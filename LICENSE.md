@@ -3,7 +3,9 @@
 Les sources de ce logiciel sont sous licence CeCILL-B.
 
 Auteur : Alain Pomirol <pomirol@gmail.com>
+
 Compagnie: Dafap informatique <dafap@free.fr>
+
 Dépôt : https://github.com/dafap/SchoolBusManager
 
 à l'exception des modules contenus dans le répertoire <vendor> qui ont leurs licences propres.
