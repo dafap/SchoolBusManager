@@ -10,7 +10,7 @@ Dépôt : https://github.com/dafap/SchoolBusManager
 
 ## ZendFramework est sous la licence suivante :
 
-Copyright (c) 2005-2014, Zend Technologies USA, Inc.
+```Copyright (c) 2005-2014, Zend Technologies USA, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -37,6 +37,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
 
 ## CONTRAT DE LICENCE DE LOGICIEL LIBRE CeCILL-B
 
@@ -554,4 +555,5 @@ les différends ou litiges seront portés par la Partie la plus diligente
 devant les Tribunaux compétents de Paris.
 
 
-Version 1.0 du 2006-09-05.```
+Version 1.0 du 2006-09-05.
+```
