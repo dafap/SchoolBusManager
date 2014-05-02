@@ -1,0 +1,42 @@
+{
+	"name" : "dafap/sbm",
+	"description" : "School Bus Manager",
+	"authors" : [{
+			"name" : "Dafap",
+			"email" : "dafap@dafap.fr",
+			"homepage" : "http://www.dafap.fr"
+		}
+	],
+	"keywords" : [
+		"framework",
+		"zf2"
+	],
+	"homepage" : "http://framework.zend.com/",
+	"license" : [
+		"BSD-3-Clause"
+	],
+	"require" : {
+		"dafap/dafap-layout" : "dev-master",
+		"atukai/at-php-settings" : "dev-master",
+		"php" : ">=5.3.3",
+		"bjyoungblood/bjy-authorize" : "dev-master",
+		"zf-commons/zfc-user" : "dev-master",
+		"zendframework/zendframework" : "2.3.*",
+		"zf-commons/zfc-admin" : "dev-master"
+	},
+	"require-dev" : {
+		"zendframework/zftool" : "dev-master",
+		"bjyoungblood/bjy-profiler" : "dev-master",
+		"zendframework/zend-developer-tools" : "dev-master"
+	},
+	"minimum-stability" : "stable",
+	"support" : {
+		"email" : "sbm@dafap.fr"
+	},
+	"repositories" : [{
+			"type" : "git",
+			"url" : "https://github.com/dafap/DafapLayout.git"
+		}
+	],
+	"prefer-stable" : true
+}

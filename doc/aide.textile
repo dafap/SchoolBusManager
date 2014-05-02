@@ -1,0 +1,250 @@
+h1. Aide mémoire pour l'édition textile
+
+h2. Sommaire
+
+"Création d'un fichier":#Crationdunfichier 
+"Blockquote, bloc de code":#Blockquoteblocdecode
+"Paragraphes, alignements, retraits":#Paragraphesalignementsretraits
+"Décoration de texte en ligne : gras, italique, barré, souligné, exposant, indice ...":#Dcorationdunmotdansunephrasespan
+"Accronyme":#Accronyme
+"Tableaux":#Tableaux
+"Listes à puces et listes numérotées":#Listespucesetlistesnumrotes
+"Indice et note de pied de page":#Indiceetnotedepieddepage
+"Liens":#Liens
+"Images":#Images
+"Inhiber la conversion textile":#Inhiberlaconversiontextile
+
+
+h2. Création d'un fichier
+
+Il doit se terminer par l'extention @.textile@
+
+h2. Titres
+
+Une ligne vide est nécessaire après chaque ligne vide
+@h1(#id). Titre de niveau 1@
+@h2. Titre de niveau 2@
+@h3. Titre de niveau 3@
+@h4. Titre de niveau 4@
+@h5. Titre de niveau 5@
+@h6. Titre de niveau 6@
+
+h2. Blockquote, bloc de code
+
+@bc. Un bloc de code@
+donnera
+
+bc. Un bloc de code
+A noter qu'une ligne vide doit précéder et suivre le bloc.
+
+@bq. Un blockquote@
+donnera
+
+bq. Un bloc de code
+A noter qu'une ligne vide doit précéder et suivre le bloc.
+
+h3. Bloc étendu (..) 
+
+Ajouter un deuxième point en fin de balise. 
+
+Une balise bloc Textile prend fin dès qu’il rencontre une ligne vierge, le bloc étendu permet 
+donc d’étendre une balise bloc au-delà d’une ligne vierge et ne prend fin qu’à l’écriture d’une 
+nouvelle balise de type bloc. 
+
+Exemple :
+
+bq.. Ajouter un deuxième point en fin de balise.
+ 
+Une balise bloc Textile prend fin dès qu’il rencontre une ligne vierge, le bloc étendu permet 
+donc d’étendre une balise bloc au-delà d’une ligne vierge et ne prend fin qu’à l’écriture d’une 
+nouvelle balise de type bloc. 
+
+h2. Paragraphes, alignements, retraits
+
+@p.@ permet de définir un paragraphe. On peut alors préciser l'alignement désiré de la façon suivante:
+|@p<.@ | alignement à gauche |
+|@p>.@ | alignement à droite |
+|@p=.@ | centré |
+|@p<>.@ | justifié |
+|@p(.@ | retrait gauche d'1em |
+|@p((.@ | retrait gauche de 2em |
+|@p(((.@ | retrait gauche de 3em |
+|@p).@ | retrait droit d'1em |
+|@p)).@ | retrait droit de 2em |
+|@p))).@ | retrait droit de 3em |
+
+Les alignements et retraits peuvent être appliqués aux titres et aux blocs.
+
+h2. Décoration de texte en ligne : gras, italique, barré, souligné, exposant, indice...
+
+@_italique_@ donnera : _italique_
+@*gras*@ donnera : *gras*
+@-texte barré-@ donnera : -texte barré-
+@+texte souligné+@ donnera : +texte souligné+
+@^texte en exposant^@ donnera : ^texte en exposant^
+@~texte en indice~@ donnera : ~texte en indice~
+@??citation??@ donnera : ??citation??
+
+h3. Décoration d'un mot dans une phrase : span
+
+Exemple : 
+Le pire n'est pas de %{color:red}se mentir%, mais de se croire. 
+
+
+h2. Accronyme
+
+Exemple : @Sbm(School Bus Manager)@ donnera SBM(School Bus Manager)
+A noter que l'accronyme est en majuscules.
+
+h2. Tableaux
+
+Un | doit être présent au début et à la fin de chaque ligne / colonne.
+@|_. Titre |_. Titre |_. Titre |@
+@| Cellule 1 | Cellule 2 | Cellule 3 |@
+@| Cellule 1 | Cellule 2 | Cellule 3 |@
+donnera :
+|_. Titre |_. Titre |_. Titre |
+| Cellule 1 | Cellule 2 | Cellule 3 |
+| Cellule 1 | Cellule 2 | Cellule 3 |
+
+Pour spécifier des cellules d'en-tête, utiliser les caractères underscore + point + espace « _. » 
+
+h3. Alignement du contenu d'une cellule
+
+bc. |_ Titre |
+|<. Alignement gauche |
+|>. Alignement droit |
+|<>. Centre | 
+|^. Alignement haut |
+
+ 
+p. Exemple :
+
+|_ Titre |
+|<. Alignement gauche |
+|>. Alignement droit | 
+|<>. Justifie |
+|^. Alignement haut |
+
+h3. Fusion de colonnes : colspans (\n)
+
+|\2. Deux colspans |
+| col 1 | col 2 | 
+ 
+h3. Fusion de lignes dans une colonne : rowspan (/n)
+
+|/3. spans 3 rangées | a |
+ | b |
+ | c | 
+
+h3. Attribut global d'un tableau 
+
+L’attribut global du tableau est défini avant la première cellule dans des accolades suivi d’un point puis d’un retour à la ligne. 
+
+Exemple :
+
+table{background:#ddd}.
+|une|belle|ligne|ici|
+|une|autre|ligne|ici| 
+
+h3. Attribut pour une ligne du tableau
+
+Pour définir les attributs d’une seule ligne du tableau, l’attribut doit être défini avant la première cellule de la ligne cible, dans des accolades suivies d’un point puis d’un espace.
+
+| une | belle | ligne | ici |
+{background:#ddd}. | une | autre | ligne | ici | 
+
+h3. Attribut pour une cellule du tableau
+
+| une | belle | ligne | ici |
+|une |{background:#ddd}. autre | ligne | ici | 
+
+
+h2. Listes à puces et listes numérotées
+
+h3. Liste à puces
+
+@* Premier élément d'une liste à puces@
+@* Deuxième élément@
+@** Deuxième niveau@
+@** Encore un deuxième niveau@
+@*** Troisième niveau@
+donnera :
+* Premier élément d'une liste à puces
+* Deuxième élément
+** Deuxième niveau
+** Encore un deuxième niveau
+*** Troisième niveau
+
+h3. Liste numérotée
+
+@# Premier élément d'une liste numérotée@
+@# Deuxième élément@
+@## Deuxième niveau@
+@## Encore un deuxième niveau@
+@### Troisième niveau@
+donnera :
+# Premier élément d'une liste numérotée
+# Deuxième élément
+## Deuxième niveau
+## Encore un deuxième niveau
+### Troisième niveau
+
+h2. Indice et note de pied de page
+
+@Elément de texte[1]@ donnera : Elément de texte[1]
+@fn1. Note de pied de page@ donnera 
+
+fn1. Note de pied de page
+
+La ligne doit commencer par @fn1@ et doit être précédée et suivie d'une ligne vierge.
+
+h2. Liens
+
+@"Texte du lien(Description du site)":adresse_lien@
+Exemple : @Je recherche sur "Google":http://google.com@ donnera : Je recherche sur "Google":http://google.com
+
+h3. Alias de lien
+
+Exemple :
+L’adresse de "Dafap informatique":dafap est "ici":dafap, vous pouvez accéder au "site":dafap facilement.
+ 
+[dafap]http://dafap.fr 
+
+
+h2. Images
+
+@!../public/img/sbm-logo.gif!@ donnera !../public/img/sbm-logo.gif!
+@!{width:5%}../public/img/sbm-logo.gif!@ donnera !{width:5%}../public/img/sbm-logo.gif!
+@!{width=32px;height=64px}../public/img/sbm-logo.gif!@ donnera !{width=32px;height=64px}../public/img/sbm-logo.gif!
+
+Les symboles d'alignement fonctionnent pour les images.
+
+h2. Inhiber la conversion textile
+
+h3. No textile (@notextile.@) 
+
+Cette balise de type bloc empêche l’interprétation du code Textile. 
+
+Exemple :
+
+bc. 
+notextile. ici un bloc *sans bold* ni _italic_ 
+
+donnera
+
+notextile. ici un bloc *sans bold* ni _italic_ 
+
+h3. Double égale (@==no textile==@) 
+
+Cette balise de type inline empêche l’interprétation du code Textile. 
+
+Exemple :
+
+bc. Du texte ==^sans sup^== et du texte ^avec sup^.
+
+donnera
+
+p{color:magenta}. Du texte ==^sans sup^== et du texte ^avec sup^.
+
+
