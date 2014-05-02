@@ -1,0 +1,40 @@
+<?php
+/**
+ * Vue pour l'action create du controleur SbmInstallation
+ *
+ *
+ * @project sbm
+ * @package module/SbmInstallation/view/sbm-installation/index
+ * @filesource create.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 janv. 2014
+ * @version 2014-1
+ */
+use Zend\Db\Adapter\Driver\ResultInterface;
+
+function printResult($args) 
+{
+    if (!is_array($args)) {
+        echo "Résultat inconnu\n"; var_dump($args); echo "\n";
+    } else {
+        foreach ($args as $result) {
+            if (is_string($result)) {
+                echo "$result\n";
+            } elseif ($result instanceof ResultInterface) {
+                echo $result->getResource()->queryString;
+                echo "\n";
+            } elseif (is_array($result)) {
+                printResult($result);
+            } else {
+                echo "Résultat inconnu\n"; var_dump($result); echo "\n";
+            }
+        }
+    }
+}
+
+set_time_limit(30);
+?>
+<h1>Création des tables et des vues</h1>
+<pre><?php printResult($this->args); ?></pre>
+<p>Création terminée.</p>
