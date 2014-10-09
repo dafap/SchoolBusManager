@@ -1,0 +1,38 @@
+<?php
+/**
+ * Page de modification d'une station
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/station-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+$retour = $this->url('sbmgestion/transport', array('action'=> 'station-liste', 'page' => $this->page));
+?>
+<h1>Modification d'une station</h1>
+<div class="fiche-wrapper">
+  <div class="zone-actions">
+    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des stations"><i class="fam-door-out"></i> Retour</a>
+  </div>
+<?php 
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('stationId'));
+echo $this->formHidden($this->form->get('csrf'));
+echo '<fieldset class="edit">';
+echo '<div id="station-edit-communeId" class="row-inner edit">' . $this->formRow($this->form->get('communeId')) . '</div>';
+echo '<div id="station-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
+echo '<div id="station-edit-aliasCG" class="row-inner edit">' . $this->formRow($this->form->get('aliasCG')) . '</div>';
+echo '<div id="station-edit-codeCG" class="row-inner edit">' . $this->formRow($this->form->get('codeCG')) . '</div>';
+echo '<div id="station-edit-longitude" class="row-inner edit">' . $this->formRow($this->form->get('longitude')) . '</div>';
+echo '<div id="station-edit-latitude" class="row-inner edit">' . $this->formRow($this->form->get('latitude')) . '</div>';
+echo '<div id="station-edit-visible" class="row-inner edit">' . $this->formRow($this->form->get('visible')) . '</div>';
+echo '<div id="station-edit-ouverte" class="row-inner edit">' . $this->formRow($this->form->get('ouverte')) . '</div>';
+echo '<div id="station-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo '</fieldset>';
+echo $this->form()->closeTag();
+?>
+</div>

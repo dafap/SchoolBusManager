@@ -1,0 +1,34 @@
+h1. Description technique
+
+h2. Les modules
+
+h3. Les modules chargés
+
+h4. Mode de chargement
+
+Les modules récupérés  sont chargés à partir de composer.phar et de composer.json (racine du projet).
+Il faut indiquer leur caractéristique dans composer.json.
+Exemple :
+
+bc. "require" : {
+		"zendframework/zftool" : "dev-master",
+		"atukai/at-php-settings" : "dev-master",
+		"php" : ">=5.3.3",
+		"zendframework/zendframework" : "2.3.*"
+	},
+
+h4. Liste des modules chargés
+
+* *AtPhpSettings* (atukai/at-php-settings) : permet de gérer les directives %{color:orange}PHP_INI_ALL% et %{color:orange}PHP_INI_PERDIR%. Le fichier @at-php-settings.global.php@ dans le dossier @config/autoload@ de l'application définit une clé @php_settings@ dans la configuration de l'application qui indique les valeurs à forcer. Le module met en place ces valeurs. Il devra donc être déclaré en premier dans @application.config.php@. "Documentation et sources du module":https://github.com/atukai/AtPhpSettings et "liste des directives PHP existantes":http://www.php.net/manual/fr/ini.list.php.
+* *DafapLayout* (dafap/DafapLayout) : permet de choisir un layout en fonction du module de l'application. Le fichier @dafap-layout.global.php@ dans le dossier @config/auloload@ de l'application définit une clé @layout_map@ dans la configuration de l'application qui indique le layout par défaut, le layout pour les erreurs et les layouts particuliers aux différents modules ou controleurs. La documentation du paramétrage se trouve sur ce wiki.
+* *ZendDeveloperTools* (zendframework/zed-developer-tools) : ajoute une barre au bas de l'écran qui aide le développeur en affichant la version de ZF2, la version de PHP, les extensions, les modules, les templates, la config de l'application, etc. "Documentation et sources":https://github.com/zendframework/ZendDeveloperTools
+* *BjyProfiler* (bjyoungblood/bjy-profiler) : complète ZendDeveloperTools par la liste des dernières requêtes à la base de données. "Documentation et sources":https://github.com/bjyoungblood/BjyProfiler
+* *ZfcBase* (zf-commons/zfc-base) : définit des classes pour d'autres modules, en particulier une classe AbstractModule bien utile. La liste des classes est la suivante :
+** ZfcBase\Module
+** ZfcBase\Form\ProvidesEventsForm
+** ZfcBase\Mapper\Exception\ExceptionInterface
+** ZfcBase\Mapper\Exception\InvalidArgumentException
+** ZfcBase\Mapper\AbstractDbMapper
+** ZfcBase\EventManager\EventProvider
+** ZfcBase\Module\AbstractModule
+* *ZfcUser* (zf-commons/zfc-user) : un module générique d'enregistrement et d'autentification d'un utilisateur avec changement d'email et changement de mot de passe. Copier le fichier @zfcuser.global.php.dist@ du dossier @config@ du module dans le dossier @config/autoload@ de l'application sous le nom @zfcuser.globla.php@ et l'adapter. "Documentation et sources":https://github.com/ZF-Commons/ZfcUser/wiki.

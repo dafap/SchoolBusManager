@@ -1,0 +1,42 @@
+<?php
+/**
+ * Page de consultation des inscrits ayant le même responsable
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
+ * @filesource eleve-group.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 juillet 2014
+ * @version 2014-1
+ */
+$retour = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-liste',
+    'page' => $this->page
+));
+?>
+<h1>Groupe des élèves inscrits ayant comme responsable 1</h1>
+<div class="groupe-wrapper">
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapehtml($this->datagroup->nom); ?> <?php echo $this->escapehtml($this->datagroup->prenom); ?></li>
+			<li>habitant <?php echo $this->escapehtml($this->datagroup->adressL1); ?> à <?php echo $this->escapehtml($this->datagroup->commune); ?></li>
+		</ul>
+	</div>
+	<div class="liste-wrapper">
+		<div class="zone-actions">
+			<a href="<?php echo $retour; ?>" class="bouton"
+				title="retour à la liste des eleves"><i class="fam-door-out"></i>
+				Retour</a>
+		</div>
+		<table class="liste-inner">
+			<tbody>
+			</tbody>
+		</table>
+
+		<p>
+			<em>A faire</em>
+		</p>
+	</div>
+</div>

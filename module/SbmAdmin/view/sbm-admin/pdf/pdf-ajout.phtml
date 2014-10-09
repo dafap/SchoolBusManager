@@ -1,0 +1,240 @@
+<?php
+/**
+ * Page de création d'un document pdf par un formulaire présenté en accordéon.
+ * 
+ * Ce formulaire utilise le javascript jQuery-ui accordion.
+ * - La bibliothèque jquery-ui doit être montée. 
+ *   Comme on utilise le module 'dafap-layout', il faut le faire par le fichier config/autoload/dafap-layout.global.php
+ * - La balise <form> doit avoir id="accordion" pour que ça marche
+ * - A la fin du script de cette vue, il faut lancer le script par : $( "#accordion" ).accordion();
+ *
+ *
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/pdf
+ * @filesource pdf-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 août 2014
+ * @version 2014-1
+ */
+use Zend\Form\View\Helper\FormRow;
+
+/**
+ * Fonction appelée par colonneElements()
+ *
+ * @param string $view            
+ * @param array $array            
+ */
+function listeElements($view, $array)
+{
+    foreach ($array as $element) {
+        if ($view->form->has($element))
+            echo "<div id=\"pdf-edit-$element\" class=\"row-inner edit\">" . $view->formRow($view->form->get($element)) . '</div>';
+        else
+            echo "<div id=\"pdf-edit-$element\" class=\"row-inner edit\">$element pas encore défini dans SbmAdmin\Form\DocumentPdf.</div>";
+    }
+}
+
+/**
+ * Fonction appelée par blocAccordeon2cols()
+ *
+ * @param string $view            
+ * @param array $array            
+ */
+function colonneElements($view, $array)
+{
+    echo '<div class="float-left cols-2">';
+    listeElements($view, $array);
+    echo '</div>';
+}
+
+/**
+ * Compose un bloc d'accordéon
+ *
+ * @param Zend\View\Renderer\PhpRenderer $view
+ *            (parce que $this n'est pas disponible dans une fonction
+ * @param string $label
+ *            le label de l'accordéon
+ * @param array $array2d
+ *            tableau à 2 dimension :<ul>
+ *            <li>dimension 1 : le numéro de la colonne</li>
+ *            <li>dimension 2 : les noms des éléments du formulaire qui composent la colonne</li></ul>
+ */
+function blocAccordeon2cols($view, $label, $array2d)
+{
+    echo "<h3>$label</h3>";
+    echo '<div>';
+    colonneElements($view, $array2d[1]); // colonne 1
+    colonneElements($view, $array2d[2]); // colonne 2
+    echo '</div>';
+}
+// =============================================================================================
+$retour = $this->url('sbmadmin/pdf', array(
+    'action' => 'pdf-liste',
+    'page' => $this->page
+));
+?>
+<h1>Création d'un nouveau document pdf</h1>
+<div class="fiche-wrapper">
+	<div class="zone-actions">
+		<a href="<?php echo $retour; ?>" class="bouton"
+			title="retour à la liste des documents pdf"><i class="fam-door-out"></i>
+			Retour</a>
+	</div>
+<?php
+echo $this->form()->openTag($this->form); // le formulaire doit avoir id="accordion" pour que ça marche
+echo $this->formHidden($this->form->get('documentId'));
+echo $this->formHidden($this->form->get('type'));
+echo $this->formHidden($this->form->get('csrf'));
+echo $this->formHidden($this->form->get('creator'));
+
+blocAccordeon2cols($this, 'Caractéristiques du document', array(
+    1 => array(
+        'name',
+        'page_format',
+        'page_orientation',
+        'out_mode',
+        'out_name'
+    ),
+    2 => array(
+        'recordSourceType',
+        'recordSource',
+        'filter',
+        'orderBy',
+        'disposition'
+    )
+));
+blocAccordeon2cols($this, 'En-tête de document', array(
+    1 => array(
+        'docheader',
+        'docheader_templateId',
+        'docheader_page_distincte',
+        'docheader_pageheader',
+        'docheader_pagefooter',
+        'author',
+        'subject',
+        'keywords',
+        'docheader_margin'
+    ),
+    2 => array(
+        'title',
+        'docheader_subtitle'
+    )
+));
+blocAccordeon2cols($this, 'Pied de document', array(
+    1 => array(
+        'docfooter',
+        'docfooter_templateId',
+        'docfooter_page_distincte',
+        'docfooter_pageheader',
+        'docfooter_pagefooter',
+        'docfooter_insecable',
+        'docfooter_margin'
+    ),
+    2 => array(
+        
+        'docfooter_title',
+        'docfooter_string'
+    )
+));
+blocAccordeon2cols($this, 'En-tête de page', array(
+    1 => array(
+        'pageheader',
+        'pageheader_templateId',
+        'pageheader_logo_visible',
+        'pageheader_margin',
+        'pageheader_font_family',
+        'pageheader_font_style',
+        'pageheader_font_size',
+        'pageheader_text_color',
+        'pageheader_line_color'
+    ),
+    2 => array(
+        'pageheader_logo',
+        'pageheader_logo_width',
+        'pageheader_title',
+        'pageheader_string'
+    )
+));
+blocAccordeon2cols($this, 'Pied de page', array(
+    1 => array(
+        'pagefooter',
+        'pagefooter_templateId',
+        'pagefooter_font_family',
+        'pagefooter_font_style',
+        'pagefooter_font_size',
+        'pagefooter_margin',
+        'pagefooter_text_color',
+        'pagefooter_line_color'
+    ),
+    2 => array(
+        'pagefooter_string'
+    )
+));
+blocAccordeon2cols($this, 'Mise en page du contenu', array(
+    1 => array(
+        'page_templateId',
+        'page_margin_top',
+        'page_margin_bottom',
+        'page_margin_left',
+        'page_margin_right',
+        'url_path_images',
+        'image_blank'
+    ),
+    2 => array(
+        'main_font_family',
+        'main_font_style',
+        'main_font_size',
+        'data_font_family',
+        'data_font_style',
+        'data_font_size',
+        'default_font_monospaced'
+    )
+));
+blocAccordeon2cols($this, 'Titres', array(
+    1 => array(
+        'titre1_font_family',
+        'titre1_font_style',
+        'titre1_font_size',
+        'titre1_text_color',
+        'titre1_line',
+        'titre1_line_color',
+        'titre2_font_family',
+        'titre2_font_style',
+        'titre2_font_size',
+        'titre2_text_color',
+        'titre2_line',
+        'titre2_line_color'
+    ),
+    2 => array(
+        'titre3_font_family',
+        'titre3_font_style',
+        'titre3_font_size',
+        'titre3_text_color',
+        'titre3_line',
+        'titre3_line_color',
+        'titre4_font_family',
+        'titre4_font_style',
+        'titre4_font_size',
+        'titre4_text_color',
+        'titre4_line',
+        'titre4_line_color'
+    )
+));
+?>
+  <div id="pdf-edit-buttons" class="row-inner edit">
+	<?php echo $this->formSubmit($this->form->get('submit')); ?>
+	<?php echo $this->formSubmit($this->form->get('cancel')); ?>
+  </div>
+  <?php echo $this->form()->closeTag(); ?>
+</div>
+<?php // fiche_wrapper ?>
+
+<?php
+// lance le script accordion
+$this->inlineScript()->captureStart();
+echo <<<'JS'
+    $( "#accordion" ).accordion();
+JS;
+$this->inlineScript()->captureEnd();
+?>

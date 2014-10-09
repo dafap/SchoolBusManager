@@ -1,0 +1,86 @@
+<?php
+/**
+ * Liste des transporteurs
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/transporteur-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 mai 2014
+ * @version 2014-1
+ */
+$this->paginator->setDefaultItemCountPerPage($this->nb_transporteur_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$transporteurs = $this->paginator->getCurrentItems();
+$ajouter = $this->url('sbmgestion/transport', array(
+    'action' => 'transporteur-ajout',
+    'page' => $this->page
+));
+$pdf = $this->url('sbmgestion/transport', array(
+    'action' => 'transporteur-pdf',
+    'page' => $this->page
+));
+$retour = $this->url('sbmgestion/transport');
+?>
+<h1>Liste des transporteurs</h1>
+<div class="liste-wrapper">
+	<div class="zone-actions">
+		<a href="<?php echo $retour; ?>" class="bouton"
+			title="retour au menu de gestion du réseau de transport"><i
+			class="fam-door-out"></i> Retour</a> <a href="<?php echo $pdf; ?>"
+			class="bouton" title="exporter en pdf" target="_blank"><i
+			class="fam-application-view-list"></i> Exporter en pdf</a> <a
+			href="<?php echo $ajouter; ?>" class="bouton"
+			title="créer un nouveau transporteur"><i class="fam-add"></i> Ajouter
+			un transporteur</a>
+	</div>
+	<table class="liste-inner transporteurs">
+		<tbody>
+        <?php foreach($transporteurs as $test => $transporteur): ?>
+        <?php $fmt?>
+         <tr
+				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<td class="nom"><?php echo $this->escapeHtml($transporteur->nom); ?></td>
+				<td class="commune"><?php echo $this->escapeHtml($transporteur->commune); ?></td>
+				<td class="codepostal"><?php echo $this->escapeHtml($transporteur->codePostal); ?></td>
+				<td class="telephone"><?php echo $this->escapeHtml($transporteur->telephone); ?></td>
+				<td class="fax"><?php echo $this->escapeHtml($transporteur->fax); ?></td>
+				<td class="email"><?php echo $this->escapeHtml($transporteur->email); ?></td>
+				<td class="siret"><?php echo $this->escapeHtml($transporteur->siret); ?></td>
+				<td class="rib-domiciliation"><?php echo $this->escapeHtml($transporteur->rib_domiciliation); ?></td>
+				<td class="boutons">
+             <?php
+            $url_edit = $this->url('sbmgestion/transport', array(
+                'action' => 'transporteur-edit',
+                'page' => $this->page,
+                'id' => $transporteur->transporteurId
+            ));
+            $url_delete = $this->url('sbmgestion/transport', array(
+                'action' => 'transporteur-suppr',
+                'page' => $this->page,
+                'id' => $transporteur->transporteurId
+            ));
+            $url_group = $this->url('sbmgestion/transport', array(
+                'action' => 'transporteur-group',
+                'page' => $this->page,
+                'id' => $transporteur->transporteurId
+            ));
+            ?>
+                 <a href="<?php echo $url_edit; ?>" class="bouton"
+					title="modifier"><i class="fam-pencil"></i></a> <a
+					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i
+						class="fam-delete"></i></a> <a href="<?php echo $url_group; ?>"
+					class="bouton" title="groupe des services de ce transporteur"><i
+						class="fam-group"></i></a>
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+<?php echo $this->form()->openTag($this->criteres_form);?>
+<?php echo $this->formCollection($this->criteres_form, true);?>
+<?php echo $this->form()->closeTag();?>	
+</div>

@@ -1,0 +1,43 @@
+<?php
+/**
+ * Page de consultation des inscrits d'un commune
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/commune-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+$retour = $this->url('sbmgestion/transport', array(
+    'action' => 'commune-liste',
+    'page' => $this->page
+));
+?>
+<h1>Groupe des élèves inscrits dans une commune</h1>
+<div class="groupe-wrapper">
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo '<span class="label">Code INSEE :</span>' . $this->escapeHtml($this->data->communeId); ?></li>
+			<li><?php echo '<span class="label">Commune :</span>' . $this->escapeHtml($this->data->nom); ?></li>
+			<li><?php echo '<span class="label">Code postal :</span>' . $this->escapeHtml($this->data->codePostal); ?></li>
+		</ul>
+	</div>
+	<div class="liste-wrapper">
+		<div class="zone-actions">
+			<a href="<?php echo $retour; ?>" class="bouton"
+				title="retour à la liste des communes"><i class="fam-door-out"></i>
+				Retour</a>
+		</div>
+	</div>
+	<table class="liste-inner">
+		<tbody>
+		</tbody>
+	</table>
+
+	<p>
+		<em>A faire</em>
+	</p>
+</div>

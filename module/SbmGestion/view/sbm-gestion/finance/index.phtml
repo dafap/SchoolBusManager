@@ -1,0 +1,28 @@
+<?php
+/**
+ * Vue de l'action index du controller FinanceController du module SbmGestion
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/finance/index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 avr. 2014
+ * @version 2014-1
+ */
+$url_finance_encaissements = $this->url('sbmgestion/finance');
+$url_finance_tarifs = $this->url('sbmgestion/finance', array('action' => 'tarif-liste', 'page' => $this->page));
+$url_finance_factures = $this->url('sbmgestion/finance');
+$url_finance_prelevements = $this->url('sbmgestion/finance');
+$url_gestion = $this->url('sbmgestion');
+
+?>
+<h1>Menu de gestion financière</h1>
+<ul>
+<li>Gestion des encaissements</li>
+<li><a href="<?php echo $url_finance_tarifs; ?>">Gestion des tarifs</a></li>
+<li>Gestion des factures</li>
+<li>Gestion des prélèvements</li>
+<li><a href="<?php echo $url_gestion; ?>">Retour au menu général</a></li>
+</ul>

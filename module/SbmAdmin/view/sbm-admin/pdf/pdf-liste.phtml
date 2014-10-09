@@ -1,0 +1,100 @@
+<?php
+/**
+ * Vue du module SbmAdmin, controller PdfController, affichant la liste des documents pdf
+ *
+ *
+ * @project sbm
+ * @package SbmAdmin/view/pdf
+ * @filesource pdf-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 août 2014
+ * @version 2014-1
+ */
+$this->paginator->setDefaultItemCountPerPage($this->nb_pdf_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$documents = $this->paginator->getCurrentItems();
+$ajouter = $this->url('sbmadmin/pdf', array(
+    'action' => 'pdf-ajout',
+    'page' => $this->page
+));
+$pdf = $this->url('sbmadmin/pdf', array(
+    'action' => 'pdf-pdf',
+    'page' => $this->page
+));
+$retour = $this->url('sbmadmin');
+?>
+<h1>Liste des documents pdf</h1>
+<div class="liste-wrapper">
+	<div class="zone-actions">
+		<a href="<?php echo $retour; ?>" class="bouton"
+			title="retour au menu d'administration"><i class="fam-door-out"></i>
+			Retour</a> <a href="<?php echo $pdf; ?>" class="bouton"
+			title="exporter en pdf" target="_blank"><i
+			class="fam-application-view-list"></i> Exporter en pdf</a> <a
+			href="<?php echo $ajouter; ?>" class="bouton"
+			title="créer un nouveau document pdf"><i class="fam-add"></i> Créer
+			un nouveau document pdf</a>
+	</div>
+	<table class="liste-inner pdf">
+		<tbody>
+        <?php foreach($documents as $test => $doc): ?>
+         <tr
+				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<td class="documentId"><?php echo $doc->documentId; ?></td>
+				<td class="name"><?php echo $this->escapeHtml($doc->name); ?></td>
+				<td class="recordSource"><?php echo $this->escapeHtml($doc->recordSource); ?></td>
+				<td class="filter"><?php echo $this->escapeHtml($doc->filter); ?></td>
+				<td class="orderBy"><?php echo $this->escapeHtml($doc->orderBy); ?></td>
+				<td class="pdf_page_format"><?php echo $doc->page_format; ?></td>
+				<td class="pdf_page_orientation"><?php echo $doc->page_orientation; ?></td>
+				<td class="docheader"><?php echo $doc->docheader; ?></td>
+				<td class="title"><?php echo $this->escapeHtml($doc->title); ?></td>
+				<td class="docfooter"><?php echo $doc->docfooter; ?></td>
+				<td class="docfooter_title"><?php echo $this->escapeHtml($doc->docfooter_title); ?></td>
+				<td class="pageheader"><?php echo $doc->pageheader; ?></td>
+				<td class="pageheader_title"><?php echo $this->escapeHtml($doc->pageheader_title); ?></td>
+				<td class="pagefooter"><?php echo $doc->pagefooter; ?></td>
+				<td class="pagefooter_string"><?php echo $this->escapeHtml($doc->pagefooter_string); ?></td>
+				<td class="boutons">
+             <?php
+            $url_edit = $this->url('sbmadmin/pdf', array(
+                'action' => 'pdf-edit',
+                'page' => $this->page,
+                'id' => $doc->documentId
+            ));
+            $url_delete = $this->url('sbmadmin/pdf', array(
+                'action' => 'pdf-suppr',
+                'page' => $this->page,
+                'id' => $doc->documentId
+            ));
+            $url_dupliquer = $this->url('sbmadmin/pdf', array(
+                'action' => 'pdf-dupliquer',
+                'page' => $this->page,
+                'id' => $doc->documentId
+            ));
+            $url_group = $this->url('sbmadmin/pdf', array(
+                'action' => 'pdf-group',
+                'page' => $this->page,
+                'id' => $doc->documentId
+            ));
+            ?>
+                 <a href="<?php echo $url_edit; ?>" class="bouton"
+					title="modifier"><i class="fam-pencil"></i></a> <a
+					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i
+						class="fam-delete"></i></a> <a
+					href="<?php echo $url_dupliquer; ?>" class="bouton" title="dupliquer"><i
+						class="fam-user-add"></i></a> <a href="<?php echo $url_group; ?>"
+					class="bouton"
+					title="groupe des documents ayant la même source de données"><i
+						class="fam-group"></i></a>
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+<?php echo $this->form()->openTag($this->criteres_form);?>
+<?php echo $this->formCollection($this->criteres_form, true);?>
+<?php echo $this->form()->closeTag();?>	
+</div>

@@ -9,19 +9,24 @@ return array(
     'modules' => array(
         'AtPhpSettings',
         'DafapLayout',
+        'DafapTcpdf',
         'ZendDeveloperTools',
         'BjyProfiler',
         'ZfcBase',
         'ZfcUser',
         'SbmFront',
+        'SbmInstallation',
         'SbmGestion',
+        'SbmAdmin',
         'SbmCommun'
-        ),
+    ),
     'module_listener_options' => array(
         'module_paths' => array(
             './module',
-            './vendor',
-            ),
-        'config_glob_paths' => array('config/autoload/{,*.}{global,local}.php')
+            './vendor'
+        ),
+        'config_glob_paths' => array(
+            'config/autoload/{,*.}{global,local}.php'
         )
-    );
+    )
+);

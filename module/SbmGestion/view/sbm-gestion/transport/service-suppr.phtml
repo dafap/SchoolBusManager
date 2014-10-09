@@ -1,0 +1,27 @@
+<?php
+/**
+ * Page de suppression d'un service
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/finance/service-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+?>
+<h1>Suppression d'un service</h1>
+<p>Vous avez demandé la suppression du service :</p>
+<ul>
+    <li><?php echo $this->escapeHtml($this->data->serviceId); ?></li>
+    <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+    <li><?php echo $this->escapeHtml($this->data->transporteur); ?></li>
+</ul>
+<p>Confirmez-vous ?</p>
+<?php 
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>

@@ -1,0 +1,33 @@
+<?php
+/**
+ * Page de modification d'une classe
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/classe-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+$retour = $this->url('sbmgestion/transport', array('action'=> 'classe-liste', 'page' => $this->page));
+?>
+<h1>Modification d'une classe</h1>
+<div class="fiche-wrapper">
+  <div class="zone-actions">
+    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des classes"><i class="fam-door-out"></i> Retour</a>
+  </div>
+<?php 
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('classeId'));
+echo $this->formHidden($this->form->get('csrf'));
+echo '<fieldset class="edit">';
+echo '<div id="classe-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
+echo '<div id="classe-edit-aliasCG" class="row-inner edit">' . $this->formRow($this->form->get('aliasCG')) . '</div>';
+echo '<div id="classe-edit-niveau" class="row-inner edit">' . $this->formRow($this->form->get('niveau')) . '</div>';
+echo '<div id="classe-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo '</fieldset>';
+echo $this->form()->closeTag();
+?>
+</div>

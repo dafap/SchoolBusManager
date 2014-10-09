@@ -1,0 +1,26 @@
+<?php
+/**
+ * Page de suppression d'une station
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/finance/station-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+?>
+<h1>Suppression d'une station</h1>
+<p>Vous avez demandé la suppression de la station :</p>
+<ul>
+    <li><?php echo $this->escapeHtml($this->data->commune); ?></li>
+    <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+</ul>
+<p>Confirmez-vous ?</p>
+<?php 
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>

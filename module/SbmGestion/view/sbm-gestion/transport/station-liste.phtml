@@ -1,0 +1,84 @@
+<?php
+/**
+ * Liste des stations
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/station-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 mai 2014
+ * @version 2014-1
+ */
+$this->paginator->setDefaultItemCountPerPage($this->nb_station_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$stations = $this->paginator->getCurrentItems();
+$ajouter = $this->url('sbmgestion/transport', array(
+    'action' => 'station-ajout',
+    'page' => $this->page
+));
+$pdf = $this->url('sbmgestion/transport', array(
+    'action' => 'station-pdf',
+    'page' => $this->page
+));
+$retour = $this->url('sbmgestion/transport');
+?>
+<h1>Liste des stations</h1>
+<div class="liste-wrapper">
+	<div class="zone-actions">
+		<a href="<?php echo $retour; ?>" class="bouton"
+			title="retour au menu de gestion du réseau de transport"><i
+			class="fam-door-out"></i> Retour</a> <a href="<?php echo $pdf; ?>" class="bouton"
+			title="exporter en pdf" target="_blank"><i
+			class="fam-application-view-list"></i> Exporter en pdf</a> <a
+			href="<?php echo $ajouter; ?>" class="bouton"
+			title="créer une nouvelle station"><i
+			class="fam-add"></i> Ajouter un station</a>
+	</div>
+	<table class="liste-inner stations">
+		<tbody>
+        <?php foreach($stations as $test => $station): ?>
+        <?php $fmt?>
+         <tr
+				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<td class="commune"><?php echo $this->escapeHtml($station->commune); ?></td>
+				<td class="nom"><?php echo $this->escapeHtml($station->nom); ?></td>
+				<td class="aliascg"><?php echo $this->escapeHtml($station->aliasCG); ?></td>
+				<td class="codecg"><?php echo $this->escapeHtml($station->codeCG); ?></td>
+				<td class="visible"><?php echo $this->escapeHtml($station->visible); ?></td>
+				<td class="ouverte"><?php echo $this->escapeHtml($station->ouverte); ?></td>
+				<td class="boutons">
+             <?php
+            $url_edit = $this->url('sbmgestion/transport', array(
+                'action' => 'station-edit',
+                'page' => $this->page,
+                'id' => $station->stationId
+            ));
+            $url_delete = $this->url('sbmgestion/transport', array(
+                'action' => 'station-suppr',
+                'page' => $this->page,
+                'id' => $station->stationId
+            ));
+            $url_group = $this->url('sbmgestion/transport', array(
+                'action' => 'station-group',
+                'page' => $this->page,
+                'id' => $station->stationId
+            ));
+            ?>
+                 <a href="<?php echo $url_edit; ?>" class="bouton"
+					title="modifier"><i class="fam-pencil"></i></a> <a
+					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i class="fam-delete"></i></a> <a
+					href="<?php echo $url_group; ?>" class="bouton"
+					title="groupe d'élèves inscrits"><i
+						class="fam-group"></i></a>
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+<?php echo $this->form()->openTag($this->criteres_form);?>
+<?php echo $this->formCollection($this->criteres_form, true);?>
+<?php echo $this->form()->closeTag();?>	
+</div>

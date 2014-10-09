@@ -1,0 +1,219 @@
+﻿  ***************
+  * DafapLayout *
+  ***************
+1. Que fait ce module ?
+-----------------------
+Ce module permet de : 
+ * choisir un layout par défaut, un layout pour les erreurs et autant de layouts particuliers que nécessaire, 
+   appliqués à des modules ou à des contrôleurs.
+ * passer des paramètres aux layouts à partir d'un fichier de configuration.
+
+Il offre aussi trois aides de vue : 
+ * getParameter renvoie un paramètre de la configuration, ou null s'il n'est pas présent. 
+ * getHeadLinks permet de mettre en place toutes les balises <link> (css, favicon, etc.) dont les paramètres sont 
+   passés par la configuration.
+ * getHeadScripts permet de mettre en place toutes les balises <script> qu'elles soient définies par des fichiers 
+   ou par des chaines contenant les scripts.
+
+
+2. Comment configurer le module ?
+---------------------------------
+Pour configurer le module, il faut :
+ * déclarer le module dans le fichier config/application.config.php
+ * copier le fichier DafapLayout/config/dafap-layout.global.dist.php dans le dossier config/autoload sous le 
+   nom de dafap-layout.global.php de votre application et l'adapter à votre besoin en respectant la structure 
+   indiquée plus loin.
+
+   2.1 Comment déclarer ce module ?
+   --------------------------------
+   La déclaration du module se fait en deux étapes :
+    * Ajouter le nom du module dans le tableau 'modules' du fichier config/application.config.php de votre application. 
+      Etant donné que ce module est totalement indépendant, peu importe l'ordre dans ce module dans la liste.
+    * S'assurer que les chemins indiqués dans la tableau 'module_paths' permettent d'accéder au module. 
+      En particulier, si ce module est monté dans vendor sans l'aide de composer.phar[1], il faut rajouter son chemin dans le tableau 'module_paths'.
+
+   2.2 Structure du fichier de configuration
+   -----------------------------------------
+   Le fichier config/autoload/dafap-layout.global.php contient les paramètres nécessaires à votre situation.
+    * un layout particulier pour les erreurs 404 et les exceptions
+    * un layout général qui s'appliquera par défaut à tout module ou tout contrôleur pour lesquels un layout particulier n'a pas été configuré
+    * autant de layouts que nécessaire pour les modules
+    * autant de layouts que nécessaire pour les contrôleurs
+
+      2.2.1 Le layout utilisé pour les erreurs 404 et les exceptions
+       a) 'layout/error' doit être déclaré dans le 'view_manager' parmi les 'template_map' de l'application[2]. 
+          Cet alias pointe sur le fichier layout qui sera utilisé pour les erreurs 404 et les exceptions. 
+          Cet alias ne doit pas être modifié[3].
+       b) Si ce layout utilise des paramètres de configuration (fichiers css, favicon, images, nom d'organisation ...), 
+          il doit être déclaré dans le tableau 'parameter' de 'layout_manager' (voir la structure plus loin).
+
+      2.2.2 Le layout à utiliser par défaut
+       a) 'layout/defaults' doit être déclaré dans le 'view_manager' parmi les 'template_map' de l'application[2]. 
+          Cet alias pointe sur le fichier layout qui sera utilisé par défaut, pour tous les modules ou contrôleurs pour lesquels 
+          un template particulier n'a pas été déclaré.
+       b) Il doit ensuite être déclaré dans le tableau 'layout_map' de 'layout_manager' de la façon impérative suivante : 
+            'defaults' => 'layout/defaults'
+       c) Enfin, si ce layout utilise des paramètres de configuration (fichiers css, favicon, images, nom d'organisation ...), 
+          il doit être déclaré dans le tableau 'parameter' de 'layout_manager' (voir la structure plus loin).
+
+      2.2.3 Le layout à utiliser pour un module particulier
+      Envisageons que tout un module de namespace MonModule doive utiliser un layout particulier enregistré dans 
+      le fichier 'MonModule\view\layout\layout.phtml'.
+       a) Il doit être déclaré dans le 'view_manager' parmi les 'template_map' de l’application[2]. 
+          Par cohérence, il est souhaitable d’utiliser le namespace du module dans la clé. 
+          Pour notre exemple, on peut utiliser : 'layout/monModule'[2].
+       b) Il doit être déclaré dans le tableau 'layout_map' de 'layout_manager' de la façon suivante : 
+            'namespace' => 'clé du fichier layout'		
+          Pour notre exemple, on doit déclarer, 'MonModule' => 'layout/monModule'.
+       c) Si ce layout utilise des paramètres de configuration  (fichiers css, favicon, images, nom d'organisation ...), 
+          il doit être déclaré dans le tableau 'parameter' de 'layout_manager' (voir la structure plus loin).
+
+      2.2.4 Le layout à utiliser pour un contrôleur particulier
+      Envisageons qu'un contrôleur dont la classe est MonModule\Controller\SpecialController doive utiliser un layout particulier 
+      enregistré dans le fichier 'MonModule\view\layout\special.phtml'.
+       a) Il doit être déclaré dans le 'view_manager' parmi les 'template_map' de l’application[2]. 
+          Par cohérence, il est souhaitable d’utiliser le nom du controller dans la clé. 
+          Pour notre exemple, on peut utiliser : 'layout/specialController'[2].
+       b) Il doit être déclaré dans le tableau 'layout_map' de 'layout_manager' de la façon suivante :
+           'nom de la classe' => 'clé du fichier layout'
+          Pour notre exemple, on doit déclarer : 'MonModule\Controller\SpecialController' => 'layout/specialController').
+          Attention à la case des caractères pour le nom de la classe. Se référer à la note [2] pour l'alias du layout. 
+       c) Si ce layout utilise des paramètres de configuration  (fichiers css, favicon, images, nom d'organisation ...), 
+          il doit être déclaré dans le tableau 'parameter' de 'layout_manager' (voir la structure ci-dessous).
+
+Notes :
+[1] Si on utilise composer.phar, il sera rajouté automatiquement dans les fichiers
+
+[2] Dans le tableau 'template_map' de 'view_manager', les clés sont de la forme 'layout/alias' où alias commence toujours par une minuscule.
+
+[3] Utilisé dans la classe LayoutErrorListener
+
+3. Structure des paramètres (clé 'parameter' de 'layout_manager')
+-----------------------------------------------------------------
+   3.1 Structure générale
+   ----------------------
+   La structure générale du 'layout_manager' est fixée dans DafapLayout/config/module.config.php et ne doit pas être modifiée.
+    'layout_manager' => array(
+        'layout_map' => array(),
+        'parameter' => array()
+    ),
+    
+    Le tableau 'layout_map' doit dresser la liste des associations entre les namespaces des modules ou les classes des contrôleurs 
+    et les alias des layouts.
+    Exemple :
+        'layout_map' => array(
+            'defaults' => 'layout/defaults',
+            'MonModule' => 'layout/monModule',
+            'MonModule\Controller\SpecialController' => 'layout/specialController'
+        ),
+    A noter qu'on ne déclare pas le 'layout/error' dans cette liste.    
+    
+    Le tableau 'parameter' contient une description des paramètres à passer aux différents layouts de la façon suivante :
+        'parameter' => array(
+            'layout/error' => array(),
+            'layout/defaults' => array(),
+            'layout/monModule => array(),
+            'layout/specialController => array(),
+        ),
+    C'est le tableau correspondant au layout qui sera passé au layout dans sa propriété $this->parameter. On doit donc y déclarer 
+    tout ce que le layout doit connaitre.
+    
+    3.2 Exemple de configuration pour un layout :
+    'layout_manager' => array(
+        'layout_map' => array(
+            'defaults' => 'layout/defaults',
+            'MonModule' => 'layout/monModule',
+            'MonModule\Controller\SpecialController' => 'layout/specialController'
+        ),
+        'parameter' => array(
+            'layout/error' => array(
+                'favicon' => '/img/favicon.ico'
+                'css' => array(
+                    '/css/style.css',
+                    '/css/nav.css',
+                    array(
+                        'href' => '/css/nav-ie7.css',
+                        'media' => 'screen',
+                        'conditionalStylesheet' => 'lt IE7',
+                        'extras' => array('id' => 'dafap')
+                    )
+                )
+            ),
+            'layout/defaults' => array(...),
+            'layout/monModule => array(
+                ...
+                'js-file' => array(
+                    '/js/bootstrap.min.js',
+                    '/js/jquery.min.js',
+                    array(
+                        'src' => '/js/respond.min.js',
+                        'type' => 'text/javascript',
+                        'attrs' => array(
+                            'conditional' => 'lt IE 9'
+                        )
+                    ),
+                    array(
+                        'src' => '/js/html5shiv.js',
+                        'type' => 'text/javascript',
+                        'attrs' => array(
+                            'conditional' => 'lt IE 9'
+                        )
+                    )
+                ),
+                'js-script' => array(<<<EOD               
+function pageRetour(controller, action) {
+window.location.href = '" . $base . "index.php/' + controller + '/' + action;
+}
+EOD
+                )
+                ...
+            ),
+            'layout/specialController => array(...),
+        ),
+    )
+    On peut définir tous les paramètres qu'on veut, sans exception.
+   
+4. Mode d'emploi des aides de vue
+---------------------------------   
+   4.1 Utilisation de getParameter
+   -------------------------------
+   Cette aide de vue prend 2 paramètres : $this->getParameter($needle, $haystack)
+   où $needle est la clé recherchée dans le tableau $haystack
+   Elle renvoie la valeur associée à cette clé ou null si la clé est absente.
+   
+   
+   4.2 Utilisation de getHeadLinks
+   ----------------------------
+   Cette aide de vue permet de mettre en place le favicon et les fichiers css à charger dans la page.
+   En supposant que dans le tableau 'parameter' de 'layout_manager' on ait défini pour notre layout les clés favicon et css comme exposé 
+   pour le layout/error de la section 3.2, on écrira dans le code du layout :
+   <?php
+      echo $this->getHeadLinks($this->basePath(), $this->getParameter('favicon', $this->parameter), $this->getParameter('css', $this->parameter));
+   ?>
+   
+   A noter que le tableau 'css' est constitué des url des fichiers css (url de ces fichier à partir de index.php) et/ou de tableaux structurés 
+   array('href' => url du fichier,
+         'media' => nom du media auquel s'applique la css,
+         'conditionalStylesheet' => chaine exprimant la condition,
+         'extras' => tout ce qu'on veut rajouter dans la balise <link> comme un 'id' par exemple
+   )
+    * s'il n'y a pas de condition, on associe la valeur true
+    * s'il n'y a pas d'extras, on associe un tableau vide array()
+   
+   4.3 Utilisation de getHeadScripts
+   ------------------------------------------
+   Cette aide de vue permet de mettre en place les scripts dans le <head> de notre page.
+   En supposant que dans le tableau 'parameter' de 'layout_manager' on ait défini pour notre layout la clé 'js-file' et la clé 'js-script'
+   comme pour layout/monModule de l'exemple 3.2, on écrira dans le code du layout :
+   <?php
+      echo $this->getHeadScripts($this->basePath(), $this->getParameter('js-file', $this->parameter), $this->getParameter('js-script', $this->parameter));
+   ?>
+   
+   A noter que le tableau 'js-file' est constitué des url des  fichiers de scripts (relatives à index.php) et/ou de tableaux structurés
+   array( 'src' => url du fichier,
+          'type' => 'text/javascript', // ou 'text/x-jquery-tmpl' ou autre si nécessaire ...
+          'attrs' => array() // peut contenir par exemple les clés 'conditional', 'id', 'noescape' ...
+   )
+   Et le tableau 'js-script' passe directementd des scripts sous forme de chaîne de caractères. Ce dernier tableau est optionnel.
+
+

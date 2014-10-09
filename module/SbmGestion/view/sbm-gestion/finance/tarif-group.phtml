@@ -1,0 +1,43 @@
+<?php
+/**
+ * Page de consultation des inscrits sur un tarif
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+$retour = $this->url('sbmgestion/finance', array(
+    'action' => 'tarif-liste',
+    'page' => $this->page
+));
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+?>
+<h1>Groupe des élèves inscrits au tarif</h1>
+<div class="groupe-wrapper">
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+			<li><?php echo $fmt->formatCurrency($this->data->montant, 'EUR'); ?></li>
+		</ul>
+	</div>
+	<div class="liste-wrapper">
+		<div class="zone-actions">
+			<a href="&lt;?php echo $retour; ?&gt;" class="bouton"
+				title="retour à la liste des tarifs"><i class="fam-door-out"></i>
+				Retour</a>
+		</div>
+		<table class="liste-inner">
+			<tbody>
+			</tbody>
+		</table>
+
+		<p>
+			<em>A faire</em>
+		</p>
+	</div>
+</div>

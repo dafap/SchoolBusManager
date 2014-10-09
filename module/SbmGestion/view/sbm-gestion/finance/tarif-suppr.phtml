@@ -1,0 +1,34 @@
+<?php
+/**
+ * Page de suppression d'un tarif
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/finance/tarif-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+?>
+<h1>Suppression d'un tarif</h1>
+<div class="groupe-wrapper">
+	<p>Vous avez demandé la suppression du tarif :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+			<li><?php echo $fmt->formatCurrency($this->data->montant, 'EUR'); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->rythme); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->grille); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->mode); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

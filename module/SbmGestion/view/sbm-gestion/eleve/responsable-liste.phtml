@@ -1,0 +1,88 @@
+<?php
+/**
+ * Liste des responsables
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
+ * @filesource eleve-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 juil. 2014
+ * @version 2014-1
+ */
+$this->paginator->setDefaultItemCountPerPage($this->nb_responsable_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$responsables = $this->paginator->getCurrentItems();
+$ajouter = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-ajout',
+    'page' => $this->page
+));
+$pdf = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-pdf',
+    'page' => $this->page
+));
+$retour = $this->url('sbmgestion/eleve');
+?>
+<h1>Liste des responsables</h1>
+<div class="liste-wrapper">
+	<div class="zone-actions">
+		<a href="<?php echo $retour; ?>" class="bouton"
+			title="retour au menu de gestion des élèves"><i
+			class="fam-door-out"></i> Retour</a> <a href="<?php echo $pdf; ?>"
+			class="bouton" title="exporter en pdf" target="_blank"><i
+			class="fam-application-view-list"></i> Exporter en pdf</a> <a
+			href="<?php echo $ajouter; ?>" class="bouton"
+			title="créer un nouveau responsable"><i class="fam-add"></i> Ajouter
+			un responsable</a>
+	</div>
+	<table class="liste-inner responsables">
+		<tbody>
+        <?php foreach($responsables as $test => $responsable): ?>
+         <tr
+				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<td class="responsableId"><?php echo $this->escapehtml($responsable->responsableId); ?></td>
+				<td class="titre"><?php echo $this->escapeHtml($responsable->titre); ?></td>
+				<td class="nom"><?php echo $this->escapeHtml($responsable->nom); ?></td>
+				<td class="prenom"><?php echo $this->escapeHtml($responsable->prenom); ?></td>
+				<td class="adressL1"><?php echo $this->escapehtml($responsable->adressL1); ?></td>
+				<td class="adressL2"><?php echo $this->escapehtml($responsable->adressL2); ?></td>
+				<td class="codePostal"><?php echo $this->escapeHtml($responsable->codePostal); ?></td>
+				<td class="commune"><?php echo $this->escapehtml($responsable->commune); ?></td>
+				<td class="nbEleves"><?php echo $responsable->nbEleves; ?></td>
+				<td class="demenagement"><?php echo $responsable->demenagement ? 'D' : ''; ?></td>
+				<td class="selection"><?php echo $responsable->selection ? 'X' : ''; ?></td>
+				<td class="boutons">
+             <?php
+            $url_edit = $this->url('sbmgestion/eleve', array(
+                'action' => 'responsable-edit',
+                'page' => $this->page,
+                'id' => $responsable->responsableId
+            ));
+            $url_delete = $this->url('sbmgestion/eleve', array(
+                'action' => 'responsable-suppr',
+                'page' => $this->page,
+                'id' => $responsable->responsableId
+            ));
+            $url_group = $this->url('sbmgestion/eleve', array(
+                'action' => 'responsable-group',
+                'page' => $this->page,
+                'id' => $responsable->responsableId
+            ));
+            ?>
+                 <a href="<?php echo $url_edit; ?>" class="bouton"
+					title="modifier"><i class="fam-pencil"></i></a> <a
+					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i
+						class="fam-delete"></i></a> <a href="<?php echo $url_group; ?>"
+					class="bouton" title="groupe des élèves ayant ce responsable 1"><i
+						class="fam-group"></i></a>
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+<?php echo $this->form()->openTag($this->criteres_form);?>
+<?php echo $this->formCollection($this->criteres_form, true);?>
+<?php echo $this->form()->closeTag();?>	
+</div>

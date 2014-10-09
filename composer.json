@@ -1,20 +1,30 @@
 {
 	"name" : "dafap/sbm",
-	"description" : "School Bus Manager",
+	"description" : "School Bus Manager, software",
+	"version" : "1.0.0",
 	"authors" : [{
 			"name" : "Dafap",
 			"email" : "dafap@dafap.fr",
 			"homepage" : "http://www.dafap.fr"
 		}
 	],
+	"support" : {
+	    "email": "sbmt@dafap.fr",
+        "issues": "https://github.com/dafap/SchoolBusManager/issues",
+        "wiki": "https://github.com/dafap/SchoolBusManager/wiki",
+        "source": "https://github.com/dafap/SchoolBusManager"
+    },
 	"keywords" : [
+	    "transport",
+	    "school",
 		"framework",
 		"zf2"
 	],
-	"homepage" : "http://framework.zend.com/",
+	"homepage" : "http://www.dafap.fr/",
 	"license" : [
 		"BSD-3-Clause"
 	],
+	"time" : "2014-09-01",
 	"require" : {
 		"dafap/dafap-layout" : "dev-master",
 		"atukai/at-php-settings" : "dev-master",
@@ -22,7 +32,8 @@
 		"bjyoungblood/bjy-authorize" : "dev-master",
 		"zf-commons/zfc-user" : "dev-master",
 		"zendframework/zendframework" : "2.3.*",
-		"zf-commons/zfc-admin" : "dev-master"
+		"zf-commons/zfc-admin" : "dev-master",
+		"tecnick.com/tcpdf": "*"
 	},
 	"require-dev" : {
 		"zendframework/zftool" : "dev-master",
@@ -36,7 +47,30 @@
 	"repositories" : [{
 			"type" : "git",
 			"url" : "https://github.com/dafap/DafapLayout.git"
-		}
+		},
+		{
+           "type":"package",
+           "package": {
+               "name": "tecnick.com/tcpdf",
+               "version":"master",
+               "source": {
+                    "url": "http://git.code.sf.net/p/tcpdf/code",
+                    "type": "git",
+                    "reference":"master"
+               }
+           }
+        }		
 	],
-	"prefer-stable" : true
+	"prefer-stable" : true,
+	"config" : {
+	    "process-timeout" : 5000,
+	    "use-include-path": false,
+	    "github-protocols": ["git", "https", "http"],
+	    "vendor-dir": "vendor"
+	},
+	"autoload": {
+    "classmap": [
+      "vendor/tecnick.com/tcpdf"
+      ]
+    }
 }

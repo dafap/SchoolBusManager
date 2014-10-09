@@ -1,0 +1,64 @@
+<?php
+/**
+ * Application Sbm
+ * Dessin des pages
+ *
+ * Voir la documentation dans docs/application/views/layouts/layout.textile
+ *
+ * Le partial('common/stats.phtml') est prévu pour inclure un compteur de visites
+ *
+ * @project sbm
+ * @package module/SbmFront
+ * @filesource view/layout/layout.phtml
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 avr. 2014
+ * @version 2014-1
+ */
+$appl_name = $this->translate($this->getParameter('appl_name', $this->parameter));
+$base_path = $this->basePath();
+echo $this->doctype();
+?>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+        <?php echo $this->headTitle('SBM '. $appl_name)->setSeparator(' - ')->setAutoEscape(false)?>
+
+        <?php
+        echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+            ->setHttpEquiv('lang', 'fr')
+            ->setName('author', 'Alain Pomirol - DAFAP Informatique')
+            ->setName('generator', 'ZendFramework 2.3')
+            ->setName('language', 'fr') . PHP_EOL;
+        ?>
+        <base href="<?php echo $base_path; ?>" />
+<!-- Les styles -->
+<?php
+    echo $this->getHeadLinks($base_path, $this->getParameter('favicon', $this->parameter), $this->getParameter('css', $this->parameter));
+?>
+<!-- Les scripts -->
+<?php
+    echo $this->getHeadScripts($base_path, $this->getParameter('js', $this->parameter));
+?>
+        
+</head>
+<body>
+	<div class="contener_general">
+		<div class="contener_interface">
+			<!-- header -->
+		    <?php echo $this->partial('layout/header', $this->getParameter('header', $this->parameter));?>
+			<!-- corps de page -->
+			<div class="centre">
+			<?php echo $this->layout()->content; ?>
+			</div>
+			<!-- Footer -->
+			<?php echo $this->partial('layout/footer', $this->getParameter('footer', $this->parameter));?>
+		</div>
+	</div>
+	<!-- Statistiques (comme par exemple Google Analytics) -->
+	<?php  echo $this->partial('layout/stats'); ?>
+	<!-- Scripts éventuels de validation -->
+	<?php echo $this->inlineScript(); ?>
+</body>

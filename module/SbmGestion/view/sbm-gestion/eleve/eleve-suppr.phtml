@@ -1,0 +1,28 @@
+<?php
+/**
+ * Page de suppression d'un eleve
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
+ * @filesource eleve-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 juillet 2014
+ * @version 2014-1
+ */
+?>
+<h1>Suppression d'un élève</h1>
+<p>Vous avez demandé la suppression de l'élève :</p>
+<ul>
+    <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+    <li><?php echo $this->escapeHtml($this->data->prenom); ?></li>
+    <li>né le <?php echo $this->escapehtml($this->data->dateN); ?></li>
+    <li>habitant <?php echo $this->escapehtml($this->data->adress1L1); ?> à <?php echo $this->escapehtml($this->data->commune1); ?></li>
+</ul>
+<p>Confirmez-vous ?</p>
+<?php 
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>

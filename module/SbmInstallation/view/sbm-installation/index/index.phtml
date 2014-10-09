@@ -11,8 +11,17 @@
  * @date 22 janv. 2014
  * @version 2014-1
  */
-
+if (! empty($this->args)) {
+    var_dump($this->args);
+}
+$url_create = $this->url('sbminstall', array('action' => 'create-tables'));
+$url_dumpdoc = $this->url('sbminstall', array('action' => 'dump-tables'));
+$url_tablealias = $this->url('sbminstall', array('action' => 'table-alias'));
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
-<pre><?php var_dump($this->args); ?></pre>
+<ul>
+	<li><a href="<?php echo $url_create; ?>">Création des tables</a></li>
+	<li><a href="<?php echo $url_dumpdoc;?>">Copie des tables</a></li>
+	<li><a href="<?php echo $url_tablealias;?>">Liste des alias des tables</a>
+</ul>
 

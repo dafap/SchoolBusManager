@@ -1,0 +1,37 @@
+<?php
+/**
+ * Application Sbm
+ * Dessin du haut de page
+ * 
+ * L'appel se fait par :
+ * $this->partial('layout/header', array('client_name' => 'COBAS', 'footer_elements' => array('mentions légales' => 'SbmFront\about'))); 
+ *
+ * @project sbm
+ * @package module/SbmFront
+ * @filesource view/layout/header.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 avr. 2014
+ * @version 2014-1
+ */
+$contener_logo = $this->basePath($this->logo_file);
+$bandeau_scolaire = $this->basePath($this->bandeau_file);
+$auth = null;//Zend\Auth::getInstance()->hasIdentity();
+?>
+<div class="header">
+  <div class="contener_logo">
+    <a href="http://www.agglo-cobas.fr"><img src="<?php echo $contener_logo; ?>" alt="NATURELLEMENT COBAS" width="246" height="123" border="0" /></a>
+  </div>
+  <div class="contener_nav1_header">
+    <span class="contener_nav2_header"><?php echo $this->retour; ?></span>
+    <?php if ($auth) :?>
+    <span class="contener_nav2_header"><?php echo $this->logout; ?></span>
+    <?php endif; ?>
+    <span class="contener_nav2_header"><?php echo $this->help; ?></span>
+    <?php if (!empty($this->admin)) :?>
+    <span class="contener_nav2_header"><?php echo $this->admin; ?></span>
+    <?php endif; ?>
+  </div>
+  <div class="contener_rechercher_header"></div>
+  <div class="container_banner"><img src="<?php  echo $bandeau_scolaire; ?>" width="963" height="136" alt="Transports scolaires" title="Transports scolaires" border="0"></div>
+</div>

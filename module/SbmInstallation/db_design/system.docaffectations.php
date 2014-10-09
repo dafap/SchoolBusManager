@@ -1,0 +1,33 @@
+<?php
+/**
+ * Table système - Affectation des documents aux méthodes des controllers
+ *
+ *
+ * @project sbm
+ * @package SbmInstallation/db_design
+ * @filesource system.docaffectations.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 17 août 2014
+ * @version 2014-1
+ */
+return array(
+    'name' => 'docaffectations',
+    'type' => 'system',
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
+    'structure' => array(
+        'fields' => array(
+            'docaffectationId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'documentId' => 'int(11) NOT NULL',
+            'methodeAction' => 'varchar(255) NOT NULL'
+        ),
+        'primary_key' => array(
+            'docaffectationId'
+        ),
+        'engine' => 'MyISAM',
+        'charset' => 'utf8',
+        'collate' => 'utf8_unicode_ci'
+    )
+);

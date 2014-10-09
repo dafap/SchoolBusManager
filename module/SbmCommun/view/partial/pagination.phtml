@@ -1,0 +1,45 @@
+<?php
+/**
+ * Partial pour pagination
+ *
+ *
+ * @project sbm
+ * @package SbmCommun/view/partial
+ * @filesource pagination.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 mai 2014
+ * @version 2014-1
+ */
+$firstClassCss = 'first';
+$previousClassCss = 'previous';
+$nextClassCss = 'next';
+$lastClassCss = 'last';
+if (!isset($this->previous)) {
+    $firstClassCss .= ' disabled';
+    $previousClassCss .= ' disabled';
+}
+if (!isset($this->next)) {
+    $nextClassCss .= ' disabled';
+    $lastClassCss .= ' disabled';
+}
+?>
+<?php if (1 < (int) $this->pageCount) :?>
+    <div class="pagination">
+        <a href="<?php echo $this->url($this->route, array('page' => $this->first), false, true); ?>" class="<?php echo $firstClassCss; ?>"><i class="fam-resultset-first"></i></a>
+        <a href="<?php echo $this->url($this->route, array('page' => $this->previous), false, true); ?>" class="<?php echo $previousClassCss; ?>"><i class="fam-resultset-previous"></i></a>
+
+        <?php 
+        foreach ($this->pagesInRange as $p) {
+            if ($p == $this->current) {
+                echo '<span class="current">' . $p . '</span>';
+            } else {
+                echo '<a href="' . $this->url($this->route, array('page' => $p), false, true) . '" class="page">' . $p . '</a>';
+            }
+        }
+        ?>
+
+        <a href="<?php echo $this->url($this->route, array('page' => $this->next), false, true); ?>" class="<?php echo $nextClassCss; ?>"><i class="fam-resultset-next"></i></a>
+        <a href="<?php echo $this->url($this->route, array('page' => $this->last), false, true); ?>" class="<?php echo $lastClassCss; ?>"><i class="fam-resultset-last"></i></a>
+    </div>
+<?php endif;?>

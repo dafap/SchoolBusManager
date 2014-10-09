@@ -10,34 +10,58 @@
  * @date 22 janv. 2014
  * @version 2014-1
  */
-
 return array(
+    'service_manager' => array(
+        'invokables' => array(
+            'SbmInstallation\DumpTables' => 'SbmInstallation\Model\DumpTables'
+        )
+    ),
     'controllers' => array(
         'invokables' => array(
-            'SbmInstallation\Controller\Index' => 'SbmInstallation\Controller\IndexController',
-        ),
+            'SbmInstallation\Controller\Index' => 'SbmInstallation\Controller\IndexController'
+        )
     ),
     'router' => array(
         'routes' => array(
-            'install' => array(
+            'sbminstall' => array(
+                
+                // 'type' => 'literal',
                 'type' => 'segment',
                 'options' => array(
+                    
+                    // 'route' => '/install',
                     'route' => '/install[/:action]',
-                    'contraints' => array(
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
                     ),
                     'defaults' => array(
+                        'module' => 'SbmInstallation',
                         'controller' => 'SbmInstallation\Controller\Index',
-                        'action' => 'index',
+                        'action' => 'index'
                     )
-                )
+                ),
+                'may_terminate' => true
             )
+            // 'child_routes' => array(
+            // 'create-tables' => array(
+            // 'type' => 'literal',
+            // 'options' => array(
+            // 'route' => '/create-tables',
+            // 'defaults' => array(
+            // 'module' => 'SbmInstallation',
+            // 'controller' => 'SbmInstallation\Controller\Index',
+            // 'action' => 'create'
+            // )
+            // )
+            // )
+            // )
+            
         )
     ),
     'view_manager' => array(
         'template_map' => array(),
         'template_path_stack' => array(
-            'install' => __DIR__ . '/../view',
-        ),
-    ),
-);
+            __DIR__ . '/../view'
+        )
+    )
+);  

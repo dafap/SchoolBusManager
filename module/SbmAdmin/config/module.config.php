@@ -1,0 +1,63 @@
+<?php
+/**
+ * Module SbmAdmin
+ *
+ * @project sbm
+ * @package module/SbmAdmin/config
+ * @filesource module.config.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 22 janv. 2014
+ * @version 2014-1
+ */
+return array(
+    'liste' => array(
+        'paginator' => array(
+            'nb_pdf_pagination' => 20
+        )
+    ),
+    'controllers' => array(
+        'invokables' => array(
+            'SbmAdmin\Controller\Index' => 'SbmAdmin\Controller\IndexController',
+            'SbmAdmin\Controller\Pdf' => 'SbmAdmin\Controller\PdfController'
+        )
+    ),
+    'router' => array(
+        'routes' => array(
+            'sbmadmin' => array(
+                'type' => 'literal',
+                'options' => array(
+                    'route' => '/admin',
+                    'defaults' => array(
+                        'controller' => 'SbmAdmin\Controller\Index',
+                        'action' => 'index'
+                    )
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'pdf' => array( // gestion des documents pdf
+                        'type' => 'segment',
+                        'options' => array(
+                            'route' => '/adminpdf[/:action[/:page][/:id]]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'page' => '[0-9]+'
+                            ),
+                            'defaults' => array(
+                                'module' => 'SbmAdmin',
+                                'controller' => 'SbmAdmin\Controller\Pdf',
+                                'action' => 'pdf-liste'
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    ),
+    'view_manager' => array(
+        'template_map' => array(),
+        'template_path_stack' => array(
+            __DIR__ . '/../view'
+        )
+    )
+);

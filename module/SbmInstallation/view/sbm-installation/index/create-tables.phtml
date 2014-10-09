@@ -1,0 +1,79 @@
+<?php
+/**
+ * Vue pour l'action create du controleur SbmInstallation
+ *
+ *
+ * @project sbm
+ * @package module/SbmInstallation/view/sbm-installation/index
+ * @filesource create.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 janv. 2014
+ * @version 2014-1
+ */
+use Zend\Db\Adapter\Driver\ResultInterface;
+
+function printResult($args)
+{
+    if (! is_array($args)) {
+        echo "Résultat inconnu\n";
+        var_dump($args);
+        echo "\n";
+    } else {
+        foreach ($args as $result) {
+            if (is_string($result)) {
+                echo "$result\n";
+            } elseif ($result instanceof ResultInterface) {
+                echo $result->getResource()->queryString;
+                echo "\n";
+            } elseif (is_array($result)) {
+                printResult($result);
+            } else {
+                echo "Résultat inconnu\n";
+                var_dump($result);
+                echo "\n";
+            }
+        }
+    }
+}
+
+set_time_limit(30);
+?>
+<h1>Création des tables et des vues</h1>
+<?php if (is_null($this->form)) : ?>
+<pre><?php printResult($this->args); ?></pre>
+<?php else : ?>
+<table class="installation">
+	<thead>
+		<tr>
+			<th>name</th>
+			<th>type</th>
+			<th>drop</th>
+			<th>edit_entity</th>
+			<th>add_data</th>
+			<th>data</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php foreach ($this->args as $row) : ?>
+		<tr>
+			<td><?php echo $row['name']?></td>
+			<td><?php echo $row['type']?></td>
+			<td><?php echo $row['drop']?></td>
+			<td><?php echo $row['edit_entity']?></td>
+			<td><?php echo $row['add_data']?></td>
+			<td><?php echo $row['data']?></td>
+		</tr>
+	<?php endforeach; ?>
+	</tbody>
+</table>
+
+<p>Confirmez-vous que vous voulez créer les tables comme indiqué dans
+	cette configuration ?</p>
+<?php
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+    ?>
+<?php endif; ?>
+<p>Création terminée.</p>

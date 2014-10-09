@@ -1,0 +1,33 @@
+<?php
+/**
+ * Vue de l'action index du controller IndexController du module SbmGestion
+ *
+ *
+ * @project sbm
+ * @package 
+ * @filesource 
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 12 févr. 2014
+ * @version 2014-1
+ */
+
+$url_gest_eleve = $this->url('sbmgestion/eleve');
+$url_gest_finance = $this->url('sbmgestion/finance');
+$url_gest_transport = $this->url('sbmgestion/transport');
+$url_gest_change_as = $this->url('sbmgestion/anneescolaire');
+$url_gest_simulation = $this->url('sbmgestion/simul');
+$url_gest_parametre = $this->url('sbmgestion/config');
+
+
+?>
+<h1>Menu général de gestion</h1>
+<ul>
+<li><a href="<?php echo $url_gest_eleve; ?>">Gestion des élèves</a></li>
+<li><a href="<?php echo $url_gest_finance; ?>">Gestion financière</a></li>
+<li><a href="<?php echo $url_gest_transport; ?>">Gestion des fichiers annexes</a></li>
+<li><a href="<?php echo $url_gest_change_as; ?>">Changement d'année scolaire</a></li>
+<li><a href="<?php echo $url_gest_simulation; ?>">Simulation d'organisation</a></li>
+<li><a href="<?php echo $url_gest_parametre; ?>">Configuration et paramètres</a></li>
+</ul>
+

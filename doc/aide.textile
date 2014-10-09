@@ -21,7 +21,7 @@ Il doit se terminer par l'extention @.textile@
 
 h2. Titres
 
-Une ligne vide est nécessaire après chaque ligne vide
+Une ligne vide est nécessaire après chaque ligne de titre
 @h1(#id). Titre de niveau 1@
 @h2. Titre de niveau 2@
 @h3. Titre de niveau 3@

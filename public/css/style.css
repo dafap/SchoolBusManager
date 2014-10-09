@@ -1,0 +1,405 @@
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+.margin-left20 {
+	margin-left: 20px;
+}
+
+.centre {
+	text-align: center;
+}
+
+.zf-green {
+	color: #68b604;
+}
+
+.btn-success {
+	background-color: #57a900;
+	background-image: -moz-linear-gradient(top, #70d900, #57a900);
+	background-image: -ms-linear-gradient(top, #70d900, #57a900);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#70d900),
+		to(#57a900));
+	background-image: -webkit-linear-gradient(top, #70d900, #57a900);
+	background-image: -o-linear-gradient(top, #70d900, #57a900);
+	background-image: linear-gradient(top, #70d900, #57a900);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#70d900',
+		endColorstr='#57a900', GradientType=0);
+}
+
+.btn-success:hover,.btn-success:active,.btn-success.active,.btn-success.disabled,.btn-success[disabled]
+	{
+	background-color: #57a900;
+}
+
+.btn-success:active,.btn-success.active {
+	background-color: #57a900;
+}
+
+div.container a.brand {
+	background: url("../img/zf2-logo.png") no-repeat scroll 0 10px
+		transparent;
+	margin-left: 0;
+	padding: 8px 20px 12px 40px;
+}
+
+img.carre-40 {
+	width: 40px;
+	height: 40px;
+}
+
+.navbar {
+	min-height: 48px;
+	margin-bottom: 0;
+	border: 0 solid transparent;
+}
+
+a.navbar-brand {
+	padding: 4px 15px;
+}
+
+.navbar-nav>li>a {
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+
+div.liste {
+	min-height: 400px;
+}
+
+div.zone-pagination {
+	display: block;
+	position: relative;
+}
+
+.pagination {
+	margin-top: 10px;
+	position: relative;
+	top: 0;
+	left: 300px;
+	margin-right: 10px;
+	color: #176f94;
+	font-size: 110%;
+	font-weight: bold;
+}
+
+.pagination .disabled {
+	display: none;
+}
+
+.pagination span.current {
+	color: orange;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.pagination a.page {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.even {
+	background-color: #f3fafc;
+	border-bottom: 1px solid #e3eaec;
+}
+
+.odd {
+	border-bottom: 1px solid #e3eaec;
+}
+
+.float-left {
+	float: left;
+}
+
+.cols-2 {
+	width: 48%;
+}
+
+/* LES CRITERES */
+form#criteres {
+	display: block;
+	font-size: 75%;
+	border: 1px solid #ed9d3d;
+	margin-top: 1em;
+	padding: 5px 3px 3px 3px;
+}
+
+#criteres label {
+	margin-right: 3px;
+	margin-left: 7px;
+}
+
+#criteres label.sbm-first {
+	margin-left: 0;
+}
+
+#criteres input.button {
+	margin-left: 7px;
+}
+
+/* POUR LES LISTES */
+.liste-wrapper .tarifs .attributs {
+	padding-left: 15px;
+	text-align: right;
+}
+
+.liste-wrapper .tarifs .montant {
+	text-align: right;
+	padding-left: 15px;
+}
+
+.liste-wrapper .liste-inner .boutons {
+	padding-left: 15px;
+}
+
+.liste-wrapper .zone-actions {
+	margin-bottom: 10px;
+}
+
+/* POUR LES FICHES */
+.fiche-wrapper div.row-inner.edit {
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
+.fiche-wrapper fieldset.edit {
+	border: 2px solid #ed9d3d;
+}
+
+.fiche-wrapper .row-inner fieldset.edit {
+	border: 0;
+	display: inline-block;
+}
+
+.fiche-wrapper .row-inner label {
+	color: black;
+	font-size: 75%;
+	font-weight: bold;
+	margin-right: 2px;
+	display: inline-block;
+}
+
+.fiche-wrapper .row-inner label.sbm-label-radio {
+	float: left;
+}
+
+label.sbm-label130 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 130px;
+}
+
+label.sbm-label150 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 150px;
+}
+
+label.sbm-label170 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+
+label.sbm-label190 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 190px;
+}
+
+label.sbm-label210 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 210px;
+}
+
+label.sbm-label230 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 230px;
+}
+
+label.sbm-label250 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 250px;
+}
+
+label.sbm-label270 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 270px;
+}
+
+label.sbm-label300 {
+	display: inline-block;
+	padding-left: 5px;
+	width: 300px;
+}
+
+.fiche-wrapper .row-inner input,.fiche-wrapper .row-inner select {
+	font-size: 85%;
+	padding: 3px;
+	border: 1px solid #f0b565;
+	box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.5);
+	padding: 3px;
+}
+
+.fiche-wrapper .row-inner input.sbm-radio,.fiche-wrapper .row-inner input.sbm-checkbox,.fiche-wrapper .row-inner input.sbm-multicheckbox
+	{
+	box-shadow: none;
+	margin-right: 1px;
+}
+
+.fiche-wrapper .row-inner input,.fiche-wrapper .row-inner select {
+	margin-left: 3px;
+}
+
+.fiche-wrapper .row-inner input.left135 {
+	margin-left: 135px;
+	margin-right: 2px;
+}
+
+.fiche-wrapper .row-inner legend {
+	display: inline;
+	float: left;
+	padding-left: 5px;
+	font-size: 75%;
+	line-height: inherit;
+	border: 0;
+	font-weight: bold;
+	color: black;
+	text-align: left;
+	width: inherit;
+	margin: 0;
+}
+
+#pdf-edit-page_orientation legend {
+	width: 170px;
+}
+
+#etablissement-edit-statut legend, #etablissement-edit-jOuverture legend {
+	width: 170px;
+}
+
+#classe-edit-niveau legend {
+	width: 130px;
+}
+
+input.confirm {
+	margin-right: 5px;
+}
+
+input.sbm-text3 {
+	width: 33px;
+}
+
+input.sbm-text5 {
+	width: 44px;
+}
+
+input.sbm-text8 {
+	width: 71px;
+}
+
+input.sbm-text10 {
+	width: 88px;
+}
+
+input.sbm-text11 {
+	width: 97px;
+}
+
+input.sbm-text14 {
+	width: 123px;
+}
+
+input.sbm-text15 {
+	width: 132px;
+}
+
+input.sbm-text18 {
+	width: 159px;
+}
+
+input.sbm-text20 {
+	width: 176px;
+}
+
+input.sbm-text30 {
+	width: 265px;
+}
+
+input.sbm-text32 {
+	width: 283px;
+}
+
+input.sbm-text34 {
+	width: 300px;
+}
+
+input.sbm-text38 {
+	width: 300px;
+}
+
+input.sbm-text40 {
+	width: 350px;
+}
+
+input.sbm-text45 {
+	width: 350px;
+}
+
+input.sbm-text48 {
+	width: 350px;
+}
+
+input.sbm-text50 {
+	width: 350px;
+}
+
+input.sbm-text64 {
+	width: 350px;
+}
+
+input.sbm-text80 {
+	width: 350px;
+}
+
+input.sbm-text128 {
+	width: 350px;
+}
+
+input.sbm-text255 {
+	width: 350px;
+}
+
+select.sbm-select1 {
+	width: 88px;
+}
+
+select.sbm-select2 {
+	width: 175px;
+}
+
+select.sbm-select3 {
+	width: 263px;
+}
+
+select.sbm-select4 {
+	width: 350px;
+}
+
+/* INSTALLATION */
+table.installation {
+	border: 2px solid gray;
+}
+.installation thead {
+	background-color: #ededed;
+	border: 2px solid gray;
+}
+.installation tbody td {
+	border: 1px solid gray;
+}
+

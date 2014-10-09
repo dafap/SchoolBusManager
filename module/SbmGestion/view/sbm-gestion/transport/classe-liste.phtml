@@ -1,0 +1,80 @@
+<?php
+/**
+ * Liste des classes
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/classe-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 mai 2014
+ * @version 2014-1
+ */
+$this->paginator->setDefaultItemCountPerPage($this->nb_classe_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$classes = $this->paginator->getCurrentItems();
+$ajouter = $this->url('sbmgestion/transport', array(
+    'action' => 'classe-ajout',
+    'page' => $this->page
+));
+$pdf = $this->url('sbmgestion/transport', array(
+    'action' => 'classe-pdf',
+    'page' => $this->page
+));
+$retour = $this->url('sbmgestion/transport');
+?>
+<h1>Liste des classes</h1>
+<div class="liste-wrapper">
+	<div class="zone-actions">
+		<a href="<?php echo $retour; ?>" class="bouton"
+			title="retour au menu de gestion du réseau de transport"><i
+			class="fam-door-out"></i> Retour</a> <a href="<?php echo $pdf; ?>" class="bouton"
+			title="exporter en pdf" target="_blank"><i
+			class="fam-application-view-list"></i> Exporter en pdf</a> <a
+			href="<?php echo $ajouter; ?>" class="bouton"
+			title="créer une nouvelle classe"><i
+			class="fam-add"></i> Ajouter un classe</a>
+	</div>
+	<table class="liste-inner classes">
+		<tbody>
+        <?php foreach($classes as $test => $classe): ?>
+        <?php $fmt?>
+         <tr
+				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<td class="nom"><?php echo $this->escapeHtml($classe->nom); ?></td>
+				<td class="aliascg"><?php echo $this->escapeHtml($classe->aliasCG); ?></td>
+				<td class="boutons">
+             <?php
+            $url_edit = $this->url('sbmgestion/transport', array(
+                'action' => 'classe-edit',
+                'page' => $this->page,
+                'id' => $classe->classeId
+            ));
+            $url_delete = $this->url('sbmgestion/transport', array(
+                'action' => 'classe-suppr',
+                'page' => $this->page,
+                'id' => $classe->classeId
+            ));
+            $url_group = $this->url('sbmgestion/transport', array(
+                'action' => 'classe-group',
+                'page' => $this->page,
+                'id' => $classe->classeId
+            ));
+            ?>
+                 <a href="<?php echo $url_edit; ?>" class="bouton"
+					title="modifier"><i class="fam-pencil"></i></a> <a
+					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i class="fam-delete"></i></a> <a
+					href="<?php echo $url_group; ?>" class="bouton"
+					title="groupe d'élèves inscrits"><i
+						class="fam-group"></i></a>
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+<?php echo $this->form()->openTag($this->criteres_form);?>
+<?php echo $this->formCollection($this->criteres_form, true);?>
+<?php echo $this->form()->closeTag();?>
+</div>

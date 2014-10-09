@@ -1,0 +1,42 @@
+<?php
+/**
+ * Page de consultation des inscrits sur une station
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/station-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2014
+ * @version 2014-1
+ */
+$retour = $this->url('sbmgestion/transport', array(
+    'action' => 'station-liste',
+    'page' => $this->page
+));
+?>
+<h1>Groupe des élèves inscrits sur une station</h1>
+<div class="groupe-wrapper">
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data->commune); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+		</ul>
+	</div>
+	<div class="liste-wrapper">
+		<div class="zone-actions">
+			<a href="<?php echo $retour; ?>" class="bouton"
+				title="retour à la liste des stations"><i class="fam-door-out"></i>
+				Retour</a>
+		</div>
+		<table class="liste-inner">
+			<tbody>
+			</tbody>
+		</table>
+
+		<p>
+			<em>A faire</em>
+		</p>
+	</div>
+</div>

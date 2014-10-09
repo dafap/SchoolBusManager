@@ -1,0 +1,26 @@
+<?php
+/**
+ * Page d'accueil
+ *
+ *
+ * @project sbm
+ * @package module/SbmFront
+ * @filesource view/sbm-front/index/index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 avr. 2014
+ * @version 2014-1
+ */
+$url_gestion = $this->url('sbmgestion');
+$url_install = $this->url('sbminstall');
+$url_admin = $this->url('sbmadmin');
+?>
+<h1>Accès aux services</h1>
+
+<h3>Identifiez-vous</h3>
+
+<ul>
+  <li><a href="<?php echo $url_gestion; ?>">Gestion des transports scolaires</a></li>
+  <li><a href="<?php echo $url_admin; ?>">Module d'administration</a></li>
+  <li><a href="<?php echo $url_install; ?>">Installation de SchoolBusManager</a></li>
+</ul>

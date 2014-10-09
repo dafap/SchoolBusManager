@@ -1,0 +1,79 @@
+<?php
+/**
+ * Liste des circuits
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/circuit-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 mai 2014
+ * @version 2014-1
+ */
+$this->paginator->setDefaultItemCountPerPage($this->nb_circuit_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$circuits = $this->paginator->getCurrentItems();
+$ajouter = $this->url('sbmgestion/transport', array(
+    'action' => 'circuit-ajout',
+    'page' => $this->page
+));
+$retour = $this->url('sbmgestion/transport');
+?>
+<h1>Liste des circuits</h1>
+<div class="liste-wrapper">
+	<div class="zone-actions">
+		<a href="<?php echo $retour; ?>" class="bouton"
+			title="retour au menu de gestion du réseau de transport"><i
+			class="fam-door-out"></i> Retour</a> <a
+			href="<?php echo $ajouter; ?>" class="bouton"
+			title="créer un nouveau circuit"><i
+			class="fam-add"></i> Ajouter un circuit</a>
+	</div>
+	<table class="liste-inner circuits">
+		<tbody>
+        <?php foreach($circuits as $test => $circuit): ?>
+        <?php $fmt?>
+         <tr
+				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<td class="serviceid"><?php echo $this->escapeHtml($circuit->serviceId); ?></td>
+				<td class="stationid"><?php echo $this->escapeHtml($circuit->stationId); ?></td>
+				<td class="aller"><?php echo $this->escapeHtml($circuit->aller); ?></td>
+				<td class="retour"><?php echo $this->escapeHtml($circuit->retour); ?></td>
+				<td class="horaire"><?php echo $this->escapeHtml($circuit->horaire1); ?></td>
+				<td class="horaire"><?php echo $this->escapeHtml($circuit->horaire2); ?></td>
+				<td class="horaire"><?php echo $this->escapeHtml($circuit->horaire3); ?></td>
+				<td class="boutons">
+             <?php
+            $url_edit = $this->url('sbmgestion/transport', array(
+                'action' => 'circuit-edit',
+                'page' => $this->page,
+                'id' => $circuit->circuitId
+            ));
+            $url_delete = $this->url('sbmgestion/transport', array(
+                'action' => 'circuit-suppr',
+                'page' => $this->page,
+                'id' => $circuit->circuitId
+            ));
+            $url_group = $this->url('sbmgestion/transport', array(
+                'action' => 'circuit-group',
+                'page' => $this->page,
+                'id' => $circuit->circuitId
+            ));
+            ?>
+                 <a href="<?php echo $url_edit; ?>" class="bouton"
+					title="modifier"><i class="fam-pencil"></i></a> <a
+					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i class="fam-delete"></i></a> <a
+					href="<?php echo $url_group; ?>" class="bouton"
+					title="groupe d'élèves inscrits"><i
+						class="fam-group"></i></a>
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+<?php echo $this->form()->openTag($this->criteres_form);?>
+<?php echo $this->formCollection($this->criteres_form, true);?>
+<?php echo $this->form()->closeTag();?>
+</div>

@@ -1,0 +1,63 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource dump-tables.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 8 oct. 2014
+ * @version 2014-1
+ */
+$form = $this->form;
+$retour = $this->url('sbminstall', array(
+    'action' => 'index'
+));
+
+// pour afficher le résultat, il faut conserver la balise <pre> et échapper le texte à l'intérieur
+preg_match('/^<pre>(.*)<\/pre>\z/si', $this->description, $inner);
+if (! empty($inner)) {
+    $escaper = new \Zend\Escaper\Escaper('utf-8');
+    $output = '<pre>' . $escaper->escapeHtmlAttr($inner[1]) . '</pre>';
+} else {
+    $output = $this->description;
+}
+?>
+<h1><?php echo $this->titre; ?></h1>
+<p><?php echo $output; ?></p>
+<?php if (is_null($form)) : ?>
+  <?php
+    // liste des tables copiées
+    echo var_dump($this->tables);
+    ?>
+<a href="<?php echo $retour; ?>" class="bouton"
+	title="retour au menu d'installation"><i class="fam-door-out"></i>
+	Retour</a>
+<?php else : ?>
+<div>
+  <?php
+    // formulaire
+    $form->prepare();
+    $form->setAttribute('action', $this->url('sbminstall', array(
+        'action' => 'dump-tables'
+    )));
+    $form->setAttribute('method', 'post');
+    echo $this->form()->openTag($form);
+    
+    $element = $form->get('tables');
+    echo $this->formRow($element);
+    $element = $form->get('systems');
+    echo $this->formRow($element);
+    $element = $form->get('onscreen');
+    $element->setValue(0);
+    echo $this->formRow($element);
+    echo $this->formElement($form->get('cancel'));
+    echo $this->formElement($form->get('copy'));
+    
+    echo $this->form()->closeTag();
+    ?>
+  </div>
+<?php endif; ?>
