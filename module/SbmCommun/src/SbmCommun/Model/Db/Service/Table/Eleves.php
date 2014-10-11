@@ -29,6 +29,37 @@ class Eleves extends AbstractSbmTable
         $this->id_name = 'eleveId';
     }
     
+    public function saveRecord(ObjectDataInterface $obj_data)
+    {
+        try {
+            $old_data = $this->getRecord($obj_data->getId());
+            $is_new = false;
+        } catch (Exception $e) {
+            $is_new = true;
+        }
+        if ($is_new) {
+            $obj_data->setCalculateFields(array(
+                'nomSA',
+                'prenomSA',
+                'dateCreation'
+            ));
+        } else {
+            // on vérifie si des données ont changé
+            if ($obj_data->isUnchanged($old_data))
+                return;
+    
+            if ($old_data->nom != $obj_data->nom) {
+                $obj_data->addCalculateField('nomSA');
+            }
+            if ($old_data->prenom != $obj_data->prenom) {
+                $obj_data->addCalculateField('prenomSA');
+            }
+            $obj_data->addCalculateField('dateModification');
+        }
+    
+        parent::saveRecord($obj_data);
+    }
+    
     /**
      * Liste des élèves ayant la personne d'identifiant $responsableId comme responsable (1, 2 ou financier)
      * 

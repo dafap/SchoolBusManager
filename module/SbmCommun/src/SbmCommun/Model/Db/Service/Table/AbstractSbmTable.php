@@ -20,77 +20,80 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\Db\Sql\Where;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Paginator\Paginator;
-
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\Service\Table\Exception;
 
 abstract class AbstractSbmTable implements FactoryInterface
 {
+
     /**
      * Descripteur de la base de données
+     *
      * @var DbLib
      */
     protected $db;
 
     /**
      * Objet d'échange de données
-     * 
+     *
      * @var ObjectDataInterface
      */
     protected $obj_data;
 
     /**
      * Alias sous lequel ce TableGateway est enregistré dans le ServiceConfig du module
-     * 
+     *
      * @var string
      */
     protected $table_gateway_alias;
+
     /**
      * objet TableGateway
-     * 
+     *
      * @var TableGateway
      */
     protected $table_gateway;
 
     /**
      * objet Hydrator utilisé pour chaque ligne de résultat des méthodes fetchAll(), paginator(), getRecord(), saveRecord()
-     * Cette propriété est définie dans AbstractSbmTableGateway. Sa méthode extract() est utilisée dans saveRecord().
-     * 
+     * Cette propriété est définie dans AbstractSbmTableGateway.
+     * Sa méthode extract() est utilisée dans saveRecord().
+     *
      * @var HydratorInterface
      */
     protected $hydrator = null;
 
     /**
      * objet Zend\Db\Sql\Select du table_gateway
-     * 
+     *
      * @var Zend\Db\Sql\Select
      */
     protected $obj_select;
 
     /**
      * Nom de la table (qui est défini dans la table dérivée)
-     * 
+     *
      * @var string
      */
     protected $table_name;
-       
+
     /**
      * Type : table, vue ou system
-     * 
+     *
      * @var string
      */
     protected $table_type;
 
     /**
      * Nom du champ id de la table
-     * 
+     *
      * @var string
      */
     protected $id_name;
 
     /**
      * La primary key
-     * 
+     *
      * @var string array
      */
     protected $primary_key;
@@ -100,22 +103,22 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Les attributs $table_name et $table_type doivent être déclarés dans la méthode init() des classes dérivées.
      *
      * @param ServiceLocatorInterface $sm            
-     * @param ObjectDataInterface $objectData           
+     * @param ObjectDataInterface $objectData            
      */
     public function createService(ServiceLocatorInterface $sm)
     {
         $this->init();
         $this->db = $sm->get('Sbm\Db\DbLib');
-        $this->primary_key = $this->db->getPrimaryKey($this->table_name, $this->table_type);   
-            
-        $this->table_gateway = $sm->get($this->table_gateway_alias);        
+        $this->primary_key = $this->db->getPrimaryKey($this->table_name, $this->table_type);
+        
+        $this->table_gateway = $sm->get($this->table_gateway_alias);
         $this->obj_select = clone $this->table_gateway->getSql()->select(); // utile pour join() et pour paginator()
         $this->join();
         // à placer après join()
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
-        $this->obj_data->setArrayMask($this->getColumnsNames()); 
+        $this->obj_data->setArrayMask($this->getColumnsNames());
         if (is_callable(array(
-            $this->table_gateway->getResultSetPrototype(),            
+            $this->table_gateway->getResultSetPrototype(),
             'getHydrator'
         ))) {
             $this->hydrator = $this->table_gateway->getResultSetPrototype()->getHydrator();
@@ -123,7 +126,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         }
         return $this;
     }
-    
+
     protected abstract function init();
 
     /**
@@ -143,7 +146,7 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     /**
      * Renvoie l'objet d'échange de données
-     * 
+     *
      * @return \Bdts\Model\ObjectData\ObjectDataInterface
      */
     public function getObjData()
@@ -163,26 +166,27 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     /**
      * Renvoie le nom court de la table (sans indicateur de type et sans préfixe)
-     * 
+     *
      * @return string
      */
     public function getTableName()
     {
         return $this->table_name;
     }
-    
+
     /**
      * Renvoie le type de la table (table | system | vue)
-     * 
+     *
      * @return string
      */
     public function getTableType()
     {
         return $this->table_type;
     }
+
     /**
      * Renvoie les nom des colonnes (champs de la table)
-     * 
+     *
      * @return array
      */
     public function getColumnsNames()
@@ -228,15 +232,15 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Retourne le contenu de la table.
      * Les résultats sont hydratés et sont conformes au ResultSetPrototype du TableGateway
-     * 
-     * @param \Zend\Db\Sql\Where|null $where
-     * @param array|string|null $order
+     *
+     * @param \Zend\Db\Sql\Where|null $where            
+     * @param array|string|null $order            
      *
      * @return ResultSet
      */
     public function fetchAll($where = null, $order = null)
     {
-        if (!$this->table_gateway->isInitialized()) {
+        if (! $this->table_gateway->isInitialized()) {
             $this->initialize();
         }
         
@@ -255,22 +259,35 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Retourne l'enregistrement d'identifiant donné.
      * Le résultat est hydraté et sont conforme au ResultSetPrototype du TableGateway
      *
-     * @param int|string $id    
-     * @throws Exception        
+     * @param int|string $id            
+     * @throws Exception
      * @return \Bdts\Model\ObjectData\ObjectDataInterface null
      */
     public function getRecord($id)
     {
-        $rowset = $this->table_gateway->select(array(
-            $this->id_name . ' = ?' => $id
-        ));
+        if (is_array($id)) {
+            $array_where = array();
+            $condition_msg = array();
+            foreach ($id as $key => $condition) {
+                $array_where[$key . ' = ?'] = $condition;
+                $condition_msg[] = "$key = $condition";
+            }
+            $condition_msg = implode(' et ', $condition_msg);
+        } else {
+            $array_where = array(
+                $this->id_name . ' = ?' => $id
+            );
+            $condition_msg = $this->id_name . " = $id";
+        }
+        
+        $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();
         if (! $row) {
-            throw new Exception(sprintf(_("Could not find row '%s = %s' in table %s"), $this->id_name, $id, $this->table_name));
+            throw new Exception(sprintf(_("Could not find row '%s' in table %s"), $condition_msg, $this->table_name));
         }
         return $row;
     }
-    
+
     public function is_newRecord($id)
     {
         try {
@@ -289,9 +306,15 @@ abstract class AbstractSbmTable implements FactoryInterface
      */
     public function deleteRecord($id)
     {
-        return $this->table_gateway->delete(array(
-            $this->id_name => $id
-        ));
+        if (is_array($id)) {
+            $array_where = $id;
+        } else {
+            $array_where = array(
+                $this->id_name . ' = ?' => $id
+            );
+        }
+        
+        return $this->table_gateway->delete($array_where);
     }
 
     /**
@@ -311,11 +334,23 @@ abstract class AbstractSbmTable implements FactoryInterface
         } else {
             $id = $obj_data->getId();
             if ($this->getRecord($id)) {
-                $this->table_gateway->update($data, array(
-                    $this->id_name => $id
-                ));
+                if (is_array($id)) {
+                    $array_where = $id;
+                    $condition_msg = array();
+                    foreach ($id as $key => $condition) {
+                        $condition_msg[] = "$key = $condition";
+                    }
+                    $condition_msg = implode(' et ', $condition_msg);
+                } else {
+                    $array_where = array(
+                        $this->id_name . ' = ?' => $id
+                    );
+                    $condition_msg = $this->id_name . " = $id";
+                }
+                
+                $this->table_gateway->update($data, $array_where);
             } else {
-                throw new Exception(sprintf(_("This is not a new data and the id '%s = %s' can not be found in the table %s."), $this->id_name, $id, $this->table_name));
+                throw new Exception(sprintf(_("This is not a new data and the id '%s' can not be found in the table %s."), $condition_msg, $this->table_name));
             }
         }
     }

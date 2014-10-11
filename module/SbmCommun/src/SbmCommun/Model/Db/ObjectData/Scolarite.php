@@ -1,23 +1,23 @@
 <?php
 /**
- * Objet contenant les données à manipuler pour la table Responsables
- *
+ * Objet contenant les données à manipuler pour la table `scolarites`
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
- * @filesource Responsable.php
+ * @filesource Scolarite.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juil. 2014
+ * @date 10 oct. 2014
  * @version 2014-1
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
-class Responsable extends AbstractObjectData
+class Scolarite extends AbstractObjectData
 {
     public function __construct()
     {
         $this->setObjName(__CLASS__);
-        $this->setIdFieldName('responsableId');
+        $this->setIdFieldName(array('millesime', 'eleveId'));
     }
 }
+ 

@@ -35,9 +35,10 @@ abstract class AbstractObjectData implements ObjectDataInterface
     private $obj_name;
 
     /**
-     * Nom du champ id
+     * Nom(s) du (ou des) champ(s) id
+     * (voir la définition de primary key pour la table concernée)
      *
-     * @var string
+     * @var string|array
      */
     private $id_field_name;
 
@@ -47,6 +48,13 @@ abstract class AbstractObjectData implements ObjectDataInterface
      * @var unknown_type
      */
     private $array_mask = array();
+    
+    /**
+     * Liste des champs calculés à mettre à jour par l'hydrator
+     *
+     * @var array of string
+     */
+    private $calculate_fields = array();    
 
     /**
      *
@@ -107,7 +115,7 @@ abstract class AbstractObjectData implements ObjectDataInterface
     /**
      * Enregister le nom du champ Id de l'objet
      *
-     * @param string $name            
+     * @param string|array $name            
      * @return void
      */
     protected function setIdFieldName($name)
@@ -130,7 +138,49 @@ abstract class AbstractObjectData implements ObjectDataInterface
         }
         $this->array_mask = $array_mask;
     }
+    
+    /**
+     * Initialise la propriété calculate_fields avec le tableau fourni
+     * 
+     * @param array $array
+     */
+    public function setCalculateFields($array)
+    {
+        if (!is_array($array)) {
+            ob_start();
+            var_dump($array);
+            $dump = ob_get_clean();
+            throw new Exception(__METHOD__ . " Le paramètre fourni doit être un tableau. On a reçu :\n$dump");
+        }
+        $this->calculate_fields = $array;
+    }
+    
+    /**
+     * Ajoute le champ fourni comme paramètre dans la propriété calculate_fields
+     * 
+     * @param string $str
+     */
+    public function addCalculateField($str)
+    {
+        if (!is_string($str)) {
+            ob_start();
+            var_dump($str);
+            $dump = ob_get_clean();
+            throw new Exception(__METHOD__ . " Le paramètre fourni doit être une chaîne de caractère. On a reçu :\n$dump");
+        }
+        $this->calculate_fields[] = $str;
+    }
 
+    /**
+     * Renvoie le tableau des champs calculés
+     * 
+     * @return array
+     */
+    public function getCalculateFields()
+    {
+        return $this->calculate_fields;
+    }
+    
     /**
      * (non-PHPdoc)
      *
@@ -180,7 +230,15 @@ abstract class AbstractObjectData implements ObjectDataInterface
     public function getId()
     {
         $data_array = $this->getArrayCopy();
-        return $data_array[$this->getIdFieldName()];
+        if (is_array($this->getIdFieldName())) {
+            $id = array();
+            foreach ($this->getIdFieldName() as $item) {
+                $id[$item] = $data_array[$item];
+            }
+            return $id;
+        } else {
+            return $data_array[$this->getIdFieldName()];
+        }
     }
 
     /**
@@ -191,5 +249,21 @@ abstract class AbstractObjectData implements ObjectDataInterface
     public function getIterator()
     {
         return $this->dataSource;
+    }
+    
+    /**
+     * Indique si l'objet courant a changé par rapport à l'ancien objet passé en paramètre
+     * 
+     * @param ObjectDataInterface $old_obj
+     * 
+     * @return boolean
+     */
+    public function isUnchanged(ObjectDataInterface $old_obj)
+    {
+        $data1 = $this->getArrayCopy();
+        $data2 = $old_obj->getArrayCopy();
+        $commun1 = array_intersect_key($data1, $data2);
+        $commun2 = array_intersect_key($data2, $data1);
+        return $commun1 == $commun2;
     }
 }

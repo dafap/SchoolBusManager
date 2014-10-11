@@ -16,44 +16,20 @@
  */
 namespace SbmCommun\Model\Hydrator;
 
-use Zend\Stdlib\Hydrator\ArraySerializable;
 use SbmCommun\Model\Db\ObjectData\Responsable as ObjectData;
 use SbmCommun\Filter\SansAccent;
 
-class Responsables extends ArraySerializable
+class Responsables extends AbstractHydrator
 {
-
-    private $object;
-
     public function extract($object)
     {
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(sprintf('%s : On attend un SbmCommun\Model\Db\ObjectData\Responsable et on a reçu un %s', __METHOD__, gettype($object)));
         }
-        
-        $this->object = $object;
-        $this->calculate();
-        $data = $object->getArrayCopy();        
-        $filter = $this->getFilter();
-        
-        foreach ($data as $name => $value) {
-            if (! $filter->filter($name)) {
-                unset($data[$name]);
-                continue;
-            }
-            $extractedName = $this->extractName($name, $object);
-            // replace the original key with extracted, if differ
-            if ($extractedName !== $name) {
-                unset($data[$name]);
-                $name = $extractedName;
-            }
-            $data[$name] = $this->extractValue($name, $value, $object);
-        }
-        
-        return $data;
+        parent::extract($object);
     }
 
-    private function calculate()
+    protected function calculate()
     {
         $calculate_fields = $this->object->getCalculateFields();
         $now = new \DateTime('now');

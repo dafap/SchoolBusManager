@@ -42,6 +42,7 @@ set_time_limit(30);
 <h1>Création des tables et des vues</h1>
 <?php if (is_null($this->form)) : ?>
 <pre><?php printResult($this->args); ?></pre>
+<p>Création terminée.</p>
 <?php else : ?>
 <table class="installation">
 	<thead>
@@ -76,4 +77,3 @@ set_time_limit(30);
     echo $this->form()->closeTag();
     ?>
 <?php endif; ?>
-<p>Création terminée.</p>

@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/atukai/AtPhpSettings.git",
-                "reference": "a7ebe96bbf32a27573604564ec3854304242adaf"
+                "reference": "dbe85cabb4bc5a37a5f69de285c8aaf29b350e71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/atukai/AtPhpSettings/zipball/a7ebe96bbf32a27573604564ec3854304242adaf",
-                "reference": "a7ebe96bbf32a27573604564ec3854304242adaf",
+                "url": "https://api.github.com/repos/atukai/AtPhpSettings/zipball/dbe85cabb4bc5a37a5f69de285c8aaf29b350e71",
+                "reference": "dbe85cabb4bc5a37a5f69de285c8aaf29b350e71",
                 "shasum": ""
             },
             "require": {
@@ -36,8 +36,7 @@
             "authors": [
                 {
                     "name": "Alexander Tukai",
-                    "email": "atukai@gmail.com",
-                    "homepage": "https://github.com/atukai"
+                    "email": "atukai@gmail.com"
                 }
             ],
             "description": "A ZF2 module for managing php settings.",
@@ -50,7 +49,7 @@
                 "php",
                 "zf2"
             ],
-            "time": "2014-01-15 21:38:22"
+            "time": "2014-08-28 08:41:42"
         },
         {
             "name": "bjyoungblood/bjy-authorize",
@@ -58,12 +57,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bjyoungblood/BjyAuthorize.git",
-                "reference": "fb81997c2d904da7b7620da78c0962989ea53dec"
+                "reference": "ff602bb3df17fac51b57645d8501a00f73d8fd66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bjyoungblood/BjyAuthorize/zipball/fb81997c2d904da7b7620da78c0962989ea53dec",
-                "reference": "fb81997c2d904da7b7620da78c0962989ea53dec",
+                "url": "https://api.github.com/repos/bjyoungblood/BjyAuthorize/zipball/ff602bb3df17fac51b57645d8501a00f73d8fd66",
+                "reference": "ff602bb3df17fac51b57645d8501a00f73d8fd66",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +119,7 @@
                 "zf2",
                 "zfc-user"
             ],
-            "time": "2014-08-07 11:40:29"
+            "time": "2014-09-06 10:15:09"
         },
         {
             "name": "dafap/dafap-layout",
@@ -160,16 +159,16 @@
         },
         {
             "name": "tecnick.com/tcpdf",
-            "version": "6.0.091",
+            "version": "6.0.096",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "5252fd2e968ef17854ec0915ab3c600272c00f8a"
+                "reference": "ff8799164231d5c99a69bee276ce33bcb7f52a54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/5252fd2e968ef17854ec0915ab3c600272c00f8a",
-                "reference": "5252fd2e968ef17854ec0915ab3c600272c00f8a",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ff8799164231d5c99a69bee276ce33bcb7f52a54",
+                "reference": "ff8799164231d5c99a69bee276ce33bcb7f52a54",
                 "shasum": ""
             },
             "require": {
@@ -219,20 +218,20 @@
                 "pdf417",
                 "qrcode"
             ],
-            "time": "2014-08-13 16:57:25"
+            "time": "2014-10-06 17:50:43"
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.3.2",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "0b74b66dc07ff88140287bdf67d230c1bd32ee0c"
+                "reference": "88c9b6f566fc1097f64ead155625db9bdfee531e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zf2/zipball/0b74b66dc07ff88140287bdf67d230c1bd32ee0c",
-                "reference": "0b74b66dc07ff88140287bdf67d230c1bd32ee0c",
+                "url": "https://api.github.com/repos/zendframework/zf2/zipball/88c9b6f566fc1097f64ead155625db9bdfee531e",
+                "reference": "88c9b6f566fc1097f64ead155625db9bdfee531e",
                 "shasum": ""
             },
             "require": {
@@ -294,7 +293,7 @@
             },
             "require-dev": {
                 "doctrine/annotations": ">=1.0",
-                "fabpot/php-cs-fixer": "dev-master",
+                "fabpot/php-cs-fixer": "dev-master#fcbb09b5204",
                 "ircmaxell/random-lib": "dev-master",
                 "ircmaxell/security-lib": "dev-master",
                 "mikey179/vfsstream": "1.2.*",
@@ -337,7 +336,7 @@
                 "framework",
                 "zf2"
             ],
-            "time": "2014-08-12 16:48:34"
+            "time": "2014-09-16 22:58:11"
         },
         {
             "name": "zendframework/zendxml",
@@ -496,12 +495,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcUser.git",
-                "reference": "7c2187bbdab00d32c9251cd95d70ccb1aa8d6975"
+                "reference": "d65fac77a8ffbae36a18bc20e48cc022cf17ccd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/7c2187bbdab00d32c9251cd95d70ccb1aa8d6975",
-                "reference": "7c2187bbdab00d32c9251cd95d70ccb1aa8d6975",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/d65fac77a8ffbae36a18bc20e48cc022cf17ccd9",
+                "reference": "d65fac77a8ffbae36a18bc20e48cc022cf17ccd9",
                 "shasum": ""
             },
             "require": {
@@ -519,16 +518,11 @@
                 "zendframework/zend-stdlib": "~2.1",
                 "zendframework/zend-validator": "~2.1",
                 "zendframework/zend-view": "~2.1",
-                "zf-commons/zfc-base": "0.*"
+                "zf-commons/zfc-base": "~0.1.0"
             },
             "require-dev": {
-                "phpmd/phpmd": "1.4.*",
                 "phpunit/phpunit": ">=3.7,<4",
-                "squizlabs/php_codesniffer": "1.4.*",
-                "zendframework/zend-captcha": "~2.1"
-            },
-            "suggest": {
-                "zendframework/zend-captcha": "Zend\\Captcha if you want to use the captcha component"
+                "squizlabs/php_codesniffer": "1.4.*"
             },
             "type": "library",
             "extra": {
@@ -558,14 +552,20 @@
                     "name": "Evan Coury",
                     "email": "me@evancoury.com",
                     "homepage": "http://blog.evan.pro/"
+                },
+                {
+                    "name": "Daniel Strøm",
+                    "email": "ds@eye4web.dk",
+                    "homepage": "http://eye4web.dk/"
                 }
             ],
-            "description": "A generic user registration and authentication module for ZF2. Supports Zend\\Db and Doctrine2.",
+            "description": "A generic user registration and authentication module for ZF2. Supports multiple adapters with built-in support for Zend\\Db.",
             "homepage": "https://github.com/ZF-Commons/ZfcUser",
             "keywords": [
+                "Authentication",
                 "zf2"
             ],
-            "time": "2014-07-25 10:44:29"
+            "time": "2014-10-04 21:29:45"
         }
     ],
     "packages-dev": [
@@ -575,12 +575,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bjyoungblood/BjyProfiler.git",
-                "reference": "890d8b522d00c7b5e62210e39812d83a6d99bdfb"
+                "reference": "1d05f9b740fd1d8d840686fea257c8c26d3f757b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bjyoungblood/BjyProfiler/zipball/890d8b522d00c7b5e62210e39812d83a6d99bdfb",
-                "reference": "890d8b522d00c7b5e62210e39812d83a6d99bdfb",
+                "url": "https://api.github.com/repos/bjyoungblood/BjyProfiler/zipball/1d05f9b740fd1d8d840686fea257c8c26d3f757b",
+                "reference": "1d05f9b740fd1d8d840686fea257c8c26d3f757b",
                 "shasum": ""
             },
             "require": {
@@ -615,7 +615,7 @@
                 "zdt",
                 "zf2"
             ],
-            "time": "2014-08-05 14:38:59"
+            "time": "2014-09-04 01:22:02"
         },
         {
             "name": "zendframework/zend-developer-tools",
@@ -792,9 +792,7 @@
             "time": "2014-04-22 18:35:37"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "dafap/dafap-layout": 20,
@@ -810,7 +808,5 @@
     "platform": {
         "php": ">=5.3.3"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }

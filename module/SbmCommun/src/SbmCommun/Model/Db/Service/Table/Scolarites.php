@@ -1,22 +1,21 @@
 <?php
 /**
- * Gestion de la table `responsables`
+ * Gestion de la table `scolarites`
  *
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
- * @filesource Responsables.php
+ * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juil. 2014
+ * @date 10 oct. 2014
  * @version 2014-1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
-use SbmCommun\Model\Db\ObjectData\Responsable as ObjectDataResponsable;
 
-class Responsables extends AbstractSbmTable
+class Scolarites extends AbstractSbmTable
 {
 
     /**
@@ -24,10 +23,10 @@ class Responsables extends AbstractSbmTable
      */
     protected function init()
     {
-        $this->table_name = 'responsables';
+        $this->table_name = 'scolarites';
         $this->table_type = 'table';
-        $this->table_gateway_alias = 'Sbm\Db\TableGateway\Responsables';
-        $this->id_name = 'responsableId';
+        $this->table_gateway_alias = 'Sbm\Db\TableGateway\Scolarites';
+        $this->id_name = array('millesime', 'eleveId');
     }
 
     public function saveRecord(ObjectDataInterface $obj_data)
@@ -40,24 +39,13 @@ class Responsables extends AbstractSbmTable
         }
         if ($is_new) {
             $obj_data->setCalculateFields(array(
-                'nomSA',
-                'prenomSA',
-                'dateCreation'
+                'dateInscription'
             ));
         } else {
             // on vérifie si des données ont changé
             if ($obj_data->isUnchanged($old_data))
                 return;
             
-            if ($old_data->nom != $obj_data->nom) {
-                $obj_data->addCalculateField('nomSA');
-            }
-            if ($old_data->prenom != $obj_data->prenom) {
-                $obj_data->addCalculateField('prenomSA');
-            }
-            if ($old_data->demenagement != $obj_data->demenagement) {
-                $obj_data->addCalculateField('demenagement');
-            }
             $obj_data->addCalculateField('dateModification');
         }
         

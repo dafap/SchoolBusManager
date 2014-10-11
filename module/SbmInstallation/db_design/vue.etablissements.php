@@ -14,8 +14,9 @@
 
 return array(
     'name' => 'etablissements',
-    'drop' => true, // si true, un DROP TABLE IF EXISTS sera fait avant la création
     'type' => 'vue',
+    'drop' => false, // si true, un DROP TABLE IF EXISTS sera fait avant la création
+    'edit_entity' => false,
     'structure'=> array(
         'fields' => array(
             array('field' => 'etablissementId',),
