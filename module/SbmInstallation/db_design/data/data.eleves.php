@@ -26,7 +26,7 @@ return array(
         'numero' => 3194545, 
         'responsable1Id' => 1, 
         'responsable2Id' => 2, 
-        'responsableFId' => 0, 
+        'responsableFId' => 1, 
         'note' => null, 
     ),
     array(
@@ -42,7 +42,7 @@ return array(
         'numero' => 2746555, 
         'responsable1Id' => 1, 
         'responsable2Id' => 2, 
-        'responsableFId' => 0, 
+        'responsableFId' => 1, 
         'note' => null, 
     ),
     array(
@@ -58,7 +58,7 @@ return array(
         'numero' => 1290199, 
         'responsable1Id' => 3, 
         'responsable2Id' => 0, 
-        'responsableFId' => 0, 
+        'responsableFId' => 3, 
         'note' => null, 
     ),
     array(
@@ -74,7 +74,7 @@ return array(
         'numero' => 12001, 
         'responsable1Id' => 4, 
         'responsable2Id' => 0, 
-        'responsableFId' => 0, 
+        'responsableFId' => 4, 
         'note' => null, 
     ),
     array(
@@ -90,7 +90,7 @@ return array(
         'numero' => 2000123, 
         'responsable1Id' => 5, 
         'responsable2Id' => 0, 
-        'responsableFId' => 0, 
+        'responsableFId' => 5, 
         'note' => null, 
     ),
     array(
@@ -106,7 +106,7 @@ return array(
         'numero' => 4243524, 
         'responsable1Id' => 5, 
         'responsable2Id' => 0, 
-        'responsableFId' => 0, 
+        'responsableFId' => 5, 
         'note' => null, 
     ),
     array(
@@ -122,7 +122,7 @@ return array(
         'numero' => 7666222, 
         'responsable1Id' => 5, 
         'responsable2Id' => 0, 
-        'responsableFId' => 0, 
+        'responsableFId' => 5, 
         'note' => null, 
     ),
 );

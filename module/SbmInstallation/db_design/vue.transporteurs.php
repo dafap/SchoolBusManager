@@ -16,7 +16,7 @@ return array(
     'name' => 'transporteurs',
     'type' => 'vue',
     'drop' => true, // si true, un DROP TABLE IF EXISTS sera fait avant la création
-    'edit_entity' => false,
+    'edit_entity' => true,
     'structure'=> array(
         'fields' => array(
             array('field' => 'transporteurId',),

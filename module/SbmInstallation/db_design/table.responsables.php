@@ -15,9 +15,9 @@
 return array(
     'name' => 'responsables',
     'type' => 'table',
-    'drop' => true,
-    'edit_entity' => true,
-    'add_data' => true,
+    'drop' => false,
+    'edit_entity' => false,
+    'add_data' => false,
     'structure'=> array(
         'fields' => array(
             'responsableId' => 'int(11) NOT NULL AUTO_INCREMENT',
@@ -47,10 +47,10 @@ return array(
             'dateDemenagement' => 'date NOT NULL DEFAULT "1900-01-01"',
             'facture' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"',
             'grilleTarif' => 'int(4) NOT NULL DEFAULT "1"',
-            'Rib_tit' => 'varchar(32) DEFAULT NULL',
-            'Rib_dom' => 'varchar(24) DEFAULT NULL',
-            'Iban' => 'varchar(34) DEFAULT NULL',
-            'Bic' => 'varchar(11) DEFAULT NULL'
+            'ribTit' => 'varchar(32) DEFAULT NULL',
+            'ribDom' => 'varchar(24) DEFAULT NULL',
+            'iban' => 'varchar(34) DEFAULT NULL',
+            'bic' => 'varchar(11) DEFAULT NULL'
         ),
         'primary_key' => array('responsableId',),
         'engine' => 'InnoDB',
