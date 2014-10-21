@@ -1236,7 +1236,7 @@ class Tcpdf extends \TCPDF
                     $this->config['doctable']['thead']['visible'] = true;
                     $this->config['doctable']['tfoot']['visible'] = false;
                 } catch (\Exception $e) {
-                    $message = sprintf('Impossible d\'exécuter la requête décrite dans ce document.\n%s', $sql);
+                    $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s", $sql);
                     throw new Exception($message, $e->getCode(), $e->getPrevious());
                 }
             }

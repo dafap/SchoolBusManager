@@ -5,6 +5,7 @@
  * Les fonctions évaluées sont : 
  *   %date%
  *   %compte%
+ *   %compte(condition)% où condition est une chaine compatible à la classe Conditions
  *   %somme(num_colonne) où num_colonne est le numéro de colonne en partant de 1 pour la première
  *   %moyenne(num_colonne)%
  *   %max(num_colonne)%
@@ -44,6 +45,7 @@
  */
 namespace DafapTcpdf\Model;
 
+use SbmCommun\Model\StdLib;
 class Calculs
 {
 
@@ -118,11 +120,44 @@ class Calculs
      */
     private function analyse($s, $idx)
     {
-        $pattern = '/%([a-z]+)(?:\(([0-9a-z]*)\))?%/i';
+        $s = $this->getExpression($s);
+        $pattern = '/%([a-z]+)(?:{([^};]*)})?%/i';
         $cr = preg_match_all($pattern, $s, $matches);
         $this->expressions[$idx]['search'] = $matches[0];
         $this->expressions[$idx]['functions'] = isset($matches[1]) ? $matches[1] : array();
         $this->expressions[$idx]['args'] = isset($matches[2]) ? $matches[2] : array();
+        return $s;
+    }
+    
+    /**
+     * Contrôle si le nombre de parenthèses de l'expression est cohérent et renvoie l'expression après avoir remplacé les 
+     * parenthèses de premier niveau par des accolades.
+     * 
+     * @param string $expression
+     * @throws \Exception
+     *      si l'expression est mal parenthésée
+     * @return string
+     */
+    private function getExpression($expression)
+    {
+        $parentheses = array();
+        for ($np = 0, $i=0; $i < mb_strlen($expression) && $np >= 0; $i++) {
+            $c = $expression[$i];
+            if ($c == '(' || $c == ')') {
+                if ($np == 0 && $c == '(') $parentheses[$i] = '{';
+                elseif ($np==1 && $c == ')') $parentheses[$i] = '}';
+                if ($c == '(') $np++;
+                else $np--;
+            }
+        }
+        if ($np <> 0) {
+            $msg = sprintf("L'expression est mal parenthésée : %s", $expression);
+            throw new \Exception($msg);
+        }
+        foreach ($parentheses as $position => $accolade) {
+            $expression = substr_replace($expression, $accolade, $position, 1);
+        }
+        return $expression;
     }
 
     /**
@@ -135,16 +170,20 @@ class Calculs
      */
     public function getResultat($s)
     {
+        if ($s=='') return '';
+        //if ($s != '%somme%') var_dump($s);
         if (array_key_exists($key = md5($s), $this->resultats))
             return $this->resultats[$key];
+        
         if (! array_key_exists($key, $this->expressions)) {
-            $this->analyse($s, $key);
+            $s = $this->analyse($s, $key);
         }
         $search = $this->expressions[$key]['search'];
         $replace = array();
         for ($j = 0; $j < count($search); $j ++) {
             $replace[] = $this->{$this->expressions[$key]['functions'][$j]}($this->expressions[$key]['args'][$j]);
         }
+        //if ($s != '%somme%') die(var_dump($this->expressions, $search, $replace, str_replace($search, $replace, $s)));
         return $this->resultats[$key] = str_replace($search, $replace, $s);
     }
     
@@ -185,9 +224,28 @@ class Calculs
      * @return number
      *      Nombre de lignes
      */
-    public function compte()
+    public function compte($condition = null)
     {
-        return $this->fin - $this->debut + 1;
+        if (is_null($condition) || $condition == '') {
+            return $this->fin - $this->debut + 1;
+        }
+        $oConditions = new Conditions($condition);
+        $column = $this->arg_default;
+        $colonne =  $column - 1;
+        $compte = 0;
+        for ($ligne = $this->debut; $ligne <= $this->fin; $ligne ++) {
+            if (!isset($this->data[$ligne][$colonne])) {
+                ob_start();
+                print_r($this->data);
+                $dump = ob_get_clean();
+                throw new Exception("Ligne $ligne. Pas de colonne n° $column dans les données ($colonne).\n$dump\n");
+            }
+            $val = $this->data[$ligne][$colonne];
+            if ($oConditions->value($val)) {
+                $compte++;
+            }
+        }
+        return $compte;
     }
     
     private function nombre()

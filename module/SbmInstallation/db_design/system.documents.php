@@ -16,9 +16,9 @@
 return array(
     'name' => 'documents',
     'type' => 'system',
-    'drop' => false,
-    'edit_entity' => false,
-    'add_data' => false,
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
     'structure' => array(
         'fields' => array(
             // document

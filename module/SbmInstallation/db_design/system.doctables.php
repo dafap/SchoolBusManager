@@ -14,9 +14,9 @@
 return array(
     'name' => 'doctables',
     'type' => 'system',
-    'drop' => false,
-    'edit_entity' => false,
-    'add_data' => false,
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
     'structure' => array(
         'fields' => array(
             'doctableId' => 'int(11) NOT NULL AUTO_INCREMENT',

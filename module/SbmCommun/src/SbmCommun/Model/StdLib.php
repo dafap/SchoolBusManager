@@ -109,16 +109,16 @@ abstract class StdLib
         }
         // gestion des booléens dans une chaine
         if ($val == 'true' || $val == 'false') {
-            return $val == 'true';
+            return $val == 'true' ? 1 : 0;
         }
         if ($val == 'vrai' || $val == 'faux') {
-            return $val == 'vrai';
+            return $val == 'vrai' ? 1 : 0;
         }
         if ($val == 'yes' || $val == 'no') {
-            return $val == 'yes';
+            return $val == 'yes' ? 1 : 0;
         }
         if ($val == 'oui' || $val == 'non') {
-            return $val == 'oui';
+            return $val == 'oui' ? 1 : 0;
         }
         // gestion des autres chaines
         return "'" . str_replace("'", "\'", trim(trim($val, '"'), "'")) . "'";
@@ -155,7 +155,7 @@ abstract class StdLib
             unset($row);
         }
         $str = implode(',', $trows);
-        
+     
         // construction du tableau résultat
         $tableau = array();
         eval("\$tableau=array($str);");
