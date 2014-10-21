@@ -55,9 +55,9 @@ class Responsables extends AbstractSbmTable
             if ($old_data->prenom != $obj_data->prenom) {
                 $obj_data->addCalculateField('prenomSA');
             }
-            if ($old_data->demenagement != $obj_data->demenagement) {
+            /*if ($old_data->demenagement != $obj_data->demenagement) {
                 $obj_data->addCalculateField('demenagement');
-            }
+            }*/
             $obj_data->addCalculateField('dateModification');
         }
         

@@ -25,7 +25,7 @@ class Eleves extends AbstractHydrator
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(sprintf('%s : On attend un SbmCommun\Model\Db\ObjectData\Eleve et on a reçu un %s', __METHOD__, gettype($object)));
         }
-        parent::extract($object);
+        return parent::extract($object);
     }
 
     protected function calculate()

@@ -19,7 +19,7 @@ use Zend\Stdlib\Hydrator\ArraySerializable;
 
 abstract class AbstractHydrator extends ArraySerializable
 {
-    private $object;
+    protected  $object;
     
     public function extract($object)
     {

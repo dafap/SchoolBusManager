@@ -328,6 +328,8 @@ abstract class AbstractSbmTable implements FactoryInterface
     {
         if (! is_null($this->hydrator)) {
             $data = $this->hydrator->extract($obj_data);
+        } else {
+            $data = $obj_data->getArrayCopy();        
         }
         if ($this->is_newRecord($obj_data->getId())) {
             $this->table_gateway->insert($data);

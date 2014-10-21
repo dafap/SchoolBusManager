@@ -26,7 +26,7 @@ class Responsables extends AbstractHydrator
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(sprintf('%s : On attend un SbmCommun\Model\Db\ObjectData\Responsable et on a reçu un %s', __METHOD__, gettype($object)));
         }
-        parent::extract($object);
+        return parent::extract($object);
     }
 
     protected function calculate()
@@ -34,21 +34,21 @@ class Responsables extends AbstractHydrator
         $calculate_fields = $this->object->getCalculateFields();
         $now = new \DateTime('now');
         foreach ($calculate_fields as $value) {
-            if ($value == 'demenagement') {
+            /*if ($value == 'demenagement') {
                 if ($this->object->demenagement) {
-                    $this->object->ancienAdressL1 = $this->object->adressL1;
-                    $this->object->ancienAdressL2 = $this->object->adressL2;
+                    $this->object->ancienAdresseL1 = $this->object->adresseL1;
+                    $this->object->ancienAdresseL2 = $this->object->adresseL2;
                     $this->object->ancienCodePostal = $this->object->codePostal;
                     $this->object->ancienCommuneId = $this->object->communeId;
                     $this->object->dateDemenagement = $now->format('Y-m-d');
                 } else {
-                    $this->object->ancienAdressL1 = null;
-                    $this->object->ancienAdressL2 = null;
+                    $this->object->ancienAdresseL1 = null;
+                    $this->object->ancienAdresseL2 = null;
                     $this->object->ancienCodePostal = null;
                     $this->object->ancienCommuneId = null;
                     $this->object->dateDemenagement = null;
                 }
-            } elseif (substr($value, - 2) == 'SA') {
+            } else*/if (substr($value, - 2) == 'SA') {
                 $sa = new SansAccent();
                 $index = substr($value, 0, strlen($value) - 2);
                 $this->object->$value = $sa->filter($this->object->$index);
