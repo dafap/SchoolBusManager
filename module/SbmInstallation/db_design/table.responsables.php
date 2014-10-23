@@ -57,5 +57,31 @@ return array(
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci',
     ),
+    'triggers' => array(
+        'responsables_bi_history' => array(
+            'moment' => 'BEFORE',
+            'evenement' => 'INSERT',
+            'definition' => <<<EOT
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
+VALUES ('%table(responsables)%', 'insert', 'responsableId', NEW.responsableId, NOW(), CONCAT(NEW.selection, '|', NEW.dateCreation, '|', NEW.dateModification, '|', NEW.nature, '|', NEW.titre, '|', NEW.nom, '|', NEW.nomSA, '|', NEW.prenom, '|', NEW.prenomSA, '|', NEW.adresseL1, '|', NEW.adresseL2, '|', NEW.codePostal, '|', NEW.communeId, '|', NEW.ancienAdresseL1, '|', NEW.ancienAdresseL2, '|', NEW.ancienCodePostal, '|', NEW.ancienCommuneId, '|', NEW.email, '|', NEW.telephoneF, '|', NEW.telephoneP, '|', NEW.telephoneT, '|', NEW.etiquette, '|', NEW.demenagement, '|', NEW.dateDemenagement, '|', NEW.facture, '|', NEW.grilleTarif, '|', NEW.ribTit, '|', NEW.ribDom, '|', NEW.iban, '|', NEW.bic))
+EOT
+        ),        
+        'responsables_bu_history' => array(
+            'moment' => 'BEFORE',
+            'evenement' => 'UPDATE',
+            'definition' => <<<EOT
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
+VALUES ('%table(responsables)%', 'update', 'responsableId', OLD.responsableId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nature, '|', OLD.titre, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.adresseL1, '|', OLD.adresseL2, '|', OLD.codePostal, '|', OLD.communeId, '|', OLD.ancienAdresseL1, '|', OLD.ancienAdresseL2, '|', OLD.ancienCodePostal, '|', OLD.ancienCommuneId, '|', OLD.email, '|', OLD.telephoneF, '|', OLD.telephoneP, '|', OLD.telephoneT, '|', OLD.etiquette, '|', OLD.demenagement, '|', OLD.dateDemenagement, '|', OLD.facture, '|', OLD.grilleTarif, '|', OLD.ribTit, '|', OLD.ribDom, '|', OLD.iban, '|', OLD.bic))
+EOT
+        ),
+        'responsables_bd_history' => array(
+            'moment' => 'BEFORE',
+            'evenement' => 'DELETE',
+            'definition' => <<<EOT
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
+VALUES ('%table(responsables)%', 'delete', 'responsableId', OLD.responsableId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nature, '|', OLD.titre, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.adresseL1, '|', OLD.adresseL2, '|', OLD.codePostal, '|', OLD.communeId, '|', OLD.ancienAdresseL1, '|', OLD.ancienAdresseL2, '|', OLD.ancienCodePostal, '|', OLD.ancienCommuneId, '|', OLD.email, '|', OLD.telephoneF, '|', OLD.telephoneP, '|', OLD.telephoneT, '|', OLD.etiquette, '|', OLD.demenagement, '|', OLD.dateDemenagement, '|', OLD.facture, '|', OLD.grilleTarif, '|', OLD.ribTit, '|', OLD.ribDom, '|', OLD.iban, '|', OLD.bic))
+EOT
+        )
+    ),
     'data' => include __DIR__ . '/data/data.responsables.php'
 ); 

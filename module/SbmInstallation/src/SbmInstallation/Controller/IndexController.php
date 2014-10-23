@@ -145,7 +145,7 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Renvoie un tableau décrivant la structure des tables et des vues définies dans SbmInstallation/config/db_design.
+     * Renvoie un tableau décrivant la structure des tables et des vues définies dans SbmInstallation/db_design.
      * (voir SbmInstallation/db_design/README.txt)
      *
      * @return array

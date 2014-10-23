@@ -9,7 +9,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 22 janv. 2014
- * @version 2014-1
+ * @version 2014-2 (23 oct. 2014)
  */
 namespace SbmInstallation\Model;
 
@@ -29,6 +29,8 @@ class CreateTables
     const BAD_DROP = 201;
 
     const BAD_CREATE = 202;
+
+    const BAD_TRIGGER = 203;
 
     const DB_DESIGN_PATH = '/../../../db_design';
 
@@ -310,6 +312,64 @@ class CreateTables
         return $result;
     }
 
+    protected function createTriggers($entity)
+    {
+        $prefix = $this->prefix;
+        $table_name = StdLib::entityName($entity['name'], $entity['type'], $prefix);
+        $result = '';
+        foreach ($entity['triggers'] as $name => $structure) {
+            $command = "DROP TRIGGER IF EXISTS `$name`";
+            try {
+                $r = $this->dbadapter->query($command, Adapter::QUERY_MODE_EXECUTE);
+                $result .= "$command -> OK\n";
+            } catch (\PDOException $e) {
+                $message = "Impossible d'exécuter la commande $command.\n" . $e->getMessage();
+                throw new Exception($message, self::BAD_TRIGGER);
+            }
+            
+            $moment = $structure['moment'];
+            if (! in_array(strtoupper($moment), array(
+                'BEFORE',
+                'AFTER'
+            ))) {
+                $message = "Définition incorrecte du moment dans la structure du trigger %s.\nLes valeurs possibles sont BEFORE et AFTER";
+                throw new Exception($message, self::BAD_TRIGGER);
+            }
+            
+            $evenement = $structure['evenement'];
+            if (! in_array(strtoupper($evenement), array(
+                'INSERT',
+                'UPDATE',
+                'DELETE'
+            ))) {
+                $message = "Définition incorrecte de l'évènement dans la structure du trigger %s.\nLes valeurs possibles sont INSERT, UPDATE et DELETE";
+                throw new Exception($message, self::BAD_TRIGGER);
+            }
+            
+            $definition = trim($structure['definition'], ';');
+            $definition = preg_replace_callback('/%(table|system)\((.*)\)%/i', function ($matches) use($prefix)
+            {
+                return StdLib::entityName($matches[2], $matches[1], $prefix);
+            }, $definition);
+            
+            $command = <<<EOT
+CREATE TRIGGER `$name` 
+ $moment $evenement ON `$table_name`
+ FOR EACH ROW BEGIN
+ $definition;
+ END;
+EOT;
+            try {
+                $r = $this->dbadapter->query($command, Adapter::QUERY_MODE_EXECUTE);
+                $result .= "CREATE TRIGGER `$name` $moment $evenement ON `$table_name` -> OK\n";
+            } catch (\PDOException $e) {
+                $message = "Impossible d'exécuter la commande :\n$command.\n" . $e->getMessage();
+                throw new Exception($message, self::BAD_TRIGGER);
+            }
+        }
+        return $result;
+    }
+
     /**
      * Fait un DROP TABLE IF EXISTS ou un DROP VIEW IF EXISTS sur l'entité nommée.
      * (pour les vues, on fait un DROP TABLE avant un DROP VIEW au cas où il aurait fallu créé une table fictive pour les relations et les autres vues)
@@ -447,6 +507,9 @@ class CreateTables
                     if (array_key_exists('structure', $entity)) {
                         $result[] = $this->createOrAlterEntity($entity);
                     }
+                    if (($type_entity == 'table') && array_key_exists('triggers', $entity)) {
+                        $result[] = $this->createTriggers($entity);
+                    }
                     if (($type_entity == 'table') && array_key_exists('data', $entity)) {
                         $result[] = $this->addData($entity);
                     }
@@ -493,18 +556,18 @@ class CreateTables
                 if (count($parts) == 3) {
                     $key = $parts[1];
                     $value = $parts[2];
-                    if (in_array($key, $keys) && $row[$key] == '') {                        
+                    if (in_array($key, $keys) && $row[$key] == '') {
                         if ($value == 'false') {
                             $value = 'Non';
                         } elseif ($value == 'true') {
                             $value = 'Oui';
                         }
                         
-                        $row[$key] = $value;                        
+                        $row[$key] = $value;
                     }
-                } 
+                }
             }
-            $result[] = $row;  
+            $result[] = $row;
         }
         return $result;
     }
