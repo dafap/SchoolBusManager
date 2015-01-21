@@ -20,9 +20,18 @@ use SbmCommun\Model\Db\DbLib;
 
 class IndexController extends AbstractActionController
 {
+    /**
+     * Affectation du millesime de travail. S'il n'y en a pas en session, il prend le dernier millesime valide et le met en session.
+     * 
+     * (non-PHPdoc)
+     * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
+     */
     public function indexAction()
     {
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        return new ViewModel(array('result' => $db->getTableList()));
+        $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');        
+        for ($millesime = $this->getSbmSessionGenerale('millesime', false); !$millesime; $millesime = $this->getSbmSessionGenerale('millesime', false)) {
+            $this->setSbmSessionGenerale('millesime', $table_calendar->getDefaultMillesime());
+        }
+        return new ViewModel(array('as_libelle' => $table_calendar->getAnneeScolaire($millesime)));
     }
 }

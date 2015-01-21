@@ -14,6 +14,24 @@
  */
 return array(
     array(
+        'transporteurId' => 1,
+        'nom' => 'SISS',
+        'adresse1' => 'RUE MARCEL PAUL',
+        'adresse2' => 'ZA DE DUMES',
+        'codePostal' => 33210,
+        'communeId' => 33227,
+        'telephone' => '0556623603',
+        'fax' => '0556631527',
+        'email' => 'transport@siss-langon.fr',
+        'siret' => '25330017200025',
+        'naf' => '4939A',
+        'tvaIntraCommunautaire' => 'FR06253300172',
+        'rib_titulaire' => '',
+        'rib_domiciliation' => '',
+        'rib_bic' => '',
+        'rib_iban' => '',
+    ),
+    array(
         'transporteurId' => 4, 
         'nom' => 'ASTG', 
         'adresse1' => 'CHE DE CASTELNAU', 

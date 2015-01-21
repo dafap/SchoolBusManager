@@ -57,12 +57,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bjyoungblood/BjyAuthorize.git",
-                "reference": "ff602bb3df17fac51b57645d8501a00f73d8fd66"
+                "reference": "7553b9ec4f23fb665135d51c520b21289abf1c5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bjyoungblood/BjyAuthorize/zipball/ff602bb3df17fac51b57645d8501a00f73d8fd66",
-                "reference": "ff602bb3df17fac51b57645d8501a00f73d8fd66",
+                "url": "https://api.github.com/repos/bjyoungblood/BjyAuthorize/zipball/7553b9ec4f23fb665135d51c520b21289abf1c5e",
+                "reference": "7553b9ec4f23fb665135d51c520b21289abf1c5e",
                 "shasum": ""
             },
             "require": {
@@ -119,7 +119,7 @@
                 "zf2",
                 "zfc-user"
             ],
-            "time": "2014-09-06 10:15:09"
+            "time": "2014-11-24 16:24:12"
         },
         {
             "name": "dafap/dafap-layout",
@@ -159,16 +159,16 @@
         },
         {
             "name": "tecnick.com/tcpdf",
-            "version": "6.0.096",
+            "version": "6.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "ff8799164231d5c99a69bee276ce33bcb7f52a54"
+                "reference": "ba2afad72c6191bfed735dfa357bcaf3f225f52b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ff8799164231d5c99a69bee276ce33bcb7f52a54",
-                "reference": "ff8799164231d5c99a69bee276ce33bcb7f52a54",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ba2afad72c6191bfed735dfa357bcaf3f225f52b",
+                "reference": "ba2afad72c6191bfed735dfa357bcaf3f225f52b",
                 "shasum": ""
             },
             "require": {
@@ -218,20 +218,20 @@
                 "pdf417",
                 "qrcode"
             ],
-            "time": "2014-10-06 17:50:43"
+            "time": "2015-01-08 18:35:22"
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.3.3",
+            "version": "2.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "88c9b6f566fc1097f64ead155625db9bdfee531e"
+                "reference": "c878e047ab1c5dcfb201974bdff607be54ccb54b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zf2/zipball/88c9b6f566fc1097f64ead155625db9bdfee531e",
-                "reference": "88c9b6f566fc1097f64ead155625db9bdfee531e",
+                "url": "https://api.github.com/repos/zendframework/zf2/zipball/c878e047ab1c5dcfb201974bdff607be54ccb54b",
+                "reference": "c878e047ab1c5dcfb201974bdff607be54ccb54b",
                 "shasum": ""
             },
             "require": {
@@ -293,7 +293,7 @@
             },
             "require-dev": {
                 "doctrine/annotations": ">=1.0",
-                "fabpot/php-cs-fixer": "dev-master#fcbb09b5204",
+                "fabpot/php-cs-fixer": "1.*",
                 "ircmaxell/random-lib": "dev-master",
                 "ircmaxell/security-lib": "dev-master",
                 "mikey179/vfsstream": "1.2.*",
@@ -336,7 +336,7 @@
                 "framework",
                 "zf2"
             ],
-            "time": "2014-09-16 22:58:11"
+            "time": "2015-01-14 16:44:17"
         },
         {
             "name": "zendframework/zendxml",
@@ -389,17 +389,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcAdmin.git",
-                "reference": "e0062e2f0c351b2e75359cdcca105df74a4da2f6"
+                "reference": "86794b7c3162516586c2e3e0d5814887bec58e95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcAdmin/zipball/e0062e2f0c351b2e75359cdcca105df74a4da2f6",
-                "reference": "e0062e2f0c351b2e75359cdcca105df74a4da2f6",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcAdmin/zipball/86794b7c3162516586c2e3e0d5814887bec58e95",
+                "reference": "86794b7c3162516586c2e3e0d5814887bec58e95",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
-                "zendframework/zendframework": "2.*"
+                "zendframework/zend-eventmanager": "2.*",
+                "zendframework/zend-loader": "2.*",
+                "zendframework/zend-modulemanager": "2.*",
+                "zendframework/zend-mvc": "2.*",
+                "zendframework/zend-navigation": "2.*"
             },
             "suggest": {
                 "bjyoungblood/bjy-authorize": "Access control to protect ZfcAdmin against unauthorized users"
@@ -419,14 +423,13 @@
             ],
             "authors": [
                 {
-                    "name": "Jurian Sluiman",
-                    "email": "jurian@juriansluiman.nl",
-                    "homepage": "http://juriansluiman.nl/"
+                    "name": "Martin Shwalbe",
+                    "email": "martin.shwalbe@gmail.com"
                 },
                 {
-                    "name": "Martin Shwalbe",
-                    "email": "martin.shwalbe@gmail.com",
-                    "homepage": "http://hounddog.github.com"
+                    "name": "Jurian Sluiman",
+                    "email": "jurian@juriansluiman.nl",
+                    "homepage": "http://juriansluiman.nl/en/"
                 }
             ],
             "description": "A generic Admin module for ZF2.",
@@ -434,7 +437,7 @@
             "keywords": [
                 "zf2"
             ],
-            "time": "2014-07-02 08:15:18"
+            "time": "2014-10-22 07:57:03"
         },
         {
             "name": "zf-commons/zfc-base",
@@ -495,12 +498,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcUser.git",
-                "reference": "d65fac77a8ffbae36a18bc20e48cc022cf17ccd9"
+                "reference": "2cc167a89f7939799b1607820ac7b5420a364e23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/d65fac77a8ffbae36a18bc20e48cc022cf17ccd9",
-                "reference": "d65fac77a8ffbae36a18bc20e48cc022cf17ccd9",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/2cc167a89f7939799b1607820ac7b5420a364e23",
+                "reference": "2cc167a89f7939799b1607820ac7b5420a364e23",
                 "shasum": ""
             },
             "require": {
@@ -565,7 +568,7 @@
                 "Authentication",
                 "zf2"
             ],
-            "time": "2014-10-04 21:29:45"
+            "time": "2015-01-08 13:14:06"
         }
     ],
     "packages-dev": [
@@ -623,12 +626,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "6468ed1c58a65ad797f04ebe794ca85fef0ff142"
+                "reference": "4cb1864711eaa2856d2a0c698faedaaf167af248"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/6468ed1c58a65ad797f04ebe794ca85fef0ff142",
-                "reference": "6468ed1c58a65ad797f04ebe794ca85fef0ff142",
+                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/4cb1864711eaa2856d2a0c698faedaaf167af248",
+                "reference": "4cb1864711eaa2856d2a0c698faedaaf167af248",
                 "shasum": ""
             },
             "require": {
@@ -676,7 +679,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2014-08-13 19:03:31"
+            "time": "2015-01-08 20:45:35"
         },
         {
             "name": "zendframework/zenddiagnostics",
@@ -805,6 +808,7 @@
         "zendframework/zend-developer-tools": 20
     },
     "prefer-stable": true,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.3"
     },

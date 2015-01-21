@@ -38,7 +38,7 @@ class IndexController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
-                $this->redirect()->toRoute('sbminstall', array(
+                return $this->redirect()->toRoute('sbminstall', array(
                     'action' => 'index'
                 ));
                 $viewArgs = array();
@@ -72,7 +72,7 @@ class IndexController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
-                $this->redirect()->toRoute('sbminstall', array(
+                return $this->redirect()->toRoute('sbminstall', array(
                     'action' => 'index'
                 ));
                 $viewArgs = array();

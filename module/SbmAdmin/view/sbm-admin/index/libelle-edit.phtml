@@ -1,0 +1,35 @@
+<?php
+/**
+ * Page de modification d'un libellé
+ *
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource libelle-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 janv. 2015
+ * @version 2015-1
+ */
+$retour = $this->url('sbmadmin', array('action'=> 'libelle-liste', 'page' => $this->page));
+$elementId = $this->form->get('id');
+//$elementId->setData($this->id);
+?>
+<h1>Modification d'un libellé</h1>
+<div class="fiche-wrapper">
+  <div class="zone-actions">
+    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des libellés"><i class="fam-door-out"></i> Retour</a>
+  </div>
+<?php 
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($elementId);
+echo $this->formHidden($this->form->get('csrf'));
+echo '<fieldset class="edit">';
+echo '<div id="libelle-edit-nature" class="row-inner edit">' . $this->formRow($this->form->get('nature')) . '</div>';
+echo '<div id="libelle-edit-code" class="row-inner edit">' . $this->formRow($this->form->get('code')) . '</div>';
+echo '<div id="libelle-edit-libelle" class="row-inner edit">' . $this->formRow($this->form->get('libelle')) . '</div>';
+echo '<div id="libelle-edit-ouvert" class="row-inner edit">' . $this->formRow($this->form->get('ouvert')) . '</div>';
+echo '<div id="libelle-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo '</fieldset>';
+echo $this->form()->closeTag();
+?>
+</div>

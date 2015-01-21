@@ -95,7 +95,7 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $tarifId = $this->params('id', - 1);
         if ($tarifId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/finance', array(
+            return $this->redirect()->toRoute('sbmgestion/finance', array(
                 'action' => 'tarif-liste',
                 'page' => $currentPage
             ));
@@ -115,7 +115,7 @@ class FinanceController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/finance', array(
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'tarif-liste',
                     'page' => $currentPage
                 ));
@@ -124,7 +124,7 @@ class FinanceController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableTarifs->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/finance', array(
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'tarif-liste',
                     'page' => $currentPage
                 ));
@@ -177,7 +177,7 @@ class FinanceController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/finance', array(
+            return $this->redirect()->toRoute('sbmgestion/finance', array(
                 'action' => 'tarif-liste',
                 'page' => $currentPage
             ));
@@ -188,7 +188,7 @@ class FinanceController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/finance', array(
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'tarif-liste',
                     'page' => $currentPage
                 ));
@@ -228,7 +228,7 @@ class FinanceController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/finance', array(
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'tarif-liste',
                     'page' => $currentPage
                 ));
@@ -237,7 +237,7 @@ class FinanceController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableTarifs->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/finance', array(
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'tarif-liste',
                     'page' => $currentPage
                 ));

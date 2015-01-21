@@ -89,7 +89,7 @@ class EleveController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'eleve-liste',
                     'page' => $currentPage
                 ));
@@ -98,7 +98,7 @@ class EleveController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableEleves->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'eleve-liste',
                     'page' => $currentPage
                 ));
@@ -116,7 +116,7 @@ class EleveController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $eleveId = $this->params('id', - 1);
         if ($eleveId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/eleve', array(
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'eleve-liste',
                 'page' => $currentPage
             ));
@@ -124,28 +124,36 @@ class EleveController extends AbstractActionController
         $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         
+        $respSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
         $form = new FormEleve();
-        // $form->modifFormForEdit();
-        $form->setMaxLength($db->getMaxLengthArray('eleves', 'table'));
-        $form->bind($tableEleves->getObjData());
+        $form->setValueOptions('responsable1Id', $respSelect)
+            ->setValueOptions('responsable2Id', $respSelect)
+            ->setValueOptions('responsableFId', $respSelect)
+            ->setMaxLength($db->getMaxLengthArray('eleves', 'table'))
+            ->bind($tableEleves->getObjData());
         
         $request = $this->getRequest();
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'eleve-liste',
                     'page' => $currentPage
                 ));
             }
-            $form->setData($request->getPost());
+            $data = $request->getPost();
+            if (empty($data['responsableFId']))
+                $data['responsableFId'] = $data['responsable1Id'];
+            $form->setData($data);
             if ($form->isValid()) { // controle le csrf
                 $tableEleves->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'eleve-liste',
                     'page' => $currentPage
                 ));
+            } else {
+                var_dump($request->getPost());
             }
         } else {
             $form->setData($tableEleves->getRecord($eleveId)
@@ -165,6 +173,7 @@ class EleveController extends AbstractActionController
         $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
         return new ViewModel(array(
             'datagroup' => $tableResponsables->getRecord($responsableId),
+            
             // 'paginator' => $table_eleves->paginator(),
             'page' => $currentPage,
             'responsableId' => $responsableId
@@ -297,7 +306,7 @@ class EleveController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/eleve', array(
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'eleve-liste',
                 'page' => $currentPage
             ));
@@ -308,7 +317,7 @@ class EleveController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'eleve-liste',
                     'page' => $currentPage
                 ));
@@ -380,7 +389,7 @@ class EleveController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
                     'page' => $currentPage
                 ));
@@ -389,7 +398,7 @@ class EleveController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableResponsables->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
                     'page' => $currentPage
                 ));
@@ -408,7 +417,7 @@ class EleveController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $responsableId = $this->params('id', - 1);
         if ($responsableId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/eleve', array(
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'responsable-liste',
                 'page' => $currentPage
             ));
@@ -429,7 +438,7 @@ class EleveController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
                     'page' => $currentPage
                 ));
@@ -438,7 +447,7 @@ class EleveController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableResponsables->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
                     'page' => $currentPage
                 ));
@@ -475,6 +484,22 @@ class EleveController extends AbstractActionController
         ));
     }
 
+    public function responsablePaiementsAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $responsableId = $this->params('id', - 1); // GET
+        $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
+        $tablePaiements = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements');
+        $data = array();
+        $data = $tablePaiements->duResponsable($responsableId);
+        return new ViewModel(array(
+            'datagroup' => $tableResponsables->getRecord($responsableId),
+            'data' => $data,
+            'page' => $currentPage,
+            'responsableId' => $responsableId
+        ));
+    }
+
     public function responsablePdfAction()
     {
         $currentPage = $this->params('page', 1);
@@ -487,94 +512,12 @@ class EleveController extends AbstractActionController
         }
         
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setData(array(
-            // 'sm' => $this->getServiceLocator(),
-            'table' => 'Sbm\Db\Vue\Responsables',
-            'fields' => array(
-                'nom',
-                'prenom',
-                'adressL1',
-                'adressL2',
-                'codePostal',
-                'commune',
-                'email',
-                'telephone',
-                'telephoneC',
-                'nbEleves',
-                array(
-                    'name' => 'demenagement',
-                    'type' => 'boolean',
-                    'values' => array(
-                        false => '',
-                        true => 'D'
-                    )
-                )
-            ),
-            'where' => $criteres_obj->getWhere(), // objet Zend\Db\Sql\Where
-            'orderBy' => array(
-                'nomSA',
-                'prenomSA'
-            )
-        ))
-            ->setHead(array(
-            'Nom',
-            'Prénom',
-            'Adresse',
-            'Adresse',
-            'Code postal',
-            'Commune',
-            'Email',
-            'Telephone',
-            'Portable',
-            'Nb élèves',
-            'Dém.'
-        ))
-            ->setPdfConfig(array(
-            'title' => 'Liste des responsables',
-            'header' => array(
-                'title' => 'Liste des responsables',
-                'string' => 'éditée par School Bus Manager le ' . date('d/m/Y à H:i')
-            )
-        ))
-            ->setTableConfig(array(
-            'thead' => array(
-                'cell' => array(
-                    'stretch' => 1
-                ),
-                'font' => array('family' => 'helvetica')
-            ),
-            'tbody' => array(
-                'cell' => array(
-                    'txt_precision' => array(
-                        - 1,
-                        - 1,
-                        - 1,
-                        - 1,
-                        - 1,
-                        - 1,
-                        - 1,
-                        - 1,
-                        - 1,
-                        0,
-                        - 1
-                    ),
-                    'stretch' => 1
-                ),
-                'font' => array('family' => 'times')
-            ),
-            /*'column_widths' => '='/*array(
-                25,
-                15,
-                25,
-                15,
-                10,
-                25,
-                25,
-                10,
-                10,
-                8,
-                5
-            )*/
+        $call_pdf->setParam('documentId', 8)
+            ->setParam('recordSource', 'Sbm\Db\Vue\Responsables')
+            ->setParam('where', $criteres_obj->getWhere())
+            ->setParam('orderBy', array(
+            'nomSA',
+            'prenomSA'
         ))
             ->renderPdf();
         
@@ -619,7 +562,7 @@ class EleveController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/eleve', array(
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'responsable-liste',
                 'page' => $currentPage
             ));
@@ -630,7 +573,7 @@ class EleveController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/eleve', array(
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
                     'page' => $currentPage
                 ));

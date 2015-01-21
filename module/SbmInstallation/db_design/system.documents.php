@@ -16,9 +16,9 @@
 return array(
     'name' => 'documents',
     'type' => 'system',
-    'drop' => false,
-    'edit_entity' => false,
-    'add_data' => false,
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
     'structure' => array(
         'fields' => array(
             // document
@@ -126,9 +126,11 @@ return array(
         'primary_key' => array(
             'documentId'
         ),
-        'engine' => 'MyISAM',
+        'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ),
-    'data' => include __DIR__ . '/data/data.system.documents.php'
+    //'data' => include __DIR__ . '/data/data.system.documents.php'
+    //'data' => array('after' => array(), 'include' => __DIR__ . '/data/data.documents.php')
+    'data' => __DIR__ . '/data/data.system.documents.php'
 );

@@ -147,7 +147,7 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Renvoie l'objet d'échange de données
      *
-     * @return \Bdts\Model\ObjectData\ObjectDataInterface
+     * @return SbmCommun\Model\Db\ObjectData\ObjectDataInterface
      */
     public function getObjData()
     {
@@ -259,7 +259,9 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Retourne l'enregistrement d'identifiant donné.
      * Le résultat est hydraté et sont conforme au ResultSetPrototype du TableGateway
      *
-     * @param int|string $id            
+     * @param int|string|array $id
+     *   Si c'est un tableau, ce doit être un tableau associatif
+     *               
      * @throws Exception
      * @return \Bdts\Model\ObjectData\ObjectDataInterface null
      */

@@ -1,10 +1,10 @@
 <?php
 /**
- * Structure de la table système documents
+ * Structure de la table système `documents`
  *
  *
  * @project sbm
- * @package 
+ * @package SbmCommun\Model\Db\ObjectData\Sys
  * @filesource 
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

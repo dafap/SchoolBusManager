@@ -222,8 +222,11 @@ class DbLibService implements FactoryInterface
     {
         $result = array();
         foreach ($this->table_list as $nom_reel) {
-            $type_nom = str_replace($this->prefix . '_', '', $nom_reel);
-            list($type, $nom) = explode('_', $type_nom);
+            $nom_sans_prefix = str_replace($this->prefix . '_', '', $nom_reel);
+            $type_nom = explode('_', $nom_sans_prefix);
+            if (count($type_nom) < 2) continue;
+            $type = array_shift($type_nom);
+            $nom = implode('_', $type_nom);
             if ($type == 's') continue;
             $type = $type == 't' ? 'table' : ($type == 'v' ? 'données complètes' : 'table système');
             $result[$nom_reel] = implode(' ',array($nom, '(' . $type . ')'));

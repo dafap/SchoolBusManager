@@ -1644,7 +1644,7 @@ class DocumentPdf extends Form
             'attributes' => array(
                 'type' => 'submit',
                 'value' => 'Enregistrer',
-                'id' => 'classe-submit',
+                'id' => 'documentpdf-submit',
                 'autofocus' => 'autofocus',
                 'class' => 'button submit left135'
             )
@@ -1654,7 +1654,7 @@ class DocumentPdf extends Form
             'attributes' => array(
                 'type' => 'submit',
                 'value' => 'Abandonner',
-                'id' => 'classe-cancel',
+                'id' => 'documentpdf-cancel',
                 'class' => 'button cancel'
             )
         ));

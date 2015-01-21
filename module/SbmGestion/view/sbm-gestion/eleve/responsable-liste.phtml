@@ -28,9 +28,9 @@ $retour = $this->url('sbmgestion/eleve');
 <div class="liste-wrapper">
 	<div class="zone-actions">
 		<a href="<?php echo $retour; ?>" class="bouton"
-			title="retour au menu de gestion des élèves"><i
-			class="fam-door-out"></i> Retour</a> <a href="<?php echo $pdf; ?>"
-			class="bouton" title="exporter en pdf" target="_blank"><i
+			title="retour au menu de gestion des élèves"><i class="fam-door-out"></i>
+			Retour</a> <a href="<?php echo $pdf; ?>" class="bouton"
+			title="exporter en pdf" target="_blank"><i
 			class="fam-application-view-list"></i> Exporter en pdf</a> <a
 			href="<?php echo $ajouter; ?>" class="bouton"
 			title="créer un nouveau responsable"><i class="fam-add"></i> Ajouter
@@ -69,13 +69,20 @@ $retour = $this->url('sbmgestion/eleve');
                 'page' => $this->page,
                 'id' => $responsable->responsableId
             ));
-            ?>
+            $url_euro = $this->url('sbmgestion/eleve', array(
+                'action' => 'responsable-paiements',
+                'page' => $this->page,
+                'id' => $responsable->responsableId
+            ))?>
                  <a href="<?php echo $url_edit; ?>" class="bouton"
 					title="modifier"><i class="fam-pencil"></i></a> <a
 					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i
 						class="fam-delete"></i></a> <a href="<?php echo $url_group; ?>"
-					class="bouton" title="groupe des élèves ayant ce responsable 1"><i
-						class="fam-group"></i></a>
+					class="bouton"
+					title="groupe des élèves dépendant de ce responsable"><i
+						class="fam-group"></i></a> <a href="<?php echo $url_euro; ?>"
+					class="bouton" title="paiements de ce responsable"><i
+						class="fam-money-euro"></i></a>
 				</td>
 			</tr>         
         <?php endforeach;?>

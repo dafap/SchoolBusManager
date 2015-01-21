@@ -27,6 +27,7 @@ return array(
         'template_map' => array(
             'layout/error' => __DIR__ . '/../../module/SbmCommun/view/layout/layout.phtml',
             'layout/defaults' => __DIR__ . '/../../module/SbmCommun/view/layout/layout.phtml',
+            'layout/sbmEleve' => __DIR__ . '/../../module/SbmCommun/view/layout/layout.phtml',
             'layout/sbmFront' => __DIR__ . '/../../module/SbmFront/view/layout/layout.phtml',
             'layout/sbmAdmin' => __DIR__ . '/../../module/SbmCommun/view/layout/layout.phtml' 
         )
@@ -41,7 +42,8 @@ return array(
             'defaults' => 'layout/defaults',
             'SbmFront' => 'layout/sbmFront',
             'SbmGestion\Controller\SimulationController' => 'layout/sbmFront',
-            'SbmAdmin\Controller\PdfController' => 'layout/sbmAdmin'
+            'SbmGestion\Controller\EleveController' => 'layout/sbmEleve',
+            'SbmAdmin\Controller\IndexController' => 'layout/sbmAdmin'
         ),
         'parameter' => array(
             /**
@@ -88,6 +90,42 @@ return array(
                 ),
                 'js' => array(
                     '/js/bootstrap.min.js',
+                    '/js/jquery.min.js',
+                    array(
+                        'src' => '/js/respond.min.js',
+                        'type' => 'text/javascript',
+                        'attrs' => array(
+                            'conditional' => 'lt IE 9'
+                        )
+                    ),
+                    array(
+                        'src' => '/js/html5shiv.js',
+                        'type' => 'text/javascript',
+                        'attrs' => array(
+                            'conditional' => 'lt IE 9'
+                        )
+                    )
+                ),
+                'logo_file' => 'img/sbm-logo.gif'
+            ),
+            'layout/sbmEleve' => array(
+                'appl_name' => 'School Bus Manager',
+                'favicon' => '/img/favicon.ico',
+                'css' => array(
+                    '/css/style.css',
+                    '/css/bootstrap-theme.min.css',
+                    '/css/bootstrap.min.css',
+                    '/css/fam-icons.css',
+                    '/css/jquery/themes/humanity/jquery-ui-1.10.4.custom.min.css',
+                ),
+                'js' => array(
+                    '/js/jq/jquery.ui.tabs.min.js',
+                    '/js/jq/jquery.ui.widget.min.js',
+                    '/js/jq/jquery.ui.core.min.js',
+                    '//tinymce.cachefly.net/4.1/tinymce.min.js',
+                    '/js/bootstrap.min.js',
+                    //'//code.jquery.com/ui/1.10.4/jquery-ui.js',
+                    //'//code.jquery.com/jquery-1.10.2.js',
                     '/js/jquery.min.js',
                     array(
                         'src' => '/js/respond.min.js',

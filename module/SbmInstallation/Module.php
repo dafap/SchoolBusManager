@@ -29,11 +29,11 @@ class Module
     public function getConfig()
     {
         $config = include __DIR__ . '/config/module.config.php';
-        $pattern = __DIR__ . '/config/db_design/*.php';
+        /*$pattern = __DIR__ . '/db_design/*.php';
         foreach (Glob::glob($pattern) as $filename) {
             $value = basename($filename, '.php');
             $config['db_design'][$value] = ConfigFactory::fromFile($filename);
-        }
+        }*/
         return $config;
     }
 

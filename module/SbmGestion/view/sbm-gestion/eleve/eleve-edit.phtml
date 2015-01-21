@@ -23,17 +23,112 @@ echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('eleveId'));
 echo $this->formHidden($this->form->get('csrf'));
 echo '<fieldset class="edit">';
-echo '<div id="eleve-edit-service" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
-echo '<div id="eleve-edit-station" class="row-inner edit">' . $this->formRow($this->form->get('prenom')) . '</div>';
-echo '<div id="eleve-edit-aller" class="row-inner edit">' . $this->formRow($this->form->get('dateN')) . '</div>';
-echo '<div id="eleve-edit-retour" class="row-inner edit">' . $this->formRow($this->form->get('regimeId')) . '</div>';
-echo '<div id="eleve-edit-distance" class="row-inner edit">' . $this->formRow($this->form->get('etablissementId')) . '</div>';
-echo '<div id="eleve-edit-jOuverture" class="row-inner edit">' . $this->formRow($this->form->get('classeId')) . '</div>';
-//echo '<div id="eleve-edit-horaire1" class="row-inner edit">' . $this->formRow($this->form->get('horaire1')) . '</div>';
-//echo '<div id="eleve-edit-horaire2" class="row-inner edit">' . $this->formRow($this->form->get('horaire2')) . '</div>';
-//echo '<div id="eleve-edit-horaire3" class="row-inner edit">' . $this->formRow($this->form->get('horaire3')) . '</div>';
-echo '<div id="eleve-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo '<div id="eleve-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
+echo '<div id="eleve-edit-prenom" class="row-inner edit">' . $this->formRow($this->form->get('prenom')) . '</div>';
+echo '<div id="eleve-edit-dateN" class="row-inner edit">' . $this->formRow($this->form->get('dateN')) . '</div>';
+echo '<p>&nbsp;</p>';
+?>
+<div id="tabs" class="sbm-tabs-label">
+<ul>
+<li><a href="#tabs-1">Responsable</a></li>
+<li><a href="#tabs-2">Garde alternée</a></li>
+<li><a href="#tabs-3">Scolarité</a></li>
+<li><a href="#tabs-4">Transport</a></li>
+<li><a href="#tabs-5">Facturation</a></li>
+<li><a href="#tabs-6">Prélèvement</a></li>
+<li><a href="#tabs-7">Historique</a>
+</ul>
+<div id="tabs-1" class="sbm-tabs-container">
+<?php 
+// Responsable 1
+echo '<div id="eleve-edit-responsable1Id" class="row-inner edit">' . $this->formRow($this->form->get('responsable1Id')) . '</div>';
+/*echo '<div id="elever1-edit-titre" class="row-inner edit">' . $this->formRow($this->formr1->get('titre')) . '</div>';
+echo '<div id="elever1-edit-nom" class="row-inner edit">' . $this->formRow($this->formr1->get('nom')) . '</div>';
+echo '<div id="elever1-edit-prenom" class="row-inner edit">' . $this->formRow($this->formr1->get('prenom')) . '</div>';
+echo '<div id="elever1-edit-telephoneF" class="row-inner edit">' . $this->formRow($this->formr1->get('telephoneF')) . '</div>';
+echo '<div id="elever1-edit-telephoneP" class="row-inner edit">' . $this->formRow($this->formr1->get('telephoneP')) . '</div>';
+echo '<div id="elever1-edit-telephoneT" class="row-inner edit">' . $this->formRow($this->formr1->get('telephoneT')) . '</div>';
+echo '<div id="elever1-edit-email" class="row-inner edit">' . $this->formRow($this->formr1->get('email')) . '</div>';
+echo '<div id="elever1-edit-adresseL1" class="row-inner edit">' . $this->formRow($this->formr1->get('adresseL1')) . '</div>';
+echo '<div id="elever1-edit-adresseL2" class="row-inner edit">' . $this->formRow($this->formr1->get('adresseL2')) . '</div>';
+echo '<div id="elever1-edit-codePostal" class="row-inner edit">' . $this->formRow($this->formr1->get('codePostal')) . '</div>';
+echo '<div id="elever1-edit-communeId" class="row-inner edit">' . $this->formRow($this->formr1->get('communeId')) . '</div>';*/
+?>
+</div>
+<div id="tabs-2" class="sbm-tabs-container">
+<?php 
+// Responsable 2 (Garde alternée)
+echo '<div id="eleve-edit-responsable2Id" class="row-inner edit">' . $this->formRow($this->form->get('responsable2Id')) . '</div>';
+/*echo '<div id="elever2-edit-titre" class="row-inner edit">' . $this->formRow($this->formr2->get('titre')) . '</div>';
+echo '<div id="elever2-edit-nom" class="row-inner edit">' . $this->formRow($this->formr2->get('nom')) . '</div>';
+echo '<div id="elever2-edit-prenom" class="row-inner edit">' . $this->formRow($this->formr2->get('prenom')) . '</div>';
+echo '<div id="elever2-edit-telephoneF" class="row-inner edit">' . $this->formRow($this->formr2->get('telephoneF')) . '</div>';
+echo '<div id="elever2-edit-telephoneP" class="row-inner edit">' . $this->formRow($this->formr2->get('telephoneP')) . '</div>';
+echo '<div id="elever2-edit-telephoneT" class="row-inner edit">' . $this->formRow($this->formr2->get('telephoneT')) . '</div>';
+echo '<div id="elever2-edit-email" class="row-inner edit">' . $this->formRow($this->formr2->get('email')) . '</div>';
+echo '<div id="elever2-edit-adresseL1" class="row-inner edit">' . $this->formRow($this->formr2->get('adresseL1')) . '</div>';
+echo '<div id="elever2-edit-adresseL2" class="row-inner edit">' . $this->formRow($this->formr2->get('adresseL2')) . '</div>';
+echo '<div id="elever2-edit-codePostal" class="row-inner edit">' . $this->formRow($this->formr2->get('codePostal')) . '</div>';
+echo '<div id="elever2-edit-communeId" class="row-inner edit">' . $this->formRow($this->formr2->get('communeId')) . '</div>';*/
+?>
+</div>
+<div id="tabs-3">
+<?php 
+// Scolarité
+/*echo '<div id="elevescolarite-edit-etablissement" class="row-inner edit">' . $this->formRow($this->formsco->get('etablissement')) . '</div>';
+echo '<div id="elevescolarite-edit-regime" class="row-inner edit">' . $this->formRow($this->formsco->get('regime')) . '</div>';
+echo '<div id="elevescolarite-edit-classe" class="row-inner edit">' . $this->formRow($this->formsco->get('classe')) . '</div>';*/
+echo '<p>Formulaire présentant l\'établissement scolaire, le régime, la classe, la dérogation.</p>';
+?>
+</div>
+<div id="tabs-4">
+<?php 
+// Transport
+// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
+echo '<p>Tableau des affectations avec bouton pour modifier / supprimer</p>';
+?>
+</div>
+<div id="tabs-5">
+<?php 
+// Facturation
+echo '<div id="eleve-edit-responsableFId" class="row-inner edit">' . $this->formRow($this->form->get('responsableFId')) . '</div>';
+// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
+echo '<p>Formulaire présentant les élaments financiers : tarif appliqué, responsable, Rib, subvention ...</p>';
+?>
+</div>
+<div id="tabs-6">
+<?php
+// Prélèvement
+// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
+echo '<p>Tableau présentant l\'historique de l\'élève avec les dates de création, modification, les années d\'inscription et l\'historique de facturation</p>';
+?>
+</div>
+<div id="tabs-7">
+<?php
+// Historique
+// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
+echo '<p>Tableau présentant l\'historique de l\'élève avec les dates de création, modification, les années d\'inscription et l\'historique de facturation</p>';
+?>
+</div>
+</div>
+<?php 
+echo '<p>&nbsp;</p>';
+echo '<div id="eleve-edit-note" class="row-inner edit">' . $this->formRow($this->form->get('note')) . '</div>';
+echo '<div id="eleve-edit-note" class="row-inner edit">' . $this->formRow($this->form->get('selection')) . '</div>';
 echo '</fieldset>';
+
+echo '<div id="eleve-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+
 echo $this->form()->closeTag();
 ?>
 </div>
+<?php // fiche_wrapper ?>
+
+<?php
+// lance le script tabs
+$this->inlineScript()->captureStart();
+echo <<<'JS'
+    $( "#tabs" ).tabs();
+JS;
+$this->inlineScript()->captureEnd();
+?>

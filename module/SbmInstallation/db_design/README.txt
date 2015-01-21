@@ -8,11 +8,11 @@ Ces fichiers sont lus par la méthode getConfig() de ce module.
 Le nom du fichier est de la forme table.{nom de la table}.php
 Il contient :
 return array(
-    'name' => 'nom de la table',
+    'name' => 'nom de la table', // par la suite dans ce document, ce nom est désigné `nom_court_de_la_table`
+	'type' => 'table | system', // les `table` contiennent les données de l'utilisateur, les `system` contiennent des paramètres et objets du logiciel
     'drop' => false, // si true, un DROP TABLE IF EXISTS sera fait avant la création 
     'edit_entity' => true, // si false, on ne touche pas à la structure dans Create::createOrAlterEntity() - true par défaut
     'add_data' => true, // si false, on ne fait rien dans Create::addData() - true par défaut ; sans effet sur une vue
-	'type' => 'table'
     'structure'=> array(
         'fields' => array(
             //définition de champs : 
@@ -62,23 +62,65 @@ return array(
             							),
             	 ),
             	 // il peut y avoir plusieurs index de noms différents
-            ),
+        ),
+        'foreign key' => array(
+        		array(
+        			'key' => string | array (nom de la clé ou tableau des noms composant la clé)
+        			'references' => array(
+        				'table' => nom de la table,
+        				'fields' => array(
+        					'champ1',
+            				// il peut y avoir plusieurs champs
+        				),
+        				'on' => array(
+        					'update' => 'CASCADE' | 'SET NULL' | 'NO ACTION' | 'RESTRICT',
+        					'delete' => 'CASCADE' | 'SET NULL' | 'NO ACTION' | 'RESTRICT'
+        				)
+        			)
+        		),
+        		... autres foreign key
+        ),
         'engine' => 'MyISAM', // on peut utiliser les différents engines proposés par MySql
                                      MyISAM, MEMORY et MERGE sont trois moteurs non transactionnels rapides et compacts
                                      InnoDB et BDB gèrent des tables transactionnelles et sont plus surs en cas d'échec (COMMIT, ROLLBACK)
         'charset' => 'utf8', // ou autre chose si on veut
         'collate' => 'utf8_unicode_ci', // ou autre chose
     ),
-    'data' => array(
-        array('champ1' => 'PS', 'champ3' => 1,),
-        array('champ1' => 'MS', 'champ3' => 1,),
+    'triggers' => array(
+    	'nom du trigger' => array(
+    		'moment' => 'BEFORE | AFTER',
+    		'evenement' => 'INSERT | UPDATE | DELETE',
+    		'definition' => <<<EOT
+commandes SQL définissant les actions à accomplir. 
+	Pour faire référence dans la commande SQL à une table de cette base de données, on utilisera la sytaxe suivante :
+		%table(nom_court_de_la_table)% pour une table de type 'table' 
+		%system(nom_cour_de_la_table)% pour une table de type 'system'
+EOT
+    	),
+    	...
+    ),
+    'data' => chemin absolu du fichier contenant les données. On pourra de la façon suivante : __DIR__ . 'chemin relatif par rapport à ce fichier',
     ),
 );
 
 Les clés 'type', 'name' et 'drop' sont obligatoires.
 Les autres clés sont facultatives et les tabeaux peuvent être vides.
 
-2. Structure définissant une vue
+2. Structure d'un fichier contenant des données
+-----------------------------------------------
+Ce fichier est indiqué dans la clé ['data']['include'] de structure définissant une table.
+Il contient :
+return array(
+	// enregistrement 1
+	array(
+		'champ1' => valeur du champ 1,
+		'champ2' => valeur du cham 2,
+		... on peut ne pas donner de valeur à un champ si une valeur par défaut a été précisée lors de sa définition ou s'il peut être NULL
+	),
+	... autres enregistrements
+);
+
+3. Structure définissant une vue
 --------------------------------
 Le nom du fichier est de la forme vue.{nom de la vue}.php
 Il contient:

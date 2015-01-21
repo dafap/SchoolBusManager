@@ -1,0 +1,27 @@
+<?php
+/**
+ * Page de suppression d'un libellé
+ *
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource libelle-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 janv. 2015
+ * @version 2015-1
+ */
+?>
+<h1>Suppression d'un un libellé</h1>
+<p>Vous avez demandé la suppression du libellé :</p>
+<ul>
+    <li><?php echo $this->escapeHtml($this->data->nature); ?></li>
+    <li><?php echo $this->data->code; ?></li>
+    <li><?php echo $this->escapeHtml($this->data->libelle); ?></li>
+</ul>
+<p>Dans le paramétrage actuel, c'est un libellé <?php echo $this->data->ouvert ? 'employé' : 'inemployé'; ?> dans l'application.</p>
+<p>Confirmez-vous ?</p>
+<?php 
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?> 

@@ -2,10 +2,10 @@
 /**
  * Structure de la table des `eleves`
  *
- * Découpage en `eleves`, `scolarites` et `responsables`
+ * Découpage en `eleves`, `scolarites`, `affectations` et `responsables`
  * 
  * @project sbm
- * @package module/SbmInstallation/config/db_design
+ * @package SbmInstallation/db_design
  * @filesource table.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -30,17 +30,63 @@ return array(
             'prenomSA' => 'varchar(30) NOT NULL',
             'dateN' => 'date NOT NULL',
             'numero' => 'int(11) NOT NULL DEFAULT "-1"',
-            'responsable1Id' => 'int(11) UNSIGNED NOT NULL DEFAULT "0"',
-            'responsable2Id' => 'int(11) UNSIGNED NOT NULL DEFAULT "0"',
-            'responsableFId' => 'int(11) UNSIGNED NOT NULL DEFAULT "0"',
+            'responsable1Id' => 'int(11) NOT NULL DEFAULT "0"',
+            'responsable2Id' => 'int(11) NOT NULL DEFAULT "0"',
+            'responsableFId' => 'int(11) NOT NULL DEFAULT "0"',
             'note' => 'text'
         ),
         'primary_key' => array(
             'eleveId'
         ),
+        //'keys' => array('responsable1Id' => array('fields' => array('responsable1Id'))),
+        'foreign key' => array(
+            array(
+                'key' => 'responsable1Id',
+                'references' => array(
+                    'table' => 'responsables',
+                    'fields' => array(
+                        'responsableId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            )
+        ),
         'engine' => 'InnoDB',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ),
-    'data' => include __DIR__ . '/data/data.eleves.php'
+    'triggers' => array(
+        'eleves_bi_history' => array(
+            'moment' => 'BEFORE',
+            'evenement' => 'INSERT',
+            'definition' => <<<EOT
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
+VALUES ('%table(eleves)%', 'insert', 'eleveId', NEW.eleveId, NOW(), CONCAT(NEW.selection, '|', NEW.dateCreation, '|', NEW.dateModification, '|', NEW.nom, '|', NEW.nomSA, '|', NEW.prenom, '|', NEW.prenomSA, '|', NEW.dateN, '|', NEW.numero, '|', NEW.responsable1Id, '|', NEW.responsable2Id, '|', NEW.responsableFId))
+EOT
+
+        ),
+        'eleves_bu_history' => array(
+            'moment' => 'BEFORE',
+            'evenement' => 'UPDATE',
+            'definition' => <<<EOT
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
+VALUES ('%table(eleves)%', 'update', 'eleveId', OLD.eleveId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.dateN, '|', OLD.numero, '|', OLD.responsable1Id, '|', OLD.responsable2Id, '|', OLD.responsableFId))
+EOT
+
+        ),
+        'eleves_bd_history' => array(
+            'moment' => 'BEFORE',
+            'evenement' => 'DELETE',
+            'definition' => <<<EOT
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
+VALUES ('%table(eleves)%', 'delete', 'eleveId', OLD.eleveId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.dateN, '|', OLD.numero, '|', OLD.responsable1Id, '|', OLD.responsable2Id, '|', OLD.responsableFId))
+EOT
+
+        )
+    ),
+    //'data' => array('after' => array('responsables'),'include' => __DIR__ . '/data/data.eleves.php')
+    'data' => __DIR__ . '/data/data.eleves.php'
 ); 

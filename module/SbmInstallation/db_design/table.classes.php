@@ -4,7 +4,7 @@
  *
  *
  * @project sbm
- * @package module/SbmInstallation/config/db_design
+ * @package SbmInstallation/db_design
  * @filesource table.classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -42,15 +42,17 @@ return array(
     'type' => 'table',
     'structure'=> array(
         'fields' => array(
-            'classeId' => 'int(5) NOT NULL AUTO_INCREMENT',
+            'classeId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'nom' => 'varchar(30) NOT NULL',
             'aliasCG' => 'varchar(30) NULL DEFAULT NULL',
             'niveau' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "255"',
         ),
         'primary_key' => array('classeId',),
-        'engine' => 'MyISAM',
+        'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci',
     ),
-    'data' => include __DIR__ . '/data/data.classes.php',  
+    //'data' => include __DIR__ . '/data/data.classes.php',
+    //'data' => array('after' => array(), 'include' => __DIR__ . '/data/data.classes.php')
+    'data' => __DIR__ . '/data/data.classes.php'
 );

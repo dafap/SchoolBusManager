@@ -4,7 +4,7 @@
  *
  *
  * @project sbm
- * @package module/SbmInstallation/config/db_design
+ * @package SbmInstallation/db_design
  * @filesource table.communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -40,9 +40,11 @@ return array(
 //            'membres_alpha' => array('fields' => array('membre',),),
 //            'desservies_alpha' => array('fields' => array('desservie',),),
 //        ),
-        'engine' => 'InnoDB',
+        'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci',
     ),
-    'data' => include __DIR__ . '/data/data.communes.php',
+    //'data' => include __DIR__ . '/data/data.communes.php',
+    //'data' => array('after' => array(), 'include' => __DIR__ . '/data/data.communes.php')
+    'data' => __DIR__ . '/data/data.communes.php',
 );

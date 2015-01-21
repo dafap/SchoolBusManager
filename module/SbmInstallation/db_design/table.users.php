@@ -5,7 +5,7 @@
  * Description longue du fichier s'il y en a une
  * 
  * @project sbm
- * @package module/SbmInstallation/config/db_design
+ * @package SbmInstallation/db_design
  * @filesource users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -47,6 +47,21 @@ return array(
         'primary_key' => array(
             'userId'
         ),
+        'foreign key' => array(
+            array(
+                'key' => 'communeId',
+                'references' => array(
+                    'table' => 'communes',
+                    'fields' => array(
+                        'communeId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            )
+        ),
         'keys' => array(
             'USER_Email' => array(
                 'unique' => true,
@@ -67,6 +82,7 @@ return array(
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
 VALUES ('%table(users)%', 'update', 'userId', OLD.userId, NOW(), CONCAT(OLD.confirme, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLogin, '|', OLD.adresseIp, '|', OLD.categorie, '|', OLD.titre, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.adresseL1, '|', OLD.adresseL2, '|', OLD.codePostal, '|', OLD.communeId, '|', OLD.telephoneF, '|', OLD.telephoneP, '|', OLD.telephoneT, '|', OLD.email, '|', OLD.mdp, '|', OLD.temoin))
 EOT
+
         ),
         'users_bd_history' => array(
             'moment' => 'BEFORE',
@@ -75,7 +91,11 @@ EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
 VALUES ('%table(users)%', 'delete', 'userId', OLD.userId, NOW(), CONCAT(OLD.confirme, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLogin, '|', OLD.adresseIp, '|', OLD.categorie, '|', OLD.titre, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.adresseL1, '|', OLD.adresseL2, '|', OLD.codePostal, '|', OLD.communeId, '|', OLD.telephoneF, '|', OLD.telephoneP, '|', OLD.telephoneT, '|', OLD.email, '|', OLD.mdp, '|', OLD.temoin))
 EOT
+
         )
     ),
-    'data' => include __DIR__ . '/data/data.users.php'
+    
+    // 'data' => include __DIR__ . '/data/data.users.php'
+    // 'data' => array('after' => array('communes'),'include' => __DIR__ . '/data/data.users.php')
+    'data' => __DIR__ . '/data/data.users.php'
 );

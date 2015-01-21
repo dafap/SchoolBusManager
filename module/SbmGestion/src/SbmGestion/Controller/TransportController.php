@@ -92,7 +92,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $circuitId = $this->params('id', - 1);
         if ($circuitId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'circuit-liste',
                 'page' => $currentPage
             ));
@@ -109,7 +109,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'circuit-liste',
                     'page' => $currentPage
                 ));
@@ -118,7 +118,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableCircuits->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'circuit-liste',
                     'page' => $currentPage
                 ));
@@ -171,7 +171,7 @@ class TransportController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'circuit-liste',
                 'page' => $currentPage
             ));
@@ -182,7 +182,7 @@ class TransportController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'circuit-liste',
                     'page' => $currentPage
                 ));
@@ -218,7 +218,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'circuit-liste',
                     'page' => $currentPage
                 ));
@@ -227,7 +227,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableCircuits->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'circuit-liste',
                     'page' => $currentPage
                 ));
@@ -387,7 +387,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $classeId = $this->params('id', - 1);
         if ($classeId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'classe-liste',
                 'page' => $currentPage
             ));
@@ -404,7 +404,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'classe-liste',
                     'page' => $currentPage
                 ));
@@ -413,7 +413,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableClasses->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'classe-liste',
                     'page' => $currentPage
                 ));
@@ -466,7 +466,7 @@ class TransportController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'classe-liste',
                 'page' => $currentPage
             ));
@@ -477,7 +477,7 @@ class TransportController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'classe-liste',
                     'page' => $currentPage
                 ));
@@ -514,7 +514,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'classe-liste',
                     'page' => $currentPage
                 ));
@@ -523,7 +523,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableClasses->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'classe-liste',
                     'page' => $currentPage
                 ));
@@ -640,7 +640,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $communeId = $this->params('id', - 1);
         if ($communeId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'commune-liste',
                 'page' => $currentPage
             ));
@@ -657,7 +657,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'commune-liste',
                     'page' => $currentPage
                 ));
@@ -666,7 +666,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableCommunes->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'commune-liste',
                     'page' => $currentPage
                 ));
@@ -719,7 +719,7 @@ class TransportController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'commune-liste',
                 'page' => $currentPage
             ));
@@ -730,7 +730,7 @@ class TransportController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'commune-liste',
                     'page' => $currentPage
                 ));
@@ -766,7 +766,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'commune-liste',
                     'page' => $currentPage
                 ));
@@ -775,7 +775,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableCommunes->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'commune-liste',
                     'page' => $currentPage
                 ));
@@ -892,7 +892,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $etablissementId = $this->params('id', - 1);
         if ($etablissementId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'etablissement-liste',
                 'page' => $currentPage
             ));
@@ -916,7 +916,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
                 ));
@@ -925,7 +925,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableEtablissements->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
                 ));
@@ -979,7 +979,7 @@ class TransportController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'etablissement-liste',
                 'page' => $currentPage
             ));
@@ -990,7 +990,7 @@ class TransportController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
                 ));
@@ -1034,7 +1034,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
                 ));
@@ -1043,7 +1043,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableEtablissements->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
                 ));
@@ -1160,7 +1160,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $serviceId = $this->params('id', - 1);
         if ($serviceId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'service-liste',
                 'page' => $currentPage
             ));
@@ -1180,7 +1180,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'service-liste',
                     'page' => $currentPage
                 ));
@@ -1189,7 +1189,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableServices->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'service-liste',
                     'page' => $currentPage
                 ));
@@ -1243,7 +1243,7 @@ class TransportController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'service-liste',
                 'page' => $currentPage
             ));
@@ -1254,7 +1254,7 @@ class TransportController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'service-liste',
                     'page' => $currentPage
                 ));
@@ -1294,7 +1294,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'service-liste',
                     'page' => $currentPage
                 ));
@@ -1303,7 +1303,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableServices->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'service-liste',
                     'page' => $currentPage
                 ));
@@ -1420,7 +1420,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $stationId = $this->params('id', - 1);
         if ($stationId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'station-liste',
                 'page' => $currentPage
             ));
@@ -1439,7 +1439,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'station-liste',
                     'page' => $currentPage
                 ));
@@ -1448,7 +1448,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableStations->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'station-liste',
                     'page' => $currentPage
                 ));
@@ -1502,7 +1502,7 @@ class TransportController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'station-liste',
                 'page' => $currentPage
             ));
@@ -1513,7 +1513,7 @@ class TransportController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'station-liste',
                     'page' => $currentPage
                 ));
@@ -1553,7 +1553,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'station-liste',
                     'page' => $currentPage
                 ));
@@ -1562,7 +1562,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableStations->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'station-liste',
                     'page' => $currentPage
                 ));
@@ -1679,7 +1679,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $transporteurId = $this->params('id', - 1);
         if ($transporteurId == - 1) {
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'transporteur-liste',
                 'page' => $currentPage
             ));
@@ -1698,7 +1698,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'transporteur-liste',
                     'page' => $currentPage
                 ));
@@ -1707,7 +1707,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableTransporteurs->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'transporteur-liste',
                     'page' => $currentPage
                 ));
@@ -1761,7 +1761,7 @@ class TransportController extends AbstractActionController
             } else { // abandon
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
             }
-            $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'transporteur-liste',
                 'page' => $currentPage
             ));
@@ -1772,7 +1772,7 @@ class TransportController extends AbstractActionController
                 ));
             } else {
                 $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'transporteur-liste',
                     'page' => $currentPage
                 ));
@@ -1812,7 +1812,7 @@ class TransportController extends AbstractActionController
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
                 $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'transporteur-liste',
                     'page' => $currentPage
                 ));
@@ -1821,7 +1821,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) { // controle le csrf
                 $tableTransporteurs->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'transporteur-liste',
                     'page' => $currentPage
                 ));

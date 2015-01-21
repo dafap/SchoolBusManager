@@ -4,7 +4,7 @@
  *
  *
  * @project sbm
- * @package module/SbmInstallation/config/db_design
+ * @package SbmInstallation/db_design
  * @filesource table.etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -19,7 +19,7 @@ return array(
     'add_data' => false, // si false, on ne fait rien dans Create::addData() - true par défaut ; sans effet sur une vue
     'structure' => array(
         'fields' => array(
-            'etablissementId' => 'varchar(8) NOT NULL',
+            'etablissementId' => 'char(8) NOT NULL',
             'nom' => 'varchar(45) NOT NULL',
             'alias' => 'varchar(30) NOT NULL DEFAULT ""',
             'aliasCG' => 'varchar(50) NOT NULL DEFAULT ""',
@@ -42,11 +42,27 @@ return array(
             'hMidi' => 'varchar(5) NOT NULL DEFAULT ""',
             'hAMidi' => 'varchar(5) NOT NULL DEFAULT ""',
             'hSoir' => 'varchar(5) NOT NULL DEFAULT ""',
-            'jOuverture' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
+            'jOuverture' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"'
         ),
         'primary_key' => array(
             'etablissementId'
         ),
+        'foreign key' => array(
+            array(
+                'key' => 'communeId',
+                'references' => array(
+                    'table' => 'communes',
+                    'fields' => array(
+                        'communeId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            )
+        ),
+        
         // 'keys' => array(
         // 'noms' => array('fields' => array('nom',),),
         // 'membres_alpha' => array('fields' => array('membre',),),
@@ -56,5 +72,8 @@ return array(
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ),
-    'data' => include __DIR__ . '/data/data.etablissements.php'
+    
+    // 'data' => include __DIR__ . '/data/data.etablissements.php'
+    // 'data' => array('after' => array('communes'),'include' => __DIR__ . '/data/data.etablissements.php')
+    'data' => __DIR__ . '/data/data.etablissements.php'
 );

@@ -4,21 +4,20 @@
  *
  *
  * @project sbm
- * @package module/SbmInstallation/config/db_design
+ * @package SbmInstallation/db_design
  * @filesource table.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 5 févr. 2014
  * @version 2014-1
  */
-
 return array(
     'name' => 'stations',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure'=> array(
+    'structure' => array(
         'fields' => array(
             'stationId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'communeId' => 'varchar(6) NOT NULL',
@@ -27,13 +26,34 @@ return array(
             'codeCG' => 'int(11) NOT NULL DEFAULT "0"',
             'longitude' => 'varchar(20) NOT NULL DEFAULT ""',
             'latitude' => 'varchar(20) NOT NULL DEFAULT ""',
+            'geopt' => 'GEOMETRY',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
-            'ouverte' => 'tinyint(1) NOT NULL DEFAULT  "1"',
+            'ouverte' => 'tinyint(1) NOT NULL DEFAULT  "1"'
         ),
-        'primary_key' => array('stationId',),
-        'engine' => 'MyISAM',
+        'primary_key' => array(
+            'stationId'
+        ),
+        'foreign key' => array(
+            array(
+                'key' => 'communeId',
+                'references' => array(
+                    'table' => 'communes',
+                    'fields' => array(
+                        'communeId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            )
+        ),
+        'engine' => 'InnoDb',
         'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci',
+        'collate' => 'utf8_unicode_ci'
     ),
-    'data' => include __DIR__ . '/data/data.stations.php',
+    
+    // 'data' => include __DIR__ . '/data/data.stations.php',
+    //'data' => array('after' => array('communes'),'include' => __DIR__ . '/data/data.stations.php')
+    'data' => __DIR__ . '/data/data.stations.php'
 );

@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue du module SbmAdmin, controller PdfController, affichant la liste des documents pdf
+ * Vue du module SbmAdmin, controller IndexController, affichant la liste des documents pdf
  *
  *
  * @project sbm
@@ -14,11 +14,11 @@
 $this->paginator->setDefaultItemCountPerPage($this->nb_pdf_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $documents = $this->paginator->getCurrentItems();
-$ajouter = $this->url('sbmadmin/pdf', array(
+$ajouter = $this->url('sbmadmin', array(
     'action' => 'pdf-ajout',
     'page' => $this->page
 ));
-$pdf = $this->url('sbmadmin/pdf', array(
+$pdf = $this->url('sbmadmin', array(
     'action' => 'pdf-pdf',
     'page' => $this->page
 ));
@@ -58,22 +58,22 @@ $retour = $this->url('sbmadmin');
 				<td class="pagefooter_string"><?php echo $this->escapeHtml($doc->pagefooter_string); ?></td>
 				<td class="boutons">
              <?php
-            $url_edit = $this->url('sbmadmin/pdf', array(
+            $url_edit = $this->url('sbmadmin', array(
                 'action' => 'pdf-edit',
                 'page' => $this->page,
                 'id' => $doc->documentId
             ));
-            $url_delete = $this->url('sbmadmin/pdf', array(
+            $url_delete = $this->url('sbmadmin', array(
                 'action' => 'pdf-suppr',
                 'page' => $this->page,
                 'id' => $doc->documentId
             ));
-            $url_dupliquer = $this->url('sbmadmin/pdf', array(
+            $url_dupliquer = $this->url('sbmadmin', array(
                 'action' => 'pdf-dupliquer',
                 'page' => $this->page,
                 'id' => $doc->documentId
             ));
-            $url_group = $this->url('sbmadmin/pdf', array(
+            $url_group = $this->url('sbmadmin', array(
                 'action' => 'pdf-group',
                 'page' => $this->page,
                 'id' => $doc->documentId

@@ -14,9 +14,9 @@
 return array(
     'name' => 'doccolumns',
     'type' => 'system',
-    'drop' => false,
-    'edit_entity' => false,
-    'add_data' => false,
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
     'structure' => array(
         'fields' => array(
             'doccolumnId' => 'int(11) NOT NULL AUTO_INCREMENT',
@@ -45,9 +45,26 @@ return array(
         'primary_key' => array(
             'doccolumnId'
         ),
-        'engine' => 'MyISAM',
+        'foreign key' => array(
+            array(
+                'key' => 'documentId',
+                'references' => array(
+                    'table' => 'documents',
+                    'fields' => array(
+                        'documentId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            )
+        ),
+        'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ),
-    'data' => include __DIR__ . '/data/data.system.doccolumns.php'
+    //'data' => include __DIR__ . '/data/data.system.doccolumns.php'
+    //'data' => array('after' => array('documents'), 'include' => __DIR__ . '/data/data.doccolumns.php')
+    'data' => __DIR__ . '/data/data.system.doccolumns.php'
 );

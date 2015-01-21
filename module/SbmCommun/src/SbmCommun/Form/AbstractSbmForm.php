@@ -29,12 +29,14 @@ abstract class AbstractSbmForm extends Form
             } catch (\Exception $e) {
             }
         }
+        return $this;
     }
     
     public function setValueOptions($element, array $values_options)
     {
         $e = $this->get($element);
         $e->setValueOptions($values_options);
+        return $this;
     }
     
     

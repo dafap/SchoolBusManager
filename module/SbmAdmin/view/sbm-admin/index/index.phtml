@@ -11,14 +11,11 @@
  * @date 11 août 2014
  * @version 2014-1
  */
-$url_admin_pdf_liste = $this->url('sbmadmin/pdf');
-$url_dump = $this->url('sbmadmin/pdf', array('action' => 'dump-document'));
-
+$url_pdf_liste = $this->url('sbmadmin', array('action' => 'pdf-liste'));
+$url_libelle_liste = $this->url('sbmadmin', array('action' => 'libelle-liste'));
 ?>
 <h1>Menu du module d'administration</h1>
 <ul>
-	<li><a href="<?php echo $url_admin_pdf_liste; ?>">Liste des documents
-			pdf</a></li>
-	<li><a href="<?php echo $url_dump; ?>">Dump des tables définissant les
-			documents PDF</a></li>
+    <li><a href="<?php echo $url_libelle_liste; ?>">Gestion des libellés de l'application</a></li>
+	<li><a href="<?php echo $url_pdf_liste; ?>">Gestion des documents pdf</a></li>
 </ul>

@@ -229,15 +229,15 @@ class CriteresForm extends Form
     private function formEleves()
     {
         $this->add(array(
-            'name' => 'nomSA',
+            'name' => 'numero',
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-nom',
-                'maxlength' => '45',
-                'class' => 'sbm-text45'
+                'maxlength' => '11',
+                'class' => 'sbm-text11'
             ),
             'options' => array(
-                'label' => 'Nom',
+                'label' => 'Numéro',
                 'label_attributes' => array(
                     'class' => 'sbm-first'
                 ),
@@ -247,12 +247,45 @@ class CriteresForm extends Form
             )
         ));
         $this->add(array(
-            'name' => 'commune1',
+            'name' => 'nomSA',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-nom',
+                'maxlength' => '45',
+                'class' => 'sbm-text11'
+            ),
+            'options' => array(
+                'label' => 'Nom',
+                /*'label_attributes' => array(
+                    'class' => 'sbm-first'
+                ),*/
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'responsable',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-responsable',
+                'maxlength' => '45',
+                'class' => 'sbm-text11'
+            ),
+            'options' => array(
+                'label' => 'Responsable',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'commune',
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-commune',
-                'maxlength' => '45',
-                'class' => 'sbm-text45'
+                'maxlength' => '30',
+                'class' => 'sbm-text15'
             ),
             'options' => array(
                 'label' => 'Commune',
@@ -262,12 +295,12 @@ class CriteresForm extends Form
             )
         ));
         $this->add(array(
-            'name' => 'station1',
+            'name' => 'station',
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-station',
                 'maxlength' => '30',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-text15'
             ),
             'options' => array(
                 'label' => 'Station',
@@ -277,30 +310,15 @@ class CriteresForm extends Form
             )
         ));
         $this->add(array(
-            'name' => 'service1',
+            'name' => 'service',
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-service',
                 'maxlength' => '11',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-text8'
             ),
             'options' => array(
                 'label' => 'Service',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'etablissement',
-            'attributes' => array(
-                'type' => 'text',
-                'id' => 'critere-etablissemeny=t',
-                'maxlength' => '45',
-                'class' => 'sbm-text45'
-            ),
-            'options' => array(
-                'label' => 'Etablissement',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -311,8 +329,8 @@ class CriteresForm extends Form
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-tarif',
-                'maxlength' => '20',
-                'class' => 'sbm-text20'
+                'maxlength' => '11',
+                'class' => 'sbm-text8'
             ),
             'options' => array(
                 'label' => 'Tarif',
@@ -322,7 +340,7 @@ class CriteresForm extends Form
             )
         ));
         $this->add(array(
-            'name' => 'secondeAdresse',
+            'name' => 'prelevement',
             'type' => 'Zend\Form\Element\Checkbox',
             'attributes' => array(
                 'type' => 'checkbox',
@@ -334,7 +352,40 @@ class CriteresForm extends Form
                 'class' => 'sbm-checkbox'
             ),
             'options' => array(
-                'label' => '2nd adresse',
+                'label' => 'Prélevés',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'etablissement',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-etablissement',
+                'maxlength' => '45',
+                'class' => 'sbm-text20'
+            ),
+            'options' => array(
+                'label' => 'Etablissement',
+                'label_attributes' => array(
+                    'class' => 'sbm-first'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'classe',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-classe',
+                'maxlength' => '30',
+                'class' => 'sbm-text5'
+            ),
+            'options' => array(
+                'label' => 'Classe',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -413,6 +464,46 @@ class CriteresForm extends Form
         ));
     }
 
+    private function formLibelles()
+    {
+        $this->add(array(
+            'name' => 'nature',
+            'attribues' => array(
+                'type' => 'text',
+                'id' => 'critere-nature',
+                'maxlength' => '20',
+                'class' => 'sbm-text20'
+            ),
+            'options' => array(
+                'label' => 'Nature',
+                'label_attributes' => array(
+                    'class' => 'sbm-first'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'ouvert',
+            'attributes' => array(
+                'useHiddenElement' => true,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Ouvert ',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+    }
+
     private function formResponsables()
     {
         $this->add(array(
@@ -452,6 +543,7 @@ class CriteresForm extends Form
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
             'attributes' => array(
+                
                 // 'type' => 'checkbox',
                 'useHiddenElement' => true,
                 'options' => array(
@@ -471,6 +563,7 @@ class CriteresForm extends Form
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'demenagement',
             'attributes' => array(
+                
                 // 'type' => 'checkbox',
                 'useHiddenElement' => true,
                 'options' => array(

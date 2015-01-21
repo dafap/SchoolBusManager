@@ -16,6 +16,7 @@ namespace SbmCommun\Form;
 use Zend\Filter\StringToUpper;
 use Zend\Filter\StripTags;
 use Zend\Filter\StringTrim;
+
 class Responsable extends AbstractSbmForm
 {
 
@@ -37,6 +38,10 @@ class Responsable extends AbstractSbmForm
             'type' => 'hidden'
         ));
         $this->add(array(
+            'name' => 'nature',
+            'type' => 'hidden'
+        ));
+        $this->add(array(
             'name' => 'titre',
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
@@ -44,14 +49,14 @@ class Responsable extends AbstractSbmForm
                 'class' => 'sbm-select1'
             ),
             'options' => array(
-                'label' => 'Titre',
+                'label' => 'Identité du responsable',
                 'label_attributes' => array(
                     'class' => 'sbm-label170'
                 ),
                 'value_options' => array(
                     'M.' => 'Monsieur',
                     'Mme' => 'Madame',
-                    'Mlle' => 'Mademoselle',
+                    'Mlle' => 'Mademoiselle',
                     'Dr' => 'Docteur',
                     'Me' => 'Maître',
                     'Pr' => 'Professeur'
@@ -70,9 +75,9 @@ class Responsable extends AbstractSbmForm
                 'class' => 'sbm-text30'
             ),
             'options' => array(
-                'label' => 'Nom du responsable',
+                'label' => 'Nom',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label70 margin-left20'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -87,9 +92,9 @@ class Responsable extends AbstractSbmForm
                 'class' => 'sbm-text30'
             ),
             'options' => array(
-                'label' => 'Prénom du responsable',
+                'label' => 'Prénom',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label90 margin-left20'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -97,10 +102,70 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'adressL1',
+            'name' => 'titre2',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'responsable-titre',
+                'class' => 'sbm-select1'
+            ),
+            'options' => array(
+                'label' => 'Autre identité à la même adresse',
+                'label_attributes' => array(
+                    'class' => 'sbm-label170'
+                ),
+                'value_options' => array(
+                    'M.' => 'Monsieur',
+                    'Mme' => 'Madame',
+                    'Mlle' => 'Mademoiselle',
+                    'Dr' => 'Docteur',
+                    'Me' => 'Maître',
+                    'Pr' => 'Professeur'
+                ),
+                'empty_option' => 'Choisissez la civilité',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'nom2',
+            'type' => 'SbmCommun\Form\Element\NomPropre',
+            'attributes' => array(
+                'id' => 'responsable-nom',
+                'class' => 'sbm-text30'
+            ),
+            'options' => array(
+                'label' => 'Autre nom',
+                'label_attributes' => array(
+                    'class' => 'sbm-label70 margin-left20'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'prenom2',
+            'type' => 'SbmCommun\Form\Element\Prenom',
+            'attributes' => array(
+                'id' => 'responsable-prenom',
+                'class' => 'sbm-text30'
+            ),
+            'options' => array(
+                'label' => 'Autre prénom',
+                'label_attributes' => array(
+                    'class' => 'sbm-label90 margin-left20'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'adresseL1',
             'type' => 'SbmCommun\Form\Element\Adresse',
             'attributes' => array(
-                'id' => 'responsable-adressL1',
+                'id' => 'responsable-adresseL1',
                 'class' => 'sbm-text38'
             ),
             'options' => array(
@@ -114,10 +179,10 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'adressL2',
+            'name' => 'adresseL2',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'responsable-adressL2',
+                'id' => 'responsable-adresseL2',
                 'class' => 'sbm-text38'
             ),
             'options' => array(
@@ -166,14 +231,14 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'telephone',
+            'name' => 'telephoneF',
             'type' => 'SbmCommun\Form\Element\Telephone',
             'attributes' => array(
-                'id' => 'respondable-telephone',
+                'id' => 'respondable-telephoneF',
                 'class' => 'sbm-text14'
             ),
             'options' => array(
-                'label' => 'Téléphone fixe',
+                'label' => 'Téléphone domicile',
                 'label_attributes' => array(
                     'class' => 'sbm-label170'
                 ),
@@ -183,14 +248,31 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'telephoneC',
+            'name' => 'telephoneP',
             'type' => 'SbmCommun\Form\Element\Telephone',
             'attributes' => array(
-                'id' => 'respondable-telephone',
+                'id' => 'respondable-telephoneP',
                 'class' => 'sbm-text14'
             ),
             'options' => array(
                 'label' => 'Téléphone portable',
+                'label_attributes' => array(
+                    'class' => 'sbm-label170'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'telephoneT',
+            'type' => 'SbmCommun\Form\Element\Telephone',
+            'attributes' => array(
+                'id' => 'respondable-telephoneT',
+                'class' => 'sbm-text14'
+            ),
+            'options' => array(
+                'label' => 'Téléphone travail',
                 'label_attributes' => array(
                     'class' => 'sbm-label170'
                 ),
@@ -217,10 +299,10 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'ancienAdressL1',
+            'name' => 'ancienAdresseL1',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'responsable-ancienAdressL1',
+                'id' => 'responsable-ancienAdresseL1',
                 'class' => 'sbm-text38'
             ),
             'options' => array(
@@ -234,10 +316,10 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'ancienAdressL2',
+            'name' => 'ancienAdresseL2',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'responsable-ancienAdressL2',
+                'id' => 'responsable-ancienAdresseL2',
                 'class' => 'sbm-text38'
             ),
             'options' => array(
@@ -302,6 +384,20 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $this->add(array(
+            'name' => 'dateDemenagement',
+            'type' => 'Zend\Form\Element\Date',
+            'attributes' => array(
+                'id' => 'responsable-dateDemenagement',
+            ),
+            'options' => array(
+                'label' => 'Date du déménagement',
+                'label_attributes' => array(
+                    'class' => 'sbm-label170'
+                ),
+                'format' => 'Y-m-d'
+            )
+        ));
+        $this->add(array(
             'name' => 'selection',
             'type' => 'Zend\Form\Element\Checkbox',
             'attributes' => array(
@@ -337,12 +433,16 @@ class Responsable extends AbstractSbmForm
             )
         ));
         $input_filter = $this->getInputFilter();
-        //$input_filter->get('nom')->setRequired(true)->getFilterChain()->attach(new StripTags())->attach(new StringToUpper())->attach(new StringTrim());
-
+        // $input_filter->get('nom')->setRequired(true)->getFilterChain()->attach(new StripTags())->attach(new StringToUpper())->attach(new StringTrim());
+        
+        $input_filter->get('ancienAdresseL1')->setRequired(false);
+        $input_filter->get('ancienAdresseL2')->setRequired(false);
         $input_filter->get('ancienCommuneId')->setRequired(false);
         $input_filter->get('ancienCodePostal')->setRequired(false);
-        $input_filter->get('telephone')->setRequired(false);
-        $input_filter->get('telephoneC')->setRequired(false);
+        $input_filter->get('telephoneF')->setRequired(false);
+        $input_filter->get('telephoneP')->setRequired(false);
+        $input_filter->get('telephoneT')->setRequired(false);
         $input_filter->get('email')->setRequired(false);
+        $input_filter->get('dateDemenagement')->setRequired(false);
     }
 }

@@ -14,9 +14,9 @@
 return array(
     'name' => 'doctables',
     'type' => 'system',
-    'drop' => false,
-    'edit_entity' => false,
-    'add_data' => false,
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
     'structure' => array(
         'fields' => array(
             'doctableId' => 'int(11) NOT NULL AUTO_INCREMENT',
@@ -38,15 +38,32 @@ return array(
             'line_width' => 'float(2,1) NOT NULL DEFAULT "0.1"',
             'fill_color' => 'varchar(20) NOT NULL DEFAULT "E0EBFF"',
             'text_color' => 'varchar(20) NOT NULL DEFAULT "black"',
-            'font_style' => 'char(2) NOT NULL DEFAULT ""'
-        ) // '', B, I, U, D, O ou combinaison de 2 d'entre elles
-,
+            'font_style' => 'char(2) NOT NULL DEFAULT ""' // '', B, I, U, D, O ou combinaison de 2 d'entre elles
+        ), 
         'primary_key' => array(
             'doctableId'
         ),
-        'engine' => 'MyISAM',
+        'foreign key' => array(
+            array(
+                'key' => 'documentId',
+                'references' => array(
+                    'table' => 'documents',
+                    'fields' => array(
+                        'documentId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            )
+        ),
+        'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ),
-    'data' => include __DIR__ . '/data/data.system.doctables.php'
+    
+    // 'data' => include __DIR__ . '/data/data.system.doctables.php'
+    //'data' => array('after' => array('documents'), 'include' => __DIR__ . '/data/data.doctables.php')
+    'data' => __DIR__ . '/data/data.system.doctables.php'
 );

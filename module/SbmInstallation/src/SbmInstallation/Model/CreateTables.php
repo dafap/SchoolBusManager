@@ -46,8 +46,8 @@ class CreateTables
      *
      * @var string
      */
-    protected $database;
-
+    // protected $database;
+    
     /**
      * Préfixe des tables, system et des vues
      *
@@ -76,30 +76,132 @@ class CreateTables
     private $err_msg;
 
     /**
+     * Files ordonnées de traitement des create et des datas
+     * et liste des index nécessaires pour les 'foreign key' dans les tables référencées
      *
-     * @var array (voir SbmInstallation/config/db_design/README.txt)
+     * @var array
      */
-    protected $db_design = array();
+    protected $queue = array();
 
+    /**
+     * Constructeur
+     *
+     * @param array $dbconfig
+     *            tableau de configuration de la base de données pour récupérer le 'prefix' et le 'definer'
+     * @param Adapter $dbadapter            
+     */
     public function __construct($dbconfig, Adapter $dbadapter)
     {
-        $this->database = $dbconfig['database'];
+        // $this->database = $dbconfig['database'];
         $this->prefix = $dbconfig['prefix'];
         $this->definer = $dbconfig['definer'];
         $this->dbadapter = $dbadapter;
-        $this->dir();
+        // $this->dir();
+        $this->createQueue('data');
     }
 
-    protected function addData($entity)
+    /**
+     * Crée la queue de traitement des tables.
+     * Cette queue définit
+     * - la liste des fichiers de définition dans db_design associés à leur type
+     * - l'ordre de traitement des tables 'system', 'table', 'vue'
+     * - les index nécessaires aux 'foreign key' dans les tables référencées
+     * - l'ordre de traitement des 'data'
+     */
+    private function createQueue()
     {
-        if (array_key_exists('add_data', $entity) && ! $entity['add_data']) {
-            return sprintf('Pas d\'ajout de données dans la table `%s`.', $entity['name']);
+        $this->queue = array(
+            'db_design' => array(),
+            'system' => array(),
+            'table' => array(),
+            'vue' => array(),
+            'foreign key' => array(),
+            'data' => array()
+        );
+        foreach ($this->dir() as $item) {
+            $this->insereQueue($item);
         }
+    }
+
+    /**
+     * Insère la clé $item à sa place dans la structure de la queue
+     * Tient compte des 'foreign key' pour trouver la place dans la queue.
+     *
+     * @param string $item
+     *            nom du fichier de définition de l'entité (sans son chemin)
+     */
+    private function insereQueue($include_file)
+    {
+        if (! array_key_exists($include_file, $this->queue['db_design'])) {
+            $def = include (self::DB_DESIGN_PATH . "/$include_file");
+            if (! $this->isEntity($def)) {
+                $message = "Le fichier $include_file est incorrect.\n" . $this->err_msg;
+                throw new Exception($message, self::BAD_DESIGN);
+            }
+            if ($def['type'] != 'vue' && array_key_exists('foreign key', $def['structure'])) {
+                foreach ($def['structure']['foreign key'] as $fk) {
+                    $precedent = $def['type'] . '.' . $fk['references']['table'] . '.php';
+                    $this->insereQueue($precedent);
+                }
+            }
+            $this->addQueue($include_file, $def);
+        }
+    }
+
+    /**
+     * Ajoute la clé $item dans la structure de la queue.
+     * A la fin,
+     * - le tableau $this->queue['system'] donne l'ordre de création des tables system
+     * - le tableau $this->queue['table'] donne l'ordre de création des tables
+     * - le tableau $this->queue['vue'] donne l'ordre de création des vues
+     * - le tableau $this->queue['foreign key'] donne par type (system | table) pour chaque table référencée, la liste des clés à créer si elles n'existent pas
+     * - le tableau $this->queue['data'] donne pour chaque fichier de donnée à inclure (indexé par son nom complet), le nom de la table et son type
+     *
+     * @param string $include_file
+     *            nom du fichier de définition de l'entité (sans son chemin)
+     * @param array $def
+     *            tableau de définition de l'entité (table, table system, vue)
+     */
+    private function addQueue($include_file, $def)
+    {
+        $this->queue['db_design'][$include_file] = $def['type'];
+        $this->queue[$def['type']][$include_file] = $def;
+        if (array_key_exists('foreign key', $def['structure'])) {
+            foreach ($def['structure']['foreign key'] as $fk) {
+                $table = $fk['references']['table'];
+                $fields = $fk['references']['fields'];
+                if (! array_key_exists($def['type'], $this->queue['foreign key']) || ! array_key_exists($table, $this->queue['foreign key'][$def['type']]) || ! in_array($fields, $this->queue['foreign key'][$def['type']][$table])) {
+                    $this->queue['foreign key'][$def['type']][$table][] = $fields;
+                }
+            }
+        }
+        if (! empty($def['add_data']) && array_key_exists('data', $def)) {
+            // dans la structure de $def, remplacer la sous-structure 'data' par une chaine 'nom complet du fichier à inclure'
+            $this->queue['data'][$def['data']] = array(
+                $def['name'],
+                $def['type']
+            ); // réduire la clé à $array['data']
+        }
+    }
+
+    /**
+     * Ajoute les données dans la table
+     *
+     * @param string $file_data
+     *            fichier de définition des données
+     * @param array $properties
+     *            0 => nom_court de la table, 1 => type de la table
+     *            
+     * @return multitype:Ambigous <\Zend\Db\Adapter\Driver\StatementInterface, \Zend\Db\ResultSet\Zend\Db\ResultSet>
+     */
+    protected function addData($file_data, $properties)
+    {
+        $donnees = include ($file_data);
         $results = array();
         $sql = new Sql($this->dbadapter);
-        foreach ($entity['data'] as $data) {
+        foreach ($donnees as $data) {
             set_time_limit(20);
-            $insert = $sql->insert(StdLib::entityName($entity['name'], $entity['type'], $this->prefix));
+            $insert = $sql->insert(StdLib::entityName($properties[0], $properties[1], $this->prefix));
             $insert->values($data);
             $sqlString = $sql->getSqlStringForSqlObject($insert);
             $results[] = $this->dbadapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
@@ -107,9 +209,17 @@ class CreateTables
         return $results;
     }
 
+    /**
+     * A FAIRE
+     *
+     * @param unknown $entityName            
+     * @param unknown $entityStructure            
+     * @param unknown $entityType            
+     * @return string
+     */
     protected function alterTable($entityName, $entityStructure, $entityType)
     {
-        // à faire
+        // @todo: alterTable à faire
         return '';
     }
 
@@ -137,12 +247,56 @@ class CreateTables
             $sep = ",\n";
         }
         if (array_key_exists('primary_key', $entityStructure) && is_array($entityStructure['primary_key'])) {
-            $command .= $sep . 'PRIMARY KEY (`' . implode('`,`', $entityStructure['primary_key']) . '`)';
+            $pk_str = implode('`,`', $entityStructure['primary_key']);
+            $command .= $sep . "PRIMARY KEY (`$pk_str`)";
         }
         if (array_key_exists('keys', $entityStructure) && is_array($entityStructure['keys']) && ! empty($entityStructure['keys'])) {
+            $keys_str = array();
             foreach ($entityStructure['keys'] as $key => $value) {
                 $unique = array_key_exists('unique', $value) && $value['unique'] ? 'UNIQUE ' : '';
-                $command .= $sep . $unique . "KEY `$key` (`" . implode('`,`', $value['fields']) . '`)';
+                $tmp = implode('`,`', $value['fields']);
+                $command .= $sep . $unique . "KEY `$key` (`$tmp`)";
+                $keys_str[] = $tmp;
+            }
+            unset($tmp);
+        }
+        // ajout des index nécessaires pour les foreign key référençant cette table
+        if (StdLib::array_keys_exists(array(
+            'foreign_key',
+            $entityType,
+            $entityName
+        ), $this->queue)) {
+            $numero = 1;
+            foreach ($this->queue['foreign key'][$entityType][$entityName] as $fk) {
+                $fk_str = implode('`,`', $fk);
+                // vérifier si la pk est suffisante
+                if (isset($pk_str) && mb_strcut($pk_str, 0, mb_strlen($id_str)) == $id_str)
+                    continue;
+                $trouve = false;
+                if (isset($keys_str)) {
+                    // vérifier les autres keys
+                    foreach ($keys_str as $key) {
+                        $trouve |= mb_strcut($key, 0, mb_strlen($id_str)) == $id_str;
+                    }
+                    if ($trouve)
+                        continue;
+                }
+                // la fk n'a pas été trouvé, il faut la créer
+                $key = "dafap_$entityName" . "_fk$numero";
+                $command .= $sep . "KEY `$key` (`$fk_str`)";
+            }
+        }
+        if (array_key_exists('foreign key', $entityStructure)) {
+            foreach ($entityStructure['foreign key'] as $fk) {
+                $command .= $sep . 'FOREIGN KEY (`' . implode('`,`', (array) $fk['key']) . '`) REFERENCES `' . StdLib::entityName($fk['references']['table'], $entityType, $this->prefix) . '`(`' . implode('`,`', $fk['references']['fields']) . '`)';
+                if (array_key_exists('on', $fk['references'])) {
+                    if (array_key_exists('update', $fk['references']['on'])) {
+                        $command .= ' ON UPDATE ' . strtoupper($fk['references']['on']['update']);
+                    }
+                    if (array_key_exists('delete', $fk['references']['on'])) {
+                        $command .= ' ON DELETE ' . strtoupper($fk['references']['on']['delete']);
+                    }
+                }
             }
         }
         $command .= "\n)";
@@ -169,13 +323,13 @@ class CreateTables
     {
         $structure = array();
         $filename = 'vue.' . $viewName . '.php';
-        $entity = require (__DIR__ . '/../../../db_design/' . $filename);
+        $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
         $viewStructure = $entity['structure'];
         SbmCommun\Model\Db\CommandSql::isValidDbDesignStructureView($viewStructure); // lance une exception si la structure n'est pas bonne
         $table = $viewStructure['from']['table'];
         if ($viewStructure['from']['type'] == 'table') {
             $filename = 'table.' . $table . '.php';
-            $entity = require (__DIR__ . '/../../../db_design/' . $filename);
+            $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
             $fields_table = $entity['structure']['fields'];
             foreach ($viewStructure['fields'] as $field) {
                 // chercher la définition de ce champ dans cette table
@@ -218,7 +372,7 @@ class CreateTables
                 $table = $join['table'];
                 if ($join['type'] == 'table') {
                     $filename = 'table.' . $table . '.php';
-                    $entity = require (__DIR__ . '/../../../db_design/' . $filename);
+                    $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
                     $join_structure = $entity['structure']['fields'];
                 } else {
                     // il s'agit d'une vue
@@ -470,12 +624,72 @@ EOT;
             return false;
         }
         
-        if (array_key_exists('structure', $entity) && ! is_array($entity['structure'])) {
-            $this->err_msg = "La clé `structure` doit être un tableau.";
-            return false;
+        if (array_key_exists('structure', $entity)) {
+            if (! is_array($entity['structure'])) {
+                $this->err_msg = "La clé `structure` doit être un tableau.";
+                return false;
+            }
+            if (! array_key_exists('fields', $entity['structure']) || ! is_array($entity['structure']['fields'])) {
+                $this->err_msg = "Dans la partie `structure` la clé `fields` est nécessaire et doit être un tableau.";
+                return false;
+            }
+            if (array_key_exists('primary_key', $entity['structure']) && ! is_array($entity['structure']['primary_key'])) {
+                $this->err_msg = "Dans la partie `structure` la clé `primary_key` doit être un tableau.";
+                return false;
+            }
+            if (array_key_exists('keys', $entity['structure'])) {
+                if (! is_array($entity['structure']['keys'])) {
+                    $this->err_msg = "Dans la partie `structure` la clé `keys` doit être un tableau.";
+                    return false;
+                }
+                foreach ($entity['structure']['keys'] as $key) {
+                    if (! is_array($key) || ! array_key_exists('fields', $key)) {
+                        $this->err_msg = "Dans la partie `structure` chaque clé de `keys` doit être un tableau qui doit posséder la clé `fields`.";
+                        return false;
+                    }
+                    if (! is_array($key['fields'])) {
+                        $this->err_msg = "Dans la partie `structure` chaque clé de `keys` doit présenter une clé `fields` qui est un tableau.";
+                        return false;
+                    }
+                }
+            }
+            
+            if (array_key_exists('foreign key', $entity['structure'])) {
+                if (! is_array($entity['structure']['foreign key'])) {
+                    $this->err_msg = "La clé `foreign key` de la partie `structure` doit être un tableau.";
+                    return false;
+                }
+                $ok = true;
+                $i = 1;
+                foreach ($entity['structure']['foreign key'] as $fk) {
+                    $ok &= array_key_exists('key', $fk) && (is_string($fk['key']) || is_array($fk['key']));
+                    $ok &= array_key_exists('references', $fk) && is_array($fk['references']);
+                    $ok &= array_key_exists('table', $fk['references']) && is_string($fk['references']['table']);
+                    $ok &= array_key_exists('fields', $fk['references']) && is_array($fk['references']['fields']);
+                    if (array_key_exists('on', $fk['references'])) {
+                        $permis = array(
+                            'CASCADE',
+                            'SET NULL',
+                            'NO ACTION',
+                            'RESTRICT'
+                        );
+                        if (array_key_exists('update', $fk['references']['on'])) {
+                            $ok &= in_array(strtoupper($fk['references']['on']['update']), $permis);
+                        }
+                        if (array_key_exists('delete', $fk['references']['on'])) {
+                            $ok &= in_array(strtoupper($fk['references']['on']['delete']), $permis);
+                        }
+                    }
+                    if (! $ok) {
+                        $this->err_msg = "Erreur dans la définition de la 'FOREIGN KEY' n° $i.";
+                        return false;
+                    }
+                    $i ++;
+                }
+            }
         }
-        if (array_key_exists('data', $entity) && ! is_array($entity['data'])) {
-            $this->err_msg = "La clé `data` doit être un tableau.";
+        if (array_key_exists('data', $entity) && ! is_string($entity['data'])) {
+            $this->err_msg = "La clé `data` doit être une chaine.";
             return false;
         }
         return true;
@@ -489,52 +703,66 @@ EOT;
     public function run()
     {
         $result = array();
-        $entities = array( // il s'agit de la véritable nature de l'entité dans MySQL. Un type 'system' est une table.
-            'table',
-            'vue'
-        );
-        foreach ($entities as $type_entity) {
-            foreach ($this->db_design as $filename) {
-                $entity = require (__DIR__ . '/../../../db_design/' . $filename);
-                if (! $this->isEntity($entity)) {
-                    $message = "Le fichier $filename est incorrect.\n" . $this->err_msg;
-                    throw new Exception($message, self::BAD_DESIGN);
+        // création des tables (tables et tables systèmes)
+        foreach (array(
+            'system',
+            'table'
+        ) as $type) {
+            // liste drop des tables 'system'
+            $keys = array_keys($this->queue[$type]);
+            while (! is_null($element = array_pop($keys))) {
+                if ($this->queue[$type][$element]['drop']) {
+                    $result[] = $this->dropEntity($this->queue[$type][$element]['name'], $type);
                 }
-                if ($entity['type'] == $type_entity || ($entity['type'] == 'system' && $type_entity == 'table')) {
-                    if ($entity['drop']) {
-                        $result[] = $this->dropEntity($entity['name'], $entity['type']);
-                    }
-                    if (array_key_exists('structure', $entity)) {
-                        $result[] = $this->createOrAlterEntity($entity);
-                    }
-                    if (($type_entity == 'table') && array_key_exists('triggers', $entity)) {
-                        $result[] = $this->createTriggers($entity);
-                    }
-                    if (($type_entity == 'table') && array_key_exists('data', $entity)) {
-                        $result[] = $this->addData($entity);
-                    }
-                } elseif ($type_entity == 'table') {
-                    $result[] = 'Vue : ' . $entity['name'];
-                    // c'est dans le premier passage et on a à faire à une vue.
-                    // Création de la table temporaire remplaçant la vue et évitant les blocages de création des vues.
-                    $result[] = $this->dropEntity($entity['name'], $entity['type']);
-                    $result[] = $this->createTmpTableForView($entity['name'], $entity['structure']);
+            }
+            // création des tables
+            foreach ($this->queue[$type] as $filename => $entity) {
+                if (array_key_exists('structure', $entity)) {
+                    $result[] = $this->createOrAlterEntity($entity);
+                }
+                if (array_key_exists('triggers', $entity)) {
+                    $result[] = $this->createTriggers($entity);
                 }
             }
         }
+        // création des vues. On crée d'abord des tables puis on les remplace par des vues
+        foreach (array(
+            'table',
+            'vue'
+        ) as $type_mysql) {
+            foreach ($this->queue['vue'] as $entity) {
+                if ($entity['drop']) {
+                    $result[] = $this->dropEntity($entity['name'], $entity['type']);
+                }
+                if ($type_mysql == 'table') {
+                    // création de tables temporaires qui remplacent les vues pour éviter les blocages lors de leur création.
+                    $result[] = 'Vue : ' . $entity['name'];
+                    $result[] = $this->createTmpTableForView($entity['name'], $entity['structure']);
+                } elseif (array_key_exists('structure', $entity)) {
+                    $result[] = $this->createOrAlterEntity($entity);
+                }
+            }
+        }
+        // peuplement des tables
+        foreach ($this->queue['data'] as $filename => $properties) {
+            $result[] = $this->addData($filename, $properties);
+        }
+        // @todo: exploiter la liste des messages d'erreur
         return $result;
     }
 
     private function dir()
     {
+        $result = array();
         $dossier = opendir(__DIR__ . self::DB_DESIGN_PATH);
         while ($f = readdir($dossier)) {
             $p = explode('.', $f);
             if (! is_dir($f) && count($p) == 3 && $p[2] == 'php' && ($p[0] == 'table' || $p[0] == 'system' || $p[0] == 'vue')) {
-                $this->db_design[] = $f;
+                $result[] = $f;
             }
         }
         closedir($dossier);
+        return $result;
     }
 
     public function voir()
@@ -548,8 +776,8 @@ EOT;
             'data'
         );
         $result = array();
-        foreach ($this->db_design as $filename) {
-            $buffer = file(__DIR__ . self::DB_DESIGN_PATH . '/' . $filename);
+        foreach ($this->dir() as $filename) {
+            $buffer = file(__DIR__ . self::DB_DESIGN_PATH . "/$filename");
             $row = array_fill_keys($keys, '');
             foreach ($buffer as $ligne) {
                 preg_match("@^\s*'(.*)'\s*=>\s*(?:include __DIR__ \. '/)?'?([^',]*)'?,?\s*(?://.*)*$@i", $ligne, $parts);

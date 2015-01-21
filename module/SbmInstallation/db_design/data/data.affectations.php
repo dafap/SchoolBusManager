@@ -19,8 +19,8 @@ return array(
         'trajet' => 1,
         'jours' => 27,
         'responsableId' => 1,
-        'stationId' => 181,
-        'serviceId' => '188-12'
+        'station1Id' => 181,
+        'service1Id' => '188-12'
     ),
     array(
         'eleveId' => 1,
@@ -28,8 +28,8 @@ return array(
         'trajet' => 1,
         'jours' => 4,
         'responsableId' => 1,
-        'stationId' => 181,
-        'serviceId' => '188-12'
+        'station1Id' => 181,
+        'service1Id' => '188-12'
     ),
     array(
         'eleveId' => 1,
@@ -37,8 +37,8 @@ return array(
         'trajet' => 2,
         'jours' => 27,
         'responsableId' => 2,
-        'stationId' => 168,
-        'serviceId' => '188-10-Gare'
+        'station1Id' => 168,
+        'service1Id' => '188-10-Gare'
     ),
     array(
         'eleveId' => 1,
@@ -46,8 +46,8 @@ return array(
         'trajet' => 2,
         'jours' => 4,
         'responsableId' => 2,
-        'stationId' => 168,
-        'serviceId' => '188-10-Gare'
+        'station1Id' => 168,
+        'service1Id' => '188-10-Gare'
     ),
     
     array(
@@ -56,8 +56,8 @@ return array(
         'trajet' => 1,
         'jours' => 27,
         'responsableId' => 1,
-        'stationId' => 181,
-        'serviceId' => '188-12'
+        'station1Id' => 181,
+        'service1Id' => '188-12'
     ),
     array(
         'eleveId' => 2,
@@ -65,8 +65,8 @@ return array(
         'trajet' => 1,
         'jours' => 4,
         'responsableId' => 1,
-        'stationId' => 181,
-        'serviceId' => '188-12'
+        'station1Id' => 181,
+        'service1Id' => '188-12'
     ),
     array(
         'eleveId' => 2,
@@ -74,8 +74,8 @@ return array(
         'trajet' => 2,
         'jours' => 27,
         'responsableId' => 2,
-        'stationId' => 168,
-        'serviceId' => '188-10-Gare'
+        'station1Id' => 168,
+        'service1Id' => '188-10-Gare'
     ),
     array(
         'eleveId' => 2,
@@ -83,8 +83,8 @@ return array(
         'trajet' => 2,
         'jours' => 4,
         'responsableId' => 2,
-        'stationId' => 168,
-        'serviceId' => '188-10-Gare'
+        'station1Id' => 168,
+        'service1Id' => '188-10-Gare'
     ),
     array(
         'eleveId' => 3,
@@ -92,8 +92,8 @@ return array(
         'trajet' => 1,
         'jours' => 27,
         'responsableId' => 3,
-        'stationId' => 295,
-        'serviceId' => '188-20'
+        'station1Id' => 295,
+        'service1Id' => '188-20'
     ),
     array(
         'eleveId' => 3,
@@ -101,8 +101,8 @@ return array(
         'trajet' => 1,
         'jours' => 4,
         'responsableId' => 3,
-        'stationId' => 285,
-        'serviceId' => '188-20'
+        'station1Id' => 285,
+        'service1Id' => '188-20'
     ),
     array(
         'eleveId' => 4,
@@ -110,8 +110,8 @@ return array(
         'trajet' => 1,
         'jours' => 27,
         'responsableId' => 4,
-        'stationId' => 208,
-        'serviceId' => '188-20'
+        'station1Id' => 208,
+        'service1Id' => '188-20'
     ),
     array(
         'eleveId' => 4,
@@ -119,8 +119,8 @@ return array(
         'trajet' => 1,
         'jours' => 4,
         'responsableId' => 4,
-        'stationId' => 208,
-        'serviceId' => '188-20'
+        'station1Id' => 208,
+        'service1Id' => '188-20'
     ),
     array(
         'eleveId' => 5,
@@ -128,8 +128,8 @@ return array(
         'trajet' => 1,
         'jours' => 27,
         'responsableId' => 5,
-        'stationId' => 243,
-        'serviceId' => '183-03'
+        'station1Id' => 243,
+        'service1Id' => '183-03'
     ),
     array(
         'eleveId' => 5,
@@ -137,8 +137,8 @@ return array(
         'trajet' => 1,
         'jours' => 4,
         'responsableId' => 5,
-        'stationId' => 243,
-        'serviceId' => '183-03'
+        'station1Id' => 243,
+        'service1Id' => '183-03'
     ),
     array(
         'eleveId' => 6,
@@ -146,8 +146,8 @@ return array(
         'trajet' => 1,
         'jours' => 27,
         'responsableId' => 5,
-        'stationId' => 243,
-        'serviceId' => '183-03'
+        'station1Id' => 243,
+        'service1Id' => '183-03'
     ),
     array(
         'eleveId' => 6,
@@ -155,8 +155,8 @@ return array(
         'trajet' => 1,
         'jours' => 4,
         'responsableId' => 5,
-        'stationId' => 243,
-        'serviceId' => '183-03'
+        'station1Id' => 243,
+        'service1Id' => '183-03'
     ),
     array(
         'eleveId' => 7,
@@ -164,8 +164,8 @@ return array(
         'trajet' => 1,
         'jours' => 27,
         'responsableId' => 5,
-        'stationId' => 243,
-        'serviceId' => '183-03'
+        'station1Id' => 243,
+        'service1Id' => '183-03'
     ),
     array(
         'eleveId' => 7,
@@ -173,8 +173,8 @@ return array(
         'trajet' => 1,
         'jours' => 4,
         'responsableId' => 5,
-        'stationId' => 243,
-        'serviceId' => '183-03'
+        'station1Id' => 243,
+        'service1Id' => '183-03'
     ),
     
 );

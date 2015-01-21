@@ -15,6 +15,7 @@ namespace SbmCommun\Model\Db\Service\Table;
 
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\PredicateSet;
+use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 
 class Eleves extends AbstractSbmTable
 {

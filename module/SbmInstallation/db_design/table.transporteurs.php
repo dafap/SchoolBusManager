@@ -4,14 +4,13 @@
  *
  *
  * @project sbm
- * @package module/SbmInstallation/config/db_design
+ * @package SbmInstallation/db_design
  * @filesource table.transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 5 févr. 2014
  * @version 2014-1
  */
-
 return array(
     'name' => 'transporteurs',
     'type' => 'table',
@@ -31,14 +30,31 @@ return array(
             'email' => 'varchar(80) NOT NULL DEFAULT ""',
             'siret' => 'varchar(14) NOT NULL DEFAULT ""',
             'naf' => 'varchar(5) NOT NULL DEFAULT ""',
+            'tvaIntraCommunautaire' => 'varchar(13) NOT NULL DEFAULT ""',
             'rib_titulaire' => 'varchar(32) NOT NULL DEFAULT ""',
             'rib_domiciliation' => 'varchar(24) NOT NULL DEFAULT ""',
             'rib_bic' => 'varchar(11) NOT NULL DEFAULT ""',
-            'rib_iban' => 'varchar(34) NOT NULL DEFAULT ""',
+            'rib_iban' => 'varchar(34) NOT NULL DEFAULT ""'
         ),
         'primary_key' => array(
             'transporteurId'
         ),
+        'foreign key' => array(
+            array(
+                'key' => 'communeId',
+                'references' => array(
+                    'table' => 'communes',
+                    'fields' => array(
+                        'communeId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            )
+        ),
+        
         // 'keys' => array(
         // 'noms' => array('fields' => array('nom',),),
         // 'membres_alpha' => array('fields' => array('membre',),),
@@ -48,5 +64,8 @@ return array(
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ),
-    'data' => include __DIR__ . '/data/data.transporteurs.php'
+    
+    // 'data' => include __DIR__ . '/data/data.transporteurs.php'
+    // 'data' => array('after' => 'communes','include' => __DIR__ . '/data/data.transporteurs.php')
+    'data' => __DIR__ . '/data/data.transporteurs.php'
 );

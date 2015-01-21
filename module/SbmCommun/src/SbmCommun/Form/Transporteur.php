@@ -205,6 +205,23 @@ class Transporteur extends AbstractSbmForm
             )
         ));
         $this->add(array(
+            'name' => 'tvaIntraCommunautaire',
+            'type' => 'text',
+            'attributes' => array(
+                'id' => 'transporteur-tvaIntraCommunautaire',
+                'class' => 'sbm-text13'
+            ),
+            'options' => array(
+                'label' => 'TVA intra communautaire',
+                'label_attributes' => array(
+                    'class' => 'sbm-label130'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
             'name' => 'rib_titulaire',
             'type' => 'text',
             'attributes' => array(

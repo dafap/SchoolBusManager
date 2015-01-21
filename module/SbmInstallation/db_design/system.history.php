@@ -22,9 +22,9 @@ return array(
         'fields' => array(
             'table_name' => 'varchar(32) DEFAULT NULL',
             'action' => 'char(6) NOT NULL',
-            'id_name' => 'varchar(32) DEFAULT NULL',
+            'id_name' => 'varchar(64) DEFAULT NULL',
             'id_int' => 'int(11) NOT NULL DEFAULT 0',
-            'id_txt' => 'varchar(8) DEFAULT NULL',
+            'id_txt' => 'varchar(25) DEFAULT NULL', // calculé pour affectations
             'dt' => 'datetime NOT NULL',
             'log' => 'text'
         ),
