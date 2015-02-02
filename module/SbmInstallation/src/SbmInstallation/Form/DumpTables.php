@@ -55,7 +55,7 @@ class DumpTables extends Form
                 'value' => 'Lancer la copie',
                 'id' => 'dump-tables-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit margin-left20'
+                'class' => 'button default submit margin-left20'
             )
         ));
         $this->add(array(
@@ -64,7 +64,7 @@ class DumpTables extends Form
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'dump-tables-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }

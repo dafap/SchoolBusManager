@@ -18,7 +18,7 @@ use SbmCommun\Model\StdLib;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Ddl;
-use Zend\Debug\Debug;
+use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 
 abstract class CommandSql
@@ -38,13 +38,17 @@ abstract class CommandSql
         self::isValidDbDesignStructureView($structure); // lance une exception si la structure n'est pas bonne
         $sql = new Select();
         $table = StdLib::entityName($structure['from']['table'], array_key_exists('type', $structure['from']) ? $structure['from']['type'] : 'table', $prefix);
-        $table = array_key_exists('alias', $structure['from']) ? array($structure['from']['alias'] => $table) : $table;
+        $table = array_key_exists('alias', $structure['from']) ? array(
+            $structure['from']['alias'] => $table
+        ) : $table;
         $sql->from($table);
         $sql->columns(self::getColumnsFromDbDesignFields($structure['fields']));
         if (array_key_exists('join', $structure)) {
             foreach ($structure['join'] as $join) {
                 $table = StdLib::entityName($join['table'], array_key_exists('type', $join) ? $join['type'] : 'table', $prefix);
-                $table = array_key_exists('alias', $join) ? array($join['alias'] => $table) : $table;
+                $table = array_key_exists('alias', $join) ? array(
+                    $join['alias'] => $table
+                ) : $table;
                 $on = $join['relation'];
                 if (array_key_exists('fields', $join)) {
                     $columns = self::getColumnsFromDbDesignFields($join['fields']);
@@ -58,6 +62,9 @@ abstract class CommandSql
                 }
             }
         }
+        if (array_key_exists('where', $structure)) {
+            $sql->where(self::getWhere($structure['where']));
+        }
         if (array_key_exists('group', $structure)) {
             $fields = array();
             foreach ($structure['group'] as $field) {
@@ -65,13 +72,13 @@ abstract class CommandSql
             }
             $sql->group($fields);
         }
-        //die($sql->getSqlString($dbadapter->getPlatform()));
+        // die($sql->getSqlString($dbadapter->getPlatform()));
         return $sql->getSqlString($dbadapter->getPlatform());
     }
 
     /**
      * Lance une exception si la structure n'est pas bonne
-     * 
+     *
      * @param array $structure
      *            (description de la structure dans SbmInstallation/config/db_design/README.txt)
      * @throws Exception
@@ -92,7 +99,7 @@ abstract class CommandSql
             $message = "La structure proposée ne permet pas de créer la requête SELECT.\n";
             ob_start();
             var_dump($structure);
-            $message .= ob_get_clean();            
+            $message .= ob_get_clean();
             throw new Exception($message);
         }
     }
@@ -106,7 +113,8 @@ abstract class CommandSql
      */
     private static function isValidDbDesignJoin($joins)
     {
-        $ok = false; $j=1;
+        $ok = false;
+        $j = 1;
         foreach ($joins as $join) {
             $ok = array_key_exists('table', $join) && array_key_exists('relation', $join);
             if ($ok && array_key_exists('fields', $join)) {
@@ -118,7 +126,7 @@ abstract class CommandSql
         }
         return $ok;
     }
-    
+
     /**
      * Vérifie la validité de la structure définisant une liste de champs
      *
@@ -137,7 +145,7 @@ abstract class CommandSql
         }
         return $ok;
     }
-    
+
     private static function getColumnsFromDbDesignFields($fields)
     {
         $result = array();
@@ -150,6 +158,129 @@ abstract class CommandSql
                 }
             } else { // c'est une expression
                 $result[$field['alias']] = new Expression($field['expression']['value']);
+            }
+        }
+        return $result;
+    }
+
+    public static function getWhere($array)
+    {
+        $where = new Where();
+        $result = $where;
+        foreach ($array as $arguments) {
+            $predicate = array_shift($arguments);
+            switch ($predicate) {
+                case 'and':
+                    $result = $result->and;
+                case 'or':
+                    $result = $result->or;
+                case 'nest':
+                case '(':
+                    $result = $result->nest();
+                case 'unnest':
+                case ')':
+                    $result = $result->unnest();
+                case 'between':                   
+                    list($identifier, $minValue, $maxValue) = $arguments;
+                    $result = $result->between($identifier, $minValue, $maxValue);
+                    break;
+                case 'expression':
+                    list($expression, $parameter) = $arguments;
+                    $result = $result->expression($expression, $parameters);
+                    break;
+                case 'in':
+                    list($identifier, $valueSet) = $arguments;
+                    $result = $result->in($identifier, $valueSet);
+                    break;
+                case 'isnotnull':
+                    list($identifier) = $arguments;
+                    $result = $result->isNotNull($identifier);
+                    break;
+                case 'isnull':
+                    list($identifier) = $arguments;
+                    $result = $result->isNotNull($identifier);
+                    break;
+                case 'like':
+                    list($identifier, $like) = $arguments;
+                    $result = $result->like($identifier, $like);
+                    break;
+                case 'literal':
+                    list($literal) = $arguments;
+                    $result = $result->literal($literal);
+                    break;
+                case 'notin':
+                    list($identifier, $valueSet) = $arguments;
+                    $result = $result->notIn($identifier);
+                    break;
+                case 'notlike':
+                    list($identifier, $notLike) = $arguments;
+                    $result = $result->notLike($identifier, $notLike);
+                    break;
+                case 'equalto':
+                case '=':
+                    if (count($arguments) == 4) {
+                        list($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->equalTo($left, $right, $leftType, $rightType);
+                    } else {
+                        list($left, $right) = $arguments;
+                        $result = $result->equalTo($left, $right);
+                    }
+                    break;
+                case 'notequalto':
+                case '<>':
+                case '!=':
+                    if (count($arguments) == 4) {
+                        list($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->notEqualTo($left, $right, $leftType, $rightType);
+                    } else {
+                        list($left, $right) = $arguments;
+                        $result = $result->notEqualTo($left, $right);
+                    }
+                    break;
+                case 'lessthan':
+                case '<':
+                    if (count($arguments) == 4) {
+                        list($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->lessThan($left, $right, $leftType, $rightType);
+                    } else {
+                        list($left, $right) = $arguments;
+                        $result = $result->lessThan($left, $right);
+                    }
+                    break;
+                case 'lessthanorequalto':
+                case '<=':
+                    if (count($arguments) == 4) {
+                        list($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->lessThanOrEqualTo($left, $right, $leftType, $rightType);
+                    } else {
+                        list($left, $right) = $arguments;
+                        $result = $result->lessThanOrEqualTo($left, $right);
+                    }
+                    break;
+                case 'greaterthan':
+                case '>':
+                    if (count($arguments) == 4) {
+                        list($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->greaterThan($left, $right, $leftType, $rightType);
+                    } else {
+                        list($left, $right) = $arguments;
+                        $result = $result->greaterThan($left, $right);
+                    }
+                    break;
+                case 'greaterthanorequalto':
+                case '>=':
+                    if (count($arguments) == 4) {
+                        list($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->greaterThanOrEqualTo($left, $right, $leftType, $rightType);
+                    } else {
+                        list($left, $right) = $arguments;
+                        $result = $result->greaterThanOrEqualTo($left, $right);
+                    }
+                    break;
+                default:
+                    $msg = sprintf(" : La clé `%s` du tableau passé en paramètre est inconnue.", $predicate);
+                    throw new Exception(__METHOD__ . $msg);
+                    break;
             }
         }
         return $result;

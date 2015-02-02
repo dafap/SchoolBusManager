@@ -1,0 +1,27 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource new.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 nov. 2014
+ * @version 2014-1
+ */
+$url_retour = $this->url('sbmgestion/anneescolaire');
+?>
+<h1>Edition de l'année scolaire <?php echo $this->as_libelle;?></h1>
+<div class="zone-actions">
+	<a href="<?php echo $url_retour; ?>" class="bouton"
+		title="retour au menu de gestion"> <i class="fam-door-out"></i>Retour
+	</a>
+</div>
+<div class="liste-wrapper">
+	<p>Complétez chaque ligne en précisant les dates de début et de fin de
+		chaque période.</p>
+<?php include 'calendar.inc.phtml';?>
+ </div>

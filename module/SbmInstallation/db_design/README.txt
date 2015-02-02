@@ -162,6 +162,9 @@ return array(
     				...
     	),
     	'where' => array(
+    	           array(predicate, argument1, ...), // predicate est un mot clé définissant un predicate (ou son alias = < > != ( ) ...)
+    	                                             // et il est suivi de sa liste d'arguments comme défini dans la zf2 documentation (voir ci-dessous)
+    	           ...
     	),
     	'group' => array(
     	            array(
@@ -178,3 +181,26 @@ Dans 'structure' les clés 'fields' et 'from' sont obligatoires ; les clés 'joi
 Les jointures sont définies dans Zend\Db\Sql\Select par les constantes : JOIN_INNER (par défaut), JOIN_OUTER, JOIN_LEFT et JOIN_RIGHT. 
 (Ne pas oublier de placer "use Zend\Db\Sql\Select;" en tête de fichier de définition pour utiliser ces constantes.)
 
+Liste des predicates et de leurs arguments
+-----------------------------------------------------------------------------------------------------------------------------------
+nom du predicate     alias    nb_args    liste des arguments [optionnels]          explication
+-----------------------------------------------------------------------------------------------------------------------------------
+and                              0       pas d'argument
+or                               0       pas d'argument
+nest                   (         0       pas d'argument
+unnest                 )         0       pas d'argument
+between                          3       $identifier, $minValue, $maxValue
+expression                       2       $expression, $parameter
+in                               2       $identifier, $valueSet                    où $valueset est un array(value1, value2 ...)
+isNotNull                        1       $identifier
+isNull                           1       $identifier
+like                             2       $identifier, $like
+literal                          1       $literal
+notIn                            2       $identifier, $valueSet
+notLike                          2       $identifier, $notlike
+equalTo               =         2[4]     $left, $right [, $leftType, $rightType]   avec $leftType et $rightType dans 
+notEqualTo            <> ou !=  2[4]     $left, $right [, $leftType, $rightType]   { Zend\Db\Sql\Predicate\Predicate::TYPE_IDENTIFIER, 
+lessThan              <         2[4]     $left, $right [, $leftType, $rightType]     Zend\Db\Sql\Predicate\Predicate::TYPE_VALUE }
+lessThanOrEqualTo     <=        2[4]     $left, $right [, $leftType, $rightType]
+greaterThan           >         2[4]     $left, $right [, $leftType, $rightType]
+greaterThanOrEqualTo  >=        2[4]     $left, $right [, $leftType, $rightType]

@@ -13,13 +13,16 @@
  */
 namespace SbmCommun\Form;
 
-use Zend\Form\Form;
+use Zend\InputFilter\InputFilterProviderInterface;
 
-class CriteresForm extends Form
+class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterface
 {
+
+    private $tableName;
 
     public function __construct($tableName = null)
     {
+        $this->tableName = $tableName;
         parent::__construct('criteres');
         $this->setAttribute('method', 'post');
         
@@ -32,12 +35,20 @@ class CriteresForm extends Form
             'name' => 'submit',
             'attributes' => array(
                 'type' => 'submit',
-                'value' => 'Rechercher',
+                'title' => 'Rechercher',
                 'id' => 'criteres-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit'
+                'class' => 'fam-find button submit'
             )
         ));
+    }
+
+    public function getInputFilterSpecification()
+    {
+        $method = 'form' . ucwords(strtolower($this->tableName)) . 'Specification';
+        if (method_exists($this, $method)) {
+            return $this->$method();
+        }
     }
 
     /**
@@ -504,6 +515,226 @@ class CriteresForm extends Form
         ));
     }
 
+    private function formPaiements()
+    {
+        $this->add(array(
+            'name' => 'responsable',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-responsable',
+                'class' => 'sbm-text30',
+                'maxlegth' => '61'
+            ),
+            'options' => array(
+                'label' => 'Responsable',
+                'label_attributes' => array(
+                    'class' => 'sbm-critere-responsable sbm-first'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'codeCaisse',
+            'attributes' => array(
+                'id' => 'critere-code-caisse',
+                'class' => 'sbm-select1'
+            ),
+            'options' => array(
+                'label' => 'Caisse',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'empty_option' => 'Toutes',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'codeModeDePaiement',
+            'attributes' => array(
+                'id' => 'critere-code-mode-de-paiement',
+                'class' => 'sbm-select1'
+            ),
+            'options' => array(
+                'label' => 'Mode de paiement',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'empty_option' => 'Toutes',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'exercice',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-exercice',
+                'class' => 'sbm-text4',
+                'maxlegth' => '4'
+            ),
+            'options' => array(
+                'label' => 'Exercice',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'anneeScolaire',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-annee-scolaire',
+                'class' => 'sbm-text9',
+                'maxlegth' => '9'
+            ),
+            'options' => array(
+                'label' => 'Année scolaire',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Date',
+            'name' => 'dateValeur',
+            'attributes' => array(
+                'id' => 'critere-date-valeur',
+                'class' => ''
+            ),
+            'options' => array(
+                'label' => 'Date de valeur',
+                'label_attributes' => array(
+                    'class' => 'sbm-critere-date-valeur sbm-first sbm-new-line'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Date',
+            'name' => 'datePaiement',
+            'attributes' => array(
+                'id' => 'critere-date-paiement',
+                'class' => ''
+            ),
+            'options' => array(
+                'label' => 'Date de paiement',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Date',
+            'name' => 'dateDepot',
+            'attributes' => array(
+                'id' => 'critere-date-depot',
+                'class' => ''
+            ),
+            'options' => array(
+                'label' => 'Date de dépôt',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'titulaire',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-titulaire',
+                'class' => 'sbm-text30',
+                'maxlegth' => '30'
+            ),
+            'options' => array(
+                'label' => 'Titulaire',
+                'label_attributes' => array(
+                    'class' => 'sbm-critere-titulaire sbm-first sbm-new-line'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'banque',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-banque',
+                'class' => 'sbm-text30',
+                'maxlegth' => '30'
+            ),
+            'options' => array(
+                'label' => 'Banque',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'reference',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-reference',
+                'class' => 'sbm-text30',
+                'maxlegth' => '30'
+            ),
+            'options' => array(
+                'label' => 'Référence',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+    }
+
+    private function formPaiementsSpecification()
+    {
+        return array(
+            'codeCaisse' => array(
+                'required' => false
+            ),
+            'codeModeDePaiement' => array(
+                'required' => false
+            ),
+            'dateDepot' => array(
+                'required' => false
+            ),
+            'datePaiement' => array(
+                'required' => false
+            ),
+            'dateValeur' => array(
+                'required' => false
+            )
+        );
+    }
+
     private function formResponsables()
     {
         $this->add(array(
@@ -768,15 +999,20 @@ class CriteresForm extends Form
                 )
             )
         ));
-        $this->getInputFilter()
-            ->get('rythme')
-            ->setRequired(false);
-        $this->getInputFilter()
-            ->get('grille')
-            ->setRequired(false);
-        $this->getInputFilter()
-            ->get('mode')
-            ->setRequired(false);
+    }
+    private function formTarifSpecification()
+    {
+        return array(
+            'rythme' => array(
+                'required' => false
+            ),
+            'grille' => array(
+                'required' => false
+            ),
+            'mode' => array(
+                'required' => false
+            ),
+        );
     }
 
     private function formTransporteurs()

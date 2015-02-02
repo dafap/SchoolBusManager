@@ -4,7 +4,7 @@ echo $this->doctype();
 ?>
 <html lang="fr">
 <head>
-<?php if ($this->doctype()->getDoctype() == 'HTML5') : ?>
+<?php if ($this->doctype()->isHtml5()) : ?>
 <meta charset="utf-8">
 <?php else:?>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />

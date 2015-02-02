@@ -29,8 +29,8 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');        
-        for ($millesime = $this->getSbmSessionGenerale('millesime', false); !$millesime; $millesime = $this->getSbmSessionGenerale('millesime', false)) {
-            $this->setSbmSessionGenerale('millesime', $table_calendar->getDefaultMillesime());
+        for ($millesime = $this->getFromSession('millesime', false); !$millesime; $millesime = $this->getFromSession('millesime', false)) {
+            $this->setToSession('millesime', $table_calendar->getDefaultMillesime());
         }
         return new ViewModel(array('as_libelle' => $table_calendar->getAnneeScolaire($millesime)));
     }

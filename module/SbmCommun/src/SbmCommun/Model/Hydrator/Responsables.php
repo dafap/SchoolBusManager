@@ -2,7 +2,7 @@
 /**
  * Hydrator pour tenir à jour la modification d'une fiche Responsable dans la table Responsables
  * 
- * Cet hydrator, déclaré dans SbmCommun\Model\Db\Service\Table\Responsables::init(), 
+ * Cet hydrator, déclaré dans SbmCommun\Model\Db\Service\TableGateway\TableGatewayResponsables::init(), 
  * sera utilisé dans SbmCommun\Model\Db\Service\Table\Responsables::saveRecord()
  *
  *
@@ -34,21 +34,7 @@ class Responsables extends AbstractHydrator
         $calculate_fields = $this->object->getCalculateFields();
         $now = new \DateTime('now');
         foreach ($calculate_fields as $value) {
-            /*if ($value == 'demenagement') {
-                if ($this->object->demenagement) {
-                    $this->object->ancienAdresseL1 = $this->object->adresseL1;
-                    $this->object->ancienAdresseL2 = $this->object->adresseL2;
-                    $this->object->ancienCodePostal = $this->object->codePostal;
-                    $this->object->ancienCommuneId = $this->object->communeId;
-                    $this->object->dateDemenagement = $now->format('Y-m-d');
-                } else {
-                    $this->object->ancienAdresseL1 = null;
-                    $this->object->ancienAdresseL2 = null;
-                    $this->object->ancienCodePostal = null;
-                    $this->object->ancienCommuneId = null;
-                    $this->object->dateDemenagement = null;
-                }
-            } else*/if (substr($value, - 2) == 'SA') {
+            if (substr($value, - 2) == 'SA') {
                 $sa = new SansAccent();
                 $index = substr($value, 0, strlen($value) - 2);
                 $this->object->$value = $sa->filter($this->object->$index);

@@ -41,6 +41,10 @@ set_time_limit(30);
 ?>
 <h1>Création des tables et des vues</h1>
 <?php if (is_null($this->form)) : ?>
+<div class="zone-actions">
+	<a href="<?php echo $this->url("sbminstall"); ?>"
+		title="Installation de School Bus Manager"><i class="fam-door-out"></i>Retour</a>
+</div>
 <pre><?php printResult($this->args); ?></pre>
 <p>Création terminée.</p>
 <?php else : ?>

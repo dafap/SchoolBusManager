@@ -1,0 +1,187 @@
+<?php
+/**
+ * Liste des paiements
+ *
+ * Cette liste peut être donner les paiements d'un responsable ou de tous les paiements (éventuellement filtrée par les critères indiqués)
+ * La vue reçoit la propriété `url_retour` du controller.
+ * 
+ * Chaque bouton `group` est implémenté dans un formulaire de façon à envoyer en post la route_retour, l'action_retour et la page_retour.
+ * Ce bouton n'est visible que dans la gestion des paiements (liste complète ou groupée). Il est invisible pour les paiements relatifs à un
+ * responsable indiqué.
+ * 
+ * @project sbm
+ * @package module\SbmGestion\view\sbm-gestion\finance
+ * @filesource paiement-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 22 janv. 2015
+ * @version 2015-1
+ */
+use SbmCommun\Model\DateLib;
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_paiement_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+
+$paiements = $this->paginator->getCurrentItems();
+
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+
+if (! $this->h2) {
+    $url_retour_pour_group = $this->url('sbmgestion/finance', array(
+        'action' => 'paiement-liste',
+        'page' => $this->page
+    ));
+}
+?>
+<h1>Liste des paiements</h1>
+<?php if ($this->h2): ?>
+<h2>Paiements effectués par <?php echo $this->responsable; ?></h2>
+<?php endif; ?>
+<div class="liste-wrapper">
+	<div class="zone-actions">
+<?php
+$url_retour = empty($this->url2_retour) ? $this->url1_retour : $this->url2_retour;
+$url_ajouter = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-ajout',
+    'page' => $this->page
+));
+$url_imprimer = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-imprimer',
+    'page' => $this->page
+));
+$hiddens = array(
+    'url1_retour' => $this->url1_retour,
+    'url2_retour' => $this->url2_retour,
+    'h2' => $this->h2,
+    /*
+     * Pour la compatibilité de traitement avec les formulaires de ligne (voir plus bas)
+     * - si h2 == true alors $responsableId est celui de la liste
+     * - si h2 == false alors $responsableId = -1 et le responsableId de la liste est aussi -1.
+     */
+    'responsableId' => $this->responsableId,
+    'responsable' => $this->escapeHtml($this->responsable)
+);
+$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'onclick' => $js_retour,
+        'title' => 'Retour'
+    ),
+    'rapport' => array(
+        'class' => 'fam-report',
+        'formaction' => $url_imprimer,
+        'title' => 'Rapports à imprimer'
+    ),
+    'ajouter' => array(
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouveau paiement'
+    )
+);
+echo $this->listeZoneActions($hiddens, $actions);
+?>
+	</div>
+	<table class="liste-inner paiements">
+		<tbody>
+			<tr>
+				<th>Responsable</th>
+				<th>Montant</th>
+				<th>Caisse</th>
+				<th>Mode de paiement</th>
+				<th>Date de paiement</th>
+				<th>Date de valeur</th>
+			</tr>
+        <?php foreach($paiements as $test => $paiement): ?>
+         <tr
+				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<td class="responsable"><?php echo $r = $this->escapeHtml($paiement->responsable); ?></td>
+				<td class="montant"><?php echo $m = $fmt->formatCurrency($paiement->montant, 'EUR'); ?></td>
+				<td class="caisse"><?php echo $cs = $this->escapeHtml($paiement->caisse); ?></td>
+				<td class="mode-de-paiement"><?php echo $mp = $this->escapeHtml($paiement->modeDePaiement); ?></td>
+				<td class="date-paiement"><?php echo $dp = DateLib::formatDateTimeFromMysql($paiement->datePaiement); ?></td>
+				<td class="date-valeur"><?php echo $dv = DateLib::formatDateFromMysql($paiement->dateValeur); ?></td>
+				<td class="boutons">
+             <?php
+            $title_voir = 'Année scolaire : ' . $paiement->anneeScolaire . "\n" . 'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' . $paiement->titulaire . "\n" . 'Banque : ' . $paiement->banque . "\n" . 'Référence : ' . $paiement->reference . "\n" . 'Date de dépôt : ' . DateLib::formatDateTimeFromMysql($paiement->dateDepot);
+            $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" . 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" . 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" . $title_voir;
+            $js_voir = 'javascript:window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' . str_replace("\n", '; ', $texte_voir) . '\');return false;';
+            $url_voir = $this->url('sbmgestion/finance', array(
+                'action' => 'paiement-voir'
+            ));
+            $url_edit = $this->url('sbmgestion/finance', array(
+                'action' => 'paiement-edit',
+                'page' => $this->page
+            ));
+            $url_delete = $this->url('sbmgestion/finance', array(
+                'action' => 'paiement-suppr',
+                'page' => $this->page
+            ));
+            if (! $this->h2) {
+                $url_group = $this->url('sbmgestion/finance', array(
+                    'action' => 'paiement-liste'
+                ));
+            }
+            $hiddens = array(
+                'url1_retour' => $this->url1_retour,
+                'url2_retour' => $this->url2_retour,
+                'paiementId' => $paiement->paiementId,
+                'h2' => $this->h2,
+                /*
+                 * Pour responsableId il y a 2 cas :
+                 *  - si h2 == true alors responsableId correspond au responsableId de la liste et de la ligne (liste des paiements d'un responsable)
+                 *  - si h2 == false alors responsableId correspond au responsableId de la ligne. Dans ce cas, le responsableId de la liste est -1.
+                 */
+                'responsableId' => $paiement->responsableId,
+                'responsable' => $this->escapeHtml($paiement->responsable)
+            );
+            // ne pas utiliser de guillement dans la chaine $js
+            $js = 'javascript:window.document.getElementById(\'op' . $paiement->paiementId . '\').value=%s;';
+            $buttons = array(
+                'voir' => array(
+                    'class' => 'fam-zoom',
+                    'formaction' => $url_voir,
+                    'title' => $title_voir,
+                    'onclick' => $js_voir
+                ),
+                'modifier' => array(
+                    'class' => 'fam-pencil',
+                    'formaction' => $url_edit,
+                    'title' => 'modifier l\'encaissement de ' . $m . ' de ' . $r,
+                    'onclick' => sprintf($js, "'modifier'")
+                ),
+                'supprimer' => array(
+                    'class' => 'fam-delete',
+                    'formaction' => $url_delete,
+                    'title' => 'supprimer le paiement de ' . $m . ' de ' . $r,
+                    'onclick' => sprintf($js, "'supprimer'")
+                )
+            );
+            if (! $this->h2) {
+                // ne pas utiliser de guillement dans la chaine $js
+                $js = sprintf($js, "'grouper'") . 'window.document.getElementById(\'url2_retour' . $paiement->paiementId . '\').value=\'' . $url_retour_pour_group . '\';';
+                $buttons['groupe'] = array(
+                    'class' => 'fam-group',
+                    'formaction' => $url_group,
+                    'title' => 'liste de tous les paiements de ' . $r,
+                    'onclick' => $js
+                );
+            }
+            echo $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);
+            ?>                           
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+<?php
+if (! is_null($this->criteres_form)) {
+    echo $this->form()->openTag($this->criteres_form);
+    echo $this->formCollection($this->criteres_form, true);
+    echo $this->form()->closeTag();
+}
+?>
+</div>
+

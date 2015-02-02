@@ -29,9 +29,9 @@ class LibellesModeDePaiement implements FactoryInterface
         $select->columns(array('code', 'libelle'));
         $select->order('code');
         $where = new Where();
-        $where->expression('nature = ?', 'ModeDePaiement');
+        $where->literal("nature = 'ModeDePaiement'");
         $where->AND;
-        $where->expression('ouvert = 1');
+        $where->literal('ouvert = 1');
         $select->where($where);
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();

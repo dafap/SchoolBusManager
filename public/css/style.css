@@ -6,10 +6,12 @@ body {
 .clearfix {
 	zoom: 1;
 }
+
 .clearfix:after {
 	content: "";
 	display: block;
-	clear; both;
+	clear;
+	both;
 }
 
 .margin-left20 {
@@ -37,12 +39,12 @@ body {
 		endColorstr='#57a900', GradientType=0);
 }
 
-.btn-success:hover,.btn-success:active,.btn-success.active,.btn-success.disabled,.btn-success[disabled]
-	{
+.btn-success:hover, .btn-success:active, .btn-success.active,
+	.btn-success.disabled, .btn-success[disabled] {
 	background-color: #57a900;
 }
 
-.btn-success:active,.btn-success.active {
+.btn-success:active, .btn-success.active {
 	background-color: #57a900;
 }
 
@@ -121,34 +123,13 @@ div.zone-pagination {
 	color: #fbbf00;
 	font-weight: bold;
 }
+
 .float-left {
 	float: left;
 }
 
 .cols-2 {
 	width: 48%;
-}
-
-/* LES CRITERES */
-form#criteres {
-	display: block;
-	font-size: 75%;
-	border: 1px solid #ed9d3d;
-	margin-top: 1em;
-	padding: 5px 3px 3px 3px;
-}
-
-#criteres label {
-	margin-right: 3px;
-	margin-left: 7px;
-}
-
-#criteres label.sbm-first {
-	margin-left: 0;
-}
-
-#criteres input.button {
-	margin-left: 7px;
 }
 
 /* POUR LES LISTES */
@@ -214,6 +195,7 @@ label.sbm-label110 {
 	padding-left: 5px;
 	width: 110px;
 }
+
 label.sbm-label130 {
 	display: inline-block;
 	padding-left: 5px;
@@ -268,7 +250,7 @@ label.sbm-label300 {
 	width: 300px;
 }
 
-.fiche-wrapper .row-inner input,.fiche-wrapper .row-inner select {
+.fiche-wrapper .row-inner input, .fiche-wrapper .row-inner select {
 	font-size: 85%;
 	padding: 3px;
 	border: 1px solid #f0b565;
@@ -276,13 +258,13 @@ label.sbm-label300 {
 	padding: 3px;
 }
 
-.fiche-wrapper .row-inner input.sbm-radio,.fiche-wrapper .row-inner input.sbm-checkbox,.fiche-wrapper .row-inner input.sbm-multicheckbox
-	{
+.fiche-wrapper .row-inner input.sbm-radio, .fiche-wrapper .row-inner input.sbm-checkbox,
+	.fiche-wrapper .row-inner input.sbm-multicheckbox {
 	box-shadow: none;
 	margin-right: 1px;
 }
 
-.fiche-wrapper .row-inner input,.fiche-wrapper .row-inner select {
+.fiche-wrapper .row-inner input, .fiche-wrapper .row-inner select {
 	margin-left: 3px;
 }
 
@@ -309,7 +291,8 @@ label.sbm-label300 {
 	width: 170px;
 }
 
-#etablissement-edit-statut legend, #etablissement-edit-jOuverture legend {
+#etablissement-edit-statut legend, #etablissement-edit-jOuverture legend
+	{
 	width: 170px;
 }
 
@@ -323,6 +306,10 @@ input.confirm {
 
 input.sbm-text3 {
 	width: 33px;
+}
+
+input.sbm-text4 {
+	width: 39px;
 }
 
 input.sbm-text5 {
@@ -432,15 +419,61 @@ textarea.sbm-textarea500 {
 textarea.sbm-note {
 	width: 85%;
 }
+textarea.sbm-label170 {
+	width: 890px;
+	margin-left: 3px;
+}
 
 td.centre {
 	text-align: center;
 }
 
+/* LES CRITERES */
+form#criteres {
+	display: block;
+	font-size: 75%;
+	border: 1px solid #ed9d3d;
+	margin-top: 1em;
+	padding: 5px 3px 3px 3px;
+}
+
+#criteres label {
+	margin-right: 3px;
+	margin-left: 7px;
+}
+#criteres label.sbm-first {
+	margin-left: 0;	
+}
+#criteres label.sbm-new-line {
+	margin-left: 0;
+	display:initial;
+	
+}
+#criteres label.sbm-new-line:before {
+	content: "\A";
+	white-space: pre;
+}
+
+#criteres input.button {
+	margin-left: 7px;
+}
+
+label.sbm-critere-responsable {
+	width: 7em;
+}
+label.sbm-critere-date-valeur {
+	padding-right: 2px;
+}
+label.sbm-critere-titulaire {
+	padding-right: 34px;
+}
+
+
 /* LES ONGLETS */
 .sbm-tabs-label a {
 	font-size: 80%;
 }
+
 .sbm-tabs-container p {
 	font-size: 75%;
 }
@@ -449,11 +482,12 @@ td.centre {
 table.installation {
 	border: 2px solid gray;
 }
+
 .installation thead {
 	background-color: #ededed;
 	border: 2px solid gray;
 }
+
 .installation tbody td {
 	border: 1px solid gray;
 }
-

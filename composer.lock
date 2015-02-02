@@ -159,16 +159,16 @@
         },
         {
             "name": "tecnick.com/tcpdf",
-            "version": "6.2.4",
+            "version": "6.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "ba2afad72c6191bfed735dfa357bcaf3f225f52b"
+                "reference": "a2e8f5b505a7a14a4ed960313c4baf699fd1f4bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ba2afad72c6191bfed735dfa357bcaf3f225f52b",
-                "reference": "ba2afad72c6191bfed735dfa357bcaf3f225f52b",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/a2e8f5b505a7a14a4ed960313c4baf699fd1f4bb",
+                "reference": "a2e8f5b505a7a14a4ed960313c4baf699fd1f4bb",
                 "shasum": ""
             },
             "require": {
@@ -218,7 +218,7 @@
                 "pdf417",
                 "qrcode"
             ],
-            "time": "2015-01-08 18:35:22"
+            "time": "2015-01-28 18:51:40"
         },
         {
             "name": "zendframework/zendframework",
@@ -498,12 +498,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcUser.git",
-                "reference": "2cc167a89f7939799b1607820ac7b5420a364e23"
+                "reference": "5ddfb229e51593fd80165ec45816fe5cc94cba26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/2cc167a89f7939799b1607820ac7b5420a364e23",
-                "reference": "2cc167a89f7939799b1607820ac7b5420a364e23",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/5ddfb229e51593fd80165ec45816fe5cc94cba26",
+                "reference": "5ddfb229e51593fd80165ec45816fe5cc94cba26",
                 "shasum": ""
             },
             "require": {
@@ -568,7 +568,7 @@
                 "Authentication",
                 "zf2"
             ],
-            "time": "2015-01-08 13:14:06"
+            "time": "2015-02-01 17:51:00"
         }
     ],
     "packages-dev": [
@@ -683,16 +683,16 @@
         },
         {
             "name": "zendframework/zenddiagnostics",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDiagnostics.git",
-                "reference": "2ae657df8ffafff26fe2963ebb47e677946b0263"
+                "reference": "b855b48f6539038270a3c0935b6bd2c51fa43f7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDiagnostics/zipball/2ae657df8ffafff26fe2963ebb47e677946b0263",
-                "reference": "2ae657df8ffafff26fe2963ebb47e677946b0263",
+                "url": "https://api.github.com/repos/zendframework/ZendDiagnostics/zipball/b855b48f6539038270a3c0935b6bd2c51fa43f7c",
+                "reference": "b855b48f6539038270a3c0935b6bd2c51fa43f7c",
                 "shasum": ""
             },
             "require": {
@@ -738,7 +738,7 @@
                 "php",
                 "test"
             ],
-            "time": "2014-08-11 16:12:58"
+            "time": "2014-12-07 18:10:07"
         },
         {
             "name": "zendframework/zftool",

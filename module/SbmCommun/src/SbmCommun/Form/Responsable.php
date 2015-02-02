@@ -16,8 +16,9 @@ namespace SbmCommun\Form;
 use Zend\Filter\StringToUpper;
 use Zend\Filter\StripTags;
 use Zend\Filter\StringTrim;
+use Zend\InputFilter\InputFilterProviderInterface;
 
-class Responsable extends AbstractSbmForm
+class Responsable extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($param = 'responsable')
@@ -387,7 +388,7 @@ class Responsable extends AbstractSbmForm
             'name' => 'dateDemenagement',
             'type' => 'Zend\Form\Element\Date',
             'attributes' => array(
-                'id' => 'responsable-dateDemenagement',
+                'id' => 'responsable-dateDemenagement'
             ),
             'options' => array(
                 'label' => 'Date du déménagement',
@@ -432,17 +433,64 @@ class Responsable extends AbstractSbmForm
                 'class' => 'button cancel'
             )
         ));
-        $input_filter = $this->getInputFilter();
-        // $input_filter->get('nom')->setRequired(true)->getFilterChain()->attach(new StripTags())->attach(new StringToUpper())->attach(new StringTrim());
-        
-        $input_filter->get('ancienAdresseL1')->setRequired(false);
-        $input_filter->get('ancienAdresseL2')->setRequired(false);
-        $input_filter->get('ancienCommuneId')->setRequired(false);
-        $input_filter->get('ancienCodePostal')->setRequired(false);
-        $input_filter->get('telephoneF')->setRequired(false);
-        $input_filter->get('telephoneP')->setRequired(false);
-        $input_filter->get('telephoneT')->setRequired(false);
-        $input_filter->get('email')->setRequired(false);
-        $input_filter->get('dateDemenagement')->setRequired(false);
+        /*
+         * $input_filter = $this->getInputFilter();
+         * // $input_filter->get('nom')->setRequired(true)->getFilterChain()->attach(new StripTags())->attach(new StringToUpper())->attach(new StringTrim());
+         *
+         * $input_filter->get('ancienAdresseL1')->setRequired(false);
+         * $input_filter->get('ancienAdresseL2')->setRequired(false);
+         * $input_filter->get('ancienCommuneId')->setRequired(false);
+         * $input_filter->get('ancienCodePostal')->setRequired(false);
+         * $input_filter->get('telephoneF')->setRequired(false);
+         * $input_filter->get('telephoneP')->setRequired(false);
+         * $input_filter->get('telephoneT')->setRequired(false);
+         * $input_filter->get('email')->setRequired(false);
+         * $input_filter->get('dateDemenagement')->setRequired(false);
+         */
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'titre2' => array(
+                'required' => false
+            ),
+            'nom2' => array(
+                'required' => false
+            ),
+            'prenom2' => array(
+                'required' => false
+            ),
+            'codePostal' => array(
+                'required' => false
+            ),
+            'ancienAdresseL1' => array(
+                'required' => false
+            ),
+            'ancienAdresseL2' => array(
+                'required' => false
+            ),
+            'ancienCommuneId' => array(
+                'required' => false
+            ),
+            'ancienCodePostal' => array(
+                'required' => false
+            ),
+            'telephoneF' => array(
+                'required' => false
+            ),
+            'telephoneP' => array(
+                'required' => false
+            ),
+            'telephoneT' => array(
+                'required' => false
+            ),
+            'email' => array(
+                'required' => false
+            ),
+            'dateDemenagement' => array(
+                'required' => false
+            )
+        );
     }
 }

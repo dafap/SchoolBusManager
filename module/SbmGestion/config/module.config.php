@@ -174,6 +174,7 @@ return array(
             'nb_commune_pagination' => 10,
             'nb_eleve_pagination' => 10,
             'nb_etablissement_pagination' => 5,
+            'nb_paiement_pagination' => 10,
             'nb_responsable_pagination' => 10,
             'nb_service_pagination' => 8,
             'nb_station_pagination' => 8,

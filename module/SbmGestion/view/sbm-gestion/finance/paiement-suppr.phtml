@@ -1,0 +1,48 @@
+<?php
+/**
+ * Ecran de confirmation de la suppression d'un paiement
+ *
+ * La suppression d'un paiement doit être archivée. Le motif de la suppression sera saisi.
+ * 
+ * @project sbm
+ * @package module\SbmGestion\view\sbm-gestion\finance
+ * @filesource paiement-suppr.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 23 janv. 2015
+ * @version 2015-1
+ */
+use SbmCommun\Model\DateLib;
+
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+?>
+<h1>Suppression d'un paiement</h1>
+<div class="fiche-wrapper">
+	<p><i>Vous avez demandé la suppression du paiement suivant :</i></p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo 'Responsable : <b>' . $this->escapeHtml($this->responsable); ?></b></li>
+			<li><?php echo 'Montant : <b>' . $fmt->formatCurrency($this->data->montant, 'EUR'); ?></b></li>
+			<li><?php echo 'Caisse : <b>' . $this->escapeHtml($this->libelles->getLibelle('caisse', $this->data->codeCaisse)); ?></b></li>
+			<li><?php echo 'Exercice budgétaire : <b>' . $this->data->exercice; ?></b></li>
+			<li><?php echo 'Année scolaire : <b>' . $this->data->anneeScolaire; ?></b></li>
+			<li><?php echo 'Date du paiement : <b>' . DateLib::formatDateTimeFromMysql($this->data->datePaiement); ?></b></li>
+			<li><?php echo 'Date de valeur : <b>' . DateLib::formatDateFromMysql($this->data->dateValeur); ?></b></li>
+			<li><?php echo 'Date de dépôt : <b>' . DateLib::formatDateTimeFromMysql($this->data->dateDepot); ?></b></li>
+			<li><?php echo 'Mode de paiement : <b>' . $this->escapeHtml($this->libelles->getLibelle('modeDePaiement', $this->data->codeModeDePaiement)); ?></b></li>
+			<?php if ($this->data->codeModeDePaiement == $this->libelles->getCode('modeDePaiement', 'chèque')) :?>
+			<li><?php echo 'Banque : <b>' . $this->escapeHtml($this->data->banque); ?></b></li>
+			<li><?php echo 'Titulaire du compte : <b>' . $this->escapeHtml($this->data->titulaire); ?></b></li>
+			<li><?php echo 'Référence du chèque : <b>' . $this->escapeHtml($this->data->reference); ?></b></li>
+			<?php endif; ?>
+		</ul>
+	</div>
+	<p><i>Pour confirmer, donnez la raison puis cliquez sur le bouton de confirmation.</i></p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formHidden($this->form->get('paiementId'));
+echo '<div id="paiement-suppr-note" class="row-inner edit">' . $this->formRow($this->form->get('note')) . '</div>';
+echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo $this->form()->closeTag();
+?>
+</div>

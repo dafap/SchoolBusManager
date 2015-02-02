@@ -327,8 +327,8 @@ class CreateTables
         $viewStructure = $entity['structure'];
         SbmCommun\Model\Db\CommandSql::isValidDbDesignStructureView($viewStructure); // lance une exception si la structure n'est pas bonne
         $table = $viewStructure['from']['table'];
-        if ($viewStructure['from']['type'] == 'table') {
-            $filename = 'table.' . $table . '.php';
+        if ($viewStructure['from']['type'] == 'table' || $viewStructure['from']['type'] == 'system') {
+            $filename = $viewStructure['from']['type'] . '.' . $table . '.php';
             $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
             $fields_table = $entity['structure']['fields'];
             foreach ($viewStructure['fields'] as $field) {
@@ -370,13 +370,14 @@ class CreateTables
         if (array_key_exists('join', $viewStructure)) {
             foreach ($viewStructure['join'] as $join) {
                 $table = $join['table'];
-                if ($join['type'] == 'table') {
-                    $filename = 'table.' . $table . '.php';
+                if ($join['type'] == 'table' || $join['type'] == 'system') {
+                    $filename = $join['type'] . '.' . $table . '.php';
                     $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
                     $join_structure = $entity['structure']['fields'];
                 } else {
                     // il s'agit d'une vue
                     $join_structure = $this->analyseView($table);
+                    $join_structure = $join_structure['fields'];
                 }
                 foreach ($join['fields'] as $field) {
                     if (array_key_exists('alias', $field)) {

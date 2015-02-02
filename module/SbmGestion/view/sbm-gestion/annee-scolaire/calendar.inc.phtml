@@ -1,0 +1,36 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource liste.inc.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 nov. 2014
+ * @version 2014-1
+ */
+use SbmCommun\Model\DateLib;
+
+?>
+<table class="liste-inner annee-scolaire">
+<tbody>
+<tr>
+<th></th><th>Description</th><th>Date de début</th><th>Date de fin</th><th>Echéance</th><th>Exercice</th><th></th>
+</tr>
+ <?php foreach ($this->table as $element) : ?>
+ <?php $url_edit = $this->url('sbmgestion/anneescolaire', array('action' => 'edit', 'millesime' => $this->millesime, 'id' => $element['calendarId'])); ?>
+ <tr>
+ <td><?php echo $element['ordinal'];?></td>
+ <td><?php echo $element['description'];?></td>
+ <td><?php echo DateLib::formatDateFromMysql($element['dateDebut']);?></td>
+ <td><?php echo DateLib::formatDateFromMysql($element['dateFin']);?></td>
+ <td><?php echo DateLib::formatDateFromMysql($element['echeance']);?></td>
+ <td><?php echo $element['exercice'];?></td>
+ <td><a href="<?php echo $url_edit;?>" class="bouton" title="activer"><i class="fam-date-edit"></i>Editer</a></td>
+ </tr>
+ <?php endforeach;?>
+ </tbody>
+ </table> 

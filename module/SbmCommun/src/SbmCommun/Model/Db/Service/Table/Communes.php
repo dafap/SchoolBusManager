@@ -25,5 +25,20 @@ class Communes extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Communes';
         $this->id_name = 'communeId';
     }
+    
+    public function getCodePostal($communeId)
+    {
+        if (!empty($communeId)) {
+            try {
+                $c = $this->getRecord($communeId);
+                return $c->codePostal;
+            } catch (Exception $e) {
+                // $communeId n'a pas été trouvée
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
 }
 

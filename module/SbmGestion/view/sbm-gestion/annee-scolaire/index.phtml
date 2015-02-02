@@ -11,15 +11,7 @@
  * @date 25 avr. 2014
  * @version 2014-1
  */
-function formatDate($d)
-{
-    if (empty($d)) {
-        return '';
-    } else {
-        $date= DateTime::createFromFormat('Y-m-d', $d);
-        return $date->format('d/m/Y');
-    }
-}
+use SbmCommun\Model\DateLib;
 
 $col_date_width = 100;
 $url_retour = $this->url('sbmgestion');
@@ -50,8 +42,8 @@ if (!$as['valid']) {
 ?>
 <tr class="<?php echo $classes_css;?>">
 <td><?php echo $as['description'];?></td>
-<td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo formatDate($as['dateDebut']);?></td>
-<td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo formatDate($as['dateFin']);?></td>
+<td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateDebut']);?></td>
+<td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateFin']);?></td>
 <td>
 <?php if ($as['valid']) :?>
 <?php if ($as['millesime'] == $this->millesimeActif) :?>

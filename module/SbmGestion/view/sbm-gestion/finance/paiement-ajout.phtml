@@ -1,0 +1,54 @@
+<?php
+/**
+ * Ecran de saisie d'un encaissement
+ *
+ * Il s'agit pour le moment d'une entrée générale où le responsable n'est pas connu.
+ * Ensuite, on adaptera l'écran au cas où le responsable est déjà connu 
+ * (par exemple à partir de la liste des paiements d'un responsables ou de la fiche d'un responsable)
+ * 
+ * @project sbm
+ * @package module\SbmGestion\view\sbm-gestion\finance
+ * @filesource paiement-ajout.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 31 janv. 2015
+ * @version 2015-1
+ */
+$retour = $this->url('sbmgestion/finance', array('action'=> 'paiement-liste', 'page' => $this->page));
+?>
+<h1>Enregistrement d'un nouveau paiement</h1>
+<?php if ($this->hidden_responsableId):?>
+<h2>Paiement concernant <?php echo $this->responsable; ?></h2>
+<?php endif;?>
+<div class="fiche-wrapper">
+  <div class="zone-actions">
+    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des paiements"><i class="fam-door-out"></i> Retour</a>
+    <?php 
+    ?>
+  </div>
+<?php 
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('paiementId'));
+echo $this->formHidden($this->form->get('csrf'));
+echo '<fieldset class="edit">';
+if ($this->hidden_responsableId) {
+    echo $this->formHidden($this->form->get('responsableId'));
+} else {
+    echo '<div id="paiement-edit-responsableId" class="row-inner edit">' . $this->formRow($this->form->get('responsableId')) . '</div>';
+}
+echo '<div id="paiement-edit-code-caisse" class="row-inner edit">' . $this->formRow($this->form->get('codeCaisse')) . '</div>';
+echo '<div id="paiement-edit-montant" class="row-inner edit">' . $this->formRow($this->form->get('montant')) . '</div>';
+echo '<div id="paiement-edit-code-mode-de-paiement" class="row-inner edit">' . $this->formRow($this->form->get('codeModeDePaiement')) . '</div>';
+echo '<div id="paiement-edit-exercice" class="row-inner edit">' . $this->formRow($this->form->get('exercice')) . '</div>';
+echo '<div id="paiement-edit-annee-scolaire" class="row-inner edit">' . $this->formRow($this->form->get('anneeScolaire')) . '</div>';
+echo '<div id="paiement-edit-date-paiement" class="row-inner edit">' . $this->formRow($this->form->get('datePaiement')) . '</div>';
+echo '<div id="paiement-edit-date-valeur" class="row-inner edit">' . $this->formRow($this->form->get('dateValeur')) . '</div>';
+echo '<div id="paiement-edit-date-depot" class="row-inner edit">' . $this->formRow($this->form->get('dateDepot')) . '</div>';
+echo '<div id="paiement-edit-titulaire" class="row-inner edit">' . $this->formRow($this->form->get('titulaire')) . '</div>';
+echo '<div id="paiement-edit-banque" class="row-inner edit">' . $this->formRow($this->form->get('banque')) . '</div>';
+echo '<div id="paiement-edit-reference" class="row-inner edit">' . $this->formRow($this->form->get('reference')) . '</div>';
+echo '<div id="paiement-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo '</fieldset>';
+echo $this->form()->closeTag();
+?>
+</div>

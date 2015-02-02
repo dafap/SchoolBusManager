@@ -16,6 +16,8 @@ namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
+use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate\Literal;
 
 class Libelles extends AbstractSbmTable
 {
@@ -57,5 +59,17 @@ class Libelles extends AbstractSbmTable
             }
         }
         return $ok;
+    }
+    
+    /**
+     * Renvoie tous les libellés ouverts
+     * 
+     * @return \SbmCommun\Model\Db\Service\Table\ResultSet
+     */
+    public function fetchOpen()
+    {
+        $where = new Where(array(new Literal('ouvert = 1')));
+        $order = array('nature', 'code');
+        return $this->fetchAll($where, $order);
     }
 }

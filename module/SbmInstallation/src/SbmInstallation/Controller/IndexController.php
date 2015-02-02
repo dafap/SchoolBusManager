@@ -51,11 +51,11 @@ class IndexController extends AbstractActionController
         } else {
             $form = new ButtonForm(array(
                 'create' => array(
-                    'class' => 'confirm',
+                    'class' => 'confirm default',
                     'value' => 'Confirmer'
                 ),
                 'cancel' => array(
-                    'class' => 'confirm',
+                    'class' => 'confirm default',
                     'value' => 'Abandonner'
                 )
             ));           

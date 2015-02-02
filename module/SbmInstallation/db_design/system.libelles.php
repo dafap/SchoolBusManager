@@ -21,9 +21,9 @@
 return array(
     'name' => 'libelles',
     'type' => 'system',
-    'drop' => true,
-    'edit_entity' => true,
-    'add_data' => true,
+    'drop' => false,
+    'edit_entity' => false,
+    'add_data' => false,
     'structure' => array(
         'fields' => array(
             'nature' => 'varchar(20) NOT NULL',

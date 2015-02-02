@@ -4,7 +4,7 @@
  *
  *
  * @project sbm
- * @package module/SbmCommun/src/SbmCommun/Model/Db/Vue
+ * @package module/SbmCommun/src/SbmCommun/Model/Db/Service/Table/Vue
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

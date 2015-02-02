@@ -15,10 +15,10 @@ namespace SbmFront\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use SbmCommun\Form\ButtonForm;
-use SbmCommun\Model\StdLib;
-use Zend\Filter\StringToUpper;
-use SbmCommun\Filter\StringUcfirst;
+
+use Zend\Db\Sql\Where;
+use Zend\Paginator\Adapter\DbSelect;
+use Zend\Paginator\Paginator;
 
 class IndexController extends AbstractActionController
 {
@@ -30,11 +30,14 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        die(var_dump(StdLib::addQuotesToString('maternelle')));
+        $libelles = $this->getServiceLocator()->get('Sbm\Libelles');
+        
         return new ViewModel(array(
-            'args' => array(
-                $config['doctable']['columns'], $data
-            )
+            /*'args' => array(
+                'page' =>$this->getParamByGetAndPost('page')
+                
+            )*/
+            'caisse' => $libelles->getLibelle('caisse', 1)
         ));
     }
 }

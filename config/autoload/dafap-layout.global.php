@@ -86,7 +86,7 @@ return array(
                     '/css/style.css',
                     '/css/bootstrap-theme.min.css',
                     '/css/bootstrap.min.css',
-                    '/css/fam-icons.css'
+                    '/css/fam-icons-custom.css'
                 ),
                 'js' => array(
                     '/js/bootstrap.min.js',
@@ -115,7 +115,7 @@ return array(
                     '/css/style.css',
                     '/css/bootstrap-theme.min.css',
                     '/css/bootstrap.min.css',
-                    '/css/fam-icons.css',
+                    '/css/fam-icons-custom.css',
                     '/css/jquery/themes/humanity/jquery-ui-1.10.4.custom.min.css',
                 ),
                 'js' => array(
@@ -169,7 +169,7 @@ return array(
                     '/css/style.css',
                     '/css/bootstrap-theme.min.css',
                     '/css/bootstrap.min.css',
-                    '/css/fam-icons.css',
+                    '/css/fam-icons-custom.css',
                     '/css/jquery/themes/redmond/jquery-ui-1.10.4.custom.min.css',
                 ),
                 'js' => array(

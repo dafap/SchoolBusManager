@@ -24,19 +24,24 @@ use Zend\Session\Container as SessionContainer;
  */
 abstract class AbstractActionController extends ZendAbstractActionController
 {
+
     const SBM_DG_SESSION = 'sbm_dg_session';
-    
+
     /**
      * Renvoie une chaine de la forme 'module_controller_action_item'
      *
-     * @param string $item            
+     * @param string|null $action
+     *            Si $action est null alors on prend l'action indiquée dans la route courante
+     * @param string|null $item
+     *            Ce que l'on veut rajouter
+     *            
      * @return string
      */
-    protected function getSessionNamespace($item = null)
+    protected function getSessionNamespace($action = null, $item = null)
     {
         $args = array(
             $this->getModuleControllerName(),
-            $this->getCurrentActionFromRoute()
+            $action ?  : $this->getCurrentActionFromRoute()
         );
         if (! is_null($item)) {
             $args[] = $item;
@@ -70,30 +75,34 @@ abstract class AbstractActionController extends ZendAbstractActionController
     /**
      * Renvoie le paramètre en session ou la valeur par défaut s'il n'est pas défini
      *
-     * @param $param 
-     *      Nom du paramètre demandé
-     * @param $default
-     *      Valeur à renvoyer si le paramètre n'est pas défini
-     * 
+     * @param $param Nom
+     *            du paramètre demandé
+     * @param $default Valeur
+     *            à renvoyer si le paramètre n'est pas défini
+     * @param string|null $sessionNamespace
+     *            namespace de la session (par défaut valeur fixée par le constante de cette classe SBM_DG_SESSION)
+     *            
      * @return int|boolean
      */
-    protected function getSbmSessionGenerale($param, $default = null)
+    protected function getFromSession($param, $default = null, $sessionNamespace = self::SBM_DG_SESSION)
     {
-        $session = new SessionContainer(self::SBM_DG_SESSION);
+        $session = new SessionContainer($sessionNamespace);
         return isset($session->{$param}) ? $session->{$param} : $default;
     }
-    
+
     /**
-     * Place la valeur en session générale dans le paramètre indiqué
-     * 
+     * Place la valeur en session dans le paramètre indiqué
+     *
      * @param string $param
-     *      nom du paramètre
+     *            nom du paramètre
      * @param mixed $value
-     *      valeur à mettre en session
+     *            valeur à mettre en session
+     * @param string|null $sessionNamespace
+     *            namespace de la session (par défaut valeur fixée par le constante de cette classe SBM_DG_SESSION)
      */
-    protected function setSbmSessionGenerale($param, $value)
+    protected function setToSession($param, $value, $sessionNamespace = self::SBM_DG_SESSION)
     {
-        $session = new SessionContainer(self::SBM_DG_SESSION);
+        $session = new SessionContainer($sessionNamespace);
         $session->{$param} = $value;
     }
 }

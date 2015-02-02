@@ -26,7 +26,7 @@ class AnneeScolaireController extends AbstractActionController
         $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
         return new ViewModel(array(
             'anneesScolaires' => $table_calendar->getAnneesScolaires(),
-            'millesimeActif' => $this->getSbmSessionGenerale('millesime', false)
+            'millesimeActif' => $this->getFromSession('millesime', false)
         ));
     }
 
@@ -34,7 +34,7 @@ class AnneeScolaireController extends AbstractActionController
     {
         $millesime = $this->params('millesime', 0);
         if (!empty($millesime)) {
-            $this->setSbmSessionGenerale('millesime', $millesime);
+            $this->setToSession('millesime', $millesime);
         }
         return $this->redirect()->toRoute('sbmgestion/anneescolaire');
     }

@@ -20,6 +20,7 @@ use Zend\Mvc\ModuleRouteListener;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\EventManager\EventInterface;
 use ZfcBase\Module\AbstractModule;
+use Zend\View\Helper\Doctype;
 
 class Module extends AbstractModule implements BootstrapListenerInterface
 {
@@ -36,6 +37,8 @@ class Module extends AbstractModule implements BootstrapListenerInterface
     
     public function onBootstrap(EventInterface $e)
     {
+        $doctypeHelper = new Doctype();
+        $doctypeHelper('HTML5');
         $eventManager = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);

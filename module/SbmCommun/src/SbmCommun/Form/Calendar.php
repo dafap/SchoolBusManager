@@ -114,7 +114,7 @@ class Calendar extends AbstractSbmForm
             'options' => array(
                 'label' => 'Exercice budgétaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label170'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'

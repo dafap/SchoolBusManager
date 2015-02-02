@@ -365,7 +365,7 @@ class EleveController extends AbstractActionController
             'paginator' => $table_responsables->paginator($criteres_obj->getWhere()),
             'page' => $currentPage,
             'nb_responsable_pagination' => $nb_responsable_pagination,
-            'criteres_form' => $criteres_form
+            'criteres_form' => $criteres_form,
         ));
     }
 

@@ -20,7 +20,7 @@ class Responsables extends AbstractSbmTable
 {
 
     /**
-     * Initialisation du transporteur
+     * Initialisation du responsable
      */
     protected function init()
     {
@@ -62,5 +62,21 @@ class Responsables extends AbstractSbmTable
         }
         
         parent::saveRecord($obj_data);
+    }
+    
+    /**
+     * Renvoie le `nom prénom` du responsable, éventuellement précédé du `titre`
+     * 
+     * @param int $responsabled
+     * référence du respondable
+     * @param bool $with_titre
+     * indique si le titre doit être mis ou non
+     * 
+     * @return string
+     */
+    public function getNomPrenom($responsabled, $with_titre = false)
+    {
+        $record = $this->getRecord($responsabled);
+        return ($with_titre ? $record->titre . ' ' : '') . $record->nom . ' ' . $record->prenom;
     }
 }

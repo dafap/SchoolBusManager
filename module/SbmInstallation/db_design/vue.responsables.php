@@ -143,7 +143,8 @@ return array(
                         ),
                         'alias' => 'nbEleves'
                     )
-                )
+                ),
+                'jointure' => \Zend\Db\Sql\Select::JOIN_LEFT
             )
         ),
         'group' => array(

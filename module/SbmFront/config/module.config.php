@@ -25,7 +25,7 @@ return array(
             'home' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/[:action]',
+                    'route' => '/[:action][/:page]',
                     'defaults' => array(
                         'module' => __NAMESPACE__,
                         'controller' => 'SbmFront\Controller\Index',
