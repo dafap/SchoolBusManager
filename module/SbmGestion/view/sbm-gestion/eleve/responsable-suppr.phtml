@@ -13,11 +13,12 @@
  */
 ?>
 <h1>Suppression d'un responsable</h1>
+<div class="fiche-wrapper">
 <p>Vous avez demandé la suppression du responsable :</p>
 <ul>
     <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
     <li><?php echo $this->escapeHtml($this->data->prenom); ?></li>
-    <li>habitant <?php echo $this->escapehtml($this->data->adressL1); ?> à <?php echo $this->escapehtml($this->data->commune); ?></li>
+    <li>habitant <?php echo $this->escapehtml($this->data->adresseL1); ?> à <?php echo $this->escapehtml($this->data->commune); ?></li>
 </ul>
 <?php if ($this->data_dependantes->count()) : ?>
   <?php if ($this->data_dependantes->count() == 1) : ?>
@@ -41,6 +42,10 @@
 <p>Confirmez-vous ?</p>
 <?php 
 echo $this->form()->openTag($form);
-echo $this->formCollection($form);
+echo $this->formHidden($this->form->get('responsableId'));
+echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+
+//echo $this->formCollection($form);
 echo $this->form()->closeTag();
 ?>
+</div>

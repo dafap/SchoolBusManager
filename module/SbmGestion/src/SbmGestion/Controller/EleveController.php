@@ -22,6 +22,7 @@ use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\Eleve as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
+use Zend\Http\PhpEnvironment\Response;
 
 class EleveController extends AbstractActionController
 {
@@ -334,30 +335,50 @@ class EleveController extends AbstractActionController
 
     public function responsableListeAction()
     {
+        // utilisation de PostRedirectGet pour mesure de sécurité
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
+            return $prg;
+        } elseif ($prg === false) {
+            // ce n'était pas un post. Prendre les paramètres dans la route et éventuellement dans la session (cas du paginator)
+            $is_post = false;
+            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+        } else {
+            // c'est le tableau qui correspond au post après redirection; on le met en session
+            $args = $prg;
+            $op = array_key_exists('op', $args) ? $args['op'] : '';
+            if ($op == 'retour') {
+                $is_post = false;
+            } else {
+                $is_post = true;
+                $this->setToSession('post', $args, $this->getSessionNamespace());
+            }
+        }
+        // ici, $args contient ce qu'il y avait dans $_POST ou dans un $_POST précédemment mis en session.
+        // la page vient de la route (comaptibilité du paginateur)
         $currentPage = $this->params('page', 1);
-        $table_responsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        
+        // la configuration du paginateur vient de module.config.php de ce module
         $config = $this->getServiceLocator()->get('Config');
         $nb_responsable_pagination = $config['liste']['paginator']['nb_responsable_pagination'];
+        // ouvrir la vue Sql
+        $table_responsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
         
+        // formulaire des critères de recherche
         $criteres_form = new CriteresForm('responsables');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
         
-        // récupère les données du post et met en session
-        $this->session = new SessionContainer($this->getSessionNamespace());
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $criteres_form->setData($request->getPost());
+        if ($is_post) {
+            $criteres_form->setData($args);
             if ($criteres_form->isValid()) {
                 $criteres_obj->exchangeArray($criteres_form->getData());
-                $this->session->criteres = $criteres_obj->getArrayCopy();
-            } else {
-                $criteres_form->reset(); // nécessaire pour remettre en place les control, submit et cancel du formulaire qui peuvent être écrasés par le post
+                $this->setToSession('criteres', $criteres_obj->getArrayCopy());
             }
         }
-        // récupère les données de la session si le post n'a pas validé
-        if (! $criteres_form->hasValidated() && isset($this->session->criteres)) {
-            $criteres_obj->exchangeArray($this->session->criteres);
+        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas de post ou invalide)
+        $criteres_data = $this->getFromSession('criteres');
+        if (! $criteres_form->hasValidated() && ! empty($criteres_data)) {
+            $criteres_obj->exchangeArray($criteres_data);
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
         
@@ -365,48 +386,63 @@ class EleveController extends AbstractActionController
             'paginator' => $table_responsables->paginator($criteres_obj->getWhere()),
             'page' => $currentPage,
             'nb_responsable_pagination' => $nb_responsable_pagination,
-            'criteres_form' => $criteres_form,
+            'criteres_form' => $criteres_form
         ));
     }
 
     public function responsableAjoutAction()
     {
-        $currentPage = $this->params('page', 1);
+        // utilisation de PostRedirectGet par mesure de sécurité
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
+            return $prg;
+        } elseif ($prg === false) {
+            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'responsable-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
+        $args = $prg;
+        // si $args contient la clé 'cancel' c'est un abandon de l'action
+        if (\array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'responsable-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        // on ouvre la table des responsables
         $responsableId = null;
         $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        
+        // on ouvre le formulaire et on l'adapte
         $form = new FormResponsable();
-        $form->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
-        $form->setValueOptions('ancienCommuneId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
-        $form->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\CommunesDesservies');
+        $form->setValueOptions('communeId', $value_options)
+            ->setValueOptions('ancienCommuneId', $value_options)
+            ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        unset($value_options);
         
         $form->bind($tableResponsables->getObjData());
         
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('cancel', false)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'responsable-liste',
-                    'page' => $currentPage
-                ));
-            }
-            $form->setData($request->getPost());
-            if ($form->isValid()) { // controle le csrf
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                // controle le csrf et contrôle les datas
                 $tableResponsables->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
-                    'page' => $currentPage
+                    'page' => $this->params('page', 1)
                 ));
             }
         }
         return new ViewModel(array(
             'form' => $form,
-            'page' => $currentPage,
+            'page' => $this->params('page', 1),
             'responsableId' => $responsableId,
             'demenagement' => false
         ));
@@ -414,45 +450,54 @@ class EleveController extends AbstractActionController
 
     public function responsableEditAction()
     {
-        $currentPage = $this->params('page', 1);
-        $responsableId = $this->params('id', - 1);
-        if ($responsableId == - 1) {
+        // utilisation de PostRedirectGet par mesure de sécurité
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
+            return $prg;
+        } elseif ($prg === false) {
+            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
             return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'responsable-liste',
-                'page' => $currentPage
+                'page' => $this->params('page', 1)
             ));
         }
+        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
+        $args = $prg;
+        // si $args contient la clé 'cancel' c'est un abandon de l'action
+        if (\array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'responsable-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        // on ouvre la table des données
+        $responsableId = $args['responsableId'];
         $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        
+        // on ouvre le formulaire et on l'adapte
         $form = new FormResponsable();
-        $form->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
-        $form->setValueOptions('ancienCommuneId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
-        $form->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\CommunesDesservies');
+        $form->setValueOptions('communeId', $value_options)
+            ->setValueOptions('ancienCommuneId', $value_options)
+            ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        unset($value_options);
         
         $form->bind($tableResponsables->getObjData());
         
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('cancel', false)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'responsable-liste',
-                    'page' => $currentPage
-                ));
-            }
-            $form->setData($request->getPost());
-            if ($form->isValid()) { // controle le csrf
+        if (\array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                // controle le csrf et contrôle les datas
                 $tableResponsables->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
-                    'page' => $currentPage
+                    'page' => $this->params('page', 1)
                 ));
             }
-            $demenagement = $request->getPost('demenagement', false);
+            $demenagement = $args['demenagement'] ?  : false;
         } else {
             $array_data = $tableResponsables->getRecord($responsableId)->getArrayCopy();
             $form->setData($array_data);
@@ -460,7 +505,7 @@ class EleveController extends AbstractActionController
         }
         return new ViewModel(array(
             'form' => $form,
-            'page' => $currentPage,
+            'page' => $this->params('page', 1),
             'responsableId' => $responsableId,
             'demenagement' => $demenagement
         ));
@@ -476,22 +521,6 @@ class EleveController extends AbstractActionController
         $data['resp1'] = $tableEleves->duResponsable1($responsableId);
         $data['resp2'] = $tableEleves->duResponsable2($responsableId);
         $data['fact'] = $tableEleves->duResponsableFinancier($responsableId);
-        return new ViewModel(array(
-            'datagroup' => $tableResponsables->getRecord($responsableId),
-            'data' => $data,
-            'page' => $currentPage,
-            'responsableId' => $responsableId
-        ));
-    }
-
-    public function responsablePaiementsAction()
-    {
-        $currentPage = $this->params('page', 1);
-        $responsableId = $this->params('id', - 1); // GET
-        $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        $tablePaiements = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements');
-        $data = array();
-        $data = $tablePaiements->duResponsable($responsableId);
         return new ViewModel(array(
             'datagroup' => $tableResponsables->getRecord($responsableId),
             'data' => $data,
@@ -526,65 +555,73 @@ class EleveController extends AbstractActionController
 
     public function responsableSupprAction()
     {
-        $currentPage = $this->params('page', 1);
-        $responsableId = $this->params('id', - 1); // GET
+        // utilisation de PostRedirectGet par mesure de sécurité
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
+            return $prg;
+        } elseif ($prg === false) {
+            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'responsable-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
+        $args = $prg;
+        // si $args contient la clé 'cancel' c'est un abandon de l'action
+        if (\array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'responsable-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        // on ouvre la table des données
+        $responsableId = $args['responsableId'];
+        $vueResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
+        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves'); // table en relation avec responsables
+                                                                               // on crée le formulaire
         $form = new ButtonForm(array(
-            'supproui' => array(
-                'class' => 'confirm',
+            'submit' => array(
+                'class' => 'default submit',
                 'value' => 'Confirmer'
             ),
-            'supprnon' => array(
-                'class' => 'confirm',
+            'cancel' => array(
+                'class' => 'default cancel',
                 'value' => 'Abandonner'
             )
         ), array(
-            'id' => $responsableId
+            'responsableId' => $responsableId
         ));
-        $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves'); // table en relation avec responsables
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/eleve', array(
+            'action' => 'responsable-suppr',
+            'page' => $this->params('page', 1)
+        )));
         
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('supproui', false)) { // confirmation
-                $responsableId = $this->params()->fromPost('id', false); // POST
-                if ($responsableId) {
-                    // on supprime les eleves en relation avec ce responsable
-                    foreach ($tableEleves->duResponsable($responsableId) as $eleve) {
-                        $tableEleves->deleteRecord($eleve->eleveId);
-                    }
-                    // on supprime le responsable
-                    $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
-                    $tableResponsables->deleteRecord($responsableId);
-                    $this->flashMessenger()->addSuccessMessage("L'enregistrement a été supprimé.");
-                } else {
-                    $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                }
-            } else { // abandon
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
-            }
-            return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                'action' => 'responsable-liste',
-                'page' => $currentPage
-            ));
-        } else {
-            if ($responsableId) {
-                $form->setData(array(
-                    'id' => $responsableId
-                ));
-            } else {
-                $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
+                $tableResponsables->deleteRecord($responsableId);
+                $this->flashMessenger()->addSuccessMessage("L'enregistrement a été supprimé.");
                 return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
-                    'page' => $currentPage
+                    'page' => $this->params('page', 1)
                 ));
             }
+        } else {
+            $form->setData(array(
+                'responsableId' => $responsableId
+            ));
         }
         
         return new ViewModel(array(
-            'data' => $tableResponsables->getRecord($responsableId),
+            'data' => $vueResponsables->getRecord($responsableId),
             'data_dependantes' => $tableEleves->duResponsable($responsableId),
             'form' => $form,
-            'page' => $currentPage,
+            'page' => $this->params('page', 1),
             'responsableId' => $responsableId
         ));
     }

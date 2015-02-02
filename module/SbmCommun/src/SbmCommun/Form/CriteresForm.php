@@ -48,6 +48,8 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $method = 'form' . ucwords(strtolower($this->tableName)) . 'Specification';
         if (method_exists($this, $method)) {
             return $this->$method();
+        } else {
+            return array();
         }
     }
 
@@ -827,6 +829,27 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         ));
     }
 
+    private function formResponsablesSpecification()
+    {
+        return array(
+            'nomSA' => array(
+                'required' => false
+            ),
+            'commune' => array(
+                'required' => false
+            ),
+            'nbEleves' => array(
+                'required' => false
+            ),
+            'selection' => array(
+                'required' => false
+            ),
+            'demenagement' => array(
+                'required' => false
+            ),
+        );
+    }
+
     private function formServices()
     {
         $this->add(array(
@@ -1000,6 +1023,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+
     private function formTarifSpecification()
     {
         return array(
@@ -1011,7 +1035,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'mode' => array(
                 'required' => false
-            ),
+            )
         );
     }
 

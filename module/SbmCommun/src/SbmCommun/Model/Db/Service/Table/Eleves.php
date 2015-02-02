@@ -70,7 +70,7 @@ class Eleves extends AbstractSbmTable
     public function duResponsable($responsableId) 
     {
         $where = new Where();
-        $where->equalTo('respId1', $responsableId)->OR->equalTo('respId2', $responsableId)->OR->equalTo('FactId', $responsableId);
+        $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId)->OR->equalTo('responsableFId', $responsableId);
         return $this->fetchAll($where, array('nom', 'prenom'));
     }
     
@@ -83,7 +83,7 @@ class Eleves extends AbstractSbmTable
     public function duResponsable1($responsableId)
     {
         $where = new Where();
-        $where->equalTo('respId1', $responsableId);
+        $where->equalTo('responsable1Id', $responsableId);
         return $this->fetchAll($where, array('nom', 'prenom'));
     }
     
@@ -96,7 +96,7 @@ class Eleves extends AbstractSbmTable
     public function duResponsable2($responsableId)
     {
         $where = new Where();
-        $where->equalTo('respId2', $responsableId);
+        $where->equalTo('responsable2Id', $responsableId);
         return $this->fetchAll($where, array('nom', 'prenom'));
     }
     
@@ -109,7 +109,7 @@ class Eleves extends AbstractSbmTable
     public function duResponsableFinancier($responsableId)
     {
         $where = new Where();
-        $where->equalTo('factId', $responsableId);
+        $where->equalTo('responsableFId', $responsableId);
         return $this->fetchAll($where, array('nom', 'prenom'));
     }
 }

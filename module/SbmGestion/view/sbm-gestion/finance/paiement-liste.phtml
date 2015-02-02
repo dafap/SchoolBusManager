@@ -61,6 +61,7 @@ $hiddens = array(
     'responsableId' => $this->responsableId,
     'responsable' => $this->escapeHtml($this->responsable)
 );
+// ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
     'retour' => array(
