@@ -11,13 +11,37 @@
  * @date 25 avr. 2014
  * @version 2014-1
  */
-$url_eleve_eleves = $this->url('sbmgestion/eleve', array('action' => 'eleve-liste', 'page' => $this->page));
-$url_eleve_responsables = $this->url('sbmgestion/eleve', array('action' => 'responsable-liste', 'page' => $this->page));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_eleve_eleves = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-liste',
+    'page' => $this->page
+));
+$url_eleve_responsables = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-liste',
+    'page' => $this->page
+));
 $url_gestion = $this->url('sbmgestion');
 ?>
 <h1>Gestion des élèves</h1>
-<ul>
-<li><a href="<?php echo $url_eleve_eleves; ?>">Gestion des élèves</a></li>
-<li><a href="<?php echo $url_eleve_responsables; ?>">Gestion des responsables</a></li>
-<li><a href="<?php echo $url_gestion; ?>">Retour au menu général</a></li>
-</ul>
+<div id="menugeneral">
+	<div class="flashMessenger">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+    </div>
+	<div class="items">
+		<ul>
+			<li><a href="<?php echo $url_eleve_eleves; ?>"><i
+					class="fam-bullet-go"></i>Gestion des élèves</a></li>
+			<li><a href="<?php echo $url_eleve_responsables; ?>"><i
+					class="fam-bullet-go"></i>Gestion des responsables</a></li>
+			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-door-out"></i>Retour
+					au menu général</a></li>
+		</ul>
+	</div>
+</div>

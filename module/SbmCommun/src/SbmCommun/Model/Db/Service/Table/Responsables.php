@@ -1,7 +1,7 @@
 <?php
 /**
  * Gestion de la table `responsables`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table

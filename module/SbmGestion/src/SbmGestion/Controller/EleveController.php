@@ -17,8 +17,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Db\DbLib;
-use SbmCommun\Form\CriteresForm;
-use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
+use SbmCommun\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\Eleve as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
@@ -34,38 +33,17 @@ class EleveController extends AbstractActionController
 
     public function eleveListeAction()
     {
-        $currentPage = $this->params('page', 1);
-        $table_eleves = $this->getServiceLocator()->get('Sbm\Db\Vue\Eleves');
-        
-        $config = $this->getServiceLocator()->get('Config');
-        $nb_eleve_pagination = $config['liste']['paginator']['nb_eleve_pagination'];
-        
-        $criteres_form = new CriteresForm('eleves');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        
-        // récupère les données du post et met en session
-        $this->session = new SessionContainer($this->getSessionNamespace());
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $criteres_form->setData($request->getPost());
-            if ($criteres_form->isValid()) {
-                $criteres_obj->exchangeArray($criteres_form->getData());
-                $this->session->criteres = $criteres_obj->getArrayCopy();
-            } else {
-                $criteres_form->reset(); // nécessaire pour remettre en place les control, submit et cancel du formulaire qui peuvent être écrasés par le post
-            }
-        }
-        // récupère les données de la session si le post n'a pas validé
-        if (! $criteres_form->hasValidated() && isset($this->session->criteres)) {
-            $criteres_obj->exchangeArray($this->session->criteres);
-            $criteres_form->setData($criteres_obj->getArrayCopy());
-        }
+        $args = $this->initListe('eleves');
+        if ($args instanceof Response)
+            return $args;
         
         return new ViewModel(array(
-            'paginator' => $table_eleves->paginator($criteres_obj->getWhere()),
-            'page' => $currentPage,
-            'nb_eleve_pagination' => $nb_eleve_pagination,
-            'criteres_form' => $criteres_form
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Eleves')
+                ->paginator($args['where']),
+            'page' => $this->params('page', 1),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
+            'criteres_form' => $args['form']
         ));
     }
 
@@ -335,58 +313,18 @@ class EleveController extends AbstractActionController
 
     public function responsableListeAction()
     {
-        // utilisation de PostRedirectGet pour mesure de sécurité
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
-            return $prg;
-        } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres dans la route et éventuellement dans la session (cas du paginator)
-            $is_post = false;
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
-        } else {
-            // c'est le tableau qui correspond au post après redirection; on le met en session
-            $args = $prg;
-            $op = array_key_exists('op', $args) ? $args['op'] : '';
-            if ($op == 'retour') {
-                $is_post = false;
-            } else {
-                $is_post = true;
-                $this->setToSession('post', $args, $this->getSessionNamespace());
-            }
-        }
-        // ici, $args contient ce qu'il y avait dans $_POST ou dans un $_POST précédemment mis en session.
-        // la page vient de la route (comaptibilité du paginateur)
-        $currentPage = $this->params('page', 1);
-        // la configuration du paginateur vient de module.config.php de ce module
-        $config = $this->getServiceLocator()->get('Config');
-        $nb_responsable_pagination = $config['liste']['paginator']['nb_responsable_pagination'];
-        // ouvrir la vue Sql
-        $table_responsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        
-        // formulaire des critères de recherche
-        $criteres_form = new CriteresForm('responsables');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        
-        if ($is_post) {
-            $criteres_form->setData($args);
-            if ($criteres_form->isValid()) {
-                $criteres_obj->exchangeArray($criteres_form->getData());
-                $this->setToSession('criteres', $criteres_obj->getArrayCopy());
-            }
-        }
-        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas de post ou invalide)
-        $criteres_data = $this->getFromSession('criteres');
-        if (! $criteres_form->hasValidated() && ! empty($criteres_data)) {
-            $criteres_obj->exchangeArray($criteres_data);
-            $criteres_form->setData($criteres_obj->getArrayCopy());
-        }
+        // utilisation de PostRedirectGet par mesure de sécurité
+        $args = $this->initListe('responsables');
+        if ($args instanceof Response)
+            return $args;
         
         return new ViewModel(array(
-            'paginator' => $table_responsables->paginator($criteres_obj->getWhere()),
-            'page' => $currentPage,
-            'nb_responsable_pagination' => $nb_responsable_pagination,
-            'criteres_form' => $criteres_form
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Responsables')
+                ->paginator($args['where']),
+            'page' => $this->params('page', 1),
+            'nb_pagination' => $this->getNbPagination('nb_responsables', 10),
+            'criteres_form' => $args['form']
         ));
     }
 
@@ -555,74 +493,57 @@ class EleveController extends AbstractActionController
 
     public function responsableSupprAction()
     {
-        // utilisation de PostRedirectGet par mesure de sécurité
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
-            return $prg;
-        } elseif ($prg === false) {
-            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
-            return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                'action' => 'responsable-liste',
-                'page' => $this->params('page', 1)
-            ));
-        }
-        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
-        $args = $prg;
-        // si $args contient la clé 'cancel' c'est un abandon de l'action
-        if (\array_key_exists('cancel', $args)) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-            return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                'action' => 'responsable-liste',
-                'page' => $this->params('page', 1)
-            ));
-        }
-        // on ouvre la table des données
-        $responsableId = $args['responsableId'];
-        $vueResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves'); // table en relation avec responsables
-                                                                               // on crée le formulaire
+        $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
-            'submit' => array(
-                'class' => 'default submit',
+            'supproui' => array(
+                'class' => 'confirm',
                 'value' => 'Confirmer'
             ),
-            'cancel' => array(
-                'class' => 'default cancel',
+            'supprnon' => array(
+                'class' => 'confirm',
                 'value' => 'Abandonner'
             )
         ), array(
-            'responsableId' => $responsableId
+            'id' => null
         ));
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/eleve', array(
-            'action' => 'responsable-suppr',
-            'page' => $this->params('page', 1)
-        )));
-        
-        if (array_key_exists('submit', $args)) {
-            $form->setData($args);
-            if ($form->isValid()) {
-                $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
-                $tableResponsables->deleteRecord($responsableId);
-                $this->flashMessenger()->addSuccessMessage("L'enregistrement a été supprimé.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'responsable-liste',
-                    'page' => $this->params('page', 1)
-                ));
-            }
+        $params = array(
+            'data' => array(
+                'alias' => 'Sbm\Db\Table\Responsables',
+                'id' => 'responsableId'
+            ),
+            'form' => $form
+        );
+        $vueResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
+        $r = $this->supprData($params, function ($id, $tableResponsables) use($vueResponsables) {
+            return array(
+                'id' => $id,
+                'data' => $vueResponsables->getRecord($id)
+            );
+        });
+        if ($r instanceof Response) {
+            return $r;
         } else {
-            $form->setData(array(
-                'responsableId' => $responsableId
-            ));
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'responsable-liste',
+                        'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                        'form' => $form,
+                        'page' => $currentPage,
+                        'data' => StdLib::getParam('data', $r->getResult()),
+                        'responsableId' => StdLib::getParam('id', $r->getResult()),
+                        'data_dependantes' => $this->getServiceLocator()
+                            ->get('Sbm\Db\Table\Eleves')
+                            ->duResponsable(StdLib::getParam('id', $r->getResult()))
+                    ));
+                    break;
+            }
         }
-        
-        return new ViewModel(array(
-            'data' => $vueResponsables->getRecord($responsableId),
-            'data_dependantes' => $tableEleves->duResponsable($responsableId),
-            'form' => $form,
-            'page' => $this->params('page', 1),
-            'responsableId' => $responsableId
-        ));
     }
 }

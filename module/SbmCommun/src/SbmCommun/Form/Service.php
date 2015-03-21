@@ -13,7 +13,9 @@
  */
 namespace SbmCommun\Form;
 
-class Service extends AbstractSbmForm
+use Zend\InputFilter\InputFilterProviderInterface;
+
+class Service extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($param = 'service')
@@ -34,12 +36,13 @@ class Service extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'service-codeid',
-                'class' => 'sbm-text11'
+                'autofocus' => 'autofocus',
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Code du service',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -51,12 +54,12 @@ class Service extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'service-nom',
-                'class' => 'sbm-text45'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Désignation du service',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -68,12 +71,12 @@ class Service extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'service-aliascg',
-                'class' => 'sbm-text15'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Désignation au CG',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -85,12 +88,35 @@ class Service extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'service-transporteurId',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Transporteur',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
+                ),
+                'empty_option' => 'Choisissez un transporteur',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'operateur',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'service-operateur',
+                'class' => 'sbm-width-10c'
+            ),
+            'options' => array(
+                'label' => 'Opérateur',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'empty_option' => 'Choisissez un opérateur',
+                'value_options' => array(
+                    'CCDA' => 'CCDA',
+                    'CG12' => 'CG12'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -102,12 +128,46 @@ class Service extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'service-nbPlaces',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Nombre de places',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'kmAVide',
+            'type' => 'text',
+            'attributes' => array(
+                'id' => 'service-kmAVide',
+                'class' => 'sbm-width-10c'
+            ),
+            'options' => array(
+                'label' => 'Km à vide',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'kmEnCharge',
+            'type' => 'text',
+            'attributes' => array(
+                'id' => 'service-kmEnCharge',
+                'class' => 'sbm-width-10c'
+            ),
+            'options' => array(
+                'label' => 'Km en charge',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -124,7 +184,7 @@ class Service extends AbstractSbmForm
             'options' => array(
                 'label' => 'Sur les états du CG',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -138,7 +198,7 @@ class Service extends AbstractSbmForm
                 'value' => 'Enregistrer',
                 'id' => 'service-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -147,7 +207,7 @@ class Service extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'service-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }
@@ -159,24 +219,84 @@ class Service extends AbstractSbmForm
             'name' => 'serviceId',
             'type' => 'hidden'
         ));
+        $this->get('nom')->setAttribute('autofocus', 'autofocus');
         $this->add(array(
             'name' => 'codeService',
             'type' => 'text',
             'attributes' => array(
                 'id' => 'service-codeid',
                 'disabled' => 'disabled',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Code du service',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
             )
         ));
+        return $this;
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'serviceId' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\CodeService'
+                    )
+                )
+            ),
+            'nom' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'aliasCG' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'transporteurId' => array(
+                'required' => true
+            ),
+            'surEtatCG' => array(
+                'required' => false
+            ),
+            'nbPlaces' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'Digits'
+                    )
+                )
+            )
+        );
     }
 
     public function setData($data)

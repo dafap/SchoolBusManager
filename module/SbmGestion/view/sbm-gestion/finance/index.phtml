@@ -11,18 +11,41 @@
  * @date 25 avr. 2014
  * @version 2014-1
  */
-$url_finance_encaissements = $this->url('sbmgestion/finance', array('action' => 'paiement-liste'));
-$url_finance_tarifs = $this->url('sbmgestion/finance', array('action' => 'tarif-liste'));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_finance_encaissements = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-liste'
+));
+$url_finance_tarifs = $this->url('sbmgestion/finance', array(
+    'action' => 'tarif-liste'
+));
 $url_finance_factures = $this->url('sbmgestion/finance');
 $url_finance_prelevements = $this->url('sbmgestion/finance');
 $url_gestion = $this->url('sbmgestion');
 
 ?>
 <h1>Menu de gestion financière</h1>
-<ul>
-<li><a href="<?php echo $url_finance_encaissements; ?>">Gestion des encaissements</a></li>
-<li><a href="<?php echo $url_finance_tarifs; ?>">Gestion des tarifs</a></li>
-<li>Gestion des factures</li>
-<li>Gestion des prélèvements</li>
-<li><a href="<?php echo $url_gestion; ?>">Retour au menu général</a></li>
-</ul>
+<div id="menugeneral">
+	<div class="flashMessenger">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+    </div>
+	<div class="items">
+		<ul>
+			<li><a href="<?php echo $url_finance_encaissements; ?>"><i
+					class="fam-bullet-go"></i>Gestion des encaissements</a></li>
+			<li><a href="<?php echo $url_finance_tarifs; ?>"><i
+					class="fam-bullet-go"></i>Gestion des tarifs</a></li>
+			<li class="gris"><i class="fam-bullet-go"></i>Gestion des factures</li>
+			<li class="gris"><i class="fam-bullet-go"></i>Gestion des
+				prélèvements</li>
+			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-door-out"></i>Retour
+					au menu général</a></li>
+		</ul>
+	</div>
+</div>

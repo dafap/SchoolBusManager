@@ -22,7 +22,12 @@ class ConfigController extends AbstractActionController
 {
     public function indexAction()
     {
-        throw new \Exception('Test');
         return new ViewModel();
+    }
+    
+    public function modifCompteAction()
+    {
+        $retour = $this->url()->fromRoute('sbmgestion');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'modif-compte'));
     }
 }

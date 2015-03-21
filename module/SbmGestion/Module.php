@@ -33,22 +33,5 @@ public function getDir()
     public function getNamespace()
     {
         return __NAMESPACE__;
-    }
-    
-    /*public function onBoostrap(EventInterface $e)
-    {
-        $eventManager = $e->getApplication()->getEventManager();
-        $eventManager->attach(MvcEvent::EVENT_DISPATCH, function($e) {
-            $controller = $e->getTarget();
-            var_dump(get_class($controller));
-            $controller->layout()->flashMessages = array_merge(
-               array('success' => $this->flashMessenger()->getSuccessMessages()), 
-               array('warning' => $this->flashMessenger()->getWarningMessages()),
-               array('error' => $this->flashMessenger()->getErrorMessages()), 
-               $this->flashMessenger()->getMessages()
-            );
-        }, -9500);
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
-    }*/
+    }    
 }

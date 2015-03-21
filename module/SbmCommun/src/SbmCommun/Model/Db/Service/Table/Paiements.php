@@ -1,7 +1,7 @@
 <?php
 /**
  * Gestion de la table `paiements`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table

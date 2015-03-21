@@ -10,7 +10,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 10 oct. 2014
- * @version 2014-1
+ * @version 2015-2
  */
 return array(
     'name' => 'scolarites',
@@ -27,9 +27,15 @@ return array(
             'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'etablissementId' => 'char(8) NOT NULL',
             'classeId' => 'int(11) NOT NULL DEFAULT "0"',
-            'adresseL1' => 'varchar(38) NOT NULL',
-            'adresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
-            'communeId' => 'varchar(6) NOT NULL',
+            'chez' => 'varchar(38) DEFAULT NULL',
+            'adresseL1' => 'varchar(38) DEFAULT NULL',
+            'adresseL2' => 'varchar(38) DEFAULT NULL',
+            'codePostal' => 'varchar(5) DEFAULT NULL',
+            'communeId' => 'varchar(6) DEFAULT NULL',
+            'x' => 'decimal(18,10) NOT NULL DEFAULT "1641520.6"', // decazeville, maison de l'industrie
+            'y' => 'decimal(18,10) NOT NULL DEFAULT "3262032.5"', // decazeville, maison de l'industrie
+            'geopt' => 'GEOMETRY',
+            'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'dateEtiquette' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'dateCarte' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
@@ -40,6 +46,7 @@ return array(
             'derogation' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'dateDebut' => 'date NOT NULL',
             'dateFin' => 'date NOT NULL',
+            'joursTransport' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
             'tarifId' => 'int(11) NOT NULL DEFAULT "0"',
             'regimeId' => 'tinyint(1) NOT NULL DEFAULT "0"',

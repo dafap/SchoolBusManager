@@ -27,6 +27,8 @@ use Zend\Paginator\Adapter\DbSelect;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\View;
 use SbmGestion\Form\FinancePaiementSuppr;
+use SbmCommun\Form\SbmCommun\Form;
+use SbmCommun\Model\StdLib;
 
 class FinanceController extends AbstractActionController
 {
@@ -85,7 +87,7 @@ class FinanceController extends AbstractActionController
         $order = 'datePaiement DESC';
         // configuration du paginator
         $config = $this->getServiceLocator()->get('Config');
-        $nb_paiement_pagination = $config['liste']['paginator']['nb_paiement_pagination'];
+        $nb_paiements = $config['liste']['paginator']['nb_paiements'];
         
         if ($responsableId == - 1) {
             // pas de $responsableId - gestion de tous les paiements
@@ -111,7 +113,7 @@ class FinanceController extends AbstractActionController
             }
             return new ViewModel(array(
                 'paginator' => $tablePaiements->paginator($criteres_obj->getWhere(), $order),
-                'nb_paiement_pagination' => $nb_paiement_pagination,
+                'nb_pagination' => $nb_paiements,
                 'criteres_form' => $criteres_form,
                 'h2' => false,
                 'responsable' => null,
@@ -130,7 +132,7 @@ class FinanceController extends AbstractActionController
             
             return new ViewModel(array(
                 'paginator' => $tablePaiements->paginator($where, $order),
-                'nb_paiement_pagination' => $nb_paiement_pagination,
+                'nb_pagination' => $nb_paiements,
                 'criteres_form' => null,
                 'h2' => true,
                 'responsable' => $tableResponsables->getNomPrenom($responsableId, true),
@@ -243,45 +245,17 @@ class FinanceController extends AbstractActionController
         ));
     }
 
+    /**
+     * Reçoit en post les données suivantes à utiliser pour le retour : paiementId, h2, responsableId, responsable, url1_retour et url2_retour
+     * (seuls paiementId et responsable sont utiles ici - les autres sont présents en raison de la compatibilité du formulaire avec 'groupe')
+     * Reçoit dans la route la page de la liste d'où l'on vient
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function paiementEditAction()
     {
-        /*
-         * Reçoit en post les données suivantes à utiliser pour le retour : paiementId, h2, responsableId, url1_retour et url2_retour
-         * (seul paiementId est utile ici - les autres sont présents en raison de la compatibilité du formulaire avec 'groupe')
-         * Reçoit dans la route la page de la liste d'où l'on vient
-         */
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
-            return $prg;
-        } elseif ($prg === false) {
-            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
-            return $this->redirect()->toRoute('sbmgestion/finance', array(
-                'action' => 'paiement-liste',
-                'page' => $this->params('page', 1)
-            ));
-        }
-        // Si on est la c'est qu'on a eu un post et que les données sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
-        // on les copie dans $args. Il y a paiementId, h2, responsableId, url1_retour et url2_retour
-        // Il y a sans doute des choses inutiles mais c'est nécessaire pour groupe qui se traite autrement
-        $args = $prg;
-        // si $args contient la clé 'cancel' (ou si paiementId n'est pas défini) c'est un abandon de l'action
-        if (array_key_exists('cancel', $args) || ! \array_key_exists('paiementId', $args)) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-            return $this->redirect()->toRoute('sbmgestion/finance', array(
-                'action' => 'paiement-liste',
-                'page' => $this->params('page', 1)
-            ));
-        }
-        // Si responsable est passé, on le met en session afin de le retrouver si nécessaire (cas d'un formulaire non validé)
-        if (\array_key_exists('responsable', $args)) {
-            $this->setToSession('responsable', $args['responsable'], $this->getSessionNamespace());
-        }
-        $paiementId = $args['paiementId'];
-        // on ouvre la table des données
-        $tablePaiements = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements');
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        // on ouvre le formulaire, l'adapte et le lie à l'échange de données
+        $currentPage = $this->params('page', 1);
+        $tableTarifs = $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs');
         $hidden_responsableId = false; // mettre true pour obtenir en hidden ; mettre false pour obtenir un select
         $form = new FormPaiement(array(
             'responsableId' => $hidden_responsableId,
@@ -290,45 +264,90 @@ class FinanceController extends AbstractActionController
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/finance', array(
             'action' => 'paiement-edit',
-            'page' => $this->params('page', 1)
+            'page' => $currentPage
         )))
             ->setValueOptions('codeCaisse', $this->getServiceLocator()
             ->get('Sbm\Libelles\Caisse'))
             ->setValueOptions('codeModeDePaiement', $this->getServiceLocator()
-            ->get('Sbm\Libelles\ModeDePaiement'))
-            ->setMaxLength($db->getMaxLengthArray('paiements', 'table'));
+            ->get('Sbm\Libelles\ModeDePaiement'));
         if (! $hidden_responsableId) {
             $form->setValueOptions('responsableId', $this->getServiceLocator()
                 ->get('Sbm\Db\Select\Responsables'));
         }
-        $form->bind($tablePaiements->getObjData());
-        if (array_key_exists('submit', $args)) {
-            $form->setData($args);
-            if ($form->isValid()) {
-                // sauvegarde après avoir validé les datas
-                $tablePaiements->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                // retour à la liste
+        $params = array(
+            'data' => array(
+                'table' => 'paiements',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Paiements',
+                'id' => 'paiementId'
+            ),
+            'form' => $form
+        );
+        $sessionNS = $this->getSessionNamespace();
+        $r = $this->editData($params, function ($post) use($sessionNS) {
+            if (array_key_exists('responsable', $post)) {
+                $responsable = $post['responsable'];
+                \DafapSession\Model\Session::set('responsable', $responsable, $sessionNS);
+            } else {
+                $responsable = \DafapSession\Model\Session::get('responsable', '', $sessionNS);
+            }
+            return array(
+                'paiementId' => $post['paiementId'],
+                'responsable' => $responsable
+            );
+        });
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/finance', array(
+                        'action' => 'paiement-liste',
+                        'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                        'form' => $form,
+                        'page' => $currentPage,
+                        'paiementId' => StdLib::getParam('paiementId', $r->getResult()),
+                        'responsable' => StdLib::getParam('responsable', $r->getResult()),
+                        'hidden_responsableId' => $hidden_responsableId
+                    ));
+                    break;
+            }
+        }
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
                 return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'paiement-liste',
-                    'page' => $this->params('page', 1)
+                    'page' => $currentPage
                 ));
-            } else {
-                $args['responsable'] = $this->getFromSession('responsable');
-            }
-        } else {
-            $form->setData($tablePaiements->getRecord($paiementId)
-                ->getArrayCopy());
+                break;
+            default:
+                return new ViewModel(array(
+                    'form' => $form,
+                    'page' => $currentPage,
+                    'paiementId' => $r['paiementId'],
+                    'responsable' => $r['responsable'],
+                    'hidden_responsableId' => $hidden_responsableId
+                ));
+                break;
         }
-        return new ViewModel(array(
-            'form' => $form,
-            'page' => $this->params('page', 1),
-            'paiementId' => $paiementId,
-            'hidden_responsableId' => $hidden_responsableId,
-            'responsable' => $args['responsable']
-        ));
     }
 
+    /**
+     * Cette fonction n'utilise pas la méthode générale supprData().
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function paiementSupprAction()
     {
         // attention, la suppression d'un paiement déposé chez le comptable doit être accompagnée d'un archivage. Mettre en place un trigger.
@@ -339,6 +358,7 @@ class FinanceController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
+            $this->flashMessenger()->addErrorMessage("Action interdite.");
             return $this->redirect()->toRoute('sbmgestion/finance', array(
                 'action' => 'paiement-liste',
                 'page' => $this->params('page', 1)
@@ -410,42 +430,21 @@ class FinanceController extends AbstractActionController
      */
     public function tarifListeAction()
     {
-        $currentPage = $this->params('page', 1);
-        $tableTarifs = $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs');
-        
-        $criteres_form = new CriteresForm('tarifs');
-        $criteres_form->setValueOptions('rythme', $tableTarifs->getRythmes());
-        $criteres_form->setValueOptions('grille', $tableTarifs->getGrilles());
-        $criteres_form->setValueOptions('mode', $tableTarifs->getModes());
-        
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        
-        $config = $this->getServiceLocator()->get('Config');
-        $nb_tarif_pagination = $config['liste']['paginator']['nb_tarif_pagination'];
-        
-        // récupère les données du post et met en session
-        $session = new SessionContainer($this->getSessionNamespace());
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $criteres_form->setData($request->getPost());
-            if ($criteres_form->isValid()) {
-                $criteres_obj->exchangeArray($criteres_form->getData());
-                $session->criteres = $criteres_obj->getArrayCopy();
-            } else {
-                $criteres_form->reset(); // nécessaire pour remettre en place les control, submit et cancel du formulaire qui peuvent être écrasés par le post
-            }
-        }
-        // récupère les données de la session si le post n'a pas validé
-        if (! $criteres_form->hasValidated() && isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
-            $criteres_form->setData($criteres_obj->getArrayCopy());
-        }
-        
+        $args = $this->initListe('tarifs', function ($sm, $form) {
+            $table = $sm->get('Sbm\Db\Table\Tarifs');
+            $form->setValueOptions('rythme', $table->getRythmes());
+            $form->setValueOptions('grille', $table->getGrilles());
+            $form->setValueOptions('mode', $table->getModes());
+        });
+        if ($args instanceof Response)
+            return $args;
         return new ViewModel(array(
-            'paginator' => $tableTarifs->paginator($criteres_obj->getWhere(), 'nom'),
-            'page' => $currentPage,
-            'nb_tarif_pagination' => $nb_tarif_pagination,
-            'criteres_form' => $criteres_form
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Tarifs')
+                ->paginator($args['where']),
+            'page' => $this->params('page', 1),
+            'nb_pagination' => $this->getNbPagination('nb_tarifs', 10),
+            'criteres_form' => $args['form']
         ));
     }
 
@@ -458,51 +457,43 @@ class FinanceController extends AbstractActionController
     public function tarifEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $tarifId = $this->params('id', - 1);
-        if ($tarifId == - 1) {
-            return $this->redirect()->toRoute('sbmgestion/finance', array(
-                'action' => 'tarif-liste',
-                'page' => $currentPage
-            ));
-        }
         $tableTarifs = $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs');
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        
         $form = new FormTarif();
-        $form->setValueOptions('rythme', array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()));
-        $form->setValueOptions('grille', array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()));
-        $form->setValueOptions('mode', array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
-        $form->setMaxLength($db->getMaxLengthArray('tarifs', 'table'));
+        $form->setValueOptions('rythme', array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
+            ->setValueOptions('grille', array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
+            ->setValueOptions('mode', array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
+        $params = array(
+            'data' => array(
+                'table' => 'tarifs',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Tarifs',
+                'id' => 'tarifId'
+            ),
+            'form' => $form
+        );
         
-        $form->bind($tableTarifs->getObjData());
-        
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('cancel', false)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                return $this->redirect()->toRoute('sbmgestion/finance', array(
-                    'action' => 'tarif-liste',
-                    'page' => $currentPage
-                ));
-            }
-            $form->setData($request->getPost());
-            if ($form->isValid()) { // controle le csrf
-                $tableTarifs->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                return $this->redirect()->toRoute('sbmgestion/finance', array(
-                    'action' => 'tarif-liste',
-                    'page' => $currentPage
-                ));
-            }
+        $r = $this->editData($params);
+        if ($r instanceof Response) {
+            return $r;
         } else {
-            $form->setData($tableTarifs->getRecord($tarifId)
-                ->getArrayCopy());
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/finance', array(
+                        'action' => 'tarif-liste',
+                        'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                        'form' => $form,
+                        'page' => $currentPage,
+                        'tarifId' => $r->getResult()
+                    ));
+                    break;
+            }
         }
-        return new ViewModel(array(
-            'form' => $form,
-            'page' => $currentPage,
-            'tarifId' => $tarifId
-        ));
     }
 
     /**
@@ -515,7 +506,6 @@ class FinanceController extends AbstractActionController
     public function tarifSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $tarifId = $this->params('id', - 1); // GET
         $form = new ButtonForm(array(
             'supproui' => array(
                 'class' => 'confirm',
@@ -526,46 +516,44 @@ class FinanceController extends AbstractActionController
                 'value' => 'Abandonner'
             )
         ), array(
-            'id' => $tarifId
+            'id' => null
         ));
-        $tableTarifs = $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs');
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('supproui', false)) { // confirmation
-                $tarifId = $this->params()->fromPost('id', false); // POST
-                if ($tarifId) {
-                    $tableTarifs->deleteRecord($tarifId);
-                    $this->flashMessenger()->addSuccessMessage("L'enregistrement a été supprimé.");
-                } else {
-                    $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                }
-            } else { // abandon
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
-            }
-            return $this->redirect()->toRoute('sbmgestion/finance', array(
-                'action' => 'tarif-liste',
-                'page' => $currentPage
-            ));
+        $params = array(
+            'data' => array(
+                'alias' => 'Sbm\Db\Table\Tarifs',
+                'id' => 'tarifId'
+            ),
+            'form' => $form
+        );
+        
+        $r = $this->supprData($params, function ($id, $tableTarifs) {
+            return array(
+                'id' => $id,
+                'data' => $tableTarifs->getRecord($id)
+            );
+        });
+        if ($r instanceof Response) {
+            return $r;
         } else {
-            if ($tarifId) {
-                $form->setData(array(
-                    'id' => $tarifId
-                ));
-            } else {
-                $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                return $this->redirect()->toRoute('sbmgestion/finance', array(
-                    'action' => 'tarif-liste',
-                    'page' => $currentPage
-                ));
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/finance', array(
+                        'action' => 'tarif-liste',
+                        'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                        'form' => $form,
+                        'page' => $currentPage,
+                        'data' => StdLib::getParam('data', $r->getResult()),
+                        'tarifId' => StdLib::getParam('id', $r->getResult())
+                    ));
+                    break;
             }
         }
-        
-        return new ViewModel(array(
-            'data' => $tableTarifs->getRecord($tarifId),
-            'form' => $form,
-            'page' => $currentPage,
-            'tarifId' => $tarifId
-        ));
     }
 
     /**
@@ -577,42 +565,41 @@ class FinanceController extends AbstractActionController
     public function tarifAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $tarifId = null;
         $tableTarifs = $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs');
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        
         $form = new FormTarif();
-        $form->setValueOptions('rythme', array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()));
-        $form->setValueOptions('grille', array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()));
-        $form->setValueOptions('mode', array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
-        $form->setMaxLength($db->getMaxLengthArray('tarifs', 'table'));
-        
-        $form->bind($tableTarifs->getObjData());
-        
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('cancel', false)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+        $form->setValueOptions('rythme', array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
+            ->setValueOptions('grille', array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
+            ->setValueOptions('mode', array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
+        $params = array(
+            'data' => array(
+                'table' => 'tarifs',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Tarifs'
+            ),
+            // 'id' => 'tarifId'
+            'form' => $form
+        );
+        $r = $this->addData($params);
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
                 return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'tarif-liste',
                     'page' => $currentPage
                 ));
-            }
-            $form->setData($request->getPost());
-            if ($form->isValid()) { // controle le csrf
-                $tableTarifs->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                return $this->redirect()->toRoute('sbmgestion/finance', array(
-                    'action' => 'tarif-liste',
-                    'page' => $currentPage
+                break;
+            default:
+                return new ViewModel(array(
+                    'form' => $form,
+                    'page' => $currentPage,
+                    'tarifId' => null
                 ));
-            }
+                break;
         }
-        return new ViewModel(array(
-            'form' => $form,
-            'page' => $currentPage,
-            'tarifId' => $tarifId
-        ));
     }
 
     /**

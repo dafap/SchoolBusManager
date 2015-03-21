@@ -11,35 +11,50 @@
  * @date 5 mai 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url('sbmgestion/transport', array('action'=> 'transporteur-liste', 'page' => $this->page));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
 ?>
 <h1>Création d'un nouveau transporteur</h1>
-<div class="fiche-wrapper">
-  <div class="zone-actions">
-    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des transporteurs"><i class="fam-door-out"></i> Retour</a>
-  </div>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
 <?php 
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('transporteurId'));
 echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="edit">';
-echo '<div id="transporteur-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
-echo '<div id="transporteur-edit-adresse1" class="row-inner edit">' . $this->formRow($this->form->get('adresse1')) . '</div>';
-echo '<div id="transporteur-edit-adresse2" class="row-inner edit">' . $this->formRow($this->form->get('adresse2')) . '</div>';
-echo '<div id="transporteur-edit-codePostal" class="row-inner edit">' . $this->formRow($this->form->get('codePostal')) . '</div>';
-echo '<div id="transporteur-edit-comuneId" class="row-inner edit">' . $this->formRow($this->form->get('communeId')) . '</div>';
-echo '<div id="transporteur-edit-telephone" class="row-inner edit">' . $this->formRow($this->form->get('telephone')) . '</div>';
-echo '<div id="transporteur-edit-fax" class="row-inner edit">' . $this->formRow($this->form->get('fax')) . '</div>';
-echo '<div id="transporteur-edit-email" class="row-inner edit">' . $this->formRow($this->form->get('email')) . '</div>';
-echo '<div id="transporteur-edit-siret" class="row-inner edit">' . $this->formRow($this->form->get('siret')) . '</div>';
-echo '<div id="transporteur-edit-naf" class="row-inner edit">' . $this->formRow($this->form->get('naf')) . '</div>';
-echo '<div id="transporteur-edit-tvaIntraCommunautaire" class="row-inner edit">' . $this->formRow($this->form->get('tvaIntraCommunautaire')) . '</div>';
-echo '<div id="transporteur-edit-rib_titulaire" class="row-inner edit">' . $this->formRow($this->form->get('rib_titulaire')) . '</div>';
-echo '<div id="transporteur-edit-rib_domiciliation" class="row-inner edit">' . $this->formRow($this->form->get('rib_domiciliation')) . '</div>';
-echo '<div id="transporteur-edit-rib_bic" class="row-inner edit">' . $this->formRow($this->form->get('rib_bic')) . '</div>';
-echo '<div id="transporteur-edit-rib_iban" class="row-inner edit">' . $this->formRow($this->form->get('rib_iban')) . '</div>';
-echo '<div id="transporteur-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
-echo '</fieldset>';
-echo $this->form()->closeTag();
 ?>
+    <fieldset class="sbm-page1">
+        <div id="transporteur-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+        <div id="transporteur-ajout-adresse1" class="row-inner ajout"><?php echo $this->formRow($this->form->get('adresse1')); ?></div>
+        <div id="transporteur-ajout-adresse2" class="row-inner ajout"><?php echo $this->formRow($this->form->get('adresse2')); ?></div>
+        <div id="transporteur-ajout-codePostal" class="row-inner ajout"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
+        <div id="transporteur-ajout-comuneId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
+        <div id="transporteur-ajout-telephone" class="row-inner ajout"><?php echo $this->formRow($this->form->get('telephone')); ?></div>
+        <div id="transporteur-ajout-fax" class="row-inner ajout"><?php echo $this->formRow($this->form->get('fax')); ?></div>
+        <div id="transporteur-ajout-email" class="row-inner ajout"><?php echo $this->formRow($this->form->get('email')); ?></div>
+        <div id="transporteur-ajout-siret" class="row-inner ajout"><?php echo $this->formRow($this->form->get('siret')); ?></div>
+        <div id="transporteur-ajout-naf" class="row-inner ajout"><?php echo $this->formRow($this->form->get('naf')); ?></div>
+        <div id="transporteur-ajout-tvaIntraCommunautaire" class="row-inner ajout"><?php echo $this->formRow($this->form->get('tvaIntraCommunautaire')); ?></div>
+        <div id="transporteur-ajout-rib_titulaire" class="row-inner ajout"><?php echo $this->formRow($this->form->get('rib_titulaire')); ?></div>
+        <div id="transporteur-ajout-rib_domiciliation" class="row-inner ajout"><?php echo $this->formRow($this->form->get('rib_domiciliation')); ?></div>
+        <div id="transporteur-ajout-rib_bic" class="row-inner ajout"><?php echo $this->formRow($this->form->get('rib_bic')); ?></div>
+        <div id="transporteur-ajout-rib_iban" class="row-inner ajout"><?php echo $this->formRow($this->form->get('rib_iban')); ?></div>
+        <div id="transporteur-ajout-buttons" class="row-inner ajout">
+        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+    </fieldset>
+<?php echo $this->form()->closeTag(); ?>
+    </div>
+	<div id="fiche-footer"></div>
 </div>

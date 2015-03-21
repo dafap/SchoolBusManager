@@ -32,6 +32,7 @@ return array(
             'canton' => 'varchar(5) NOT NULL',
             'membre' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'desservie' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'visible' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'population' => 'mediumint(8) UNSIGNED NOT NULL DEFAULT "0"',
         ),
         'primary_key' => array('communeId',),

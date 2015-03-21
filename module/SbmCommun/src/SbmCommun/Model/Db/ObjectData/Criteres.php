@@ -75,12 +75,16 @@ class Criteres implements ArraySerializableInterface
      * @return Zend\Db\Sql\Where
      *
      */
-    public function getWhere()
+    public function getWhere($strict = array())
     {
         $where = new Where();
         foreach ($this->data as $field => $value) {
             if (! empty($value)) {
-                $where->like($field, $value . '%');
+                if (in_array($field, $strict)) {
+                    $where->equalTo($field, $value);
+                } else {
+                    $where->like($field, $value . '%');
+                }
             }
         }
         return $where;

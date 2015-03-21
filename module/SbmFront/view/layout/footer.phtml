@@ -15,17 +15,30 @@
  * @version 2014-1
  */
 ?>
-<div class="footer">
-  <div class="contener_wf">
+<div id="footer">
+  <div class="float-left">
   <?php echo $this->translate('School Bus Manager');?> : Réalisation 
   <a href="http://www.dafap.fr" target="_blank">Dafap informatique</a>
-  </div>
-  <div class="contener_mention_plan">
   &copy;2013 - <?php echo date('Y') . ' ' . $this->client_name; ?> 
+  </div>
+  <div class="float-right"> 
   <?php 
   // mentions légales, plan du site ... passés dans un tableau associatif {$name => $url}
+  $sep = '';
   foreach ((array) $this->footer_elements as $name => $url) {
-      echo ' - <a href="' . $url . '" class="txt9_ffffff">' . $name . '</a>';
+      if (is_array($url)) {
+          $href= array_key_exists('href', $url) ? $url['href'] : '';
+          $accesskey = array_key_exists('accesskey', $url) ? ' accesskey="' . $url['accesskey'] .'"' : '';
+          $title = array_key_exists('title', $url) ? ' title="' . $url['title'] .'"' : '';
+          $css = array_key_exists('class', $url) ? ' class="' . $url['class'] .'"' : '';
+      } elseif (is_string($url)) {
+          $href = $url;
+          $accesskey = '';
+          $title = '';
+          $css = '';
+      }
+      echo $sep . '<a' . $title . $accesskey . $css. ' href="' . $href . '">' . $name . '</a>';
+      $sep = ' | ';
   }
   ?>
   </div>

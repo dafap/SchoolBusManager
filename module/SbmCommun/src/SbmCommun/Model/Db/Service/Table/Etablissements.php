@@ -1,7 +1,7 @@
 <?php
 /**
  * Gestion de la table `etablissements`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
@@ -14,6 +14,7 @@
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
+use SbmCommun\Model\Strategy\Niveau as NiveauStrategy;
 
 class Etablissements extends AbstractSbmTable
 {
@@ -35,6 +36,7 @@ class Etablissements extends AbstractSbmTable
     protected function setStrategies()
     {
         $this->hydrator->addStrategy('jOuverture', new SemaineStrategy());
+        $this->hydrator->addStrategy('niveau', new NiveauStrategy());
     }
     
     public function getSemaine()
@@ -55,9 +57,9 @@ class Etablissements extends AbstractSbmTable
         return array(
                     '1' => 'Maternelle',
                     '2' => 'Primaire',
-                    '3' => 'Collège',
-                    '4' => 'Lycée',
-                    '5' => 'Autre'
+                    '4' => 'Collège',
+                    '8' => 'Lycée',
+                    '16' => 'Autre'
                 );
     }
 }

@@ -24,8 +24,8 @@ return array(
             'nom' => 'varchar(45) NOT NULL',
             'aliasCG' => 'varchar(45) NOT NULL DEFAULT ""',
             'codeCG' => 'int(11) NOT NULL DEFAULT "0"',
-            'longitude' => 'varchar(20) NOT NULL DEFAULT ""',
-            'latitude' => 'varchar(20) NOT NULL DEFAULT ""',
+            'x' => 'decimal(18,10) NOT NULL DEFAULT "0.0"',
+            'y' => 'decimal(18,10) NOT NULL DEFAULT "0.0"',
             'geopt' => 'GEOMETRY',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'ouverte' => 'tinyint(1) NOT NULL DEFAULT  "1"'

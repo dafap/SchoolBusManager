@@ -13,7 +13,9 @@
  */
 namespace SbmCommun\Form;
 
-class Etablissement extends AbstractSbmForm
+use Zend\InputFilter\InputFilterProviderInterface;
+
+class Etablissement extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($param = 'etablissement')
@@ -34,12 +36,13 @@ class Etablissement extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'etablissement-codeid',
-                'class' => 'sbm-text8'
+                'autofocus' => 'autofocus',
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
-                'label' => 'Code de l\'établissement',
+                'label' => 'Code',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -51,12 +54,12 @@ class Etablissement extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'etablissement-nom',
-                'class' => 'sbm-text45'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
-                'label' => 'Nom de l\'établissement',
+                'label' => 'Nom',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -68,12 +71,12 @@ class Etablissement extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'etablissement-alias',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Autre désignation',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -85,12 +88,12 @@ class Etablissement extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'etablissement-aliasCG',
-                'class' => 'sbm-text50'
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Désignation au CG',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -99,15 +102,15 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'adresse1',
-            'type' => 'text',
+            'type' => 'SbmCommun\Form\Element\Adresse',
             'attributes' => array(
                 'id' => 'etablissement-adresse1',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-40c'
             ),
             'options' => array(
                 'label' => 'Adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -116,15 +119,15 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'adresse2',
-            'type' => 'text',
+            'type' => 'SbmCommun\Form\Element\Adresse',
             'attributes' => array(
                 'id' => 'etablissement-adresse2',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-40c'
             ),
             'options' => array(
                 'label' => 'Adresse (suite)',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -136,12 +139,12 @@ class Etablissement extends AbstractSbmForm
             'type' => 'SbmCommun\Form\Element\CodePostal',
             'attributes' => array(
                 'id' => 'etablissement-codepostal',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Code postal',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -153,12 +156,12 @@ class Etablissement extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'etablissement-communeId',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une commune',
                 'error_attributes' => array(
@@ -171,12 +174,12 @@ class Etablissement extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'etablissement-directeur',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom du directeur',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -185,15 +188,15 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'telephone',
-            'type' => 'text',
+            'type' => 'SbmCommun\Form\Element\Telephone',
             'attributes' => array(
                 'id' => 'etablissement-telephone',
-                'class' => 'sbm-text10'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Téléphone',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -202,15 +205,15 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'fax',
-            'type' => 'text',
+            'type' => 'SbmCommun\Form\Element\Telephone',
             'attributes' => array(
                 'id' => 'etablissement-fax',
-                'class' => 'sbm-text10'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Fax',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -219,15 +222,15 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'email',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Email',
             'attributes' => array(
                 'id' => 'etablissement-email',
-                'class' => 'sbm-text80'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Email',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -235,18 +238,17 @@ class Etablissement extends AbstractSbmForm
             )
         ));
         $this->add(array(
+            'type' => 'Zend\Form\Element\MultiCheckbox',
             'name' => 'niveau',
-            'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'etablissement-niveau',
-                'class' => 'sbm-select2'
+                'class' => 'sbm-multicheckbox'
             ),
             'options' => array(
                 'label' => 'Niveau',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
-                'empty_option' => 'Choisissez un niveau',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -272,15 +274,20 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'hMatin',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hMatin',
-                'class' => 'sbm-text5'
+                'title' => 'Format hh:mm',
+                'class' => 'sbm-width-10c',
+                'min' => '00:00',
+                'max' => '29:59',
+                'step' => '60'
             ),
             'options' => array(
-                'label' => 'Matin : heure d\'entrée',
+                'format' => 'H:i',
+                'label' => 'Entrée',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -289,15 +296,20 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'hMidi',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hMidi',
-                'class' => 'sbm-text5'
+                'title' => 'Format hh:mm',
+                'class' => 'sbm-width-10c',
+                'min' => '00:00',
+                'max' => '29:59',
+                'step' => '60'
             ),
             'options' => array(
-                'label' => 'Midi : heure de sortie',
+                'format' => 'H:i',
+                'label' => 'Sortie',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -306,15 +318,20 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'hAMidi',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hAMidi',
-                'class' => 'sbm-text5'
+                'title' => 'Format hh:mm',
+                'class' => 'sbm-width-10c',
+                'min' => '00:00',
+                'max' => '29:59',
+                'step' => '60'
             ),
             'options' => array(
-                'label' => 'Après-midi : heure d\'entrée',
+                'format' => 'H:i',
+                'label' => 'Entrée',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -323,15 +340,86 @@ class Etablissement extends AbstractSbmForm
         ));
         $this->add(array(
             'name' => 'hSoir',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hSoir',
-                'class' => 'sbm-text5'
+                'title' => 'Format hh:mm',
+                'class' => 'sbm-width-10c',
+                'min' => '00:00',
+                'max' => '29:59',
+                'step' => '60'
             ),
             'options' => array(
-                'label' => 'Après-midi : heure de sortie',
+                'format' => 'H:i',
+                'label' => 'Sortie',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'hGarderieOMatin',
+            'type' => 'Zend\Form\Element\Time',
+            'attributes' => array(
+                'id' => 'etablissement-hMatin',
+                'title' => 'Format hh:mm',
+                'class' => 'sbm-width-10c',
+                'min' => '00:00',
+                'max' => '29:59',
+                'step' => '60'
+            ),
+            'options' => array(
+                'format' => 'H:i',
+                'label' => 'Tous les jours',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'hGarderieFSoir',
+            'type' => 'Zend\Form\Element\Time',
+            'attributes' => array(
+                'id' => 'etablissement-hMidi',
+                'title' => 'Format hh:mm',
+                'class' => 'sbm-width-10c',
+                'min' => '00:00',
+                'max' => '29:59',
+                'step' => '60'
+            ),
+            'options' => array(
+                'format' => 'H:i',
+                'label' => 'Lu Ma Je Ve',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'hGarderieFMidi',
+            'type' => 'Zend\Form\Element\Time',
+            'attributes' => array(
+                'id' => 'etablissement-hAMidi',
+                'title' => 'Format hh:mm',
+                'class' => 'sbm-width-10c',
+                'min' => '00:00',
+                'max' => '29:59',
+                'step' => '60'
+            ),
+            'options' => array(
+                'format' => 'H:i',
+                'label' => 'Mercredi',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -346,7 +434,7 @@ class Etablissement extends AbstractSbmForm
                 'class' => 'sbm-multicheckbox'
             ),
             'options' => array(
-                'label' => 'Cochez les jours d\'ouverture',
+                'label' => 'Jours d\'ouverture',
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
@@ -365,7 +453,7 @@ class Etablissement extends AbstractSbmForm
             'options' => array(
                 'label' => 'Regroupement pédagogique',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -377,12 +465,12 @@ class Etablissement extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'etablissement-rattacheA',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Secteur scolaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un établissement',
                 'allow_empty' => true,
@@ -393,16 +481,17 @@ class Etablissement extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'latitude',
+            'name' => 'x',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'etablissement-latitude',
-                'class' => 'sbm-text20'
+                'id' => 'etablissement-x',
+                'title' => 'Utilisez . comme séparateur décimal',
+                'class' => 'sbm-width-20c'
             ),
             'options' => array(
-                'label' => 'Latitude',
+                'label' => 'X',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -410,16 +499,17 @@ class Etablissement extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'longitude',
+            'name' => 'y',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'etablissement-longitude',
-                'class' => 'sbm-text20'
+                'id' => 'etablissement-y',
+                'title' => 'Utilisez . comme séparateur décimal',
+                'class' => 'sbm-width-20c'
             ),
             'options' => array(
-                'label' => 'Longitude',
+                'label' => 'Y',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -434,9 +524,9 @@ class Etablissement extends AbstractSbmForm
                 'class' => 'sbm-checkbox'
             ),
             'options' => array(
-                'label' => 'Etablissement visible',
+                'label' => 'Visible',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -449,8 +539,7 @@ class Etablissement extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'etablissement-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -459,15 +548,18 @@ class Etablissement extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'etablissement-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
-        $this->getInputFilter()->get('rattacheA')->setRequired(false);
+        $this->getInputFilter()
+            ->get('rattacheA')
+            ->setRequired(false);
     }
 
     public function modifFormForEdit()
     {
         $e = $this->remove('etablissementId');
+        $this->get('nom')->setAttribute('autofocus', 'autofocus');
         $this->add(array(
             'name' => 'etablissementId',
             'type' => 'hidden'
@@ -481,7 +573,7 @@ class Etablissement extends AbstractSbmForm
                 'class' => 'sbm-text8'
             ),
             'options' => array(
-                'label' => 'Code de l\'établissement',
+                'label' => 'Code',
                 'label_attributes' => array(
                     'class' => 'sbm-label170'
                 ),
@@ -490,6 +582,179 @@ class Etablissement extends AbstractSbmForm
                 )
             )
         ));
+        return $this;
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'etablissementId' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'Alnum'
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\CodeEtablissement'
+                    )
+                )
+            ),
+            'nom' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'StringToUpper'
+                    )
+                )
+            ),
+            'alias' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'StringToUpper'
+                    )
+                )
+            ),
+            'aliasCG' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'StringToUpper'
+                    )
+                )
+            ),
+            'adresse1' => array(
+                'required' => false
+            ),
+            'adresse2' => array(
+                'required' => false
+            ),
+            'codePostal' => array(
+                'required' => true
+            ),
+            'communeId' => array(
+                'required' => true
+            ),
+            'niveau' => array(
+                'required' => true
+            ),
+            'statut' => array(
+                'required' => true
+            ),
+            'visible' => array(
+                'required' => false
+            ),
+            'desservie' => array(
+                'required' => false
+            ),
+            'regrPeda' => array(
+                'required' => false
+            ),
+            'rattacheA' => array(
+                'required' => false
+            ),
+            'telephone' => array(
+                'required' => false
+            ),
+            'fax' => array(
+                'required' => false
+            ),
+            'email' => array(
+                'required' => false
+            ),
+            'directeur' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'StringToUpper'
+                    )
+                )
+            ),
+            'jOuverture' => array(
+                'required' => true
+            ),
+            'hMatin' => array(
+                'required' => false
+            ),
+            'hMidi' => array(
+                'required' => false
+            ),
+            'hAMidi' => array(
+                'required' => false
+            ),
+            'hSoir' => array(
+                'required' => false
+            ),
+            'hGarderieOMatin' => array(
+                'required' => false
+            ),
+            'hGarderieFMidi' => array(
+                'required' => false
+            ),
+            'hGarderieFSoir' => array(
+                'required' => false
+            ),
+            'x' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\Decimal'
+                    )
+                )
+            ),
+            'y' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\Decimal'
+                    )
+                )
+            )
+        );
     }
 
     public function setData($data)

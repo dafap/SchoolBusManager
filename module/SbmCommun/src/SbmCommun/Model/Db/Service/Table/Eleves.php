@@ -1,7 +1,7 @@
 <?php
 /**
  * Gestion de la table `eleves`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
@@ -20,6 +20,28 @@ use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 class Eleves extends AbstractSbmTable
 {
     /**
+     * Renvoie l'enregistrement corresponsdant au gid donné
+     * 
+     * @param int $gid
+     * @throws Exception
+     * @return mixed
+     */
+    public function getRecordByGid($gid)
+    {
+        $array_where = array(
+            'id_ccda = ?' => $gid
+        );
+        $condition_msg = "id_ccda = $gid";
+        
+        $rowset = $this->table_gateway->select($array_where);
+        $row = $rowset->current();
+        if (! $row) {
+            throw new Exception(sprintf(_("Could not find row '%s' in table %s"), $condition_msg, $this->table_name));
+        }
+        return $row;
+    }
+
+    /**
      * Initialisation du transporteur
      */
     protected function init()
@@ -29,7 +51,7 @@ class Eleves extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Eleves';
         $this->id_name = 'eleveId';
     }
-    
+
     public function saveRecord(ObjectDataInterface $obj_data)
     {
         try {
@@ -44,11 +66,19 @@ class Eleves extends AbstractSbmTable
                 'prenomSA',
                 'dateCreation'
             ));
+            for ($u = $obj_data->createNumero(), $i = 0; $this->numeroLibre($u); $i ++) {
+                $u ++;
+                $u += 2 * $i;
+                $u %= $obj_data::BASE;
+                if ($u == 0)
+                    $u = $obj_data::BASE;
+            }
+            $obj_data->numero = $u;
         } else {
             // on vérifie si des données ont changé
             if ($obj_data->isUnchanged($old_data))
                 return;
-    
+            
             if ($old_data->nom != $obj_data->nom) {
                 $obj_data->addCalculateField('nomSA');
             }
@@ -57,59 +87,79 @@ class Eleves extends AbstractSbmTable
             }
             $obj_data->addCalculateField('dateModification');
         }
-    
+        
         parent::saveRecord($obj_data);
     }
-    
+
+    private function numeroLibre($n)
+    {
+        return is_null($this->fetchAll(array(
+            'numero',
+            $n
+        )));
+    }
+
     /**
      * Liste des élèves ayant la personne d'identifiant $responsableId comme responsable (1, 2 ou financier)
-     * 
-     * @param long $responsableId
+     *
+     * @param long $responsableId            
      * @return \SbmCommun\Model\Db\Service\Table\ResultSet
      */
-    public function duResponsable($responsableId) 
+    public function duResponsable($responsableId)
     {
         $where = new Where();
         $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId)->OR->equalTo('responsableFId', $responsableId);
-        return $this->fetchAll($where, array('nom', 'prenom'));
+        return $this->fetchAll($where, array(
+            'nom',
+            'prenom'
+        ));
     }
-    
+
     /**
      * Liste des élèves ayant comme responsable 1 la personne d'identifiant $responsableId
-     * 
-     * @param long $responsableId
+     *
+     * @param long $responsableId            
      * @return \SbmCommun\Model\Db\Service\Table\ResultSet
      */
     public function duResponsable1($responsableId)
     {
         $where = new Where();
         $where->equalTo('responsable1Id', $responsableId);
-        return $this->fetchAll($where, array('nom', 'prenom'));
+        return $this->fetchAll($where, array(
+            'nom',
+            'prenom'
+        ));
     }
-    
+
     /**
      * Liste des élèves ayant comme responsable 2 la personne d'identifiant $responsableId
-     * 
-     * @param long $responsableId
+     *
+     * @param long $responsableId            
      * @return \SbmCommun\Model\Db\Service\Table\ResultSet
      */
     public function duResponsable2($responsableId)
     {
         $where = new Where();
         $where->equalTo('responsable2Id', $responsableId);
-        return $this->fetchAll($where, array('nom', 'prenom'));
+        return $this->fetchAll($where, array(
+            'nom',
+            'prenom'
+        ));
     }
-    
+
     /**
      * Liste des élèves ayant comme responsable financier la personne d'identifiant $responsableId
-     * 
-     * @param long $responsableId
+     *
+     * @param long $responsableId            
      * @return \SbmCommun\Model\Db\Service\Table\ResultSet
      */
     public function duResponsableFinancier($responsableId)
     {
         $where = new Where();
         $where->equalTo('responsableFId', $responsableId);
-        return $this->fetchAll($where, array('nom', 'prenom'));
+        return $this->fetchAll($where, array(
+            'nom',
+            'prenom'
+        ));
     }
 }

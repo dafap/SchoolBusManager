@@ -1,7 +1,7 @@
 <?php
 /**
  * Gestion de la table `circuits`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
@@ -12,6 +12,8 @@
  * @version 2014-1
  */
 namespace SbmCommun\Model\Db\Service\Table;
+
+use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 
 class Circuits extends AbstractSbmTable
 {
@@ -24,6 +26,27 @@ class Circuits extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Circuits';
         $this->id_name = 'circuitId';
+    }
+    /**
+     * (non-PHPdoc)
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
+     */
+    protected function setStrategies()
+    {
+        $this->hydrator->addStrategy('semaine', new SemaineStrategy());
+    }
+    
+    public function getSemaine()
+    {
+        return  array(
+            SemaineStrategy::CODE_SEMAINE_LUNDI => 'lun',
+            SemaineStrategy::CODE_SEMAINE_MARDI => 'mar',
+            SemaineStrategy::CODE_SEMAINE_MERCREDI => 'mer',
+            SemaineStrategy::CODE_SEMAINE_JEUDI => 'jeu',
+            SemaineStrategy::CODE_SEMAINE_VENDREDI => 'ven',
+            SemaineStrategy::CODE_SEMAINE_SAMEDI => 'sam',
+            SemaineStrategy::CODE_SEMAINE_DIMANCHE => 'dim'
+        );
     }
 }
 

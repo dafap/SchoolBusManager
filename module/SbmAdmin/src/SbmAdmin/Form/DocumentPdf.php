@@ -29,7 +29,7 @@ class DocumentPdf extends Form
         $fonts = new TcpdfFonts();
         parent::__construct($param);
         $this->setAttribute('method', 'post');
-        $this->setAttribute('id', 'accordion');
+        //$this->setAttribute('id', 'accordion');
         $this->add(array(
             'name' => 'documentId',
             'type' => 'hidden'
@@ -53,19 +53,19 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-disposition',
-                'class' => 'sbm-select2'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
-                'label' => 'Disposition des données',
+                'label' => 'Disposition',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'value_options' => array(
                     'Tablulaire' => 'Présentation tabulaire',
                     'BlocVertical' => 'Présentation verticale',
                     'BlocFiche' => 'Présentation en fiches'
                 ),
-                'empty_option' => 'Choisissez la disposition des données',
+                'empty_option' => 'Choisissez la disposition',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -76,12 +76,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-name',
-                'class' => 'sbm-text32'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Nom du document pdf',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -93,12 +93,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-out_mode',
-                'class' => 'sbm-select2'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Récupération du pdf',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'value_options' => array(
                     'I' => 'en ligne',
@@ -119,12 +119,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-out_name',
-                'class' => 'sbm-text32'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Nom du fichier pdf',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'value' => 'document.pdf',
                 'error_attributes' => array(
@@ -137,12 +137,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf_recordSourceType',
-                'class' => 'sbm-selectl1'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
-                'label' => 'Provenance des données',
+                'label' => 'Provenance',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez',
                 'value_options' => array(
@@ -159,12 +159,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-recordSource',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Source des données',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une source de données',
                 'error_attributes' => array(
@@ -177,12 +177,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-filter',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Filtre des données',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -194,12 +194,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-orderBy',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
-                'label' => 'Ordre de tri des données',
+                'label' => 'Ordre de tri',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -211,12 +211,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-url_path_images',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Dossier contenant les images du document',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -228,12 +228,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-image_blank',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom de l\'image vide',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -248,9 +248,9 @@ class DocumentPdf extends Form
                 'class' => 'sbm-checkbox'
             ),
             'options' => array(
-                'label' => 'Y a-t-il un en-tête de document ?',
+                'label' => 'Y a-t-il un en-tête de document ?   ',
                 'label_attributes' => array(
-                    'class' => 'sbm-label230'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -267,7 +267,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Y a-t-il un pied de document ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label230'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -284,7 +284,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Y a-t-il un en-tête de page ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -301,7 +301,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Y a-t-il un pied de page ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -317,12 +317,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-author',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Auteur du document pdf',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -334,12 +334,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-title',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Titre du document pdf',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -351,12 +351,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-subject',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Sujet du document pdf',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -368,12 +368,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-keywords',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Mots clés',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -385,12 +385,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-docheader_subtitle',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Sous-titre du document pdf',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -407,7 +407,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Saut de page après l\'en-tête de document ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -419,12 +419,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-docheader_margin',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge de l\'en-tête de document (en mm)',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -441,7 +441,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'En-tête de page sur la première page ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -456,9 +456,9 @@ class DocumentPdf extends Form
                 'class' => 'sbm-checkbox'
             ),
             'options' => array(
-                'label' => 'Pied de page sur la première page ?',
+                'label' => 'Pied de page sur la première page ? ',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -470,12 +470,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-docheader_templateId',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Modèle de page d\'en-tête',
                 'label_attributes' => array(
-                    'class' => 'sbm-label190'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un modèle',
                 'value_options' => $this->getTemplateList('docheader'),
@@ -489,12 +489,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-docfooter_title',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Titre du pied de document',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -506,12 +506,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-docfooter_string',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Texte du pied de document',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -528,7 +528,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Saut de page avant le pied de document ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -545,7 +545,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Pied de document insécable ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -557,12 +557,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-docfooter_margin',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge du pied de document (en mm)',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -579,7 +579,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'En-tête de page sur la dernière page ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -596,7 +596,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Pied de page sur la dernière page ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -608,12 +608,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-docfooter_templateId',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Modèle de pied de document',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un modèle',
                 'value_options' => $this->getTemplateList('docfooter'),
@@ -627,12 +627,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_templateId',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Modèle d\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label190'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un modèle',
                 'value_options' => $this->getTemplateList('header'),
@@ -646,12 +646,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_title',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Titre d\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -663,12 +663,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_string',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Texte d\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -685,7 +685,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Logo dans l\'en-tête de page ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -697,12 +697,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_logo',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Logo d\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -714,12 +714,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_logo_width',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Largeur du logo d\'en-tête de page (en mm)',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -731,12 +731,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_margin',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge de l\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -748,12 +748,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Police de l\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label190'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -767,12 +767,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_font_style',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style police de l\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label230'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -784,12 +784,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_font_size',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille police de l\'en-tête de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label230'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -801,12 +801,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_text_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur du texte dans l\'en-tête',
                 'label_attributes' => array(
-                    'class' => 'sbm-label230'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -818,12 +818,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_line_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur des traits dans l\'en-tête',
                 'label_attributes' => array(
-                    'class' => 'sbm-label230'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -835,12 +835,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_templateId',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Modèle de pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label190'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un modèle',
                 'value_options' => $this->getTemplateList('footer'),
@@ -854,12 +854,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_string',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Texte de pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label300'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -871,12 +871,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_margin',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge du pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -888,12 +888,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Police du pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -907,12 +907,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_font_style',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style police du pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -924,12 +924,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_font_size',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille police du pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -941,12 +941,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_text_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur du texte dans le pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label270'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -958,12 +958,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_line_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur des traits dans le pied de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label270'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -975,12 +975,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-page_templateId',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Modèle de page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un modèle',
                 'value_options' => $this->getTemplateList('docbody'),
@@ -994,12 +994,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-page_format',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Format de la page',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un format',
                 'value_options' => $this->getArrayPageFormats(),
@@ -1031,12 +1031,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-page_margin_top',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge du haut',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1048,12 +1048,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-page_margin_bottom',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge du bas',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1065,12 +1065,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-page_margin_left',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge de gauche',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1082,12 +1082,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-page_margin_right',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Marge de droite',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1099,12 +1099,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-main_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Police principale',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -1118,12 +1118,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-main_font_style',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style de la police principale',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1135,12 +1135,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-main_font_size',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille de la police principale',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1152,12 +1152,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-data_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Police des données',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -1171,12 +1171,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-data_font_style',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style de la police des données',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1188,12 +1188,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-data_font_size',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille de la police des données',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1205,12 +1205,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-titre1_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Police des Titre1',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -1224,12 +1224,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre1_font_style',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style de la police des Titre1',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1241,12 +1241,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre1_font_size',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille de la police des Titre1',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1258,12 +1258,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre1_text_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur du titre 1',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1280,7 +1280,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Encadrement de titre 1 ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1292,12 +1292,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre1_line_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur encadrement titre 1',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1310,12 +1310,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-titre2_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Police des Titre2',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -1329,12 +1329,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre2_font_style',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style de la police des Titre2',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1346,12 +1346,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre2_font_size',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille de la police des Titre2',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1363,12 +1363,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre2_text_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur du titre 2',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1385,7 +1385,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Encadrement de titre 2 ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1397,12 +1397,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre2_line_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur encadrement titre 2',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1415,12 +1415,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-titre3_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Police des Titre3',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -1434,12 +1434,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre3_font_style',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style de la police des Titre3',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1451,12 +1451,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre3_font_size',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille de la police des Titre3',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1468,12 +1468,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre3_text_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur du titre 3',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1490,7 +1490,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Encadrement de titre 3 ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1502,12 +1502,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre3_line_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur encadrement titre 3',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1520,12 +1520,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-titre4_font_family',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'Police des Titre4',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(),
@@ -1539,12 +1539,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre4_font_style',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Style de la police des Titre4',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1556,12 +1556,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre4_font_size',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Taille de la police des Titre4',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1573,12 +1573,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre4_text_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur du titre 4',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1595,7 +1595,7 @@ class DocumentPdf extends Form
             'options' => array(
                 'label' => 'Encadrement de titre 4 ?',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1607,12 +1607,12 @@ class DocumentPdf extends Form
             'type' => 'text',
             'attributes' => array(
                 'id' => 'documentpdf-titre4_line_color',
-                'class' => 'sbm-text6'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Couleur encadrement titre 4',
                 'label_attributes' => array(
-                    'class' => 'sbm-label210'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -1625,12 +1625,12 @@ class DocumentPdf extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'documentpdf-page_font_monospaced',
-                'class' => 'sbm-select3'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Police à espacement fixe',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une police',
                 'value_options' => $fonts->getFonts(true),
@@ -1646,7 +1646,7 @@ class DocumentPdf extends Form
                 'value' => 'Enregistrer',
                 'id' => 'documentpdf-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -1655,7 +1655,7 @@ class DocumentPdf extends Form
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'documentpdf-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }
@@ -1672,7 +1672,7 @@ class DocumentPdf extends Form
             } catch (\Exception $e) {}
         }
     }
-
+    
     public function setValueOptions($element, array $values_options)
     {
         $e = $this->get($element);

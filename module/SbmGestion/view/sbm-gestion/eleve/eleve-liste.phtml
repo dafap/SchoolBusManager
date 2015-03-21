@@ -11,7 +11,9 @@
  * @date 18 juil. 2014
  * @version 2014-1
  */
-$this->paginator->setDefaultItemCountPerPage($this->nb_eleve_pagination);
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $eleves = $this->paginator->getCurrentItems();
 $ajouter = $this->url('sbmgestion/eleve', array(
@@ -23,21 +25,41 @@ $pdf = $this->url('sbmgestion/eleve', array(
     'page' => $this->page
 ));
 $retour = $this->url('sbmgestion/eleve');
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    ),
+    'rapports' => array(
+        'class' => 'fam-application-view-list',
+        'formaction' => $pdf,
+        'title' => 'Rapports à imprimer'
+    ),
+    'ajouter' => array(
+        'class' => 'fam-add',
+        'formaction' => $ajouter,
+        'title' => 'Nouvel élève'
+    )
+);
 ?>
 <h1>Liste des élèves</h1>
-<div class="liste-wrapper">
-	<div class="zone-actions">
-		<a href="<?php echo $retour; ?>" class="bouton"
-			title="retour au menu de gestion des élèves"><i
-			class="fam-door-out"></i> Retour</a> <a href="<?php echo $pdf; ?>"
-			class="bouton" title="exporter en pdf" target="_blank"><i
-			class="fam-application-view-list"></i> Exporter en pdf</a> <a
-			href="<?php echo $ajouter; ?>" class="bouton"
-			title="créer un nouvel élève"><i class="fam-add"></i> Ajouter
-			un élève</a>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+	    <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	    <div class="flashMessenger float-right"><?php 
+		    echo $this->flashMessenger()->render('success');
+		    echo $this->flashMessenger()->render('warning');
+		    echo $this->flashMessenger()->render('error');
+		    echo $this->flashMessenger()->render('info');
+		    echo $this->flashMessenger()->render('default');
+		    ?></div>
 	</div>
-	<table class="liste-inner eleves">
+	<div id="liste-inner">
+	<table class="eleves">
 		<tbody>
+		<tr><th>Code</th><th>Numéro</th><th>Nom</th><th>Prénom</th><th>Date de naissance</th><th>Responsable 1</th><th>Responsable 2</th><th>Paiement par</th><th>Sélect.</th><th></th></tr>
         <?php foreach($eleves as $test => $eleve): ?>
          <tr
 				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
@@ -51,7 +73,7 @@ $retour = $this->url('sbmgestion/eleve');
 				<td class="responsableF"><?php echo $this->escapeHtml($eleve->responsableFNomPrenom); ?></td>
 				<td class="selection"><?php echo $eleve->selection ? 'X' : ''; ?></td>
 				<td class="boutons">
-             <?php
+            <?php
             $url_edit = $this->url('sbmgestion/eleve', array(
                 'action' => 'eleve-edit',
                 'page' => $this->page,
@@ -67,20 +89,38 @@ $retour = $this->url('sbmgestion/eleve');
                 'page' => $this->page,
                 'id' => $eleve->responsable1Id
             ));
+            $hiddens = array('eleveId' => $eleve->eleveId);
+            $buttons = array(
+                'modifier' => array(
+                    'class' => 'fam-pencil',
+                    'formaction' => $url_edit,
+                    'title' => 'modifier'
+                ),
+                'supprimer' => array(
+                    'class' => 'fam-delete',
+                    'formaction' => $url_delete,
+                    'title' => 'supprimer'
+                ),
+                'eleves' => array(
+                    'class' => 'fam-group',
+                    'formaction' => $url_group,
+                    'title' => 'élèves inscrits de la même famille'
+                )
+            );
+            echo $this->listeLigneActions($eleve->eleveId, $hiddens, $buttons);
             ?>
-                 <a href="<?php echo $url_edit; ?>" class="bouton"
-					title="modifier"><i class="fam-pencil"></i></a> <a
-					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i
-						class="fam-delete"></i></a> <a href="<?php echo $url_group; ?>"
-					class="bouton" title="groupe des élèves ayant le même responsable 1"><i
-						class="fam-group"></i></a>
 				</td>
 			</tr>         
         <?php endforeach;?>
     </tbody>
 	</table>
-	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
-<?php echo $this->form()->openTag($this->criteres_form);?>
-<?php echo $this->formCollection($this->criteres_form, true);?>
-<?php echo $this->form()->closeTag();?>	
+	</div>
+	<div id="liste-footer">
+	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	    <div class="criteres-wrapper">
+	    <?php echo $this->form()->openTag($this->criteres_form);?>
+	    <?php echo $this->formCollection($this->criteres_form, true);?>
+	    <?php echo $this->form()->closeTag();?>	
+	    </div>
+    </div>
 </div>

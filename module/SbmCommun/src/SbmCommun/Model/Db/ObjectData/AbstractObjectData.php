@@ -23,9 +23,9 @@ abstract class AbstractObjectData implements ObjectDataInterface
     /**
      * Données de l'objet
      *
-     * @var null array Iterator IteratorAggregate
+     * @var array Iterator IteratorAggregate
      */
-    protected $dataSource = null;
+    protected $dataSource = array();
 
     /**
      * Nom de l'objet à initialiser dans le constructeur
@@ -48,13 +48,13 @@ abstract class AbstractObjectData implements ObjectDataInterface
      * @var unknown_type
      */
     private $array_mask = array();
-    
+
     /**
      * Liste des champs calculés à mettre à jour par l'hydrator
      *
      * @var array of string
      */
-    private $calculate_fields = array();    
+    private $calculate_fields = array();
 
     /**
      *
@@ -80,7 +80,7 @@ abstract class AbstractObjectData implements ObjectDataInterface
     }
 
     /**
-     * Affectaion par défaut
+     * Affectation par défaut
      *
      * @param string $param            
      * @param unknown $valeur            
@@ -88,7 +88,7 @@ abstract class AbstractObjectData implements ObjectDataInterface
      */
     public function __set($param, $valeur)
     {
-        if ($this->dataSource instanceof \ArrayIterator) {           
+        if ($this->dataSource instanceof \ArrayIterator) {
             $this->dataSource->offsetSet($param, $valeur);
         } else {
             foreach ($this->dataSource as $key => &$value) {
@@ -138,34 +138,34 @@ abstract class AbstractObjectData implements ObjectDataInterface
         }
         $this->array_mask = $array_mask;
     }
-    
+
     /**
      * Initialise la propriété calculate_fields avec le tableau fourni
-     * 
-     * @param array $array
+     *
+     * @param array $array            
      */
     public function setCalculateFields($array)
     {
-        if (!is_array($array)) {
+        if (! is_array($array)) {
             ob_start();
             var_dump($array);
-            $dump = ob_get_clean();
+            $dump = html_entity_decode(strip_tags(ob_get_clean()));
             throw new Exception(__METHOD__ . " Le paramètre fourni doit être un tableau. On a reçu :\n$dump");
         }
         $this->calculate_fields = $array;
     }
-    
+
     /**
      * Ajoute le champ fourni comme paramètre dans la propriété calculate_fields
-     * 
-     * @param string $str
+     *
+     * @param string $str            
      */
     public function addCalculateField($str)
     {
-        if (!is_string($str)) {
+        if (! is_string($str)) {
             ob_start();
             var_dump($str);
-            $dump = ob_get_clean();
+            $dump = html_entity_decode(strip_tags(ob_get_clean()));
             throw new Exception(__METHOD__ . " Le paramètre fourni doit être une chaîne de caractère. On a reçu :\n$dump");
         }
         $this->calculate_fields[] = $str;
@@ -173,14 +173,14 @@ abstract class AbstractObjectData implements ObjectDataInterface
 
     /**
      * Renvoie le tableau des champs calculés
-     * 
+     *
      * @return array
      */
     public function getCalculateFields()
     {
         return $this->calculate_fields;
     }
-    
+
     /**
      * (non-PHPdoc)
      *
@@ -227,6 +227,41 @@ abstract class AbstractObjectData implements ObjectDataInterface
         return $this->id_field_name;
     }
 
+    /**
+     * Devra être surchargé si un contrôle de construction d'id est nécessaire.
+     * C'est le cas lorsque la primary key est composée de plusieurs champs.
+     *
+     * @param int|string|array $id            
+     * @return boolean
+     */
+    public function isValidId($id)
+    {
+        return is_null($id) ? false : true;
+    }
+
+    /**
+     * Renvoie un id correct : scalaire si id_field_name est un scalaire, tableau associatif si id_field_name est un tableau
+     * On s'assurera avant que l'id est valide
+     *
+     * @param int|string|array $id            
+     *
+     * @return int|string|array
+     */
+    public function getValidId($id)
+    {
+        if (is_array($this->id_field_name)) {
+            if (is_string($id)) {
+                $parts = explode('|', $id);
+                $result = array();
+                for ($i = 0; $i < count($this->id_field_name); $i ++) {
+                    $result[$this->id_field_name[$i]] = $parts[$i];
+                }
+                return $result;
+            }
+        }        
+        return $id;
+    }
+
     public function getId()
     {
         $data_array = $this->getArrayCopy();
@@ -250,12 +285,12 @@ abstract class AbstractObjectData implements ObjectDataInterface
     {
         return $this->dataSource;
     }
-    
+
     /**
      * Indique si l'objet courant a changé par rapport à l'ancien objet passé en paramètre
-     * 
-     * @param ObjectDataInterface $old_obj
-     * 
+     *
+     * @param ObjectDataInterface $old_obj            
+     *
      * @return boolean
      */
     public function isUnchanged(ObjectDataInterface $old_obj)

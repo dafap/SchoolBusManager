@@ -13,8 +13,8 @@
 return array(
     'liste' => array(
         'paginator' => array(
-            'nb_libelles_pagination' => 12,
-            'nb_pdf_pagination' => 20
+            'nb_libelles' => 15,
+            'nb_pdf' => 5
         )
     ),
     'controllers' => array(

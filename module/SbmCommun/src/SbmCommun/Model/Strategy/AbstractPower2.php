@@ -55,7 +55,7 @@ abstract class AbstractPower2 implements StrategyInterface
                 } else {
                     ob_start();
                     print_r($value);
-                    $dump = ob_get_clean();
+                    $dump = html_entity_decode(strip_tags(ob_get_clean()));
                 }
                 throw new Exception(__METHOD__ . sprintf(_(" Le tableau donné en paramètre contient la valeur illégale : %s\nLes valeurs doivent être des entiers puissance de 2."), $dump));
             }

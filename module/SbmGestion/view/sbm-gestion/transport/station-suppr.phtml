@@ -13,14 +13,18 @@
  */
 ?>
 <h1>Suppression d'une station</h1>
-<p>Vous avez demandé la suppression de la station :</p>
-<ul>
-    <li><?php echo $this->escapeHtml($this->data->commune); ?></li>
-    <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
-</ul>
-<p>Confirmez-vous ?</p>
-<?php 
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de la station :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data->commune); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
 echo $this->form()->openTag($form);
 echo $this->formCollection($form);
 echo $this->form()->closeTag();
 ?>
+</div>

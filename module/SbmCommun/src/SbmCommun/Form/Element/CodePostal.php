@@ -1,11 +1,11 @@
 <?php
 /**
- * Description
+ * Définition de l'élément 'CodePostal' avec filtres et validateurs
  *
  *
  * @project sbm
- * @package 
- * @filesource 
+ * @package module/SbmCommun/src/SbmCommun/Form/Element
+ * @filesource CodePostal.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 29 juil. 2014

@@ -12,16 +12,20 @@
  */
 ?>
 <h1>Suppression d'un un libellé</h1>
-<p>Vous avez demandé la suppression du libellé :</p>
-<ul>
-    <li><?php echo $this->escapeHtml($this->data->nature); ?></li>
-    <li><?php echo $this->data->code; ?></li>
-    <li><?php echo $this->escapeHtml($this->data->libelle); ?></li>
-</ul>
-<p>Dans le paramétrage actuel, c'est un libellé <?php echo $this->data->ouvert ? 'employé' : 'inemployé'; ?> dans l'application.</p>
-<p>Confirmez-vous ?</p>
-<?php 
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du libellé :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data->nature); ?></li>
+			<li><?php echo $this->data->code; ?></li>
+			<li><?php echo $this->escapeHtml($this->data->libelle); ?></li>
+		</ul>
+		<p>Dans le paramétrage actuel, c'est un libellé <?php echo $this->data->ouvert ? 'employé' : 'inemployé'; ?> dans l'application.</p>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
 echo $this->form()->openTag($form);
 echo $this->formCollection($form);
 echo $this->form()->closeTag();
 ?> 
+</div>

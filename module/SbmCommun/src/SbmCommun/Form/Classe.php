@@ -13,7 +13,9 @@
  */
 namespace SbmCommun\Form;
 
-class Classe extends AbstractSbmForm
+use Zend\InputFilter\InputFilterProviderInterface;
+
+class Classe extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($param = 'classe')
@@ -38,12 +40,12 @@ class Classe extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'classe-nom',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom de la classe',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -55,12 +57,12 @@ class Classe extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'classe-aliascg',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
-                'label' => 'Nom CG',
+                'label' => 'Libellé complet',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -91,7 +93,7 @@ class Classe extends AbstractSbmForm
                 'value' => 'Enregistrer',
                 'id' => 'classe-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -100,8 +102,36 @@ class Classe extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'classe-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'nom' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'aliasCG' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            )
+        );
     }
 }

@@ -11,50 +11,84 @@
  * @date 5 mai 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url('sbmgestion/transport', array('action'=> 'etablissement-liste', 'page' => $this->page));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
 ?>
 <h1>Modification d'un établissement</h1>
-<div class="fiche-wrapper">
-  <div class="zone-actions">
-    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des etablissements"><i class="fam-door-out"></i> Retour</a>
-  </div>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
 <?php 
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('etablissementId'));
 echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="edit">';
-echo '<div class="float-left cols-2">';
-echo '<div id="etablissement-edit-etablissementId" class="row-inner edit">' . $this->formRow($this->form->get('codeEtablissement')) . '</div>';
-echo '<div id="etablissement-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
-echo '<div id="etablissement-edit-alias" class="row-inner edit">' . $this->formRow($this->form->get('alias')) . '</div>';
-echo '<div id="etablissement-edit-aliasCG" class="row-inner edit">' . $this->formRow($this->form->get('aliasCG')) . '</div>';
-echo '<div id="etablissement-edit-adresse1" class="row-inner edit">' . $this->formRow($this->form->get('adresse1')) . '</div>';
-echo '<div id="etablissement-edit-adresse2" class="row-inner edit">' . $this->formRow($this->form->get('adresse2')) . '</div>';
-echo '<div id="etablissement-edit-codePostal" class="row-inner edit">' . $this->formRow($this->form->get('codePostal')) . '</div>';
-echo '<div id="etablissement-edit-communeId" class="row-inner edit">' . $this->formRow($this->form->get('communeId')) . '</div>';
-echo '<div id="etablissement-edit-telephone" class="row-inner edit">' . $this->formRow($this->form->get('telephone')) . '</div>';
-echo '<div id="etablissement-edit-fax" class="row-inner edit">' . $this->formRow($this->form->get('fax')) . '</div>';
-echo '<div id="etablissement-edit-email" class="row-inner edit">' . $this->formRow($this->form->get('email')) . '</div>';
-echo '<div id="etablissement-edit-directeur" class="row-inner edit">' . $this->formRow($this->form->get('directeur')) . '</div>';
-echo '</div><div class="float-left cols-2">';
-echo '<div id="etablissement-edit-niveau" class="row-inner edit">' . $this->formRow($this->form->get('niveau')) . '</div>';
-echo '<div id="etablissement-edit-statut" class="row-inner edit multicheckbox">' . $this->formRow($this->form->get('statut')) . '</div>';
-echo '<div id="etablissement-edit-jOuverture" class="row-inner edit multicheckbox">' . $this->formRow($this->form->get('jOuverture')) . '</div>';
-echo '<div class="float-left cols-2">';
-echo '<div id="etablissement-edit-hMatin" class="row-inner edit">' . $this->formRow($this->form->get('hMatin')) . '</div>';
-echo '<div id="etablissement-edit-hMidi" class="row-inner edit">' . $this->formRow($this->form->get('hMidi')) . '</div>';
-echo '</div><div class="float-left cols-2">';
-echo '<div id="etablissement-edit-hAMidi" class="row-inner edit">' . $this->formRow($this->form->get('hAMidi')) . '</div>';
-echo '<div id="etablissement-edit-hSoir" class="row-inner edit">' . $this->formRow($this->form->get('hSoir')) . '</div>';
-echo '</div>';
-echo '<div id="etablissement-edit-regrPeda" class="row-inner edit">' . $this->formRow($this->form->get('regrPeda')) . '</div>';
-echo '<div id="etablissement-edit-rattacheA" class="row-inner edit">' . $this->formRow($this->form->get('rattacheA')) . '</div>';
-echo '<div id="etablissement-edit-longitude" class="row-inner edit">' . $this->formRow($this->form->get('longitude')) . '</div>';
-echo '<div id="etablissement-edit-latitude" class="row-inner edit">' . $this->formRow($this->form->get('latitude')) . '</div>';
-echo '<div id="etablissement-edit-visible" class="row-inner edit">' . $this->formRow($this->form->get('visible')) . '</div>';
-echo '<div id="etablissement-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
-echo '</div></fieldset>';
-echo $this->form()->closeTag();
-//var_dump($this->form->get('rattacheA')->debugGetValidator());
 ?>
+<fieldset class="sbm-page1 clearfix">
+<div class="float-left cols-2">
+  <div id="etablissement-edit-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeEtablissement')); ?></div>
+  <div id="etablissement-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+  <div id="etablissement-edit-alias" class="row-inner edit"><?php echo $this->formRow($this->form->get('alias')); ?></div>
+  <div id="etablissement-edit-adresse1" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresse1')); ?></div>
+  <div id="etablissement-edit-adresse2" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresse2')); ?></div>
+  <div id="etablissement-edit-codePostal" class="row-inner edit"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
+  <div id="etablissement-edit-communeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
+  <div id="etablissement-edit-telephone" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephone')); ?></div>
+  <div id="etablissement-edit-fax" class="row-inner edit"><?php echo $this->formRow($this->form->get('fax')); ?></div>
+  <div id="etablissement-edit-email" class="row-inner edit"><?php echo $this->formRow($this->form->get('email')); ?></div>
+  <div id="etablissement-edit-directeur" class="row-inner edit"><?php echo $this->formRow($this->form->get('directeur')); ?></div>
+  <div id="etablissement-edit-regrPeda" class="row-inner edit"><?php echo $this->formRow($this->form->get('regrPeda')); ?></div>
+  <div id="etablissement-edit-rattacheA" class="row-inner edit"><?php echo $this->formRow($this->form->get('rattacheA')); ?></div>
+  <div id="etablissement-edit-x" class="row-inner edit"><?php echo $this->formRow($this->form->get('x')); ?></div>
+  <div id="etablissement-edit-y" class="row-inner edit"><?php echo $this->formRow($this->form->get('y')); ?></div>
+  <div id="etablissement-edit-visible" class="row-inner edit"><?php echo $this->formRow($this->form->get('visible')); ?></div>
 </div>
+<div class="float-left cols-2">
+  <div id="etablissement-edit-niveau" class="row-inner edit"><?php echo $this->formRow($this->form->get('niveau')); ?></div>
+  <div id="etablissement-edit-statut" class="row-inner edit multicheckbox"><?php echo $this->formRow($this->form->get('statut')); ?></div>
+  <div id="etablissement-edit-jOuverture" class="row-inner edit multicheckbox"><?php echo $this->formRow($this->form->get('jOuverture')); ?></div>
+  <div class="clearfix">
+    <div id="horaires-matin" class="row-inner edit float-left cols-2">
+      <fieldset class=""><legend>Horaires du matin</legend>
+      <div id="etablissement-edit-hMatin" class="row-inner edit"><?php echo $this->formRow($this->form->get('hMatin')); ?></div>
+      <div id="etablissement-edit-hMidi" class="row-inner edit"><?php echo $this->formRow($this->form->get('hMidi')); ?></div>
+      </fieldset>
+    </div>
+    <div id="horaires-soir" class="row-inner edit float-left cols-2">
+      <fieldset class=""><legend>Horaires de l'après-midi</legend>
+      <div id="etablissement-edit-hAMidi" class="row-inner edit"><?php echo $this->formRow($this->form->get('hAMidi')); ?></div>
+      <div id="etablissement-edit-hSoir" class="row-inner edit"><?php echo $this->formRow($this->form->get('hSoir')); ?></div>
+      </fiedset>
+    </div>
+  </div>
+  <div class="clearfix">
+    <div id="ouverture-garderie" class="row-inner edit float-left cols-2">
+      <fieldset class="rows-2"><legend>Ouverture de la garderie</legend>
+      <div id="etablissement-edit-hGarderieOMatin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('hGarderieOMatin')); ?></div>
+      </fieldset>
+    </div>
+    <div id="fermeture-garderie" class="row-inner edit float-left cols-2">
+      <fieldset><legend>Fermeture de la garderie</legend>
+      <div id="etablissement-edit-hGarderieFSoir" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('hGarderieFSoir')); ?></div>
+      <div id="etablissement-edit-hGarderieFMidi" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('hGarderieFMidi')); ?></div>
+      </fieldset></div>
+    <div id="etablissement-edit-buttons" class="row-inner edit">
+    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
+    </div>
+  </div>
+</fieldset>
+<?php echo $this->form()->closeTag(); ?>
+    </div><?php // fiche-inner ?>
+	<div id="fiche-footer"></div>
+</div><?php //fiche-wrapper ?>

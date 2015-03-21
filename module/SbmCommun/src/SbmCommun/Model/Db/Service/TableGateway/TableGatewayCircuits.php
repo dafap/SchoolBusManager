@@ -1,6 +1,6 @@
 <?php
 /**
- * Service donnant un Tablegateway pour le table Circuits
+ * Service donnant un Tablegateway pour la table Circuits
  * (à déclarer dans module.config.php)
  *
  * @project sbm

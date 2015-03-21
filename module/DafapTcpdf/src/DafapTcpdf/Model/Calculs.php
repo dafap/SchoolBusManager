@@ -237,7 +237,7 @@ class Calculs
             if (!isset($this->data[$ligne][$colonne])) {
                 ob_start();
                 print_r($this->data);
-                $dump = ob_get_clean();
+                $dump = html_entity_decode(strip_tags(ob_get_clean()));
                 throw new Exception("Ligne $ligne. Pas de colonne n° $column dans les données ($colonne).\n$dump\n");
             }
             $val = $this->data[$ligne][$colonne];
@@ -271,7 +271,7 @@ class Calculs
             if (!isset($this->data[$ligne][$colonne])) {
                 ob_start();
                 print_r($this->data);
-                $dump = ob_get_clean();
+                $dump = html_entity_decode(strip_tags(ob_get_clean()));
                 throw new Exception("Ligne $ligne. Pas de colonne n° $column dans les données ($colonne).\n$dump\n");
             }
             $val = $this->data[$ligne][$colonne];

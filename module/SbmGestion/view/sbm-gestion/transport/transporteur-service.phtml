@@ -1,0 +1,96 @@
+<?php
+/**
+ * Liste des services pour un transporteur donné
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource transporteur-service.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 mars 2015
+ * @version 2015-1
+ */
+use SbmCommun\Model\StdLib;
+ 
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$pdf = $this->url('sbmgestion/transport', array(
+    'action' => 'transporteur-service-pdf',
+    'page' => $this->page
+));
+$retour = $this->url('sbmgestion/transport', array(
+    'action' => 'transporteur-liste',
+    'page' => $this->page
+));
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+
+$hiddens = array(
+    'transporteurId' => $this->transporteurId
+);
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ),
+    'rapports' => array(
+        'class' => 'fam-application-view-list',
+        'formaction' => $pdf,
+        'title' => 'Rapports à imprimer'
+    )
+);
+?>
+<h1>Liste des services d'un transporteur</h1>
+<div id="liste-wrapper">
+	<div id="liste-title">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->transporteur->nom); ?></li>
+		</ul>
+	</div>
+	<div id="liste-header" class="clearfix">
+		<div><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<p>
+			<em>Il y a <?php echo count($this->data); ?> services.</em>
+		</p>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Code</th>
+					<th>Nom</th>
+					<th>Alias</th>
+					<th>Opérateur</th>
+					<th>Capacité</th>
+					<th>Inscrits</th>
+				</tr>
+            <?php foreach($this->data as $test => $service): ?>
+            <?php $fmt?>
+            <?php $nbInscrits = StdLib::getParamR(array($service->serviceId, 'total'), $this->t_nb_inscrits, 0); ?>
+            <?php $exces = $service->nbPlaces < $nbInscrits; ?>
+                <tr
+					class="<?php echo $this->cycle(array(
+                    "even",
+                    "odd"
+                ))->next();
+                if ($exces)
+                    echo ' exces';
+                ?>">
+					<td class="serviceid"><?php echo $this->escapeHtml($service->serviceId); ?></td>
+					<td class="nom"><?php echo $this->escapeHtml($service->nom); ?></td>
+					<td class="aliascg"><?php echo $this->escapeHtml($service->aliasCG); ?></td>
+					<td class="operateur"><?php echo $this->escapeHtml($service->operateur); ?></td>
+					<td class="nbplaces"><?php echo $this->escapeHtml($service->nbPlaces); ?></td>
+					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+				</tr>         
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<p>
+			<em>Il y a <?php echo count($this->data); ?> services.</em>
+		</p>
+	</div>
+</div>

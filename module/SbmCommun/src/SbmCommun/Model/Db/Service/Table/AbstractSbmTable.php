@@ -303,7 +303,7 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Supprime l'enregistrement d'identifiant donné
      *
-     * @param int|string $id            
+     * @param int|string|array $id            
      * @return int
      */
     public function deleteRecord($id)

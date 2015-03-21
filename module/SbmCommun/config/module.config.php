@@ -18,14 +18,20 @@ if (! defined('APPL_NAME')) {
     define('APPL_NAME', 'School Bus Manager');
 }
 return array(
+    'controller_plugins' => array(
+        'invokables' => array(
+            'redirectToOrigin' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack'
+        )
+    ),
     'service_manager' => array(
         'invokables' => array(
-            'SbmCommun\FlashMessenger' => 'SbmCommun\Listener\FlashMessengerListener',
+            'Sbm\Db\ObjectData\Affectation' => 'SbmCommun\Model\Db\ObjectData\Affectation',
             'Sbm\Db\ObjectData\Circuit' => 'SbmCommun\Model\Db\ObjectData\Circuit',
             'Sbm\Db\ObjectData\Classe' => 'SbmCommun\Model\Db\ObjectData\Classe',
             'Sbm\Db\ObjectData\Commune' => 'SbmCommun\Model\Db\ObjectData\Commune',
             'Sbm\Db\ObjectData\Eleve' => 'SbmCommun\Model\Db\ObjectData\Eleve',
             'Sbm\Db\ObjectData\Etablissement' => 'SbmCommun\Model\Db\ObjectData\Etablissement',
+            'Sbm\Db\ObjectData\EtablissementService' => 'SbmCommun\Model\Db\ObjectData\EtablissementService',
             'Sbm\Db\ObjectData\Paiement' => 'SbmCommun\Model\Db\ObjectData\Paiement',
             'Sbm\Db\ObjectData\Responsable' => 'SbmCommun\Model\Db\ObjectData\Responsable',
             'Sbm\Db\ObjectData\Scolarite' => 'SbmCommun\Model\Db\ObjectData\Scolarite',
@@ -33,6 +39,7 @@ return array(
             'Sbm\Db\ObjectData\Station' => 'SbmCommun\Model\Db\ObjectData\Station',
             'Sbm\Db\ObjectData\Tarif' => 'SbmCommun\Model\Db\ObjectData\Tarif',
             'Sbm\Db\ObjectData\Transporteur' => 'SbmCommun\Model\Db\ObjectData\Transporteur',
+            'Sbm\Db\ObjectData\User' => 'SbmCommun\Model\Db\ObjectData\User',
             'Sbm\Db\SysObjectData\Calendar' => 'SbmCommun\Model\Db\ObjectData\Sys\Calendar',
             'Sbm\Db\SysObjectData\Document' => 'SbmCommun\Model\Db\ObjectData\Sys\Document',
             'Sbm\Db\SysObjectData\DocAffectation' => 'SbmCommun\Model\Db\ObjectData\Sys\DocAffectation',
@@ -43,11 +50,13 @@ return array(
         ),
         'factories' => array(
             'Sbm\Db\DbLib' => 'SbmCommun\Model\Db\Service\DbLibService',
+            'Sbm\Db\Table\Affectations' => 'SbmCommun\Model\Db\Service\Table\Affectations',
             'Sbm\Db\Table\Circuits' => 'SbmCommun\Model\Db\Service\Table\Circuits',
             'Sbm\Db\Table\Classes' => 'SbmCommun\Model\Db\Service\Table\Classes',
             'Sbm\Db\Table\Communes' => 'SbmCommun\Model\Db\Service\Table\Communes',
             'Sbm\Db\Table\Eleves' => 'SbmCommun\Model\Db\Service\Table\Eleves',
             'Sbm\Db\Table\Etablissements' => 'SbmCommun\Model\Db\Service\Table\Etablissements',
+            'Sbm\Db\Table\EtablissementsServices' => 'SbmCommun\Model\Db\Service\Table\EtablissementsServices',
             'Sbm\Db\Table\Paiements' => 'SbmCommun\Model\Db\Service\Table\Paiements',
             'Sbm\Db\Table\Responsables' => 'SbmCommun\Model\Db\Service\Table\Responsables',
             'Sbm\Db\Table\Scolarites' => 'SbmCommun\Model\Db\Service\Table\Scolarites',
@@ -55,6 +64,7 @@ return array(
             'Sbm\Db\Table\Stations' => 'SbmCommun\Model\Db\Service\Table\Stations',
             'Sbm\Db\Table\Tarifs' => 'SbmCommun\Model\Db\Service\Table\Tarifs',
             'Sbm\Db\Table\Transporteurs' => 'SbmCommun\Model\Db\Service\Table\Transporteurs',
+            'Sbm\Db\Table\Users' => 'SbmCommun\Model\Db\Service\Table\Users',
             'Sbm\Db\System\Calendar' => 'SbmCommun\Model\Db\Service\Table\Sys\Calendar',
             'Sbm\Db\System\Documents' => 'SbmCommun\Model\Db\Service\Table\Sys\Documents',
             'Sbm\Db\System\DocAffectations' => 'SbmCommun\Model\Db\Service\Table\Sys\DocAffectations',
@@ -63,11 +73,13 @@ return array(
             'Sbm\Db\System\DocTables\Columns' => 'SbmCommun\Model\Db\Service\Table\Sys\DocColumns',
             'Sbm\Db\System\Libelles' => 'SbmCommun\Model\Db\Service\Table\Sys\Libelles',
             
+            'Sbm\Db\TableGateway\Affectations' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayAffectations',
             'Sbm\Db\TableGateway\Circuits' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayCircuits',
             'Sbm\Db\TableGateway\Classes' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayClasses',
             'Sbm\Db\TableGateway\Communes' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayCommunes',
             'Sbm\Db\TableGateway\Eleves' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayEleves',
             'Sbm\Db\TableGateway\Etablissements' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayEtablissements',
+            'Sbm\Db\TableGateway\EtablissementsServices' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayEtablissementsServices',
             'Sbm\Db\TableGateway\Paiements' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayPaiements',
             'Sbm\Db\TableGateway\Responsables' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayResponsables',
             'Sbm\Db\TableGateway\Scolarites' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayScolarites',
@@ -75,6 +87,7 @@ return array(
             'Sbm\Db\TableGateway\Stations' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayStations',
             'Sbm\Db\TableGateway\Tarifs' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayTarifs',
             'Sbm\Db\TableGateway\Transporteurs' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayTransporteurs',
+            'Sbm\Db\TableGateway\Users' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayUsers',
             'Sbm\Db\SysTableGateway\Calendar' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayCalendar',
             'Sbm\Db\SysTableGateway\Documents' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocuments',
             'Sbm\Db\SysTableGateway\DocAffectations' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocAffectations',
@@ -86,6 +99,7 @@ return array(
             'Sbm\Db\Vue\Circuits' => 'SbmCommun\Model\Db\Service\Table\Vue\Circuits',
             'Sbm\Db\Vue\Eleves' => 'SbmCommun\Model\Db\Service\Table\Vue\Eleves',
             'Sbm\Db\Vue\Etablissements' => 'SbmCommun\Model\Db\Service\Table\Vue\Etablissements',
+            'Sbm\Db\Vue\EtablissementsServices' => 'SbmCommun\Model\Db\Service\Table\Vue\EtablissementsServices',
             'Sbm\Db\Vue\Paiements' => 'SbmCommun\Model\Db\Service\Table\Vue\Paiements',
             'Sbm\Db\Vue\Responsables' => 'SbmCommun\Model\Db\Service\Table\Vue\Responsables',
             'Sbm\Db\Vue\Services' => 'SbmCommun\Model\Db\Service\Table\Vue\Services',
@@ -95,6 +109,7 @@ return array(
             'Sbm\Db\VueGateway\Circuits' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayCircuits',
             'Sbm\Db\VueGateway\Eleves' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEleves',
             'Sbm\Db\VueGateway\Etablissements' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEtablissements',
+            'Sbm\Db\VueGateway\EtablissementsServices' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEtablissementsServices',
             'Sbm\Db\VueGateway\Paiements' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayPaiements',
             'Sbm\Db\VueGateway\Responsables' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayResponsables',
             'Sbm\Db\VueGateway\Services' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayServices',
@@ -104,10 +119,12 @@ return array(
             // 'Sbm\Db\Select\Calendar' => 'SbmCommun\Model\Db\Service\Select\Calendar',
             // 'Sbm\Db\Select\CommunesMembres' => 'SbmCommun\Model\Db\Service\Select\CommunesMembres',
             'Sbm\Db\Select\CommunesDesservies' => 'SbmCommun\Model\Db\Service\Select\CommunesDesservies',
+            'Sbm\Db\Select\CommunesVisibles' => 'SbmCommun\Model\Db\Service\Select\CommunesVisibles',
             'Sbm\Db\Select\EtablissementsVisibles' => 'SbmCommun\Model\Db\Service\Select\EtablissementsVisibles',
             'Sbm\Db\Select\Responsables' => 'SbmCommun\Model\Db\Service\Select\Responsables',
-            // 'Sbm\Db\Select\Services' => 'SbmCommun\Model\Db\Service\Select\Services',
-            // 'Sbm\Db\Select\StationsVisibles' => 'SbmCommun\Model\Db\Service\Select\StationsVisibles',
+            'Sbm\Db\Select\Services' => 'SbmCommun\Model\Db\Service\Select\Services',
+            'Sbm\Db\Select\StationsVisibles' => 'SbmCommun\Model\Db\Service\Select\StationsVisibles',
+            'Sbm\Db\Select\StationsOuvertes' => 'SbmCommun\Model\Db\Service\Select\StationsOuvertes',
             'Sbm\Db\Select\Transporteurs' => 'SbmCommun\Model\Db\Service\Select\Transporteurs',
             'Sbm\Libelles\Caisse' => 'SbmCommun\Model\Db\Service\Select\LibellesCaisse',
             'Sbm\Libelles\ModeDePaiement' => 'SbmCommun\Model\Db\Service\Select\LibellesModeDePaiement',
@@ -117,13 +134,14 @@ return array(
     ),
     'view_manager' => array(
         'template_map' => array(
-            'sbm/pagination' => __DIR__ . '/../view/partial/pagination.phtml'
+            'sbm/pagination' => __DIR__ . '/../view/partial/pagination.phtml',
+            'sbm/mdpchange' => __DIR__ . '/../view/partial/mdpchange.phtml'
         )
     ),
     'view_helpers' => array(
         'invokables' => array(
             'listeLigneActions' => 'SbmCommun\Form\View\Helper\ListeLigneActions',
-            'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',
+            'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions'
         )
     )
 );

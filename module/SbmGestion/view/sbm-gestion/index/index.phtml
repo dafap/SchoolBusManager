@@ -11,6 +11,7 @@
  * @date 12 févr. 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_gest_eleve = $this->url('sbmgestion/eleve');
 $url_gest_finance = $this->url('sbmgestion/finance');
@@ -19,15 +20,33 @@ $url_gest_change_as = $this->url('sbmgestion/anneescolaire');
 $url_gest_simulation = $this->url('sbmgestion/simul');
 $url_gest_parametre = $this->url('sbmgestion/config');
 
-
 ?>
 <h1>Menu général de gestion</h1>
 <h4>Année scolaire <?php echo $this->as_libelle;?></h4>
-<ul>
-<li><a href="<?php echo $url_gest_eleve; ?>">Gestion des élèves</a></li>
-<li><a href="<?php echo $url_gest_finance; ?>">Gestion financière</a></li>
-<li><a href="<?php echo $url_gest_transport; ?>">Gestion des fichiers annexes</a></li>
-<li><a href="<?php echo $url_gest_change_as; ?>">Choix de l'année scolaire</a></li>
-<li><a href="<?php echo $url_gest_simulation; ?>">Simulation d'organisation</a></li>
-<li><a href="<?php echo $url_gest_parametre; ?>">Configuration et paramètres</a></li>
-</ul>
+<div id="menugeneral">
+	<div class="flashMessenger">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+</div>
+	<div class="items">
+		<ul>
+			<li><a href="<?php echo $url_gest_eleve; ?>"><i class="fam-bullet-go"></i>Gestion
+					des élèves</a></li>
+			<li><a href="<?php echo $url_gest_finance; ?>"><i
+					class="fam-bullet-go"></i>Gestion financière</a></li>
+			<li><a href="<?php echo $url_gest_transport; ?>"><i
+					class="fam-bullet-go"></i>Gestion du réseau de transport</a></li>
+			<li><a href="<?php echo $url_gest_change_as; ?>"><i
+					class="fam-bullet-go"></i>Choix de l'année scolaire</a></li>
+			<li><a href="<?php echo $url_gest_simulation; ?>"><i
+					class="fam-bullet-go"></i>Simulation d'organisation</a></li>
+			<li><a href="<?php echo $url_gest_parametre; ?>"><i
+					class="fam-bullet-go"></i>Configuration et paramètres</a></li>
+		</ul>
+	</div>
+</div>

@@ -9,7 +9,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 5 févr. 2014
- * @version 2014-1
+ * @version 2015-2
  */
 return array(
     'name' => 'services',
@@ -24,7 +24,11 @@ return array(
             'aliasCG' => 'varchar(15) NOT NULL DEFAULT ""',
             'transporteurId' => 'int(11) NOT NULL DEFAULT "0"',
             'nbPlaces' => 'tinyint(3) unsigned NOT NULL DEFAULT "0"',
-            'surEtatCG' => 'tinyint(1) NOT NULL DEFAULT "1"'
+            'surEtatCG' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'operateur' => 'varchar(4) NOT NULL DEFAULT "CCDA"',
+            'kmAVide' => 'decimal(7,3) NOT NULL DEFAULT "0"',
+            'kmEnCharge' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
+            'geotrajet' => 'POLYGON'
         ),
         'primary_key' => array(
             'serviceId'

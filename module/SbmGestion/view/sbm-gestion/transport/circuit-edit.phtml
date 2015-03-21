@@ -11,29 +11,71 @@
  * @date 5 mai 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $retour = $this->url('sbmgestion/transport', array('action'=> 'circuit-liste', 'page' => $this->page));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
 ?>
 <h1>Modification d'un point d'arrêt sur un circuit</h1>
-<div class="fiche-wrapper">
-  <div class="zone-actions">
-    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des circuits"><i class="fam-door-out"></i> Retour</a>
-  </div>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
 <?php 
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('circuitId'));
+echo $this->formHidden($this->form->get('millesime'));
 echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="edit">';
-echo '<div id="circuit-edit-service" class="row-inner edit">' . $this->formRow($this->form->get('serviceId')) . '</div>';
-echo '<div id="circuit-edit-station" class="row-inner edit">' . $this->formRow($this->form->get('stationId')) . '</div>';
-echo '<div id="circuit-edit-aller" class="row-inner edit">' . $this->formRow($this->form->get('aller')) . '</div>';
-echo '<div id="circuit-edit-retour" class="row-inner edit">' . $this->formRow($this->form->get('retour')) . '</div>';
-echo '<div id="circuit-edit-distance" class="row-inner edit">' . $this->formRow($this->form->get('distance')) . '</div>';
-echo '<div id="circuit-edit-jOuverture" class="row-inner edit">' . $this->formRow($this->form->get('jOuverture')) . '</div>';
-echo '<div id="circuit-edit-horaire1" class="row-inner edit">' . $this->formRow($this->form->get('horaire1')) . '</div>';
-echo '<div id="circuit-edit-horaire2" class="row-inner edit">' . $this->formRow($this->form->get('horaire2')) . '</div>';
-echo '<div id="circuit-edit-horaire3" class="row-inner edit">' . $this->formRow($this->form->get('horaire3')) . '</div>';
-echo '<div id="circuit-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
-echo '</fieldset>';
-echo $this->form()->closeTag();
 ?>
+    <fieldset class="sbm-page1">
+        <div id="circuit-edit-serviceId" class="row-inner edit"><?php echo $this->formRow($this->form->get('serviceId')); ?></div>
+        <div id="circuit-edit-stationId" class="row-inner edit"><?php echo $this->formRow($this->form->get('stationId')); ?></div>
+        <div id="circuit-edit-typeArret" class="row-inner edit"><?php echo $this->formRow($this->form->get('typeArret')); ?></div>
+        <div id="circuit-edit-distance" class="row-inner edit"><?php echo $this->formRow($this->form->get('distance')); ?></div>
+        <div id="circuit-edit-montee" class="row-inner edit"><?php echo $this->formRow($this->form->get('montee')); ?></div>
+        <div id="circuit-edit-descente" class="row-inner edit"><?php echo $this->formRow($this->form->get('descente')); ?></div>
+        <div id="circuit-edit-semaine" class="row-inner edit"><?php echo $this->formRow($this->form->get('semaine')); ?></div>
+        <div class="clearfix">
+            <div id="horaire-matin" class="row-inner edit float-left cols-2">
+                <fieldset><legend>Horaires aller</legend>
+                <div id="circuit-edit-m1" class="row-inner edit"><?php echo $this->formRow($this->form->get('m1')); ?></div>
+                <div id="circuit-edit-m2" class="row-inner edit"><?php echo $this->formRow($this->form->get('m2')); ?></div>
+                <div id="circuit-edit-m3" class="row-inner edit"><?php echo $this->formRow($this->form->get('m3')); ?></div>
+                </fieldset>
+            </div>
+            <div id="horaires-soir" class="row-inner edit float-left cols-2">
+                <fieldset><legend>Horaires retour</legend>
+                <div id="circuit-edit-s1" class="row-inner edit"><?php echo $this->formRow($this->form->get('s1')); ?></div>
+                <div id="circuit-edit-s2" class="row-inner edit"><?php echo $this->formRow($this->form->get('s2')); ?></div>
+                <div id="circuit-edit-s3" class="row-inner edit"><?php echo $this->formRow($this->form->get('s3')); ?></div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div id="commentaire-aller" class="row-inner ajout float-left cols-2">
+                <div id="circuit-edit-commentaire1" class="row-inner ajout"><?php echo $this->formRow($this->form->get('commentaire1')); ?></div>
+            </div>
+            <div id="copy" class="float-left left-10px"><br/>
+                <input id="comment-copy" type="button" class="fam-comments-add" title="Copier le commentaire aller comme commentaire retour">
+            </div>
+            <div id="commentaire-retour" class="row-inner ajout float-left cols-2 left-10px">
+                <div id="circuit-edit-commentaire2" class="row-inner ajout"><?php echo $this->formRow($this->form->get('commentaire2')); ?></div>
+            </div>
+        </div>
+        <div id="circuit-edit-buttons" class="row-inner edit"><?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+    </fieldset>
+<?php echo $this->form()->closeTag(); ?>
+    </div> <?php // fiche-inner ?>
+	<div id="fiche-footer"></div>
 </div>
+<?php $this->inlineScript()->appendFile($this->basePath() . '/js/form-circuit.js'); ?>

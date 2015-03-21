@@ -35,12 +35,12 @@ class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
             'name' => 'note',
             'attributes' => array(
                 'id' => 'note',
-                'class' => 'sbm-label170'
+                'class' => 'sbm-width-55c'
             ),
             'options' => array(
                 'label' => 'Motif de la suppression',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label-top'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -55,7 +55,7 @@ class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
                 'value' => 'Confirmer',
                 'id' => 'finance-paiement-suppr-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button default submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(

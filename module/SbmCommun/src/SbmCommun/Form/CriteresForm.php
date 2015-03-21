@@ -94,7 +94,56 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     }
 
     private function formCircuits()
-    {}
+    {
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'serviceId',
+            'attributes' => array(
+                'id' => 'critere-serviceId',
+                'class' => 'sbm-select1'
+            ),
+            'options' => array(
+                'label' => 'Service',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'empty_option' => 'Tous',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'stationId',
+            'attributes' => array(
+                'id' => 'critere-stationId',
+                'class' => 'sbm-select4'
+            ),
+            'options' => array(
+                'label' => 'Station',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'empty_option' => 'Toutes',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+    }
+
+    private function formCircuitsSpecification()
+    {
+        return array(
+            'serviceId' => array(
+                'required' => false
+            ),
+            'stationId' => array(
+                'required' => false
+            )
+        );
+    }
 
     private function formClasses()
     {
@@ -104,7 +153,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'id' => 'critere-nom',
                 'maxlength' => '30',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -119,11 +168,11 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         
         $this->add(array(
             'name' => 'aliasCG',
-            'type' => 'text',
+            'type' => 'hidden',
             'attributes' => array(
                 'id' => 'critere-aliasCG',
                 'maxlength' => '30',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom CG',
@@ -142,7 +191,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-departement',
                 'maxlength' => '2',
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Département',
@@ -160,7 +209,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-canton',
                 'maxlength' => '4',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Canton',
@@ -175,7 +224,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-codePostal',
                 'maxlength' => '5',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Code postal',
@@ -190,7 +239,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nom',
                 'maxlength' => '45',
-                'class' => 'sbm-text45'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -237,6 +286,39 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'visible',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => true,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Visibles',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+    }
+    private function formCommunesSpecification()
+    {
+        return array(
+            'membre' => array(
+                'required' => false
+            ),
+            'desservie' => array(
+                'required' => false
+            ),
+            'visible' => array(
+                'required' => false
+            )
+        );
     }
 
     private function formEleves()
@@ -247,7 +329,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nom',
                 'maxlength' => '11',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Numéro',
@@ -265,7 +347,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nom',
                 'maxlength' => '45',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -283,7 +365,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-responsable',
                 'maxlength' => '45',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Responsable',
@@ -298,10 +380,13 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-commune',
                 'maxlength' => '30',
-                'class' => 'sbm-text15'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Commune',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -313,7 +398,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-station',
                 'maxlength' => '30',
-                'class' => 'sbm-text15'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Station',
@@ -328,7 +413,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-service',
                 'maxlength' => '11',
-                'class' => 'sbm-text8'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Service',
@@ -343,7 +428,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-tarif',
                 'maxlength' => '11',
-                'class' => 'sbm-text8'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Tarif',
@@ -377,12 +462,12 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-etablissement',
                 'maxlength' => '45',
-                'class' => 'sbm-text20'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Etablissement',
                 'label_attributes' => array(
-                    'class' => 'sbm-first'
+                    'class' => 'sbm-new-line'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -395,7 +480,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-classe',
                 'maxlength' => '30',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Classe',
@@ -428,12 +513,12 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formEtablissements()
     {
         $this->add(array(
+            'type' => 'text',
             'name' => 'commune',
-            'attributes' => array(
-                'type' => 'text',
+            'attributes' => array(                
                 'id' => 'critere-commune',
                 'maxlength' => '45',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
@@ -450,7 +535,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'maxlength' => '45',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -463,10 +548,10 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $this->add(array(
             'name' => 'aliasCG',
             'attributes' => array(
-                'type' => 'text',
+                'type' => 'hidden',
                 'id' => 'critere-aliasCG',
                 'maxlength' => '50',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Nom CG',
@@ -475,6 +560,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+    }
+    private function formEtablissementsSpecification()
+    {
+        return array(
+            'commune' => array(
+                'required' => false
+            )
+        );
     }
 
     private function formLibelles()
@@ -485,7 +578,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nature',
                 'maxlength' => '20',
-                'class' => 'sbm-text20'
+                'class' => 'sbm-width-20c'
             ),
             'options' => array(
                 'label' => 'Nature',
@@ -516,6 +609,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+    private function formLibellesSpecification()
+    {
+        return array(
+            'ouvert' => array(
+                'required' => false
+            )
+        );
+    }
 
     private function formPaiements()
     {
@@ -524,7 +625,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-responsable',
-                'class' => 'sbm-text30',
+                'class' => 'sbm-width-50c',
                 'maxlegth' => '61'
             ),
             'options' => array(
@@ -547,7 +648,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'options' => array(
                 'label' => 'Caisse',
                 'label_attributes' => array(
-                    'class' => ''
+                    'class' => 'sbm-new-line'
                 ),
                 'empty_option' => 'Toutes',
                 'error_attributes' => array(
@@ -578,7 +679,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-exercice',
-                'class' => 'sbm-text4',
+                'class' => 'sbm-width-5c',
                 'maxlegth' => '4'
             ),
             'options' => array(
@@ -596,7 +697,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-annee-scolaire',
-                'class' => 'sbm-text9',
+                'class' => 'sbm-width-10c',
                 'maxlegth' => '9'
             ),
             'options' => array(
@@ -665,7 +766,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-titulaire',
-                'class' => 'sbm-text30',
+                'class' => 'sbm-width-30c',
                 'maxlegth' => '30'
             ),
             'options' => array(
@@ -683,7 +784,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-banque',
-                'class' => 'sbm-text30',
+                'class' => 'sbm-width-30c',
                 'maxlegth' => '30'
             ),
             'options' => array(
@@ -701,7 +802,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-reference',
-                'class' => 'sbm-text30',
+                'class' => 'sbm-width-30c',
                 'maxlegth' => '30'
             ),
             'options' => array(
@@ -745,7 +846,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nom',
                 'maxlength' => '45',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -763,7 +864,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-commune',
                 'maxlength' => '45',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
@@ -787,6 +888,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'options' => array(
                 'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -818,7 +922,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'id' => 'critere-nbEleves',
                 'maxlength' => 2,
-                'class' => 'sbm-text3'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Nb d\'élèves',
@@ -846,7 +950,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'demenagement' => array(
                 'required' => false
-            ),
+            )
         );
     }
 
@@ -858,7 +962,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-serviceId',
                 'maxlength' => '11',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Numéro',
@@ -876,7 +980,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nom',
                 'maxlength' => '45',
-                'class' => 'sbm-text45'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -886,37 +990,45 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         $this->add(array(
-            'name' => 'transporteur',
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'transporteurId',
             'attributes' => array(
-                'type' => 'text',
-                'id' => 'critere-transporteur',
+                'id' => 'critere-transporteurId',
                 'maxlength' => '30',
-                'class' => 'sbmtext30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Transporteur',
+                'empty_option' => 'Tous',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
             )
         ));
     }
-
+    private function formServicesSpecification()
+    {
+        return array(
+            'transporteurId' => array(
+                'required' => false
+            )
+        );
+    }
     private function formStations()
     {
         $this->add(array(
-            'name' => 'commune',
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'communeId',
             'attributes' => array(
-                'type' => 'text',
-                'id' => 'critere-commune',
-                'maxlength' => '45',
-                'class' => 'sbm-text30'
+                'id' => 'critere-communeId',
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
                 'label_attributes' => array(
                     'class' => 'sbm-first'
                 ),
+                'empty_option' => 'Tous',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -928,7 +1040,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nom',
                 'maxlength' => '45',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -940,10 +1052,10 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $this->add(array(
             'name' => 'aliasCG',
             'attributes' => array(
-                'type' => 'text',
+                'type' => 'hidden',
                 'id' => 'critere-aliasCG',
                 'maxlength' => '45',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-25c'
             ),
             'options' => array(
                 'label' => 'Nom CG',
@@ -952,6 +1064,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+    }
+    private function formStationsSpecification()
+    {
+        return array(
+            'communeId' => array(
+                'required' => false
+            )
+        );
     }
 
     private function formTarifs()
@@ -962,7 +1082,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'id' => 'critere-montant',
                 'maxlength' => '11',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Montant',
@@ -1024,7 +1144,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         ));
     }
 
-    private function formTarifSpecification()
+    private function formTarifsSpecification()
     {
         return array(
             'rythme' => array(
@@ -1047,7 +1167,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-commune',
                 'maxlength' => '45',
-                'class' => 'sbm-text45'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
@@ -1065,7 +1185,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'text',
                 'id' => 'critere-nom',
                 'maxlength' => '30',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom',

@@ -24,26 +24,27 @@ return array(
             array('field' => 'nom',),
             array('field' => 'aliasCG'),
             array('field' => 'codeCG',),
-            array('field' => 'longitude',),
-            array('field' => 'latitude',),
+            array('field' => 'x',),
+            array('field' => 'y',),
             array('field' => 'visible',),
             array('field' => 'ouverte',),
         ),
         'from' => array(
             'table' => 'stations', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
-            'alias' => 'eta', // optionnel
+            'alias' => 'sta', // optionnel
         ),
         'join' => array(
             array(
                 'table' => 'communes', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
                 'alias' => 'com', // optionnel
-                'relation' => 'com.communeId = eta.communeId', // obligatoire
+                'relation' => 'com.communeId = sta.communeId', // obligatoire
                 'fields' => array(
                     array('field' => 'nom', 'alias' => 'commune',),
                 ),
             ),
         ),
+        'order' => array('commune', 'nom')
     ),
 );

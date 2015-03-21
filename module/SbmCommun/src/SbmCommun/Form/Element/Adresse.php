@@ -1,6 +1,6 @@
 <?php
 /**
- * Définition de l'élément 'Prenom' avec filtres et validateurs
+ * Définition de l'élément 'Adresse' avec filtres et validateurs
  *
  *
  * @project sbm

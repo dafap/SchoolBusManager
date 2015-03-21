@@ -13,14 +13,18 @@
  */
 ?>
 <h1>Suppression d'une classe</h1>
-<p>Vous avez demandé la suppression de la classe :</p>
-<ul>
-    <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
-    <li><?php echo $this->escapeHtml($this->data->aliasCG); ?></li>
-</ul>
-<p>Confirmez-vous ?</p>
-<?php 
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de la classe :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->aliasCG); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
 echo $this->form()->openTag($form);
 echo $this->formCollection($form);
 echo $this->form()->closeTag();
 ?>
+</div>

@@ -11,25 +11,43 @@
  * @date 5 mai 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url('sbmgestion/transport', array('action'=> 'service-liste', 'page' => $this->page));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
 ?>
 <h1>Création d'un nouveau service</h1>
-<div class="fiche-wrapper">
-  <div class="zone-actions">
-    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des services"><i class="fam-door-out"></i> Retour</a>
-  </div>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
 <?php 
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="edit">';
-echo '<div id="service-edit-serviceId" class="row-inner edit">' . $this->formRow($this->form->get('serviceId')) . '</div>';
-echo '<div id="service-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
-echo '<div id="service-edit-aliasCG" class="row-inner edit">' . $this->formRow($this->form->get('aliasCG')) . '</div>';
-echo '<div id="service-edit-transporteurId" class="row-inner edit">' . $this->formRow($this->form->get('transporteurId')) . '</div>';
-echo '<div id="service-edit-nbPlaces" class="row-inner edit">' . $this->formRow($this->form->get('nbPlaces')) . '</div>';
-echo '<div id="service-edit-surEtatCG" class="row-inner edit">' . $this->formRow($this->form->get('surEtatCG')) . '</div>';
-echo '<div id="service-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
-echo '</fieldset>';
-echo $this->form()->closeTag();
 ?>
+    <fieldset class="sbm-page1">
+        <div id="service-ajout-serviceId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('serviceId')); ?></div>
+        <div id="service-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+        <div id="service-ajout-aliasCG" class="row-inner ajout"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
+        <div id="service-ajout-transporteurId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('transporteurId')); ?></div>
+        <div id="service-ajout-operateur" class="row-inner ajout"><?php echo $this->formRow($this->form->get('operateur')); ?></div>
+        <div id="service-ajout-nbPlaces" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nbPlaces')); ?></div>
+        <div id="service-ajout-kmAVide" class="row-inner ajout"><?php echo $this->formRow($this->form->get('kmAVide')); ?></div>
+        <div id="service-ajout-kmEnCharge" class="row-inner ajout"><?php echo $this->formRow($this->form->get('kmEnCharge')); ?></div>
+        <div id="service-ajout-surEtatCG" class="row-inner ajout"><?php echo $this->formRow($this->form->get('surEtatCG')); ?></div>
+        <div id="service-ajout-buttons" class="row-inner ajout">
+        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+    </fieldset>
+<?php echo $this->form()->closeTag(); ?>
+    </div>
+	<div id="fiche-footer"></div>
 </div>

@@ -1,61 +1,187 @@
 <?php
 /**
- * Application Sbm
- * Dessin des pages
+ * Dessin des pages de l'application School Bus Manager
  *
  * Voir la documentation dans docs/application/views/layouts/layout.textile
  *
  * Le partial('common/stats.phtml') est prévu pour inclure un compteur de visites
  *
  * @project sbm
+ *
  * @package module/SbmFront
  * @filesource view/layout/layout.phtml
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2014
+ *         @date 21 avr. 2014
  * @version 2014-1
  */
-$appl_name = $this->translate($this->getParameter('appl_name', $this->parameter));
-$base_path = $this->basePath();
+use SbmCommun\Model\StdLib;
+
+// paramètres du layout
+$appl_name = StdLib::getParam('appl_name', $this->parameter);
+$layoutParameters = StdLib::getParam('layout', $this->parameter);
+
 echo $this->doctype();
 ?>
 
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-        <?php echo $this->headTitle('SBM '. $appl_name)->setSeparator(' - ')->setAutoEscape(false)?>
+<base href="<?php echo $this->basePath(); ?>" />
+<?php
+echo $this->headTitle('SBM ' . $appl_name)
+    ->setSeparator(' - ')
+    ->setAutoEscape(false);
+echo $this->headMeta()
+    ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+    ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ->setHttpEquiv('lang', 'fr')
+    ->setName('author', 'Alain Pomirol - DAFAP Informatique')
+    ->setName('generator', 'ZendFramework 2.3')
+    ->setName('language', 'fr') . PHP_EOL;
 
-        <?php
-        echo $this->headMeta()
-            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
-            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
-            ->setHttpEquiv('lang', 'fr')
-            ->setName('author', 'Alain Pomirol - DAFAP Informatique')
-            ->setName('generator', 'ZendFramework 2.3')
-            ->setName('language', 'fr') . PHP_EOL;
-        ?>
-        <base href="<?php echo $base_path; ?>" />
-<!-- Les styles -->
-<?php
-    echo $this->getHeadLinks($base_path, $this->getParameter('favicon', $this->parameter), $this->getParameter('css', $this->parameter));
-?>
-<!-- Les scripts -->
-<?php
-    echo $this->getHeadScripts($base_path, $this->getParameter('js', $this->parameter));
-?>
-        
+// headLink : Le favicon et les styles
+$this->headLink(array(
+    'rel' => 'shortcut icon',
+    'type' => 'image/vnd.microsoft.icon',
+    'href' => $this->basePath(StdLib::getParam('favicon', $layoutParameters))
+));
+foreach (StdLib::getParamR(array(
+    'css',
+    'append'
+), $layoutParameters, array()) as $css_file) {
+    if (is_string($css_file)) {
+        $this->headLink()->appendStylesheet($this->basePath($css_file));
+    } elseif (is_array($css_file)) {
+        $href = StdLib::getParam('href', $css_file);
+        $media = StdLib::getParam('media', $css_file) ?  : 'all';
+        $conditionalStylesheet = StdLib::getParam('conditionalStylesheet', $css_file) ?  : true;
+        $extras = StdLib::getParam('extras', $css_file) ?  : array();
+        if (! is_null($href)) {
+            $this->headLink()->appendStylesheet($this->basePath($href), $media, $conditionalStylesheet, $extras);
+        }
+    } else {
+        throw new Exception('Erreur de structure pour la définition des fichiers css dans la section append.');
+    }
+}
+foreach (StdLib::getParamR(array(
+    'css',
+    'prepend'
+), $layoutParameters, array()) as $css_file) {
+    if (is_string($css_file)) {
+        $this->headLink()->prependStylesheet($this->basePath($css_file));
+    } elseif (is_array($css_file)) {
+        $href = StdLib::getParam('href', $css_file);
+        $media = StdLib::getParam('media', $css_file) ?  : 'all';
+        $conditionalStylesheet = StdLib::getParam('conditionalStylesheet', $css_file) ?  : true;
+        $extras = StdLib::getParam('extras', $css_file) ?  : array();
+        if (! is_null($href)) {
+            $this->headLink()->prependStylesheet($this->basePath($href), $media, $conditionalStylesheet, $extras);
+        }
+    } else {
+        throw new Exception('Erreur de structure pour la définition des fichiers css dans la section prepend.');
+    }
+}
+echo $this->headLink();
+
+// headScript : les scripts
+foreach (StdLib::getParamR(array(
+    'js',
+    'file',
+    'prepend'
+), $layoutParameters, array()) as $js_file) {
+    if (is_string($js_file)) {
+        $this->headScript()->prependFile($this->basePath($js_file));
+    } elseif (is_array($js_file)) {
+        $src = StdLib::getParam('src', $js_file);
+        $type = StdLib::getParam('type', $js_file);
+        $attrs = StdLib::getParam('attrs', $js_file);
+        if (! is_null($src)) {
+            $head_script = $this->headScript()->prependFile($this->basePath($src), $type, $attrs);
+        }
+    } else {
+        throw new Exception('Erreur de structure pour la définition des fichiers js dans la section prepend.');
+    }
+}
+foreach (StdLib::getParamR(array(
+    'js',
+    'file',
+    'append'
+), $layoutParameters, array()) as $js_file) {
+    if (is_string($js_file)) {
+        $this->headScript()->appendFile($this->basePath($js_file));
+    } elseif (is_array($js_file)) {
+        $src = StdLib::getParam('src', $js_file);
+        $type = StdLib::getParam('type', $js_file);
+        $attrs = StdLib::getParam('attrs', $js_file);
+        if (! is_null($src)) {
+            $head_script = $this->headScript()->appendFile($this->basePath($src), $type, $attrs);
+        }
+    } else {
+        throw new Exception('Erreur de structure pour la définition des fichiers js dans la section append.');
+    }
+}
+foreach (StdLib::getParamR(array(
+    'js',
+    'script',
+    'prepend'
+), $layoutParameters, array()) as $js_script) {
+    if (is_string($js_script)) {
+        $this->headScript()->prependScript($js_script);
+    } elseif (is_array($js_script)) {
+        $template = StdLib::getParam('template', $js_script);
+        $type = StdLib::getParam('type', $js_script);
+        $attrs = StdLib::getParam('attrs', $js_script);
+        if (! is_null($template)) {
+            $this->headScript()->prependScript($template, $type, $attrs);
+        }
+    } else {
+        throw new Exception('Erreur de structure pour la définition d\'un script dans la section prepend');
+    }
+}
+foreach (StdLib::getParamR(array(
+    'js',
+    'script',
+    'append'
+), $layoutParameters, array()) as $js_script) {
+    if (is_string($js_script)) {
+        $this->headScript()->appendScript($js_script);
+    } elseif (is_array($js_script)) {
+        $template = StdLib::getParam('template', $js_script);
+        $type = StdLib::getParam('type', $js_script);
+        $attrs = StdLib::getParam('attrs', $js_script);
+        if (! is_null($template)) {
+            $this->headScript()->appendScript($template, $type, $attrs);
+        }
+    } else {
+        throw new Exception('Erreur de structure pour la définition d\'un script dans la section append');
+    }
+}
+echo $this->headScript();
+?>        
 </head>
 <body>
-	<div class="contener_general">
-		<div class="contener_interface">
+	<div id="container-general">
+		<?php echo $this->partial('layout/header', StdLib::getParam('header', $layoutParameters));?>
+		<!-- conteneur de la page -->
+		<div id="container-interface"
+			class="<?php echo StdLib::getParam('page', $layoutParameters, 'page1'); ?>">
 			<!-- header -->
-		    <?php echo $this->partial('layout/header', $this->getParameter('header', $this->parameter));?>
+			<div id="header">
+				<div class="container_banner">
+					<a href="<?php echo StdLib::getParam('accueil', $layoutParameters, ''); ?>" title="Retour à l'accueil">
+						<div id="bandeau" class="<?php echo StdLib::getParam('page', $layoutParameters, 'page1'); ?>"></div></a>
+				</div>
+			</div>
+			<!-- bienvenue  -->
+			<?php echo $this->bienvenue(); ?>
 			<!-- corps de page -->
-			<div class="centre">
+			<div class="content">
 			<?php echo $this->layout()->content; ?>
 			</div>
-			<!-- Footer -->
-			<?php echo $this->partial('layout/footer', $this->getParameter('footer', $this->parameter));?>
+
 		</div>
+		<!-- Footer -->
+		<?php echo $this->partial('layout/footer', StdLib::getParam('footer', $layoutParameters));?>
 	</div>
 	<!-- Statistiques (comme par exemple Google Analytics) -->
 	<?php  echo $this->partial('layout/stats'); ?>

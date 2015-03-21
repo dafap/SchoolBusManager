@@ -38,12 +38,13 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-nom',
-                'class' => 'sbm-text30'
+                'autofocus' => 'autofocus',
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
-                'label' => 'Libellé du transporteur',
+                'label' => 'Nom du transporteur',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -55,12 +56,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-aliascg',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -72,12 +73,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-aliascg',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Adresse (suite)',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -89,12 +90,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'SbmCommun\Form\Element\CodePostal',
             'attributes' => array(
                 'id' => 'transporteur-codepostal',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Code postal',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -106,12 +107,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'transporteur-communeId',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une commune',
                 'error_attributes' => array(
@@ -124,12 +125,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-telephone',
-                'class' => 'sbm-text10'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Téléphone',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -141,12 +142,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-fax',
-                'class' => 'sbm-text10'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Fax',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -158,12 +159,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-email',
-                'class' => 'sbm-text80'
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Email',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -175,12 +176,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-siret',
-                'class' => 'sbm-text14'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'SIRET',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -192,12 +193,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-naf',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'NAF',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -209,12 +210,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-tvaIntraCommunautaire',
-                'class' => 'sbm-text13'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'TVA intra communautaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -226,12 +227,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-rib_titulaire',
-                'class' => 'sbm-text32'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'RIB - titulaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -243,12 +244,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-rib_domiciliation',
-                'class' => 'sbm-text24'
+                'class' => 'sbm-width-25c'
             ),
             'options' => array(
                 'label' => 'RIB - domiciliation',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -260,12 +261,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-rib_bic',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'RIB - BIC',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -277,12 +278,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-rib_iban',
-                'class' => 'sbm-text34'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'RIB - IBAN',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -294,12 +295,12 @@ class Transporteur extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'transporteur-communeId',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une commune',
                 'error_attributes' => array(
@@ -314,8 +315,7 @@ class Transporteur extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'transporteur-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -324,7 +324,7 @@ class Transporteur extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'transporteur-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }

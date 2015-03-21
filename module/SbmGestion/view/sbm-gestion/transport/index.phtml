@@ -11,24 +11,59 @@
  * @date 25 avr. 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_transport_circuits = $this->url('sbmgestion/transport', array('action' => 'circuit-liste', 'page' => $this->page));
-$url_transport_classes = $this->url('sbmgestion/transport', array('action' => 'classe-liste', 'page' => $this->page));
-$url_transport_communes = $this->url('sbmgestion/transport', array('action' => 'commune-liste', 'page' => $this->page));
-$url_transport_etablissements = $this->url('sbmgestion/transport', array('action' => 'etablissement-liste', 'page' => $this->page));
-$url_transport_services = $this->url('sbmgestion/transport', array('action' => 'service-liste', 'page' => $this->page));
-$url_transport_stations = $this->url('sbmgestion/transport', array('action' => 'station-liste', 'page' => $this->page));
-$url_transport_transporteurs = $this->url('sbmgestion/transport', array('action' => 'transporteur-liste', 'page' => $this->page));
+$url_transport_circuits = $this->url('sbmgestion/transport', array(
+    'action' => 'circuit-liste',
+    'page' => $this->page
+));
+$url_transport_classes = $this->url('sbmgestion/transport', array(
+    'action' => 'classe-liste',
+    'page' => $this->page
+));
+$url_transport_communes = $this->url('sbmgestion/transport', array(
+    'action' => 'commune-liste',
+    'page' => $this->page
+));
+$url_transport_etablissements = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-liste',
+    'page' => $this->page
+));
+$url_transport_services = $this->url('sbmgestion/transport', array(
+    'action' => 'service-liste',
+    'page' => $this->page
+));
+$url_transport_stations = $this->url('sbmgestion/transport', array(
+    'action' => 'station-liste',
+    'page' => $this->page
+));
+$url_transport_transporteurs = $this->url('sbmgestion/transport', array(
+    'action' => 'transporteur-liste',
+    'page' => $this->page
+));
 $url_gestion = $this->url('sbmgestion');
 ?>
 <h1>Gestion du réseau de transport</h1>
-<ul>
-<li><a href="<?php echo $url_transport_circuits; ?>">Circuits</a></li>
-<li><a href="<?php echo $url_transport_classes; ?>">Classes</a></li>
-<li><a href="<?php echo $url_transport_communes; ?>">Communes</a></li>
-<li><a href="<?php echo $url_transport_etablissements; ?>">Etablissements</a></li>
-<li><a href="<?php echo $url_transport_services; ?>">Services</a></li>
-<li><a href="<?php echo $url_transport_stations; ?>">Stations</a></li>
-<li><a href="<?php echo $url_transport_transporteurs; ?>">Transporteurs</a></li>
-<li><a href="<?php echo $url_gestion; ?>">Retour au menu général</a></li>
-</ul>
+<div id="menugeneral">
+	<div class="flashMessenger">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+</div>
+	<div class="items">
+		<ul>
+			<li><a href="<?php echo $url_transport_circuits; ?>"><i class="fam-bullet-go"></i>Circuits</a></li>
+			<li><a href="<?php echo $url_transport_classes; ?>"><i class="fam-bullet-go"></i>Classes</a></li>
+			<li><a href="<?php echo $url_transport_communes; ?>"><i class="fam-bullet-go"></i>Communes</a></li>
+			<li><a href="<?php echo $url_transport_etablissements; ?>"><i class="fam-bullet-go"></i>Etablissements</a></li>
+			<li><a href="<?php echo $url_transport_services; ?>"><i class="fam-bullet-go"></i>Services</a></li>
+			<li><a href="<?php echo $url_transport_stations; ?>"><i class="fam-bullet-go"></i>Stations</a></li>
+			<li><a href="<?php echo $url_transport_transporteurs; ?>"><i class="fam-bullet-go"></i>Transporteurs</a></li>
+			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-door-out"></i>Retour au menu général</a></li>
+		</ul>
+	</div>
+</div>

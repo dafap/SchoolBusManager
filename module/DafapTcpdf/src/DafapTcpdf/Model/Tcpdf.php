@@ -227,13 +227,13 @@ class Tcpdf extends \TCPDF
             if (! array_key_exists($k, $array)) {
                 ob_start();
                 var_dump($array);
-                $dump_array = ob_get_clean();
+                $dump_array = html_entity_decode(strip_tags(ob_get_clean()));
                 $message = sprintf("La clé %s n'existe pas dans le tableau %s.\n%s", $k, $config, $dump_array);
                 break;
             } elseif (! is_array($array[$k])) {
                 ob_start();
                 var_dump($array);
-                $dump_array = ob_get_clean();
+                $dump_array = html_entity_decode(strip_tags(ob_get_clean()));
                 $message = sprintf("La clé %s existe dans le tableau %s mais ne donne pas un tableau.\n%s", $k, $config, $dump_array);
                 break;
             } else {
@@ -792,7 +792,7 @@ class Tcpdf extends \TCPDF
             if (! is_array($colorInput)) {
                 ob_start();
                 var_dump($colorInput);
-                $dump = ob_get_clean();
+                $dump = html_entity_decode(strip_tags(ob_get_clean()));
                 throw new Exception(sprintf("%s (%s Ligne %d) L'entrée n'est pas le codage RGB d'une couleur.\n%s", __METHOD__, __FILE__, __LINE__, $dump));
             }
             

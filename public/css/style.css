@@ -1,7 +1,49 @@
+html {
+	background: #E5E0D4;
+	text-align: center;
+	font-size: 100%;
+	color: #333;
+	margin: 0;
+	padding: 0;
+}
 body {
 	padding-top: 60px;
 	padding-bottom: 40px;
+	color: inherit;
+	margin: auto;
+	max-width: 80em;
+	font-size: 0.8125em;
+	font-family: Verdana, "Luxi sans", "Lucida Grande", Lucida, "Lucida Sans Unicode", sans-serif;
+	height: auto;
+	width: 1170px;
+	padding: 0;
 }
+
+/*--------- TOP-SITE -----------------*/
+#top-site {
+	height: 20px;
+	margin: 0;
+	text-align: center;
+	font-size: 0.75em;
+	color: #999;
+	width: 100%;
+	padding: 0;
+}
+#top-site a {
+	color: #666;
+	padding: 1px 4px;
+	text-decoration: none;
+}
+/*************************************/
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}
+
+
+
 
 .clearfix {
 	zoom: 1;
@@ -124,10 +166,6 @@ div.zone-pagination {
 	font-weight: bold;
 }
 
-.float-left {
-	float: left;
-}
-
 .cols-2 {
 	width: 48%;
 }
@@ -152,9 +190,26 @@ div.zone-pagination {
 }
 
 /* POUR LES FICHES */
+.fiche-wrapper .zone-description {
+	font-size: 80%;
+	color: #3f3f3f;
+}
+
+.fiche-wrapper .zone-description p {
+	margin: 1em  1em;
+}
+
 .fiche-wrapper div.row-inner.edit {
 	margin-top: 4px;
 	margin-bottom: 4px;
+}
+
+.fiche-wrapper fieldset {
+	padding: .5em; 	 
+}
+
+.fiche-wrapper .button {
+	margin-top: 5px;
 }
 
 .fiche-wrapper fieldset.edit {

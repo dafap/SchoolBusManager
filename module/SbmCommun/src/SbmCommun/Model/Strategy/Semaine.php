@@ -62,14 +62,36 @@ class Semaine extends AbstractPower2
      */
     protected function valid($value)
     {
-        return in_array($value, array(
-            self::CODE_SEMAINE_LUNDI,
-            self::CODE_SEMAINE_MARDI,
-            self::CODE_SEMAINE_MERCREDI,
-            self::CODE_SEMAINE_JEUDI,
-            self::CODE_SEMAINE_VENDREDI,
-            self::CODE_SEMAINE_SAMEDI,
-            self::CODE_SEMAINE_DIMANCHE
-        ));
+        return array_key_exists($value, self::getJours());
+    }
+    
+    /**
+     * Renvoie la liste des jours de la semaine sous forme d'un tableau indexé
+     * 
+     * @return array
+     * La clé est le code du jour, la valeur est le nom abrégé du jour
+     */
+    public static function getJours()
+    {
+        return  array(
+            self::CODE_SEMAINE_LUNDI => 'lun',
+            self::CODE_SEMAINE_MARDI => 'mar',
+            self::CODE_SEMAINE_MERCREDI => 'mer',
+            self::CODE_SEMAINE_JEUDI => 'jeu',
+            self::CODE_SEMAINE_VENDREDI => 'ven',
+            self::CODE_SEMAINE_SAMEDI => 'sam',
+            self::CODE_SEMAINE_DIMANCHE => 'dim'
+        );
+    }
+    
+    /**
+     * Renvoie la liste des jours de la semaine sous forme d'un tableau indexé
+     *
+     * @return array
+     * La clé est le nom abrégé du jour, la valeur est le code du jour
+     */
+    public static function getCodesJours()
+    {
+        return array_flip(self::getJours());
     }
 }

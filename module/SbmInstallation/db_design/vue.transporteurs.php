@@ -51,5 +51,6 @@ return array(
                 ),
             ),
         ),
+        'order' => 'nom'
     ),
 );

@@ -11,47 +11,55 @@
  * @date 18 juil. 2014
  * @version 2014-1
  */
-$this->paginator->setDefaultItemCountPerPage($this->nb_responsable_pagination);
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $responsables = $this->paginator->getCurrentItems();
-?>
-<h1>Liste des responsables</h1>
-<div class="liste-wrapper">
-	<div class="zone-actions">
-<?php
-$url_ajouter = $this->url('sbmgestion/eleve', array(
+$ajouter = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-ajout',
     'page' => $this->page
 ));
-$url_imprimer = $this->url('sbmgestion/eleve', array(
+$pdf = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-pdf',
     'page' => $this->page
 ));
-$url_retour = $this->url('sbmgestion/eleve');
+$retour = $this->url('sbmgestion/eleve');
+$hiddens = array();
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
-$buttons = array(
+$actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $url_retour,
+        'formaction' => $retour,
         'onclick' => $js_retour,
         'title' => 'Retour'
     ),
     'rapport' => array(
         'class' => 'fam-report',
-        'formaction' => $url_imprimer,
+        'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
     ),
     'ajouter' => array(
         'class' => 'fam-add',
-        'formaction' => $url_ajouter,
+        'formaction' => $ajouter,
         'title' => 'Nouveau responsable'
     )
 );
-echo $this->listeZoneActions(array(), $buttons);
-?>	
+?>
+<h1>Liste des responsables</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+	<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	    <div class="flashMessenger float-right"><?php 
+		    echo $this->flashMessenger()->render('success');
+		    echo $this->flashMessenger()->render('warning');
+		    echo $this->flashMessenger()->render('error');
+		    echo $this->flashMessenger()->render('info');
+		    echo $this->flashMessenger()->render('default');
+		    ?></div>
 	</div>
-	<table class="liste-inner responsables">
+	<div id="liste-inner">
+	<table class="responsables">
 		<tbody>
 			<tr>
 				<th>Code</th>
@@ -141,8 +149,13 @@ echo $this->listeZoneActions(array(), $buttons);
         <?php endforeach;?>
     </tbody>
 	</table>
-	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	</div>
+	<div id="liste-footer">
+	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	    <div class="criteres-wrapper responsables">
 <?php echo $this->form()->openTag($this->criteres_form);?>
 <?php echo $this->formCollection($this->criteres_form, true);?>
-<?php echo $this->form()->closeTag();?>	
+<?php echo $this->form()->closeTag();?>
+        </div>
+	</div>
 </div>

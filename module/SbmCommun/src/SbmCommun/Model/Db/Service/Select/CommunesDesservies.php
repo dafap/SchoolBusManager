@@ -24,12 +24,11 @@ class CommunesDesservies implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $db = $serviceLocator->get('Sbm\Db\DbLib');
-        $d33 = new Expression('departement= ?', '33', array(Expression::TYPE_LITERAL));
         $sql = new Sql($db->getDbAdapter());
         $select = $sql->select($db->getCanonicName('communes', 'table'));
         $select->where('desservie = true');
-        $select->columns(array('communeId', 'nom', 'departement', 'd33' => $d33));
-        $select->order('d33 DESC, departement, nom');
+        $select->columns(array('communeId', 'nom', 'departement'));
+        $select->order(array('departement', 'nom'));
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = array();

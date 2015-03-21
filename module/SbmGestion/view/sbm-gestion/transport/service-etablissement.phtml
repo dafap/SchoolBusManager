@@ -1,0 +1,144 @@
+<?php
+/**
+ * Liste des établissements pour un service donné
+ *
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource service-etablissement.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 13 mars 2015
+ * @version 2015-1
+ */
+use SbmCommun\Model\StdLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+// à faire en premier
+// et faire l'action du controller
+
+$ajouter = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service-ajout', // voir si on peut faire une seule action
+    'page' => $this->page
+));
+$pdf = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service-pdf', // voir si on peut faire une seule action
+    'page' => $this->page
+));
+$retour = $this->url('sbmgestion/transport', array(
+    'action' => 'service-etablissement',
+    'page' => $this->page
+));
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+
+$hiddens = array(
+    'serviceId' => $this->service->serviceId,
+    'etablissementId' => null,
+    'origine' => 'service-etablissement'
+);
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ),
+    'rapports' => array(
+        'class' => 'fam-application-view-list',
+        'formaction' => $pdf,
+        'title' => 'Rapports à imprimer'
+    ),
+    'ajouter' => array(
+        'class' => 'fam-add',
+        'formaction' => $ajouter,
+        'title' => 'Nouvel établissement'
+    )
+);
+?>
+<h1>Liste des établissements desservis par
+<?php echo $this->service->serviceId . ' - ' . $this->service->nom; ?>
+
+</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Code</th>
+					<th>Nom</th>
+					<th>Commune</th>
+					<th>Code postal</th>
+					<th>Téléphone</th>
+					<th>Email</th>
+					<th>Inscrits</th>
+				</tr>
+            <?php foreach($this->data as $test => $etablissement): ?>
+            <?php $fmt?>
+            <?php $nbInscrits = StdLib::getParamR(array($etablissement->etablissementId, 'total'), $this->t_nb_inscrits, 0); ?>
+            <?php $exces = $etablissement->serv_nbPlaces < $nbInscrits; ?>
+                <tr
+					class="<?php
+                
+echo $this->cycle(array(
+                    "even",
+                    "odd"
+                ))->next();
+                if ($exces)
+                    echo ' exces';
+                ?>">
+					<td class="etablissementid"><?php echo $this->escapeHtml($etablissement->etablissementId); ?></td>
+					<td class="nom"><?php echo $this->escapeHtml($etablissement->etab_nom); ?></td>
+					<td class="commune"><?php echo $this->escapeHtml($etablissement->etab_commune); ?></td>
+					<td class="codepostal"><?php echo $this->escapeHtml($etablissement->etab_codePostal); ?></td>
+					<td class="telephone"><?php echo $this->escapeHtml($etablissement->etab_telephone); ?></td>
+					<td class="email"><?php echo $this->escapeHtml($etablissement->etab_email); ?></td>
+					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="boutons">
+            <?php
+                $url_delete = $this->url('sbmgestion/transport', array(
+                    'action' => 'etablissement-service-suppr',
+                    'page' => $this->page
+                ));
+                $url_group = $this->url('sbmgestion/transport', array(
+                    'action' => 'etablissement-service-group',
+                    'page' => $this->page
+                ));
+                $hiddens = array(
+                    'etablissementId' => $etablissement->etablissementId,
+                    'serviceId' => $service->serviceId,
+                    'origine' => 'service-etablissement'
+                );
+                $buttons = array(
+                    'supprimer' => array(
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ),
+                    'eleves' => array(
+                        'class' => 'fam-group',
+                        'formaction' => $url_group,
+                        'title' => sprintf('élèves du service %s inscrits dans %s', $this->service->serviceId, $etablissement->etab_nom)
+                    )
+                );
+                echo $this->listeLigneActions($etablissement->etablissementId . '|' . $service->serviceId, $hiddens, $buttons);
+                ?>
+			        </td>
+				</tr>         
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer"></div>
+</div>

@@ -15,12 +15,79 @@ $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
 $url_admin = $this->url('sbmadmin');
 ?>
-<h1>Accès aux services</h1>
-
-<h3>Identifiez-vous</h3>
-
-<ul>
-  <li><a href="<?php echo $url_gestion; ?>">Gestion des transports scolaires</a></li>
-  <li><a href="<?php echo $url_admin; ?>">Module d'administration</a></li>
-  <li><a href="<?php echo $url_install; ?>">Installation de SchoolBusManager</a></li>
-</ul>
+<div class="centre">
+	<h1>Transports scolaires</h1>
+	<h3>Inscription et paiement en ligne</h3>
+</div>
+<div class="table-page1">
+	<div class="row">
+		<div class="column1">
+		    <p><?php echo $this->msg; ?>
+			<p>Vous pouvez inscrire vos enfants en ligne au service de transport
+				scolaire organisé par la Communauté de communes du Bassin
+				Decazeville Aubin pour la prochaine année scolaire. Les inscriptions
+				ne seront définitives qu'après paiement des prestations demandées.</p>
+			<p>Les paiements peuvent se faire :</p>
+			<ul>
+				<li>en ligne par carte bancaire, sur une connexion sécurisée,</li>
+				<li>ou par chèque, en se rendant à la Communauté de communes.</li>
+			</ul>
+			<p>Si c'est la première fois que vous utilisez ce service, vous devez
+				d'abord créer votre compte pour inscrire vos enfants. Cela nécessite
+				de donner votre adresse email et votre identité. Les instructions
+				pour poursuivre votre inscription seront envoyées à l'adresse
+				électronique que vous aurez donnée.</p>
+			<p>Si vous avez déjà créé votre compte et suivi les indications
+				transmises par email, vous pouvez entrer en donnant votre email et
+				votre mot de passe.</p>
+			<p>Pour tout autre renseignement ou tout autre mode d'inscription,
+				vous pouvez vous adresser directement au service à l'adresse :</p>
+			<div class="centre noir">
+				<?php echo $this->client['name'];?><br>
+				<?php echo $this->client['adresse'][0]; ?><br>
+				<?php echo $this->client['adresse'][1]; ?><br>
+				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
+				Tél. <?php echo $this->client['telephone']; ?>
+			</div>
+		</div>
+		<div class="column2">
+		    <div class="flashMessenger">
+		    <?php 
+		    echo $this->flashMessenger()->render('success');
+		    echo $this->flashMessenger()->render('warning');
+		    echo $this->flashMessenger()->render('error');
+		    echo $this->flashMessenger()->render('info');
+		    echo $this->flashMessenger()->render('default');
+		    ?>
+		    </div>
+		    <?php echo $this->form()->openTag($this->form); ?>
+		    <fieldset class="sbm-page1">
+				<div class="centre">
+					<h3>Identifiez-vous</h3>
+					<div class="sbm-description">(si vous avez déjà créé votre compte)</div>
+				</div>	
+		    <?php echo $this->formRow($this->form->get('email')); ?>
+		    <br>
+		    <?php echo $this->formRow($this->form->get('mdp')); ?>
+		    <br>
+				<div class="centre"><?php echo $this->formSubmit($this->form->get('signin')); ?></div>
+				<div class="centre top-6px">
+					<a
+						href="<?php echo $this->url('login', array('action' => 'mdp-demande')); ?>">Mot
+						de passe oublié ?</a>
+				</div>
+			</fieldset>
+			<p></p>
+			<?php if ($this->etat == 1): ?>
+			<fieldset class="sbm-page1">
+			<div class="centre">
+					<h3>Nouvel utilisateur</h3>
+					<div class="sbm-description">(si vous n'avez pas de compte)</div>
+					<div class="centre"><?php echo $this->formSubmit($this->form->get('signup')); ?></div>
+				</div>
+			</fieldset>
+			<?php endif;?>
+			<?php echo $this->form()->closeTag(); ?>
+		</div>
+	</div>
+</div>

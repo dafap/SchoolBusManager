@@ -13,9 +13,10 @@
  */
 namespace SbmCommun\Form;
 
-class Tarif extends AbstractSbmForm
-{
+use Zend\InputFilter\InputFilterProviderInterface;
 
+class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
+{
     public function __construct($param = 'tarif')
     {
         parent::__construct($param);
@@ -38,12 +39,13 @@ class Tarif extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'tarif-nom',
-                'class' => 'sbm-text48'
+                'autofocus' => 'autofocus',
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Libellé du tarif',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -55,12 +57,12 @@ class Tarif extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'tarif-montant',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Montant',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -72,12 +74,12 @@ class Tarif extends AbstractSbmForm
             'name' => 'rythme',
             'attributes' => array(
                 'id' => 'tarif-rytme',
-                'class' => 'sbm-select2'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Rythme de paiement',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un rythme de paiement',
                 'error_attributes' => array(
@@ -90,12 +92,12 @@ class Tarif extends AbstractSbmForm
             'name' => 'grille',
             'attributes' => array(
                 'id' => 'tarif-grille',
-                'class' => 'sbm-select2'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Grille tarifaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une grille',
                 'error_attributes' => array(
@@ -108,12 +110,12 @@ class Tarif extends AbstractSbmForm
             'name' => 'mode',
             'attributes' => array(
                 'id' => 'tarif-mode',
-                'class' => 'sbm-select2'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Mode de paiement',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un mode de paiement',
                 'error_attributes' => array(
@@ -127,8 +129,7 @@ class Tarif extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'tarif-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -137,8 +138,42 @@ class Tarif extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'tarif-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'nom' => array(
+                'requeried' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'montant' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\Decimal'
+                    )
+                )
+            )
+        );
     }
 }

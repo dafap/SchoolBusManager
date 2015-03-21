@@ -1,0 +1,76 @@
+<?php
+/**
+ * Page de création d'un lien entre un établissement et un service
+ * (le service desservant l'établissement)
+ * 
+ * Voici les variables définies dans cette vue:
+ * $origine         : prend l'une des valeurs 'etablissement-service' ou 'service-etablissement'
+ * $etablissementId : null ou identifiant d'un établissement
+ * $serviceId       : null ou identifiant d'un service
+ *                    (l'un parmi $etablissementId, $serviceId est null, l'autre est donné)
+ * $etablissement   : null si $etablissementId est null, sinon fiche de l'établissement pour affichage dans titre
+ * $service         : null si $serviceId est null, sinon fiche du service pour affichage dans le titre
+ * $form            : le formulaire de saisi
+ * $page            : la page de la liste initiale dans etablissement-liste ou dans service-liste
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource etablissement-service-ajout.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 13 mars 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$retour = $this->url('sbmgestion/transport', array(
+    'action' => $this->origine,
+    'page' => $this->page
+));
+$hiddens = array(
+    'etablissementId' => $this->etablissementId,
+    'serviceId' => $this->serviceId,
+    'origine' => $this->origine
+);
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
+if (empty($this->etablissementId)) {
+    $h1 = sprintf("Ajout d'un établissement desservi par le circuit %s (%s)\nTransporteur : %s", $this->serviceId, $this->service->nom, $this->service->transporteur);
+} else {
+    $h1 = sprintf("Ajout d'un service desservant l'établissement\n%s %s - %s", $this->etablissementId, $this->etablissement->nom, $this->etablissement->commune);
+}
+?>
+<h1><?php echo nl2br($h1); ?></h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+	<?php echo $this->listeZoneActions($hiddens, $actions);?>
+	</div>
+	<div id="fiche-inner">
+<?php
+echo $this->form()->openTag($this->form);
+?>
+    <fieldset class="sbm-page1">
+<?php 
+echo $this->formHidden($this->form->get('origine'));
+echo $this->formHidden($this->form->get('csrf'));
+if (empty($this->etablissementId)) {
+    echo $this->formHidden($this->form->get('serviceId'));
+    echo '<div id="etablissement-service-ajout-etablissementId" class="row-inner ajout">' . $this->formRow($this->form->get('etablissementId')) . '</div>';
+} else {
+    echo $this->formHidden($this->form->get('etablissementId'));
+    echo '<div id="etablissement-service-ajout-serviceId" class="row-inner ajout">' . $this->formRow($this->form->get('serviceId')) . '</div>';
+}
+?>
+    <div id="classe-ajout-buttons" class="row-inner ajout">
+    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
+    </div>
+    </fieldset>
+<?php echo $this->form()->closeTag();
+?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>

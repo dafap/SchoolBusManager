@@ -1,7 +1,7 @@
 <?php
 /**
  * Gestion de la table `classes`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
@@ -13,7 +13,7 @@
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-use SbmCommun\Model\Strategy\ClasseNiveau as NiveauStrategy;
+use SbmCommun\Model\Strategy\Niveau as NiveauStrategy;
 
 
 class Classes extends AbstractSbmTable

@@ -1,0 +1,28 @@
+<?php
+/**
+ * Page de saisie du premier mot de passe, entrée par token
+ *
+ * Un contrôle du mot de passe est assuré.
+ * 
+ * @project sbm
+ * @package SbmFront/view/sbm-front/login
+ * @filesource confirm.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 févr. 2015
+ * @version 2015-1
+ */
+?>
+<h1>Choisissez un mot de passe</h1>
+<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('userId'));
+echo $this->formHidden($this->form->get('csrf'));
+?>
+<fieldset class="sbm-page1">
+	<div id="user-first-mdp" class="row-inner edit"><?php echo $this->formRow($this->form->get('mdp')); ?></div>
+	<div id="user-first-ctrl" class="row-inner edit"><?php echo $this->formRow($this->form->get('ctrl')); ?></div>
+	<div id="user-edit-buttons" class="row-inner top-6px">
+    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
+    </div>
+</fieldset>

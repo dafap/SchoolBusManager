@@ -13,7 +13,9 @@
  */
 namespace SbmCommun\Form;
 
-class Station extends AbstractSbmForm
+use Zend\InputFilter\InputFilterProviderInterface;
+
+class Station extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($param = 'station')
@@ -38,12 +40,13 @@ class Station extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'station-communeId',
-                'class' => 'sbm-select4'
+                'autofocus' => 'autofocus',
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une commune',
                 'error_attributes' => array(
@@ -56,12 +59,12 @@ class Station extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'station-nom',
-                'class' => 'sbm-text45'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom de la station',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -73,12 +76,12 @@ class Station extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'station-aliasCG',
-                'class' => 'sbm-text45'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Nom CG',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -90,12 +93,12 @@ class Station extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'station-codeCG',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Code CG',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -103,16 +106,16 @@ class Station extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'latitude',
+            'name' => 'x',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'station-latitude',
-                'class' => 'sbm-text20'
+                'id' => 'station-x',
+                'class' => 'sbm-width-20c'
             ),
             'options' => array(
-                'label' => 'Latitude',
+                'label' => 'X',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -120,16 +123,16 @@ class Station extends AbstractSbmForm
             )
         ));
         $this->add(array(
-            'name' => 'longitude',
+            'name' => 'y',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'station-longitude',
-                'class' => 'sbm-text20'
+                'id' => 'station-y',
+                'class' => 'sbm-width-20c'
             ),
             'options' => array(
-                'label' => 'Longitude',
+                'label' => 'Y',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -146,7 +149,7 @@ class Station extends AbstractSbmForm
             'options' => array(
                 'label' => 'Visible',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -163,7 +166,7 @@ class Station extends AbstractSbmForm
             'options' => array(
                 'label' => 'Ouverte',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -176,8 +179,7 @@ class Station extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'station-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -186,8 +188,84 @@ class Station extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'station-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'communeId' => array(
+                'required' => true
+            ),
+            'nom' => array(
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                ),
+            ),
+            'aliasCG' => array(
+                'required' => false, 
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                ),
+            ),
+            'codeCG' => array(
+                'required' => false, 
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                ),
+            ),
+            'x' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\Decimal'
+                    )
+                )
+            ),
+            'y' => array(
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\Decimal'
+                    )
+                )
+            )
+        );
     }
 }

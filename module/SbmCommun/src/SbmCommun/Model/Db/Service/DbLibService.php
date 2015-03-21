@@ -19,6 +19,7 @@ use Zend\Db\Metadata\Object\TableObject;
 use SbmCommun\Model\Db\Metadata\Metadata;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Exception;
+use DafapSession\Model\Session;
 
 class DbLibService implements FactoryInterface
 {
@@ -95,10 +96,10 @@ class DbLibService implements FactoryInterface
     /**
      * Indique s'il existe une table ou une vue du nom indiqué dans la base de donnée.
      *
-     * @param string $tableName    
+     * @param string $tableName            
      * @param string $type
      *            table|vue|system
-     *         
+     *            
      * @return boolean
      */
     public function existsTable($tableName, $type = 'table')
@@ -118,8 +119,8 @@ class DbLibService implements FactoryInterface
 
     /**
      * Renvoie un tableau des tailles de champs pour les champs dont le type à une taille
-     * 
-     * @param string $tableName
+     *
+     * @param string $tableName            
      * @param string $type
      *            table|vue|system
      *            
@@ -144,11 +145,12 @@ class DbLibService implements FactoryInterface
         }
         return $result;
     }
-    
+
     /**
-     * Renvoie un tableau des valeurs par défaut des colonnes pour les colonnes ayant une valeur par défaut
-     * 
-     * @param string $tableName
+     * Renvoie un tableau des valeurs par défaut des colonnes pour les colonnes ayant une valeur par défaut.
+     * Pour les colonnes `millesime` la valeur par défaut est la valeur courante en session.
+     *
+     * @param string $tableName            
      * @param string $type
      *            table|vue|system
      *            
@@ -167,7 +169,9 @@ class DbLibService implements FactoryInterface
         
         $result = array();
         foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {
-            if (! is_null($descriptor['column_default'])) {
+            if ($colName == 'millesime') {
+                $result[$colName] = Session::get('millesime', 0);
+            } elseif (! is_null($descriptor['column_default'])) {
                 $result[$colName] = $descriptor['column_default'];
             }
         }
@@ -214,9 +218,10 @@ class DbLibService implements FactoryInterface
     {
         return $this->table_list;
     }
-    
+
     /**
-     * Renvoie un tableau indexé de la forme (nom_réel => nom de l'entité, ...)
+     * Renvoie un tableau indexé de la forme (nom_réel => nom de l'entité, .
+     * ..)
      */
     public function getTableList()
     {
@@ -224,12 +229,17 @@ class DbLibService implements FactoryInterface
         foreach ($this->table_list as $nom_reel) {
             $nom_sans_prefix = str_replace($this->prefix . '_', '', $nom_reel);
             $type_nom = explode('_', $nom_sans_prefix);
-            if (count($type_nom) < 2) continue;
+            if (count($type_nom) < 2)
+                continue;
             $type = array_shift($type_nom);
             $nom = implode('_', $type_nom);
-            if ($type == 's') continue;
+            if ($type == 's')
+                continue;
             $type = $type == 't' ? 'table' : ($type == 'v' ? 'données complètes' : 'table système');
-            $result[$nom_reel] = implode(' ',array($nom, '(' . $type . ')'));
+            $result[$nom_reel] = implode(' ', array(
+                $nom,
+                '(' . $type . ')'
+            ));
         }
         asort($result);
         return $result;
@@ -238,16 +248,16 @@ class DbLibService implements FactoryInterface
     /**
      * Initialise la structure de la table indiquée dans l'attribut DbLib::table_descriptor.
      *
-     * @param string $tableName
+     * @param string $tableName            
      * @param string $type
      *            table|vue|system
-     *               
+     *            
      * @throws SbmCommun\Model\Db\Exception
      */
     private function structureTable($tableName, $type = 'table')
     {
         if (! $this->existsTable($tableName, $type)) {
-            throw new Exception(sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", $type == 'vue' ?  : $type == 'table' ? : 'table système', $tableName));
+            throw new Exception(sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", $type == 'vue' ?  : $type == 'table' ?  : 'table système', $tableName));
         }
         $result = array();
         $table = $this->metadata->getTable($this->getCanonicName($tableName, $type));
@@ -289,7 +299,7 @@ class DbLibService implements FactoryInterface
      *
      * @param string $tableName            
      * @param string $type
-     * Prend les valeurs 'table', 'system' ou 'vue'
+     *            Prend les valeurs 'table', 'system' ou 'vue'
      *            
      * @return boolean
      */
@@ -323,8 +333,8 @@ class DbLibService implements FactoryInterface
      *
      * @param string $tableName            
      * @param string $type
-     * Prend les valeurs 'table', 'system' ou 'vue'
-     * 
+     *            Prend les valeurs 'table', 'system' ou 'vue'
+     *            
      * @return mixed: NULL|string|array
      */
     public function getPrimaryKey($tableName, $type)
@@ -342,9 +352,9 @@ class DbLibService implements FactoryInterface
      * @param string $columnName            
      * @param string $tableName            
      * @param string $type
-     * Prend les valeurs 'table', 'system' ou 'vue'      
-     * @param system $method    
-     *         
+     *            Prend les valeurs 'table', 'system' ou 'vue'
+     * @param system $method            
+     *
      * @throws SbmCommun\Model\Db\Exception
      */
     private function validColumn($columnName, $tableName, $type = 'table', $method = __METHOD__)
@@ -361,8 +371,8 @@ class DbLibService implements FactoryInterface
      * @param string $columnName            
      * @param string $tableName            
      * @param string $type
-     * Prend les valeurs 'table', 'system' ou 'vue'
-     * 
+     *            Prend les valeurs 'table', 'system' ou 'vue'
+     *            
      * @return boolean
      */
     public function isAutoIncrement($columnName, $tableName, $type = 'table')
@@ -402,9 +412,9 @@ class DbLibService implements FactoryInterface
      *
      * @param string $columnName            
      * @param string $tableName            
-     * @param string $type         
+     * @param string $type
      *            table|vue|system
-     *               
+     *            
      * @return boolean
      */
     public function isDateTimeColumn($columnName, $tableName, $type = 'table')
@@ -425,9 +435,9 @@ class DbLibService implements FactoryInterface
      *
      * @param string $columnName            
      * @param string $tableName            
-     * @param string $type   
+     * @param string $type
      *            table|vue|system
-     *                     
+     *            
      * @return boolean
      */
     public function isNumericColumn($columnName, $tableName, $type = 'table')
@@ -452,8 +462,8 @@ class DbLibService implements FactoryInterface
      * Indique si l'entité de nom $tableName est une table.
      * On a vérifié au préalable que cette entité existe.
      *
-     * @param string $tableName 
-     *            
+     * @param string $tableName            
+     *
      * @return boolean
      */
     public function isTable($tableName)

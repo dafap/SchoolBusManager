@@ -152,6 +152,7 @@ return array(
                 'table' => 'res',
                 'field' => 'responsableId'
             )
-        )
+        ),
+        'order' => array('nomSA', 'prenomSA', 'commune')
     )
 );

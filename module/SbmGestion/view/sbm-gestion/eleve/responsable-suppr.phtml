@@ -13,39 +13,40 @@
  */
 ?>
 <h1>Suppression d'un responsable</h1>
-<div class="fiche-wrapper">
-<p>Vous avez demandé la suppression du responsable :</p>
-<ul>
-    <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
-    <li><?php echo $this->escapeHtml($this->data->prenom); ?></li>
-    <li>habitant <?php echo $this->escapehtml($this->data->adresseL1); ?> à <?php echo $this->escapehtml($this->data->commune); ?></li>
-</ul>
-<?php if ($this->data_dependantes->count()) : ?>
-  <?php if ($this->data_dependantes->count() == 1) : ?>
-  <p>Cette personne est responsable de l'élève suivant :</p>
-  <?php else : ?>
-  <p>Cette personne est responsable des élèves suivants :</p>
-  <?php endif; ?>
-<ul>
-    <?php foreach ($this->data_dependantes as $eleve) : ?>
-    <li><?php echo $eleve->nom, ' ', $eleve->prenom; ?></li>
-    <?php endforeach; ?>
-</ul>
-  <?php if ($this->data_dependantes->count() == 1) : ?>
-  <p>La suppression de cette personne supprimera aussi cet élève.</p>
-  <?php else : ?>
-  <p>La suppression de cette personne supprimera aussi ces élèves.</p>
-  <?php endif; ?>
-<?php else : ?>
-<p>Cette personne n'est responsable d'aucun élève.</p>
-<?php endif; ?>
-<p>Confirmez-vous ?</p>
-<?php 
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du responsable :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->prenom); ?></li>
+			<li>habitant <?php echo $this->escapehtml($this->data->adresseL1); ?> à <?php echo $this->escapehtml($this->data->commune); ?></li>
+		</ul>
+		<?php if ($this->data_dependantes->count()) : ?>
+		    <?php if ($this->data_dependantes->count() == 1) : ?>
+            <p>Cette personne est responsable de l'élève suivant :</p>
+            <?php else : ?>
+            <p>Cette personne est responsable des élèves suivants :</p>
+            <?php endif; ?>
+        <ul>
+            <?php foreach ($this->data_dependantes as $eleve) : ?>
+            <li><?php echo $eleve->nom, ' ', $eleve->prenom; ?></li>
+            <?php endforeach; ?>
+        </ul>
+            <?php if ($this->data_dependantes->count() == 1) : ?>
+        <p>La suppression de cette personne supprimera aussi cet élève.</p>
+            <?php else : ?>
+        <p>La suppression de cette personne supprimera aussi ces élèves.</p>
+            <?php endif; ?>
+        <?php else : ?>
+        <p>Cette personne n'est responsable d'aucun élève.</p>
+        <?php endif; ?>
+    </div>
+	<p>Confirmez-vous ?</p>
+<?php
 echo $this->form()->openTag($form);
-echo $this->formHidden($this->form->get('responsableId'));
-echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
-
-//echo $this->formCollection($form);
+//echo $this->formHidden($this->form->get('responsableId'));
+//echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) . '</div>';
+echo $this->formCollection($form);
 echo $this->form()->closeTag();
 ?>
 </div>

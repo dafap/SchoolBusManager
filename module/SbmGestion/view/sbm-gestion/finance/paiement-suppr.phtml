@@ -17,7 +17,7 @@ use SbmCommun\Model\DateLib;
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <h1>Suppression d'un paiement</h1>
-<div class="fiche-wrapper">
+<div id="suppr-wrapper">
 	<p><i>Vous avez demandé la suppression du paiement suivant :</i></p>
 	<div class="header-wrapper">
 		<ul>
@@ -41,7 +41,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 <?php
 echo $this->form()->openTag($form);
 echo $this->formHidden($this->form->get('paiementId'));
-echo '<div id="paiement-suppr-note" class="row-inner edit">' . $this->formRow($this->form->get('note')) . '</div>';
+echo '<div id="paiement-suppr-note" class="row-inner edit" style="vertical-align: top;">' . $this->formRow($this->form->get('note')) . '</div>';
 echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
 echo $this->form()->closeTag();
 ?>

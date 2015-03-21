@@ -58,7 +58,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Date du dépot',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'format' => 'Y-m-d\TH:i'
             )
@@ -72,7 +72,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Date du paiement',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'format' => 'Y-m-d\TH:i'
             )
@@ -86,7 +86,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Date de valeur',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'format' => 'Y-m-d'
             )
@@ -96,12 +96,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'paiement-annee-scolaire',
-                'class' => 'sbm-text9'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Année scolaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -113,12 +113,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'paiement-exercice',
-                'class' => 'sbm-text4'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Exercice budgétaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -130,7 +130,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'paiement-montant',
-                'class' => 'sbm-text14'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Montant',
@@ -148,12 +148,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'paiement-mode-de-paiement',
-                'class' => 'sbm-select1'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Mode de paiemant',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'value_options' => array(),
                 'empty_option' => 'Choisissez le mode de paiement',
@@ -167,12 +167,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'paiement-mode-caisse',
-                'class' => 'sbm-select1'
+                'class' => 'sbm-width-10c'
             ),
             'options' => array(
                 'label' => 'Caisse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'value_options' => array(),
                 'empty_option' => 'Choisissez la caisse',
@@ -186,12 +186,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'paiement-banque',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Banque',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -203,12 +203,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'paiement-titulaire',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Titulaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -220,12 +220,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'paiement-reference',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Référence du paiement',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -238,8 +238,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'paiement-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -248,7 +247,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'paiement-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }
@@ -272,12 +271,13 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => array(
                     'id' => 'paiement-responsable-id',
-                    'class' => 'sbm-select4'
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-30c'
                 ),
                 'options' => array(
                     'label' => 'Responsable',
                     'label_attributes' => array(
-                        'class' => 'sbm-label170'
+                        'class' => 'sbm-label'
                     ),
                     'value_options' => array(),
                     'empty_option' => 'Choisissez le responsable concerné',
@@ -293,12 +293,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'note',
                 'attributes' => array(
                     'id' => 'note',
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-width-55c'
                 ),
                 'options' => array(
                     'label' => 'Motif de la modification',
                     'label_attributes' => array(
-                        'class' => 'sbm-label170'
+                        'class' => 'sbm-label-top'
                     ),
                     'error_attributes' => array(
                         'class' => 'sbm-error'

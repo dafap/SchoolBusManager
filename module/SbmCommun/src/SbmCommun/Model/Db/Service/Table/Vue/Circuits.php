@@ -1,10 +1,10 @@
 <?php
 /**
  * Gestion de la vue `circuits`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
- * @package module/SbmCommun/src/SbmCommun/Model/Db/Vue
+ * @package module/SbmCommun/src/SbmCommun/Model/Db/Service/Table/vue
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

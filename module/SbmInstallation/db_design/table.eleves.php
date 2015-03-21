@@ -29,11 +29,18 @@ return array(
             'prenom' => 'varchar(30) NOT NULL',
             'prenomSA' => 'varchar(30) NOT NULL',
             'dateN' => 'date NOT NULL',
-            'numero' => 'int(11) NOT NULL DEFAULT "-1"',
+            'numero' => 'int(11) NOT NULL',
             'responsable1Id' => 'int(11) NOT NULL DEFAULT "0"',
-            'responsable2Id' => 'int(11) NOT NULL DEFAULT "0"',
-            'responsableFId' => 'int(11) NOT NULL DEFAULT "0"',
-            'note' => 'text'
+            'x1' => 'decimal(18,10) NOT NULL DEFAULT "1641520.6"', // decazeville, maison de l'industrie
+            'y1' => 'decimal(18,10) NOT NULL DEFAULT "3262032.5"', // decazeville, maison de l'industrie
+            'geopt1' => 'GEOMETRY',
+            'responsable2Id' => 'int(11) DEFAULT NULL',
+            'x2' => 'decimal(18,10) DEFAULT NULL',
+            'y2' => 'decimal(18,10) DEFAULT NULL',
+            'geopt2' => 'GEOMETRY',
+            'responsableFId' => 'int(11) DEFAULT NULL',
+            'note' => 'text',
+            'id_ccda' => 'int(11)' // gid CCDA
         ),
         'primary_key' => array(
             'eleveId'

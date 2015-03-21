@@ -1,0 +1,28 @@
+<?php
+/**
+ * Partial pour changement de mot de passe
+ *
+ * Demande l'ancien mot de passe, le nouveau mot de passe et une confirmation
+ * 
+ * @project sbm
+ * @package SbmCommun/view/partial
+ * @filesource mdp-change.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 6 févr. 2015
+ * @version 2015-1
+ */
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('csrf'));
+echo '<fieldset class="edit">';
+echo '<div id="commun-edit-mdp-old" class="row-inner edit">' . $this->formRow($this->form->get('mdp_old')) . '</div>';
+echo '<div id="commun-edit-mdp-new" class="row-inner edit">' . $this->formRow($this->form->get('mdp_new')) . '</div>';
+echo '<div id="commun-edit-mdp-ctrl" class="row-inner edit">' . $this->formRow($this->form->get('mdp_ctrl')) . '</div>';
+echo '<div id="commun-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo '</fieldset>';
+echo $this->form()->closeTag();
+?>
+<div class="zone-description">
+  <p>Donnez d'abord votre mot de passe actuel, puis le nouveau mot de passe que vous souhaitez. Confirmez-le en l'écrivant à nouveau.</p>
+  <p>Le mot de passe doit avoir au moins 6 caractères.</p>
+</div>

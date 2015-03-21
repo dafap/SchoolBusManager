@@ -30,9 +30,9 @@
  */
 return array(
     'name' => 'paiements',
-    'drop' => true,
-    'edit_entity' => true,
-    'add_data' => true,
+    'drop' => false,
+    'edit_entity' => false,
+    'add_data' => false,
     'type' => 'table',
     'structure' => array(
         'fields' => array(

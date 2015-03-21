@@ -1,7 +1,7 @@
 <?php
 /**
  * Objet contenant les données à manipuler pour la table `Paiements`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData

@@ -15,8 +15,8 @@ return array(
     'name' => 'transporteurs',
     'type' => 'table',
     'drop' => false,
-    'edit_entity' => false, // si false, on ne touche pas à la structure dans Create::createOrAlterEntity() - true par défaut
-    'add_data' => false, // si false, on ne fait rien dans Create::addData() - true par défaut ; sans effet sur une vue
+    'edit_entity' => false,
+    'add_data' => false,
     'structure' => array(
         'fields' => array(
             'transporteurId' => 'int(11) NOT NULL AUTO_INCREMENT',

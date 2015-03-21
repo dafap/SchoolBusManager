@@ -12,4 +12,35 @@
  */
 
 return array(
+    'controllers' => array(
+        'invokables' => array(
+            'SbmUser\Controller\Index' => 'SbmUser\Controller\IndexController',
+        )
+    ),
+    'router' => array(
+        'routes' => array(
+            'sbmuser' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route' => '/user[/:action[/:page][/:id]]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'page' => '[0-9]+'
+                    ),
+                    'defaults' => array(
+                        'module' => 'SbmUser',
+                        'controller' => 'SbmUser\Controller\Index',
+                        'action' => 'index'
+                    )
+                ),
+                'may_terminate' => true,
+            )
+        )
+    ),
+    'view_manager' => array(
+        'template_map' => array(),
+        'template_path_stack' => array(
+            __DIR__ . '/../view'
+        )
+    )
 );

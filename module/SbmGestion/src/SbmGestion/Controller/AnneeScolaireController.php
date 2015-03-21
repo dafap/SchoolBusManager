@@ -100,7 +100,7 @@ class AnneeScolaireController extends AbstractActionController
 
     public function newAction()
     {
-        $config = $this->getServiceLocator()->get('Config');
+        $config = include __DIR__ . '/../Model/Modele.inc.php';
         $config = $config['annee-scolaire'];
         
         $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');

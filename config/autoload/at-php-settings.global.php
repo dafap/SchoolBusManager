@@ -19,7 +19,7 @@ if (getenv('APPLICATION_ENV') == 'development') {
             'display_errors' => true,
             'error_log' => realpath(__DIR__ . '/../../data') . '/logs/sbm_error.log',
             'error_reporting' => E_ALL,
-            'max_execution_time' => 30,
+            'max_execution_time' => 60,
             'date.timezone' => 'Europe/Paris',
             
             'controllers' => array(
@@ -30,8 +30,8 @@ if (getenv('APPLICATION_ENV') == 'development') {
             
             'routes' => array(
                 'home' => array(
-                    'memory_limit' => '32M',
-                    'max_execution_time' => '60'
+                    'memory_limit' => '128M',
+                    'max_execution_time' => '120'
                 )
             )
         )

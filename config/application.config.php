@@ -7,18 +7,18 @@
  */
 return array(
     'modules' => array(
+        'DafapSession',
         'AtPhpSettings',
-        'DafapLayout',
         'DafapTcpdf',
         'ZendDeveloperTools',
         'BjyProfiler',
         'ZfcBase',
-        'ZfcUser',
         'SbmFront',
         'SbmInstallation',
         'SbmGestion',
         'SbmAdmin',
-        'SbmCommun'
+        'SbmUser',
+        'SbmCommun',
     ),
     'module_listener_options' => array(
         'module_paths' => array(

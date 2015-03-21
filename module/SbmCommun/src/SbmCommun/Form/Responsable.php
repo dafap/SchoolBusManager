@@ -47,12 +47,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'responsable-titre',
-                'class' => 'sbm-select1'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Identité du responsable',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label responsable-titre'
                 ),
                 'value_options' => array(
                     'M.' => 'Monsieur',
@@ -73,12 +73,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\NomPropre',
             'attributes' => array(
                 'id' => 'responsable-nom',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom',
                 'label_attributes' => array(
-                    'class' => 'sbm-label70 margin-left20'
+                    'class' => 'sbm-label responsable-nom'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -90,12 +90,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\Prenom',
             'attributes' => array(
                 'id' => 'responsable-prenom',
-                'class' => 'sbm-text30'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Prénom',
                 'label_attributes' => array(
-                    'class' => 'sbm-label90 margin-left20'
+                    'class' => 'sbm-label responsable-prenom'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -106,13 +106,13 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'titre2',
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
-                'id' => 'responsable-titre',
-                'class' => 'sbm-select1'
+                'id' => 'responsable-titre2',
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Autre identité à la même adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label responsable-titre'
                 ),
                 'value_options' => array(
                     'M.' => 'Monsieur',
@@ -132,13 +132,13 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'nom2',
             'type' => 'SbmCommun\Form\Element\NomPropre',
             'attributes' => array(
-                'id' => 'responsable-nom',
-                'class' => 'sbm-text30'
+                'id' => 'responsable-nom2',
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Autre nom',
                 'label_attributes' => array(
-                    'class' => 'sbm-label70 margin-left20'
+                    'class' => 'sbm-label responsable-nom'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -149,13 +149,13 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'prenom2',
             'type' => 'SbmCommun\Form\Element\Prenom',
             'attributes' => array(
-                'id' => 'responsable-prenom',
-                'class' => 'sbm-text30'
+                'id' => 'responsable-prenom2',
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Autre prénom',
                 'label_attributes' => array(
-                    'class' => 'sbm-label90 margin-left20'
+                    'class' => 'sbm-label responsable-prenom'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -167,12 +167,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\Adresse',
             'attributes' => array(
                 'id' => 'responsable-adresseL1',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-40c'
             ),
             'options' => array(
                 'label' => 'Adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -184,12 +184,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'text',
             'attributes' => array(
                 'id' => 'responsable-adresseL2',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-40c'
             ),
             'options' => array(
                 'label' => 'Adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -201,12 +201,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\CodePostal',
             'attributes' => array(
                 'id' => 'responsable-codePostal',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Code postal',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -218,12 +218,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'responsable-communeId',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Commune',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une commune',
                 'error_attributes' => array(
@@ -236,12 +236,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\Telephone',
             'attributes' => array(
                 'id' => 'respondable-telephoneF',
-                'class' => 'sbm-text14'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Téléphone domicile',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -253,12 +253,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\Telephone',
             'attributes' => array(
                 'id' => 'respondable-telephoneP',
-                'class' => 'sbm-text14'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Téléphone portable',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -270,12 +270,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\Telephone',
             'attributes' => array(
                 'id' => 'respondable-telephoneT',
-                'class' => 'sbm-text14'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
-                'label' => 'Téléphone travail',
+                'label' => 'Autre téléphone',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -287,12 +287,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'Zend\Form\Element\Email',
             'attributes' => array(
                 'id' => 'respondable-telephone',
-                'class' => 'sbm-text50'
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Email',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -304,12 +304,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'text',
             'attributes' => array(
                 'id' => 'responsable-ancienAdresseL1',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-40c'
             ),
             'options' => array(
                 'label' => 'Ancienne adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -321,12 +321,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'text',
             'attributes' => array(
                 'id' => 'responsable-ancienAdresseL2',
-                'class' => 'sbm-text38'
+                'class' => 'sbm-width-40c'
             ),
             'options' => array(
                 'label' => 'Ancienne adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -338,12 +338,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'SbmCommun\Form\Element\CodePostal',
             'attributes' => array(
                 'id' => 'responsable-ancienCodePostal',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Ancien code postal',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -355,12 +355,12 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'responsable-ancienCommuneId',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-45c'
             ),
             'options' => array(
                 'label' => 'Ancienne commune',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une commune',
                 'error_attributes' => array(
@@ -377,7 +377,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'options' => array(
                 'label' => 'Déménagement',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'use_hidden_element' => true,
                 'checked_value' => '1',
@@ -393,7 +393,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'options' => array(
                 'label' => 'Date du déménagement',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'format' => 'Y-m-d'
             )
@@ -407,7 +407,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'options' => array(
                 'label' => 'Sélectionné',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'use_hidden_element' => true,
                 'checked_value' => '1',
@@ -421,7 +421,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'value' => 'Enregistrer',
                 'id' => 'responsable-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -430,23 +430,9 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'responsable-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
-        /*
-         * $input_filter = $this->getInputFilter();
-         * // $input_filter->get('nom')->setRequired(true)->getFilterChain()->attach(new StripTags())->attach(new StringToUpper())->attach(new StringTrim());
-         *
-         * $input_filter->get('ancienAdresseL1')->setRequired(false);
-         * $input_filter->get('ancienAdresseL2')->setRequired(false);
-         * $input_filter->get('ancienCommuneId')->setRequired(false);
-         * $input_filter->get('ancienCodePostal')->setRequired(false);
-         * $input_filter->get('telephoneF')->setRequired(false);
-         * $input_filter->get('telephoneP')->setRequired(false);
-         * $input_filter->get('telephoneT')->setRequired(false);
-         * $input_filter->get('email')->setRequired(false);
-         * $input_filter->get('dateDemenagement')->setRequired(false);
-         */
     }
 
     public function getInputFilterSpecification()

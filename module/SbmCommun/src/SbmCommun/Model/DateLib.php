@@ -106,5 +106,17 @@ class DateLib
             }
         }
     }
+    
+    public static function nowToMysql()
+    {
+        $date = new DateTime();
+        return $date->format('Y-m-d H:i:s');
+    }
+    
+    public static function todayToMysql()
+    {
+        $date = new DateTime();
+        return $date->format('Y-m-d');
+    }
 }
  

@@ -16,7 +16,7 @@ namespace SbmInstallation\Model;
 
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmCommun\Model\Strategy\ClasseNiveau;
+use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Model\Strategy\TarifAttributs;
 
@@ -131,9 +131,10 @@ EOT;
                     } elseif (is_array($column)) {
                         switch ($key) {
                             case 'niveau':
-                                $strategie = new ClasseNiveau();
+                                $strategie = new Niveau();
                                 $val = $strategie->extract($column);
                                 break;
+                            case 'semaine':
                             case 'jOuverture':
                                 $strategie = new Semaine();
                                 $val = $strategie->extract($column);
@@ -141,8 +142,8 @@ EOT;
                             default:
                                 ob_start();
                                 var_dump($column);
-                                $dump = ob_get_clean();
-                                throw new Exception(__METHOD__ . "Codage inconnu pour $key\n$debug");
+                                $dump = html_entity_decode(strip_tags(ob_get_clean()));
+                                throw new Exception(__METHOD__ . "Codage inconnu pour $key\n$dump");
                             break;
                         }
                     } elseif ($table->getTableName() == 'tarifs' && $table->getTableType() == 'table') {

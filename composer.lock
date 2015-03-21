@@ -498,12 +498,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcUser.git",
-                "reference": "5ddfb229e51593fd80165ec45816fe5cc94cba26"
+                "reference": "abd4be3eaac64898f8da4e1e60db9b03e4bd6f30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/5ddfb229e51593fd80165ec45816fe5cc94cba26",
-                "reference": "5ddfb229e51593fd80165ec45816fe5cc94cba26",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/abd4be3eaac64898f8da4e1e60db9b03e4bd6f30",
+                "reference": "abd4be3eaac64898f8da4e1e60db9b03e4bd6f30",
                 "shasum": ""
             },
             "require": {
@@ -568,7 +568,7 @@
                 "Authentication",
                 "zf2"
             ],
-            "time": "2015-02-01 17:51:00"
+            "time": "2015-02-09 09:58:28"
         }
     ],
     "packages-dev": [
@@ -626,12 +626,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "4cb1864711eaa2856d2a0c698faedaaf167af248"
+                "reference": "6040e7dce564e8f581cf7213ea3e2f5952b3f7e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/4cb1864711eaa2856d2a0c698faedaaf167af248",
-                "reference": "4cb1864711eaa2856d2a0c698faedaaf167af248",
+                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/6040e7dce564e8f581cf7213ea3e2f5952b3f7e5",
+                "reference": "6040e7dce564e8f581cf7213ea3e2f5952b3f7e5",
                 "shasum": ""
             },
             "require": {
@@ -679,7 +679,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2015-01-08 20:45:35"
+            "time": "2015-02-05 11:22:46"
         },
         {
             "name": "zendframework/zenddiagnostics",

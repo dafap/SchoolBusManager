@@ -11,18 +11,30 @@
  * @date 20 juillet 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url('sbmgestion/eleve', array('action'=> 'eleve-liste', 'page' => $this->page));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
 ?>
 <h1>Modification d'un élève</h1>
-<div class="fiche-wrapper">
-  <div class="zone-actions">
-    <a href="<?php echo $retour; ?>" class="bouton" title="retour à la liste des eleves"><i class="fam-door-out"></i> Retour</a>
-  </div>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
 <?php 
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('eleveId'));
 echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="edit">';
+echo '<fieldset class="sbm-page1">';
 echo '<div id="eleve-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
 echo '<div id="eleve-edit-prenom" class="row-inner edit">' . $this->formRow($this->form->get('prenom')) . '</div>';
 echo '<div id="eleve-edit-dateN" class="row-inner edit">' . $this->formRow($this->form->get('dateN')) . '</div>';
@@ -121,8 +133,9 @@ echo '<div id="eleve-edit-buttons" class="row-inner edit">' . $this->formSubmit(
 
 echo $this->form()->closeTag();
 ?>
-</div>
-<?php // fiche_wrapper ?>
+    </div><?php // fiche_inner ?>
+	<div id="fiche-footer"></div>
+</div><?php // fiche_wrapper ?>
 
 <?php
 // lance le script tabs

@@ -87,6 +87,99 @@ abstract class StdLib
     }
 
     /**
+     * Renvoie la valeur associée à l'index dans le tableau.
+     * La valeur renvoyée peut être de tout type.
+     *
+     * @param string|int $index            
+     * @param array $array            
+     * @param mixed $default            
+     *
+     * @throws Exception
+     *
+     * @return mixed
+     */
+    public static function getParam($index, $array, $default = null)
+    {
+        if (! \is_array($array)) {
+            ob_start();
+            var_dump($array);
+            $mess = sprintf("%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s", __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
+            throw new Exception($mess);
+        }
+        if (! \is_string($index) && ! \is_integer($index)) {
+            ob_start();
+            print_r($index);
+            $mess = sprintf("Le paramètre demandé doit être une chaîne de caractères ou un entier. On a reçu %s", html_entity_decode(strip_tags(ob_get_clean())));
+            throw new Exception($mess);
+        }
+        if (\array_key_exists($index, $array)) {
+            return $array[$index];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Renvoie la valeur associée à un tableau d'index dans un tableau à multi-dimensions.
+     * La valeur renvoyée peut être de tout type.
+     *
+     * @param array $index            
+     * @param array $array            
+     * @param mixed $default            
+     *
+     * @throws Exception
+     *
+     * @return mixed
+     */
+    public static function getParamR($index, $array, $default = null)
+    {
+        if (! \is_array($array)) {
+            ob_start();
+            var_dump($array);
+            $mess = sprintf("%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s", __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
+            throw new Exception($mess);
+        }
+        if (is_array($index)) {
+            if (self::array_keys_exists($index, $array)) {               
+                $s = $array;
+                foreach ($index as $p) {
+                    $s = self::getParam($p, $s);
+                }
+                return $s;
+            } else {
+                return $default;
+            }
+        } else {
+            return self::getParam($index, $array, $default);
+        }
+    }
+
+    /**
+     * Si $file commence par un double-slash, c'est une adresse absolue.
+     * La renvoyer sans concaténer.
+     * Sinon, concaténer le $path et le $file en vérifiant les séparateurs de chemin.
+     *
+     * @param string $path            
+     * @param string $file            
+     *
+     * @throws Exception
+     * @return string
+     */
+    public static function concatPath($path, $file)
+    {
+        if (! (is_string($path) && is_string($file))) {
+            throw new Exception(__METHOD__ . 'Des chaînes de caractères sont attendues comme paramètres.');
+        }
+        if (substr($file, 0, 2) == '//') {
+            return $file;
+        }
+        $result = rtrim(str_replace('\\', '/', $path), '/');
+        $result .= '/';
+        $result .= \ltrim($file, '/');
+        return $result;
+    }
+
+    /**
      * Renvoie la valeur $val si ce n'est pas une chaine.
      * Evalue la chaine si c'est une valeur numérique
      * Evalue la chaine si c'est une valeur booléenne (true|false, vrai|faux, yes|no, oui|non)
@@ -103,7 +196,7 @@ abstract class StdLib
         }
         
         $val = trim($val);
-                
+        
         if (is_numeric($val)) {
             return $val;
         }
@@ -127,6 +220,7 @@ abstract class StdLib
     /**
      * Renvoie un tableau associatif à partir d'une chaine qui décrit le tableau de la façon suivante :
      * clé1 => valeur1, clé2 => valeur2, .
+     *
      *
      *
      *
@@ -155,7 +249,7 @@ abstract class StdLib
             unset($row);
         }
         $str = implode(',', $trows);
-     
+        
         // construction du tableau résultat
         $tableau = array();
         eval("\$tableau=array($str);");

@@ -15,7 +15,7 @@ namespace SbmGestion\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use SbmCommun\Model\Db\DbLib;
+use DafapSession\Model\Session;
 
 
 class IndexController extends AbstractActionController
@@ -28,10 +28,7 @@ class IndexController extends AbstractActionController
      */
     public function indexAction()
     {
-        $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');        
-        for ($millesime = $this->getFromSession('millesime', false); !$millesime; $millesime = $this->getFromSession('millesime', false)) {
-            $this->setToSession('millesime', $table_calendar->getDefaultMillesime());
-        }
-        return new ViewModel(array('as_libelle' => $table_calendar->getAnneeScolaire($millesime)));
+        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');        
+        return new ViewModel(array('as_libelle' => Session::get('as_libelle'), 'auth' => $auth->getIdentity()));
     }
 }

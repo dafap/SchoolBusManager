@@ -21,52 +21,40 @@ return array(
     'structure' => array(
         'fields' => array(
             'userId' => 'int(11) NOT NULL AUTO_INCREMENT',
-            'confirme' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
+            'token' => 'varchar(32) DEFAULT NULL', // pour une entrée directe par un lien - usage unique
+            'tokenalive' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si le token est actif. Il ne l'est pas par défaut
+            'confirme' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si l'email a été confirmé. Il ne l'est pas par défaut
+            'active' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // compte actif ou désactivé
             'selection' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
             'dateCreation' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"', // non modifié lors de la mise à jour de dateLogin et adresseIp
-            'dateLogin' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
+            'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"', // n'est modifié que pour titre, nom, prenom, email, mdp
+            'dateLastLogin' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
+            'datePreviousLogin' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'adresseIp' => 'varchar(16) NOT NULL DEFAULT ""',
-            'categorie' => 'tinyint(1) NOT NULL DEFAULT "1"', // 1: parent, 2: gestionnaire, 3: administrateur, 4: superviseur sadmin
+            'previousIp' => 'varchar(16) NOT NULL DEFAULT ""',
+            'categorieId' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // 1: parent, 2: transporteur, 3: ecole, 253: gestionnaire, 254: administrateur, 255: superviseur sadmin
             'titre' => 'varchar(20) NOT NULL DEFAULT "M."',
             'nom' => 'varchar(30) NOT NULL',
-            'nomSA' => 'varchar(30) NOT NULL',
             'prenom' => 'varchar(30) NOT NULL DEFAULT ""',
-            'prenomSA' => 'varchar(30) NOT NULL DEFAULT ""',
-            'adresseL1' => 'varchar(38) NOT NULL',
-            'adresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
-            'codePostal' => 'varchar(5) NOT NULL',
-            'communeId' => 'varchar(6) NOT NULL',
-            'telephoneF' => 'varchar(10) NOT NULL DEFAULT ""',
-            'telephoneP' => 'varchar(10) NOT NULL DEFAULT ""',
-            'telephoneT' => 'varchar(10) NOT NULL DEFAULT ""',
             'email' => 'varchar(80) NOT NULL',
-            'mdp' => 'varchar(64) NOT NULL', // codage SHA1 du mot de passe
-            'temoin' => 'text'
+            'mdp' => 'varchar(60) NOT NULL DEFAULT ""', // mot de passe crypté par SbmFront\Model\Mdp::create()
+            'gds' => 'varchar(8) NOT NULL', // grain de sel - mot aléatoire de 8 caractères enregistré lors de la création, puis inchangé
+            'note' => 'text'
         ),
         'primary_key' => array(
             'userId'
-        ),
-        'foreign key' => array(
-            array(
-                'key' => 'communeId',
-                'references' => array(
-                    'table' => 'communes',
-                    'fields' => array(
-                        'communeId'
-                    ),
-                    'on' => array(
-                        'update' => 'CASCADE',
-                        'delete' => 'RESTRICT'
-                    )
-                )
-            )
         ),
         'keys' => array(
             'USER_Email' => array(
                 'unique' => true,
                 'fields' => array(
                     'email'
+                )
+            ),
+            'USER_Token' => array(
+                'unique' => true,
+                'fields' => array(
+                    'token'
                 )
             )
         ),
@@ -80,7 +68,7 @@ return array(
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(users)%', 'update', 'userId', OLD.userId, NOW(), CONCAT(OLD.confirme, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLogin, '|', OLD.adresseIp, '|', OLD.categorie, '|', OLD.titre, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.adresseL1, '|', OLD.adresseL2, '|', OLD.codePostal, '|', OLD.communeId, '|', OLD.telephoneF, '|', OLD.telephoneP, '|', OLD.telephoneT, '|', OLD.email, '|', OLD.mdp, '|', OLD.temoin))
+VALUES ('%table(users)%', 'update', 'userId', OLD.userId, NOW(), CONCAT(OLD.token, '|', OLD.tokenalive, '|', OLD.confirme, '|', OLD.active, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLastLogin, '|', OLD.datePreviousLogin, '|', OLD.adresseIp, '|', OLD.previousIp, '|', OLD.categorieId, '|', OLD.titre, '|', OLD.nom, '|', OLD.prenom, '|', OLD.email, '|', OLD.mdp, '|', OLD.gds, '|', OLD.note))
 EOT
 
         ),
@@ -89,7 +77,7 @@ EOT
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(users)%', 'delete', 'userId', OLD.userId, NOW(), CONCAT(OLD.confirme, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLogin, '|', OLD.adresseIp, '|', OLD.categorie, '|', OLD.titre, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.adresseL1, '|', OLD.adresseL2, '|', OLD.codePostal, '|', OLD.communeId, '|', OLD.telephoneF, '|', OLD.telephoneP, '|', OLD.telephoneT, '|', OLD.email, '|', OLD.mdp, '|', OLD.temoin))
+VALUES ('%table(users)%', 'delete', 'userId', OLD.userId, NOW(), CONCAT(OLD.token, '|', OLD.tokenalive, '|', OLD.confirme, '|', OLD.active, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLastLogin, '|', OLD.datePreviousLogin, '|', OLD.adresseIp, '|', OLD.previousIp, '|', OLD.categorieId, '|', OLD.titre, '|', OLD.nom, '|', OLD.prenom, '|', OLD.email, '|', OLD.mdp, '|', OLD.gds, '|', OLD.note))
 EOT
 
         )

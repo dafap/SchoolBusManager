@@ -11,7 +11,7 @@
  */
 namespace SbmCommun\Model\Strategy;
 
-class ClasseNiveau extends AbstractPower2 
+class Niveau extends AbstractPower2 
 {
 
     /**
@@ -60,14 +60,36 @@ class ClasseNiveau extends AbstractPower2
      */
     protected function valid($value)
     {
-        return in_array($value, array(
-            self::CODE_NIVEAU_MATERNELLE,
-            self::CODE_NIVEAU_ELEMENTAIRE,
-            self::CODE_NIVEAU_PREMIER_CYCLE,
-            self::CODE_NIVEAU_SECOND_CYCLE,
-            self::CODE_NIVEAU_POST_BAC,
-            self::CODE_NIVEAU_SUPERIEUR,
-            self::CODE_NIVEAU_AUTRE
-        ));
+        return array_key_exists($value, self::getNiveaux());
+    }
+    
+    /**
+     * Renvoie la liste des niveaux sous forme d'un tableau indexé
+     *
+     * @return array
+     * La clé est le code du niveau, la valeur est le niveau
+     */
+    public static function getNiveaux()
+    {
+        return  array(
+            self::CODE_NIVEAU_MATERNELLE => 'maternelle',
+            self::CODE_NIVEAU_ELEMENTAIRE => 'élémentaire',
+            self::CODE_NIVEAU_PREMIER_CYCLE => 'premier cycle',
+            self::CODE_NIVEAU_SECOND_CYCLE => 'second cycle',
+            self::CODE_NIVEAU_POST_BAC => 'post bac',
+            self::CODE_NIVEAU_SUPERIEUR => 'ens. supérieur',
+            self::CODE_NIVEAU_AUTRE => 'autres'
+        );
+    }
+    
+    /**
+     * Renvoie la liste des niveaux sous forme d'un tableau indexé
+     *
+     * @return array
+     * La clé est le niveau, la valeur est le code du niveau
+     */
+    public static function getCodesNiveaux()
+    {
+        return array_flip(self::getNiveaux());
     }
 }

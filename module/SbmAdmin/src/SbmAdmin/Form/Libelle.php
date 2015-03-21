@@ -41,12 +41,12 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'libelle-nature',
-                'class' => 'sbm-text20'
+                'class' => 'sbm-width-20c'
             ),
             'options' => array(
                 'label' => 'Nature',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -58,12 +58,12 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'text',
             'attributes' => array(
                 'id' => 'libelle-code',
-                'class' => 'sbm-text11'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Code',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -80,7 +80,7 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Libellé',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -96,7 +96,7 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Ouvert',
                 'label_attributes' => array(
-                    'class' => 'sbm-label130'
+                    'class' => 'sbm-label'
                 ),
                 'use_hidden_element' => true,
                 'checked_value' => '1',
@@ -110,7 +110,7 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
                 'value' => 'Enregistrer',
                 'id' => 'libelle-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -119,7 +119,7 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'libelle-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }

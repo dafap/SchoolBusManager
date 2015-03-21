@@ -16,8 +16,9 @@ namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
 use SbmCommun\Model\Db\Exception;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
+use DateTime;
+use Zend\Db\Sql\Expression;
 
 class Calendar extends AbstractSbmTable
 {
@@ -139,6 +140,31 @@ class Calendar extends AbstractSbmTable
     public function isValidMillesime($millesime)
     {
         return $this->isValidColDate($millesime, 'dateDebut') && $this->isValidColDate($millesime, 'dateFin') && $this->isValidColDate($millesime, 'echeance');
+    }
+    
+    /**
+     * Renvoie l'état du site vis à vis de la période d'inscripton.
+     */
+    public function etatDuSite()
+    {
+        $millesime = $this->getDefaultMillesime();
+        $where = new Where();
+        $where->expression('millesime = ?', $millesime)->literal('Nature="INS"');
+        $resultset = $this->fetchAll($where);
+        $row = $resultset->current();
+        $dateDebut = DateTime::createFromFormat('Y-m-d', $row->dateDebut);
+        $dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin);
+        $aujourdhui = new DateTime();
+        if ($aujourdhui < $dateDebut) {
+            $msg = sprintf('La %s sera ouverte du %s au %s.', \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'));
+            return array('etat' => 0, 'msg' => $msg);
+        } elseif($aujourdhui > $dateFin) {
+            $msg = sprintf('La %s est close.', \mb_strtolower($row->description, 'utf-8'));
+            return array('etat' => 2, 'msg' => $msg);
+        } else {
+            $msg = sprintf('La %s est ouverte du %s au %s.', \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'));
+            return array('etat' => 1, 'msg' => $msg);
+        }
     }
 }
  

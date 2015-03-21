@@ -2,7 +2,7 @@
 /**
  * Structure de la table des `responsables`
  *
- * Découpage en `eleves`, `scolarites` et `responsables`
+ * Découpage en `eleves`, `scolarites`, `affectations` et `responsables`
  * 
  * @project sbm
  * @package SbmInstallation/db_design
@@ -30,6 +30,11 @@ return array(
             'nomSA' => 'varchar(30) NOT NULL',
             'prenom' => 'varchar(30) NOT NULL DEFAULT ""',
             'prenomSA' => 'varchar(30) NOT NULL DEFAULT ""',
+            'titre2' => 'varchar(20) NOT NULL DEFAULT ""',
+            'nom2' => 'varchar(30) NOT NULL DEFAULT ""',
+            'nom2SA' => 'varchar(30) NOT NULL DEFAULT ""',
+            'prenom2' => 'varchar(30) NOT NULL DEFAULT ""',
+            'prenom2SA' => 'varchar(30) NOT NULL DEFAULT ""',
             'adresseL1' => 'varchar(38) NOT NULL',
             'adresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
             'codePostal' => 'varchar(5) NOT NULL',
@@ -50,7 +55,11 @@ return array(
             'ribTit' => 'varchar(32) NOT NULL DEFAULT ""',
             'ribDom' => 'varchar(24) NOT NULL DEFAULT ""',
             'iban' => 'varchar(34) NOT NULL DEFAULT ""',
-            'bic' => 'varchar(11) NOT NULL DEFAULT ""'
+            'bic' => 'varchar(11) NOT NULL DEFAULT ""',
+            'x' => 'decimal(18,10) NOT NULL DEFAULT "1641520.6"', // decazeville, maison de l'industrie
+            'y' => 'decimal(18,10) NOT NULL DEFAULT "3262032.5"', // decazeville, maison de l'industrie
+            'geopt' => 'GEOMETRY',
+            'id_ccda' => 'int(11) DEFAULT NULL'
         ),
         'primary_key' => array(
             'responsableId'

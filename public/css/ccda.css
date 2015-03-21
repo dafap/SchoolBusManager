@@ -1,0 +1,663 @@
+@CHARSET "UTF-8";
+html {
+	background: #E5E0D4;
+	color: #333;
+}
+body {
+	color: inherit;
+	margin: auto;
+	font-size: 0.8125em;
+	font-family: Verdana, "Luxi sans", "Lucida Grande", Lucida, "Lucida Sans Unicode", sans-serif;
+	height: auto;
+	width: 1170px;
+	padding: 0;
+}
+input[type="submit"]:hover {
+	font-weight: bold;
+}
+/*-------- Classes générales ------*/
+.align-right {
+	text-align: right;
+}
+.centre {
+	text-align: center;
+}
+.clearfix {
+	zoom: 1;
+}
+.clearfix:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+.content {
+	padding-left: 2px;
+	padding-right: 2px;
+	min-height: 390px;
+}
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}
+.even {
+	background-color: #f3fafc;
+	border-bottom: 1px solid #e3eaec;
+}
+odd {
+	border-bottom: 1px solid #e3eaec;
+}
+.exces {
+	color: red;
+	font-weight: bold;
+}
+.noir {
+	color: black;
+}
+.gris {
+	color: #c0c0c0;
+}
+.page1 {
+	border: 1px solid #db001b;
+}
+.row-inner {
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
+.sbm-description {
+	font-size: 80%;
+	color: #999;
+	margin-bottom: 2px;
+}
+*:hover.sbm-description {
+	font-size: 95%;
+}
+.top-6px {
+	margin-top: 6px;
+}
+.left-10px {
+	margin-left: 10px;
+}
+.left-95px {
+	margin-left: 70px;
+}
+.input-error {
+	background-color: #ffcbbf;
+	border: 2px inset #db001b;
+}
+/*-------- Erreurs -------------*/
+.row-inner ul {
+	color: #db001b;
+}
+/*--------- TOP-SITE -----------------*/
+#top-site {
+	height: 20px;
+	margin: 0;
+	text-align: center;
+	font-size: 0.75em;
+	color: #999;
+	width: 100%;
+	padding: 0;
+}
+#top-site a {
+	color: #666;
+	padding: 1px 4px;
+	text-decoration: none;
+}
+#top-site a:hover {
+	color: black;
+	font-weight: bold;
+}
+/*--------- Header -----------------*/
+#bandeau {
+	height: 195px;
+	margin: 0;
+	width: 100%;
+}
+.page1 #header #bandeau {
+	background-image: url("../img/bandeau-ccda-1.jpg");
+	background-repeat : no-repeat;
+}
+/*-------- Footer -----------------*/
+#footer {
+	color: #666;
+	font-size: 0.75em;
+	height: 23px;
+	margin: 0;
+	padding: 0;
+	padding-top: 15px;
+	clear: both;
+	overflow: hidden;
+}
+#footer a {
+	color: #666;
+	text-decoration: none;
+}
+#footer a:hover {
+	color: black;
+	font-weight: bold;
+}
+/*-------- Conteneur de la page ---*/
+#container-interface {
+	background-color: white;
+	text-align: left;
+	padding-bottom: 0.5em;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #333333;
+	overflow: hidden;
+}
+
+/*-------- Page accueil --------*/
+div.table-page1 {
+	display: table;
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+}
+div.table-page1 div.row {
+	display: table-row;
+}
+div.table-page1 div.column1 {
+	display: table-cell;
+	border-right: 10px solid white;
+}
+div.table-page1 div.column2 {
+	display: table-cell;
+	width: 29%;
+}
+div.table-page1 div.column2 a {
+	color: #f78042;
+	text-decoration: none;
+}
+div.table-page1 div.column2 a:hover {
+	font-weight: bold;
+}
+div.centre {
+	margin-left: auto;
+	margin-right: auto;
+}
+.column1 p {
+	text-align: justify;
+}
+fieldset.sbm-page1 {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+input.sbm-page1 {
+	margin-bottom: 3px;
+}
+input.sbm-signup {
+	height: 45px;
+	border-radius: 4px 4px 4px 4px;
+	font-size: 120%;
+	color: #578bcb;
+	color: #f78042;
+}
+/*---------- les labels ---------*/
+label.align-right {
+	margin-right: 3px;
+}
+label.sbm-label-page1 {
+	display: inline-block;
+	width: 95px;
+}
+label.sbm-label-200px {
+	display: inline-block;
+	width: 200px;
+}
+label.sbm-label-top {
+	vertical-align: top;
+}
+/*---------- Bienvenue ----------*/
+#bienvenue {
+	float: right;
+	margin-right: 3px;
+	position: relative;
+}
+#bienvenue ul {
+	list-style: none;
+	-webkit-padding-start: 0;
+}
+#bienvenue ul#menu {
+	margin-top: 0;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+}
+#bienvenue ul#menu li {
+	float: left;
+	padding-left: 4px;
+}
+#bienvenue a {
+	color: #91abcb;
+	text-decoration: none;
+}
+#bienvenue a:hover {
+	font-weight: bold;
+}
+#bienvenue #menu ul {
+	opacity: 0;
+	visibility: hidden;
+	position: absolute;
+	top: 16px;
+	left: 0;
+	z-index: 9999;
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+	background-color: white;
+}
+#bienvenue ul#menu li:hover ul {
+	opacity: 1;
+	visibility: visible;
+}
+#bienvenue #menu ul li {
+	float: none;
+}
+/*------------ FlashMessenger ----------------*/
+.flashMessenger ul {
+	margin: 0;
+	border-radius: 4px 4px 4px 4px;
+}
+.flashMessenger ul.success {
+	color: #3c763d;
+	background-color: #dff0d8;
+	border-color: #3c763d;
+}
+.flashMessenger ul.warning {
+	color: #836738;
+	background-color: #f7d09d;
+	border-color: #836738;
+}
+.flashMessenger ul.error {
+	color: #a94442;
+	background-color: #f2dede;
+	border-color: #a94442;
+}
+.flashMessenger ul.info {
+	color: #31708f;
+	background-color: #d9edf7;
+	border-color: #31708f;
+}
+.flashMessenger ul.default {
+	color: #333;
+	background-color: #fcf8e3;
+	dorder-color: #333;
+}
+/*--------------- Pagination ----------------------------*/
+/* la pagination est dans un clearfix pour que ça marche */
+div.pagination {
+	float: right;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 20px;
+	color: #176f94;
+	font-size: 110%;
+	font-weight: bold;
+}
+div.pagination .disabled {
+	display: none;
+}
+div.pagination span.current {
+	color: orange;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+div.pagination a.page {
+	margin-left: 3px;
+	margin-right: 3px;
+	text-decoration: none;
+	color: #91abcb
+}
+div.pagination a.page:hover {
+	color: #156486;
+}
+/*--------------- Menu général --------------*/
+#menugeneral .items ul {
+	list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+#menugeneral .items li {
+    padding-left: 25px;
+    margin-top: 3px;
+    margin-bottom: 6px; 
+}
+#menugeneral .items a {
+	text-decoration: none;
+	color: #496f9c;
+}
+#menugeneral .items a:hover {
+	font-weight: bold;
+}
+/*--------------- Suppression ---------------*/
+div#suppr-wrapper {
+	margin-left: 10em;
+}
+#suppr-wrapper fieldset {
+	border: 0;
+}
+#suppr-wrapper input.button,
+#suppr-wrapper input.confirm {
+	margin-left: 10px;
+}
+#suppr-wrapper textarea {
+	margin-left: 5px;
+}
+/*--------------- Listes --------------------*/
+div#liste-header {
+	margin-bottom: 10px;
+	position: relative;
+}
+div#liste-header input {
+	margin-left: 15px;
+}
+div#liste-inner {
+	min-height: 400px;
+}
+div#liste-footer .criteres-wrapper fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+div#liste-footer .criteres-wrapper input,
+div#liste-footer .criteres-wrapper select {
+	margin-left: 2px;
+	margin-right: 9px;
+}
+div#liste-footer .criteres-wrapper label.sbm-new-line {
+	display: initial;
+}
+div#liste-footer .criteres-wrapper label.sbm-new-line:before {
+	content: "\A\A";
+	white-space: pre;
+}
+div#liste-inner .serviceid {
+	width: 58px;
+}
+div#liste-inner .horaire {
+	width: 68px;
+}
+div#liste-inner .nbplaces,
+div#liste-inner .nbinscrits {
+	text-align: right;
+	padding-right: 3px;
+}
+div#liste-inner .codepostal {
+	text-align: center;
+}
+/*-------------- Fiches -----------------------------*/
+div#fiche-header {
+	margin-bottom: 10px;
+	position: relative;
+}
+div#fiche-header input {
+	margin-left: 15px;
+}
+div#fiche-inner {
+	min-height: 400px;
+}
+div#fiche-inner div.row-inner fieldset {
+	border: 1px solid #fdddcc;
+	border-radius: 4px 4px 4px 4px;
+}
+div#fiche-inner div.row-inner input.cancel {
+	margin-top: 6px;
+	margin-left: 20px;	
+}
+/*-------------- Fiche circuits ---------------------*/
+#fiche-inner #circuit label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 120px;
+}
+#fiche-inner #circuit input.submit {
+	margin-top: 6px;
+	margin-left: 120px;	
+}
+#circuit-edit-m3, 
+#circuit-edit-s3 {
+	display: none;
+}
+/*-------------- Fiche classes ----------------------*/
+#fiche-inner #classe label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 150px;
+}
+#fiche-inner #classe input.submit {
+	margin-top: 6px;
+	margin-left: 155px;	
+}
+/*------------- Fiche communes ----------------------*/
+#fiche-inner #commune label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 300px;
+}
+#fiche-inner #commune input.submit {
+	margin-top: 6px;
+	margin-left: 305px;	
+}
+
+/*-------------- Fiche eleves -----------------------*/
+/*-------------- Fiche etablissements ---------------*/
+#fiche-inner #etablissement label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 130px;
+}
+#fiche-inner #etablissement input.submit {
+	margin-top: 6px;
+	margin-left: 300px;	
+}
+#fiche-inner #etablissement .cols-2 {
+	width: 48%;
+}
+#fiche-inner #etablissement .rows-2 {
+	min-height: 5.5em;
+}
+/*-------------- Fiche libelles ---------------------*/
+#fiche-inner #libelle label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 70px;
+}
+#fiche-inner #libelle input.submit {
+	margin-top: 6px;
+	margin-left: 75px;	
+}
+/*-------------- Fiche paiements --------------------*/
+#fiche-inner #paiement label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+#fiche-inner #paiement input.submit {
+	margin-top: 6px;
+	margin-left: 175px;	
+}
+/*-------------- Fiche pdf --------------------------*/
+#fiche-inner .ui-widget {
+	font-size: 0.8125em;
+	font-family: Verdana, "Luxi sans", "Lucida Grande", Lucida, "Lucida Sans Unicode", sans-serif;
+}
+#fiche-inner #documentpdf .accordion1 .col1 fieldset {
+	max-width: 360px;
+}
+#fiche-inner #documentpdf label {
+	display: inline-block;
+	padding-left: 5px;
+}
+#fiche-inner #documentpdf .accordion1 .col1 label {
+	min-width: 130px;
+}
+#fiche-inner #documentpdf .accordion1 .col2 label {
+	min-width: 12em;
+}
+#fiche-inner #documentpdf .accordion2 .col1 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion2 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion3 .col1 label {
+	min-width: 22.5em;
+}
+#fiche-inner #documentpdf .accordion3 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion4 .col1 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf .accordion4 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion5 .col1 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf .accordion5 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion6 .col1 label {
+	min-width: 12em;
+}
+#fiche-inner #documentpdf .accordion6 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion7 .col1 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf .accordion7 .col2 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf input.submit {
+	margin-top: 6px;
+	margin-left: 300px;	
+}
+#fiche-inner #documentpdf .cols-2 {
+	width: 50%;
+}
+/*-------------- Fiche responsables ---------------------*/
+#fiche-inner #responsable label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+#fiche-inner #responsable label.responsable-nom {
+	width: 7em;
+	margin-left: 20px;
+}
+#fiche-inner #responsable label.responsable-prenom {
+	width: 8.5em;
+	margin-left: 20px;
+}
+#fiche-inner #responsable select#responsable-titre2 {
+	vertical-align: top;
+}
+/*-------------- Fiche services ---------------------*/
+#fiche-inner #service label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+#fiche-inner #service input.submit {
+	margin-top: 6px;
+	margin-left: 175px;	
+}
+/*-------------- Fiche stations ---------------------*/
+#fiche-inner #station label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 140px;
+}
+#fiche-inner #station input.submit {
+	margin-top: 6px;
+	margin-left: 145px;	
+}
+/*-------------- Fiche tarifs -----------------------*/
+#fiche-inner #tarif label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 150px;
+}
+#fiche-inner #tarif input.submit {
+	margin-top: 6px;
+	margin-left: 155px;	
+}
+/*-------------- Fiche transporteurs ----------------*/
+#fiche-inner #transporteur label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 180px;
+}
+#fiche-inner #transporteur input.submit {
+	margin-top: 6px;
+	margin-left: 185px;	
+}
+/*-------------- Largeur des inputs text ------------*/
+input.sbm-width-5c, select.sbm-width-5c {
+	width: 3em;
+}
+input.sbm-width-10c, select.sbm-width-10c {
+	width: 7em;
+}
+input.sbm-width-15c, select.sbm-width-15c {
+	width: 10em;
+}
+input.sbm-width-20c, select.sbm-width-20c {
+	width: 13em;
+}
+input.sbm-width-25c, select.sbm-width-25c {
+	width: 17em;
+}
+input.sbm-width-30c, select.sbm-width-30c {
+	width: 20em;
+}
+input.sbm-width-35c, select.sbm-width-35c {
+	width: 23em;
+}
+input.sbm-width-40c, select.sbm-width-40c, textarea.sbm-width-40c {
+	width: 27em;
+}
+input.sbm-width-45c, select.sbm-width-45c, textarea.sbm-width-45c {
+	width: 30em;
+}
+input.sbm-width-50c, select.sbm-width-50c, textarea.sbm-width-50c {
+	width: 33em;
+}
+input.sbm-width-55c, select.sbm-width-55c, textarea.sbm-width-55c {
+	width: 37em;
+}
+textarea.sbm-width-40c, textarea.sbm-width-45c, textarea.sbm-width-50c, textarea.sbm-width-55c {
+	height: 4rem;
+}
+/*------------- Largeur des labels -----------------*/
+label.sbm-label-35dem {
+	width: 5em;
+}
+label.sbm-label-70dem {
+	width: 8.5em;
+}
+label.sbm-label-105dem {
+	width: 12em;
+}
+label.sbm-label-140dem {
+	width: 15.5em;
+}
+label.sbm-label-175dem {
+	width: 19em;
+}
+label.sbm-label-210dem {
+	width: 22.5em;
+}
+label.sbm-label-245dem {
+	width: 26em;
+}
+label.sbm-label-280dem {
+	width: 29.5em;
+}
+label.sbm-label-315dem {
+	width: 33em;
+}
+label.sbm-label-350dem {
+	width: 36.5em;
+}

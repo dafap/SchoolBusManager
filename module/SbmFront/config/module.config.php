@@ -19,26 +19,55 @@ if (! defined('APPL_NAME')) {
 }
 
 return array(
-    'zfcuser' => array(),
+    'service_manager' => array(
+        'invokables' => array(
+            'Sbm\Authenticate' => 'SbmFront\Model\Authenticate'
+        ),
+        'factories' => array()
+    ),
     'router' => array(
         'routes' => array(
             'home' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/[:action][/:page]',
+                    'route' => '/[:action]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+                    ),
                     'defaults' => array(
                         'module' => __NAMESPACE__,
                         'controller' => 'SbmFront\Controller\Index',
                         'action' => 'index'
                     )
                 ),
-                'may_terminate' => true,
+                'may_terminate' => true
             ),
+            'login' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route' => '/login[/:action[/:id]]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-f0-9]{32}'
+                    ),
+                    'defaults' => array(
+                        'module' => __NAMESPACE__,
+                        'controller' => 'SbmFront\Controller\Login',
+                        'action' => 'login'
+                    )
+                )
+            )
         )
     ),
     'controllers' => array(
         'invokables' => array(
-            'SbmFront\Controller\Index' => 'SbmFront\Controller\IndexController'
+            'SbmFront\Controller\Index' => 'SbmFront\Controller\IndexController',
+            'SbmFront\Controller\Login' => 'SbmFront\Controller\LoginController'
+        )
+    ),
+    'view_helpers' => array(
+        'factories' => array(
+            'bienvenue' => 'SbmFront\Factory\View\Helper\BienvenueFactory'
         )
     ),
     'view_manager' => array(
@@ -47,15 +76,15 @@ return array(
         'not_found_template' => 'error/404',
         'exception_template' => 'error/index',
         'template_map' => array(
+            'layout/layout' => MODULE_PATH . '/view/layout/layout.phtml',
             'layout/header' => MODULE_PATH . '/view/layout/header.phtml',
             'layout/footer' => MODULE_PATH . '/view/layout/footer.phtml',
             'layout/stats' => MODULE_PATH . '/view/layout/stats.phtml',
             'error/404' => MODULE_PATH . '/view/error/404.phtml',
             'error/index' => MODULE_PATH . '/view/error/index.phtml'
         ),
-        'template_path_stack' => array(            
+        'template_path_stack' => array(
             MODULE_PATH . DIRECTORY_SEPARATOR . 'view'
         )
-    ),
-)
-;
+    )
+);

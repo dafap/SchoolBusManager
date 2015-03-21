@@ -60,7 +60,7 @@ class Conditions
         if (! is_string($condition)) {
             ob_start();
             var_dump($condition);
-            $dump = ob_get_clean();
+            $dump = html_entity_decode(strip_tags(ob_get_clean()));
             throw new Exception("La condition indiquée devrait être une chaîne. On a reçu :\n$dump");
         }
         

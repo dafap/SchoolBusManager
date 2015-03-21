@@ -72,6 +72,9 @@ abstract class CommandSql
             }
             $sql->group($fields);
         }
+        if (\array_key_exists('order', $structure)) {
+            $sql->order($structure['order']);
+        }
         // die($sql->getSqlString($dbadapter->getPlatform()));
         return $sql->getSqlString($dbadapter->getPlatform());
     }
@@ -99,7 +102,7 @@ abstract class CommandSql
             $message = "La structure proposée ne permet pas de créer la requête SELECT.\n";
             ob_start();
             var_dump($structure);
-            $message .= ob_get_clean();
+            $message .= html_entity_decode(strip_tags(ob_get_clean()));
             throw new Exception($message);
         }
     }

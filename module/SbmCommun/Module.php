@@ -21,6 +21,7 @@ use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\EventManager\EventInterface;
 use ZfcBase\Module\AbstractModule;
 use Zend\View\Helper\Doctype;
+use DafapSession\Model\Session;
 
 class Module extends AbstractModule implements BootstrapListenerInterface
 {
@@ -39,10 +40,16 @@ class Module extends AbstractModule implements BootstrapListenerInterface
     {
         $doctypeHelper = new Doctype();
         $doctypeHelper('HTML5');
-        $eventManager = $e->getApplication()->getEventManager();
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
-        $serviceManager = $e->getApplication()->getServiceManager();
-        $eventManager->attach($serviceManager->get('SbmCommun\FlashMessenger'));
+        $tCalendar = $e->getApplication()->getServiceManager()->get('Sbm\Db\System\Calendar'); 
+        for ($millesime = Session::get('millesime', false); !$millesime; $millesime = Session::get('millesime', false)) {
+            Session::set('millesime', $tCalendar->getDefaultMillesime());
+        }
+        Session::set('as_libelle', $tCalendar->getAnneeScolaire($millesime));
+        
+        //$eventManager = $e->getApplication()->getEventManager();
+        //$moduleRouteListener = new ModuleRouteListener();
+        //$moduleRouteListener->attach($eventManager);
+        //$serviceManager = $e->getApplication()->getServiceManager();
+        //$eventManager->attach($serviceManager->get('SbmCommun\FlashMessenger'));
     }
 }

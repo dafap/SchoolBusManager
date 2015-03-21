@@ -25,6 +25,9 @@ return array(
             array('field' => 'transporteurId',),
             array('field' => 'nbPlaces',),
             array('field' => 'surEtatCG',),
+            array('field' => 'operateur'),
+            array('field' => 'kmAVide'),
+            array('field' => 'kmEnCharge')
         ),
         'from' => array(
             'table' => 'services', // obligatoire mais peut être une vue
@@ -51,5 +54,6 @@ return array(
                 ),
             ),
         ),
+        'order' => array('serviceId')
     ),
 );

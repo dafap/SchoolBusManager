@@ -1,10 +1,10 @@
 <?php
 /**
  * Gestion de la vue `services`
- *
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
- * @package module/SbmCommun/src/SbmCommun/Model/Db/Vue
+ * @package module/SbmCommun/src/SbmCommun/Model/Db/Service/Table/vue
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
