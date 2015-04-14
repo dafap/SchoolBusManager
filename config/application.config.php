@@ -17,8 +17,10 @@ return array(
         'SbmInstallation',
         'SbmGestion',
         'SbmAdmin',
-        'SbmUser',
+        'SbmParent',
+        'SbmPaiement',
         'SbmCommun',
+        'SbmCartographie'
     ),
     'module_listener_options' => array(
         'module_paths' => array(

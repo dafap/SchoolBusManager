@@ -49,6 +49,21 @@ return array(
                 'field' => 'prenomSA'
             ),
             array(
+                'field' => 'titre2'
+            ),
+            array(
+                'field' => 'nom2'
+            ),
+            array(
+                'field' => 'nom2SA'
+            ),
+            array(
+                'field' => 'prenom2'
+            ),
+            array(
+                'field' => 'prenom2SA'
+            ),
+            array(
                 'field' => 'adresseL1'
             ),
             array(

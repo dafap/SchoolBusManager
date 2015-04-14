@@ -1,15 +1,15 @@
 <?php
 /**
- * Controller principal du module SbmGestion
+ * Controller du module SbmGestion permettant de gérer le compte de l'utilisateur et de revenir dans l'espace des gestionnaires
  *
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller
- * @filesource IndexController.php
+ * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 févr. 2014
- * @version 2014-1
+ * @date 12 févr. 2015
+ * @version 2015-1
  */
 namespace SbmGestion\Controller;
 
@@ -29,5 +29,17 @@ class ConfigController extends AbstractActionController
     {
         $retour = $this->url()->fromRoute('sbmgestion');
         return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'modif-compte'));
+    }
+    
+    public function mdpChangeAction()
+    {
+        $retour = $this->url()->fromRoute('sbmgestion');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'mdp-change'));
+    }
+    
+    public function emailChangeAction()
+    {
+        $retour = $this->url()->fromRoute('sbmgestion');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'email-change'));
     }
 }

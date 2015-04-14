@@ -51,5 +51,10 @@ return array(
             'Zend\Session\Validator\RemoteAddr',
             'Zend\Session\Validator\HttpUserAgent'
         )
+    ),
+    'service_manager' => array(
+        'invokables' => array(
+            'Dafap\Authenticate' => 'DafapSession\Model\Authenticate'
+        )
     )
 );

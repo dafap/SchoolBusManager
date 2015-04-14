@@ -17,6 +17,11 @@ return array(
             'nb_pdf' => 5
         )
     ),
+    'service_manager' => array(
+        'factories' => array(
+            'Sbm\Db\Libelle\Liste' => 'SbmAdmin\Model\Db\Service\Libelle\Liste'
+        )
+    ),
     'controllers' => array(
         'invokables' => array(
             'SbmAdmin\Controller\Index' => 'SbmAdmin\Controller\IndexController',
@@ -26,10 +31,10 @@ return array(
     'router' => array(
         'routes' => array(
             'sbmadmin' => array(
-                //'type' => 'literal',
+                // 'type' => 'literal',
                 'type' => 'segment',
                 'options' => array(
-                    //'route' => '/admin',
+                    // 'route' => '/admin',
                     'route' => '/admin[/:action[/:page][/:id]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',

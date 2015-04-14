@@ -20,17 +20,25 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
 
     private $tableName;
 
+    /**
+     * Si tableName est un tableau, ce tableau décrit les éléménts à placer dans le formulaire
+     *
+     * @param string|array $tableName            
+     */
     public function __construct($tableName = null)
     {
-        $this->tableName = $tableName;
+        $this->tableName = is_array($tableName) ? 'generic' : $tableName;
         parent::__construct('criteres');
         $this->setAttribute('method', 'post');
         
-        $method = 'form' . ucwords(strtolower($tableName));
-        if (method_exists($this, $method)) {
-            $this->$method();
+        if ($this->tableName == 'generic') {
+            $this->addGenericElements($tableName);
+        } else {
+            $method = 'form' . ucwords(strtolower($tableName));
+            if (method_exists($this, $method)) {
+                $this->$method();
+            }
         }
-        
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(
@@ -45,11 +53,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
 
     public function getInputFilterSpecification()
     {
-        $method = 'form' . ucwords(strtolower($this->tableName)) . 'Specification';
-        if (method_exists($this, $method)) {
-            return $this->$method();
+        if ($this->tableName == 'generic') {
+            return $this->genericSpecification();
         } else {
-            return array();
+            $method = 'form' . ucwords(strtolower($this->tableName)) . 'Specification';
+            if (method_exists($this, $method)) {
+                return $this->$method();
+            } else {
+                return array();
+            }
         }
     }
 
@@ -306,6 +318,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+
     private function formCommunesSpecification()
     {
         return array(
@@ -515,7 +528,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $this->add(array(
             'type' => 'text',
             'name' => 'commune',
-            'attributes' => array(                
+            'attributes' => array(
                 'id' => 'critere-commune',
                 'maxlength' => '45',
                 'class' => 'sbm-width-45c'
@@ -561,6 +574,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+
     private function formEtablissementsSpecification()
     {
         return array(
@@ -609,6 +623,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+
     private function formLibellesSpecification()
     {
         return array(
@@ -1006,6 +1021,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+
     private function formServicesSpecification()
     {
         return array(
@@ -1014,6 +1030,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         );
     }
+
     private function formStations()
     {
         $this->add(array(
@@ -1065,6 +1082,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+
     private function formStationsSpecification()
     {
         return array(
@@ -1194,5 +1212,22 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+    }
+
+    private function addGenericElements($elements)
+    {
+        foreach ($elements as $element) {
+            $this->add($element);
+        }
+    }
+    
+    private function genericSpecification()
+    {
+        $array = array();
+        foreach ($this->getElementNames() as $elementName) {
+            $array[$elementName] = array('required' => false);
+        }
+        //die(var_dump($array));
+        return $array;
     }
 }

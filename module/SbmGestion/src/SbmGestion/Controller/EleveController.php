@@ -452,6 +452,38 @@ class EleveController extends AbstractActionController
     public function responsableGroupAction()
     {
         $currentPage = $this->params('page', 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
+        $responsableId = StdLib::getParam('responsableId', $args, -1);
+        if ($responsableId == -1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmadmin', array(
+                'action' => 'libelle-liste',
+                'page' => $currentPage
+            ));
+        }
+        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
+        $data = array();
+        $data['resp1'] = $tableEleves->duResponsable1($responsableId);
+        $data['resp2'] = $tableEleves->duResponsable2($responsableId);
+        $data['fact'] = $tableEleves->duResponsableFinancier($responsableId);
+        return new ViewModel(array(
+            'data' => $data,
+            'responsable' => $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables')->getRecord($responsableId),
+            'page' => $currentPage,
+            'responsableId' => $responsableId,
+        ));
+        
+        
+        
+        $currentPage = $this->params('page', 1);
         $responsableId = $this->params('id', - 1); // GET
         $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
         $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');

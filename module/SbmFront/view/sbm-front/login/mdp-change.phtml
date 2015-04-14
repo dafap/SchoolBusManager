@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Page de changement de mot de passe
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmFront/view/sbm-front/login
  * @filesource mdp-change.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -14,8 +12,12 @@
  */
 ?>
 <h1>Changement du mot de passe</h1>
-<div class="fiche-wrapper">
-  <div class="zone-actions">
-  </div>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions"></div>
+	</div>
+	<div id="fiche-inner">
 <?php echo $this->partial('sbm/mdpchange'); ?>
+  </div>
+	<div id="fiche-footer"></div>
 </div>

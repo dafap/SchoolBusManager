@@ -20,7 +20,7 @@ use Zend\Form\Form;
 class MdpChange extends Form implements InputFilterProviderInterface
 {
 
-    public function __construct($param = 'mdp-change')
+    public function __construct($param = 'mdp')
     {
         parent::__construct($param);
         $this->setAttribute('method', 'post');
@@ -47,7 +47,7 @@ class MdpChange extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Donnez votre mot de passe',
                 'label_attributes' => array(
-                    'class' => 'sbm-label190'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -64,7 +64,7 @@ class MdpChange extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Donnez un nouveau mot de passe',
                 'label_attributes' => array(
-                    'class' => 'sbm-label190'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -81,7 +81,7 @@ class MdpChange extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Confirmez ce mot de passe',
                 'label_attributes' => array(
-                    'class' => 'sbm-label190'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -95,7 +95,7 @@ class MdpChange extends Form implements InputFilterProviderInterface
                 'value' => 'Envoyer la demande',
                 'id' => 'responsable-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit'
             )
         ));
         $this->add(array(
@@ -104,7 +104,7 @@ class MdpChange extends Form implements InputFilterProviderInterface
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'responsable-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }

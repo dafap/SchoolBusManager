@@ -1,11 +1,14 @@
 <?php
 /**
- * Formulaire de création d'un compte
+ * Formulaire de modification d'un compte
  *
- * Il va dépendre de categorieId reçu dans le constructeur
+ * Les seuls champs modifiés par ce formulaire sont le titre, le nom et le prénom.
+ * 
+ * Il n'y a pas besoin de getInputFilterSpecification() car les éléments SbmCommun\Form\Element\NomPropre 
+ * et SbmCommun\Form\Element\Prenom ont leur propre méthode getInputSpecification()
  * 
  * @project sbm
- * @package SbmUser/Form
+ * @package SbmFront/Form
  * @filesource ModifCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

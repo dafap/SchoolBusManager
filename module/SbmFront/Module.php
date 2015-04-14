@@ -62,7 +62,8 @@ class Module extends AbstractModule implements LocatorRegisteredInterface
         // liste des routes ouvertes aux anonymes
         $listeBlanche = array(
             'SbmFront\Controller\Index' => array('index', 'test'),
-            'SbmFront\Controller\Login' => array('login', 'logout', 'mdp-demande', 'creer-compte', 'confirm')
+            'SbmFront\Controller\Login' => array('login', 'logout', 'mdp-demande', 'creer-compte', 'confirm'),
+            'SbmPaiement\Controller\Index' => array('notification')
         );
         // contrôle
         $routeMatch = $e->getRouteMatch();

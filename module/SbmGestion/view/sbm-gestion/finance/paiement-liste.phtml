@@ -121,9 +121,6 @@ echo $this->listeZoneActions($hiddens, $actions);
             $title_voir = 'Année scolaire : ' . $paiement->anneeScolaire . "\n" . 'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' . $paiement->titulaire . "\n" . 'Banque : ' . $paiement->banque . "\n" . 'Référence : ' . $paiement->reference . "\n" . 'Date de dépôt : ' . DateLib::formatDateTimeFromMysql($paiement->dateDepot);
             $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" . 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" . 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" . $title_voir;
             $js_voir = 'javascript:window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' . str_replace("\n", '; ', $texte_voir) . '\');return false;';
-            $url_voir = $this->url('sbmgestion/finance', array(
-                'action' => 'paiement-voir'
-            ));
             $url_edit = $this->url('sbmgestion/finance', array(
                 'action' => 'paiement-edit',
                 'page' => $this->page
@@ -155,7 +152,6 @@ echo $this->listeZoneActions($hiddens, $actions);
             $buttons = array(
                 'voir' => array(
                     'class' => 'fam-zoom',
-                    'formaction' => $url_voir,
                     'title' => $title_voir,
                     'onclick' => $js_voir
                 ),

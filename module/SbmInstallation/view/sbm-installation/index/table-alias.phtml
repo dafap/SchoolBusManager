@@ -12,5 +12,30 @@
  * @date 8 oct. 2014
  * @version 2014-1
  */
-
-var_dump($this->tables, $this->systems, $this->vues); 
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$retour = $this->url("sbminstall");
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Création des tables et des vues</h1>
+<div id="data-wrapper">
+	<div id="data-header" class="clearfix">
+		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="data-inner">
+<?php var_dump($this->tables, $this->systems, $this->vues); ?>
+    </div>
+</div>

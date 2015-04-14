@@ -200,6 +200,7 @@ abstract class AbstractObjectData implements ObjectDataInterface
             $dataSource = array_intersect_key($dataSource, $columns);
         }
         $this->dataSource = new ArrayIterator($dataSource);
+        return $this;
     }
 
     /**

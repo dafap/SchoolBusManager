@@ -2,10 +2,11 @@
 /**
  * Formulaire de création d'un compte
  *
- * Seuls l'email et l'identité est nécessaire. Le reste sera demandé lors de la première connexion (en particulier le mot de passe).
+ * Seuls l'email et l'identité sont nécessaires. Le reste sera demandé lors de la première connexion (en particulier le mot de passe).
+ * A noter que les éléments SbmCommun\Form\Element\NomPropre et SbmCommun\Form\Element\Prenom ont leur propre méthode getInputSpecification()
  * 
  * @project sbm
- * @package SbmUser/Form
+ * @package SbmFront/Form
  * @filesource CreerCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -16,12 +17,18 @@ namespace SbmFront\Form;
 
 use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterface
 {
+    /**
+     * Service manager (nécessaire pour vérifier l'email)
+     * 
+     * @var ServiceLocatorInterface
+     */
     private $sm;
     
-    public function __construct($sm, $param = 'compte')
+    public function __construct(ServiceLocatorInterface $sm, $param = 'compte')
     {
         $this->sm = $sm;
         parent::__construct($param);
@@ -142,40 +149,6 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
         return array(
             'titre' => array(
                 'required' => true
-            ),
-            'nom' => array(
-                'required' => true,
-                'filters' => array(
-                    array('name' => 'StripTags'),
-                    array('name' => 'StringTrim')
-                ),
-                'validators' => array(
-                    array(
-                        'name' => 'StringLength',
-                        'options' => array(
-                            'encoding' => 'UTF-8',
-                            'min' => 1,
-                            'max' => 30
-                        )
-                    )
-                )
-            ),
-            'prenom' => array(
-                'required' => true,
-                'filters' => array(
-                    array('name' => 'StripTags'),
-                    array('name' => 'StringTrim')
-                ),
-                'validators' => array(
-                    array(
-                        'name' => 'StringLength',
-                        'options' => array(
-                            'encoding' => 'UTF-8',
-                            'min' => 1,
-                            'max' => 30
-                        )
-                    )
-                )
             ),
             'email' => array(
                 'required' => true,

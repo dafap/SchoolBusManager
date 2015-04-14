@@ -11,11 +11,30 @@
  * @date 11 août 2014
  * @version 2014-1
  */
-$url_pdf_liste = $this->url('sbmadmin', array('action' => 'pdf-liste'));
-$url_libelle_liste = $this->url('sbmadmin', array('action' => 'libelle-liste'));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_pdf_liste = $this->url('sbmadmin', array(
+    'action' => 'pdf-liste'
+));
+$url_libelle_liste = $this->url('sbmadmin', array(
+    'action' => 'libelle-liste'
+));
 ?>
 <h1>Menu du module d'administration</h1>
-<ul>
-    <li><a href="<?php echo $url_libelle_liste; ?>">Gestion des libellés de l'application</a></li>
-	<li><a href="<?php echo $url_pdf_liste; ?>">Gestion des documents pdf</a></li>
-</ul>
+<div id="menugeneral">
+	<div class="flashMessenger">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+</div>
+	<div class="items">
+		<ul>
+			<li><a href="<?php echo $url_libelle_liste; ?>"><i class="fam-bullet-go"></i>Gestion des libellés
+					de l'application</a></li>
+			<li><a href="<?php echo $url_pdf_liste; ?>"><i class="fam-bullet-go"></i>Gestion des documents pdf</a></li>
+		</ul>
+	</div>
+</div>

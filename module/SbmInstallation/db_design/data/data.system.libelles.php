@@ -9,7 +9,7 @@
  * @filesource data.system.libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 Jan 2015
+ * @date 22 Mar 2015
  * @version 2014-1
  */
 return array(
@@ -42,5 +42,11 @@ return array(
         'code' => 3, 
         'libelle' => 'CB', 
         'ouvert' => 0, 
+    ),
+    array(
+        'nature' => 'ModeDePaiement', 
+        'code' => 4, 
+        'libelle' => 'Titre individuel', 
+        'ouvert' => 1, 
     ),
 );

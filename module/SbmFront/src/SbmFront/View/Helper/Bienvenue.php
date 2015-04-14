@@ -16,8 +16,9 @@ namespace SbmFront\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\Helper\Url;
-use SbmFront\Model\Authenticate;
 use Zend\Session\Container;
+use SbmFront\Model\Authenticate;
+use DafapSession\Model\Session;
 
 class Bienvenue extends AbstractHelper
 {
@@ -31,6 +32,7 @@ class Bienvenue extends AbstractHelper
     public function __invoke()
     {
         if ($this->getAuthService()->hasIdentity()) {
+            $annee_scolaire = Session::get('as_libelle');
             $identity = $this->getAuthService()->getIdentity();
             $bienvenue = $identity['prenom'] . ' ' . $identity['nom'];
             $view = $this->getView();
@@ -45,9 +47,9 @@ class Bienvenue extends AbstractHelper
             $url_msg = $view->url($route, array('action' => 'message'));
             return <<<EOT
 <div id="bienvenue" class="bienvenue">
-   <div>
    <ul id="menu">
-       <li>Bienvenue $bienvenue
+       <li class="annee-scolaire">Année scolaire $annee_scolaire</li>
+       <li class="bienvenue">Bienvenue $bienvenue
        <ul>
            <li><a href="$url_compte">Mon compte</a></li>
            <li><a href="$url_mdp">Changer mon mot de passe</a></li>
@@ -57,7 +59,6 @@ class Bienvenue extends AbstractHelper
        </li>        
        <li>| <a href="$logout"><i class="fam-door-out"></i>déconnexion</a></li>
    </ul>
-   </div>  
 </div>
 EOT;
         } else {

@@ -22,6 +22,8 @@ use Zend\Session\Container;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use SbmCommun\Filter\SansAccent;
+use SbmCartographie\Model\Point;
+use SbmCartographie\GoogleMaps\DistanceEtablissements;
 
 class IndexController extends AbstractActionController
 {
@@ -48,36 +50,14 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        $dbAdapter = $db->getDbAdapter();
-        $sql = new Sql($dbAdapter);
-        $select1 = new Select();
-        $select1->from('sbm_t_circuits')
-            ->columns(array(
-            'stationId'
-        ))
-            ->where(array(
-            'millesime' => 2014
-        ));
-        $select = $sql->select();
-        $select->from(array(
-            's' => 'sbm_t_stations'
-        ))
-            ->join(array(
-            'c' => $select1
-        ), 's.stationId=c.stationId', array(), Select::JOIN_LEFT)
-            ->where(function ($where) {
-            $where->isNull('c.stationId');
-        });
-        $statement = $sql->prepareStatementForSqlObject($select);
-        $statement->execute();
-        $result = array();
-        foreach ($statement->execute() as $row) {
-            $result[] = $row;
-        }
+        $point = new Point(2.318593, 44.567649, 0,'degré');
+        //$point = new Point(1639509.56, 3259755.14);
+        //$point->setCommuneId('12013'); 
+        $point->setCommuneId('12100');
+        $distanceEtablissements = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
         return new ViewModel(array(
-            'args' => $result,
-            'x' => $statement->getSql()
+            'args' => $distanceEtablissements->collegesPrisEnCompte($point),
+            'x' => null
         ));
     }
 }

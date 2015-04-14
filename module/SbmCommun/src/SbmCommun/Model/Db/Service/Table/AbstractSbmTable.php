@@ -358,4 +358,38 @@ abstract class AbstractSbmTable implements FactoryInterface
             }
         }
     }
+    /**
+     * Mise à jour d'un enregistrement dans une table. Si l'enregistrement est absent on lance une exception
+     * 
+     * @param ObjectData $obj_data
+     * @throws Exception
+     */
+    public function updateRecord(ObjectDataInterface $obj_data)
+    {
+        if (! is_null($this->hydrator)) {
+            $data = $this->hydrator->extract($obj_data);
+        } else {
+            $data = $obj_data->getArrayCopy();
+        }
+        $id = $obj_data->getId();
+        if ($this->getRecord($id)) {
+            if (is_array($id)) {
+                $array_where = $id;
+                $condition_msg = array();
+                foreach ($id as $key => $condition) {
+                    $condition_msg[] = "$key = $condition";
+                }
+                $condition_msg = implode(' et ', $condition_msg);
+            } else {
+                $array_where = array(
+                    $this->id_name . ' = ?' => $id
+                );
+                $condition_msg = $this->id_name . " = $id";
+            }
+        
+            $this->table_gateway->update($data, $array_where);
+        } else {
+            throw new Exception(sprintf(_("This is not a new data and the id '%s' can not be found in the table %s."), $condition_msg, $this->table_name));
+        }
+    }
 }

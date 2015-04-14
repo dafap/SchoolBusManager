@@ -1,11 +1,12 @@
 <?php
 /**
- * Description courte du fichier
+ * Gestion des sessions
  *
- * Description longue du fichier s'il y en a une
+ * Ecriture et lecture dans une session pour un namespace donné.
+ * Par défaut, le namespace SBM_DG_SESSION est utilisé.
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package DafapSession
  * @filesource Session.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -51,5 +52,17 @@ abstract class Session {
     {
         $session = new Container($sessionNamespace);
         $session->{$param} = $value;
+    }
+    
+    /**
+     * Supprime le paramètre indiqué de la session
+     * 
+     * @param string $param
+     * @param string $sessionNamespace
+     */
+    public static function remove($param, $sessionNamespace = self::SBM_DG_SESSION)
+    {
+        $session = new Container($sessionNamespace);
+        unset($session->{$param});
     }
 }

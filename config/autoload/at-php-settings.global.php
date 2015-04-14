@@ -23,6 +23,9 @@ if (getenv('APPLICATION_ENV') == 'development') {
             'date.timezone' => 'Europe/Paris',
             
             'controllers' => array(
+                'SbmPaiement\Controller\Index' => array(
+                    'date.timezone' => 'UTC'
+                ),
                 'SbmGestion\Controller\Index' => array(
                     'memory_limit' => '32M'
                 )

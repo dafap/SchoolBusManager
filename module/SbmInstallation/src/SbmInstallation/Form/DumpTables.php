@@ -20,9 +20,10 @@ use Zend\Form\Element\MultiCheckbox;
 use Zend\Form\Element\Submit;
 class DumpTables extends Form
 {
-    public function __construct($name = null, $options = array())
+    public function __construct($name = 'dump-tables', $options = array())
     {
         parent::__construct($name, $options);
+        $this->setAttribute('method', 'post');
         
         $element = new MultiCheckbox('tables');
         $element->setLabel('Tables')->setValueOptions(array());
@@ -55,7 +56,7 @@ class DumpTables extends Form
                 'value' => 'Lancer la copie',
                 'id' => 'dump-tables-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button default submit margin-left20'
+                'class' => 'button default submit top-6px'
             )
         ));
         $this->add(array(
@@ -64,7 +65,7 @@ class DumpTables extends Form
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'dump-tables-cancel',
-                'class' => 'button default cancel'
+                'class' => 'button default cancel top-6px'
             )
         ));
     }

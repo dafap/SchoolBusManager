@@ -11,17 +11,37 @@
  * @date 22 janv. 2014
  * @version 2014-1
  */
-if (! empty($this->args)) {
-    var_dump($this->args);
-}
-$url_create = $this->url('sbminstall', array('action' => 'create-tables'));
-$url_dumpdoc = $this->url('sbminstall', array('action' => 'dump-tables'));
-$url_tablealias = $this->url('sbminstall', array('action' => 'table-alias'));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_create = $this->url('sbminstall', array(
+    'action' => 'create-tables'
+));
+$url_dumpdoc = $this->url('sbminstall', array(
+    'action' => 'dump-tables'
+));
+$url_tablealias = $this->url('sbminstall', array(
+    'action' => 'table-alias'
+));
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
-<ul>
-	<li><a href="<?php echo $url_create; ?>">Création des tables</a></li>
-	<li><a href="<?php echo $url_dumpdoc;?>">Copie des tables</a></li>
-	<li><a href="<?php echo $url_tablealias;?>">Liste des alias des tables</a>
-</ul>
+<div id="menugeneral">
+	<div class="flashMessenger">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+</div>
+	<div class="items">
+		<ul>
+			<li><a href="<?php echo $url_create; ?>"><i class="fam-bullet-go"></i>Création des tables</a></li>
+			<li><a href="<?php echo $url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie des tables</a></li>
+			<li><a href="<?php echo $url_tablealias;?>"><i class="fam-bullet-go"></i>Liste des alias des
+					tables</a>
+		
+		</ul>
+	</div>
+</div>
 

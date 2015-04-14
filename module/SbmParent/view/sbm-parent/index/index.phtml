@@ -1,0 +1,111 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 13 févr. 2015
+ * @version 2015-1
+ */
+use SbmCommun\Model\DateLib;
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$nbPreinscrits = $this->preinscrits->count();
+$nbInscrits = $this->inscrits->count();
+$nbPaiements = $this->paiements->count();
+?>
+<div class="flashMessenger float-right">
+<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+</div>
+<h1>Espace parent</h1>
+
+<div id="parent-wrapper">
+	<div id="parent-inscrits">
+    <?php if ($nbInscrits) : ?>
+    <fieldset class="sbm-page1">
+			<legend>Enfants inscrits</legend>
+			<table class="parent eleve">
+				<tbody>
+					<tr>
+						<th>Nom</th>
+						<th>Prénom</th>
+						<th>Etablissement scolaire</th>
+						<th>Commune</th>
+						<th>Circuit</th>
+						<th>Station</th>
+					</tr>
+            <?php
+        foreach ($this->inscrits as $row) {
+            echo '<tr><td>' . $row['nom'] . '</td><td>' . $row['prenom'] . '</td><td>' . $row['etablissement'] . '</td><td>' . $row['commune'] . '</td>';
+            $reseau = $this->affectations->getCorrespondances($row['eleveId']);
+            if ($reseau->count()) {
+                $station = $circuit = array();
+                foreach ($reseau as $transport) {
+                    $circuit[] = $transport['service1Id'] . ' - ' . $transport['transporteur1'];
+                    $station[] = $transport['station1'] . ' - ' . $transport['commune1'];
+                    if (!empty($transport['service2Id'])) {
+                        $circuit[] = $transport['service2Id'] . ' - ' . $transport['transporteur2'];
+                    }
+                    if (!empty($transport['station2Id'])) {
+                        $circuit[] = $transport['station2'] . ' - ' . $transport['commune2'];
+                    }
+                }
+                echo '<td>' . implode('<br />', $circuit) . '</td><td>' . implode('<br />', $station) . '</td>';
+            }
+            echo '</tr>';
+        }
+        ?>
+            </tbody>
+			</table>
+		</fieldset>
+    <?php endif; ?>
+    </div>
+	<div id="parent-preinscrits">
+    <?php if ($nbPreinscrits) : ?>
+    <fieldset class="sbm-page1">
+			<legend>Enfants préinscrits</legend>
+			<table class="parent eleve">
+				<tbody>
+            <?php
+        foreach ($this->preinscrits as $row) {
+            echo '<tr><td>' . $row['nom'] . '</td><td>' . $row['prenom'] . '</td></tr>';
+        }
+        ?>
+            </tbody>
+			</table>
+		</fieldset>
+    <?php endif; ?>
+    </div>
+	<div id="parent-paiements">
+    <?php if ($nbPaiements) : ?>
+    <fieldset class="sbm-page1">
+			<legend>Paiements enregistrés</legend>
+			<table class="parent paiement">
+				<tbody>
+					<tr>
+						<th>Date du paiement</th>
+						<th>Moyen de paiement</th>
+						<th>Montant</th>
+					</tr>
+            <?php
+        foreach ($this->paiements as $row) {
+            echo '<tr><td>' . DateLib::formatDateTimeFromMysql($row->datePaiement) . '</td><td>' . $row->modeDePaiement . '</td><td>' . $row->montant . '</td></tr>';
+        }
+        ?>
+            </tbody>
+			</table>
+		</fieldset>
+    <?php endif; ?>
+    </div>
+</div>

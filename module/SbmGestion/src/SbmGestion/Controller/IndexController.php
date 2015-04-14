@@ -17,18 +17,21 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DafapSession\Model\Session;
 
-
 class IndexController extends AbstractActionController
 {
+
     /**
-     * Affectation du millesime de travail. S'il n'y en a pas en session, il prend le dernier millesime valide et le met en session.
-     * 
+     * Affectation du millesime de travail.
+     * S'il n'y en a pas en session, il prend le dernier millesime valide et le met en session.
+     *
      * (non-PHPdoc)
+     * 
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
      */
     public function indexAction()
     {
-        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');        
-        return new ViewModel(array('as_libelle' => Session::get('as_libelle'), 'auth' => $auth->getIdentity()));
+        return new ViewModel(array(
+            //'as_libelle' => Session::get('as_libelle'),
+        ));
     }
 }

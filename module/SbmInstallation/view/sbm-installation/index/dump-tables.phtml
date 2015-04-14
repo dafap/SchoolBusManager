@@ -12,10 +12,17 @@
  * @date 8 oct. 2014
  * @version 2014-1
  */
-$form = $this->form;
-$retour = $this->url('sbminstall', array(
-    'action' => 'index'
-));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$retour = $this->url("sbminstall");
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
 
 // pour afficher le résultat, il faut conserver la balise <pre> et échapper le texte à l'intérieur
 preg_match('/^<pre>(.*)<\/pre>\z/si', $this->description, $inner);
@@ -27,37 +34,38 @@ if (! empty($inner)) {
 }
 ?>
 <h1><?php echo $this->titre; ?></h1>
-<p><?php echo $output; ?></p>
-<?php if (is_null($form)) : ?>
+<div id="data-wrapper">
+    <div id="data-inner">
+	<p><?php echo $output; ?></p>
+<?php if (is_null($this->form)) : ?>
   <?php
     // liste des tables copiées
     echo var_dump($this->tables);
     ?>
-<a href="<?php echo $retour; ?>" class="bouton"
-	title="retour au menu d'installation"><i class="fam-door-out"></i>
-	Retour</a>
+<a href="<?php echo $retour; ?>" class="bouton" title="Retour"><i
+		class="fam-door-out"></i></a>
 <?php else : ?>
-<div>
   <?php
     // formulaire
-    $form->prepare();
-    $form->setAttribute('action', $this->url('sbminstall', array(
+    $this->form->prepare();
+    $this->form->setAttribute('action', $this->url('sbminstall', array(
         'action' => 'dump-tables'
     )));
-    $form->setAttribute('method', 'post');
-    echo $this->form()->openTag($form);
     
-    $element = $form->get('tables');
+    echo $this->form()->openTag($this->form);
+    
+    $element = $this->form->get('tables');
     echo $this->formRow($element);
-    $element = $form->get('systems');
+    $element = $this->form->get('systems');
     echo $this->formRow($element);
-    $element = $form->get('onscreen');
+    $element = $this->form->get('onscreen');
     $element->setValue(0);
     echo $this->formRow($element);
-    echo $this->formElement($form->get('cancel'));
-    echo $this->formElement($form->get('copy'));
+    echo $this->formElement($this->form->get('cancel'));
+    echo $this->formElement($this->form->get('copy'));
     
     echo $this->form()->closeTag();
-    ?>
-  </div>
+    ?> 
 <?php endif; ?>
+    </div>
+</div>

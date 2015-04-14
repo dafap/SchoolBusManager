@@ -15,6 +15,9 @@ body {
 input[type="submit"]:hover {
 	font-weight: bold;
 }
+th, td {
+	border-bottom: inherit;
+}
 /*-------- Classes générales ------*/
 .align-right {
 	text-align: right;
@@ -34,6 +37,7 @@ input[type="submit"]:hover {
 	padding-left: 2px;
 	padding-right: 2px;
 	min-height: 390px;
+	position:relative;
 }
 .float-left {
 	float: left;
@@ -45,7 +49,7 @@ input[type="submit"]:hover {
 	background-color: #f3fafc;
 	border-bottom: 1px solid #e3eaec;
 }
-odd {
+.odd {
 	border-bottom: 1px solid #e3eaec;
 }
 .exces {
@@ -87,6 +91,10 @@ odd {
 	border: 2px inset #db001b;
 }
 /*-------- Erreurs -------------*/
+div#error_wrapper {
+	width: 100%;
+	overflow: auto;
+}
 .row-inner ul {
 	color: #db001b;
 }
@@ -212,6 +220,8 @@ label.sbm-label-top {
 /*---------- Bienvenue ----------*/
 #bienvenue {
 	float: right;
+	margin: 0;
+	padding: 0;
 	margin-right: 3px;
 	position: relative;
 }
@@ -227,6 +237,13 @@ label.sbm-label-top {
 #bienvenue ul#menu li {
 	float: left;
 	padding-left: 4px;
+}
+#bienvenue ul#menu li.annee-scolaire {
+	padding-right: 200px;
+	font-weight: bold;
+}
+#bienvenue ul#menu li.bienvenue {
+	position: relative;
 }
 #bienvenue a {
 	color: #91abcb;
@@ -245,13 +262,15 @@ label.sbm-label-top {
 	border: 1px solid #f78042;
 	border-radius: 4px 4px 4px 4px;
 	background-color: white;
+	padding-left: 0;
 }
-#bienvenue ul#menu li:hover ul {
+#bienvenue ul#menu li.bienvenue:hover ul {
 	opacity: 1;
 	visibility: visible;
 }
 #bienvenue #menu ul li {
 	float: none;
+	min-width: 200px;
 }
 /*------------ FlashMessenger ----------------*/
 .flashMessenger ul {
@@ -329,6 +348,33 @@ div.pagination a.page:hover {
 #menugeneral .items a:hover {
 	font-weight: bold;
 }
+/*-------- Installation --------*/
+div#data-inner {
+	background-color: #f7fbf7;
+	text-align: left;
+	padding-bottom: 0.5em;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #333333;
+	overflow: auto;
+}
+#data-inner .even {
+	background-color: #e3f0e3;
+	border-bottom: 1px solid #badaba;
+}
+#data-inner .odd {
+	border-bottom: 1px solid #badaba;
+}
+#data-inner fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+#data-inner p {
+	font-style: italic;
+}
+#data-inner input.button,
+#data-inner input.confirm {
+	margin-left: 10px;
+}
 /*--------------- Suppression ---------------*/
 div#suppr-wrapper {
 	margin-left: 10em;
@@ -402,6 +448,16 @@ div#fiche-inner div.row-inner fieldset {
 div#fiche-inner div.row-inner input.cancel {
 	margin-top: 6px;
 	margin-left: 20px;	
+}
+/*-------------- Fiche mdp --------------------------*/
+#fiche-inner #mdp label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 240px;
+}
+#fiche-inner #mdp input.submit {
+	margin-top: 6px;
+	margin-left: 120px;
 }
 /*-------------- Fiche circuits ---------------------*/
 #fiche-inner #circuit label {
@@ -593,6 +649,15 @@ div#fiche-inner div.row-inner input.cancel {
 	margin-top: 6px;
 	margin-left: 185px;	
 }
+/*-------------- Fiche plugin -----------------------*/
+table.plugin {
+	margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	border: 1px solid #f78042;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #9d3c06;
+}
 /*-------------- Largeur des inputs text ------------*/
 input.sbm-width-5c, select.sbm-width-5c {
 	width: 3em;
@@ -660,4 +725,13 @@ label.sbm-label-315dem {
 }
 label.sbm-label-350dem {
 	width: 36.5em;
+}
+/*---------------- Espace parents ---------------------------*/
+table.parent {
+	/*margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	/*border: 1px solid #9d3c06;*/
+	/*border-radius: 20px 20px 0 0;*/
+	/*box-shadow: 1px 1px 5px #9d3c06;*/
 }

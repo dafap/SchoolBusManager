@@ -16,6 +16,7 @@ namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
+use SbmCommun\Model\Db\Service\Table\Exception;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Literal;
 
@@ -109,5 +110,24 @@ class Libelles extends AbstractSbmTable
             'code'
         );
         return $this->fetchAll($where, $order);
+    }
+    
+    /**
+     * Renvoie le code d'un libellé pour une nature donnée.
+     * 
+     * @param string $nature
+     * @param string $libelle
+     * 
+     * @return integer
+     */
+    public function getCode($nature, $libelle)
+    {
+        $where = new Where();
+        $rowset = $this->fetchAll($where->equalTo('nature', $nature)->equalTo('libelle', $libelle));
+        if (!$rowset) {
+            throw new Exception('Ce libellé n\'existe pas.');
+        } else {
+            return $rowset->current()->code;
+        }
     }
 }

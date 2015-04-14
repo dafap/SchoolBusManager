@@ -35,6 +35,7 @@ return array(
             'Sbm\Db\ObjectData\Paiement' => 'SbmCommun\Model\Db\ObjectData\Paiement',
             'Sbm\Db\ObjectData\Responsable' => 'SbmCommun\Model\Db\ObjectData\Responsable',
             'Sbm\Db\ObjectData\Scolarite' => 'SbmCommun\Model\Db\ObjectData\Scolarite',
+            'Sbm\Db\ObjectData\SecteurScolaireClgPu'=>'SbmCommun\Model\Db\ObjectData\SecteurScolaireClgPu',
             'Sbm\Db\ObjectData\Service' => 'SbmCommun\Model\Db\ObjectData\Service',
             'Sbm\Db\ObjectData\Station' => 'SbmCommun\Model\Db\ObjectData\Station',
             'Sbm\Db\ObjectData\Tarif' => 'SbmCommun\Model\Db\ObjectData\Tarif',
@@ -60,6 +61,7 @@ return array(
             'Sbm\Db\Table\Paiements' => 'SbmCommun\Model\Db\Service\Table\Paiements',
             'Sbm\Db\Table\Responsables' => 'SbmCommun\Model\Db\Service\Table\Responsables',
             'Sbm\Db\Table\Scolarites' => 'SbmCommun\Model\Db\Service\Table\Scolarites',
+            'Sbm\Db\Table\SecteursScolairesClgPu' => 'SbmCommun\Model\Db\Service\Table\SecteursScolairesClgPu',
             'Sbm\Db\Table\Services' => 'SbmCommun\Model\Db\Service\Table\Services',
             'Sbm\Db\Table\Stations' => 'SbmCommun\Model\Db\Service\Table\Stations',
             'Sbm\Db\Table\Tarifs' => 'SbmCommun\Model\Db\Service\Table\Tarifs',
@@ -83,6 +85,7 @@ return array(
             'Sbm\Db\TableGateway\Paiements' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayPaiements',
             'Sbm\Db\TableGateway\Responsables' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayResponsables',
             'Sbm\Db\TableGateway\Scolarites' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayScolarites',
+            'Sbm\Db\TableGateway\SecteursScolairesClgPu' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewaySecteursScolairesClgPu',
             'Sbm\Db\TableGateway\Services' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayServices',
             'Sbm\Db\TableGateway\Stations' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayStations',
             'Sbm\Db\TableGateway\Tarifs' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayTarifs',
@@ -127,9 +130,11 @@ return array(
             'Sbm\Db\Select\StationsOuvertes' => 'SbmCommun\Model\Db\Service\Select\StationsOuvertes',
             'Sbm\Db\Select\Transporteurs' => 'SbmCommun\Model\Db\Service\Select\Transporteurs',
             'Sbm\Libelles\Caisse' => 'SbmCommun\Model\Db\Service\Select\LibellesCaisse',
-            'Sbm\Libelles\ModeDePaiement' => 'SbmCommun\Model\Db\Service\Select\LibellesModeDePaiement',
+            'Sbm\Libelles\ModeDePaiement' => 'SbmCommun\Model\Db\Service\Select\LibellesModeDePaiement',            
+            'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
             
-            'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles'
+            'Sbm\Db\Query\ElevesScolarites' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites',
+            'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations'
         )
     ),
     'view_manager' => array(

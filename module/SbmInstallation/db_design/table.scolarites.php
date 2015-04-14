@@ -40,7 +40,7 @@ return array(
             'dateCarte' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'afacturer' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'paiement' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'anneeComplete' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'subvention' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'derogation' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -133,7 +133,7 @@ return array(
             'evenement' => 'INSERT',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(scolarites)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', NEW.millesime, NEW.eleveId), NOW(), CONCAT_WS('|', NEW.selection, NEW.dateInscription, NEW.dateModification, NEW.etablissementId, NEW.classeId, NEW.adresseL1, NEW.adresseL2, NEW.communeId, NEW.dateEtiquette, NEW.dateCarte, NEW.inscrit, NEW.gratuit, NEW.afacturer, NEW.anneeComplete, NEW.subvention, NEW.derogation, NEW.dateDebut, NEW.dateFin, NEW.subventionTaux, NEW.tarifId, NEW.regimeId, NEW.derogationMotif))
+VALUES ('%table(scolarites)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', NEW.millesime, NEW.eleveId), NOW(), CONCAT_WS('|', NEW.selection, NEW.dateInscription, NEW.dateModification, NEW.etablissementId, NEW.classeId, NEW.adresseL1, NEW.adresseL2, NEW.communeId, NEW.dateEtiquette, NEW.dateCarte, NEW.inscrit, NEW.gratuit, NEW.paiement, NEW.anneeComplete, NEW.subvention, NEW.derogation, NEW.dateDebut, NEW.dateFin, NEW.subventionTaux, NEW.tarifId, NEW.regimeId, NEW.derogationMotif))
 EOT
 
         ),
@@ -142,7 +142,7 @@ EOT
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(scolarites)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.adresseL1, OLD.adresseL2, OLD.communeId, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.afacturer, OLD.anneeComplete, OLD.subvention, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.derogationMotif))
+VALUES ('%table(scolarites)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.adresseL1, OLD.adresseL2, OLD.communeId, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subvention, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.derogationMotif))
 EOT
 
         ),
@@ -151,7 +151,7 @@ EOT
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(scolarites)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.adresseL1, OLD.adresseL2, OLD.communeId, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.afacturer, OLD.anneeComplete, OLD.subvention, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.derogationMotif))
+VALUES ('%table(scolarites)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.adresseL1, OLD.adresseL2, OLD.communeId, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subvention, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.derogationMotif))
 EOT
 
         )

@@ -23,6 +23,7 @@ use SbmCommun\Form\CriteresForm;
 use SbmAdmin\Form\DocumentPdf as FormDocumentPdf;
 use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\ButtonForm;
+use SbmCommun\Model\StdLib;
 
 class IndexController extends AbstractActionController
 {
@@ -179,27 +180,30 @@ class IndexController extends AbstractActionController
     public function libelleGroupAction()
     {
         $currentPage = $this->params('page', 1);
-        $id_get = $this->params('id', - 1); // GET
-        $tableLibelles = $this->getServiceLocator()->get('Sbm\Db\System\Libelles');
-        if ($id_get == - 1 || ! $tableLibelles->getObjData()->isValidId($id_get)) {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
+        list($nature, $code) = explode('|', StdLib::getParam('id', $args, array(false, false)));
+        if ($nature === false) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmadmin', array(
                 'action' => 'libelle-liste',
                 'page' => $currentPage
             ));
         }
-        
-        $config = $this->getServiceLocator()->get('Config');
-        $nb_libelles_pagination = $config['liste']['paginator']['nb_libelles_pagination'];
-        
-        list ($nature, $code) = \explode('|', $id_get);
-        $where = new Where();
-        $where->expression('nature = ?', $nature);
-        
         return new ViewModel(array(
-            'paginator' => $tableLibelles->paginator($where),
+            'data' => $this->getServiceLocator()
+            ->get('Sbm\Db\Libelle\Liste')
+            ->forNature($nature),
             'page' => $currentPage,
-            'nb_libelles_pagination' => $nb_libelles_pagination,
-            'nature' => $nature
+            'nature' => $nature,
+            'code' => $code
         ));
     }
 

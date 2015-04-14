@@ -54,6 +54,15 @@ return array(
         'primary_key' => array(
             'paiementId'
         ),
+        'keys' => array(
+            'PAIEMENTS_date_reference' => array(
+                'unique' => true,
+                'fields' => array(
+                    'datePaiement',
+                    'reference'
+                )
+            ),
+        ),
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'

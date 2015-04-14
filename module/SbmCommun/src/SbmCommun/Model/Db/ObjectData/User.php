@@ -31,23 +31,27 @@ class User extends AbstractObjectData
         $this->dateCreation = DateLib::nowToMysql();
         $this->gds = Rand::getString(8);
         $this->categorieId = 1;
+        return $this;
     }
     
     public function completeToModif()
     {
         $this->dateModification = DateLib::nowToMysql();
+        return $this;
     }
     
     public function setToken()
     {
         $this->token = md5(uniqid(mt_rand(1000, 9999), true));
         $this->tokenalive = true;
+        return $this;
     }
     
     public function clearToken()
     {
         $this->token = null;
-        $this->tokenalive = false;       
+        $this->tokenalive = false;
+        return $this;       
     }
     
     public function confirme()
@@ -55,6 +59,7 @@ class User extends AbstractObjectData
         $this->clearToken();
         $this->confirme = true;
         $this->active = true;
+        return $this;
     }
     
     public function completeForLogin()
@@ -63,11 +68,29 @@ class User extends AbstractObjectData
         $this->previousIp = $this->adresseIp;
         $this->dateLastLogin = DateLib::nowToMysql();
         $this->adresseIp = $_SERVER['REMOTE_ADDR'];
+        return $this;
     }
     
     public function setMdp($userId, $mdp, $gds)
     {
         $this->userId = $userId;
         $this->mdp = Mdp::crypteMdp($mdp, $gds);
+        return $this;
+    }
+    
+    public function setNote($msg)
+    {
+        $this->note = $msg;
+        return $this;
+    }
+    
+    public function addNote($msg)
+    {
+        if (is_null($this->note)) {
+            $this->setNote($msg);
+        } else {
+            $this->note .= "\n$msg";
+        }
+        return $this;
     }
 }

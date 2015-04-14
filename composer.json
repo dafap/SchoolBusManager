@@ -31,7 +31,7 @@
 		"php" : ">=5.3.3",
 		"bjyoungblood/bjy-authorize" : "dev-master",
 		"zf-commons/zfc-user" : "dev-master",
-		"zendframework/zendframework" : "2.3.*",
+		"zendframework/zendframework" : "2.*",
 		"zf-commons/zfc-admin" : "dev-master",
 		"tecnick.com/tcpdf": "*"
 	},

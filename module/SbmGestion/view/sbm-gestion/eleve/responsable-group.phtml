@@ -11,47 +11,78 @@
  * @date 20 juillet 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
 $retour = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-liste',
     'page' => $this->page
 ));
+$pdf = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-group-pdf',
+    'page' => $this->page
+));
+$hiddens = array(
+    'responsableid' => $this->responsableId
+);
+
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ),
+    'rapports' => array(
+        'class' => 'fam-application-view-list',
+        'formaction' => $pdf,
+        'title' => 'Rapports à imprimer'
+    )
+);
 
 ?>
 <h1>Groupe des élèves sous la responsabilité d'une personne</h1>
-<div class="groupe-wrapper">
-	<div class="header-wrapper">
+<div id="liste-wrapper">
+	<div id="liste-title">
 		<ul>
-			<li><?php echo $this->escapehtml($this->datagroup->nom); ?> <?php echo $this->escapehtml($this->datagroup->prenom); ?></li>
-			<li>habitant <?php echo $this->escapehtml($this->datagroup->adressL1); ?> à <?php echo $this->escapehtml($this->datagroup->commune); ?></li>
+			<li><?php echo $this->escapehtml($this->responsable->nom); ?> <?php echo $this->escapehtml($this->responsable->prenom); ?>
+			habitant <?php echo $this->escapehtml($this->responsable->adresseL1); ?> à <?php echo $this->escapehtml($this->responsable->commune); ?></li>
 		</ul>
 	</div>
-	<div class="liste-wrapper">
-	    <div class="liste-inner">
-			<?php foreach ($this->data as $key => $liste) : ?>
-			    <?php if ($liste->count()) : ?>
-			        <?php switch ($key) :
-			        case 'resp1' : ?>
-			            <h3>Liste des élèves ayant cette personne comme responsable 1</h3>
-			        <?php break; 
-                    case 'resp2' : ?>
-                        <h3>Liste des élèves ayant cette personne comme responsable 2</h3>
-			        <?php break; 
-                    case 'fact' : ?>
-                        <h3>Liste des élèves ayant cette personne comme responsable financier</h3>                        
-			        <?php break;
-			        endswitch; ?>
-			        <ul>
+	<div id="liste-header">
+		<div><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="liste-inner">
+	<?php foreach ($this->data as $key => $liste) : ?>
+		<?php if ($liste->count()) : ?>
+			<?php switch ($key) :
+			    case 'resp1' : ?>
+			          <h3>Liste des élèves ayant cette personne comme responsable 1</h3>
+			    <?php break; 
+                case 'resp2' : ?>
+                      <h3>Liste des élèves ayant cette personne comme responsable 2</h3>
+			    <?php break; 
+                case 'fact' : ?>
+                      <h3>Liste des élèves ayant cette personne comme responsable financier</h3>                        
+			    <?php break;
+			    endswitch; ?>
+			    <p>Il y a <?php echo count($liste); ?> élève<?php echo count($liste) > 1 ? 's' : ''; ?>.
+			    <table class="libelles">
+			        <tbody>
+				        <tr>
+				            <th>Nom</th><th>Prénom</th>
+				        </tr>
 			            <?php foreach ($liste as $row) : ?>
-			                <li><?php echo $row->nom, ' ', $row->prenom; ?></li>
+			            <tr>
+			                <td><?php echo $row->nom; ?></td><td><?php echo $row->prenom; ?></td>
+			            </tr>
 			            <?php endforeach; ?>
-			        </ul>
+			        </tbody>
+			    </table>
 			    <?php endif;?>
 			<?php endforeach; ?>
 		</div>			
-		<div class="zone-actions">
-			<a href="<?php echo $retour; ?>" class="bouton"
-				title="retour à la liste des eleves"><i class="fam-door-out"></i>
-				Retour</a>
-		</div>
 	</div>
+	<div id="liste-footer"></div>
 </div>

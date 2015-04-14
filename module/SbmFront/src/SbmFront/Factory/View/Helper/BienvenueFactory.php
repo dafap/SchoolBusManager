@@ -1,11 +1,10 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Enregistrement du View Helper Bienvenue en tant que service
  * 
- * @project project_name
- * @package package_name
+ * 
+ * @project sbm
+ * @package SbmFront/Factory/View/Helper
  * @filesource BienvenueFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

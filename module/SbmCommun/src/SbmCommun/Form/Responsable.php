@@ -2,6 +2,7 @@
 /**
  * Formulaire de saisie et modification d'un responsable
  *
+ * A noter que les éléments SbmCommun\Form\Element\NomPropre et SbmCommun\Form\Element\Prenom ont leur propre méthode getInputSpecification()
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Form
@@ -20,10 +21,23 @@ use Zend\InputFilter\InputFilterProviderInterface;
 
 class Responsable extends AbstractSbmForm implements InputFilterProviderInterface
 {
+    /**
+     * Indicateur
+     * 
+     * @var bool
+     */
+    private $verrouille;
 
-    public function __construct($param = 'responsable')
+    /**
+     * Constructeur
+     * 
+     * @param boolean $option
+     *            indique si l'identité doit être verrouillée en lecture seule
+     */
+    public function __construct($option = false)
     {
-        parent::__construct($param);
+        $this->verrouille = $option;
+        parent::__construct('responsable');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'csrf',
@@ -433,11 +447,15 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'class' => 'button default cancel'
             )
         ));
+        
+        if ($this->verrouille) {
+            $this->verrouilleIdentity();
+        }
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
+        $spec = array(
             'titre2' => array(
                 'required' => false
             ),
@@ -476,7 +494,32 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             ),
             'dateDemenagement' => array(
                 'required' => false
+            ),
+            'selection' => array(
+                'required' => false
             )
         );
+        if ($this->verrouille) {
+            $spec['titre'] = array(
+                'required' => false
+            );
+            $spec['demenagement'] = array(
+                'required' => false
+            );
+        }
+        return $spec;
+    }
+
+    private function verrouilleIdentity()
+    {
+        foreach (array(
+            'titre' => 'disabled',
+            'nom' => 'readonly',
+            'prenom' => 'readonly',
+            'email' => 'readonly'
+        ) as $elementName => $attr) {
+            $e = $this->get($elementName);
+            $e->setAttribute($attr, $attr);
+        }
     }
 }

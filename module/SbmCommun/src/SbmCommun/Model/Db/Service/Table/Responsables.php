@@ -42,6 +42,8 @@ class Responsables extends AbstractSbmTable
             $obj_data->setCalculateFields(array(
                 'nomSA',
                 'prenomSA',
+                'nom2SA',
+                'prenom2SA',
                 'dateCreation'
             ));
         } else {
@@ -55,12 +57,14 @@ class Responsables extends AbstractSbmTable
             if ($old_data->prenom != $obj_data->prenom) {
                 $obj_data->addCalculateField('prenomSA');
             }
-            /*if ($old_data->demenagement != $obj_data->demenagement) {
-                $obj_data->addCalculateField('demenagement');
-            }*/
+            if ($old_data->nom2 != $obj_data->nom2) {
+                $obj_data->addCalculateField('nom2SA');
+            }
+            if ($old_data->prenom2 != $obj_data->prenom2) {
+                $obj_data->addCalculateField('prenom2SA');
+            }
             $obj_data->addCalculateField('dateModification');
         }
-        
         parent::saveRecord($obj_data);
     }
     
@@ -78,5 +82,22 @@ class Responsables extends AbstractSbmTable
     {
         $record = $this->getRecord($responsabled);
         return ($with_titre ? $record->titre . ' ' : '') . $record->nom . ' ' . $record->prenom;
+    }
+    
+    /**
+     * Change les emails
+     * 
+     * @param string $email_old
+     * @param string $email_new
+     */
+    public function changeEmail($email_old, $email_new)
+    {
+        $update = $this->table_gateway->update(array('email' => $email_new), array('email' => $email_old));
+    }
+    
+    public function getRecordByEmail($email)
+    {
+        $resultset = $this->fetchAll(array('email' => $email));
+        return $resultset->current();
     }
 }

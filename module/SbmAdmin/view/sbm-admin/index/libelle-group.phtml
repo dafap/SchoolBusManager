@@ -4,74 +4,80 @@
  *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
- * @filesource libelle-liste.phtml
+ * @filesource libelle-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 20 janv. 2015
  * @version 2015-1
  */
-$this->paginator->setDefaultItemCountPerPage($this->nb_libelles_pagination);
-$this->paginator->setCurrentPageNumber($this->page);
-$libelles = $this->paginator->getCurrentItems();
-$ajouter = $this->url('sbmadmin', array(
-    'action' => 'libelle-ajout',
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$retour = $this->url('sbmadmin', array(
+    'action' => 'libelle-liste',
     'page' => $this->page
 ));
 $pdf = $this->url('sbmadmin', array(
     'action' => 'libelle-pdf',
     'page' => $this->page
 ));
-$retour = $this->url('sbmadmin', array(
-    'action' => 'libelle-liste',
-    'page' => $this->page
-));
+$hiddens = array(
+    'nature' => $this->nature,
+    'code' => $this->code
+);
+
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ),
+    'rapports' => array(
+        'class' => 'fam-application-view-list',
+        'formaction' => $pdf,
+        'title' => 'Rapports à imprimer'
+    )
+);
 ?>
 <h1>Libellés de même nature</h1>
-<ul>
-	<li><?php echo $this->escapeHtml($this->nature); ?></li>
-</ul>
-<div class="liste-wrapper">
-	<div class="zone-actions">
-		<a href="<?php echo $retour; ?>" class="bouton"
-			title="retour au menu d'administration"><i class="fam-door-out"></i>
-			Retour</a>
+<div id="liste-wrapper">
+	<div id="liste-title">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->nature); ?></li>
+		</ul>
 	</div>
-	<table class="liste-inner libelles">
-		<tbody>
-			<tr>
-				<th>Nature</th>
-				<th>Code</th>
-				<th>Libellé</th>
-				<th>Ouvert</th>
-			</tr>
-        <?php foreach($libelles as $test => $libelle): ?>
-          <tr
-				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-				<td class="nature"><?php echo $this->escapeHtml($libelle->nature); ?></td>
-				<td class="code centre"><?php echo $this->escapeHtml($libelle->code); ?></td>
-				<td class="libelle"><?php echo $this->escapeHtml($libelle->libelle); ?></td>
-				<td class="ouvert centre"><?php echo $this->escapeHtml($libelle->ouvert); ?></td>
-				<td class="boutons">
-             <?php
-            $url_edit = $this->url('sbmadmin', array(
-                'action' => 'libelle-edit',
-                'page' => $this->page,
-                'id' => $libelle->nature . '|' . $libelle->code
-            ));
-            $url_delete = $this->url('sbmadmin', array(
-                'action' => 'libelle-suppr',
-                'page' => $this->page,
-                'id' => $libelle->nature . '|' . $libelle->code
-            ));
-            ?>
-                 <a href="<?php echo $url_edit; ?>" class="bouton"
-					title="modifier"><i class="fam-pencil"></i></a> <a
-					href="<?php echo $url_delete; ?>" class="bouton" title="supprimer"><i
-						class="fam-delete"></i></a>
-				</td>
-			</tr>         
-        <?php endforeach;?>
-        </tbody>
-	</table>
-	<div class="zone-pagination"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	<div id="liste-header">
+		<div><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<p>
+			<em>Il y a <?php echo count($this->data); ?> libellés.</em>
+		</p>
+	</div>
+	<div id="liste-inner">
+		<table class="libelles">
+			<tbody>
+				<tr>
+					<th>Nature</th>
+					<th>Code</th>
+					<th>Libellé</th>
+					<th>Ouvert</th>
+				</tr>
+                    <?php foreach($this->data as $row): ?>
+                    <tr
+					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td class="nature"><?php echo $this->escapeHtml($row['nature']); ?></td>
+					<td class="code centre"><?php echo $this->escapeHtml($row['code']); ?></td>
+					<td class="libelle"><?php echo $this->escapeHtml($row['libelle']); ?></td>
+					<td class="ouvert centre"><?php echo $this->escapeHtml($row['ouvert']); ?></td>
+				</tr>         
+                    <?php endforeach;?>
+                </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<p>
+			<em>Il y a <?php echo count($this->data); ?> libellés..</em>
+		</p>
+	</div>
 </div>

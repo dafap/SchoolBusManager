@@ -36,48 +36,70 @@ function printResult($args)
         }
     }
 }
+// ------------------------------ DEBUT -----------------------------------------
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-set_time_limit(30);
+$retour = $this->url("sbminstall");
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
 ?>
 <h1>Création des tables et des vues</h1>
-<?php if (is_null($this->form)) : ?>
-<div class="zone-actions">
-	<a href="<?php echo $this->url("sbminstall"); ?>"
-		title="Installation de School Bus Manager"><i class="fam-door-out"></i>Retour</a>
-</div>
-<pre><?php printResult($this->args); ?></pre>
-<p>Création terminée.</p>
+<div id="data-wrapper">
+	<div id="data-header" class="clearfix">
+		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+<?php if (is_null($this->form)) : ?>        	
+	<div id="data-inner">
+		<pre><?php printResult($this->args); ?></pre>
+		<p>Création terminée.</p>
+	</div>
 <?php else : ?>
-<table class="installation">
-	<thead>
-		<tr>
-			<th>name</th>
-			<th>type</th>
-			<th>drop</th>
-			<th>edit_entity</th>
-			<th>add_data</th>
-			<th>data</th>
-		</tr>
-	</thead>
-	<tbody>
+    <div id="data-inner">
+		<table class="installation">
+			<thead>
+				<tr class="odd">
+					<th>name</th>
+					<th>type</th>
+					<th>drop</th>
+					<th>edit_entity</th>
+					<th>add_data</th>
+					<th>data</th>
+				</tr>
+			</thead>
+			<tbody>
 	<?php foreach ($this->args as $row) : ?>
-		<tr>
-			<td><?php echo $row['name']?></td>
-			<td><?php echo $row['type']?></td>
-			<td><?php echo $row['drop']?></td>
-			<td><?php echo $row['edit_entity']?></td>
-			<td><?php echo $row['add_data']?></td>
-			<td><?php echo $row['data']?></td>
-		</tr>
+		        <tr class="<?php echo $this->cycle(array("even", "odd"))->next(); ?>">
+					<td><?php echo $row['name']?></td>
+					<td><?php echo $row['type']?></td>
+					<td><?php echo $row['drop']?></td>
+					<td><?php echo $row['edit_entity']?></td>
+					<td><?php echo $row['add_data']?></td>
+					<td><?php echo $row['data']?></td>
+				</tr>
 	<?php endforeach; ?>
 	</tbody>
-</table>
+		</table>
 
-<p>Confirmez-vous que vous voulez créer les tables comme indiqué dans
-	cette configuration ?</p>
+		<p>Confirmez-vous que vous voulez créer les tables comme indiqué dans
+			cette configuration ?</p>
 <?php
     echo $this->form()->openTag($form);
     echo $this->formCollection($form);
     echo $this->form()->closeTag();
     ?>
+    </div>
 <?php endif; ?>
+</div>

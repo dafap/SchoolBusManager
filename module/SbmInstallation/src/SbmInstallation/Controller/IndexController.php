@@ -27,9 +27,7 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $result = array();
-        return new ViewModel(array(
-            'args' => $result
-        ));
+        return new ViewModel();
     }
 
     public function createTablesAction()

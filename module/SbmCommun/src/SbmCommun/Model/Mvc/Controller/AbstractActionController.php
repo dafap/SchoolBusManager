@@ -61,6 +61,15 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * - si c'est un get ou un retour d'action, renvoie array(paginator, form, retour) à partir des paramètres en session
      * - si c'est une redirection 303, renvoie array(paginator, form, retour) à partir du post initial
      *
+     * @param string $formName
+     *            string : Le nom du formulaire est le nom de la table (ou de la vue) sur laquelle il porte.
+     *            array : Tableau de définition des éléments à créer dans le formulaire 
+     * @param closure $initForm
+     *            Fonction anonyme lancée juste après la création du formulaire avec comme paramètres le service manager et le formulaire. 
+     *            Elle sert à initialiser les champs du formulaire, en particulier les listes déroulantes.
+     * @param array $strictWhere
+     *            Liste des champs du formulaire pour lesquels l'égalité est recherché. Pour les autres, on fait un Like
+     *            
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
      *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme array('paginator' => ..., 'form' => ..., 'retour' => boolean)
      */
