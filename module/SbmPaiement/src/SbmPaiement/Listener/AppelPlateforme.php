@@ -2,8 +2,8 @@
 /**
  * Listener qui appelle la plateforme pour obtenir le formulaire de paiement.
  *
- * L'appel est déclanché par un évènement 'appelPaiement' lancé par la méthode SbmUser\Controller\IndexController::payerAction().
- * On utilisera comme identifiant de l'évènement la chaine 'SbmPaiement\Plugin\Appel'.
+ * L'appel est déclanché par un évènement 'appelPaiement' lancé par la méthode SbmParent\Controller\IndexController::payerAction().
+ * On utilisera comme identifiant de l'évènement la chaine 'appelPaiement'.
  * 
  * Les paramètres de l'évènement contiennent les données suivantes :
  * - montant          : en euros (il faut le multiplier par 100 ici)
@@ -17,14 +17,14 @@
  * - eleveIds         : tableau des eleveId, référence des élèves concernés par ce paiement
  * 
  * @project sbm
- * @package SbmPaiement/Plugin
+ * @package SbmPaiement/Listener
  * @filesource AppelPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 4 avr. 2015
  * @version 2015-1
  */
-namespace SbmPaiement\Plugin;
+namespace SbmPaiement\Listener;
 
 use Zend\EventManager\Event;
 use Zend\EventManager\EventManagerInterface;
@@ -45,7 +45,7 @@ class AppelPlateforme implements ListenerAggregateInterface
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Appel', 'appelPaiement', array(
+        $this->listeners[] = $sharedEvents->attach('SbmPaiement\AppelPlateforme', 'appelPaiement', array(
             $this,
             'onAppelPaiement'
         ), 1);
@@ -75,15 +75,19 @@ class AppelPlateforme implements ListenerAggregateInterface
         $ch = curl_init($objectPlateforme->getUrl());
         $options = array(
             CURLOPT_POST => 1,
-            CURLOPT_POSTFIELDS => $objectPlateforme->getPostfields($params),
+            CURLOPT_POSTFIELDS => $objectPlateforme->prepareAppel($params),
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
         );
         curl_setopt_array($ch, $options);
+        $fm = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
         if (!curl_exec($ch)) {
             // libcurl - Error codes à l'adresse http://curl.haxx.se/libcurl/c/libcurl-errors.html
             $mess = sprintf('Echec de l\'appel à la plateforme de paiement. (Code erreur n° %d)', curl_errno($ch));
-            $objectPlateforme->logError(Logger::ALERT,$mess, $ch->getinfo());
+            $objectPlateforme->logError(Logger::ALERT,$mess, curl_getinfo($ch));
+            $fm->addErrorMessage('Echec de l\'appel à la plateforme de paiement.');
+        } else {
+            $fm->addSuccessMessage('Accès au paiement en ligne.');
         }
         curl_close($ch);
     }

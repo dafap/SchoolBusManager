@@ -29,6 +29,11 @@ return array(
             'nb_paiements' => 15
         )
     ),
+    'service_manager' => array(
+        'invokables' => array(
+            'Sbm\AppelPaiement' => 'SbmPaiement\Service\Trigger'
+        )
+    ),
     'controllers' => array(
         'invokables' => array(
             'SbmPaiement\Controller\Index' => 'SbmPaiement\Controller\IndexController'
@@ -39,10 +44,11 @@ return array(
             'sbmpaiement' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/paiement[/:action[/:page]]',
+                    'route' => '/paiement[/:action[/:page[/:id]]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'page' => '[0-9]+'
+                        'page' => '[0-9]+',
+                        'id' => '[0-9]+'
                     ),
                     'defaults' => array(
                         'module' => 'SbmPaiement',

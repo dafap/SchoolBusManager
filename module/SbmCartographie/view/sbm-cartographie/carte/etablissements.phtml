@@ -1,0 +1,110 @@
+<?php
+/**
+ * Carte des établissements scolaires
+ *
+ * Affichage des établissements décrits dans $this->ptEtablissements qui est un tableau de Point
+ * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés décimaux.
+ * 
+ * Le style des markers peut être changé : remplacer BUBBLE par MARKER ligne 39
+ * 
+ * @project sbm
+ * @package SbmCarographie/view/sbm-cartographie/carte
+ * @filesource etablissements.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 29 avr. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+// mise en place des JS de googleMaps
+$this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
+$this->headScript()->appendFile('/js/StyledMarker.js');
+$this->headScript()->captureStart();
+?>
+var tMarkers = new Array();
+function initialiser() {
+    // initialisation des paramètres de la carte
+    var options = {
+        'center': new google.maps.LatLng(44.55, 2.264),
+        'zoom': 13,
+        'mapTypeId': google.maps.MapTypeId.ROADMAP
+    };
+    var oCarte = new google.maps.Map(document.getElementById('carte-inner'), options);
+    // info bulle
+    var oInfo = new google.maps.InfoWindow();
+    // placement des markers
+    for (var i = 0; i < tMarkers.length; i++) {
+        var optionsMarker = {
+            'styleIcon': new StyledIcon(StyledIconTypes.BUBBLE,{color:tMarkers[i].color,text:tMarkers[i].text}),
+            'map': oCarte,
+            'position': new google.maps.LatLng( tMarkers[i].lat, tMarkers[i].lng),
+            'numero': i,
+            'title': tMarkers[i].title
+        }
+        var oMarker = new StyledMarker(optionsMarker);        
+        // listeners
+        google.maps.event.addListener(oMarker, 'click', function(data) {
+            oInfo.setContent(tMarkers[this.numero].info);
+            oInfo.open(this.getMap(), this);
+        });
+    }
+}
+
+<?php
+$this->headScript()->captureEnd();
+// lancement du script 
+$i = 0;
+$tMarkers = "[\n";
+foreach ($this->ptEtablissements as $pt) {
+    $e = $pt->getAttribute('etablissement');
+    $niveau = array_sum($e->niveau);
+    if ($niveau <4) {
+        $color = "#ffff00";
+        $lettre = "E";
+    } elseif ($niveau == 4) {
+        $color = "#fc6700";
+        $lettre = "C";
+    } else {
+        $color = "#e5c3d0";
+        $lettre = "L";
+    }
+    $d = array(
+        '<b>' . $this->escapeHtml($e->nom) . '</b>',
+        trim(implode(" - ", array(
+            $e->adresse1,
+            $e->adresse2
+        )), " -"),
+        implode(' ', array(
+            $e->codePostal,
+            $e->commune
+        )),
+        'Tél. ' . $e->telephone,
+    );
+    if (!empty($tmp = $e->email)) {
+        $d[] = 'Email : ' . $e->email;
+    }
+    $tMarkers .= '{"lat":' . $pt->getLatitude() .',"lng":' . $pt->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre. '","title":"' . $e->nom .'","info":"' . implode('<br>', $d) ."\"},\n";
+
+}
+$tMarkers .= ']';
+$this->inlineScript()->captureStart();
+?>
+tMarkers = <?php echo $tMarkers;?>;
+initialiser();
+<?php $this->inlineScript()->captureEnd(); ?>
+<h1>Carte des établissements scolaires</h1>
+<div id="carte-wrapper">
+	<div id="carte-header">
+		<div class="left-10px"><?php
+echo $this->listeZoneActions(array(), array(
+    'cancel' => array(
+        'class' => 'fam-door-out',
+        'title' => 'Retour'
+    )
+));
+?></div>
+	</div>
+	<div id="carte-inner"
+		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>
+</div>

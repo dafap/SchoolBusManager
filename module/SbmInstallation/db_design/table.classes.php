@@ -46,6 +46,7 @@ return array(
             'nom' => 'varchar(30) NOT NULL',
             'aliasCG' => 'varchar(30) NULL DEFAULT NULL',
             'niveau' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "255"',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
         ),
         'primary_key' => array('classeId',),
         'engine' => 'InnoDb',

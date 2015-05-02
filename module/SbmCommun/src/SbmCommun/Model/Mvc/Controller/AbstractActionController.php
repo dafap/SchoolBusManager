@@ -34,9 +34,6 @@ use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
  */
 abstract class AbstractActionController extends ZendAbstractActionController
 {
-
-    const SBM_DG_SESSION = 'sbm_dg_session';
-
     /**
      * Booléen qui prend sa valeur lors de l'utilisation de postRedirectGet dans les méthode initListe, initAjout, initEdit, initSuppr
      *
@@ -93,6 +90,16 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $this->sbm_isPost = false;
                 $args = Session::get('post', array(), $this->getSessionNamespace());
             } else {
+                if (array_key_exists('cancel', $args)) {
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $args;
+                    }
+                } elseif (array_key_exists('origine', $args)) {
+                    $this->redirectToOrigin()->setBack($args['origine']);
+                    unset($args['origine']);
+                }
                 $this->sbm_isPost = true;
                 Session::set('post', $args, $this->getSessionNamespace());
             }
@@ -247,6 +254,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param array $params
      *            tableau associatif dont les clés sont 'form' et 'data'.
      *            La clé 'data' est elle-même associée à un tableau associatif dont les clés sont 'alias' et 'id'
+     *            (sa cle 'id' donne l'id passé en post)
      * @param string $renvoyer
      *            Fonction de construction de la réponse. Ses paramètres sont $id (valeur de l'id) et $table (table dont l'alias est donné)
      *            
@@ -386,7 +394,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            
      * @return int|boolean
      */
-    protected function getFromSession($param, $default = null, $sessionNamespace = self::SBM_DG_SESSION)
+    protected function getFromSession($param, $default = null, $sessionNamespace = Session::SBM_DG_SESSION)
     {
         return Session::get($param, $default, $sessionNamespace);
     }
@@ -401,7 +409,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param string|null $sessionNamespace
      *            namespace de la session (par défaut valeur fixée par le constante de cette classe SBM_DG_SESSION)
      */
-    protected function setToSession($param, $value, $sessionNamespace = self::SBM_DG_SESSION)
+    protected function setToSession($param, $value, $sessionNamespace = Session::SBM_DG_SESSION)
     {
         Session::set($param, $value, $sessionNamespace);
     }

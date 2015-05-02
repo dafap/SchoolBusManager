@@ -52,6 +52,14 @@ th, td {
 .odd {
 	border-bottom: 1px solid #e3eaec;
 }
+.alert {
+	color: #a94442;
+}
+
+.warning {
+	color: #31708f;
+}
+
 .exces {
 	color: red;
 	font-weight: bold;
@@ -89,6 +97,13 @@ th, td {
 .input-error {
 	background-color: #ffcbbf;
 	border: 2px inset #db001b;
+}
+div.explication {
+	text-align: justify;
+	padding-right: 15px;
+	padding-left: 15px;
+	color: #804040;
+	
 }
 /*-------- Erreurs -------------*/
 div#error_wrapper {
@@ -331,21 +346,21 @@ div.pagination a.page:hover {
 	color: #156486;
 }
 /*--------------- Menu général --------------*/
-#menugeneral .items ul {
+#menugeneral-inner ul {
 	list-style-type: none;
     padding: 0px;
     margin: 0px;
 }
-#menugeneral .items li {
+#menugeneral-inner li {
     padding-left: 25px;
     margin-top: 3px;
     margin-bottom: 6px; 
 }
-#menugeneral .items a {
+#menugeneral-inner a {
 	text-decoration: none;
 	color: #496f9c;
 }
-#menugeneral .items a:hover {
+#menugeneral-inner a:hover {
 	font-weight: bold;
 }
 /*-------- Installation --------*/
@@ -726,6 +741,28 @@ label.sbm-label-315dem {
 label.sbm-label-350dem {
 	width: 36.5em;
 }
+/*---------------- Formulaire automatique -------------------------*/
+/* utilisation de l'aide de vue $this->form($formulaire)      -    */
+/* le formulaire se trouve dans un conteneur de class="inner-form" */
+div.inner-form-auto {
+	position:relative;
+}
+.inner-form-auto input,
+.inner-form-auto select {
+	position: absolute;
+	left: 155px;
+}
+.inner-form-auto input.button {
+	position: relative;
+	top: 30px;
+	left: 0;
+	margin-left: 15px;
+}
+label.sbm-form-auto:before {
+	content: "\A";
+	white-space: pre;
+	line-height: 2;
+}
 /*---------------- Espace parents ---------------------------*/
 table.parent {
 	/*margin-left: auto;
@@ -735,3 +772,33 @@ table.parent {
 	/*border-radius: 20px 20px 0 0;*/
 	/*box-shadow: 1px 1px 5px #9d3c06;*/
 }
+#parent-wrapper div.bouton-inscrire {
+	margin-top: 3px;
+	margin-bottom: 10px;
+	position:relative;
+	width: 95%;
+}
+#parent-wrapper input[type="submit"] {
+	font-size: 10px;
+	color: black;
+	background-color: #a1cbe5;
+	border-top-width: 0;
+	border-bottom-width: 0;
+	border-left-width: 0;
+	border-right-width: 0;
+	margin-right: 10px;
+}
+
+#fiche-inner form#enfant div.enfant-label,
+#fiche-inner form#enfant label {
+	display: inline-block;
+	width: 215px;
+	padding-left: 5px;
+}
+#fiche-inner form#enfant label.sbm-multi-label,
+#fiche-inner form#enfant label.sbm-radio-label {
+	display: initial;
+	margin-right: 30px;
+}
+
+

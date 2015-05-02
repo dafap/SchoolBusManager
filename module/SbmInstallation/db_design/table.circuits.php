@@ -22,6 +22,7 @@ return array(
     'structure'=> array(
         'fields' => array(
             'circuitId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'millesime' => 'int(11) NOT NULL',
             'serviceId' => 'varchar(11) NOT NULL',
             'stationId' => 'int(11) NOT NULL',

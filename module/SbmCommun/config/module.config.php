@@ -50,6 +50,9 @@ return array(
             'Sbm\Db\SysObjectData\Libelle' => 'SbmCommun\Model\Db\ObjectData\Sys\Libelle'
         ),
         'factories' => array(
+            'Sbm\CalculDroitsTransport' => 'SbmCommun\Model\Service\CalculDroits',
+            'Sbm\MajDistances' => 'SbmCommun\Model\Service\MajDistances',
+            
             'Sbm\Db\DbLib' => 'SbmCommun\Model\Db\Service\DbLibService',
             'Sbm\Db\Table\Affectations' => 'SbmCommun\Model\Db\Service\Table\Affectations',
             'Sbm\Db\Table\Circuits' => 'SbmCommun\Model\Db\Service\Table\Circuits',
@@ -120,9 +123,9 @@ return array(
             'Sbm\Db\VueGateway\Transporteurs' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayTransporteurs',
             
             // 'Sbm\Db\Select\Calendar' => 'SbmCommun\Model\Db\Service\Select\Calendar',
-            // 'Sbm\Db\Select\CommunesMembres' => 'SbmCommun\Model\Db\Service\Select\CommunesMembres',
-            'Sbm\Db\Select\CommunesDesservies' => 'SbmCommun\Model\Db\Service\Select\CommunesDesservies',
-            'Sbm\Db\Select\CommunesVisibles' => 'SbmCommun\Model\Db\Service\Select\CommunesVisibles',
+            'Sbm\Db\Select\Classes' => 'SbmCommun\Model\Db\Service\Select\Classes',
+            'Sbm\Db\Select\Communes' => 'SbmCommun\Model\Db\Service\Select\CommunesForSelect',
+            'Sbm\Db\Select\EtablissementsDesservis' => 'SbmCommun\Model\Db\Service\Select\EtablissementsDesservis',
             'Sbm\Db\Select\EtablissementsVisibles' => 'SbmCommun\Model\Db\Service\Select\EtablissementsVisibles',
             'Sbm\Db\Select\Responsables' => 'SbmCommun\Model\Db\Service\Select\Responsables',
             'Sbm\Db\Select\Services' => 'SbmCommun\Model\Db\Service\Select\Services',

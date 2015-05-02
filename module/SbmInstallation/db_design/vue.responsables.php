@@ -125,6 +125,18 @@ return array(
             ),
             array(
                 'field' => 'bic'
+            ),
+            array(
+                'field' => 'x'
+            ),
+            array(
+                'field' => 'y'
+            ),
+            array(
+                'field' => 'userId'
+            ),
+            array(
+                'field' => 'note'
             )
         ),
         'from' => array(

@@ -220,6 +220,10 @@ class ListeLigneActions extends AbstractHelper
         if (array_key_exists('class', $attributes)) {
             $result .= ' class="' . $attributes['class'] . '"';
         }
+        // style
+        if (array_key_exists('style', $attributes)) {
+            $result .= ' style="' . $attributes['style'] . '"';
+        }
         // accept-charset
         if (array_key_exists('accept-charset', $attributes)) {
             $result .= ' accept-charset="' . $attributes['accept-charset'] . '"';

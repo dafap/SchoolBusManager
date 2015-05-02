@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Liste des élèves
  *
@@ -11,35 +12,103 @@
  * @date 18 juil. 2014
  * @version 2014-1
  */
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+        ->setAttribute('id', $id)
+        ->setValue($value);
+    return $view->formCheckbox($element);
+}
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
+// gestion des checkbox selection
+$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$js_chkCallback = '';
+$js_chkTrigger = '';
+// selection
+$modele_chkTrigger = "$('#chk%d').trigger('change');\n";
+$modele_chkCallback = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/gestion/eleve/'+action+'selectioneleve/%d/%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+    //alert(action);
+  });\n
+EOT;
+
+// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
+// (ne pas mettre de guillemet dans la chaine)
+$js_op = 'javascript:window.document.getElementById(\'op%s%s\').value=\'%s\';';
+
+// le paginateur
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $eleves = $this->paginator->getCurrentItems();
-$ajouter = $this->url('sbmgestion/eleve', array(
+
+// les url à utiliser
+$url_ici = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-liste',
+    'page' => $this->page
+));
+$url_responsable = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-edit',
+    'page' => $this->page
+));
+$url_edit = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-edit',
+    'page' => $this->page,
+));
+$url_delete = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-suppr',
+    'page' => $this->page,
+));
+$url_group = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-group',
+    'page' => $this->page,
+));
+$url_ajouter = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-ajout',
     'page' => $this->page
 ));
-$pdf = $this->url('sbmgestion/eleve', array(
+$url_rapports = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-pdf',
     'page' => $this->page
 ));
-$retour = $this->url('sbmgestion/eleve');
+$url_map = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-localisation',
+    'page' => $this->page
+));
+$url_gestioneleve = $this->url('sbmgestion/gestioneleve');
+$url_retour = $this->url('sbmgestion/eleve');
+
+// le formulaire des actions du haut de page - aide de vue listeZoneActions()
 $hiddens = array();
 $actions = array(
-    'retour' => array(
+    'cancel' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_ici,
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
-        'formaction' => $pdf,
+        'class' => 'fam-report',
+        'formaction' => $url_rapports,
         'title' => 'Rapports à imprimer'
+    ),
+    'gestion' => array(
+        'class' => 'fam-application-side-expand',
+        'formaction' => $url_gestioneleve,
+        'title' => 'Gestion des inscriptions'
     ),
     'ajouter' => array(
         'class' => 'fam-add',
-        'formaction' => $ajouter,
+        'formaction' => $url_ajouter,
         'title' => 'Nouvel élève'
     )
 );
@@ -47,80 +116,175 @@ $actions = array(
 <h1>Liste des élèves</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-	    <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-	    <div class="flashMessenger float-right"><?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?></div>
+		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
 	<div id="liste-inner">
-	<table class="eleves">
-		<tbody>
-		<tr><th>Code</th><th>Numéro</th><th>Nom</th><th>Prénom</th><th>Date de naissance</th><th>Responsable 1</th><th>Responsable 2</th><th>Paiement par</th><th>Sélect.</th><th></th></tr>
+		<table class="eleves">
+			<tbody>
+				<tr>
+					<th>Numéro</th>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Né(e) le</th>
+					<th>Responsable 1</th>
+					<th>Responsable 2</th>
+					<th>Paiement par</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
         <?php foreach($eleves as $test => $eleve): ?>
+        <?php
+            // responsable 1
+            $r = $this->escapehtml($eleve->responsable1NomPrenom);
+            $itemR1 = $this->listeLigneActions($eleve->eleveId . 'r1', array(
+                'responsableId' => $eleve->responsable1Id,
+                'info' => $r,
+                'origine' => $url_ici
+            ), array(
+                'r1' => array(
+                    'class' => 'fam-magnifier',
+                    'formaction' => $url_responsable,
+                    'title' => 'Voir sa fiche',
+                    'onclick' => sprintf($js_op, $eleve->eleveId, 'r1', 'voir r1')
+                ),
+                'localiser' => array(
+                    'class' => 'fam-map-magnify',
+                    'formaction' => $url_map,
+                    'title' => 'Localiser cette adresse sur la carte',
+                    'onclick' => sprintf($js_op, $eleve->eleveId, 'r1', 'localiser r1')
+                )
+            ), array(
+                'style' => 'display: inline;'
+            ));
+            $itemR1 .= $r;
+            // responsable 2
+            if ($eleve->responsable2Id) {
+                $r = $this->escapehtml($eleve->responsable2NomPrenom);
+                $itemR2 = $this->listeLigneActions($eleve->eleveId . 'r2', array(
+                    'responsableId' => $eleve->responsable2Id,
+                    'info' => $r,
+                    'origine' => $url_ici
+                ), array(
+                    'r2' => array(
+                        'class' => 'fam-magnifier',
+                        'formaction' => $url_responsable,
+                        'title' => 'Voir sa fiche',
+                        'onclick' => sprintf($js_op, $eleve->eleveId, 'r2', 'voir r2')
+                    ),
+                    'localiser' => array(
+                        'class' => 'fam-map-magnify',
+                        'formaction' => $url_map,
+                        'title' => 'Localiser cette adresse sur la carte',
+                        'onclick' => sprintf($js_op, $eleve->eleveId, 'r2', 'localiser r2')
+                    )
+                ), array(
+                    'style' => 'display: inline;'
+                ));
+                 $itemR2 .= $r;
+           } else {
+                $itemR2 = '';
+            }
+            // responsable financier
+            if ($eleve->responsableFId) {
+                $r = $this->escapehtml($eleve->responsableFNomPrenom);
+                $itemRf = $this->listeLigneActions($eleve->eleveId . 'rf', array(
+                    'responsableId' => $eleve->responsableFId,
+                    'info' => $r,
+                    'origine' => $url_ici
+                ), array(
+                    'rf' => array(
+                        'class' => 'fam-magnifier',
+                        'formaction' => $url_responsable,
+                        'title' => 'Voir sa fiche',
+                        'onclick' => sprintf($js_op, $eleve->eleveId, 'rf', 'voir rf')
+                    ),
+                    'localiser' => array(
+                        'class' => 'fam-map-magnify',
+                        'formaction' => $url_map,
+                        'title' => 'Localiser cette adresse sur la carte',
+                        'onclick' => sprintf($js_op, $eleve->eleveId, 'rf', 'localiser rf')
+                    )
+                ), array(
+                    'style' => 'display: inline;'
+                ));
+                $itemRf .= $r;
+            } else {
+                $itemRf = $this->escapehtml($eleve->responsableFNomPrenom);
+            }           
+            // selection
+            $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve->eleveId);
+            $js_chkCallback .= sprintf($modele_chkCallback, $eleve->eleveId, $this->page, $eleve->eleveId);
+            ?>
          <tr
-				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-				<td class="eleveId"><?php echo $eleve->eleveId; ?></td>
-				<td class="numero"><?php echo $eleve->numero; ?></td>
-				<td class="nom"><?php echo $this->escapeHtml($eleve->nom); ?></td>
-				<td class="prenom"><?php echo $this->escapeHtml($eleve->prenom); ?></td>
-				<td class="dateN"><?php echo $this->escapehtml($eleve->dateN); ?></td>
-				<td class="responsable1"><?php echo $this->escapehtml($eleve->responsable1NomPrenom); ?></td>
-				<td class="responsable2"><?php echo $this->escapeHtml($eleve->responsable2NomPrenom); ?></td>
-				<td class="responsableF"><?php echo $this->escapeHtml($eleve->responsableFNomPrenom); ?></td>
-				<td class="selection"><?php echo $eleve->selection ? 'X' : ''; ?></td>
-				<td class="boutons">
+					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td class="numero"><?php echo $eleve->numero; ?></td>
+					<td class="nom"><?php echo $this->escapeHtml($eleve->nom); ?></td>
+					<td class="prenom"><?php echo $this->escapeHtml($eleve->prenom); ?></td>
+					<td class="dateN"><?php echo $this->escapehtml($eleve->dateN); ?></td>
+					<td class="responsable1"><?php echo $itemR1; ?></td>
+					<td class="responsable2"><?php echo $itemR2; ?></td>
+					<td class="responsableF"><?php echo $itemRf; ?></td>
+					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve->eleveId, $eleve->selection); ?></td>
+					<td class="boutons">
             <?php
-            $url_edit = $this->url('sbmgestion/eleve', array(
-                'action' => 'eleve-edit',
-                'page' => $this->page,
-                'id' => $eleve->eleveId
-            ));
-            $url_delete = $this->url('sbmgestion/eleve', array(
-                'action' => 'eleve-suppr',
-                'page' => $this->page,
-                'id' => $eleve->eleveId
-            ));
-            $url_group = $this->url('sbmgestion/eleve', array(
-                'action' => 'eleve-group',
-                'page' => $this->page,
-                'id' => $eleve->responsable1Id
-            ));
-            $hiddens = array('eleveId' => $eleve->eleveId);
+            $hiddens = array(
+                'eleveId' => $eleve->eleveId,
+                'info' => $eleve->nom . ' ' . $eleve->prenom,
+                'origine' => $url_ici
+            );
             $buttons = array(
                 'modifier' => array(
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
-                    'title' => 'modifier'
+                    'title' => 'modifier',
+                    'onclick' => sprintf($js_op, $eleve->eleveId, '', 'modifier')
                 ),
                 'supprimer' => array(
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
-                    'title' => 'supprimer'
+                    'title' => 'supprimer',
+                    'onclick' => sprintf($js_op, $eleve->eleveId, '', 'supprimer')
                 ),
-                'eleves' => array(
+                'famille' => array(
                     'class' => 'fam-group',
                     'formaction' => $url_group,
-                    'title' => 'élèves inscrits de la même famille'
+                    'title' => 'élèves inscrits de la même famille',
+                    'onclick' => sprintf($js_op, $eleve->eleveId, '', trim($eleve->responsable1Id . '|' . $eleve->responsable2Id), '|')
                 )
             );
             echo $this->listeLigneActions($eleve->eleveId, $hiddens, $buttons);
             ?>
 				</td>
-			</tr>         
+				</tr>         
         <?php endforeach;?>
     </tbody>
-	</table>
+		</table>
 	</div>
 	<div id="liste-footer">
-	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
-	    <div class="criteres-wrapper">
-	    <?php echo $this->form()->openTag($this->criteres_form);?>
-	    <?php echo $this->formCollection($this->criteres_form, true);?>
-	    <?php echo $this->form()->closeTag();?>	
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="criteres-wrapper">
+		<?php if (!is_null($this->criteres_form)) {
+		    echo $this->form()->openTag($this->criteres_form); 
+		    echo $this->formCollection($this->criteres_form, true); 
+		    echo $this->form()->closeTag();
+		}?>
 	    </div>
-    </div>
+	</div>
 </div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $js_chkTrigger;?>}
+<?php echo $js_chkCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

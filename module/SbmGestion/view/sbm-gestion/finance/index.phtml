@@ -21,12 +21,25 @@ $url_finance_tarifs = $this->url('sbmgestion/finance', array(
 ));
 $url_finance_factures = $this->url('sbmgestion/finance');
 $url_finance_prelevements = $this->url('sbmgestion/finance');
+$url_paiement_liste = $this->url('sbmpaiement');
 $url_gestion = $this->url('sbmgestion');
 
 ?>
 <h1>Menu de gestion financière</h1>
-<div id="menugeneral">
-	<div class="flashMessenger">
+<div id="menugeneral-wrapper">
+	<div id="menugeneral-header" class="clearfix">
+		<div class="float-left left-10px">
+		<?php
+echo $this->listeZoneActions(array(), array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_gestion,
+        'title' => 'Retour'
+    )
+));
+?>
+        </div>
+		<div class="flashMessenger float-right">
 	<?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -34,18 +47,19 @@ echo $this->flashMessenger()->render('error');
 echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
+        </div>
     </div>
-	<div class="items">
+	<div id="menugeneral-inner">
 		<ul>
 			<li><a href="<?php echo $url_finance_encaissements; ?>"><i
 					class="fam-bullet-go"></i>Gestion des encaissements</a></li>
+		    <li><a href="<?php echo $url_paiement_liste; ?>"><i
+					class="fam-bullet-go"></i>Gestion des notifications de paiement en ligne</a></li>
 			<li><a href="<?php echo $url_finance_tarifs; ?>"><i
 					class="fam-bullet-go"></i>Gestion des tarifs</a></li>
 			<li class="gris"><i class="fam-bullet-go"></i>Gestion des factures</li>
 			<li class="gris"><i class="fam-bullet-go"></i>Gestion des
 				prélèvements</li>
-			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-door-out"></i>Retour
-					au menu général</a></li>
 		</ul>
 	</div>
 </div>

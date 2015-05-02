@@ -1,0 +1,166 @@
+<?php
+/**
+ * Page d'affectation d'un élève inscrit
+ *
+ * Présente le formulaire d'affectation d'un élève inscrit
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve-gestion
+ * @filesource affecter.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 15 avr. 2015
+ * @version 2015-1
+ */
+// calcul des variables
+$url_retour = $this->url('sbmgestion/gestioneleve', array(
+    'action' => 'affecter-liste',
+    'page' => $this->page
+));
+$descriptionElv = implode('<br>', array(
+    $this->eleve['nom'] . ' ' . $this->eleve['prenom'],
+    empty($this->eleve['adresseL2']) ? $this->eleve['adresseL1'] : $this->eleve['adresseL1'] . '<br>' . $this->eleve['adresseL2'],
+    $this->eleve['codePostal'] . ' ' . $this->eleve['commune']
+));
+$descriptionEta = addslashes(implode('<br>', array(
+    $this->eleve['etablissement'],
+    $this->eleve['communeEtablissement']
+)));
+$latCentre = ($this->ptElv->getLatitude() + $this->ptEta->getLatitude()) / 2;
+$lngCentre = ($this->ptElv->getLongitude() + $this->ptEta->getLongitude()) / 2;
+// page html
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
+$this->headScript()->captureStart()?>
+function adaptedecision()
+{
+    var district = document.getElementById("decision_district");
+    var derogation = document.getElementById("decision_derogation");
+    derogation.style.display = district.checked ? 'none' : '';
+    document.getElementById("decision_motifDerogation").style.display = derogation.checked ? '' : 'none';
+    var accord = document.getElementById("decision_accordR");
+    document.getElementById("decision_motifRefusR").style.display = accord.checked ? 'none' : '';
+    var subvention = document.getElementById("decision_subventionR");
+    subvention.checked = false;
+    subvention.style.display = accord.checked ? 'none' : '';
+}
+
+function initialiser() {
+    var latlng = new google.maps.LatLng(<?php echo $latCentre;?>, <?php echo $lngCentre;?>);
+    // initialisation des paramètres de la carte
+    var options = {
+        center: latlng,
+        zoom: 12,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var carte = new google.maps.Map(document.getElementById('carte-inner'), options);
+    // initialisation du marker du domicile
+    var optionsMarqueur = {
+        map: carte,
+        position: new google.maps.LatLng(<?php echo $this->ptElv->getLatitude(); ?>, <?php echo $this->ptElv->getLongitude(); ?>),
+        title: 'domicile de l\'élève'
+    }
+    var markerElv = new google.maps.Marker(optionsMarqueur);
+    var infoElv = new google.maps.InfoWindow({
+        content  : '<?php echo $descriptionElv;?>',
+        position : latlng
+    });
+    google.maps.event.addListener(markerElv, 'click', function() {
+        infoElv.open(carte,markerElv);
+    });
+    optionsMarqueur = {
+        map: carte,
+        position: new google.maps.LatLng(<?php echo $this->ptEta->getLatitude(); ?>, <?php echo $this->ptEta->getLongitude(); ?>),
+        title: 'établissement scolaire'
+    }
+    var markerEta = new google.maps.Marker(optionsMarqueur);
+    var infoEta = new google.maps.InfoWindow({
+        content  : '<?php echo $descriptionEta;?>',
+        position : latlng
+    });
+    google.maps.event.addListener(markerEta, 'click', function() {
+        infoEta.open(carte,markerEta);
+    });
+}
+<?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+initialiser();
+adaptedecision();
+<?php $this->inlineScript()->captureEnd(); ?>
+<div id="page-titre" class="clearfix">
+	<div class="float-left">
+		<h1>Affectation d'un élève inscrit</h1>
+	</div>
+	<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+</div>
+<div id="fiche-wrapper">
+	<div id="fiche-header"></div>
+	<div id="fiche-inner">
+		<div class="clearfix">
+			<div class="float-left" style="width: 45%;">
+				<ul>
+					<li><?php echo $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
+					<li><?php
+    if (empty($this->eleve['adresseL2'])) {
+        echo $this->eleve['adresseL1'];
+    } else {
+        echo $this->eleve['adresseL1'] . ' - ' . $this->eleve['adresseL2'];
+    }
+    ?></li>
+					<li><?php echo $this->eleve['codePostal'] . ' ' . $this->eleve['commune']; ?></li>
+					<li><?php echo $this->eleve['etablissement'] . ' ' . $this->eleve['communeEtablissement']; ?></li>
+				</ul>
+				<div class="inner-form-auto">
+			<?php
+if ($this->op == 1) {
+    echo $this->form($this->decision);
+} else {
+    // affichage des informations en texte;
+    echo '<p>Transport accepté</p>
+          <p class="description">Précisez le circuit, le point de montée et, en cas de correspondance, le point de descente et le circuit suivant.';
+}
+?>
+			</div>
+			</div>
+			<div id="carte-wrapper" class="float-right"
+				style="margin-right: 10px; width: 50%;">
+				<div id="carte-inner" style="height: 300px;"></div>
+			</div>
+		</div>
+		<div class="inner-form-auto">
+	<?php
+if ($this->op > 1) {
+    echo $this->form($this->decision);
+}
+?>
+        </div>
+	</div>
+	<div id="fiche-footer"></div>
+</div>
+<p>
+	<i>Présenter une page en 4 parties :</i>
+</p>
+<ul>
+	<li>Les boutons d'actions suivantes :</li>
+	<ul>
+		<li>recherche de l'arrêt le plus proche sur un circuit desservant à
+			l'établissement scolaire et ayant des places disponibles<br> <i>Il
+				faudra sans doute une table etablissements-services</i>
+		</li>
+		<li>recherche des services desservant l'établissement avec places
+			disponibles</li>
+		<li>possibilité d'ajouter une autre affectation en incrémentant
+			correspondance (= 2)<br> <i>Cette nouvelle correspondance part de
+				station2Id et de service2Id. Il n'y a donc pas besoin de formulaire
+				car la descente est à l'établissement.</i>
+	
+	</ul>
+</ul>

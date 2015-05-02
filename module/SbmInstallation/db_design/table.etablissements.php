@@ -20,6 +20,7 @@ return array(
     'structure' => array(
         'fields' => array(
             'etablissementId' => 'char(8) NOT NULL',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'nom' => 'varchar(45) NOT NULL',
             'alias' => 'varchar(30) NOT NULL DEFAULT ""',
             'aliasCG' => 'varchar(50) NOT NULL DEFAULT ""',

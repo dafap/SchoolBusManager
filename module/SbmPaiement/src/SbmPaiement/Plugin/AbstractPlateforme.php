@@ -335,9 +335,11 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getParam($key)
     {
+        $this->initConfig();
         $key = (array) $key;
         if (! StdLib::array_keys_exists($key, $this->config)) {
-            throw new Exception("Mauvaise configuration de la plateforme de paiement. La propriété $key n'est pas définie.");
+            $propriete = count($key) == 1 ? current($key) : print_r($key, true);
+            throw new Exception("Mauvaise configuration de la plateforme de paiement. La propriété '$propriete' n'est pas définie dans " . print_r($this->config, true));
         }
         return StdLib::getParamR($key, $this->config);
     }

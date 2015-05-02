@@ -14,20 +14,56 @@
 namespace SbmInstallation\Controller;
 
 use Zend\View\Model\ViewModel;
+use Zend\Http\PhpEnvironment\Response;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmInstallation\Model\CreateTables;
 use SbmInstallation\Model\Exception;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
 use SbmInstallation\Model\DumpTables;
 use SbmCommun\Form\ButtonForm;
+use Zend\View\Model\Zend\View\Model;
 
 class IndexController extends AbstractActionController
 {
 
     public function indexAction()
     {
-        $result = array();
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         return new ViewModel();
+    }
+
+    public function majResponsablesAction()
+    {
+        $ctrl = array();
+        $tResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
+        $tEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
+        $resultset = $tEleves->fetchAll();
+        foreach ($resultset as $row) {
+            if (! is_null($row->responsable2Id)) {
+                $responsableId = $row->responsable2Id;
+                $responsable = $tResponsables->getRecord($responsableId);
+                if ($responsable->x == 0.0) {
+                    $oData = $tResponsables->getObjData();
+                    $oData->exchangeArray(array(
+                        'responsableId' => $responsableId,
+                        'x' => $row->x2,
+                        'y' => $row->y2
+                    ));
+                    $tResponsables->saveRecord($oData);
+                    $ctrl[] = array(
+                        $responsableId,
+                        $row->x2,
+                        $row->y2
+                    );
+                }
+            }
+        }
+        return new ViewModel(array(
+            'args' => $ctrl
+        ));
     }
 
     public function createTablesAction()
@@ -47,7 +83,7 @@ class IndexController extends AbstractActionController
                 );
             }
         } else {
-            $form = new ButtonForm(array(
+            $form = new ButtonForm(array(), array(
                 'create' => array(
                     'class' => 'confirm default',
                     'value' => 'Confirmer'
@@ -56,7 +92,7 @@ class IndexController extends AbstractActionController
                     'class' => 'confirm default',
                     'value' => 'Abandonner'
                 )
-            ));           
+            ));
             $viewArgs = array(
                 'args' => $create->voir(),
                 'form' => $form

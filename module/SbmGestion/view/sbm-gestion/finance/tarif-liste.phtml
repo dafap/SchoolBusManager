@@ -11,7 +11,18 @@
  * @date 4 mai 2014
  * @version 2014-1
  */
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+        ->setAttribute('id', $id)
+        ->setValue($value);
+    return $view->formCheckbox($element);
+}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$jsCallback = '';
+$jsTrigger = '';
 
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -34,7 +45,7 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
+        'class' => 'fam-report',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
     ),
@@ -60,9 +71,26 @@ $actions = array(
 	<div id="liste-inner">
 	<table class="tarifs">
 		<tbody>
-		<tr><th>Nom</th><th>Montant</th><th>Rythme</th><th>Grille</th><th>Mode</th></tr>
+		<tr><th>Nom</th><th>Montant</th><th>Rythme</th><th>Grille</th><th>Mode</th><th>Sélect.</th><th></th></tr>
         <?php foreach($tarifs as $test => $tarif): ?>
-        <?php $fmt?>
+        <?php 
+        // selection
+        $modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/gestion/finance/'+action+'selectiontarif/%d/%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+        
+        $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $tarif->tarifId);
+        $jsCallback .= sprintf("$modele\n", $tarif->tarifId, $this->page, $tarif->tarifId);
+        ?>
             <tr
 				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 				<td class="nom"><?php echo $this->escapeHtml($tarif->nom); ?></td>
@@ -70,6 +98,7 @@ $actions = array(
 				<td class="attributs"><?php echo $this->escapeHtml($tarif->rythme); ?></td>
 				<td class="attributs"><?php echo $this->escapeHtml($tarif->grille); ?></td>
 				<td class="attributs"><?php echo $this->escapeHtml($tarif->mode); ?></td>
+				<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?></td>
 				<td class="boutons">
             <?php
             $url_edit = $this->url('sbmgestion/finance', array(
@@ -119,3 +148,13 @@ $actions = array(
         </div>
     </div>
 </div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $jsTrigger;?>}
+<?php echo $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

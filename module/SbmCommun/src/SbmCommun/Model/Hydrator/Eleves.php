@@ -20,6 +20,7 @@ use SbmCommun\Filter\SansAccent;
 
 class Eleves extends AbstractHydrator
 {
+
     public function extract($object)
     {
         if (! $object instanceof ObjectData) {
@@ -36,7 +37,9 @@ class Eleves extends AbstractHydrator
             if (substr($value, - 2) == 'SA') {
                 $sa = new SansAccent();
                 $index = substr($value, 0, strlen($value) - 2);
-                $this->object->$value = $sa->filter($this->object->$index);
+                try {
+                    $this->object->$value = $sa->filter($this->object->$index);
+                } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {}
             } elseif ($value == 'dateModification') {
                 $this->object->dateModification = $now->format('Y-m-d H:i:s');
             } elseif ($value == 'dateCreation') {

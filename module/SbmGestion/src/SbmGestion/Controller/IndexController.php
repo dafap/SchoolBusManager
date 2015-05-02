@@ -16,6 +16,7 @@ namespace SbmGestion\Controller;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DafapSession\Model\Session;
+use Zend\Http\PhpEnvironment\Response;
 
 class IndexController extends AbstractActionController
 {
@@ -30,8 +31,11 @@ class IndexController extends AbstractActionController
      */
     public function indexAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         return new ViewModel(array(
-            //'as_libelle' => Session::get('as_libelle'),
         ));
     }
 }

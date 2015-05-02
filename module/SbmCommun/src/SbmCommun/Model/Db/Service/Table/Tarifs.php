@@ -13,6 +13,7 @@
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use Zend\Db\Sql\Where;
 use SbmCommun\Model\Strategy\TarifAttributs as TarifAttributsStrategy;
 
 class Tarifs extends AbstractSbmTable
@@ -46,6 +47,7 @@ class Tarifs extends AbstractSbmTable
         $this->hydrator->addStrategy('mode', new TarifAttributsStrategy($this->modes, $this->mode_inconnu));
     }
     
+    // --------------- nomenclatures ------------------------
     public function getModes()
     {
         return $this->modes;
@@ -59,6 +61,42 @@ class Tarifs extends AbstractSbmTable
     public function getGrilles()
     {
         return $this->grilles;
+    }
+    
+    // ------------- recherche de données -----------------
+
+    /**
+     * La grille 1 contient les tarifs d'inscription
+     * La grille 2 contient les tarifs de duplicata
+     * Ici, chaque grille ne contient qu'un seul tarif.
+     *
+     * @param string $choix
+     */
+    public function getMontant($choix)
+    {
+        $where = new Where();
+        $where->equalTo('grille', $choix == 'inscription' ? 1 : 2);
+        $resultset = $this->fetchAll($where);
+        $row = $resultset->current();
+        return $row->montant;
+    }
+    public function getTarifId($choix)
+    {
+        $where = new Where();
+        $where->equalTo('grille', $choix == 'inscription' ? 1 : 2);
+        $resultset = $this->fetchAll($where);
+        $row = $resultset->current();
+        return $row->tarifId;
+    }
+    
+    public function setSelection($tarifId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'tarifId' => $tarifId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
     }
 }
 

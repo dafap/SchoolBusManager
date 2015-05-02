@@ -85,7 +85,7 @@ class Etablissements extends AbstractSbmTable
             if (is_null($statut)) {
                 $where->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3);
             } else {
-                $where->equalTo('statut', 1)
+                $where->equalTo('statut', $statut)
                     ->nest()
                     ->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3)->unnest();
             }
@@ -95,7 +95,7 @@ class Etablissements extends AbstractSbmTable
                     ->nest()
                     ->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3)->unnest();
             } else {
-                $where->literal('statut = 1')
+                $where->equalTo('statut', $statut)
                     ->equalTo('communeId', $communeId)
                     ->nest()
                     ->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3)->unnest();
@@ -174,6 +174,16 @@ class Etablissements extends AbstractSbmTable
         $where = new Where();
         $where->literal('statut = 0')->equalTo('niveau', 4);
         return $this->fetchAll($where);
+    }
+    
+    public function setSelection($etablissementId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'etablissementId' => $etablissementId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
     }
 }
 

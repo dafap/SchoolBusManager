@@ -19,6 +19,7 @@ return array(
     'structure'=> array(
         'fields' => array(
             'systempayId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'vads_ctx_mode' => 'varchar(10) NOT NULL',
             'vads_operation_type' => 'varchar(6) NOT NULL',       
             'vads_trans_date' => 'char(14) NOT NULL',

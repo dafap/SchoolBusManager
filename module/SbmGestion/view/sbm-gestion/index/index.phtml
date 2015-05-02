@@ -23,7 +23,8 @@ $url_gest_parametre = $this->url('sbmgestion/config');
 ?>
 <h1>Menu général de gestion</h1>
 <div id="menugeneral">
-	<div class="flashMessenger">
+    <div id="menugeneral-header" class="clearfix">
+	    <div class="flashMessenger float-right">
 	<?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -31,8 +32,9 @@ echo $this->flashMessenger()->render('error');
 echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
-</div>
-	<div class="items">
+        </div>
+    </div>
+	<div id="menugeneral-inner">
 		<ul>
 			<li><a href="<?php echo $url_gest_eleve; ?>"><i class="fam-bullet-go"></i>Gestion
 					des élèves</a></li>

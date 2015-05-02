@@ -1,0 +1,82 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource ga-localisation-bymap.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 27 avr. 2015
+ * @version 2015-1
+ */
+// mise en place des JS de googleMaps
+$this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
+$this->headScript()->captureStart();?>
+var marker;
+function initialiser() {
+    var latlng = new google.maps.LatLng(44.54, 2.264);
+    // initialisation des paramètres de la carte
+    var options = {
+        center: latlng,
+        zoom: 12,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var carte = new google.maps.Map(document.getElementById('carte-inner'), options);
+    // initialisation du marker
+    var optionsMarqueur = {
+        map: carte,
+        position: new google.maps.LatLng(document.getElementById('lat').value, document.getElementById('lng').value),
+        title: 'domicile de l\'élève'
+    }
+    marker = new google.maps.Marker(optionsMarqueur);
+    
+    var contentMarker = '<?php echo $this->description;?>';
+ 
+    var infoWindow = new google.maps.InfoWindow({
+        content  : contentMarker,
+        position : latlng
+    });
+    google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.open(carte,marker);
+    });
+    
+    google.maps.event.addListener(carte, 'click', function(event) {
+        var latlng = event.latLng;
+    	document.getElementById('lat').value = latlng.lat();
+    	document.getElementById('lng').value = latlng.lng();
+    	if (marker) {
+    	   marker.setPosition(latlng);
+    	} else {
+    	   var optionsMarker = {
+    	       map: carte,
+    	       position: new google.maps.LatLng(latlng.lat(), latlng.lng()),
+    	       title: 'mon domicile'
+    	   }
+    	   marker = Marker(optionsMarker);
+        }
+    });
+}
+
+<?php 
+$this->headScript()->captureEnd();
+// lancement du script (sera affiché dans le layout à la fin de la page
+$this->inlineScript()->captureStart(); ?>
+initialiser();
+<?php $this->inlineScript()->captureEnd(); ?>
+<h1>Position d'un domicile sur la carte</h1>
+<div id="carte-wrapper">
+	<div id="carte-header" class="clearfix">
+	    <div class="float-left"><ul style="margin-top:0;"><?php foreach ($this->responsable as $ligne) echo '<li>' . $ligne . '</li>'; ?></ul></div>
+		<div class="float-right left-10px" style="max-width: 700px;">
+			Cliquez sur la carte à l'emplacement du domicile puis cliquez
+			sur le bouton <b>'Enregistrer la localisation'</b>. Utilisez le zoom pour plus de précision.<br>
+			<?php echo $this->form($this->form); ?>
+		</div>
+
+</div>
+	<div id="carte-inner"
+		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>
+</div> 

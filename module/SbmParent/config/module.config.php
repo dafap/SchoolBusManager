@@ -26,7 +26,8 @@ return array(
                     'route' => '/parent[/:action[/:page][/:id]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'page' => '[0-9]+'
+                        'page' => '[0-9]+',
+                        'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
                     ),
                     'defaults' => array(
                         'module' => 'SbmParent',

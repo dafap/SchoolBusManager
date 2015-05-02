@@ -44,8 +44,20 @@ $url_transport_transporteurs = $this->url('sbmgestion/transport', array(
 $url_gestion = $this->url('sbmgestion');
 ?>
 <h1>Gestion du réseau de transport</h1>
-<div id="menugeneral">
-	<div class="flashMessenger">
+<div id="menugeneral-wrapper">
+	<div id="menugeneral-header" class="clearfix">
+		<div class="float-left left-10px">
+		<?php
+echo $this->listeZoneActions(array(), array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_gestion,
+        'title' => 'Retour'
+    )
+));
+?>
+        </div>
+		<div class="flashMessenger float-right">
 	<?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -53,8 +65,9 @@ echo $this->flashMessenger()->render('error');
 echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
-</div>
-	<div class="items">
+        </div>
+    </div>
+	<div id="menugeneral-inner">
 		<ul>
 			<li><a href="<?php echo $url_transport_circuits; ?>"><i class="fam-bullet-go"></i>Circuits</a></li>
 			<li><a href="<?php echo $url_transport_classes; ?>"><i class="fam-bullet-go"></i>Classes</a></li>
@@ -63,7 +76,6 @@ echo $this->flashMessenger()->render('default');
 			<li><a href="<?php echo $url_transport_services; ?>"><i class="fam-bullet-go"></i>Services</a></li>
 			<li><a href="<?php echo $url_transport_stations; ?>"><i class="fam-bullet-go"></i>Stations</a></li>
 			<li><a href="<?php echo $url_transport_transporteurs; ?>"><i class="fam-bullet-go"></i>Transporteurs</a></li>
-			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-door-out"></i>Retour au menu général</a></li>
 		</ul>
 	</div>
 </div>

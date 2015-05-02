@@ -16,13 +16,15 @@ namespace SbmCommun\Model\Db\Service\Table;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\PredicateSet;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
+use Zend\Db\Sql\Zend\Db\Sql;
 
 class Eleves extends AbstractSbmTable
 {
+
     /**
      * Renvoie l'enregistrement corresponsdant au gid donné
-     * 
-     * @param int $gid
+     *
+     * @param int $gid            
      * @throws Exception
      * @return mixed
      */
@@ -66,7 +68,7 @@ class Eleves extends AbstractSbmTable
                 'prenomSA',
                 'dateCreation'
             ));
-            for ($u = $obj_data->createNumero(), $i = 0; $this->numeroLibre($u); $i ++) {
+            for ($u = $obj_data->createNumero(), $i = 0; $this->numeroOccupe($u); $i ++) {
                 $u ++;
                 $u += 2 * $i;
                 $u %= $obj_data::BASE;
@@ -86,17 +88,22 @@ class Eleves extends AbstractSbmTable
                 $obj_data->addCalculateField('prenomSA');
             }
             $obj_data->addCalculateField('dateModification');
-        }
-        
+        }        
         parent::saveRecord($obj_data);
     }
-
-    private function numeroLibre($n)
+    
+    public function setSelection($eleveId, $selection)
     {
-        return is_null($this->fetchAll(array(
-            'numero',
-            $n
-        )));
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array('eleveId' => $eleveId, 'selection' => $selection));
+        parent::saveRecord($oData);
+    }
+
+    private function numeroOccupe($n)
+    {
+        $where = new Where();
+        $where->equalTo('numero', $n);
+        return $this->fetchAll($where)->count() != 0;
     }
 
     /**

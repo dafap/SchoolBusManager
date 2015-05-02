@@ -117,6 +117,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         // à placer après join()
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
         $this->obj_data->setArrayMask($this->getColumnsNames());
+        $this->obj_data->setAreNullable($this->db->getAreNullableColumns($this->table_name, $this->table_type));
         if (is_callable(array(
             $this->table_gateway->getResultSetPrototype(),
             'getHydrator'
@@ -257,11 +258,11 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     /**
      * Retourne l'enregistrement d'identifiant donné.
-     * Le résultat est hydraté et sont conforme au ResultSetPrototype du TableGateway
+     * Le résultat est hydraté et est conforme au ResultSetPrototype du TableGateway
      *
      * @param int|string|array $id
-     *   Si c'est un tableau, ce doit être un tableau associatif
-     *               
+     *            Si c'est un tableau, ce doit être un tableau associatif
+     *            
      * @throws Exception
      * @return \Bdts\Model\ObjectData\ObjectDataInterface null
      */
@@ -301,14 +302,15 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Supprime l'enregistrement d'identifiant donné
+     * Supprime l'enregistrement d'identifiant donné ou les enregistrements de where donnés
      *
-     * @param int|string|array $id            
+     * @param int|string|array|Where $id
+     *            identifiant ou where
      * @return int
      */
     public function deleteRecord($id)
     {
-        if (is_array($id)) {
+        if (is_array($id) || $id instanceof Where) {
             $array_where = $id;
         } else {
             $array_where = array(
@@ -331,7 +333,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         if (! is_null($this->hydrator)) {
             $data = $this->hydrator->extract($obj_data);
         } else {
-            $data = $obj_data->getArrayCopy();        
+            $data = $obj_data->getArrayCopy();
         }
         if ($this->is_newRecord($obj_data->getId())) {
             $this->table_gateway->insert($data);
@@ -358,10 +360,12 @@ abstract class AbstractSbmTable implements FactoryInterface
             }
         }
     }
+
     /**
-     * Mise à jour d'un enregistrement dans une table. Si l'enregistrement est absent on lance une exception
-     * 
-     * @param ObjectData $obj_data
+     * Mise à jour d'un enregistrement dans une table.
+     * Si l'enregistrement est absent on lance une exception
+     *
+     * @param ObjectData $obj_data            
      * @throws Exception
      */
     public function updateRecord(ObjectDataInterface $obj_data)
@@ -386,7 +390,7 @@ abstract class AbstractSbmTable implements FactoryInterface
                 );
                 $condition_msg = $this->id_name . " = $id";
             }
-        
+            
             $this->table_gateway->update($data, $array_where);
         } else {
             throw new Exception(sprintf(_("This is not a new data and the id '%s' can not be found in the table %s."), $condition_msg, $this->table_name));

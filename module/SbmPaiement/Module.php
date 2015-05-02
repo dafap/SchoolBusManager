@@ -42,7 +42,7 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface
     {
         $eventManager = $e->getTarget()->getEventManager();
         // appel du formulaire de paiement d'une plateforme
-        $eventManager->attach(new Plugin\AppelPlateforme());
+        $eventManager->attach(new Listener\AppelPlateforme());
         // mise à jour des tables paiements et scolarites à la suite d'un paiement par CB sur une plateforme
         $eventManager->attach(new Listener\PaiementOK());
         $eventManager->attach(new Listener\ScolariteOK());

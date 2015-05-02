@@ -24,6 +24,7 @@ use Zend\Db\Sql\Select;
 use SbmCommun\Filter\SansAccent;
 use SbmCartographie\Model\Point;
 use SbmCartographie\GoogleMaps\DistanceEtablissements;
+use SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites;
 
 class IndexController extends AbstractActionController
 {
@@ -50,13 +51,9 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $point = new Point(2.318593, 44.567649, 0,'degré');
-        //$point = new Point(1639509.56, 3259755.14);
-        //$point->setCommuneId('12013'); 
-        $point->setCommuneId('12100');
-        $distanceEtablissements = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
+        $tResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
         return new ViewModel(array(
-            'args' => $distanceEtablissements->collegesPrisEnCompte($point),
+            'args' => $tResponsables->getRecordByEmail(null),
             'x' => null
         ));
     }

@@ -13,7 +13,19 @@
  */
 use SbmCommun\Model\StdLib;
 
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+        ->setAttribute('id', $id)
+        ->setValue($value);
+    return $view->formCheckbox($element);
+}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$jsCallback = '';
+$jsTrigger = '';
+
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $stations = $this->paginator->getCurrentItems();
@@ -39,7 +51,7 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
+        'class' => 'fam-report',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
     ),
@@ -70,16 +82,35 @@ $actions = array(
 	<div id="liste-inner">
 		<table class="stations">
 			<tbody>
-			<tr><th>Commune</th><th>Nom</th><th>Visible</th><th>Ouverte</th><th>Inscrits</th></tr>
+			<tr><th>Commune</th><th>Nom</th><th>Visible</th><th>Ouverte</th><th>Inscrits</th><th>Sélect.</th><th></th></tr>
             <?php foreach($stations as $test => $station): ?>
-            <?php $nbInscrits = StdLib::getParamR(array($station->stationId, 'total'), $this->t_nb_inscrits, 0); ?>
-            <?php $exces = !$station->ouverte && ($nbInscrits > 0); ?>
+            <?php 
+            $nbInscrits = StdLib::getParamR(array($station->stationId, 'total'), $this->t_nb_inscrits, 0); 
+            $exces = !$station->ouverte && ($nbInscrits > 0); 
+            // selection
+            $modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/gestion/transport/'+action+'selectionstation/%d/%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+            
+            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $station->stationId);
+            $jsCallback .= sprintf("$modele\n", $station->stationId, $this->page, $station->stationId);
+            ?>
                 <tr class="<?php echo $this->cycle(array("even", "odd"))->next(); if ($exces) echo ' exces';?>">
 				    <td class="commune"><?php echo $this->escapeHtml($station->commune); ?></td>
 				    <td class="nom"><?php echo $this->escapeHtml($station->nom); ?></td>
 				    <td class="visible"><?php echo $station->visible ? 'Oui' : 'Non'; ?></td>
 				    <td class="ouverte"><?php echo $station->ouverte ? 'Oui' : 'Non'; ?></td>
 				    <td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+				    <td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $station->stationId, $station->selection)?></td>
 				    <td class="boutons">
             <?php
              $url_edit = $this->url('sbmgestion/transport', array(
@@ -141,3 +172,13 @@ $actions = array(
          </div>
 	</div>
 </div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $jsTrigger;?>}
+<?php echo $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

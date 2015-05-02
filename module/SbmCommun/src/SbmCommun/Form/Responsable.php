@@ -300,7 +300,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'email',
             'type' => 'Zend\Form\Element\Email',
             'attributes' => array(
-                'id' => 'respondable-telephone',
+                'id' => 'respondable-email',
                 'class' => 'sbm-width-50c'
             ),
             'options' => array(

@@ -20,6 +20,7 @@ return array(
     'structure' => array(
         'fields' => array(
             'transporteurId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'nom' => 'varchar(30) NOT NULL',
             'adresse1' => 'varchar(38) NOT NULL DEFAULT ""',
             'adresse2' => 'varchar(38) NOT NULL DEFAULT ""',

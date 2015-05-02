@@ -112,7 +112,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'serviceId',
             'attributes' => array(
                 'id' => 'critere-serviceId',
-                'class' => 'sbm-select1'
+                'class' => 'sbm-width-55c'
             ),
             'options' => array(
                 'label' => 'Service',
@@ -130,7 +130,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'stationId',
             'attributes' => array(
                 'id' => 'critere-stationId',
-                'class' => 'sbm-select4'
+                'class' => 'sbm-width-55c'
             ),
             'options' => array(
                 'label' => 'Station',
@@ -138,6 +138,28 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => ''
                 ),
                 'empty_option' => 'Toutes',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -152,6 +174,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'required' => false
             ),
             'stationId' => array(
+                'required' => false
+            ),
+            'selection' => array(
                 'required' => false
             )
         );
@@ -178,7 +203,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         
-        $this->add(array(
+        /*$this->add(array(
             'name' => 'aliasCG',
             'type' => 'hidden',
             'attributes' => array(
@@ -188,6 +213,29 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'options' => array(
                 'label' => 'Nom CG',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));*/
+        
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -274,6 +322,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'options' => array(
                 'label' => 'Membres',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -317,6 +368,28 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
     }
 
     private function formCommunesSpecification()
@@ -329,6 +402,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'required' => false
             ),
             'visible' => array(
+                'required' => false
+            ),
+            'selection' => array(
                 'required' => false
             )
         );
@@ -435,7 +511,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
-        $this->add(array(
+        /*$this->add(array(
             'name' => 'tarifMontant',
             'attributes' => array(
                 'type' => 'text',
@@ -468,7 +544,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-error'
                 )
             )
-        ));
+        ));*/
         $this->add(array(
             'name' => 'etablissement',
             'attributes' => array(
@@ -522,6 +598,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+    private function formElevesSpecification()
+    {
+        return array(
+            'selection' => array(
+                'required' => false
+            )
+        );
+    }
 
     private function formEtablissements()
     {
@@ -558,7 +642,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
-        $this->add(array(
+        /*$this->add(array(
             'name' => 'aliasCG',
             'attributes' => array(
                 'type' => 'hidden',
@@ -572,12 +656,37 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-error'
                 )
             )
+        ));*/
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
         ));
     }
 
     private function formEtablissementsSpecification()
     {
         return array(
+            'selection' => array(
+                'required' => false
+            ),
             'commune' => array(
                 'required' => false
             )
@@ -648,6 +757,25 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'label_attributes' => array(
                     'class' => 'sbm-critere-responsable sbm-first'
                 ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -835,6 +963,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formPaiementsSpecification()
     {
         return array(
+            'selection' => array(
+                'required' => false
+            ),
             'codeCaisse' => array(
                 'required' => false
             ),
@@ -892,9 +1023,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
             'attributes' => array(
-                
-                // 'type' => 'checkbox',
-                'useHiddenElement' => true,
+                'useHiddenElement' => false,
                 'options' => array(
                     'checkedValue' => false,
                     'uncheckedValue' => true
@@ -1020,11 +1149,36 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
     }
 
     private function formServicesSpecification()
     {
         return array(
+            'selection' => array(
+                'required' => false
+            ),
             'transporteurId' => array(
                 'required' => false
             )
@@ -1066,7 +1220,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
-        $this->add(array(
+        /*$this->add(array(
             'name' => 'aliasCG',
             'attributes' => array(
                 'type' => 'hidden',
@@ -1080,12 +1234,37 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-error'
                 )
             )
+        ));*/
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
         ));
     }
 
     private function formStationsSpecification()
     {
         return array(
+            'selection' => array(
+                'required' => false
+            ),
             'communeId' => array(
                 'required' => false
             )
@@ -1160,11 +1339,36 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
     }
 
     private function formTarifsSpecification()
     {
         return array(
+            'selection' => array(
+                'required' => false
+            ),
             'rythme' => array(
                 'required' => false
             ),
@@ -1212,6 +1416,28 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
     }
 
     private function addGenericElements($elements)
@@ -1227,7 +1453,6 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         foreach ($this->getElementNames() as $elementName) {
             $array[$elementName] = array('required' => false);
         }
-        //die(var_dump($array));
         return $array;
     }
 }

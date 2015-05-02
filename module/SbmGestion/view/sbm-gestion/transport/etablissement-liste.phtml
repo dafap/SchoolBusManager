@@ -13,7 +13,19 @@
  */
 use SbmCommun\Model\StdLib;
 
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+        ->setAttribute('id', $id)
+        ->setValue($value);
+    return $view->formCheckbox($element);
+}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$jsCallback = '';
+$jsTrigger = '';
+
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $etablissements = $this->paginator->getCurrentItems();
@@ -25,8 +37,9 @@ $pdf = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-pdf',
     'page' => $this->page
 ));
+$carte = $this->url('sbmcarte', array('action' => 'etablissements'));
 $retour = $this->url('sbmgestion/transport');
-$hiddens = array();
+$hiddens = array('back' => $this->url('sbmgestion/transport', array('action' => 'etablissement-liste', 'page' => $this->page)));
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -34,9 +47,14 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
+        'class' => 'fam-report',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
+    ),
+    'carte' => array(
+        'class' => 'fam-map-magnify',
+        'formaction' => $carte,
+        'title' => 'Cartes des établissements'
     ),
     'ajouter' => array(
         'class' => 'fam-add',
@@ -68,10 +86,29 @@ echo $this->flashMessenger()->render('default');
 					<th>Téléphone</th>
 					<th>Email</th>
 					<th>Inscrits</th>
+					<th>Sélect.</th>
+					<th></th>
 				</tr>
         <?php foreach($etablissements as $test => $etablissement): ?>
-        <?php $nbInscrits = StdLib::getParam($etablissement->etablissementId, $this->t_nb_inscrits, 0); ?>
-        <?php $fmt?>
+        <?php 
+        $nbInscrits = StdLib::getParam($etablissement->etablissementId, $this->t_nb_inscrits, 0); 
+        // selection
+        $modele = <<<EOT
+$("#chk%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/gestion/transport/'+action+'selectionetablissement/%d/%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+        
+        $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $etablissement->etablissementId);
+        $jsCallback .= sprintf("$modele\n", $etablissement->etablissementId, $this->page, $etablissement->etablissementId);
+        ?>
             <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 					<td class="etablissementid"><?php echo $this->escapeHtml($etablissement->etablissementId); ?></td>
@@ -81,6 +118,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="telephone"><?php echo $this->escapeHtml($etablissement->telephone); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($etablissement->email); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $etablissement->etablissementId, $etablissement->selection)?></td>
 					<td class="boutons">
             <?php
             $url_edit = $this->url('sbmgestion/transport', array(
@@ -141,3 +179,13 @@ echo $this->flashMessenger()->render('default');
         </div>
 	</div>
 </div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $jsTrigger;?>}
+<?php echo $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

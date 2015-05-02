@@ -37,6 +37,7 @@ return array(
     'structure' => array(
         'fields' => array(
             'paiementId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'dateDepot' => 'datetime DEFAULT NULL',
             'datePaiement' => 'datetime NOT NULL',
             'dateValeur' => 'date DEFAULT NULL',

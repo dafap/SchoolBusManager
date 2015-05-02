@@ -1,0 +1,116 @@
+<?php
+/**
+ * Page d'affectation des élèves inscrits
+ *
+ * Présente la liste des élèves inscrits sans affectation et un bouton individuel pour les affecter à un circuit
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve-gestion
+ * @filesource affecter-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 15 avr. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_retour = $this->url('sbmgestion/gestioneleve');
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Liste des élèves inscrits sans affectation</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+    echo $this->flashMessenger()->render('success');
+    echo $this->flashMessenger()->render('warning');
+    echo $this->flashMessenger()->render('error');
+    echo $this->flashMessenger()->render('info');
+    echo $this->flashMessenger()->render('default');
+    ?></div>
+	</div>
+<?php if (count($this->data)): ?>
+	<div id="liste-inner">
+		<table class="data">
+			<tbody>
+				<tr>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Adresse</th>
+					<th>Commune</th>
+					<th>Etablissement scolaire</th>
+					<th>Commune</th>
+					<th>Distance</th>
+				</tr>
+<?php foreach ($this->data as $row): ?>
+<?php $distance = $row['estR1'] ? $row['distanceR1'] : $row['distanceR2']; ?>
+<?php
+        if ($row['district'] || $row['derogation']) {
+            $tr_css = $distance < 1 ? 'alert' : ($distance < 3 ? 'warning' : '');
+        } else {
+            $tr_css = 'alert';
+        }
+        $url_affecter = $this->url('sbmgestion/gestioneleve', array(
+            'action' => 'affecter',
+            'page' => $this->page
+        ));
+        $hiddens = array(
+            'eleveId' => $row['eleveId'],
+            'millesime' => $row['millesime'],
+            'trajet' => $row['estR1'] ? 1 : 2,
+            'jours' => 31,
+            'sens' => 3,
+            'correspondance' => 1,
+            'responsableId' => $row['responsableId'],
+            'op' => 1
+        );
+        $buttons = array(
+            'affecter' => array(
+                'class' => 'fam-car-add',
+                'formaction' => $url_affecter,
+                'title' => 'affecter'
+            )
+        );
+        $cle = implode('|', array($row['millesime'], $row['eleveId'], $row['estR1'] ? 1 : 2, $row['responsableId']));
+        ?>
+            <tr
+					class="<?php echo $tr_css . ' ' . $this->cycle(array('even', 'odd'))->next(); ?>">
+					<td><?php echo $this->escapeHtml($row['nom']); ?></td>
+					<td><?php echo $this->escapeHtml($row['prenom']); ?></td>
+					<td><?php echo implode('<br/>', array($this->escapeHtml($row['adresseL1']), $this->escapeHtml($row['adresseL2']))); ?></td>
+					<td><?php echo $this->escapeHtml($row['commune']); ?></td>
+					<td><?php echo $this->escapeHtml($row['etablissement']); ?></td>
+					<td><?php echo $this->escapeHtml($row['communeEtablissement']); ?></td>
+					<td><?php echo $distance; ?></td>
+					<td><?php echo $this->listeLigneActions($cle, $hiddens, $buttons); ?></td>
+				</tr>
+<?php endforeach;?>	
+		</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<p class="description">
+			<span class="alert">En rouge</span> les demandes qui ne semblent pas
+			être éligibles, à moins d'une dérogation.<br> <span class="warning">En
+				bleu</span> les demandes d'élèves situés entre 1km et 3km de
+			l'établissement scolaire.<br> En noir les demandes d'élèves ayant
+			droit.
+		</p>
+	</div>
+<?php else: ?>
+    <div id="liste-inner">
+		<i>Il n'y a pas d`élève inscrit non affecté.</i>
+	</div>
+	<div id="liste-footer"></div>
+<?php endif; ?>
+</div>
+<p>
+	<i>Il faut rajouter un paginateur</i>
+</p>

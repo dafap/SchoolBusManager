@@ -12,7 +12,7 @@
  * @version 2014-1
  */
 
-namespace SbmCommun\Model\Db\Service\Select; //SbmCommun\Model\Db\Service\Select\CommunesDesservies
+namespace SbmCommun\Model\Db\Service\Select; 
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

@@ -40,5 +40,22 @@ class Communes extends AbstractSbmTable
             return '';
         }
     }
+    
+    public function setVisible($communeId)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array('communeId' => $communeId, 'visible' => 1));
+        $this->saveRecord($oData);
+    }
+    
+    public function setSelection($communeId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'communeId' => $communeId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
 }
 

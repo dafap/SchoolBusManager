@@ -86,4 +86,22 @@ class IndexController extends AbstractActionController
                 ->setStatusCode(200);
         }
     }
+    
+    /**
+     *  ajax - cocher décocher la case sélection
+     */
+    public function checkselectionpaiementAction()
+    {
+        $page = $this->params('page', 1);
+        $id = $this->params('id');
+        $this->getServiceLocator()->get('SbmPaiement\Plugin\Table')->setSelection($id, 1);
+        return json_encode(array());
+    }
+    public function uncheckselectionpaiementAction()
+    {
+        $page = $this->params('page', 1);
+        $id = $this->params('id');
+        $this->getServiceLocator()->get('SbmPaiement\Plugin\Table')->setSelection($id, 0);
+        return json_encode(array());
+    }
 }

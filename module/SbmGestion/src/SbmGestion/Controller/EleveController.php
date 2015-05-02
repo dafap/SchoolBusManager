@@ -14,20 +14,28 @@
 namespace SbmGestion\Controller;
 
 use Zend\View\Model\ViewModel;
-use Zend\Session\Container as SessionContainer;
+use Zend\Http\PhpEnvironment\Response;
+use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate;
+use DafapSession\Model\Session;
+use SbmCartographie\Model\Point;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\Eleve as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
-use Zend\Http\PhpEnvironment\Response;
+use SbmCommun\Form\SbmCommun\Form;
 
 class EleveController extends AbstractActionController
 {
 
     public function indexAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         return new ViewModel();
     }
 
@@ -36,6 +44,9 @@ class EleveController extends AbstractActionController
         $args = $this->initListe('eleves');
         if ($args instanceof Response)
             return $args;
+        elseif (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/eleve');
+        }
         
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
@@ -59,7 +70,8 @@ class EleveController extends AbstractActionController
             ->get('Sbm\Db\Select\EtablissementsVisibles'));
         // $form->setValueOptions('classeId', $this->getServiceLocator()->get('Sbm\Db\Select\Classes'));
         $form->setValueOptions('communeId1', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies());
         $form->setMaxLength($db->getMaxLengthArray('eleves', 'table'));
         
         $form->bind($tableEleves->getObjData());
@@ -93,7 +105,38 @@ class EleveController extends AbstractActionController
     public function eleveEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $eleveId = $this->params('id', - 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false);
+            if ($args === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
+        } else {
+            $args = $prg;
+            // !!! important !!! traiter 'cancel' avant 'origine'
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'eleve-liste',
+                        'page' => $currentPage
+                    ));
+                }
+            }
+            if (array_key_exists('origine', $args)) {
+                $this->redirectToOrigin()->setBack($args['origine']);
+                unset($args['origine']);
+                $this->setToSession('post', $args);
+            }
+        }
+        $eleveId = $args['eleveId'];
         if ($eleveId == - 1) {
             return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'eleve-liste',
@@ -111,19 +154,11 @@ class EleveController extends AbstractActionController
             ->setMaxLength($db->getMaxLengthArray('eleves', 'table'))
             ->bind($tableEleves->getObjData());
         
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('cancel', false)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'eleve-liste',
-                    'page' => $currentPage
-                ));
+        if (array_key_exists('submit', $args)) {
+            if (empty($args['responsableFId'])) {
+                $args['responsableFId'] = $args['responsable1Id'];
             }
-            $data = $request->getPost();
-            if (empty($data['responsableFId']))
-                $data['responsableFId'] = $data['responsable1Id'];
-            $form->setData($data);
+            $form->setData($args);
             if ($form->isValid()) { // controle le csrf
                 $tableEleves->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
@@ -132,31 +167,73 @@ class EleveController extends AbstractActionController
                     'page' => $currentPage
                 ));
             } else {
-                var_dump($request->getPost());
+                $identite = $args['nom'] . ' ' . $args['prenom'];
             }
         } else {
-            $form->setData($tableEleves->getRecord($eleveId)
-                ->getArrayCopy());
+            $data = $tableEleves->getRecord($eleveId)->getArrayCopy();
+            $identite = $data['nom'] . ' ' . $data['prenom'];
+            $form->setData($data);
         }
         return new ViewModel(array(
             'form' => $form,
             'page' => $currentPage,
-            'eleveId' => $eleveId
+            'eleveId' => $eleveId,
+            'identite' => $identite
         ));
     }
 
     public function eleveGroupAction()
     {
         $currentPage = $this->params('page', 1);
-        $responsableId = $this->params('id', - 1); // GET
-        $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        return new ViewModel(array(
-            'datagroup' => $tableResponsables->getRecord($responsableId),
-            
-            // 'paginator' => $table_eleves->paginator(),
-            'page' => $currentPage,
-            'responsableId' => $responsableId
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false);
+            if ($args === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
+        } else {
+            $args = $prg;
+            if (array_key_exists('origine', $args)) {
+                $this->redirectToOrigin()->setBack($args['origine']);
+                unset($args['origine']);
+                $this->setToSession('post', $args);
+            }
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'eleve-liste',
+                        'page' => $currentPage
+                    ));
+                }
+            }
+        }
+        $where = new Where();
+        $or = false;
+        $tResponsableIds = explode('|', $args['op']);
+        foreach ($tResponsableIds as $responsableId) {
+            if ($or)
+                $where->OR;
+            $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId);
+            $or = true;
+        }
+        $viewmodel = new ViewModel(array(
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Eleves')
+                ->paginator($where),
+            'page' => $this->params('page', 1),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
+            'criteres_form' => null
         ));
+        $viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
+        return $viewmodel;
     }
 
     /**
@@ -170,11 +247,7 @@ class EleveController extends AbstractActionController
         
         $criteres_form = new CriteresForm('eleves');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
-        }
-        
+        $criteres_obj->exchangeArray(Session::get('criteres', array(), str_replace('pdf', 'liste', $this->getSessionNamespace())));
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
         $call_pdf->setData(array(
             'sm' => $this->getServiceLocator(),
@@ -257,8 +330,11 @@ class EleveController extends AbstractActionController
     public function eleveSupprAction()
     {
         $currentPage = $this->params('page', 1);
+        
         $eleveId = $this->params('id', - 1); // GET
         $form = new ButtonForm(array(
+            'id' => $eleveId
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -267,8 +343,6 @@ class EleveController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => $eleveId
         ));
         $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Vue\Eleves');
         $request = $this->getRequest();
@@ -311,6 +385,34 @@ class EleveController extends AbstractActionController
         ));
     }
 
+    /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectioneleveAction()
+    {
+        $page = $this->params('page', 1);
+        $eleveId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Eleves')
+            ->setSelection($eleveId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectioneleveAction()
+    {
+        $page = $this->params('page', 1);
+        $eleveId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Eleves')
+            ->setSelection($eleveId, 0);
+        return json_encode(array());
+    }
+
+    /**
+     * Liste des responsables
+     *
+     * @return ViewModel
+     */
     public function responsableListeAction()
     {
         // utilisation de PostRedirectGet par mesure de sécurité
@@ -358,7 +460,9 @@ class EleveController extends AbstractActionController
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         // on ouvre le formulaire et on l'adapte
         $form = new FormResponsable();
-        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\CommunesDesservies');
+        $value_options = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
@@ -394,21 +498,30 @@ class EleveController extends AbstractActionController
             // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
-            return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                'action' => 'responsable-liste',
-                'page' => $this->params('page', 1)
-            ));
-        }
-        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
-        $args = $prg;
-        // si $args contient la clé 'cancel' c'est un abandon de l'action
-        if (\array_key_exists('cancel', $args)) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-            return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                'action' => 'responsable-liste',
-                'page' => $this->params('page', 1)
-            ));
+            $args = $this->getFromSession('post', false);
+            if ($args === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
+        } else {
+            $args = $prg;
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'responsable-liste',
+                        'page' => $this->params('page', 1)
+                    ));
+                }
+            } elseif (array_key_exists('origine', $args)) {
+                $this->redirectToOrigin()->setBack($args['origine']);
+                unset($args['origine']);
+                $this->setToSession('post', $args);
+            }
         }
         // on ouvre la table des données
         $responsableId = $args['responsableId'];
@@ -416,7 +529,9 @@ class EleveController extends AbstractActionController
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         // on ouvre le formulaire et on l'adapte
         $form = new FormResponsable();
-        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\CommunesDesservies');
+        $value_options = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
@@ -430,21 +545,28 @@ class EleveController extends AbstractActionController
                 // controle le csrf et contrôle les datas
                 $tableResponsables->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'responsable-liste',
-                    'page' => $this->params('page', 1)
-                ));
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'responsable-liste',
+                        'page' => $this->params('page', 1)
+                    ));
+                }
             }
             $demenagement = $args['demenagement'] ?  : false;
+            $identite = $args['titre'] . ' ' . $args['nom'] . ' ' . $args['prenom'];
         } else {
             $array_data = $tableResponsables->getRecord($responsableId)->getArrayCopy();
             $form->setData($array_data);
             $demenagement = $array_data['demenagement'];
+            $identite = $array_data['titre'] . ' ' . $array_data['nom'] . ' ' . $array_data['prenom'];
         }
         return new ViewModel(array(
             'form' => $form,
             'page' => $this->params('page', 1),
             'responsableId' => $responsableId,
+            'identite' => $identite,
             'demenagement' => $demenagement
         ));
     }
@@ -461,8 +583,8 @@ class EleveController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
-        $responsableId = StdLib::getParam('responsableId', $args, -1);
-        if ($responsableId == -1) {
+        $responsableId = StdLib::getParam('responsableId', $args, - 1);
+        if ($responsableId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmadmin', array(
                 'action' => 'libelle-liste',
@@ -476,12 +598,12 @@ class EleveController extends AbstractActionController
         $data['fact'] = $tableEleves->duResponsableFinancier($responsableId);
         return new ViewModel(array(
             'data' => $data,
-            'responsable' => $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables')->getRecord($responsableId),
+            'responsable' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Responsables')
+                ->getRecord($responsableId),
             'page' => $currentPage,
-            'responsableId' => $responsableId,
+            'responsableId' => $responsableId
         ));
-        
-        
         
         $currentPage = $this->params('page', 1);
         $responsableId = $this->params('id', - 1); // GET
@@ -499,34 +621,12 @@ class EleveController extends AbstractActionController
         ));
     }
 
-    public function responsablePdfAction()
-    {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('responsables');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
-        }
-        
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 8)
-            ->setParam('recordSource', 'Sbm\Db\Vue\Responsables')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'nomSA',
-            'prenomSA'
-        ))
-            ->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
     public function responsableSupprAction()
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -535,8 +635,6 @@ class EleveController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -577,5 +675,150 @@ class EleveController extends AbstractActionController
                     break;
             }
         }
+    }
+
+    public function responsableLocalisationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false);
+            if ($args === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
+        } else {
+            $args = $prg;
+            // selon l'origine, l'url de retour porte le nom url1_retour (liste des responsables) ou origine (liste des élèves, fiche d'un responsable)
+            if (array_key_exists('url1_retour', $args)) {
+                $this->redirectToOrigin()->setBack($args['url1_retour']);
+                unset($args['url1_retour']);
+                $this->setToSession('post', $args);
+            } elseif (array_key_exists('origine', $args)) {
+                $this->redirectToOrigin()->setBack($args['origine']);
+                unset($args['origine']);
+                $this->setToSession('post', $args);
+            }
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage('La localisation de cette adresse n\'a pas été enregistrée.');
+                return $this->redirectToOrigin()->back();
+            }
+        }
+        // les outils de travail : formulaire et convertisseur de coordonnées
+        $form = new ButtonForm(array(
+            'responsableId' => array(
+                'id' => 'responsableId'
+            ),
+            'lat' => array(
+                'id' => 'lat'
+            ),
+            'lng' => array(
+                'id' => 'lng'
+            )
+        ), array(
+            'submit' => array(
+                'class' => 'button default submit left-95px',
+                'value' => 'Enregistrer la localisation'
+            ),
+            'cancel' => array(
+                'class' => 'button default cancel left-10px',
+                'value' => 'Abandonner'
+            )
+        ));
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/eleve', array(
+            'action' => 'responsable-localisation'
+        )));
+        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
+        // traitement de la réponse
+        if (array_key_exists('submit', $args)) {
+            $form->setData(array(
+                'responsableId' => $args['responsableId'],
+                'lat' => $args['lat'],
+                'lng' => $args['lng']
+            ));
+            if ($form->isValid()) {
+                // détermine le point. Il est reçu en gRGF93 et sera enregistré en XYZ
+                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                // enregistre les coordonnées dans la table
+                $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
+                $oData = $tableResponsables->getObjData();
+                $oData->exchangeArray(array(
+                    'responsableId' => $args['responsableId'],
+                    'x' => $point->getX(),
+                    'y' => $point->getY()
+                ));
+                $tableResponsables->saveRecord($oData);
+                $this->flashMessenger()->addSuccessMessage('La localisation de cette adresse est enregistrée.');
+                $this->getServiceLocator()->get('Sbm\MajDistances')->pour($args['responsableId']);
+                return $this->redirectToOrigin()->back();
+            }
+        }
+        // chercher le responsable dans la table
+        $responsable = $this->getServiceLocator()
+            ->get('Sbm\Db\Vue\Responsables')
+            ->getRecord($args['responsableId']);
+        // préparer le Point dans le système gRGF93
+        $point = new Point($responsable->x, $responsable->y);
+        $pt = $d2etab->getProjection()->XYZversgRGF93($point);
+        // charger le formulaire
+        $form->setData(array(
+            'responsableId' => $args['responsableId'],
+            'lat' => $pt->getLatitude(),
+            'lng' => $pt->getLongitude()
+        ));
+        return new ViewModel(array(
+            'point' => $pt,
+            'form' => $form,
+            'responsableId' => $args['responsableId'],
+            'responsable' => $responsable
+        ));
+    }
+
+    public function responsablePdfAction()
+    {
+        $currentPage = $this->params('page', 1);
+        
+        $criteres_form = new CriteresForm('responsables');
+        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
+        $criteres_obj->exchangeArray(Session::get('criteres', array(), str_replace('pdf', 'liste', $this->getSessionNamespace())));
+        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+        $call_pdf->setParam('documentId', 8)
+            ->setParam('recordSource', 'Sbm\Db\Vue\Responsables')
+            ->setParam('where', $criteres_obj->getWhere())
+            ->setParam('orderBy', array(
+            'nomSA',
+            'prenomSA'
+        ))
+            ->renderPdf();
+        
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+    }
+
+    /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectionresponsableAction()
+    {
+        $page = $this->params('page', 1);
+        $responsableId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Responsables')
+            ->setSelection($responsableId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectionresponsableAction()
+    {
+        $page = $this->params('page', 1);
+        $responsableId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Responsables')
+            ->setSelection($responsableId, 0);
+        return json_encode(array());
     }
 }

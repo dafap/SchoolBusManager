@@ -17,6 +17,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Predicate\Predicate;
 
 class ElevesScolarites implements FactoryInterface
 {
@@ -71,14 +73,22 @@ class ElevesScolarites implements FactoryInterface
             'communeId' => 'communeId',
             'x' => 'x',
             'y' => 'y',
-            'distance' => 'distance',
+            'distanceR1' => 'distanceR1',
+            'distanceR2' => 'distanceR2',
             'dateEtiquette' => 'dateEtiquette',
             'dateCarte' => 'dateCarte',
             'inscrit' => 'inscrit',
             'gratuit' => 'gratuit',
             'paiement' => 'paiement',
             'anneeComplete' => 'anneeComplete',
-            'subvention' => 'subvention',
+            'subventionR1' => 'subventionR1',
+            'subventionR2' => 'subventionR2',
+            'demandeR1' => 'demandeR1',
+            'demandeR2' => 'demandeR2',
+            'accordR1' => 'accordR1',
+            'accordR2' => 'accordR2',
+            'internet' => 'internet',
+            'district' => 'district',
             'derogation' => 'derogation',
             'dateDebut' => 'dateDebut',
             'dateFin' => 'dateFin',
@@ -86,21 +96,60 @@ class ElevesScolarites implements FactoryInterface
             'subventionTaux' => 'subventionTaux',
             'tarifId' => 'tarifId',
             'regimeId' => 'regimeId',
-            'derogationMotif' => 'derogationMotif'
+            'motifDerogation' => 'motifDerogation',
+            'motifRefusR1' => 'motifRefusR1',
+            'motifRefusR2' => 'motifRefusR2',
+            'commentaire' => 'commentaire'
         ))
+            ->
         // 'noteScolarite' => 'note'
         
-            ->join(array(
+        join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId = eta.etablissementId', array(
-            'etablissement' => 'nom'
+            'etablissement' => 'nom',
+            'xeta' => 'x',
+            'yeta' => 'y'
         ))
             ->join(array(
             'com' => $this->db->getCanonicName('communes', 'table')
         ), 'eta.communeId = com.communeId', array(
-            'commune' => 'nom'
+            'communeEtablissement' => 'nom'
         ));
         return $this;
+    }
+
+    public function getEleve($eleveId)
+    {
+        $select = clone $this->select;
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))->equalTo('ele.eleveId', $eleveId);
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute()->current();
+    }
+
+    public function getEleveAdresse($eleveId, $trajet)
+    {
+        $select = clone $this->select;
+        $select->join(array(
+            'r' => $this->db->getCanonicName('responsables', 'table')
+        ), $trajet == 1 ? 'ele.responsable1Id = r.responsableId' : 'ele.responsable2Id=r.responsableId', array(
+            'responsableId' => 'responsableId',
+            'adresseL1' => 'adresseL1',
+            'adresseL2' => 'adresseL2',
+            'codePostal' => 'codePostal',
+            'x' => 'x',
+            'y' => 'y'
+        ))
+            ->join(array(
+            'comresp' => $this->db->getCanonicName('communes', 'table')
+        ), 'r.communeId = comresp.communeId', array(
+            'commune' => 'nom'
+        ));
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))->equalTo('ele.eleveId', $eleveId);
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute();
     }
 
     public function getElevesInscrits($responsableId)
@@ -117,6 +166,95 @@ class ElevesScolarites implements FactoryInterface
         $select = clone $this->select;
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))->and->literal('paiement = 0')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute();
+    }
+
+    public function getElevesNonAffectes()
+    {
+        $select = clone $this->select;
+        $select->join(array(
+            'r' => $this->db->getCanonicName('responsables', 'table')
+        ), 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId', array(
+            'estR1' => new Expression('CASE WHEN r.responsableId=ele.responsable1Id THEN 1 ELSE 0 END'),
+            'responsableId' => 'responsableId',
+            'adresseL1' => 'adresseL1',
+            'adresseL2' => 'adresseL2'
+        ))
+            ->join(array(
+            'comresp' => $this->db->getCanonicName('communes', 'table')
+        ), 'r.communeId = comresp.communeId', array(
+            'commune' => 'nom'
+        ))
+            ->join(array(
+            'aff' => $this->db->getCanonicName('affectations', 'table')
+        ), 'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime', array(), $select::JOIN_LEFT);
+        // inscrit : bon millesime dans scolarites et paiement enregistré
+        $predicate1 = new Predicate();
+        $predicate1->equalTo('sco.millesime', Session::get('millesime'))->literal('paiement = 1');
+        // demande non traitée
+        $predicate2 = new Predicate();
+        $predicate2->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal('sco.demandeR1 = 1')->unnest()->OR->nest()->literal('ele.responsable2Id=r.responsableId')->and->literal('sco.demandeR2 = 1')->unnest();
+        // accord mais pas d'affectation
+        $predicate3 = new Predicate();
+        $predicate3->isNull('aff.eleveId')
+            ->nest()
+            ->nest()
+            ->literal('ele.responsable1Id = r.responsableId')->and->literal('sco.demandeR1 = 2')
+            ->literal('sco.accordR1 = 1')
+            ->unnest()->or->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal('sco.demandeR1 = 2')
+            ->literal('sco.accordR2 = 1')
+            ->unnest()
+            ->unnest();
+        // composition du where
+        $where = new Where();
+        $where->predicate($predicate1)
+            ->nest()
+            ->predicate($predicate2)->or->predicate($predicate3)->unnest();
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute();
+    }
+
+    public function getDemandeGaDistanceR2Zero()
+    {
+        $select = clone $this->select;
+        $select->join(array(
+            'r1' => $this->db->getCanonicName('responsables', 'table')
+        ), 'ele.responsable1Id = r1.responsableId', array(
+            'adresseR1L1' => 'adresseL1',
+            'adresseR1L2' => 'adresseL2'
+        ))
+            ->join(array(
+            'comr1' => $this->db->getCanonicName('communes', 'table')
+        ), 'r1.communeId = comr1.communeId', array(
+            'communeR1' => 'nom'
+        ))
+            ->join(array(
+            'r2' => $this->db->getCanonicName('responsables', 'table')
+        ), 'ele.responsable2Id = r2.responsableId', array(
+            'adresseR2L1' => 'adresseL1',
+            'adresseR2L2' => 'adresseL2'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'comr2' => $this->db->getCanonicName('communes', 'table')
+        ), 'r2.communeId = comr2.communeId', array(
+            'communeR2' => 'nom'
+        ), $select::JOIN_LEFT);
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->isNotNull('responsable2Id')
+            ->literal('demandeR2 = 1')
+            ->literal('distanceR2 = 0');
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute();
+    }
+    
+    
+    public function getEnfants($responsableId, $ga = 1)
+    {
+        $select = clone $this->select;
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))->equalTo(sprintf('responsable%dId', $ga), $responsableId);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }

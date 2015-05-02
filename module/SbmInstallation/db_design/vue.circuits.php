@@ -21,6 +21,9 @@ return array(
                 'field' => 'circuitId'
             ),
             array(
+                'field' => 'selection'
+            ),
+            array(
                 'field' => 'millesime'
             ),
             array(

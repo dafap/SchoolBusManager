@@ -23,6 +23,9 @@ return array(
                 'field' => 'paiementId'
             ),
             array(
+                'field' => 'selection'
+            ),
+            array(
                 'field' => 'dateDepot'
             ),
             array(

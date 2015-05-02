@@ -39,6 +39,10 @@ class TransportController extends AbstractActionController
 
     public function indexAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         return new ViewModel();
     }
 
@@ -137,6 +141,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -145,8 +151,6 @@ class TransportController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -355,6 +359,29 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectioncircuitAction()
+    {
+        $page = $this->params('page', 1);
+        $circuitId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Circuits')
+            ->setSelection($circuitId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectioncircuitAction()
+    {
+        $page = $this->params('page', 1);
+        $circuitId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Circuits')
+            ->setSelection($circuitId, 0);
+        return json_encode(array());
+    }
+
+    /**
      * =============================================== CLASSES ==================================================
      */
     
@@ -473,6 +500,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -481,8 +510,6 @@ class TransportController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -631,6 +658,29 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectionclasseAction()
+    {
+        $page = $this->params('page', 1);
+        $classeId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\classes')
+            ->setSelection($classeId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectionclasseAction()
+    {
+        $page = $this->params('page', 1);
+        $classeId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\classes')
+            ->setSelection($classeId, 0);
+        return json_encode(array());
+    }
+
+    /**
      * =============================================== COMMUNES ==================================================
      */
     
@@ -715,6 +765,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -723,8 +775,6 @@ class TransportController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -875,6 +925,29 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectioncommuneAction()
+    {
+        $page = $this->params('page', 1);
+        $communeId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Communes')
+            ->setSelection($communeId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectioncommuneAction()
+    {
+        $page = $this->params('page', 1);
+        $communeId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Communes')
+            ->setSelection($communeId, 0);
+        return json_encode(array());
+    }
+
+    /**
      * =============================================== ETABLISSEMENTS ==================================================
      */
     
@@ -919,7 +992,8 @@ class TransportController extends AbstractActionController
             ->setValueOptions('rattacheA', $this->getServiceLocator()
             ->get('Sbm\Db\Select\EtablissementsVisibles'))
             ->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies());
         $params = array(
             'data' => array(
                 'table' => 'etablissements',
@@ -965,6 +1039,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -973,8 +1049,6 @@ class TransportController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -1029,7 +1103,8 @@ class TransportController extends AbstractActionController
             ->setValueOptions('rattacheA', $this->getServiceLocator()
             ->get('Sbm\Db\Select\EtablissementsVisibles'))
             ->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies());
         $params = array(
             'data' => array(
                 'table' => 'etablissements',
@@ -1130,6 +1205,29 @@ class TransportController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+    }
+
+    /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectionetablissementAction()
+    {
+        $page = $this->params('page', 1);
+        $etablissementId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Etablissements')
+            ->setSelection($etablissementId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectionetablissementAction()
+    {
+        $page = $this->params('page', 1);
+        $etablissementId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Etablissements')
+            ->setSelection($etablissementId, 0);
+        return json_encode(array());
     }
 
     /**
@@ -1482,6 +1580,9 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null,
+            'origine' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -1490,9 +1591,6 @@ class TransportController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null,
-            'origine' => null
         ));
         $params = array(
             'data' => array(
@@ -1646,6 +1744,29 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectionserviceAction()
+    {
+        $page = $this->params('page', 1);
+        $serviceId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Services')
+            ->setSelection($serviceId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectionserviceAction()
+    {
+        $page = $this->params('page', 1);
+        $serviceId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Services')
+            ->setSelection($serviceId, 0);
+        return json_encode(array());
+    }
+
+    /**
      * =============================================== STATIONS ==================================================
      */
     
@@ -1658,7 +1779,8 @@ class TransportController extends AbstractActionController
     public function stationListeAction()
     {
         $args = $this->initListe('stations', function ($sm, $form) {
-            $form->setValueOptions('communeId', $sm->get('Sbm\Db\Select\CommunesDesservies'));
+            $form->setValueOptions('communeId', $sm->get('Sbm\Db\Select\Communes')
+                ->desservies());
         }, array(
             'communeId'
         ));
@@ -1714,7 +1836,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormStation();
         $form->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies());
         $params = array(
             'data' => array(
                 'table' => 'stations',
@@ -1768,6 +1891,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -1776,8 +1901,6 @@ class TransportController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -1856,7 +1979,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormStation();
         $form->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesDesservies'));
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies());
         $params = array(
             'data' => array(
                 'table' => 'stations',
@@ -2003,6 +2127,29 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectionstationAction()
+    {
+        $page = $this->params('page', 1);
+        $stationId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Stations')
+            ->setSelection($stationId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectionstationAction()
+    {
+        $page = $this->params('page', 1);
+        $stationId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Stations')
+            ->setSelection($stationId, 0);
+        return json_encode(array());
+    }
+
+    /**
      * =============================================== TRANSPORTEURS ==================================================
      */
     
@@ -2010,7 +2157,7 @@ class TransportController extends AbstractActionController
      * Liste des transporteurs
      * (avec pagination)
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function transporteurListeAction()
     {
@@ -2024,7 +2171,7 @@ class TransportController extends AbstractActionController
                 ->paginator($args['where']),
             't_nb_inscrits' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
-                ->byTransporteur(),
+                ->bytransporteur(),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_transporteurs', 15),
             'criteres_form' => $args['form']
@@ -2035,14 +2182,15 @@ class TransportController extends AbstractActionController
      * Modification d'une fiche de transporteur
      * (la validation porte sur un champ csrf)
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function transporteurEditAction()
     {
         $currentPage = $this->params('page', 1);
         $form = new FormTransporteur();
         $form->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesVisibles'));
+            ->get('Sbm\Db\Select\Communes')
+            ->visibles());
         $params = array(
             'data' => array(
                 'table' => 'transporteurs',
@@ -2082,12 +2230,14 @@ class TransportController extends AbstractActionController
      *
      * @todo : Vérifier qu'il n'y a pas de service attribué avant de supprimer la fiche
      *      
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function transporteurSupprAction()
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -2096,8 +2246,6 @@ class TransportController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -2106,11 +2254,11 @@ class TransportController extends AbstractActionController
             ),
             'form' => $form
         );
-        $vueTransporteurs = $this->getServiceLocator()->get('Sbm\Db\Vue\Transporteurs');
-        $r = $this->supprData($params, function ($id, $tableTransporteurs) use($vueTransporteurs) {
+        $vuetransporteurs = $this->getServiceLocator()->get('Sbm\Db\Vue\Transporteurs');
+        $r = $this->supprData($params, function ($id, $tabletransporteurs) use($vuetransporteurs) {
             return array(
                 'id' => $id,
-                'data' => $vueTransporteurs->getRecord($id)
+                'data' => $vuetransporteurs->getRecord($id)
             );
         });
         if ($r instanceof Response) {
@@ -2141,14 +2289,15 @@ class TransportController extends AbstractActionController
      * Ajout d'une nouvelle fiche de transporteur
      * (la validation porte sur un champ csrf)
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function transporteurAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormTransporteur();
+        $form = new Formtransporteur();
         $form->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\CommunesVisibles'));
+            ->get('Sbm\Db\Select\Communes')
+            ->visibles());
         $params = array(
             'data' => array(
                 'table' => 'transporteurs',
@@ -2183,7 +2332,7 @@ class TransportController extends AbstractActionController
     /**
      * renvoie la liste des élèves pour un transporteur donné
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function transporteurGroupAction()
     {
@@ -2209,7 +2358,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(array(
             'data' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byTransporteur($this->getFromSession('millesime'), $transporteurId, array(
+                ->bytransporteur($this->getFromSession('millesime'), $transporteurId, array(
                 'nom',
                 'prenom'
             )),
@@ -2225,7 +2374,7 @@ class TransportController extends AbstractActionController
     /**
      * renvoie la liste des services d'un transporteur
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function transporteurServiceAction()
     {
@@ -2294,5 +2443,28 @@ class TransportController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+    }
+
+    /**
+     * ajax - cocher décocher la case sélection
+     */
+    public function checkselectiontransporteurAction()
+    {
+        $page = $this->params('page', 1);
+        $transporteurId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Transporteurs')
+            ->setSelection($transporteurId, 1);
+        return json_encode(array());
+    }
+
+    public function uncheckselectiontransporteurAction()
+    {
+        $page = $this->params('page', 1);
+        $transporteurId = $this->params('id');
+        $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Transporteurs')
+            ->setSelection($transporteurId, 0);
+        return json_encode(array());
     }
 }

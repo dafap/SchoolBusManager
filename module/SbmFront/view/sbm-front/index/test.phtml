@@ -11,8 +11,18 @@
  * @date 3 mai 2014
  * @version 2014-1
  */
-
+echo '<div class="clearfix"></div>';
 echo '<div style="overflow:scroll">';
+echo 'args<pre>';
+
+if ($this->args instanceof \Traversable) {
+    foreach ($this->args as $row) {
+        print_r($row);
+    }
+} else {
+    print_r($this->args);
+}
+echo '</pre>var_dump(args) donne :';
 var_dump($this->args);
 echo 'X = ' . $this->x;
 echo '</div>';

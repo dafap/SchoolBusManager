@@ -25,5 +25,15 @@ class Transporteurs extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Transporteurs';
         $this->id_name = 'transporteurId';
     }
+    
+    public function setSelection($transporteurId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'transporteurId' => $transporteurId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
 }
 

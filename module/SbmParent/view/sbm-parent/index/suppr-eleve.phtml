@@ -1,0 +1,40 @@
+<?php
+/**
+ * Page de suppression d'une inscription d'un élève
+ *
+ * Après validation, les affectations et la scolarité seront supprimées. Par contre, la fiche eleve n'est pas supprimée.
+ * 
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/index
+ * @filesource suppr-eleve.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 avr. 2015
+ * @version 2015-1
+ */
+?>
+<h1>Suppression de l'inscription d'un enfant</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de l'inscription de :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
+			<li>Scolarisé à <?php echo $this->eleve['etablissement'] . ' - ' . $this->eleve['communeEtablissement']; ?></li>
+	        <?php if ($this->affectations->count() > 0) : ?>
+	        <li>Affecté sur :
+				<ul>
+	            <?php foreach ($this->affectations as $affectation) :?>
+	               <li><?php echo $affectation['service1Id'] . ' (' . $affectation['transporteur1'] . ')'; ?></li>
+	            <?php endforeach; ?>
+	            </ul>
+			</li>
+	        <?php endif; ?>
+        </ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

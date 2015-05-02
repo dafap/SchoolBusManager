@@ -21,6 +21,13 @@ class ButtonForm extends Form
     /**
      * Constructeur du formulaire
      *
+     * @param array() $hiddens
+     *            Le tableau $hiddens est de la forme <pre>
+     *            array(
+     *            'name-hidden1' => 'valeur-hidden1' ou 'name-hidden1' => attributes (où attributes est un tableau d'attributs : id =>..., value =>...)
+     *            ...
+     *            )
+     *            </pre>
      * @param array() $submits
      *            Le tableau $submits est de la forme <pre>
      *            array(
@@ -30,29 +37,21 @@ class ButtonForm extends Form
      *            </pre>
      *            où validTagAttribute est dans validGlobalAttributes (@see Zend\Form\View\Helper\AbstractHelper)
      *            ou dans validTagAttributes (@see Zend\View\Helper\FormButton)
-     *            
-     * @param array() $hiddens
-     *            Le tableau $hiddens est de la forme <pre>
-     *            array(
-     *            'name-hidden1' => 'valeur-hidden1',
-     *            ...
-     *            )
-     *            </pre>
      */
-    public function __construct(array $submits, $hiddens = array())
+    public function __construct($hiddens, array $submits, $nomform = 'Form')
     {
-        parent::__construct('Form');
+        parent::__construct($nomform);
         $this->setAttribute('method', 'post');
         
         // les hiddens
         foreach ($hiddens as $name => $value) {
             $description = array(
                 'name' => $name,
-                'attributes' => array(
-                    'type' => 'hidden'
-                )
+                'type' => 'hidden'
             );
-            if (! is_null($value)) {
+            if (is_array($value)) {
+                $description['attributes'] = $value;
+            } elseif (! is_null($value)) {
                 $description['attributes']['value'] = $value;
             }
             $this->add($description);
@@ -78,14 +77,4 @@ class ButtonForm extends Form
             $this->add($description);
         }
     }
-
-/**
- * Ajout de l'option au bouton submit
- * (non-PHPdoc)
- *
- * @see \Zend\Form\Element::setOption()
- */
-    /*
-     * public function setOption($submit, $option, $valeur) { $button = $this->get($submit); $button->setOption($option, $valeur); }
-     */
 }

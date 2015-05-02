@@ -18,9 +18,12 @@ namespace SbmCommun\Model\Hydrator;
 
 use SbmCommun\Model\Db\ObjectData\Responsable as ObjectData;
 use SbmCommun\Filter\SansAccent;
+use DafapSession\Model\Authenticate;
+use DafapSession\Model\DafapSession\Model;
 
 class Responsables extends AbstractHydrator
 {
+
     public function extract($object)
     {
         if (! $object instanceof ObjectData) {
@@ -37,11 +40,16 @@ class Responsables extends AbstractHydrator
             if (substr($value, - 2) == 'SA') {
                 $sa = new SansAccent();
                 $index = substr($value, 0, strlen($value) - 2);
-                $this->object->$value = $sa->filter($this->object->$index);
+                try {
+                    $this->object->$value = $sa->filter($this->object->$index);
+                } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {}
             } elseif ($value == 'dateModification') {
                 $this->object->dateModification = $now->format('Y-m-d H:i:s');
             } elseif ($value == 'dateCreation') {
                 $this->object->dateCreation = $now->format('Y-m-d H:i:s');
+            } elseif ($value == 'userId') {
+                $auth = new Authenticate();
+                $this->object->userId = $auth->getUserId();
             }
         }
     }

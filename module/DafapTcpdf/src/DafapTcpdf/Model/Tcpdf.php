@@ -902,7 +902,7 @@ class Tcpdf extends \TCPDF
             // cas d'une section continue
             $y = $this->GetY() + $this->getConfig('document', 'docheader_margin', self::DEFAULT_SBM_DOCHEADER_MARGIN);
             $this->SetY($y);
-            if (! empty($this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE))) {
+            if (! empty($tmp = $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE))) {
                 $this->Titre(1, $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE), 'C');
                 $delta = trim($this->getConfig('document', 'docheader_subtitle', ''), "\n") == '' ? self::SBM_DOCHEADER_DELTA_SMALL : self::SBM_DOCHEADER_DELTA_WIDE;
                 $this->SetY($this->GetY() + $delta);
@@ -1267,7 +1267,7 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docfooter_page_distincte', false)) {
             // cas d'une page distincte
             $this->SetY($this->GetY() + $this->getConfig('document', 'docfooter_margin', self::DEFAULT_SBM_DOCFOOTER_MARGIN));
-            if (! empty($this->getConfig('document', 'docfooter_title', ''))) {
+            if (! empty($tmp = $this->getConfig('document', 'docfooter_title', ''))) {
                 $this->Titre(1, $this->getConfig('document', 'docfooter_title', ''), 'C');
                 $this->SetY(140, true, true);
             }
@@ -1286,7 +1286,7 @@ class Tcpdf extends \TCPDF
             $delta = $this->getConfig('document', 'docfooter_margin', self::DEFAULT_SBM_DOCFOOTER_MARGIN);
             if ($this->getConfig('document', 'docfooter_insecable', true)) {
                 // on réserve la place pour la marge, le titre (si non vide) et 3 lignes (si docfooter_string non vide)
-                if (! empty($this->getConfig('document', 'docfooter_title', ''))) {
+                if (! empty($tmp = $this->getConfig('document', 'docfooter_title', ''))) {
                     $delta += self::SBM_DOCFOOTER_INSECABLE_DELTA_TITLE;
                 }
                 if (! empty($txt)) {
@@ -1297,7 +1297,7 @@ class Tcpdf extends \TCPDF
             if ($current_page == $this->PageNo()) {
                 $this->SetY($this->GetY() + $this->getConfig('document', 'docfooter_margin', self::DEFAULT_SBM_DOCFOOTER_MARGIN));
             }
-            if (! empty($this->getConfig('document', 'docfooter_title', ''))) {
+            if (! empty($tmp = $this->getConfig('document', 'docfooter_title', ''))) {
                 $this->Titre(1, $this->getConfig('document', 'docfooter_title', ''), 'L');
             }
             if (! empty($txt)) {

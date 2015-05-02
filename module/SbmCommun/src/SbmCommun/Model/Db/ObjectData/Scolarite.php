@@ -20,5 +20,23 @@ class Scolarite extends AbstractObjectData
         $this->setObjName(__CLASS__);
         $this->setIdFieldName(array('millesime', 'eleveId'));
     }
+    
+    /**
+     * Renvoie vrai si l'élève a une adresse perso notée dans sa fiche scolarité.
+     * Pour cela, il doit avoir une addresseL1, un codePostal et une communeId.
+     * 
+     * @return bool
+     */
+    public function hasAdressePerso()
+    {
+        try {
+            $value = $this->communeId;
+            $value = $this->codePostal;
+            $value = $this->adresseL1;
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }        
+    }
 }
  

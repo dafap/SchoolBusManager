@@ -33,7 +33,6 @@ class Adresse extends Element implements InputProviderInterface
             $premiere = '[1-9A-Z' . self::MAJ_AUTORISEES . ']';
             $suite = '[0-9A-Za-z' . self::MAJ_AUTORISEES . mb_strtolower(self::MAJ_AUTORISEES, 'utf-8') . '\' ]*';
             $pattern = '/^' . $premiere . $suite . '$/';
-            //die(var_dump($pattern));
             $validator = new RegexValidator($pattern);
             $validator->setMessage('Les caractères autorisés sont des lettres, l\' espace ou l\' apostrophe !', RegexValidator::NOT_MATCH);
             $this->validator = $validator;

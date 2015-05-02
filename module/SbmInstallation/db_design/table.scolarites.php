@@ -34,15 +34,23 @@ return array(
             'communeId' => 'varchar(6) DEFAULT NULL',
             'x' => 'decimal(18,10) NOT NULL DEFAULT "1641520.6"', // decazeville, maison de l'industrie
             'y' => 'decimal(18,10) NOT NULL DEFAULT "3262032.5"', // decazeville, maison de l'industrie
-            'geopt' => 'GEOMETRY',
-            'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
+            'geopt' => 'GEOMETRY DEFAULT NULL',
+            'distanceR1' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
+            'distanceR2' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'dateEtiquette' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'dateCarte' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'paiement' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'anneeComplete' => 'tinyint(1) NOT NULL DEFAULT "1"',
-            'subvention' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'subventionR1' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'subventionR2' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'demandeR1' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'demandeR2' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'accordR1' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'accordR2' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'internet' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'district' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'derogation' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'dateDebut' => 'date NOT NULL',
             'dateFin' => 'date NOT NULL',
@@ -50,7 +58,10 @@ return array(
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
             'tarifId' => 'int(11) NOT NULL DEFAULT "0"',
             'regimeId' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'derogationMotif' => 'text'
+            'motifDerogation' => 'text',
+            'motifRefusR1' => 'text',
+            'motifRefusR2' => 'text',
+            'commentaire' => 'text'
         ),
         'primary_key' => array(
             'millesime',
@@ -133,7 +144,7 @@ return array(
             'evenement' => 'INSERT',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(scolarites)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', NEW.millesime, NEW.eleveId), NOW(), CONCAT_WS('|', NEW.selection, NEW.dateInscription, NEW.dateModification, NEW.etablissementId, NEW.classeId, NEW.adresseL1, NEW.adresseL2, NEW.communeId, NEW.dateEtiquette, NEW.dateCarte, NEW.inscrit, NEW.gratuit, NEW.paiement, NEW.anneeComplete, NEW.subvention, NEW.derogation, NEW.dateDebut, NEW.dateFin, NEW.subventionTaux, NEW.tarifId, NEW.regimeId, NEW.derogationMotif))
+VALUES ('%table(scolarites)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', NEW.millesime, NEW.eleveId), NOW(), CONCAT_WS('|', NEW.selection, NEW.dateInscription, NEW.dateModification, NEW.etablissementId, NEW.classeId, NEW.chez, NEW.adresseL1, NEW.adresseL2, NEW.codePostal, NEW.communeId, NEW.x, NEW.y, NEW.distanceR1, NEW.distanceR2, NEW.dateEtiquette, NEW.dateCarte, NEW.inscrit, NEW.gratuit, NEW.paiement, NEW.anneeComplete, NEW.subventionR1, NEW.subventionR2, NEW.demandeR1, NEW.demandeR2, NEW.accordR1, NEW.accordR2, NEW.internet, NEW.district, NEW.derogation, NEW.dateDebut, NEW.dateFin, NEW.joursTransport, NEW.subventionTaux, NEW.tarifId, NEW.regimeId, NEW.motifDerogation, NEW.motifRefusR1, NEW.motifRefusR2, NEW.commentaire))
 EOT
 
         ),
@@ -142,7 +153,7 @@ EOT
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(scolarites)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.adresseL1, OLD.adresseL2, OLD.communeId, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subvention, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.derogationMotif))
+VALUES ('%table(scolarites)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.chez, OLD.adresseL1, OLD.adresseL2, OLD.codePostal, OLD.communeId, OLD.x, OLD.y, OLD.distanceR1, OLD.distanceR2, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subventionR1, OLD.subventionR2, OLD.demandeR1, OLD.demandeR2, OLD.accordR1, OLD.accordR2, OLD.internet, OLD.district, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.joursTransport, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.motifDerogation, OLD.motifRefusR1, OLD.motifRefusR2, OLD.commentaire))
 EOT
 
         ),
@@ -151,13 +162,10 @@ EOT
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(scolarites)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.adresseL1, OLD.adresseL2, OLD.communeId, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subvention, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.derogationMotif))
+VALUES ('%table(scolarites)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.chez, OLD.adresseL1, OLD.adresseL2, OLD.codePostal, OLD.communeId, OLD.x, OLD.y, OLD.distanceR1, OLD.distanceR2, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subventionR1, OLD.subventionR2, OLD.demandeR1, OLD.demandeR2, OLD.accordR1, OLD.accordR2, OLD.internet, OLD.district, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.joursTransport, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.motifDerogation, OLD.motifRefusR1, OLD.motifRefusR2, OLD.commentaire))
 EOT
 
         )
     ),
-    
-    // 'data' => include __DIR__ . '/data/data.scolarites.php'
-    // 'data' => array('after' => array('eleves','etablissements','classes','communes','tarifs'),'include' => __DIR__ . '/data/data.scolarites.php')
     'data' => __DIR__ . '/data/data.scolarites.php'    
 ); 

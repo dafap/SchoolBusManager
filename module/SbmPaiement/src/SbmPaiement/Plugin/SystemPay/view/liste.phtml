@@ -16,7 +16,19 @@ function formatDate($date)
     return DateTime::createFromFormat('YmdHis', $date)->format('d/m/Y H:i:s');
 }
 
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+    ->setAttribute('id', $id)
+    ->setValue($value);
+    return $view->formCheckbox($element);
+}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$jsCallback = '';
+$jsTrigger = '';
+
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $datas = $this->paginator->getCurrentItems();
@@ -33,7 +45,7 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
+        'class' => 'fam-report',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
     )
@@ -63,11 +75,30 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<th>Statut</th>
 					<th>Autorisation</th>
 					<th>Montant</th>
+					<th>Sélect.</th>
 					<th></th>
 				</tr>
             <?php foreach($datas as $test => $notification): ?>
             <?php $montant = $fmt->formatCurrency($notification->vads_amount/100, 'EUR'); ?>
             <?php $date_trans = formatDate($notification->vads_trans_date); ?>
+            <?php 
+            // selection
+            $modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/paiement/'+action+'selectionpaiement/%d/%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+            
+            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $notification->systempayId);
+            $jsCallback .= sprintf("$modele\n", $notification->systempayId, $this->page, $notification->systempayId);
+            ?>
                 <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 					<td class="vads_cust_last_name"><?php echo $this->escapeHtml($notification->vads_cust_last_name); ?></td>
@@ -77,6 +108,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<td class="vads_trans_status"><?php echo $this->escapeHtml($notification->vads_trans_status); ?></td>
 					<td class="vads_auth_number"><?php echo $this->escapeHtml($notification->vads_auth_number); ?></td>
 					<td class="vads_amount"><?php echo $montant; ?></td>
+					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $notification->systempayId, $notification->selection)?></td>
 					<td class="boutons">
             <?php
             $url_voir = $this->url('sbmpaiement', array(
@@ -142,3 +174,13 @@ EOT;
         </div>
 	</div>
 </div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $jsTrigger;?>}
+<?php echo $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

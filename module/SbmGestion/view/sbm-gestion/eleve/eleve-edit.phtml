@@ -12,13 +12,28 @@
  * @version 2014-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmgestion/eleve', array('action'=> 'eleve-liste', 'page' => $this->page));
-$hiddens = array();
+$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$url_ici = $this->url('sbmgestion/eleve', array('action'=> 'eleve-edit', 'page' => $this->page));
+$url_map = $this->url('sbmgestion/eleve', array(
+    'action' => 'localisation',
+    'page' => $this->page
+));
+$hiddens = array(
+    'eleveId' => $this->eleveId,
+    'eleve' => $this->identite,
+    'origine' => $url_ici
+);
 $actions = array(
-    'retour' => array(
+    'cancel' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_ici, // traitement de cancel pour un redirectToOrigin()->back() proprement
         'title' => 'Retour'
+    ),
+    'localiser' => array(
+        'class' => 'fam-map-magnify',
+        'formaction' => $url_map,
+        'title' => 'localiser cet élève sur la carte',
+        'onclick' => sprintf($js, "'localiser'")
     )
 );
 ?>

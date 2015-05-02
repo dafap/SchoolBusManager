@@ -20,6 +20,7 @@ return array(
     'structure' => array(
         'fields' => array(
             'stationId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'communeId' => 'varchar(6) NOT NULL',
             'nom' => 'varchar(45) NOT NULL',
             'aliasCG' => 'varchar(45) NOT NULL DEFAULT ""',

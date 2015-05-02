@@ -25,5 +25,15 @@ class Services extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Services';
         $this->id_name = 'serviceId';
     }
+    
+    public function setSelection($serviceId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'serviceId' => $serviceId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
 }
 

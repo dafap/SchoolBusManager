@@ -33,6 +33,7 @@ return array(
             'membre' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'desservie' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'population' => 'mediumint(8) UNSIGNED NOT NULL DEFAULT "0"',
         ),
         'primary_key' => array('communeId',),

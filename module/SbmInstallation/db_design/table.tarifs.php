@@ -48,6 +48,7 @@ return array(
     'structure' => array(
         'fields' => array(
             'tarifId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'montant' => 'decimal(10,2) NOT NULL DEFAULT "0.00"',
             'nom' => 'varchar(48) NOT NULL',
             'rythme' => 'int(4) NOT NULL DEFAULT "1"',

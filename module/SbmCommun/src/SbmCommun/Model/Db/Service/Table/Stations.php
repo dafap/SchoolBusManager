@@ -25,5 +25,15 @@ class Stations extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Stations';
         $this->id_name = 'stationId';
     }
+    
+    public function setSelection($stationId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'stationId' => $stationId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
 }
 

@@ -15,17 +15,16 @@ class Niveau extends AbstractPower2
 {
 
     /**
-     * Les niveaux sont établis en composant par puissance de 2 les valeurs du tableau $param *
-     * 1 pour maternelle *
-     * 2 pour élémentaire *
-     * 4 pour premier cycle du second degré (collège, segpa .
-     * ..) *
-     * 8 pour second cycle du second degré (lycée, lp ...) *
-     * 16 pour classes après bac de lycée et lp (bts, cpge ...) *
-     * 32 pour enseignement supérieur (iut, université ...) *
-     * 64 pour autres (stagiaires de la formation prof, apprentis ...) *
-     * 128 inutilisé *
-     * 255 pour tous les niveaux *
+     * Les niveaux sont établis en composant par puissance de 2 les valeurs du tableau $param 
+     * 1 pour maternelle 
+     * 2 pour élémentaire 
+     * 4 pour premier cycle du second degré (collège, segpa) 
+     * 8 pour second cycle du second degré (lycée, lp, ...) 
+     * 16 pour classes après bac de lycée et lp (bts, cpge ...) 
+     * 32 pour enseignement supérieur (iut, université ...) 
+     * 64 pour autres (stagiaires de la formation prof, apprentis ...) 
+     * 128 inutilisé 
+     * 255 pour tous les niveaux 
      */
     const NOMBRE_DE_CODES = 7;
 

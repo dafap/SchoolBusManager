@@ -13,7 +13,7 @@
 return array(
     'liste' => array(
         'paginator' => array(
-            'nb_circuits' => 20,
+            'nb_circuits' => 15,
             'nb_classes' => 15,
             'nb_communes' => 20,
             'nb_eleves' => 10,
@@ -37,6 +37,7 @@ return array(
         'invokables' => array(
             'SbmGestion\Controller\Index' => 'SbmGestion\Controller\IndexController',
             'SbmGestion\Controller\Eleve' => 'SbmGestion\Controller\EleveController',
+            'SbmGestion\Controller\EleveGestion' => 'SbmGestion\Controller\EleveGestionController',
             'SbmGestion\Controller\Finance' => 'SbmGestion\Controller\FinanceController',
             'SbmGestion\Controller\Transport' => 'SbmGestion\Controller\TransportController',
             'SbmGestion\Controller\AnneeScolaire' => 'SbmGestion\Controller\AnneeScolaireController',
@@ -68,6 +69,21 @@ return array(
                             'defaults' => array(
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Eleve',
+                                'action' => 'index'
+                            )
+                        )
+                    ),
+                    'gestioneleve' => array(
+                        'type' => 'segment',
+                        'options' => array(
+                            'route' => '/gestioneleve[/:action[/:page][/:id]]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'page' => '[0-9]+'
+                            ),
+                            'defaults' => array(
+                                'module' => 'SbmGestion',
+                                'controller' => 'SbmGestion\Controller\EleveGestion',
                                 'action' => 'index'
                             )
                         )

@@ -17,6 +17,7 @@ use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 
 class Circuits extends AbstractSbmTable
 {
+
     /**
      * Initialisation du circuit
      */
@@ -27,18 +28,20 @@ class Circuits extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Circuits';
         $this->id_name = 'circuitId';
     }
+
     /**
      * (non-PHPdoc)
+     * 
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
      */
     protected function setStrategies()
     {
         $this->hydrator->addStrategy('semaine', new SemaineStrategy());
     }
-    
+
     public function getSemaine()
     {
-        return  array(
+        return array(
             SemaineStrategy::CODE_SEMAINE_LUNDI => 'lun',
             SemaineStrategy::CODE_SEMAINE_MARDI => 'mar',
             SemaineStrategy::CODE_SEMAINE_MERCREDI => 'mer',
@@ -47,6 +50,16 @@ class Circuits extends AbstractSbmTable
             SemaineStrategy::CODE_SEMAINE_SAMEDI => 'sam',
             SemaineStrategy::CODE_SEMAINE_DIMANCHE => 'dim'
         );
+    }
+
+    public function setSelection($circuitId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'circuitId' => $circuitId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
     }
 }
 

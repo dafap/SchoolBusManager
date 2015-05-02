@@ -1,0 +1,141 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource edit-eleve.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 22 avr. 2015
+ * @version 2015-1
+ */
+$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$this->headScript()->captureStart();
+?>
+//copie / suppression de la div par le bouton radio
+$(function() {
+  // montre ou cache la partie du formulaire concernant la garde alternee
+  $("#btnradioga0").on('click', function() {
+    $("#enfant_ga").empty();
+  });
+  $("#btnradioga1").click(function() {
+    $("#enfant_ga").empty();
+    if ($(this).is(':checked')) {
+      bloc=$("#formga").clone();
+      ch = bloc.find('*[id]');
+      ch.each(function(i) {
+        if(this.id) {
+          this.id = 'r2'+this.id;
+        }
+      });
+      bloc.removeAttr("id").appendTo("#enfant_ga");
+    }
+  });
+  // adapte le select de la commune au code postal
+  $("#enfant_ga").on('blur', '#r2codePostal', function() {
+    var valeur = $('#r2codePostal').val();
+    $.ajax({
+				url : '/parent/getcommunesforselect/1/' + valeur,
+				success : function(data) {
+					$('#r2communeId').empty();
+					var opts = $.parseJSON(data);
+					$.each(opts, function(i, d) {
+	                    $('#r2communeId').append('<option value="' + d + '">' + i + '</option>');
+	                });
+				},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+});
+<?php
+$this->headScript()->captureEnd();
+// initialisation s'il y a garde alternée
+$this->inlineScript()->captureStart(); ?>
+$(function() {
+  if ($("#btnradioga1").is(':checked')) {
+    bloc=$("#formga").clone();
+    ch = bloc.find('*[id]');
+      ch.each(function(i) {
+        if(this.id) {
+          this.id = 'r2'+this.id;
+        }
+      });
+    bloc.removeAttr("id").appendTo("#enfant_ga");
+  }
+});
+<?php $this->inlineScript()->captureEnd();
+$identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->nom, $this->responsable->prenom);
+if ($this->hasGa) {
+    $r2identite = sprintf('%s %s %s', $this->responsable2['titre'], $this->responsable2['nom'], $this->responsable2['prenom']);
+    $r2adresseL1 = $this->responsable2['adresseL1'];
+    $r2adresseL2 = $this->responsable2['adresseL2'];
+    $r2cp = $this->responsable2['codePostal'];
+    $r2commune = $this->responsable2['commune'];
+} else {
+    $r2identite = $r2adresseL1 = $r2adresseL2 = $r2cp = $r2commune = '';
+}
+?>
+<h1>Modification des informations concernant un enfant</h1>
+
+<div id="fiche-wrapper">
+	<div id="fiche-header"></div>
+	<div id="fiche-inner">
+<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('eleveId'));
+echo $this->formHidden($this->form->get('responsable1Id'));
+echo $this->formHidden($this->form->get('csrf'));
+?>
+    <fieldset class="sbm-page1">
+			<div id="enfant-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+			<div id="enfant-edit-prenom" class="row-inner edit"><?php echo $this->formRow($this->form->get('prenom')); ?></div>
+			<div id="enfant-edit-dateN" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateN')); ?></div>
+			<div>
+				<div class="enfant-label">Responsable</div><?php echo $identiteResponsable; ?></div>
+			<div>
+				<div class="enfant-label">Adresse</div><?php echo $this->responsable->adresseL1; ?></div>
+			<div>
+				<div class="enfant-label">Adresse</div><?php echo $this->responsable->adresseL2; ?></div>
+			<div>
+				<div class="enfant-label">Commune</div><?php echo $this->responsable->codePostal . ' ' . $this->responsable->commune; ?></div>
+			<div id="enfant-edit-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('etablissementId')); ?></div>
+			<div id="enfant-edit-classeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('classeId')); ?></div>
+			<div id="enfant-edit-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport')); ?></div>
+			<div id="enfant-edit-ga" class="row-inner edit"><?php echo $this->formRow($this->form->get('ga')); ?></div>
+			<div id="enfant_ga"></div>
+			<div id="enfant-edit-buttons" class="row-inner edit">    		
+            <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+<?php echo $this->form()->closeTag(); ?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>
+<div style="display: none;">
+	<div id="formga">
+    <?php echo $this->formHidden($this->formga->get('r2responsable2Id')); ?>
+    <?php echo $this->formHidden($this->formga->get('r2userId')); ?>
+<?php if (is_null($this->responsable2) || $this->responsable2['owner']) : ?>
+    <div id="enfant_titre" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2titre'));?></div>
+		<div id="enfant_nom" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2nom'));?></div>
+		<div id="enfant_prenom" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2prenom'));?></div>
+		<div id="enfant_adresseL1" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2adresseL1'));?></div>
+		<div id="enfant_adresseL2" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2adresseL2'));?></div>
+		<div id="enfant_codePostal" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2codePostal'));?></div>
+		<div id="enfant_communeId" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2communeId'));?></div>
+		<div id="enfant_telephoneF" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2telephoneF'));?></div>
+		<div id="enfant_email" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2email'));?></div>
+		<div id="enfant_demandeR2" class="row-inner edit"><?php  echo $this->formRow($this->form->get('demandeR2'));?></div>
+<?php else : ?>
+        <div><div class="enfant-label">Responsable</div><?php echo $r2identite; ?></div>
+        <div><div class="enfant-label">Adresse</div><?php echo $r2adresseL1; ?></div>
+        <div><div class="enfant-label">Adresse</div><?php echo $r2adresseL2; ?></div>
+        <div><div class="enfant-label">Commune</div><?php echo $r2cp . ' ' . $r2commune; ?></div>
+        <div id="enfant_demandeR2" class="row-inner edit"><?php echo $this->formRow($this->form->get('demandeR2')); ?></div>
+<?php endif; ?>
+    </div>
+</div>

@@ -14,6 +14,8 @@
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
+use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
+use SbmCommun\Model\Db\ObjectData\Exception as ObjectDataException;
 
 class Scolarites extends AbstractSbmTable
 {
@@ -26,9 +28,29 @@ class Scolarites extends AbstractSbmTable
         $this->table_name = 'scolarites';
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Scolarites';
-        $this->id_name = array('millesime', 'eleveId');
+        $this->id_name = array(
+            'millesime',
+            'eleveId'
+        );
     }
 
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \SbmCommun\Model\Db\Table\AbstractTable::setStrategies()
+     */
+    protected function setStrategies()
+    {
+        $this->hydrator->addStrategy('joursTransport', new SemaineStrategy());
+    }
+
+    /**
+     * Renvoie true si l'établissement a changé ou si c'est un nouvel enregistrement
+     *
+     * (non-PHPdoc)
+     * 
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
+     */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
         try {
@@ -41,14 +63,21 @@ class Scolarites extends AbstractSbmTable
             $obj_data->setCalculateFields(array(
                 'dateInscription'
             ));
+            $changeEtab = true;
         } else {
             // on vérifie si des données ont changé
-            if ($obj_data->isUnchanged($old_data))
-                return;
-            
+            if ($obj_data->isUnchanged($old_data)) {
+                return false;
+            }
+            try {
+                $changeEtab = $obj_data->etablissementId != $old_data->etablissementId;
+            } catch (ObjectDataException $e) {
+                $changeEtab = false;
+            }
             $obj_data->addCalculateField('dateModification');
         }
         
         parent::saveRecord($obj_data);
+        return $changeEtab;
     }
 }

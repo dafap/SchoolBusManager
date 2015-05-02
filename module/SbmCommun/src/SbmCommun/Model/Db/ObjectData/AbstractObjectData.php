@@ -44,10 +44,22 @@ abstract class AbstractObjectData implements ObjectDataInterface
 
     /**
      * Masque servant de modèle pour la composition de la donnée dans la méthode exchangeArray()
+     * (Pour un objet associé à une table, c'est la liste des noms de colonnes)
      *
-     * @var unknown_type
+     * @var array
      */
     private $array_mask = array();
+
+    /**
+     * Tableau des champs qui doivent être null lorsqu'ils sont vides
+     * Ce tableau est de la forme array('field_name' => boolean, .
+     * ..)
+     * où boolean est vrai si le champ doit être null lorsqu'il est vide
+     * pour tous les champs de l'objectdata
+     *
+     * @var array
+     */
+    private $are_nullable = array();
 
     /**
      * Liste des champs calculés à mettre à jour par l'hydrator
@@ -68,7 +80,7 @@ abstract class AbstractObjectData implements ObjectDataInterface
             if ($this->dataSource->offsetExists($param)) {
                 return $this->dataSource->offsetGet($param);
             } else {
-                throw new Exception(sprintf('Impossible de trouver la propriété %s.', $param));
+                throw new Exception(sprintf('Impossible de trouver la propriété %s.<pre>%s</pre>', $param, print_r($this->dataSource, true)));
             }
         } else {
             foreach ($this->dataSource as $key => $value) {
@@ -140,6 +152,30 @@ abstract class AbstractObjectData implements ObjectDataInterface
     }
 
     /**
+     * Enregistre la liste des champs avec l'indicateur is_nullable (boolean)
+     *
+     * @param array $are_nullable            
+     * @throws Exception
+     */
+    public function setAreNullable($are_nullable = array())
+    {
+        if (! is_array($are_nullable)) {
+            throw new Exception(__METHOD__ . _(' - AreNullable provided is not an array'));
+        }
+        $this->are_nullable = $are_nullable;
+    }
+
+    /**
+     * Renvoie le masque utilisé dans exchangeArray()
+     *
+     * @return array
+     */
+    public function getArrayMask()
+    {
+        return $this->array_mask;
+    }
+
+    /**
      * Initialise la propriété calculate_fields avec le tableau fourni
      *
      * @param array $array            
@@ -198,6 +234,18 @@ abstract class AbstractObjectData implements ObjectDataInterface
         if ($this->array_mask) {
             $columns = array_fill_keys($this->array_mask, null);
             $dataSource = array_intersect_key($dataSource, $columns);
+        }
+        foreach ($this->are_nullable as $key => $is_nullable) {
+            if (!array_key_exists($key, $dataSource)) continue;
+            if ($is_nullable) {
+                if (empty($dataSource[$key])) {
+                    $dataSource[$key] = null;
+                }
+            } else {
+                if (is_null($dataSource[$key])) {
+                    unset($dataSource[$key]);
+                }
+            }
         }
         $this->dataSource = new ArrayIterator($dataSource);
         return $this;
@@ -259,7 +307,7 @@ abstract class AbstractObjectData implements ObjectDataInterface
                 }
                 return $result;
             }
-        }        
+        }
         return $id;
     }
 

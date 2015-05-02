@@ -36,6 +36,16 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
         return $this->id_name;
     }
 
+    public function setSelection($id, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            $this->getIdName() => $id,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
+    
     public function criteres()
     {
         return array(
@@ -73,15 +83,37 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
                         'class' => 'sbm-error'
                     )
                 )
+            ),
+            array(
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'selection',
+                'attributes' => array(
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => array(
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ),
+                    'class' => 'sbm-checkbox'
+                ),
+                'options' => array(
+                    'label' => 'Sélectionnés',
+                    'label_attributes' => array(
+                        'class' => ''
+                    ),
+                    'error_attributes' => array(
+                        'class' => 'sbm-error'
+                    )
+                )
             )
         );
     }
-    
+
     /**
      * Nécessaire pour pouvoir modifier le format de la date dans $where si nécessaire.
      * Le format créé est de la forme Y-m-d. Ici il faut Ymd.
-     * 
-     * @param Where $where
+     *
+     * @param Where $where            
      */
     public function adapteWhere(Where &$where)
     {

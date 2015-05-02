@@ -30,6 +30,10 @@ class IndexController extends AbstractActionController
 
     public function indexAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         return new ViewModel();
     }
 
@@ -78,9 +82,9 @@ class IndexController extends AbstractActionController
                 return new ViewModel(array(
                     'form' => $form,
                     'page' => $currentPage
-                )
+                ))
                 // 'id' => null
-                );
+                ;
                 break;
         }
     }
@@ -128,6 +132,8 @@ class IndexController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm(array(
+            'id' => null
+        ), array(
             'supproui' => array(
                 'class' => 'confirm',
                 'value' => 'Confirmer'
@@ -136,8 +142,6 @@ class IndexController extends AbstractActionController
                 'class' => 'confirm',
                 'value' => 'Abandonner'
             )
-        ), array(
-            'id' => null
         ));
         $params = array(
             'data' => array(
@@ -189,7 +193,10 @@ class IndexController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
-        list($nature, $code) = explode('|', StdLib::getParam('id', $args, array(false, false)));
+        list ($nature, $code) = explode('|', StdLib::getParam('id', $args, array(
+            false,
+            false
+        )));
         if ($nature === false) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmadmin', array(
@@ -199,8 +206,8 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel(array(
             'data' => $this->getServiceLocator()
-            ->get('Sbm\Db\Libelle\Liste')
-            ->forNature($nature),
+                ->get('Sbm\Db\Libelle\Liste')
+                ->forNature($nature),
             'page' => $currentPage,
             'nature' => $nature,
             'code' => $code

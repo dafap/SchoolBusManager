@@ -13,7 +13,19 @@
  */
 use SbmCommun\Model\StdLib;
  
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+        ->setAttribute('id', $id)
+        ->setValue($value);
+    return $view->formCheckbox($element);
+}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$jsCallback = '';
+$jsTrigger = '';
+
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $services = $this->paginator->getCurrentItems();
@@ -34,7 +46,7 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
+        'class' => 'fam-report',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
     ),
@@ -60,11 +72,28 @@ $actions = array(
 	<div id="liste-inner">
 		<table class="liste-inner services">
 			<tbody>
-			    <tr><th>Code</th><th>Nom</th><th>Alias</th><th>Transporteur</th><th>Opérateur</th><th>Capacité</th><th>Inscrits</th><th></th></tr>
+			    <tr><th>Code</th><th>Nom</th><th>Alias</th><th>Transporteur</th><th>Opérateur</th><th>Capacité</th><th>Inscrits</th><th>Sélect.</th><th></th></tr>
             <?php foreach($services as $test => $service): ?>
-            <?php $fmt?>
-            <?php $nbInscrits = StdLib::getParamR(array($service->serviceId, 'total'), $this->t_nb_inscrits, 0); ?>
-            <?php $exces = $service->nbPlaces < $nbInscrits; ?>
+            <?php 
+            $nbInscrits = StdLib::getParamR(array($service->serviceId, 'total'), $this->t_nb_inscrits, 0); 
+            $exces = $service->nbPlaces < $nbInscrits; 
+            // selection
+            $modele = <<<EOT
+$("#chk%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/gestion/transport/'+action+'selectionservice/%d/%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+            
+            $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $service->serviceId);
+            $jsCallback .= sprintf("$modele\n", $service->serviceId, $this->page, $service->serviceId);
+            ?>
                 <tr class="<?php echo $this->cycle(array("even", "odd"))->next();
                                  if ($exces) echo ' exces';
                            ?>">
@@ -75,6 +104,7 @@ $actions = array(
 					<td class="operateur"><?php echo $this->escapeHtml($service->operateur); ?></td>					
 					<td class="nbplaces"><?php echo $this->escapeHtml($service->nbPlaces); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $service->serviceId, $service->selection)?></td>
 					<td class="boutons">
             <?php
             $url_edit = $this->url('sbmgestion/transport', array(
@@ -135,3 +165,13 @@ $actions = array(
         </div>
 	</div>
 </div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $jsTrigger;?>}
+<?php echo $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

@@ -50,5 +50,15 @@ class Classes extends AbstractSbmTable
             NiveauStrategy::CODE_NIVEAU_AUTRE => 'autres'
         );
     }
+    
+    public function setSelection($classeId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'classeId' => $classeId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
 }
 

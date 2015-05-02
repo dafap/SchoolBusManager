@@ -20,6 +20,7 @@ namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 use Zend\Mvc\Controller\Plugin\Redirect;
 use Zend\Session\ManagerInterface as Manager;
 use Zend\Session\Container;
+use SbmCommun\Model\Mvc\Controller\Plugin\Exception;
 
 class RedirectBack extends Redirect
 {
@@ -39,6 +40,8 @@ class RedirectBack extends Redirect
             $url = $container->back[$index];
             unset($container->back[$index]);
             return $this->toUrl($url);
+        } else {
+            throw new Exception(__METHOD__ . ' - Pile vide');
         }
     }
 

@@ -178,6 +178,23 @@ class DbLibService implements FactoryInterface
         return $result;
     }
 
+    public function getAreNullableColumns($tableName, $type)
+    {
+        // initialise DbLib::table_descriptor si nécessaire
+        if (! StdLib::array_keys_exists(array(
+            $type,
+            $tableName,
+            'columns'
+        ), $this->table_descriptor)) {
+            $this->structureTable($tableName, $type);
+        }
+        $result = array();
+        foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {          
+            $result[$colName] = $descriptor['is_nullable'];
+        }
+        return $result;
+    }
+
     /**
      * Renvoie le Metadata
      *
@@ -221,6 +238,7 @@ class DbLibService implements FactoryInterface
 
     /**
      * Renvoie un tableau indexé de la forme (nom_réel => nom de l'entité, .
+     *
      * ..)
      */
     public function getTableList()

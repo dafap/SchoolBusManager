@@ -38,6 +38,13 @@ class Paiements extends AbstractSbmTable
         }
         parent::saveRecord($obj_data);
     }
+    
+    public function setSelection($paiementId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array('paiementId' => $paiementId, 'selection' => $selection));
+        parent::saveRecord($oData);
+    }
 
     /**
      * Renvoie le paiementId d'un paiement pour les paramètres indiqués.
