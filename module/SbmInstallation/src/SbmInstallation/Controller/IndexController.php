@@ -35,6 +35,10 @@ class IndexController extends AbstractActionController
         return new ViewModel();
     }
 
+    /**
+     * Simple besoin de développement - Cette méthode doit être supprimée dans la version finale
+     * @return \Zend\View\Model\ViewModel
+     */
     public function majResponsablesAction()
     {
         $ctrl = array();

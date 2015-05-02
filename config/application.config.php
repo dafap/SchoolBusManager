@@ -20,8 +20,7 @@ return array(
         'SbmParent',
         'SbmPaiement',
         'SbmCommun',
-        'SbmCartographie',
-        'TestAjax'
+        'SbmCartographie'
     ),
     'module_listener_options' => array(
         'module_paths' => array(

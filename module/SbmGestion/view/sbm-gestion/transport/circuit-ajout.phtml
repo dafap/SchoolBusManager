@@ -79,4 +79,15 @@ echo $this->formHidden($this->form->get('csrf'));
     </div> <?php // fiche-inner ?>
 	<div id="fiche-footer"></div>
 </div>
-<?php $this->inlineScript()->appendFile($this->basePath() . '/js/form-circuit.js'); ?>
+<?php $this->inlineScript()->captureStart(); ?>
+/**
+ * Copie le commentaire1 dans le commentaire2
+ */
+$(function() {
+	$("#comment-copy").click(
+			function() {
+				$("#circuit-commentaire2").append(
+						$("#circuit-commentaire1").val());
+			});
+});
+<?php $this->inlineScript()->captureEnd(); ?>
