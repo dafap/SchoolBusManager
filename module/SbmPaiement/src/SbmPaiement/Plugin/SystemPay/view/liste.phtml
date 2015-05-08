@@ -87,7 +87,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
-				url : '/paiement/'+action+'selectionpaiement/%d/%d',
+				url : '/sbmajaxfinance/'+action+'selectionnotification/id:%d',
 				success : function(data) {},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
@@ -97,7 +97,7 @@ $("#chk%d").change(function() {
 EOT;
             
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $notification->systempayId);
-            $jsCallback .= sprintf("$modele\n", $notification->systempayId, $this->page, $notification->systempayId);
+            $jsCallback .= sprintf("$modele\n", $notification->systempayId, $notification->systempayId);
             ?>
                 <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">

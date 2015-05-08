@@ -44,7 +44,7 @@ class Module extends AbstractModule implements BootstrapListenerInterface
         for ($millesime = Session::get('millesime', false); !$millesime; $millesime = Session::get('millesime', false)) {
             Session::set('millesime', $tCalendar->getDefaultMillesime());
         }
-        Session::set('as_libelle', $tCalendar->getAnneeScolaire($millesime));
+        Session::set('as', $tCalendar->getAnneeScolaire($millesime));
         
         //$eventManager = $e->getApplication()->getEventManager();
         //$moduleRouteListener = new ModuleRouteListener();

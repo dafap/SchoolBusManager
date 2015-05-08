@@ -79,7 +79,7 @@ $actions = array(
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
-				url : '/gestion/finance/'+action+'selectiontarif/%d/%d',
+				url : '/sbmajaxfinance/'+action+'selectiontarif/tarifId:%d',
 				success : function(data) {},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);

@@ -427,29 +427,6 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectionpaiementAction()
-    {
-        $page = $this->params('page', 1);
-        $paiementId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Paiements')
-            ->setSelection($paiementId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectionpaiementAction()
-    {
-        $page = $this->params('page', 1);
-        $paiementId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Paiements')
-            ->setSelection($paiementId, 0);
-        return json_encode(array());
-    }
-
-    /**
      * Liste des tarifs
      * (avec pagination)
      *
@@ -677,28 +654,5 @@ class FinanceController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
-    /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectiontarifAction()
-    {
-        $page = $this->params('page', 1);
-        $tarifId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Tarifs')
-            ->setSelection($tarifId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectiontarifAction()
-    {
-        $page = $this->params('page', 1);
-        $tarifId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Tarifs')
-            ->setSelection($tarifId, 0);
-        return json_encode(array());
     }
 }

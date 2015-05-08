@@ -123,7 +123,7 @@ echo $this->listeZoneActions($hiddens, $actions);
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
-				url : '/gestion/finance/'+action+'selectionpaiement/%d/%d',
+				url : '/sbmajaxfinance/'+action+'selectionpaiement/paiementId:%d',
 				success : function(data) {},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
@@ -134,7 +134,7 @@ $("#chk%d").change(function() {
 EOT;
         
         $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $paiement->paiementId);
-        $jsCallback .= sprintf("$modele\n", $paiement->paiementId, $this->page, $paiement->paiementId);
+        $jsCallback .= sprintf("$modele\n", $paiement->paiementId, $paiement->paiementId);
         ?>
          <tr
 				class="<?php echo $this->cycle(array("even", "odd"))->next();?>">

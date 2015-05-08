@@ -59,7 +59,7 @@ class TransportController extends AbstractActionController
     public function circuitListeAction()
     {
         $args = $this->initListe('circuits', function ($sm, $form) {
-            $form->setValueOptions('stationId', $sm->get('Sbm\Db\Select\StationsOuvertes'));
+            $form->setValueOptions('stationId', $sm->get('Sbm\Db\Select\Stations')->ouvertes());
             $form->setValueOptions('serviceId', $sm->get('Sbm\Db\Select\Services'));
         }, array(
             'stationId'
@@ -94,7 +94,7 @@ class TransportController extends AbstractActionController
         $form->setValueOptions('serviceId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\StationsOuvertes'))
+            ->get('Sbm\Db\Select\Stations')->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
             'data' => array(
@@ -203,7 +203,7 @@ class TransportController extends AbstractActionController
         $form->setValueOptions('serviceId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\StationsOuvertes'))
+            ->get('Sbm\Db\Select\Stations')->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
             'data' => array(
@@ -356,29 +356,6 @@ class TransportController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
-    /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectioncircuitAction()
-    {
-        $page = $this->params('page', 1);
-        $circuitId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Circuits')
-            ->setSelection($circuitId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectioncircuitAction()
-    {
-        $page = $this->params('page', 1);
-        $circuitId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Circuits')
-            ->setSelection($circuitId, 0);
-        return json_encode(array());
     }
 
     /**
@@ -658,29 +635,6 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectionclasseAction()
-    {
-        $page = $this->params('page', 1);
-        $classeId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\classes')
-            ->setSelection($classeId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectionclasseAction()
-    {
-        $page = $this->params('page', 1);
-        $classeId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\classes')
-            ->setSelection($classeId, 0);
-        return json_encode(array());
-    }
-
-    /**
      * =============================================== COMMUNES ==================================================
      */
     
@@ -922,29 +876,6 @@ class TransportController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
-    /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectioncommuneAction()
-    {
-        $page = $this->params('page', 1);
-        $communeId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Communes')
-            ->setSelection($communeId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectioncommuneAction()
-    {
-        $page = $this->params('page', 1);
-        $communeId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Communes')
-            ->setSelection($communeId, 0);
-        return json_encode(array());
     }
 
     /**
@@ -1205,29 +1136,6 @@ class TransportController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
-    /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectionetablissementAction()
-    {
-        $page = $this->params('page', 1);
-        $etablissementId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Etablissements')
-            ->setSelection($etablissementId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectionetablissementAction()
-    {
-        $page = $this->params('page', 1);
-        $etablissementId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Etablissements')
-            ->setSelection($etablissementId, 0);
-        return json_encode(array());
     }
 
     /**
@@ -1744,29 +1652,6 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectionserviceAction()
-    {
-        $page = $this->params('page', 1);
-        $serviceId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Services')
-            ->setSelection($serviceId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectionserviceAction()
-    {
-        $page = $this->params('page', 1);
-        $serviceId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Services')
-            ->setSelection($serviceId, 0);
-        return json_encode(array());
-    }
-
-    /**
      * =============================================== STATIONS ==================================================
      */
     
@@ -2127,29 +2012,6 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectionstationAction()
-    {
-        $page = $this->params('page', 1);
-        $stationId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Stations')
-            ->setSelection($stationId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectionstationAction()
-    {
-        $page = $this->params('page', 1);
-        $stationId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Stations')
-            ->setSelection($stationId, 0);
-        return json_encode(array());
-    }
-
-    /**
      * =============================================== TRANSPORTEURS ==================================================
      */
     
@@ -2443,28 +2305,5 @@ class TransportController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
-    /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectiontransporteurAction()
-    {
-        $page = $this->params('page', 1);
-        $transporteurId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Transporteurs')
-            ->setSelection($transporteurId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectiontransporteurAction()
-    {
-        $page = $this->params('page', 1);
-        $transporteurId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Transporteurs')
-            ->setSelection($transporteurId, 0);
-        return json_encode(array());
     }
 }

@@ -159,16 +159,16 @@
         },
         {
             "name": "tecnick.com/tcpdf",
-            "version": "6.2.6",
+            "version": "6.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "a2e8f5b505a7a14a4ed960313c4baf699fd1f4bb"
+                "reference": "3dee9e7f3a414875fd1d9f4f1dfc2433493a86d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/a2e8f5b505a7a14a4ed960313c4baf699fd1f4bb",
-                "reference": "a2e8f5b505a7a14a4ed960313c4baf699fd1f4bb",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/3dee9e7f3a414875fd1d9f4f1dfc2433493a86d2",
+                "reference": "3dee9e7f3a414875fd1d9f4f1dfc2433493a86d2",
                 "shasum": ""
             },
             "require": {
@@ -218,7 +218,7 @@
                 "pdf417",
                 "qrcode"
             ],
-            "time": "2015-01-28 18:51:40"
+            "time": "2015-04-29 16:13:58"
         },
         {
             "name": "zendframework/zendframework",
@@ -625,12 +625,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "111b7bc6deee830d9db0016229f184aee92754aa"
+                "reference": "7844297420672a5e5e404493a962a73f735d7bb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/111b7bc6deee830d9db0016229f184aee92754aa",
-                "reference": "111b7bc6deee830d9db0016229f184aee92754aa",
+                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/7844297420672a5e5e404493a962a73f735d7bb0",
+                "reference": "7844297420672a5e5e404493a962a73f735d7bb0",
                 "shasum": ""
             },
             "require": {
@@ -660,10 +660,7 @@
             "autoload": {
                 "psr-0": {
                     "ZendDeveloperTools": "src/"
-                },
-                "classmap": [
-                    "./Module.php"
-                ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -688,7 +685,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2015-04-06 03:50:15"
+            "time": "2015-04-26 22:28:10"
         },
         {
             "name": "zendframework/zenddiagnostics",

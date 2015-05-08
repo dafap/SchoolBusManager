@@ -11,9 +11,294 @@
  * @date 20 juillet 2014
  * @version 2014-1
  */
+use SbmCommun\Model\DateLib;
+
+function formatDate($date, $withTime = true)
+{
+    if ($withTime) {
+        $d = DateLib::formatDateTimeFromMysql($date);
+        if ($d == '01/01/1900 00:00:00') {
+            return '';
+        } else {
+            return $d;
+        }
+    } else {
+        $d = DateLib::formatDateFromMysql($date);
+        if ($d == '01/01/1900') {
+            return '';
+        } else {
+            return $d;
+        }
+    }
+}
+$structAffectations = array();
+if (count($this->affectations)) {
+    foreach ($this->affectations as $affectation) {
+        $structAffectations[$affectation['trajet']][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = array(
+            'service1Id' => $affectation['service1Id'],
+            'station1Id' => $affectation['station1Id'],
+            'station1' => $affectation['station1'],
+            'service2Id' => $affectation['service2Id'],
+            'station2Id' => $affectation['station2Id'],
+            'station2' => $affectation['station2']
+        );
+    }
+}
+unset($affectation);
+$disableAccordR1 = isset($structAffectations[1]);
+$disableAccordR2 = isset($structAffectations[2]);
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery/jquery.js'));
+$this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->captureStart();
+?>
+function initAccord() {
+<?php
+// cette fonction pour bloquer ou non les checkbox accordR1 et accordR2 au chargement de la page
+if ($disableAccordR1) {
+    echo '$("#eleve-accordR1").attr("disabled", true);' . PHP_EOL;
+    // echo '$("#block-affectationsr1").show();' . PHP_EOL;
+} else {
+    echo '$("#eleve-accordR1").removeAttr("disabled");' . PHP_EOL;
+    ;
+    // echo '$("#block-affectationsr1").hide();' . PHP_EOL;
+}
+if ($disableAccordR2) {
+    echo '$("#eleve-accordR2").attr("disabled", true);' . PHP_EOL;
+    // echo '$("#block-affectationsr2").show();' . PHP_EOL;
+} else {
+    echo '$("#eleve-accordR2").removeAttr("disabled");' . PHP_EOL;
+    // echo '$("#block-affectationsr2").hide();' . PHP_EOL;
+}
+?>
+}
+function montreDebutFin(ancomplet) {
+    if (ancomplet) {
+        $("#wrapper-dateDebut").hide();
+        $("#wrapper-dateFin").hide();
+    } else {
+        $("#wrapper-dateDebut").show();
+        $("#wrapper-dateFin").show();
+    }
+}
+function montreMotifDerogation(derogation) {
+    if (derogation) {
+        $("#wrapper-motifDerogation").show();
+    } else {
+        $("#wrapper-motifDerogation").hide();
+    }
+}
+function montreOngletGa(voir) {
+    if (voir) {
+        $("#tabs li").eq(1).show();
+    } else {
+        $("#tabs li").eq(1).hide();
+    }
+}
+// pour les fonctions suivantes r prend la valeur 'r1' ou 'r2'
+function montreDemande(r) {
+    if ($("#demande"+r+"radio0").is(":checked")) {
+        $("#block-demande"+r).hide();
+        $("#block-affectations"+r).hide();
+    } else {
+        $("#block-demande"+r).show();
+        $("#block-affectations"+r).show();
+    }
+}
+function montreMotifSubvention(accord, r) {
+    if (accord) {
+        $("#wrapper-motifRefus"+r).hide();
+        $("#wrapper-subvention"+r).hide();
+    } else {
+        $("#wrapper-motifRefus"+r).show();
+        $("#wrapper-subvention"+r).show();
+    }
+}
+function montreBlockAffectation(accord, r) {
+    if (accord) {
+        $("#block-affectations"+r).show();
+    } else {
+        $("#block-affectations"+r).hide();
+    }
+}
+function montreResponsable(r,data) {
+    var oresponsable = $.parseJSON(data);
+    $("#"+r+"-ligne1").html(oresponsable.titre+' '+oresponsable.nom+ ' '+oresponsable.prenom);
+    $("#"+r+"-ligne2").html(oresponsable.adresseL1+' '+oresponsable.adresseL2);
+    $("#"+r+"-ligne3").html(oresponsable.codePostal+' '+oresponsable.commune);
+    $("#"+r+"-ligne4").html('email: '+oresponsable.email);
+    $("#"+r+"-ligne5").html('Tél. '+oresponsable.telephoneF+' '+oresponsable.telephoneP+ ' '+oresponsable.telephoneT);
+}
+function majBlockaffectations(trajet) {
+    $('html', 'body').css('cursor','auto');  
+    var args1='eleveId:<?php echo $this->eleveId;?>/identite:<?php echo urlencode($this->identite)?>/trajet:'+trajet;
+    $.ajax({
+			url : '/sbmajaxeleve/blockaffectations/'+args1,
+			type: 'GET',
+			dataType: 'html',
+			success : function(data){
+			    var myid = '#block-affectationsr'+trajet;
+			    $(myid).empty();
+			    $(myid).append(data);
+			    $('html', 'body').css('cursor','auto');
+            },
+			error : function(xhr, ajaxOptions, thrownError) {
+				alert(xhr.status + " " + thrownError);
+				$('html', 'body').css('cursor','auto');
+			}
+	});
+	args2='eleveId:<?php echo $this->eleveId;?>/trajet:'+trajet;
+	$.ajax({
+	        url : '/sbmajaxeleve/enableaccordbutton/'+args2,
+	        dataType: 'json',
+	        success : function(dataJson){
+	            var myid = "#eleve-accordR"+trajet;
+	            if (dataJson.enable) {
+	                $(myid).removeAttr('disabled');
+	            } else {
+	                $(myid).attr('disabled','disabled');
+	            }
+	        },
+	        error : function(xhr, ajaxOptions, throxnError){
+	            alert(xhr.status + " " + thrownError);
+	        }
+	});
+}
+$(document).ready(function($) {
+$("#eleve-anneeComplete").click(function(){
+    montreDebutFin($(this).is(":checked"));
+});
+$("#eleve-derogation").click(function(){
+    montreMotifDerogation($(this).is(":checked"));
+});
+$("#eleve-ga").click(function(){
+    montreOngletGa($(this).is(":checked"));
+});
+$("#fiche-inner input[name=demandeR1]").click(function(){
+    montreDemande('r1');
+});
+$("#fiche-inner input[name=demandeR2]").click(function(){
+    montreDemande('r2');
+});
+$("#eleve-accordR1").click(function(){
+    montreMotifSubvention($(this).is(":checked"),'r1');
+    montreBlockAffectation($(this).is(":checked"),'r1');
+});
+$("#eleve-accordR2").click(function(){
+    montreMotifSubvention($(this).is(":checked"),'r2');
+    montreBlockAffectation($(this).is(":checked"),'r2');
+});
+$("input[type='text'][name^='distanceR']").dblclick(function(){
+    $(this).css("cursor", "wait");
+    var myid = '#'+$(this).attr('id');
+    var name = $(this).attr('name');
+    var n = 1;
+    if (name.indexOf('1') == -1) {
+        n = 2;
+    }
+    var id = '#eleve-responsable'+n+'Id';
+    var responsableid = $(id).val();
+    var etablissementid = $("#eleve-etablissementId").val();
+    var args = 'etablissementId:'+etablissementid+'/responsableId:'+responsableid;
+    $.ajax({
+			url : '/sbmajaxeleve/donnedistance/'+args,
+			type: 'GET',
+			dataType: 'json',
+			success : function(data){
+			    $(myid).val(data.distance);
+			    $(myid).css('cursor', 'auto');
+            },
+			error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+					$(myid).css('cursor','auto');
+			}
+	});
+});
+$("#eleve-responsable1Id").change(function(){
+    var responsableid = $(this).val();
+    $.ajax({
+			url : '/sbmajaxeleve/getresponsable/responsableId:'+responsableid,
+			success : function(data){montreResponsable('r1',data);},
+			error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+			}
+	});
+});
+$("#eleve-responsable2Id").change(function(){
+    var responsableid = $(this).val();
+    $.ajax({
+			url : '/sbmajaxeleve/getresponsable/responsableId:'+responsableid,
+			success : function(data){montreResponsable('r2',data);},
+			error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+			}
+	});
+});
+$("#tabs").on('click', "i[data-button=btnaffectation]", function(){
+    var trajet = $(this).attr('data-trajet');
+    var respid ='#eleve-responsable'+trajet+'Id';
+    var href = '/sbmajaxeleve/formaffectation/eleveId:<?php echo $this->eleveId;?>/trajet:'+trajet+$(this).attr('data-href')+'/responsableId:';
+    href = href.concat($(respid).val());
+    $("#winpopup").dialog({
+            draggable:true,
+            modal: true,
+            autoOpen: false,
+            height:400,
+            width:600,
+            resizable: false,
+            title:$(this).attr('title')//,
+            //position:'center'
+        });
+        $("#winpopup").load(href);
+        $("#winpopup").dialog("open");
+         
+        return false;
+});
+});
+<?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+
+montreDebutFin($("#eleve-anneeComplete").is(":checked"));
+montreMotifDerogation($("#eleve-derogation").is(":checked"));
+montreOngletGa($("#eleve-ga").is(":checked"));
+montreDemande('r1');
+montreDemande('r2');
+montreMotifSubvention($("#eleve-accordR1").is(":checked"),'r1');
+montreMotifSubvention($("#eleve-accordR2").is(":checked"),'r2');
+montreBlockAffectation($("#eleve-accordR1").is(":checked"),'r1');
+montreBlockAffectation($("#eleve-accordR2").is(":checked"),'r2');
+initAccord();
+$.ajax({
+		url : '/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable1Id").val(),
+		success : function(data){montreResponsable('r1',data);},
+		error : function(xhr, ajaxOptions, thrownError) {
+			alert(xhr.status + " " + thrownError);
+		}
+});
+if ($("#eleve-responsable2Id").val()) {
+$.ajax({
+		url : '/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable2Id").val(),
+		success : function(data){montreResponsable('r2',data);},
+		error : function(xhr, ajaxOptions, thrownError) {
+			alert(xhr.status + " " + thrownError);
+		}
+});
+}
+$("#tabs").tabs();
+<?php
+$this->inlineScript()->captureEnd();
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
-$url_ici = $this->url('sbmgestion/eleve', array('action'=> 'eleve-edit', 'page' => $this->page));
+// ============= fin du Javascript et JQuery =================================
+
+// urls utilisées
+$url_ici = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-edit',
+    'page' => $this->page
+));
 $url_map = $this->url('sbmgestion/eleve', array(
     'action' => 'localisation',
     'page' => $this->page
@@ -37,6 +322,7 @@ $actions = array(
     )
 );
 ?>
+<div id="winpopup"></div>
 <h1>Modification d'un élève</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
@@ -44,119 +330,262 @@ $actions = array(
         <?php echo $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
-	<div id="fiche-inner">
-<?php 
+	<div id="fiche-inner">	    
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('eleveId'));
 echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="sbm-page1">';
-echo '<div id="eleve-edit-nom" class="row-inner edit">' . $this->formRow($this->form->get('nom')) . '</div>';
-echo '<div id="eleve-edit-prenom" class="row-inner edit">' . $this->formRow($this->form->get('prenom')) . '</div>';
-echo '<div id="eleve-edit-dateN" class="row-inner edit">' . $this->formRow($this->form->get('dateN')) . '</div>';
-echo '<p>&nbsp;</p>';
 ?>
-<div id="tabs" class="sbm-tabs-label">
-<ul>
-<li><a href="#tabs-1">Responsable</a></li>
-<li><a href="#tabs-2">Garde alternée</a></li>
-<li><a href="#tabs-3">Scolarité</a></li>
-<li><a href="#tabs-4">Transport</a></li>
-<li><a href="#tabs-5">Facturation</a></li>
-<li><a href="#tabs-6">Prélèvement</a></li>
-<li><a href="#tabs-7">Historique</a>
-</ul>
-<div id="tabs-1" class="sbm-tabs-container">
-<?php 
-// Responsable 1
-echo '<div id="eleve-edit-responsable1Id" class="row-inner edit">' . $this->formRow($this->form->get('responsable1Id')) . '</div>';
-/*echo '<div id="elever1-edit-titre" class="row-inner edit">' . $this->formRow($this->formr1->get('titre')) . '</div>';
-echo '<div id="elever1-edit-nom" class="row-inner edit">' . $this->formRow($this->formr1->get('nom')) . '</div>';
-echo '<div id="elever1-edit-prenom" class="row-inner edit">' . $this->formRow($this->formr1->get('prenom')) . '</div>';
-echo '<div id="elever1-edit-telephoneF" class="row-inner edit">' . $this->formRow($this->formr1->get('telephoneF')) . '</div>';
-echo '<div id="elever1-edit-telephoneP" class="row-inner edit">' . $this->formRow($this->formr1->get('telephoneP')) . '</div>';
-echo '<div id="elever1-edit-telephoneT" class="row-inner edit">' . $this->formRow($this->formr1->get('telephoneT')) . '</div>';
-echo '<div id="elever1-edit-email" class="row-inner edit">' . $this->formRow($this->formr1->get('email')) . '</div>';
-echo '<div id="elever1-edit-adresseL1" class="row-inner edit">' . $this->formRow($this->formr1->get('adresseL1')) . '</div>';
-echo '<div id="elever1-edit-adresseL2" class="row-inner edit">' . $this->formRow($this->formr1->get('adresseL2')) . '</div>';
-echo '<div id="elever1-edit-codePostal" class="row-inner edit">' . $this->formRow($this->formr1->get('codePostal')) . '</div>';
-echo '<div id="elever1-edit-communeId" class="row-inner edit">' . $this->formRow($this->formr1->get('communeId')) . '</div>';*/
-?>
-</div>
-<div id="tabs-2" class="sbm-tabs-container">
-<?php 
-// Responsable 2 (Garde alternée)
-echo '<div id="eleve-edit-responsable2Id" class="row-inner edit">' . $this->formRow($this->form->get('responsable2Id')) . '</div>';
-/*echo '<div id="elever2-edit-titre" class="row-inner edit">' . $this->formRow($this->formr2->get('titre')) . '</div>';
-echo '<div id="elever2-edit-nom" class="row-inner edit">' . $this->formRow($this->formr2->get('nom')) . '</div>';
-echo '<div id="elever2-edit-prenom" class="row-inner edit">' . $this->formRow($this->formr2->get('prenom')) . '</div>';
-echo '<div id="elever2-edit-telephoneF" class="row-inner edit">' . $this->formRow($this->formr2->get('telephoneF')) . '</div>';
-echo '<div id="elever2-edit-telephoneP" class="row-inner edit">' . $this->formRow($this->formr2->get('telephoneP')) . '</div>';
-echo '<div id="elever2-edit-telephoneT" class="row-inner edit">' . $this->formRow($this->formr2->get('telephoneT')) . '</div>';
-echo '<div id="elever2-edit-email" class="row-inner edit">' . $this->formRow($this->formr2->get('email')) . '</div>';
-echo '<div id="elever2-edit-adresseL1" class="row-inner edit">' . $this->formRow($this->formr2->get('adresseL1')) . '</div>';
-echo '<div id="elever2-edit-adresseL2" class="row-inner edit">' . $this->formRow($this->formr2->get('adresseL2')) . '</div>';
-echo '<div id="elever2-edit-codePostal" class="row-inner edit">' . $this->formRow($this->formr2->get('codePostal')) . '</div>';
-echo '<div id="elever2-edit-communeId" class="row-inner edit">' . $this->formRow($this->formr2->get('communeId')) . '</div>';*/
-?>
-</div>
-<div id="tabs-3">
-<?php 
-// Scolarité
-/*echo '<div id="elevescolarite-edit-etablissement" class="row-inner edit">' . $this->formRow($this->formsco->get('etablissement')) . '</div>';
-echo '<div id="elevescolarite-edit-regime" class="row-inner edit">' . $this->formRow($this->formsco->get('regime')) . '</div>';
-echo '<div id="elevescolarite-edit-classe" class="row-inner edit">' . $this->formRow($this->formsco->get('classe')) . '</div>';*/
-echo '<p>Formulaire présentant l\'établissement scolaire, le régime, la classe, la dérogation.</p>';
-?>
-</div>
-<div id="tabs-4">
-<?php 
-// Transport
-// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
-echo '<p>Tableau des affectations avec bouton pour modifier / supprimer</p>';
-?>
-</div>
-<div id="tabs-5">
-<?php 
-// Facturation
-echo '<div id="eleve-edit-responsableFId" class="row-inner edit">' . $this->formRow($this->form->get('responsableFId')) . '</div>';
-// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
-echo '<p>Formulaire présentant les élaments financiers : tarif appliqué, responsable, Rib, subvention ...</p>';
-?>
-</div>
-<div id="tabs-6">
-<?php
-// Prélèvement
-// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
-echo '<p>Tableau présentant l\'historique de l\'élève avec les dates de création, modification, les années d\'inscription et l\'historique de facturation</p>';
-?>
-</div>
-<div id="tabs-7">
-<?php
-// Historique
-// ici, on tracera un tableau des jours | GA(1 ou 2) | services | point de montée | point de descente |
-echo '<p>Tableau présentant l\'historique de l\'élève avec les dates de création, modification, les années d\'inscription et l\'historique de facturation</p>';
-?>
-</div>
-</div>
-<?php 
-echo '<p>&nbsp;</p>';
-echo '<div id="eleve-edit-note" class="row-inner edit">' . $this->formRow($this->form->get('note')) . '</div>';
-echo '<div id="eleve-edit-note" class="row-inner edit">' . $this->formRow($this->form->get('selection')) . '</div>';
-echo '</fieldset>';
+        <fieldset class="sbm-page1">
+			<div id="commun" class="clearfix">
+				<div id="commun-col1" class="float-left">
+					<div id="wrapper-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom'));?></div>
+					<div id="wrapper-prenom" class="row-inner edit"><?php echo $this->formRow($this->form->get('prenom'));?></div>
+					<div id="wrapper-dateN" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateN'));?></div>
+					<div id="wrapper-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport'));?></div>
+				</div>
+				<div id="commun-col2" class="float-left left-10px">
+					<div id="wrapper-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
+					<div id="wrapper-classeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('classeId'));?></div>
+					<div id="commun-col2-periode" class="clearfix">
+						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
+						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
+						<div id="wrapper-dateFin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateFin'));?></div>
+					</div id="commun-col2-derogation" class="clearfix">
+					<div>
+						<div id="wrapper-derogation" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('derogation'));?></div>
+						<div id="wrapper-motifDerogation"
+							class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('motifDerogation'));?></div>
+					</div>
+				</div>
+				<div id="commun-col3" class="float-left left-10px">
+					<div id="wrapper-numero">
+						<div class="text-label">N° carte</div>
+						<div class="text-input"><?php echo $this->data['numero'];?></div>
+					</div>
+					<div id="wrapper-inscrit">
+						<div class="text-label">Etat</div>
+						<div class="text-input"><?php echo $this->data['etat'] == 'Rayé' ? '<span style="color: red;">Rayé</span>' : $this->data['etat'];?></div>
+					</div>
+					<div id="wrapper-district"><?php echo $this->formRow($this->form->get('district'));?></div>
+					<div id="wrapper-ga"><?php echo $this->formRow($this->form->get('ga'));?></div>
+				</div>
+			</div>
+			<div id="tabs" class="sbm-tabs-wrapper">
+				<ul>
+					<li><a href="#tabs-1">Responsable</a></li>
+					<li><a href="#tabs-2">Garde alternée</a></li>
+					<li><a href="#tabs-3">Historique</a>
+				
+				</ul>
+				<div id="tabs-1" class="sbm-tabs-container"><?php // Responsable 1?>
+				    <div id="tabs-1-r1" class="clearfix">
+						<div class="float-left">
+							<div id="wrapper-responsable1Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable1Id'));?></div>
+							<div id="wrapper-responsable1" class="wrapper-responsable">
+								<div id="r1-ligne1"></div>
+								<div id="r1-ligne2"></div>
+								<div id="r1-ligne3"></div>
+								<div id="r1-ligne4"></div>
+								<div id="r1-ligne5"></div>
+							</div>
+							<div class="clearfix">
+								<div id="wrapper-distanceR1" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR1'));?></div>
+								<div id="wrapper-demandeR1" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR1'));?></div>
+							</div>
+							<div id="block-demander1">
+								<div class="clearfix">
+									<div id="wrapper-accordR1" class="float-left"><?php echo $this->formRow($this->form->get('accordR1'));?></div>
+									<div id="wrapper-motifRefusr1" class="float-left"><?php echo $this->formRow($this->form->get('motifRefusR1'));?></div>
+								</div>
+								<div id="wrapper-subventionr1" class="row-inner edit"><?php echo $this->formRow($this->form->get('subventionR1'));?></div>
+							</div>
+						</div>
+						<div class="float-left left-10px">
+							<div id="block-affectationsr1" class="block-affectations">
+								<h3>
+									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
+										title="Ajouter une affectation pour <?php echo $this->identite;?>"
+										data-button="btnaffectation" data-trajet="1"
+										data-href="/op:add"></i>
+								</h3>
+				    <?php
+        if (isset($structAffectations[1])) {
+            $id = 1;
+            echo '<table class="eleve-affectations">';
+            foreach ($structAffectations[1] as $j => $affectationsParJours) {
+                // il faut décoder $j
+                $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
+                foreach ($affectationsParJours as $s => $affectationsSens) {
+                    $sens = array(
+                        1 => 'Aller',
+                        2 => 'Retour',
+                        3 => 'Aller-retour'
+                    )[$s];
+                    foreach ($affectationsSens as $rang => $affectation) {
+                        $idDiv = 'tabs-1-affectationsR1-' . $id;
+                        $args = '/jours:' . $j;
+                        $args .= '/sens:' . $s;
+                        $args .= '/correspondance:' . $rang;
+                        $args .= '/station1Id:' . $affectation['station1Id'];
+                        $args .= '/station2Id:' . ($affectation['station2Id'] ?  : 'null');
+                        $args .= '/service1Id:' . $affectation['service1Id'];
+                        $args .= '/service2Id:' . ($affectation['service2Id'] ?  : 'null');
+                        ?>
+								<tr>
+									<td class="first"><?php echo $jours;?></td>
+									<td class="next second"><?php echo $sens;?></td>
+									<td class="next third"><?php echo $affectation['service1Id']?></td>
+									<td class="next"><?php echo $affectation['station1']?></td>
+									<td class="next"><?php echo $affectation['station2']?></td>
+									<td class="next last"><i class="fam-car" title="Modifier une affectation"
+										data-button="btnaffectation" data-trajet="1"
+										data-href="<?php echo '/op:edit' . $args;?>"></i> <i
+										class="fam-car-delete" title="Supprimer une affectation"
+										data-button="btnaffectation" data-trajet="1"
+										data-href="<?php echo '/op:delete' . $args;?>"></i></td>
+								</tr>
+                        <?php
+                    }
+                    unset($affectation);
+                }
+                unset($affectationsSens);
+            }
+            unset($affectationsParJours);
+            echo '</table>';
+        }
+        ?>
+                            </div>
+						</div>
+					</div>
+				</div>
+				<div id="tabs-2" class="sbm-tabs-container">
+					<div id="tabs-2-r2" class="clearfix">
+						<div class="float-left">
+							<div id="wrapper-responsable2Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable2Id'));?></div>
+							<div id="wrapper-responsable2" class="wrapper-responsable">
+								<div id="r2-ligne1"></div>
+								<div id="r2-ligne2"></div>
+								<div id="r2-ligne3"></div>
+								<div id="r2-ligne4"></div>
+								<div id="r2-ligne5"></div>
+							</div>
+							<div class="clearfix">
+								<div id="wrapper-distanceR2" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR2'));?></div>
+								<div id="wrapper-demandeR2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR2'));?></div>
+							</div>
+							<div id="block-demander2">
+								<div class="clearfix">
+									<div id="wrapper-accordR2" class="float-left"><?php echo $this->formRow($this->form->get('accordR2'));?></div>
+									<div id="wrapper-motifRefusr2" class="float-left"><?php echo $this->formRow($this->form->get('motifRefusR2'));?></div>
+								</div>
+								<div id="wrapper-subventionr2" class="row-inner edit"><?php echo $this->formRow($this->form->get('subventionR2'));?></div>
+							</div>
+						</div>
+						<div class="float-left-10px">
+							<div id="block-affectationsr2" class="block-affectations">
+								<h3>
+									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
+										title="Ajouter une affectation pour <?php echo $this->identite;?>"
+										data-button="btnaffectation" data-trajet="2"
+										data-href="/op:add"></i>
+								</h3>
+				    <?php
+        if (isset($structAffectations[2])) {
+            $id = 1;
+            echo '<table class="eleve-affectations">';
+            foreach ($structAffectations[2] as $j => $affectationsParJours) {
+                // il faut décoder $j
+                $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
+                foreach ($affectationsParJours as $s => $affectationsSens) {
+                    $sens = array(
+                        1 => 'Aller',
+                        2 => 'Retour',
+                        3 => 'Aller-retour'
+                    )[$s];
+                    foreach ($affectationsSens as $rang => $affectation) {
+                        $idDiv = 'tabs-2-affectationsR2-' . $id;
+                        $args = '/jours:' . $j;
+                        $args .= '/sens:' . $s;
+                        $args .= '/correspondance:' . $rang;
+                        $args .= '/station1Id:' . $affectation['station1Id'];
+                        $args .= '/station2Id:' . ($affectation['station2Id'] ?  : 'null');
+                        $args .= '/service1Id:' . $affectation['service1Id'];
+                        $args .= '/service2Id:' . ($affectation['service2Id'] ?  : 'null');
+                        ?>
+								<tr>
+									<td class="first"><?php echo $jours;?></td>
+									<td class="next second"><?php echo $sens;?></td>
+									<td class="next third"><?php echo $affectation['service1Id']?></td>
+									<td class="next"><?php echo $affectation['station1']?></td>
+									<td class="next"><?php echo $affectation['station2']?></td>
+									<td class="next last"><i class="fam-car" title="Modifier une affectation"
+										data-button="btnaffectation" data-trajet="2"
+										data-href="<?php echo '/op:edit' . $args;?>"></i> <i
+										class="fam-car-delete" title="Supprimer une affectation"
+										data-button="btnaffectation" data-trajet="2"
+										data-href="<?php echo '/op:delete' . $args;?>"></i></td>
+								</tr>
+                        <?php
+                    }
+                }
+                echo '</table>';
+            }
+        }
+        ?>
+                            </div>
+						</div>
+					</div>
+				</div>
+				<div id="tabs-3" class="sbm-tabs-container" class="clearfix">
+					<div id="" tabs-3-col1" class="float-left">
+						<h3>Identité de l'élève</h3>
+						<div id="#eleve-dateCreation">
+							<div class="eleve-tabs-3-col-1-label">Date de création</div><?php echo formatDate($this->historique['eleve']['dateCreation']);?></div>
+						<div id="#eleve-dateModification">
+							<div class="eleve-tabs-3-col-1-label">Date de modification</div><?php echo formatDate($this->historique['eleve']['dateModification']);?></div>
+						<h3>Scolarité de l'élève</h3>
+						<div id="#scolarite-dateInscription">
+							<div class="eleve-tabs-3-col-1-label">Date d'inscription</div><?php echo formatDate($this->historique['scolarite']['dateInscription']);?></div>
+						<div id="#scolarite-dateModification">
+							<div class="eleve-tabs-3-col-1-label">Date de modification</div><?php echo formatDate($this->historique['scolarite']['dateModification']);?></div>
+					</div>
+					<div id="" tabs-3-col2" class="float-left left-10px">
+						<h3>Responsable 1</h3>
+						<div id="#responsable1-dateCreation">
+							<div class="eleve-tabs-3-col-2-label">Date de création</div><?php echo formatDate($this->historique['responsable1']['dateCreation']);?></div>
+						<div id="#responsable1-dateModification">
+							<div class="eleve-tabs-3-col-2-label">Date de modification</div><?php echo formatDate($this->historique['responsable1']['dateModification']);?></div>
+						<div id="#responsable1-dateDemenagement">
+							<div class="eleve-tabs-3-col-2-label">Date de déménagement</div><?php echo formatDate($this->historique['responsable1']['dateDemenagement'], false);?></div>
+					</div>
+				<?php if (array_key_exists('responsable2', $this->historique)):?>
+				    <div id="" tabs-3-col3" class="float-left left-10px">
+						<h3>Responsable 2</h3>
+						<div id="#responsable2-dateCreation">
+							<div class="eleve-tabs-3-col-3-label">Date de création</div><?php echo formatDate($this->historique['responsable2']['dateCreation']);?></div>
+						<div id="#responsable2-dateModification">
+							<div class="eleve-tabs-3-col-3-label">Date de modification</div><?php echo formatDate($this->historique['responsable2']['dateModification']);?></div>
+						<div id="#responsable2-dateDemenagement">
+							<div class="eleve-tabs-3-col-3-label">Date de déménagement</div><?php echo formatDate($this->historique['responsable2']['dateDemenagement'], false);?></div>
+					</div>
+				<?php endif;?>
+                </div>
 
-echo '<div id="eleve-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
-
+			</div>
+			<div id="wrapper-commentaire" class="row-inner edit top-6px"><?php echo $this->formRow($this->form->get('commentaire'));?></div>
+		</fieldset>
+<?php
+echo '<div id="eleve-edit-buttons" class="row-inner edit left-95px">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) . '</div>';
 echo $this->form()->closeTag();
 ?>
-    </div><?php // fiche_inner ?>
-	<div id="fiche-footer"></div>
-</div><?php // fiche_wrapper ?>
-
+	</div><?php // fiche_inner ?>
+<div id="fiche-footer"></div>
+</div>
 <?php
-// lance le script tabs
-$this->inlineScript()->captureStart();
-echo <<<'JS'
-    $( "#tabs" ).tabs();
-JS;
-$this->inlineScript()->captureEnd();
+// fiche_wrapper
+if (count($this->form->getMessages())) {
+    echo '<p><u>DEBUG</u></p>';
+    var_dump($this->form->getMessages());
+}
 ?>

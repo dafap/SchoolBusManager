@@ -60,7 +60,7 @@ class Calendar extends AbstractSbmTable
         if (! $resultset->count()) {
             throw new Exception(sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime, $millesime + 1));
         }
-        return $resultset->current()->libelle;
+        return $resultset->current()->getArrayCopy();
     }
     
     public function getMillesime($millesime)

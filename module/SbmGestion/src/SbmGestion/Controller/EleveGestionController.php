@@ -100,7 +100,7 @@ class EleveGestionController extends AbstractActionController
             'page' => $page
         )));
         if ($args['op'] == 2) {
-            $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\StationsOuvertes');
+            $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes();
             $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
             $formDecision->setValueOptions('station1Id', $values_options1)
                 ->setValueOptions('station2Id', $values_options1)
@@ -128,7 +128,7 @@ class EleveGestionController extends AbstractActionController
                         // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase 2. Pour le moment, mettre la décision en session
                         $this->setToSession('decision', $decision);
                         $formDecision = new AffectationDecision($args['trajet'], 2);
-                        $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\StationsOuvertes');
+                        $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes();
                         $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
                         $formDecision->setValueOptions('station1Id', $values_options1)
                             ->setValueOptions('station2Id', $values_options1)

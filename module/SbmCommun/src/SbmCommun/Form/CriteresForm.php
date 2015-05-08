@@ -87,6 +87,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         $e = $this->get($element);
         $e->setValueOptions($values_options);
+        return $this;
     }
 
     /**

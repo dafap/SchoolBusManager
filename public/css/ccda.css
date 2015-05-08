@@ -12,6 +12,13 @@ body {
 	width: 1170px;
 	padding: 0;
 }
+input, select, textarea, button {
+	font-family: inherit;
+	font-size: 1em;
+}
+select {
+	letter-spacing: -1px;
+}
 input[type="submit"]:hover {
 	font-weight: bold;
 }
@@ -87,6 +94,9 @@ th, td {
 }
 .top-6px {
 	margin-top: 6px;
+}
+.top-18px {
+	margin-top: 18px;
 }
 .left-10px {
 	margin-left: 10px;
@@ -261,7 +271,7 @@ label.sbm-label-top {
 	position: relative;
 }
 #bienvenue a {
-	color: #91abcb;
+	color: #1c94c4;
 	text-decoration: none;
 }
 #bienvenue a:hover {
@@ -340,7 +350,7 @@ div.pagination a.page {
 	margin-left: 3px;
 	margin-right: 3px;
 	text-decoration: none;
-	color: #91abcb
+	color: #1c94c4
 }
 div.pagination a.page:hover {
 	color: #156486;
@@ -510,6 +520,109 @@ div#fiche-inner div.row-inner input.cancel {
 }
 
 /*-------------- Fiche eleves -----------------------*/
+#fiche-inner #eleve {
+	line-height: 1.2em;
+}
+#fiche-inner #eleve #commun-col1 {
+	width: 415px;
+}
+#fiche-inner #eleve #commun label {
+	display: inline-block;
+	padding-left: 5px;
+}
+#fiche-inner #eleve #commun-col1 label {
+	width: 140px;
+}
+#fiche-inner #eleve #commun-col2 label {
+	width: 100px;
+}
+#fiche-inner #eleve #commun-col2-periode label {
+	width: inherit;
+	margin-right: 3px;
+}
+#fiche-inner #eleve #commun-col3 > div {
+	min-height: 19px;
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
+#fiche-inner #eleve #commun-col3 label {
+	display: inline-block;
+	padding-left: 5px;
+	min-width: 105px;
+}
+#fiche-inner #eleve #commun div.text-label {
+	display: inline-block;
+	padding-left: 5px;
+	min-width: 80px;
+}
+#fiche-inner #eleve #commun div.text-input {
+	display: inline-block;
+}
+#fiche-inner #eleve #tabs {
+	font-size: 1em;
+}
+#fiche-inner #eleve #tabs div.sbm-tabs-container {
+	min-height: 15em;
+}
+#fiche-inner #eleve #tabs a {
+	font-size: 0.8725em;
+}
+#fiche-inner #eleve #tabs label {
+	display: inline-block;
+	margin-right: 5px;
+	color: #333333;
+}
+#fiche-inner #eleve .wrapper-responsable {
+	min-height: 6em;
+}
+#fiche-inner #eleve #wrapper-joursTransport label {
+	width: 4em;
+	padding-left: 0;
+}
+#fiche-inner #eleve #wrapper-commentaire textarea {
+	width : 99.5%;
+	border-radius: 4px 4px 4px 4px;
+}
+#fiche-inner #eleve #wrapper-commentaire label {
+	display: block;
+	float: left;
+	left: 20px;
+}
+#fiche-inner #eleve .block-affectations h3 {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+}
+#fiche-inner #tabs-3 div.eleve-tabs-3-col-1-label {
+	display: inline-block;
+	width : 150px;
+	padding-left: 5px;
+}
+#fiche-inner #tabs-3 div.eleve-tabs-3-col-2-label,
+#fiche-inner #tabs-3 div.eleve-tabs-3-col-3-label {
+	display: inline-block;
+	width : 170px;
+	padding-left: 5px;
+}
+table.eleve-affectations {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+	max-width: 695px;
+}
+table.eleve-affectations td.next {
+	border-left: 1px solid #fdddcc;
+}
+table.eleve-affectations td.first {
+	width: 106px;
+}
+table.eleve-affectations td.second {
+	width: 81px;
+}
+table.eleve-affectations td.third {
+	width: 50px;
+}
+table.eleve-affectations td.last {
+	width: 42px;
+}
 /*-------------- Fiche etablissements ---------------*/
 #fiche-inner #etablissement label {
 	display: inline-block;
@@ -683,16 +796,16 @@ input.sbm-width-10c, select.sbm-width-10c {
 input.sbm-width-15c, select.sbm-width-15c {
 	width: 10em;
 }
-input.sbm-width-20c, select.sbm-width-20c {
+input.sbm-width-20c, select.sbm-width-20c, textarea.sbm-width-20c {
 	width: 13em;
 }
-input.sbm-width-25c, select.sbm-width-25c {
+input.sbm-width-25c, select.sbm-width-25c, textarea.sbm-width-25c {
 	width: 17em;
 }
-input.sbm-width-30c, select.sbm-width-30c {
+input.sbm-width-30c, select.sbm-width-30c, textarea.sbm-width-30c {
 	width: 20em;
 }
-input.sbm-width-35c, select.sbm-width-35c {
+input.sbm-width-35c, select.sbm-width-35c, textarea.sbm-width-35c {
 	width: 23em;
 }
 input.sbm-width-40c, select.sbm-width-40c, textarea.sbm-width-40c {

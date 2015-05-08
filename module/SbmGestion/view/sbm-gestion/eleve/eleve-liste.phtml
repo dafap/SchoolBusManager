@@ -33,13 +33,12 @@ $modele_chkCallback = <<<EOT
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
-				url : '/gestion/eleve/'+action+'selectioneleve/%d/%d',
+				url : '/sbmajaxeleve/'+action+'selectioneleve/eleveId:%d',
 				success : function(data) {},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
 				}
 			});
-    //alert(action);
   });\n
 EOT;
 
@@ -50,7 +49,36 @@ $js_op = 'javascript:window.document.getElementById(\'op%s%s\').value=\'%s\';';
 // le paginateur
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
-$eleves = $this->paginator->getCurrentItems();
+try {
+    $eleves = $this->paginator->getCurrentItems();
+} catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+    // affichage d'une page d'erreur
+    ?>
+<h1>Liste des élèves</h1>
+<div id="liste-wrapper">
+	<div id="liste-inner">
+	<pre>
+	  <?php echo $e->getMessage();?>
+	</pre>
+	</div>
+	<div id="liste-footer">
+		<div class="criteres-wrapper">
+<?php
+    if (! is_null($this->criteres_form)) {
+        echo $this->form()->openTag($this->criteres_form);
+        echo $this->formCollection($this->criteres_form, true);
+        echo $this->form()->closeTag();
+        return;
+    }
+    ?>
+        </div>
+	</div>
+</div>
+<?php
+// fin du catch (affichage d'une page d'erreur)
+}
+// affichage d'un message description au bas du tableau si on utilise la couleur rouge
+$afficheRouge = false;
 
 // les url à utiliser
 $url_ici = $this->url('sbmgestion/eleve', array(
@@ -63,15 +91,15 @@ $url_responsable = $this->url('sbmgestion/eleve', array(
 ));
 $url_edit = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-edit',
-    'page' => $this->page,
+    'page' => $this->page
 ));
 $url_delete = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-suppr',
-    'page' => $this->page,
+    'page' => $this->page
 ));
 $url_group = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-group',
-    'page' => $this->page,
+    'page' => $this->page
 ));
 $url_ajouter = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-ajout',
@@ -135,7 +163,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Né(e) le</th>
 					<th>Responsable 1</th>
 					<th>Responsable 2</th>
-					<th>Paiement par</th>
+					<th>Etablissement scolaire</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
@@ -187,50 +215,36 @@ echo $this->flashMessenger()->render('default');
                 ), array(
                     'style' => 'display: inline;'
                 ));
-                 $itemR2 .= $r;
-           } else {
+                $itemR2 .= $r;
+            } else {
                 $itemR2 = '';
             }
-            // responsable financier
-            if ($eleve->responsableFId) {
-                $r = $this->escapehtml($eleve->responsableFNomPrenom);
-                $itemRf = $this->listeLigneActions($eleve->eleveId . 'rf', array(
-                    'responsableId' => $eleve->responsableFId,
-                    'info' => $r,
-                    'origine' => $url_ici
-                ), array(
-                    'rf' => array(
-                        'class' => 'fam-magnifier',
-                        'formaction' => $url_responsable,
-                        'title' => 'Voir sa fiche',
-                        'onclick' => sprintf($js_op, $eleve->eleveId, 'rf', 'voir rf')
-                    ),
-                    'localiser' => array(
-                        'class' => 'fam-map-magnify',
-                        'formaction' => $url_map,
-                        'title' => 'Localiser cette adresse sur la carte',
-                        'onclick' => sprintf($js_op, $eleve->eleveId, 'rf', 'localiser rf')
-                    )
-                ), array(
-                    'style' => 'display: inline;'
-                ));
-                $itemRf .= $r;
-            } else {
-                $itemRf = $this->escapehtml($eleve->responsableFNomPrenom);
-            }           
             // selection
             $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve->eleveId);
-            $js_chkCallback .= sprintf($modele_chkCallback, $eleve->eleveId, $this->page, $eleve->eleveId);
+            $js_chkCallback .= sprintf($modele_chkCallback, $eleve->eleveId, $eleve->eleveId);
+            // tr css
+            $tr_css = $this->cycle(array(
+                "even",
+                "odd"
+            ))->next();
+            if ($eleve->demandeR1 == 2 || $eleve->demandeR2 == 2) {
+                $rouge = $eleve->accordR1 + $eleve->accordR2 == 0;
+            } else {
+                $rouge = ($eleve->district == 0 && $eleve->derogation == 0) || ($eleve->demandeR1 + $eleve->demandeR2 == 0) || ($eleve->distanceR1 < 1.0 && $eleve->distanceR2 < 1.0);
+            }
+            if ($rouge) {
+                $tr_css .= ' alert';
+                $afficheRouge = true;
+            }
             ?>
-         <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+         <tr class="<?php echo $tr_css;?>">
 					<td class="numero"><?php echo $eleve->numero; ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($eleve->nom); ?></td>
 					<td class="prenom"><?php echo $this->escapeHtml($eleve->prenom); ?></td>
-					<td class="dateN"><?php echo $this->escapehtml($eleve->dateN); ?></td>
+					<td class="dateN"><?php echo $this->escapeHtml($eleve->dateN); ?></td>
 					<td class="responsable1"><?php echo $itemR1; ?></td>
 					<td class="responsable2"><?php echo $itemR2; ?></td>
-					<td class="responsableF"><?php echo $itemRf; ?></td>
+					<td class="etablissement"><?php echo $this->escapeHtml($eleve->etablissement . ' - ' . $eleve->communeEtablissement);?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve->eleveId, $eleve->selection); ?></td>
 					<td class="boutons">
             <?php
@@ -266,15 +280,22 @@ echo $this->flashMessenger()->render('default');
         <?php endforeach;?>
     </tbody>
 		</table>
+		<?php if ($afficheRouge) : ?>
+		<p class="description"><span class="alert">Les lignes écrites  en couleur rouge</span> correspondent à des élèves hors secteur et sans dérogation ou 
+		dont le(s) domicile(s) se situe(nt) à moins d'un kilomètre de l'établissement scolaire fréquenté.</p>
+		<?php endif; ?>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
 		<div class="criteres-wrapper">
-		<?php if (!is_null($this->criteres_form)) {
-		    echo $this->form()->openTag($this->criteres_form); 
-		    echo $this->formCollection($this->criteres_form, true); 
-		    echo $this->form()->closeTag();
-		}?>
+		<?php
+
+if (! is_null($this->criteres_form)) {
+    echo $this->form()->openTag($this->criteres_form);
+    echo $this->formCollection($this->criteres_form, true);
+    echo $this->form()->closeTag();
+}
+?>
 	    </div>
 	</div>
 </div>

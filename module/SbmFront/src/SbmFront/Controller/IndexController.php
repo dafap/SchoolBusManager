@@ -51,10 +51,11 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $tResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
-        return new ViewModel(array(
-            'args' => $tResponsables->getRecordByEmail(null),
-            'x' => null
+        $view = new ViewModel(array(
+            'args' => null,
+            'x' => 'Test'
         ));
+        $view->setTerminal(true);
+        return $view;
     }
 }

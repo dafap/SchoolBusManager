@@ -100,7 +100,7 @@ echo $this->flashMessenger()->render('default');
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
-				url : '/gestion/transport/'+action+'selectioncircuit/%d/%d',
+				url : '/sbmajaxtransport/'+action+'selectioncircuit/circuitId:%d',
 				success : function(data) {},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
@@ -110,7 +110,7 @@ $("#chk%d").change(function() {
 EOT;
             
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $circuit->circuitId);
-            $jsCallback .= sprintf("$modele\n", $circuit->circuitId, $this->page, $circuit->circuitId);
+            $jsCallback .= sprintf("$modele\n", $circuit->circuitId, $circuit->circuitId);
             ?>
             <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">

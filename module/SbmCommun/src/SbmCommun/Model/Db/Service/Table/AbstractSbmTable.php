@@ -50,7 +50,7 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * objet TableGateway
      *
-     * @var TableGateway
+     * @var \Zend\Db\TableGateway\TableGateway
      */
     protected $table_gateway;
 
@@ -237,7 +237,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      * @param \Zend\Db\Sql\Where|null $where            
      * @param array|string|null $order            
      *
-     * @return ResultSet
+     * @return \Zend\Db\ResultSet\HydratingResultSet
      */
     public function fetchAll($where = null, $order = null)
     {
@@ -304,17 +304,19 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Supprime l'enregistrement d'identifiant donné ou les enregistrements de where donnés
      *
-     * @param int|string|array|Where $id
+     * @param int|string|array|Where|ObjectDataInterface $item
      *            identifiant ou where
      * @return int
      */
-    public function deleteRecord($id)
+    public function deleteRecord($item)
     {
-        if (is_array($id) || $id instanceof Where) {
-            $array_where = $id;
+        if ($item instanceof ObjectDataInterface) {
+            $array_where = $item->getId();
+        } elseif (is_array($item) || $item instanceof Where) {
+            $array_where = $item;
         } else {
             $array_where = array(
-                $this->id_name . ' = ?' => $id
+                $this->id_name . ' = ?' => $item
             );
         }
         
@@ -364,6 +366,8 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Mise à jour d'un enregistrement dans une table.
      * Si l'enregistrement est absent on lance une exception
+     * ATTENTION !!!
+     * Cette méthode ne convient pas lorsqu'on change la pk (ou une partie de la pk lorsqu'elle est basée sur plusieurs colonnes)
      *
      * @param ObjectData $obj_data            
      * @throws Exception

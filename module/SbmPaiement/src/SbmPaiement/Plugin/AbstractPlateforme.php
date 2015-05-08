@@ -393,7 +393,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getAnneeScolaire()
     {
-        return Session::get('as_libelle');
+        return Session::get('as')['libelle'];
     }
     
     /**

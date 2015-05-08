@@ -32,7 +32,7 @@ class Bienvenue extends AbstractHelper
     public function __invoke()
     {
         if ($this->getAuthService()->hasIdentity()) {
-            $annee_scolaire = Session::get('as_libelle');
+            $annee_scolaire = Session::get('as')['libelle'];
             $identity = $this->getAuthService()->getIdentity();
             $bienvenue = $identity['prenom'] . ' ' . $identity['nom'];
             $view = $this->getView();

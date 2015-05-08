@@ -24,7 +24,7 @@ class Criteres implements ArraySerializableInterface
      *
      * @var array
      */
-    private $data = array();
+    protected  $data = array();
 
     /**
      * Nom réel de la table dans la base de donnée

@@ -6,7 +6,7 @@ use Zend\Db\Sql\Select;
  * Découpage en `eleves`, `scolarites`, `affectations` et `responsables`
  *
  * @project sbm
- * 
+ *
  * @package SbmInstallation/db_design
  * @filesource vue.eleves.php
  *             @encodage UTF-8
@@ -84,6 +84,86 @@ return array(
         ),
         'join' => array(
             array(
+                'table' => 'scolarites',
+                'type' => 'table',
+                'alias' => 'sco',
+                'relation' => 'sco.eleveId = ele.eleveId',
+                'fields' => array(
+                    array(
+                        'field' => 'millesime'
+                    ),
+                    array(
+                        'field' =>'etablissementId'
+                    ),
+                    array(
+                        'field' => 'classeId'
+                    ),
+                    array(
+                        'field' => 'inscrit'
+                    ),
+                    array(
+                        'field' => 'paiement'
+                    ),
+                    array(
+                        'field' => 'district'
+                    ),
+                    array(
+                        'field' => 'derogation'
+                    ),
+                    array(
+                        'field' => 'distanceR1'
+                    ),
+                    array(
+                        'field' => 'distanceR2'
+                    ),
+                    array(
+                        'field' => 'demandeR1'
+                    ),
+                    array(
+                        'field' => 'demandeR2'
+                    ),
+                    array(
+                        'field' => 'accordR1'
+                    ),
+                    array(
+                        'field' => 'accordR2'
+                    ),
+                    array(
+                        'field' => 'subventionR1'
+                    ),
+                    array(
+                        'field' => 'subventionR2'
+                    )
+                )
+            ),
+            array(
+                'table' => 'etablissements',
+                'type' => 'table',
+                'alias' => 'eta',
+                'relation' => 'sco.etablissementId = eta.etablissementId',
+                'fields' => array(
+                    array(
+                        'expression' =>array(
+                            'value' => 'CASE WHEN eta.alias IS NULL THEN eta.nom ELSE eta.alias END',
+                            'type' => 'varchar(45)'
+                        ),
+                        'alias' => 'etablissement'
+                    )
+                )
+            ),
+            array(
+                'table' => 'communes',
+                'type' => 'table',
+                'alias' => 'com',
+                'relation' => 'com.communeId = eta.communeId',
+                'fields' => array(
+                    array(
+                        'field' =>'nom',
+                        'alias' => 'communeEtablissement'
+                    )
+                )
+            ),
+            array(
                 'table' => 'responsables', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
                 'alias' => 'r1', // optionnel
@@ -114,7 +194,7 @@ return array(
                 ),
                 'jointure' => Select::JOIN_LEFT
             ),
-            array(
+            /*array(
                 'table' => 'responsables',
                 'type' => 'table',
                 'alias' => 'rf',
@@ -129,7 +209,7 @@ return array(
                     )
                 ),
                 'jointure' => Select::JOIN_LEFT
-            )
+            )*/
         )
     )
 );

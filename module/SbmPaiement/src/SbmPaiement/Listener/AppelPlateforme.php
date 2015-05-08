@@ -69,6 +69,8 @@ class AppelPlateforme implements ListenerAggregateInterface
     {
         $sm = $e->getTarget();
         $params = $e->getParams();
+        // où sont mes certificats ?
+        $cacert = realpath(__DIR__ . '/../../../config') . DIRECTORY_SEPARATOR . 'cacert.pem';
         // ouvre l'objet de la plateforme
         $objectPlateforme = $sm->get('SbmPaiement\Plugin\Plateforme');
         // appel en post
@@ -78,6 +80,8 @@ class AppelPlateforme implements ListenerAggregateInterface
             CURLOPT_POSTFIELDS => $objectPlateforme->prepareAppel($params),
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_CAINFO => $cacert,
+            CURLOPT_SSL_VERIFYPEER => true
         );
         curl_setopt_array($ch, $options);
         $fm = new \Zend\Mvc\Controller\Plugin\FlashMessenger();

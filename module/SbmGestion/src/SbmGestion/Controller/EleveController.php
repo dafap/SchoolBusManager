@@ -14,6 +14,8 @@
 namespace SbmGestion\Controller;
 
 use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
+use Zend\Json\Json;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate;
@@ -22,14 +24,37 @@ use SbmCartographie\Model\Point;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Model\StdLib;
+use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\Eleve as FormEleve;
+use SbmGestion\Form\Eleve\EditForm as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
 
 class EleveController extends AbstractActionController
 {
 
+    private function getFormAffectationDecision()
+    {
+        $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes();
+        $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
+        $form = new \SbmGestion\Form\AffectationDecision($this->params('page', 1), 2);
+        $form->remove('back');
+        $form->setAttribute('action', $this->url()->fromRoute('sbmgestion/eleve', array('action' => 'testvalidate')));
+        $form->setValueOptions('station1Id', $values_options1)
+        ->setValueOptions('station2Id', $values_options1)
+        ->setValueOptions('service1Id', $values_options2)
+        ->setValueOptions('service2Id', $values_options2);
+        return $form;
+    }
+    public function testAction()
+    {
+        $form = $this->getFormAffectationDecision();
+        
+        $view = new ViewModel(array('form' => $form));
+        $view->setTerminal(true);
+        return $view;
+    }
+    
     public function indexAction()
     {
         $prg = $this->prg();
@@ -39,22 +64,75 @@ class EleveController extends AbstractActionController
         return new ViewModel();
     }
 
+    /**
+     * On ne peut pas utiliser la méthode initListe('eleves') parce que l'objectDataCriteres est différent (méthode getWhere particulière)
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function eleveListeAction()
     {
-        $args = $this->initListe('eleves');
-        if ($args instanceof Response)
-            return $args;
-        elseif (array_key_exists('cancel', $args)) {
-            return $this->redirect()->toRoute('sbmgestion/eleve');
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (cas du paginator ou de F5 )
+            $this->sbm_isPost = false;
+            $args = Session::get('post', array(), $this->getSessionNamespace());
+        } else {
+            // c'était un post ; on le met en session si ce n'est pas un retour ou un cancel
+            $args = $prg;
+            $retour = StdLib::getParam('op', $args, '') == 'retour';
+            if ($retour) {
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit. Comme pour un get, on récupère ce qui est en session.
+                $this->sbm_isPost = false;
+                $args = Session::get('post', array(), $this->getSessionNamespace());
+            } else {
+                if (array_key_exists('cancel', $args)) {
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $this->redirect()->toRoute('sbmgestion/eleve');
+                        ;
+                    }
+                } elseif (array_key_exists('origine', $args)) {
+                    $this->redirectToOrigin()->setBack($args['origine']);
+                    unset($args['origine']);
+                }
+                $this->sbm_isPost = true;
+                Session::set('post', $args, $this->getSessionNamespace());
+            }
         }
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmGestion\Form\Eleve\CriteresForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\EtablissementsDesservis'))
+            ->setValueOptions('classeId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Classes'));
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\Criteres($criteres_form->getElementNames());
         
+        if ($this->sbm_isPost) {
+            $criteres_form->setData($args);
+            if ($criteres_form->isValid()) {
+                $criteres_obj->exchangeArray($args);
+            }
+        }
+        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas de post ou invalide)
+        if (! $criteres_form->hasValidated() && ! empty($args)) {
+            $criteres_obj->exchangeArray($args);
+            $criteres_form->setData($criteres_obj->getArrayCopy());
+        }
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Eleves')
-                ->paginator($args['where']),
+                ->paginator($criteres_obj->getWhere(), array(
+                'nom',
+                'prenom'
+            )),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
-            'criteres_form' => $args['form']
+            'criteres_form' => $criteres_form
         ));
     }
 
@@ -143,24 +221,53 @@ class EleveController extends AbstractActionController
                 'page' => $currentPage
             ));
         }
-        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
+        $tEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
+        $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+        $qAffectations = $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations'); // à changer par une requête pour avoir les noms des arrêts
+                                                                                                       // les invariants
+        $invariants = array();
+        $historique = array();
+        $odata0 = $tEleves->getRecord($eleveId);
+        if ($odata0->dateN == '0000-00-00') {
+            $odata0->dateN = '1900-01-01';
+        }
+        $historique['eleve']['dateCreation'] = $odata0->dateCreation;
+        $historique['eleve']['dateModification'] = $odata0->dateModification;
+        $invariants['numero'] = $odata0->numero;
+        $odata1 = $tScolarites->getRecord(array(
+            'millesime' => Session::get('millesime'),
+            'eleveId' => $eleveId
+        ));
+        if ($odata1->inscrit) {
+            $invariants['etat'] = $odata1->paiement ? 'Inscrit' : 'Préinscrit';
+        } else {
+            $invariants['etat'] = 'Rayé';
+        }
+        $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
+        $historique['scolarite']['dateModification'] = $odata1->dateModification;
         
         $respSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
+        $etabSelect = $this->getServiceLocator()->get('Sbm\Db\Select\EtablissementsDesservis');
+        $clasSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Classes');
         $form = new FormEleve();
         $form->setValueOptions('responsable1Id', $respSelect)
             ->setValueOptions('responsable2Id', $respSelect)
-            ->setValueOptions('responsableFId', $respSelect)
-            ->setMaxLength($db->getMaxLengthArray('eleves', 'table'))
-            ->bind($tableEleves->getObjData());
+            ->setValueOptions('etablissementId', $etabSelect)
+            ->setValueOptions('classeId', $clasSelect)
+            ->setValueOptions('joursTransport', Semaine::getJours())
+            ->setMaxLength($db->getMaxLengthArray('eleves', 'table'));
         
         if (array_key_exists('submit', $args)) {
-            if (empty($args['responsableFId'])) {
-                $args['responsableFId'] = $args['responsable1Id'];
-            }
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
-                $tableEleves->saveRecord($form->getData());
+                $dataValid = array_merge(array(
+                    'millesime' => Session::get('millesime')
+                ), $form->getData());
+                $tEleves->saveRecord($tEleves->getObjData()
+                    ->exchangeArray($dataValid));
+                $tScolarites->saveRecord($tScolarites->getObjData()
+                    ->exchangeArray($dataValid));
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'eleve-liste',
@@ -170,15 +277,38 @@ class EleveController extends AbstractActionController
                 $identite = $args['nom'] . ' ' . $args['prenom'];
             }
         } else {
-            $data = $tableEleves->getRecord($eleveId)->getArrayCopy();
-            $identite = $data['nom'] . ' ' . $data['prenom'];
-            $form->setData($data);
+            $identite = $odata0->nom . ' ' . $odata0->prenom;
+            $adata1 = $odata1->getArrayCopy();
+            if ($odata1->anneeComplete) {
+                $adata1['dateDebut'] = Session::get('as')['dateDebut'];
+                $adata1['dateFin'] = Session::get('as')['dateFin'];
+            }
+            $form->setData(array_merge($odata0->getArrayCopy(), $adata1));
+        }
+        // historique des responsables
+        $r = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable1Id);
+        $historique['responsable1']['dateCreation'] = $r->dateCreation;
+        $historique['responsable1']['dateModification'] = $r->dateModification;
+        $historique['responsable1']['dateDemenagement'] = $r->dateDemenagement;
+        if (!empty($tmp = $odata0->responsable2Id)) {
+            $r = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable2Id);
+            $historique['responsable2']['dateCreation'] = $r->dateCreation;
+            $historique['responsable2']['dateModification'] = $r->dateModification;
+            $historique['responsable2']['dateDemenagement'] = $r->dateDemenagement;
+        }
+        
+        $affectations = array();
+        foreach ($qAffectations->getAffectations($eleveId) as $row) {
+            $affectations[] = $row;
         }
         return new ViewModel(array(
             'form' => $form,
-            'page' => $currentPage,
-            'eleveId' => $eleveId,
-            'identite' => $identite
+            'page' => $currentPage, // nécessaire pour la compatibilité des appels
+            'eleveId' => $eleveId, // nécessaire pour la compatibilité des appels
+            'identite' => $identite, // nécessaire pour la compatibilité des appels
+            'data' => $invariants,
+            'historique' => $historique,
+            'affectations' => $affectations
         ));
     }
 
@@ -383,29 +513,6 @@ class EleveController extends AbstractActionController
             'page' => $currentPage,
             'eleveId' => $eleveId
         ));
-    }
-
-    /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectioneleveAction()
-    {
-        $page = $this->params('page', 1);
-        $eleveId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Eleves')
-            ->setSelection($eleveId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectioneleveAction()
-    {
-        $page = $this->params('page', 1);
-        $eleveId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Eleves')
-            ->setSelection($eleveId, 0);
-        return json_encode(array());
     }
 
     /**
@@ -754,7 +861,9 @@ class EleveController extends AbstractActionController
                 ));
                 $tableResponsables->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage('La localisation de cette adresse est enregistrée.');
-                $this->getServiceLocator()->get('Sbm\MajDistances')->pour($args['responsableId']);
+                $this->getServiceLocator()
+                    ->get('Sbm\MajDistances')
+                    ->pour($args['responsableId']);
                 return $this->redirectToOrigin()->back();
             }
         }
@@ -797,28 +906,5 @@ class EleveController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
-    /**
-     * ajax - cocher décocher la case sélection
-     */
-    public function checkselectionresponsableAction()
-    {
-        $page = $this->params('page', 1);
-        $responsableId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Responsables')
-            ->setSelection($responsableId, 1);
-        return json_encode(array());
-    }
-
-    public function uncheckselectionresponsableAction()
-    {
-        $page = $this->params('page', 1);
-        $responsableId = $this->params('id');
-        $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Responsables')
-            ->setSelection($responsableId, 0);
-        return json_encode(array());
     }
 }

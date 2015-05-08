@@ -53,7 +53,7 @@ class AffectationsServicesStations implements FactoryInterface
         return $this;
     }
 
-    public function getAffectations($eleveId)
+    public function getAffectations($eleveId, $trajet = null)
     {
         $select = clone $this->select;
         $select->join(array(
@@ -76,9 +76,28 @@ class AffectationsServicesStations implements FactoryInterface
             'com1' => $this->db->getCanonicName('communes', 'table')
         ), 'sta1.communeId = com1.communeId', array(
             'commune1' => 'nom'
+        ))
+            ->join(array(
+            'sta2' => $this->db->getCanonicName('stations', 'table')
+        ), 'aff.station2Id = sta2.stationId', array(
+            'station2' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'com2' => $this->db->getCanonicName('communes', 'table')
+        ), 'sta2.communeId = com2.communeId', array(
+            'commune2' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->order(array(
+            'trajet',
+            'jours',
+            'sens',
+            'correspondance'
         ));
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))->and->equalTo('eleveId', $eleveId);
+        if (isset($trajet)) {
+            $where->equalTo('trajet', $trajet);
+        }
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }

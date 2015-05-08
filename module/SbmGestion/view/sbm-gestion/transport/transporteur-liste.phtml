@@ -80,7 +80,7 @@ $actions = array(
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
-				url : '/gestion/transport/'+action+'selectiontransporteur/%d/%d',
+				url : '/sbmajaxtransport/'+action+'selectiontransporteur/transporteurId:%d',
 				success : function(data) {},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
@@ -90,7 +90,7 @@ $("#chk%d").change(function() {
 EOT;
             
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $transporteur->transporteurId);
-            $jsCallback .= sprintf("$modele\n", $transporteur->transporteurId, $this->page, $transporteur->transporteurId);
+            $jsCallback .= sprintf("$modele\n", $transporteur->transporteurId, $transporteur->transporteurId);
             ?>
                 <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 					<td class="nom"><?php echo $this->escapeHtml($transporteur->nom); ?></td>
