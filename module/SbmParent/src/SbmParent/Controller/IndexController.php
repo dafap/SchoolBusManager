@@ -113,7 +113,8 @@ class IndexController extends AbstractActionController
                     $oData->exchangeArray($formga->getData());
                     if (! $oData->userId) {
                         $oData->userId = $this->getServiceLocator()
-                            ->get('Sbm\Authenticate')
+                            ->get('Dafap\Authenticate')
+                            ->by()
                             ->getUserId();
                     }
                     if ($tResponsables->saveRecord($oData)) {
@@ -166,7 +167,8 @@ class IndexController extends AbstractActionController
             'responsable' => $responsable,
             'ga' => StdLib::getParam('ga', $args, 0),
             'userId' => $this->getServiceLocator()
-                ->get('Sbm\Authenticate')
+                ->get('Dafap\Authenticate')
+                ->by()
                 ->getUserId()
         ));
     }
@@ -188,7 +190,8 @@ class IndexController extends AbstractActionController
         try {
             $responsable = new Responsable($this->getServiceLocator());
             $authUserId = $this->getServiceLocator()
-                ->get('Sbm\Authenticate')
+                ->get('Dafap\Authenticate')
+                -by()
                 ->getUserId();
         } catch (Exception $e) {
             return $this->redirect()->toRoute('login', array(
@@ -267,7 +270,8 @@ class IndexController extends AbstractActionController
                         $oData->exchangeArray($formga->getData());
                         if (! $oData->userId) {
                             $oData->userId = $this->getServiceLocator()
-                                ->get('Sbm\Authenticate')
+                                ->get('Dafap\Authenticate')
+                                ->by()
                                 ->getUserId();
                         }
                         if ($tResponsables->saveRecord($oData)) {
@@ -507,6 +511,7 @@ class IndexController extends AbstractActionController
         );
         $this->getEventManager()->addIdentifiers('SbmPaiement\AppelPlateforme');
         $this->getEventManager()->trigger('appelPaiement', $this->getServiceLocator(), $params);
-        return $this->redirect()->toRoute('sbmparent');
+        // return $this->redirect()->toRoute('sbmparent');
+        return $this->redirect()->toUrl('https://paiement.systempay.fr/vads-payment/');
     }
 } 

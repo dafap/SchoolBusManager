@@ -17,12 +17,17 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Form\Calendar as FormCalendar;
+use Zend\Http\PhpEnvironment\Response;
 
 class AnneeScolaireController extends AbstractActionController
 {
 
     public function indexAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
         return new ViewModel(array(
             'anneesScolaires' => $table_calendar->getAnneesScolaires(),
@@ -36,6 +41,7 @@ class AnneeScolaireController extends AbstractActionController
         if (!empty($millesime)) {
             $this->setToSession('millesime', $millesime);
         }
+        $this->flashMessenger()->addSuccessMessage('L\'année active a changé.');
         return $this->redirect()->toRoute('sbmgestion/anneescolaire');
     }
 
@@ -85,6 +91,10 @@ class AnneeScolaireController extends AbstractActionController
 
     public function voirAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         $millesime = $this->params('millesime', 0);
         if (empty($millesime)) {
             return $this->redirect()->toRoute('sbmgestion/anneescolaire');
@@ -100,6 +110,10 @@ class AnneeScolaireController extends AbstractActionController
 
     public function newAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
         $config = include __DIR__ . '/../Model/Modele.inc.php';
         $config = $config['annee-scolaire'];
         
@@ -142,10 +156,12 @@ class AnneeScolaireController extends AbstractActionController
             $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
         }
         
-        return new ViewModel(array(
+        $viewmodel = new ViewModel(array(
             'as_libelle' => $as_libelle,
             'millesime' => $millesime,
             'table' => $table_calendar->getMillesime($millesime)
         ));
+        $viewmodel->setTemplate('sbm-gestion/annee-scolaire/voir.phtml');
+        return $viewmodel;
     }
 }

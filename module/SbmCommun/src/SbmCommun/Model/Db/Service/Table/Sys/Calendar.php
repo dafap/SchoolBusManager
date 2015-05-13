@@ -33,6 +33,7 @@ class Calendar extends AbstractSbmTable
         $this->id_name = 'calendarId';
     }
     
+    
     /**
      * Renvoie la liste des années scolaires
      * 
@@ -103,7 +104,7 @@ class Calendar extends AbstractSbmTable
         $select1->columns(array('millesime'))->where($where1);
         
         $where  = new Where();
-        $where->notIn('millesime', $select1);
+        $where->literal('ouvert = 1')->notIn('millesime', $select1);
         $select = $this->getTableGateway()->getSql()->select()->columns(array('millesime' => new Expression('max(millesime)')))->where($where);
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();

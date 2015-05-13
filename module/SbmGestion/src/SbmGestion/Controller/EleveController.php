@@ -29,32 +29,41 @@ use SbmCommun\Form\ButtonForm;
 use SbmGestion\Form\Eleve\EditForm as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
+use Zend\View\Model\Zend\View\Model;
 
 class EleveController extends AbstractActionController
 {
 
     private function getFormAffectationDecision()
     {
-        $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes();
+        $values_options1 = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Stations')
+            ->ouvertes();
         $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
         $form = new \SbmGestion\Form\AffectationDecision($this->params('page', 1), 2);
         $form->remove('back');
-        $form->setAttribute('action', $this->url()->fromRoute('sbmgestion/eleve', array('action' => 'testvalidate')));
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/eleve', array(
+            'action' => 'testvalidate'
+        )));
         $form->setValueOptions('station1Id', $values_options1)
-        ->setValueOptions('station2Id', $values_options1)
-        ->setValueOptions('service1Id', $values_options2)
-        ->setValueOptions('service2Id', $values_options2);
+            ->setValueOptions('station2Id', $values_options1)
+            ->setValueOptions('service1Id', $values_options2)
+            ->setValueOptions('service2Id', $values_options2);
         return $form;
     }
+
     public function testAction()
     {
         $form = $this->getFormAffectationDecision();
         
-        $view = new ViewModel(array('form' => $form));
+        $view = new ViewModel(array(
+            'form' => $form
+        ));
         $view->setTerminal(true);
         return $view;
     }
-    
+
     public function indexAction()
     {
         $prg = $this->prg();
@@ -125,8 +134,8 @@ class EleveController extends AbstractActionController
         }
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
-                ->get('Sbm\Db\Vue\Eleves')
-                ->paginator($criteres_obj->getWhere(), array(
+                ->get('Sbm\Db\Query\Eleves')
+                ->paginatorScolaritesR2($criteres_obj->getWhere(), array(
                 'nom',
                 'prenom'
             )),
@@ -136,90 +145,377 @@ class EleveController extends AbstractActionController
         ));
     }
 
+    /**
+     * Si on arrive par post, on passera :
+     * - orinine : url d'origine de l'appel pour assurer un retour par redirectToOrigin()->back()
+     * à la fin de l'opération (en général dans eleveEditAction()).
+     * Si on arrive par get, on s'assurera que redirectToOrigin()->setBack() a bien été fait avant.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function eleveAjoutAction()
     {
-        $currentPage = $this->params('page', 1);
-        $eleveId = null;
-        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        
-        $form = new FormEleve();
-        $form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsVisibles'));
-        // $form->setValueOptions('classeId', $this->getServiceLocator()->get('Sbm\Db\Select\Classes'));
-        $form->setValueOptions('communeId1', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Communes')
-            ->desservies());
-        $form->setMaxLength($db->getMaxLengthArray('eleves', 'table'));
-        
-        $form->bind($tableEleves->getObjData());
-        
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('cancel', false)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'eleve-liste',
-                    'page' => $currentPage
-                ));
-            }
-            $form->setData($request->getPost());
-            if ($form->isValid()) { // controle le csrf
-                $tableEleves->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'eleve-liste',
-                    'page' => $currentPage
-                ));
-            }
-        }
-        return new ViewModel(array(
-            'form' => $form,
-            'page' => $currentPage,
-            'eleveId' => $eleveId
-        ));
-    }
-
-    public function eleveEditAction()
-    {
-        $currentPage = $this->params('page', 1);
+        $page = $this->params('page', 1); // paramètre du retour à la liste à la fin du processus
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false);
-            if ($args === false) {
-                $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('login', array(
-                    'action' => 'logout'
+            // entrée lors d'un retour éventuel par F5 ou back en 22
+            $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 1));
+        }
+        $args = (array) $prg;
+        if (array_key_exists('origine', $args)) {
+            $this->redirectToOrigin()->setBack($args['origine']);
+            // par la suite, on ne s'occupe plus de 'origine' mais on ressort par un redirectToOrigin()->back()
+            unset($args['origine']);
+        }
+        if (array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addInfoMessage('Saisie abandonnée.');
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-liste',
+                    'page' => $page
                 ));
             }
+        } elseif (array_key_exists('submit', $args)) {
+            $ispost = true;
+            // pour un retour éventuel par F5 ou back en 22
+            $this->setToSession('post', $args, $this->getSessionNamespace('ajout', 1));
         } else {
-            $args = $prg;
-            // !!! important !!! traiter 'cancel' avant 'origine'
-            if (array_key_exists('cancel', $args)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+            $ispost = false;
+        }
+        $eleveId = null;
+        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
+        
+        $form = new \SbmGestion\Form\Eleve\AddElevePhase1();
+        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/eleve', array(
+            'action' => 'eleve-ajout',
+            'page' => $page
+        )))
+            ->setValueOptions('responsable1Id', $value_options)
+            ->setValueOptions('responsable2Id', $value_options)
+            ->setMaxLength($db->getMaxLengthArray('eleves', 'table'))
+            ->bind($this->getServiceLocator()
+            ->get('Sbm\Db\Table\Eleves')
+            ->getObjData());
+        $resultset = null;
+        $odata = null;
+        if ($ispost) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $odata = $form->getData();
+                // les valeurs obligatoires sont prises dans odata, responsable2Id est pris dans args pour éviter de gérer les exceptions
+                $where = new Where();
+                $filtreSA = new \SbmCommun\Filter\SansAccent();
+                $where->equalTo('ele.nomSA', $filtreSA->filter($odata->nom))
+                    ->equalTo('ele.prenomSA', $filtreSA->filter($odata->prenom))
+                    ->nest()
+                    ->equalTo('dateN', $odata->dateN)->or->equalTo('responsable1Id', $odata->responsable1Id)->or->equalTo('responsable2Id', $odata->responsable1Id)->or->equalTo('responsable1Id', StdLib::getParam('responsable2Id', $args, - 1))->or->equalTo('responsable2Id', StdLib::getParam('responsable2Id', $args, - 1))->unnest();
+                $resultset = $this->getServiceLocator()
+                    ->get('Sbm\Db\Query\Eleves')
+                    ->withR2($where);
+                if ($resultset->count() == 0) {
+                    // pas d'homonyme. On crée cet élève (22)
+                    return $this->eleveAjout22Action($odata);
+                }
+                $form = null;
+            }
+        }
+        return new ViewModel(array(
+            'page' => $page,
+            // form est le formulaire si les données ne sont pas validées (ou pas de données)
+            'form' => $form,
+            // liste est null ou est un resultset à parcourir pour montrer la liste
+            'eleves' => $resultset,
+            // data = null ou contient les données validées à passer à nouveau en post
+            'data' => $odata
+        ));
+    }
+
+    /**
+     * Reçoit un post avec :
+     * - eleveId d'un élève existant
+     * - info (nom prénom)
+     * Met ces informations en session.
+     * On reviendra ici en cas d'entrée par GET ultérieure (F5 ou back)
+     * Vérifie si la fiche scolarité existe pour cette année courante et oriente sur
+     * - si oui : eleveEditAction()
+     * - si non : eleveAjout31Action()
+     * On arrive ici obligatoirement par un post.
+     * Il n'y a pas de view associée.
+     */
+    public function eleveAjout21Action()
+    {
+        $page = $this->params('page');
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false || ! array_key_exists('eleveId', $prg)) {
+            $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 2));
+            if ($prg === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite.');
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                     return $this->redirect()->toRoute('sbmgestion/eleve', array(
                         'action' => 'eleve-liste',
-                        'page' => $currentPage
+                        'page' => $page
                     ));
                 }
             }
-            if (array_key_exists('origine', $args)) {
+        } else {
+            $this->setToSession('post', $prg, $this->getSessionNamespace('ajout', 2)); // pour une retour éventuel par F5 ou back
+        }
+        $info = stdlib::getParam('info', $prg, '');
+        $eleveId = $prg['eleveId'];
+        $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+        $id = array(
+            'millesime' => Session::get('millesime'),
+            'eleveId' => $eleveId
+        );
+        if ($tScolarites->is_newRecord($id)) {
+            $viewmodel = $this->eleveAjout31Action($eleveId, $info);
+            $viewmodel->setTemplate('sbm-gestion/eleve/eleve-ajout31.phtml');
+        } else {
+            $args = array(
+                'eleveId' => $eleveId,
+                'info' => $info,
+                'op' => 'ajouter'
+            );
+            $viewmodel = $this->eleveEditAction($args);
+            $viewmodel->setTemplate('sbm-gestion/eleve/eleve-edit.phtml');
+        }
+        return $viewmodel;
+    }
+
+    /**
+     * Création de la fiche dans la table eleve et récupération de son eleveId
+     * puis passage en deleveAjout31Action()
+     * L'entrée se fait :
+     * - directement depuis eleveAjoutAction() s'il n'y a pas d'enregistrement ayant ces caractéristiques.
+     * Dans ce cas, le paramètre odata porte les informations à enregistrer.
+     * - par appel POST depuis la vue phase 1 si l'utilisateur choisi explicitement de créer une nouvelle fiche.
+     * Dans ce cas, les paramètres reçus par POST sont :
+     * - le contenu du formulaire AddElevePhase1 renvoyé par des hiddens depuis la liste
+     * Le retour par get est interdit afin d'éviter de recréer cet enregistrement.
+     *
+     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $odata            
+     *
+     * @return \Zend\Http\PhpEnvironment\Response
+     */
+    public function eleveAjout22Action($odata = null)
+    {
+        $page = $this->params('page', 1); // pour le retour à la liste à la fin du processus
+        $tEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
+        if (is_null($odata)) {
+            $prg = $this->prg();
+            if ($prg instanceof Response) {
+                return $prg;
+            } elseif ($prg === false) {
+                // retour vers le point d'entrée d'un F5 ou d'un back
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-ajout',
+                    'page' => $page
+                ));
+            } else {
+                $odata = $tEleves->getObjData();
+                $odata->exchangeArray($prg);
+            }
+        }
+        // ici, $odata contient les données à insérer dans la table eleves
+        $tEleves->saveRecord($odata);
+        $eleveId = $tEleves->getTableGateway()->getLastInsertValue();
+        $viewmodel = $this->eleveAjout31Action($eleveId, $odata->nom . ' ' . $odata->prenom);
+        $viewmodel->setTemplate('sbm-gestion/eleve/eleve-ajout31.phtml');
+        return $viewmodel;
+    }
+
+    /**
+     * Il s'agit de compléter les informations de scolarité pour un élève existant.
+     * Donc en cas de F5 ou back
+     * on doit revenir en eleveAjout21Action() car la fiche eleve existe.
+     *
+     * L'entrée initiale se fait toujours par un appel fonction.
+     * On montre le formulaire AddElevePhase2 pour compléter les informations de scolarités.
+     * L'entrée par POST correspond au retour du formulaire et contient donc obligatoirement
+     * un 'cancel' ou un 'submit' et dans ce dernier cas les données doivent être validées par le formulaire.
+     *
+     * @param string $eleveId            
+     * @param string $info            
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function eleveAjout31Action($eleveId = null, $info = null)
+    {
+        $page = $this->params('page', 1);
+        $ispost = false;
+        if (is_null($eleveId)) {
+            $prg = $this->prg();
+            if ($prg instanceof Response) {
+                return $prg;
+            } elseif ($prg === false) {
+                // Cela pourrait être F5 ou back du navigateur. Il faut savoir si la fiche a été créée.
+                // On reviendra donc toujours à eleveAjout21Action() pour vérifier.
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-ajout21',
+                    'page' => $page
+                ));
+            } else {
+                // c'est le traitement du retour par POST du formulaire après prg
+                $args = $prg;
+                if (array_key_exists('cancel', $args)) {
+                    $this->flashMessenger()->addInfoMessage('Saisie abandonnée.');
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                            'action' => 'eleve-liste',
+                            'page' => $page
+                        ));
+                    }
+                }
+                // on récupère eleveId et info
+                $eleveId = StdLib::getParam('eleveId', $prg, false);
+                $info = StdLib::getParam('info', $args, '');
+                if (! $eleveId) {
+                    // on a perdu la donnée essentielle : il faut tout recommencer
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'eleve-ajout',
+                        'page' => $page
+                    ));
+                }
+                $ispost = array_key_exists('submit', $args);
+            }
+        }
+        // ici on a un eleveId qui possède une fiche dans la table eleves et pour lequel on doit saisir la scolarite
+        $tableScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+        $form = new \SbmGestion\Form\Eleve\AddElevePhase2();
+        
+        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/eleve', array(
+            'action' => 'eleve-ajout31',
+            'page' => $page
+        )))
+            ->setValueOptions('etablissementId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\EtablissementsDesservis'))
+            ->setValueOptions('classeId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('joursTransport', Semaine::getJours())
+            ->bind($tableScolarites->getObjData());
+        if ($ispost) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $odata = $form->getData();
+                $odata->millesime = Session::get('millesime');
+                $odata->tarifId = $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Tarifs')
+                    ->getTarifId('inscription');
+                $tableScolarites->saveRecord($odata);
+                $viewModel = $this->eleveEditAction(array(
+                    'eleveId' => $eleveId,
+                    'info' => $info,
+                    'op' => 'ajouter'
+                ));
+                $viewModel->setTemplate('sbm-gestion/eleve/eleve-edit.phtml');
+                return $viewModel;
+            }
+        }
+        // initialisation du formulaire
+        $where = new Where();
+        $where->equalTo('eleveId', $eleveId);
+        $data = $this->getServiceLocator()
+            ->get('Sbm\Db\Query\Eleves')
+            ->withR2($where)
+            ->current();
+        $form->setData(array(
+            'eleveId' => $eleveId,
+            'responsable1Id' => $data['responsable1Id'],
+            'responsable2Id' => isset($data['responsable2Id']) ? $data['responsable2Id'] : '',
+            'dateDebut' => Session::get('as')['dateDebut'],
+            'dateFin' => Session::get('as')['dateFin'],
+            'demandeR1' => 1,
+            'demandeR2' => 0
+        ));
+        return new ViewModel(array(
+            'page' => $page,
+            'form' => $form,
+            'info' => $info,
+            'data' => $data
+        ));
+    }
+
+    /**
+     * Cette méthode est généralement appelée par post et reçoit
+     * - eleveId
+     * - info
+     * - origine (optionnel)
+     * - op = 'modifier' ou 'ajouter'
+     * Elle peut être appelée en passant un paramètre $args qui sera un tableau contenant ces 4 clés.
+     * Mais si on arrive par eleveAjoutAction() on ne passera pas origine car le redirectToOrigin()
+     * est déjà en place.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function eleveEditAction($args = null)
+    {
+        $currentPage = $this->params('page', 1);
+        if (is_null($args)) {
+            $prg = $this->prg();
+            if ($prg instanceof Response) {
+                return $prg;
+            } elseif ($prg === false) {
+                $args = $this->getFromSession('post', false);
+                if ($args === false) {
+                    $this->flashMessenger()->addErrorMessage('Action interdite');
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $this->redirect()->toRoute('login', array(
+                            'action' => 'logout'
+                        ));
+                    }
+                }
+            } else {
+                $args = $prg;
+                // !!! important !!! traiter 'cancel' avant 'origine'
+                if (array_key_exists('cancel', $args)) {
+                    $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                            'action' => 'eleve-liste',
+                            'page' => $currentPage
+                        ));
+                    }
+                }
+                if (array_key_exists('origine', $args)) {
+                    $this->redirectToOrigin()->setBack($args['origine']);
+                    unset($args['origine']);
+                    $this->setToSession('post', $args);
+                }
+            }
+        } else {
+            if (isset($args['origine'])) {
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
-                $this->setToSession('post', $args);
             }
+            $this->setToSession('post', $args);
         }
         $eleveId = $args['eleveId'];
         if ($eleveId == - 1) {
-            return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                'action' => 'eleve-liste',
-                'page' => $currentPage
-            ));
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-liste',
+                    'page' => $currentPage
+                ));
+            }
         }
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         $tEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
@@ -251,7 +547,12 @@ class EleveController extends AbstractActionController
         $etabSelect = $this->getServiceLocator()->get('Sbm\Db\Select\EtablissementsDesservis');
         $clasSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Classes');
         $form = new FormEleve();
-        $form->setValueOptions('responsable1Id', $respSelect)
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/eleve', array(
+            'action' => 'eleve-edit',
+            'page' => $currentPage
+        )))
+            ->setValueOptions('responsable1Id', $respSelect)
             ->setValueOptions('responsable2Id', $respSelect)
             ->setValueOptions('etablissementId', $etabSelect)
             ->setValueOptions('classeId', $clasSelect)
@@ -269,10 +570,14 @@ class EleveController extends AbstractActionController
                 $tScolarites->saveRecord($tScolarites->getObjData()
                     ->exchangeArray($dataValid));
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'eleve-liste',
-                    'page' => $currentPage
-                ));
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'eleve-liste',
+                        'page' => $currentPage
+                    ));
+                }
             } else {
                 $identite = $args['nom'] . ' ' . $args['prenom'];
             }
@@ -286,12 +591,16 @@ class EleveController extends AbstractActionController
             $form->setData(array_merge($odata0->getArrayCopy(), $adata1));
         }
         // historique des responsables
-        $r = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable1Id);
+        $r = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Responsables')
+            ->getRecord($odata0->responsable1Id);
         $historique['responsable1']['dateCreation'] = $r->dateCreation;
         $historique['responsable1']['dateModification'] = $r->dateModification;
         $historique['responsable1']['dateDemenagement'] = $r->dateDemenagement;
-        if (!empty($tmp = $odata0->responsable2Id)) {
-            $r = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable2Id);
+        if (! empty($tmp = $odata0->responsable2Id)) {
+            $r = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Responsables')
+                ->getRecord($odata0->responsable2Id);
             $historique['responsable2']['dateCreation'] = $r->dateCreation;
             $historique['responsable2']['dateModification'] = $r->dateModification;
             $historique['responsable2']['dateDemenagement'] = $r->dateDemenagement;

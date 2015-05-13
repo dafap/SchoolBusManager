@@ -31,7 +31,7 @@ class BienvenueFactory implements FactoryInterface
         $serviceManager = $pluginManager->getServiceLocator();
 
         /* @var $authService AuthenticationService */
-        $authService = $serviceManager->get('Sbm\Authenticate');
+        $authService = $serviceManager->get('Dafap\Authenticate')->by();
 
         $viewHelper = new Bienvenue();
         $viewHelper->setAuthService($authService);

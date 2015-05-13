@@ -56,11 +56,18 @@ class LoginController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 // isValid() vérifie l'existence de l'email
-                $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
-                if ($auth->authenticate($form->getData())) {
+                $data = $form->getData();
+                $auth = $this->getServiceLocator()
+                    ->get('Dafap\Authenticate')
+                    ->by('email');
+                $auth->getAdapter()
+                    ->setIdentity($data)
+                    ->setCredential($data);
+                if ($auth->authenticate()->getCode() > 0) {
                     return $this->homePageAction();
                 } else {
-                    $this->flashMessenger()->addErrorMessage('Mot de passe incorrect ou compte bloqué.');
+                    foreach ($result->getMessages as $msg)
+                        $this->flashMessenger()->addErrorMessage($msg);
                     return $this->redirect()->toRoute('home');
                 }
             } else {
@@ -85,14 +92,15 @@ class LoginController extends AbstractActionController
     {
         $tableUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
         $form = new MdpFirst();
-        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
+        $auth = $this->getServiceLocator()->get('Dafap\Authenticate')->by('token');
         
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg == false) {
             // entrée par get avec le token en id
-            if (! $auth->authenticateByToken($this->params('id'))) {
+            $auth->getAdapter()->setIdentity($this->params('id'));
+            if (! $auth->authenticate()->getCode() > 0) {
                 return $this->redirect()->toRoute('home');
             }
             $form->setData(array(
@@ -134,7 +142,9 @@ class LoginController extends AbstractActionController
      */
     public function homePageAction()
     {
-        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
+        $auth = $this->getServiceLocator()
+            ->get('Dafap\Authenticate')
+            ->by('email');
         if ($auth->hasIdentity()) {
             switch ($auth->getCategorieId()) {
                 case 1:
@@ -172,14 +182,14 @@ class LoginController extends AbstractActionController
                     return $this->redirect()->toRoute('sbminstall');
                 default:
                     $this->flashMessenger()->addErrorMessage('La catégorie de cet utilisateur est inconnue.');
-                    $this->redirect()->toRoute('login', array(
+                    return $this->redirect()->toRoute('login', array(
                         'action' => 'logout'
                     ));
                     break;
             }
         } else {
             $this->flashMessenger()->addWarningMessage('Identifiez-vous.');
-            $this->redirect()->toRoute('home');
+            return $this->redirect()->toRoute('home');
         }
     }
 
@@ -190,8 +200,9 @@ class LoginController extends AbstractActionController
      */
     public function logoutAction()
     {
-        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
+        $auth = $this->getServiceLocator()->get('Dafap\Authenticate')->by();
         $auth->clearIdentity();
+        Session::remove('millesime');
         try {
             $responsable = new Responsable($this->getServiceLocator());
             unset($responsable);
@@ -268,12 +279,10 @@ class LoginController extends AbstractActionController
             'action' => 'mdp-change'
         )));
         if (\array_key_exists('submit', $args) && \array_key_exists('mdp_old', $args) && \array_key_exists('mdp_new', $args)) {
-            $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
+            $auth = $this->getServiceLocator()->get('Dafap\Authenticate')->by('email');
             $identity = $auth->getIdentity();
-            if ($auth->authenticate(array(
-                'email' => $identity['email'],
-                'mdp' => $args['mdp_old']
-            ))) {
+            $auth->getAdapter()->setIdentity($identity['email'])->setCredential($args['mdp_old']);
+            if ($auth->authenticate()->getCode() > 0) {
                 if ($args['mdp_old'] == $args['mdp_new']) {
                     $this->setToSession('post', array());
                     $this->flashMessenger()->addInfoMessage('Le mot de passe est inchangé.');
@@ -325,7 +334,7 @@ class LoginController extends AbstractActionController
             return $prg;
         }
         $args = (array) $prg;
-        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
+        $auth = $this->getServiceLocator()->get('Dafap\Authenticate')->by('email');
         $identity = $auth->getIdentity();
         $email_old = $identity['email'];
         $form = new EmailChange($this->getServiceLocator());
@@ -334,10 +343,8 @@ class LoginController extends AbstractActionController
             'action' => 'email-change'
         )));
         if (array_key_exists('submit', $args) && array_key_exists('mdp', $args) && array_key_exists('email_new', $args) && array_key_exists('email_ctrl', $args)) {
-            if ($auth->authenticate(array(
-                'email' => $email_old,
-                'mdp' => $args['mdp']
-            ))) {
+            $auth->getAdapter()->setIdentity($email_old)->setCredential($args['mdp']);
+            if ($auth->authenticate()->getCode() > 0) {
                 if ($email_old == $args['email_new']) {
                     $this->setToSession('post', array());
                     $this->flashMessenger()->addInfoMessage('L\'email est inchangé.');
@@ -433,7 +440,7 @@ class LoginController extends AbstractActionController
      */
     public function modifCompteAction()
     {
-        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
+        $auth = $this->getServiceLocator()->get('Dafap\Authenticate')->by();
         if ($auth->hasIdentity()) {
             $prg = $this->prg();
             if ($prg instanceof Response) {
@@ -481,7 +488,7 @@ class LoginController extends AbstractActionController
      */
     public function synchroCompteAction()
     {
-        $auth = $this->getServiceLocator()->get('Sbm\Authenticate');
+        $auth = $this->getServiceLocator()->get('Dafap\Authenticate')->by();
         if ($auth->hasIdentity()) {
             try {
                 $responsable = new Responsable($this->getServiceLocator());

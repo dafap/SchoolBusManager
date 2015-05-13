@@ -56,7 +56,7 @@ class Plateforme extends AbstractPlateforme
     {
         $data = $data->toArray();
         $signature = $this->getSignature($data);
-        if ($signature != $data['signature']) {
+        if (!array_key_exists('signature', $data) || $signature != $data['signature']) {
             $this->error_no = 1001;
             $this->error_msg = 'Erreur de signature';
             return false;
@@ -215,12 +215,10 @@ class Plateforme extends AbstractPlateforme
     private function getSignature($data)
     {
         ksort($data);
-        $vads = array();
         $str = '';
         foreach ($data as $key => $value) {
             if (substr($key, 0, 5) == 'vads_') {
                 $str .= "$value+";
-                $vads[$key] = $value;
             }
         }
         $str .= $this->certificat;
@@ -238,8 +236,8 @@ class Plateforme extends AbstractPlateforme
             'vads_site_id' => $this->getParam('vads_site_id'),
             'vads_ctx_mode' => $this->getParam('vads_ctx_mode'),
             'vads_trans_id' => $this->getVadsTransId(),
-            'vads_trans_date' => date('YmdHis'),
-            'vads_amount' => $params['montant'] * 100,
+            'vads_trans_date' => gmdate('YmdHis'),
+            'vads_amount' => sprintf('%d', $params['montant'] * 100),
             'vads_currency' => $this->getParam('vads_currency'),
             'vads_action_mode' => $this->getParam('vads_action_mode'),
             'vads_page_action' => $this->getParam('vads_page_action'),
@@ -250,7 +248,7 @@ class Plateforme extends AbstractPlateforme
             'vads_cust_email' => $params['email'],
             'vads_cust_id' => $params['responsableId'],
             'vads_cust_first_name' => $params['prenom'],
-            'vads_cust_last_name=> ' => $params['nom'],
+            'vads_cust_last_name' => $params['nom'],
             'vads_order_id' => sprintf('TS%04d-%s-%011d-%d', $this->getMillesime(), date('Ymd'), $params['responsableId'], count($params['eleveIds'])),
             'vads_theme_config' => $this->getParam('vads_theme_config'),
             'vads_url_success' => $this->getParam('vads_url_success'),
@@ -258,22 +256,24 @@ class Plateforme extends AbstractPlateforme
             'vads_url_cancel' => $this->getParam('vads_url_cancel'),
             'vads_url_error' => $this->getParam('vads_url_error'),
             'vads_url_check' => $this->getParam('vads_url_check'),
-            'vads_redirect_success_timeout' => $this->getParam('vads_redirect_success_timeout'),
-            'vads_redirect_success_message' => $this->getParam('vads_redirect_success_message'),
-            'vads_redirect_error_timeout' => $this->getParam('vads_redirect_error_timeout'),
-            'vads_redirect_error_message' => $this->getParam('vads_redirect_error_message'),
-            'vads_nb_product' => count($params['eleveIds'])
+            //'vads_redirect_success_timeout' => $this->getParam('vads_redirect_success_timeout'),
+            //'vads_redirect_success_message' => $this->getParam('vads_redirect_success_message'),
+            //'vads_redirect_error_timeout' => $this->getParam('vads_redirect_error_timeout'),
+            //'vads_redirect_error_message' => $this->getParam('vads_redirect_error_message'),
+            'vads_nb_products' => sprintf('%d', count($params['eleveIds']))
         );
-        for ($i = 0; $i < count($params['eleveIds']); $i++) {
-            $champs['vads_product_ref' . ($i + 1)] = $params['eleveIds'][$i];
+        for ($i = 0; $i < count($params['eleveIds']); $i ++) {
+            $champs['vads_product_ref' . ($i)] = $params['eleveIds'][$i];
         }
-        $champs['signature'] = $this->getSignature($champs);
-        
         $result = array();
         foreach ($champs as $key => $value) {
-            $result[] = $key . '=' . $value;
+            if ($value != '')
+                $result[$key] = $value;
         }
-        return implode('&', $result);
+        $result['signature'] = $this->getSignature($result);
+        //die(var_dump($result));
+        
+        return $result;
     }
 
     private function getVadsPaymentConfig($params)

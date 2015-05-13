@@ -12,16 +12,34 @@
  * @date 5 nov. 2014
  * @version 2014-1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/anneescolaire');
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
 ?>
 <h1>Edition de l'année scolaire <?php echo $this->as_libelle;?></h1>
-<div class="zone-actions">
-	<a href="<?php echo $url_retour; ?>" class="bouton"
-		title="retour au menu de gestion"> <i class="fam-door-out"></i>Retour
-	</a>
-</div>
-<div class="liste-wrapper">
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="zone-actions">
+            <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+        </div>
+        <div class="flashMessenger float-right"><?php 
+		    echo $this->flashMessenger()->render('success');
+		    echo $this->flashMessenger()->render('warning');
+		    echo $this->flashMessenger()->render('error');
+		    echo $this->flashMessenger()->render('info');
+		    echo $this->flashMessenger()->render('default');
+		    ?></div>
+	</div>
+	<div id="liste-inner">
 	<p>Complétez chaque ligne en précisant les dates de début et de fin de
 		chaque période.</p>
-<?php include 'calendar.inc.phtml';?>
- </div>
+    <?php include 'calendar.inc.phtml';?>
+    </div>
+</div>

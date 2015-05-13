@@ -54,7 +54,11 @@ return array(
     ),
     'service_manager' => array(
         'invokables' => array(
-            'Dafap\Authenticate' => 'DafapSession\Model\Authenticate'
+            'Dafap\AdapterByEmail' => 'DafapSession\Model\Authentication\AdapterEmail',
+            'Dafap\AdapterByToken' => 'DafapSession\Model\Authentication\AdapterToken',
+        ),
+        'factories' => array(
+            'Dafap\Authenticate' => 'DafapSession\Model\Authentication\AuthenticationServiceFactory'
         )
     )
 );

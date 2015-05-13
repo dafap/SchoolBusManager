@@ -18,7 +18,9 @@ namespace SbmCommun\Model\Hydrator;
 
 use SbmCommun\Model\Db\ObjectData\Responsable as ObjectData;
 use SbmCommun\Filter\SansAccent;
-use DafapSession\Model\Authenticate;
+use Zend\Authentication\Storage\Session;
+use DafapSession\Model\Authentication\AuthenticationService;
+use DafapSession\Model\Authentication\AuthenticationServiceFactory;
 use DafapSession\Model\DafapSession\Model;
 
 class Responsables extends AbstractHydrator
@@ -47,8 +49,8 @@ class Responsables extends AbstractHydrator
                 $this->object->dateModification = $now->format('Y-m-d H:i:s');
             } elseif ($value == 'dateCreation') {
                 $this->object->dateCreation = $now->format('Y-m-d H:i:s');
-            } elseif ($value == 'userId') {
-                $auth = new Authenticate();
+            } elseif ($value == 'userId') {               
+                $auth = new AuthenticationService(new Session(AuthenticationServiceFactory::SESSION_AUTH_NAMESPACE));
                 $this->object->userId = $auth->getUserId();
             }
         }

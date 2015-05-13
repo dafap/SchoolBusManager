@@ -13,35 +13,51 @@
  */
 use SbmCommun\Model\DateLib;
 
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $col_date_width = 100;
 $url_retour = $this->url('sbmgestion');
 $url_nouvelle = $this->url('sbmgestion/anneescolaire', array(
     'action' => 'new'
 ));
-
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ),
+    'ajouter' => array(
+        'class' => 'fam-date-add',
+        'formaction' => $url_nouvelle,
+        'title' => 'Nouvelle année scolaire'
+    )
+);
 ?>
 <h1>Gestion des années scolaires</h1>
-<div class="liste-wrapper">
-	<div class="zone-actions">
-		<a href="<?php echo $url_retour; ?>" class="bouton"
-			title="retour au menu de gestion"> <i class="fam-door-out"></i>Retour
-		</a> <a href="<?php echo $url_nouvelle; ?>" class="bouton"
-			title="créer une nouvelle année scolaire"> <i class="fam-date-add"></i>Nouvelle
-			année scolaire
-		</a>
+<div id="liste-wrapper">
+    <div id="liste-header" class="clearfix">
+        <div class="zone-actions">
+            <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+            <div class="flashMessenger float-right"><?php 
+		    echo $this->flashMessenger()->render('success');
+		    echo $this->flashMessenger()->render('warning');
+		    echo $this->flashMessenger()->render('error');
+		    echo $this->flashMessenger()->render('info');
+		    echo $this->flashMessenger()->render('default');
+		    ?></div>
+		</div>
 	</div>
-	<table class="liste-inner annees-scolaires">
-		<tbody>
-			<tr>
-				<th>Année scolaire</th>
-				<th style="text-align: center; width: <?php echo $col_date_width; ?>px;">Date
-					de début</th>
-				<th style="text-align: center; width: <?php echo $col_date_width; ?>px;">Date
-					de fin</th>
-			</tr>
+	<div id="liste-inner">
+        <table class="liste-inner annees-scolaires">
+            <tbody>
+                <tr>
+				    <th>Année scolaire</th>
+				    <th style="text-align: center; width: <?php echo $col_date_width; ?>px;">Date de début</th>
+				    <th style="text-align: center; width: <?php echo $col_date_width; ?>px;">Date de fin</th>
+				    <th></th>
+                </tr>
 <?php foreach ($this->anneesScolaires as $as) :?>
 <?php
-
     $url_voir = $this->url('sbmgestion/anneescolaire', array(
         'action' => 'voir',
         'millesime' => $as['millesime']
@@ -58,24 +74,25 @@ $url_nouvelle = $this->url('sbmgestion/anneescolaire', array(
         $classes_css .= ' incomplet';
     }
     ?>
-<tr class="<?php echo $classes_css;?>">
-				<td><?php echo $as['description'];?></td>
-				<td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateDebut']);?></td>
-				<td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateFin']);?></td>
-				<td>
+                <tr class="<?php echo $classes_css;?>">
+                    <td><?php echo $as['description'];?></td>
+                    <td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateDebut']);?></td>
+				    <td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateFin']);?></td>
+				    <td>
 <?php if ($as['valid']) :?>
-<?php if ($as['millesime'] == $this->millesimeActif) :?>
-<i class="fam-date-go"></i>Activer
-<?php else :?>
-<a href="<?php echo $url_activer;?>" class="bouton" title="activer"><i
-						class="fam-date"></i>Activer</a>
+    <?php if ($as['millesime'] == $this->millesimeActif) :?>
+        <i class="fam-date-go"></i>
+    <?php else :?>
+        <a href="<?php echo $url_activer;?>" class="bouton" title="Activer"><i
+						class="fam-date"></i></a>
+    <?php endif;?>
 <?php endif;?>
-<?php endif;?>
-<a href="<?php echo $url_voir;?>" class="bouton" title="activer"><i
-						class="fam-date-magnify"></i><?php echo $as['valid'] ? 'Calendrier' : 'Définir les dates';?></a>
-				</td>
-			</tr>
+        <a href="<?php echo $url_voir;?>" class="bouton" title="<?php echo $as['valid'] ? 'Calendrier' : 'Définir les dates';?>"><i
+						class="fam-date-magnify"></i></a>
+				    </td>
+                </tr>
 <?php endforeach;?>
-</tbody>
-	</table>
+            </tbody>
+        </table>
+    </div>
 </div>

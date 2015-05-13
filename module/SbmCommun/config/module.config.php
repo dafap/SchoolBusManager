@@ -103,7 +103,6 @@ return array(
             'Sbm\Db\SysTableGateway\Libelles' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayLibelles',
             
             'Sbm\Db\Vue\Circuits' => 'SbmCommun\Model\Db\Service\Table\Vue\Circuits',
-            'Sbm\Db\Vue\Eleves' => 'SbmCommun\Model\Db\Service\Table\Vue\Eleves',
             'Sbm\Db\Vue\Etablissements' => 'SbmCommun\Model\Db\Service\Table\Vue\Etablissements',
             'Sbm\Db\Vue\EtablissementsServices' => 'SbmCommun\Model\Db\Service\Table\Vue\EtablissementsServices',
             'Sbm\Db\Vue\Paiements' => 'SbmCommun\Model\Db\Service\Table\Vue\Paiements',
@@ -113,7 +112,7 @@ return array(
             'Sbm\Db\Vue\Transporteurs' => 'SbmCommun\Model\Db\Service\Table\Vue\Transporteurs',
             
             'Sbm\Db\VueGateway\Circuits' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayCircuits',
-            'Sbm\Db\VueGateway\Eleves' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEleves',
+            //'Sbm\Db\VueGateway\Eleves' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEleves',
             'Sbm\Db\VueGateway\Etablissements' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEtablissements',
             'Sbm\Db\VueGateway\EtablissementsServices' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEtablissementsServices',
             'Sbm\Db\VueGateway\Paiements' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayPaiements',
@@ -135,6 +134,7 @@ return array(
             'Sbm\Libelles\ModeDePaiement' => 'SbmCommun\Model\Db\Service\Select\LibellesModeDePaiement',            
             'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
             
+            'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
             'Sbm\Db\Query\ElevesScolarites' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites',
             'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations'
         )

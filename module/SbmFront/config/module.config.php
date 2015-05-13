@@ -20,9 +20,7 @@ if (! defined('APPL_NAME')) {
 
 return array(
     'service_manager' => array(
-        'invokables' => array(
-            'Sbm\Authenticate' => 'SbmFront\Model\Authenticate'
-        ),
+        'invokables' => array(),
         'factories' => array()
     ),
     'router' => array(

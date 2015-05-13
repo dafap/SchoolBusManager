@@ -101,10 +101,7 @@ class ElevesScolarites implements FactoryInterface
             'motifRefusR2' => 'motifRefusR2',
             'commentaire' => 'commentaire'
         ))
-            ->
-        // 'noteScolarite' => 'note'
-        
-        join(array(
+            ->join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId = eta.etablissementId', array(
             'etablissement' => 'nom',

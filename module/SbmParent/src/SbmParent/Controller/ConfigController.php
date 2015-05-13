@@ -110,7 +110,8 @@ class ConfigController extends AbstractActionController
     public function createAction()
     {
         $identity = $this->getServiceLocator()
-            ->get('Sbm\Authenticate')
+            ->get('Dafap\Authenticate')
+            ->by()
             ->getIdentity();
         $prg = $this->prg();
         if ($prg instanceof Response) {

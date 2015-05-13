@@ -44,7 +44,7 @@ class Module extends AbstractModule implements LocatorRegisteredInterface
     public function checkAuthenticated(MvcEvent $e)
     {
         if (! $this->inListeBlanche($e)) {
-            $auth = $e->getApplication()->getServiceManager()->get('Sbm\Authenticate');
+            $auth = $e->getApplication()->getServiceManager()->get('Dafap\Authenticate')->by();
             if (!$auth->hasIdentity()) {
                 $e->getRouteMatch()->setParam('controller', 'SbmFront\Controller\Index')->setParam('action', 'index');
             }

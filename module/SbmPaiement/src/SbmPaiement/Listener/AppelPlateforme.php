@@ -30,18 +30,21 @@ use Zend\EventManager\Event;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\Log\Logger;
+use Zend\Http\Client;
+use Zend\Http\Client\Adapter\Curl;
 
 class AppelPlateforme implements ListenerAggregateInterface
 {
+
     /**
      *
      * @var \Zend\Stdlib\CallbackHandler[]
      */
     protected $listeners = array();
-    
+
     /**
      * {@inheritDoc}
-    */
+     */
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
@@ -50,7 +53,7 @@ class AppelPlateforme implements ListenerAggregateInterface
             'onAppelPaiement'
         ), 1);
     }
-    
+
     /**
      * (non-PHPdoc)
      *
@@ -64,7 +67,7 @@ class AppelPlateforme implements ListenerAggregateInterface
             }
         }
     }
-    
+
     public function onAppelPaiement(Event $e)
     {
         $sm = $e->getTarget();
@@ -73,26 +76,44 @@ class AppelPlateforme implements ListenerAggregateInterface
         $cacert = realpath(__DIR__ . '/../../../config') . DIRECTORY_SEPARATOR . 'cacert.pem';
         // ouvre l'objet de la plateforme
         $objectPlateforme = $sm->get('SbmPaiement\Plugin\Plateforme');
-        // appel en post
-        $ch = curl_init($objectPlateforme->getUrl());
-        $options = array(
-            CURLOPT_POST => 1,
-            CURLOPT_POSTFIELDS => $objectPlateforme->prepareAppel($params),
+        
+        $adapter = new Curl();
+        $adapter->setOptions(array(
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_CAINFO => $cacert,
             CURLOPT_SSL_VERIFYPEER => true
-        );
-        curl_setopt_array($ch, $options);
-        $fm = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
-        if (!curl_exec($ch)) {
-            // libcurl - Error codes à l'adresse http://curl.haxx.se/libcurl/c/libcurl-errors.html
-            $mess = sprintf('Echec de l\'appel à la plateforme de paiement. (Code erreur n° %d)', curl_errno($ch));
-            $objectPlateforme->logError(Logger::ALERT,$mess, curl_getinfo($ch));
-            $fm->addErrorMessage('Echec de l\'appel à la plateforme de paiement.');
-        } else {
-            $fm->addSuccessMessage('Accès au paiement en ligne.');
-        }
-        curl_close($ch);
+        ));
+        $adapter->setCurlOption(CURLOPT_CAINFO, $cacert);
+        $client = new Client($objectPlateforme->getUrl());
+        $client->setAdapter($adapter);
+        $client->setMethod('POST');
+        $client->setParameterPost($objectPlateforme->prepareAppel($params));
+        $response = $client->send($client->getRequest());
+        
+        //output the response
+        echo $response->getBody()."<br/>";
+        /*
+         * // appel en post
+         * $ch = curl_init($objectPlateforme->getUrl());
+         * $options = array(
+         * CURLOPT_POST => 1,
+         * CURLOPT_POSTFIELDS => $objectPlateforme->prepareAppel($params),
+         * CURLOPT_HEADER => 0,
+         * CURLOPT_RETURNTRANSFER => 1,
+         * CURLOPT_CAINFO => $cacert,
+         * CURLOPT_SSL_VERIFYPEER => true
+         * );
+         * curl_setopt_array($ch, $options);
+         * $fm = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
+         * if (!curl_exec($ch)) {
+         * // libcurl - Error codes à l'adresse http://curl.haxx.se/libcurl/c/libcurl-errors.html
+         * $mess = sprintf('Echec de l\'appel à la plateforme de paiement. (Code erreur n° %d)', curl_errno($ch));
+         * $objectPlateforme->logError(Logger::ALERT,$mess, curl_getinfo($ch));
+         * $fm->addErrorMessage('Echec de l\'appel à la plateforme de paiement.');
+         * } else {
+         * $fm->addSuccessMessage('Accès au paiement en ligne.');
+         * }
+         * curl_close($ch);
+         */
     }
 }

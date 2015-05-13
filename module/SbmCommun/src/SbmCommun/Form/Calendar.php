@@ -41,12 +41,12 @@ class Calendar extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'calendar-description',
-                'class' => 'sbm-text255'
+                'class' => 'sbm-width-55c'
             ),
             'options' => array(
                 'label' => 'Description',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -58,13 +58,13 @@ class Calendar extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Date',
             'attributes' => array(
                 'id' => 'calendar-dateDebut',
-                'class' => 'sbm-text15'
             ),
             'options' => array(
                 'label' => 'Date de début',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
+                'format' => 'Y-m-d',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -75,13 +75,13 @@ class Calendar extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Date',
             'attributes' => array(
                 'id' => 'calendar-dateFin',
-                'class' => 'sbm-text15'
             ),
             'options' => array(
                 'label' => 'Date de fin',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
+                'format' => 'Y-m-d',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -92,13 +92,13 @@ class Calendar extends AbstractSbmForm
             'type' => 'Zend\Form\Element\Date',
             'attributes' => array(
                 'id' => 'calendar-echeance',
-                'class' => 'sbm-text15'
             ),
             'options' => array(
                 'label' => 'Echéance',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
+                'format' => 'Y-m-d',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -109,12 +109,12 @@ class Calendar extends AbstractSbmForm
             'type' => 'text',
             'attributes' => array(
                 'id' => 'calendar-exercice',
-                'class' => 'sbm-text5'
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
                 'label' => 'Exercice budgétaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label170'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -128,7 +128,7 @@ class Calendar extends AbstractSbmForm
                 'value' => 'Enregistrer',
                 'id' => 'calendar-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left135'
+                'class' => 'button default submit left-95px'
             )
         ));
         $this->add(array(
@@ -137,7 +137,7 @@ class Calendar extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'calendar-cancel',
-                'class' => 'button cancel'
+                'class' => 'button default cancel'
             )
         ));
     }

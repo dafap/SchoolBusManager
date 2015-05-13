@@ -48,16 +48,16 @@ class Criteres extends SbmCommunCriteres
             $where->equalTo('numero', $this->data['numero']);
         }
         if (! empty($this->data['nomSA'])) {
-            $where->like('nomSA', $this->data['nomSA'] . '%');
+            $where->like('ele.nomSA', $this->data['nomSA'] . '%');
         }
         if (! empty($this->data['responsable'])) {
-            $where->nest()->like('responsable1NomPrenom', $this->data['responsable'] . '%')->OR->like('responsable2NomPrenom', $this->data['responsable'] . '%')->unnest();
+            $where->nest()->like('r1.nomSA', $this->data['responsable'] . '%')->OR->like('r2.nomSA', $this->data['responsable'] . '%')->unnest();
         }
         if (! empty($this->data['etablissementId'])) {
-            $where->equalTo('etablissementId', $this->data['etablissementId']);
+            $where->equalTo('sco.etablissementId', $this->data['etablissementId']);
         }
         if (! empty($this->data['classeId'])) {
-            $where->equalTo('classeId', $this->data['classeId']);
+            $where->equalTo('sco.classeId', $this->data['classeId']);
         }
         if (! empty($this->data['etat'])) {
             switch ($this->data['etat']) {
@@ -136,7 +136,7 @@ class Criteres extends SbmCommunCriteres
             $where->literal('derogation = 1');
         }
         if (! empty($this->data['selection'])) {
-            $where->literal('selection = 1');
+            $where->literal('ele.selection = 1');
         }
         return $where;
     }

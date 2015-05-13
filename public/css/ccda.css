@@ -71,6 +71,9 @@ th, td {
 	color: red;
 	font-weight: bold;
 }
+.gras {
+	font-weight: bold;
+}
 .noir {
 	color: black;
 }
@@ -484,6 +487,16 @@ div#fiche-inner div.row-inner input.cancel {
 	margin-top: 6px;
 	margin-left: 120px;
 }
+/*-------------- Fiche calendrier -------------------*/
+#fiche-inner #calendar label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 140px;
+}
+#fiche-inner #calendar input.submit {
+	margin-top: 6px;
+	margin-left: 120px;	
+}
 /*-------------- Fiche circuits ---------------------*/
 #fiche-inner #circuit label {
 	display: inline-block;
@@ -526,10 +539,16 @@ div#fiche-inner div.row-inner input.cancel {
 #fiche-inner #eleve #commun-col1 {
 	width: 415px;
 }
+#fiche-inner #eleve #commun div.label {
+	display: inline-block;
+	padding-left: 5px;
+	min-width: 80px;
+}
 #fiche-inner #eleve #commun label {
 	display: inline-block;
 	padding-left: 5px;
 }
+#fiche-inner #eleve #commun-col1 div.label,
 #fiche-inner #eleve #commun-col1 label {
 	width: 140px;
 }
@@ -545,17 +564,13 @@ div#fiche-inner div.row-inner input.cancel {
 	margin-top: 2px;
 	margin-bottom: 3px;
 }
+#fiche-inner #eleve #commun-col3 div.label,
 #fiche-inner #eleve #commun-col3 label {
 	display: inline-block;
 	padding-left: 5px;
 	min-width: 105px;
 }
-#fiche-inner #eleve #commun div.text-label {
-	display: inline-block;
-	padding-left: 5px;
-	min-width: 80px;
-}
-#fiche-inner #eleve #commun div.text-input {
+#fiche-inner #eleve #commun div.input {
 	display: inline-block;
 }
 #fiche-inner #eleve #tabs {
@@ -574,6 +589,7 @@ div#fiche-inner div.row-inner input.cancel {
 }
 #fiche-inner #eleve .wrapper-responsable {
 	min-height: 6em;
+	margin-left: 10px;
 }
 #fiche-inner #eleve #wrapper-joursTransport label {
 	width: 4em;
@@ -602,6 +618,9 @@ div#fiche-inner div.row-inner input.cancel {
 	display: inline-block;
 	width : 170px;
 	padding-left: 5px;
+}
+#fiche-inner #eleve #responsables div.cols {
+	min-width: 415px;
 }
 table.eleve-affectations {
 	border: 1px solid #f78042;

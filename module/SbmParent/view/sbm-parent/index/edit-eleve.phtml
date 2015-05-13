@@ -35,8 +35,9 @@ $(function() {
     }
   });
   // adapte le select de la commune au code postal
-  $("#enfant_ga").on('blur', '#r2codePostal', function() {
+  $("#enfant_ga").on('keyup', '#r2codePostal', function() {
     var valeur = $('#r2codePostal').val();
+    if (valeur.length==5) {
     $.ajax({
 				url : '/parent/getcommunesforselect/1/' + valeur,
 				success : function(data) {
@@ -50,6 +51,7 @@ $(function() {
 					alert(xhr.status + " " + thrownError);
 				}
 			});
+	}
   });
 });
 <?php

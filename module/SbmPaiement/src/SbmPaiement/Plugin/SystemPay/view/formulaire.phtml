@@ -1,0 +1,31 @@
+<?php
+/**
+ * Formulaire d'appel de la plate-forme de paiement
+ *
+ * Le formulaire est envoyé dès son chargement
+ * 
+ * @project sbm
+ * @package SbmPaiement/Plugin/SystemPay/view
+ * @filesource formulaire.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 mai 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$this->inlineScript()->captureStart();
+?>
+document.getElementById('plugin-formulaire').submit();
+<?php $this->inlineScript()->captureEnd();?>
+<div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="widget widget-white text-center">
+                <i class="fam-arrow-refresh" style="font-size: 50px"></i>
+                <h3>Redirection vers la page de paiement en cours...</h3>
+                <?php echo $this->form($this->form);?>
+            </div>
+        </div>
+    </div>
+
+ 

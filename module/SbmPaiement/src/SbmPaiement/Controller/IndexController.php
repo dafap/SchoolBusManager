@@ -18,9 +18,67 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use SbmCommun\Model\StdLib;
+use Zend\View\Model\Zend\View\Model;
+use SbmParent\Model\Responsable;
 
 class IndexController extends AbstractActionController
 {
+
+    public function formulaireAction()
+    {
+        try {
+            $responsable = new Responsable($this->getServiceLocator());
+        } catch (Exception $e) {
+            return $this->redirect()->toRoute('login', array(
+                'action' => 'logout'
+            ));
+        }
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            return $this->redirect()->toRoute('sbmparent');
+        }
+        // prg contient le post
+        $args = (array) $prg;
+        // $args = array('montant' => ..., 'payer' => ...)
+        $preinscrits = $this->getServiceLocator()
+            ->get('Sbm\Db\Query\ElevesScolarites')
+            ->getElevesPreinscrits($responsable->responsableId);
+        $elevesIds = array();
+        foreach ($preinscrits as $row) {
+            if (! $row['selectionScolarite']) {
+                $elevesIds[] = $row['eleveId'];
+            }
+        }
+        $params = array(
+            'montant' => $args['montant'],
+            'count' => 1,
+            'first' => $args['montant'],
+            'period' => 1,
+            'email' => $responsable->email,
+            'responsableId' => $responsable->responsableId,
+            'nom' => $responsable->nom,
+            'prenom' => $responsable->prenom,
+            'eleveIds' => $elevesIds
+        );
+        $objectPlateforme = $this->getServiceLocator()->get('SbmPaiement\Plugin\Plateforme');
+        $args = $objectPlateforme->prepareAppel($params);
+        $form = new \Zend\Form\Form('plugin-formulaire');
+        foreach ($args as $key => $value) {
+            $form->add(array(
+                'type' => 'hidden',
+                'name' => $key,
+                'attributes' => array(
+                    'value' => $value
+                )
+            ));
+        }
+        $form->setAttribute('action', $objectPlateforme->getUrl());
+        return new ViewModel(array(
+            'form' => $form
+        ));
+    }
 
     public function listeAction()
     {

@@ -19,13 +19,15 @@
  */
 return array(
     'url_paiement' => 'https://paiement.systempay.fr/vads-payment/',
+    //'url_paiement' => 'http://cc-decazeville-aubin.dafap.fr/notification/paiement.php',
     'url_marchand' => 'https://paiement.systempay.fr/vads-merchant/',
     'vads_action_mode' => 'INTERACTIVE',
     'vads_currency' => '978',
     'vads_page_action' => 'PAYMENT',
-    'vads_capture_delay' => 0,
-    'vads_validation_mode' => 0,
-    'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription;SUCCESS_FOOTER_MSG_RETURN=Retour au site d\'inscription',  
+    'vads_capture_delay' => '0',
+    'vads_validation_mode' => '0',
+    'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription',
+    //'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription;SUCCESS_FOOTER_MSG_RETURN=Retour au site d\'inscription',  
     'vads_version' => 'V2',
     'uniqid_path' => realpath(__DIR__ . '../../../../../../../data/share'),
     // vads_trans_id_max doit être, d'après la documentation, compris entre 000000 et 899999,

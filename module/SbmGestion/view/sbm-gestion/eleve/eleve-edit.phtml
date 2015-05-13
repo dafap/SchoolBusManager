@@ -360,12 +360,12 @@ echo $this->formHidden($this->form->get('csrf'));
 				</div>
 				<div id="commun-col3" class="float-left left-10px">
 					<div id="wrapper-numero">
-						<div class="text-label">N° carte</div>
-						<div class="text-input"><?php echo $this->data['numero'];?></div>
+						<div class="label">N° carte</div>
+						<div class="input"><?php echo $this->data['numero'];?></div>
 					</div>
 					<div id="wrapper-inscrit">
-						<div class="text-label">Etat</div>
-						<div class="text-input"><?php echo $this->data['etat'] == 'Rayé' ? '<span style="color: red;">Rayé</span>' : $this->data['etat'];?></div>
+						<div class="label">Etat</div>
+						<div class="input"><?php echo $this->data['etat'] == 'Rayé' ? '<span style="color: red;">Rayé</span>' : $this->data['etat'];?></div>
 					</div>
 					<div id="wrapper-district"><?php echo $this->formRow($this->form->get('district'));?></div>
 					<div id="wrapper-ga"><?php echo $this->formRow($this->form->get('ga'));?></div>
@@ -575,17 +575,19 @@ echo $this->formHidden($this->form->get('csrf'));
 			</div>
 			<div id="wrapper-commentaire" class="row-inner edit top-6px"><?php echo $this->formRow($this->form->get('commentaire'));?></div>
 		</fieldset>
-<?php
-echo '<div id="eleve-edit-buttons" class="row-inner edit left-95px">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) . '</div>';
-echo $this->form()->closeTag();
-?>
+		<div id="eleve-edit-buttons" class="row-inner edit left-95px">
+            <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+        </div>
+<?php echo $this->form()->closeTag();?>
 	</div><?php // fiche_inner ?>
-<div id="fiche-footer"></div>
+    <div id="fiche-footer"></div>
 </div>
 <?php
-// fiche_wrapper
-if (count($this->form->getMessages())) {
+// fermeture du div fiche_wrapper
+
+// gestion des messages d'erreur à améliorer
+/*if (count($this->form->getMessages())) {
     echo '<p><u>DEBUG</u></p>';
     var_dump($this->form->getMessages());
-}
+}*/
 ?>

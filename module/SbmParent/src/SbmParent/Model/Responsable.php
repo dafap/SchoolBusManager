@@ -82,7 +82,7 @@ class Responsable
     {
         return $this->responsable;
     }
-    
+
     public function refresh()
     {
         $this->responsable = false;
@@ -96,7 +96,9 @@ class Responsable
      */
     private function init()
     {
-        $email = $this->sm->get('Sbm\Authenticate')->getIdentity()['email'];
+        $email = $this->sm->get('Dafap\Authenticate')
+            ->by()
+            ->getIdentity()['email'];
         if ($this->invalid($email)) {
             $table = $this->sm->get('Sbm\Db\Vue\Responsables');
             $r = $table->getRecordByEmail($email);

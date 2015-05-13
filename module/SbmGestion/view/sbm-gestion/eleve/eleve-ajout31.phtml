@@ -1,0 +1,214 @@
+<?php
+/**
+ * Création d'un élève (phase 31)
+ *
+ * La création d'un élève se fait en plusieurs phases :
+ * (Form1) : demande du nom, prénom, date de naissance, responsable1, garde_alternée, responsable2 (facultatif)
+ * - recherche dans la base s'il existe des élèves ayant ces caractéristiques
+ * - si oui, affichage de la liste trouvée (Liste1) avec possibilité de choisir un élève (21) ou de créer un nouvel élève (22)
+ * - si non, création d'un nouvel élève (22)
+ * (21) : recherche dans la table scolarites en année courante si la fiche existe
+ * - si oui, passage en mode modification FIN
+ * - si non, création de la scolarite (31)
+ * (22) : enregistre le formulaire (Form1) et récupère le eleveId puis création de la scolarité (31)
+ * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, demandeR1, demandeR2, commentaire
+ * - enregistre la scolarité
+ * - passe en mode modification FIN
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource eleve-ajout31.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 10 mai 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery/jquery.js'));
+$this->headScript()->captureStart();
+?>
+function montreDebutFin(ancomplet) {
+    if (ancomplet) {
+        $("#wrapper-dateDebut").hide();
+        $("#wrapper-dateFin").hide();
+    } else {
+        $("#wrapper-dateDebut").show();
+        $("#wrapper-dateFin").show();
+    }
+}
+function montreMotifDerogation(derogation) {
+    if (derogation) {
+        $("#wrapper-motifDerogation").show();
+    } else {
+        $("#wrapper-motifDerogation").hide();
+    }
+}
+$(document).ready(function($) {
+$("#eleve-anneeComplete").click(function(){
+    montreDebutFin($(this).is(":checked"));
+});
+$("#eleve-derogation").click(function(){
+    montreMotifDerogation($(this).is(":checked"));
+});
+$("input[type='text'][name^='distanceR']").dblclick(function(){
+    $(this).css("cursor", "wait");
+    var myid = '#'+$(this).attr('id');
+    var name = $(this).attr('name');
+    var n = 1;
+    if (name.indexOf('1') == -1) {
+        n = 2;
+    }
+    var id = '#eleve-responsable'+n+'Id';
+    var responsableid = $(id).val();
+    var etablissementid = $("#eleve-etablissementId").val();
+    var args = 'etablissementId:'+etablissementid+'/responsableId:'+responsableid;
+    $.ajax({
+			url : '/sbmajaxeleve/donnedistance/'+args,
+			type: 'GET',
+			dataType: 'json',
+			success : function(data){
+			    if (data.success) {
+			      $(myid).val(data.distance);
+			      $(myid).css('cursor', 'auto');
+			    } else {
+			        alert(data.cr);
+			    }
+            },
+			error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+					$(myid).css('cursor','auto');
+			}
+	});
+});
+});
+<?php 
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+montreDebutFin($("#eleve-anneeComplete").is(":checked"));
+montreMotifDerogation($("#eleve-derogation").is(":checked"));
+<?php 
+$this->inlineScript()->captureEnd();
+$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+//======================= fin js =================================================
+$url_map = $this->url('sbmgestion/eleve', array(
+    'action' => 'localisation',
+    'page' => $this->page
+));
+$url_ici = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-ajout31',
+    'page' => $this->page
+));
+$hiddens = array(
+    'eleveId' => $this->data['eleveId'],
+    'eleve' => $this->info,
+    'origine' => $url_ici
+);
+$actions = array(
+    'localiser' => array(
+        'class' => 'fam-map-magnify',
+        'formaction' => $url_map,
+        'title' => 'localiser cet élève sur la carte',
+        'onclick' => sprintf($js, "'localiser'")
+    )
+);
+?>
+<h1>Création d'un nouvel élève</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">	    
+<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('eleveId'));
+echo $this->formHidden($this->form->get('csrf'));
+?>
+        <fieldset class="sbm-page1">
+			<div id="commun" class="clearfix">
+				<div id="commun-col1" class="float-left">
+					<div>
+						<div class="label">Nom de l'élève</div><?php echo $this->data['nom']?></div>
+					<div>
+						<div class="label">Prénom de l'élève</div><?php echo $this->data['prenom']?></div>
+					<div>
+						<div class="label">Date de naissance</div><?php echo $this->data['dateN']?></div>
+					<div id="wrapper-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport'));?></div>
+				</div>
+				<div id="commun-col2" class="float-left left-10px">
+					<div id="wrapper-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
+					<div id="wrapper-classeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('classeId'));?></div>
+					<div id="commun-col2-periode" class="clearfix">
+						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
+						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
+						<div id="wrapper-dateFin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateFin'));?></div>
+					</div id="commun-col2-derogation" class="clearfix">
+					<div>
+						<div id="wrapper-derogation" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('derogation'));?></div>
+						<div id="wrapper-motifDerogation"
+							class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('motifDerogation'));?></div>
+					</div>
+				</div>
+				<div id="commun-col3" class="float-left left-10px">
+					<div id="wrapper-numero">
+						<div class="label">N° carte</div>
+						<div class="input"><?php echo $this->data['numero'];?></div>
+					</div>
+					<div id="wrapper-inscrit">
+						<div class="label">Etat</div>
+						<div class="input">en cours...</div>
+					</div>
+					<div id="wrapper-district"><?php echo $this->formRow($this->form->get('district'));?></div>
+					<div id="wrapper-paiement"><?php echo $this->formRow($this->form->get('paiement'));?></div>
+					<div id="wrapper-ga"><?php echo empty($data['responsable2Id']) ? '' : 'Garde alternée';?></div>
+				</div>
+			</div>
+			<div id="responsables" class="clearfix">
+				<div id="responsables-col1" class="float-left cols">
+				    <?php echo $this->formHidden($this->form->get('responsable1Id'));?>
+					<div class="gras">Responsable<?php echo empty($data['responsable2Id']) ? '' : ' 1';?></div>
+					<div id="wrapper-responsable1" class="wrapper-responsable">
+						<div id="r1-ligne1"><?php echo $this->data['titreR1'] . ' ' . $this->data['responsable1NomPrenom'];?></div>
+						<div id="r1-ligne2"><?php echo $this->data['adresseL1R1'] . ' ' . $this->data['adresseL2R1'];?></div>
+						<div id="r1-ligne3"><?php echo $this->data['codePostalR1'] . ' ' . $this->data['communeR1'];?></div>
+						<div id="r1-ligne4">email: <?php echo $this->data['emailR1'];?></div>
+						<div id="r1-ligne5">Tél. <?php echo $this->data['telephoneFR1'] . ' ' . $this->data['telephonePR1'] . ' ' .$this->data['telephoneTR1'];?></div>
+					</div>
+					<div class="clearfix">
+						<div id="wrapper-distanceR1" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR1'));?></div>
+						<div id="wrapper-demandeR1" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR1'));?></div>
+					</div>
+				</div>  
+				<?php if (!empty($data['responsable2Id'])) : ?>				
+				<div id="responsables-col2" class="float-left cols left-10px">
+				    <?php echo $this->formHidden($this->form->get('responsable2Id'));?>
+					<div class="gras">Responsable 2</div>
+					<div id="wrapper-responsable2" class="wrapper-responsable">
+						<div id="r2-ligne1"><?php echo $this->data['titreR2'] . ' ' . $this->data['responsable2NomPrenom'];?></div>
+						<div id="r2-ligne2"><?php echo $this->data['adresseL1R2'] . ' ' . $this->data['adresseL2R2'];?></div>
+						<div id="r2-ligne3"><?php echo $this->data['codePostalR2'] . ' ' . $this->data['communeR2'];?></div>
+						<div id="r2-ligne4">email: <?php echo $this->data['emailR2'];?></div>
+						<div id="r2-ligne5">Tél. <?php echo $this->data['telephoneFR2'] . ' ' . $this->data['telephonePR2'] . ' ' .$this->data['telephoneTR2'];?></div>
+					</div>
+					<div class="clearfix">
+						<div id="wrapper-distanceR2" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR2'));?></div>
+						<div id="wrapper-demandeR2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR2'));?></div>
+					</div>
+				</div>
+				<?php endif;?>
+			</div>
+			<div id="wrapper-commentaire" class="row-inner edit top-6px"><?php echo $this->formRow($this->form->get('commentaire'));?></div>
+		</fieldset>
+		<div id="eleve-edit-buttons" class="row-inner edit left-95px">
+        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+    </div>
+<?php
+echo $this->form()->closeTag();
+?>
+	</div><?php // fiche_inner ?>
+    <div id="fiche-footer"></div>
+</div>
+<?php //var_dump($this->data);?>
+<?php  var_dump($this->form->getMessages());?>

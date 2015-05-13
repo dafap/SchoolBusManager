@@ -17,7 +17,7 @@ namespace SbmFront\View\Helper;
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\Helper\Url;
 use Zend\Session\Container;
-use SbmFront\Model\Authenticate;
+use DafapSession\Model\Authentication\AuthenticationService;
 use DafapSession\Model\Session;
 
 class Bienvenue extends AbstractHelper
@@ -82,9 +82,9 @@ EOT;
      * Set authService.
      *
      * @param AuthenticationService $authService            
-     * @return \ZfcUser\View\Helper\ZfcUserIdentity
+     * @return SbmFront\View\Helper\Bienvenue
      */
-    public function setAuthService(Authenticate $authService)
+    public function setAuthService(AuthenticationService $authService)
     {
         $this->authService = $authService;
         return $this;

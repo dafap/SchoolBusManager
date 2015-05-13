@@ -170,9 +170,9 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($eleves as $test => $eleve): ?>
         <?php
             // responsable 1
-            $r = $this->escapehtml($eleve->responsable1NomPrenom);
-            $itemR1 = $this->listeLigneActions($eleve->eleveId . 'r1', array(
-                'responsableId' => $eleve->responsable1Id,
+            $r = $this->escapehtml($eleve['responsable1NomPrenom']);
+            $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', array(
+                'responsableId' => $eleve['responsable1Id'],
                 'info' => $r,
                 'origine' => $url_ici
             ), array(
@@ -180,23 +180,23 @@ echo $this->flashMessenger()->render('default');
                     'class' => 'fam-magnifier',
                     'formaction' => $url_responsable,
                     'title' => 'Voir sa fiche',
-                    'onclick' => sprintf($js_op, $eleve->eleveId, 'r1', 'voir r1')
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'voir r1')
                 ),
                 'localiser' => array(
                     'class' => 'fam-map-magnify',
                     'formaction' => $url_map,
                     'title' => 'Localiser cette adresse sur la carte',
-                    'onclick' => sprintf($js_op, $eleve->eleveId, 'r1', 'localiser r1')
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'localiser r1')
                 )
             ), array(
                 'style' => 'display: inline;'
             ));
             $itemR1 .= $r;
             // responsable 2
-            if ($eleve->responsable2Id) {
-                $r = $this->escapehtml($eleve->responsable2NomPrenom);
-                $itemR2 = $this->listeLigneActions($eleve->eleveId . 'r2', array(
-                    'responsableId' => $eleve->responsable2Id,
+            if ($eleve['responsable2Id']) {
+                $r = $this->escapehtml($eleve['responsable2NomPrenom']);
+                $itemR2 = $this->listeLigneActions($eleve['eleveId'] . 'r2', array(
+                    'responsableId' => $eleve['responsable2Id'],
                     'info' => $r,
                     'origine' => $url_ici
                 ), array(
@@ -204,13 +204,13 @@ echo $this->flashMessenger()->render('default');
                         'class' => 'fam-magnifier',
                         'formaction' => $url_responsable,
                         'title' => 'Voir sa fiche',
-                        'onclick' => sprintf($js_op, $eleve->eleveId, 'r2', 'voir r2')
+                        'onclick' => sprintf($js_op, $eleve['eleveId'], 'r2', 'voir r2')
                     ),
                     'localiser' => array(
                         'class' => 'fam-map-magnify',
                         'formaction' => $url_map,
                         'title' => 'Localiser cette adresse sur la carte',
-                        'onclick' => sprintf($js_op, $eleve->eleveId, 'r2', 'localiser r2')
+                        'onclick' => sprintf($js_op, $eleve['eleveId'], 'r2', 'localiser r2')
                     )
                 ), array(
                     'style' => 'display: inline;'
@@ -220,17 +220,17 @@ echo $this->flashMessenger()->render('default');
                 $itemR2 = '';
             }
             // selection
-            $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve->eleveId);
-            $js_chkCallback .= sprintf($modele_chkCallback, $eleve->eleveId, $eleve->eleveId);
+            $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve['eleveId']);
+            $js_chkCallback .= sprintf($modele_chkCallback, $eleve['eleveId'], $eleve['eleveId']);
             // tr css
             $tr_css = $this->cycle(array(
                 "even",
                 "odd"
             ))->next();
-            if ($eleve->demandeR1 == 2 || $eleve->demandeR2 == 2) {
-                $rouge = $eleve->accordR1 + $eleve->accordR2 == 0;
+            if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) {
+                $rouge = $eleve['accordR1'] + $eleve['accordR2'] == 0;
             } else {
-                $rouge = ($eleve->district == 0 && $eleve->derogation == 0) || ($eleve->demandeR1 + $eleve->demandeR2 == 0) || ($eleve->distanceR1 < 1.0 && $eleve->distanceR2 < 1.0);
+                $rouge = ($eleve['district'] == 0 && $eleve['derogation'] == 0) || ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) || ($eleve['distanceR1'] < 1.0 && $eleve['distanceR2'] < 1.0);
             }
             if ($rouge) {
                 $tr_css .= ' alert';
@@ -238,19 +238,19 @@ echo $this->flashMessenger()->render('default');
             }
             ?>
          <tr class="<?php echo $tr_css;?>">
-					<td class="numero"><?php echo $eleve->numero; ?></td>
-					<td class="nom"><?php echo $this->escapeHtml($eleve->nom); ?></td>
-					<td class="prenom"><?php echo $this->escapeHtml($eleve->prenom); ?></td>
-					<td class="dateN"><?php echo $this->escapeHtml($eleve->dateN); ?></td>
+					<td class="numero"><?php echo $eleve['numero']; ?></td>
+					<td class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
+					<td class="prenom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
+					<td class="dateN"><?php echo $this->escapeHtml($eleve['dateN']); ?></td>
 					<td class="responsable1"><?php echo $itemR1; ?></td>
 					<td class="responsable2"><?php echo $itemR2; ?></td>
-					<td class="etablissement"><?php echo $this->escapeHtml($eleve->etablissement . ' - ' . $eleve->communeEtablissement);?></td>
-					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve->eleveId, $eleve->selection); ?></td>
+					<td class="etablissement"><?php echo $this->escapeHtml($eleve['etablissement'] . ' - ' . $eleve['communeEtablissement']);?></td>
+					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?></td>
 					<td class="boutons">
             <?php
             $hiddens = array(
-                'eleveId' => $eleve->eleveId,
-                'info' => $eleve->nom . ' ' . $eleve->prenom,
+                'eleveId' => $eleve['eleveId'],
+                'info' => $eleve['nom'] . ' ' . $eleve['prenom'],
                 'origine' => $url_ici
             );
             $buttons = array(
@@ -258,22 +258,22 @@ echo $this->flashMessenger()->render('default');
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier',
-                    'onclick' => sprintf($js_op, $eleve->eleveId, '', 'modifier')
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'modifier')
                 ),
                 'supprimer' => array(
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer',
-                    'onclick' => sprintf($js_op, $eleve->eleveId, '', 'supprimer')
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'supprimer')
                 ),
                 'famille' => array(
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'élèves inscrits de la même famille',
-                    'onclick' => sprintf($js_op, $eleve->eleveId, '', trim($eleve->responsable1Id . '|' . $eleve->responsable2Id), '|')
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', trim($eleve['responsable1Id'] . '|' . $eleve['responsable2Id']), '|')
                 )
             );
-            echo $this->listeLigneActions($eleve->eleveId, $hiddens, $buttons);
+            echo $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);
             ?>
 				</td>
 				</tr>         
