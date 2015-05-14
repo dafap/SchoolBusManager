@@ -54,7 +54,7 @@ class AuthenticationService extends ZendAuthenticationService
                 $this->clearIdentity();
             }
             $this->getStorage()->write($data);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->clearIdentity();
         }
     }

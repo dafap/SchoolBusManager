@@ -18,7 +18,6 @@ use Zend\Authentication\Adapter\ValidatableAdapterInterface;
 use Zend\Authentication\Result;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use DafapSession\Model\Exception;
 
 class AdapterToken implements ValidatableAdapterInterface, ServiceLocatorAwareInterface
 {
@@ -72,7 +71,7 @@ class AdapterToken implements ValidatableAdapterInterface, ServiceLocatorAwareIn
             unset($identity['mdp']);
             unset($identity['token']);
             return new Result(Result::SUCCESS, $identity, array('Identification confirmée.'));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', array('Impossible de se connecter.'));
         }
     }

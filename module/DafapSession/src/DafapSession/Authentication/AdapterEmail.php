@@ -12,14 +12,13 @@
  * @date 13 mai 2015
  * @version 2015-1
  */
-namespace DafapSession\Model\Authentication;
+namespace DafapSession\Authentication;
 
 use Zend\Authentication\Adapter\ValidatableAdapterInterface;
 use Zend\Authentication\Result;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Mdp;
-use DafapSession\Model\Exception;
 
 class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareInterface
 {
