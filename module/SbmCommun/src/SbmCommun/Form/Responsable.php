@@ -53,6 +53,10 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'hidden'
         ));
         $this->add(array(
+            'name' => 'userId',
+            'type' => 'hidden'
+        ));
+        $this->add(array(
             'name' => 'nature',
             'type' => 'hidden'
         ));

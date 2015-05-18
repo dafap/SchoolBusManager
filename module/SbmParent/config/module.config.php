@@ -12,6 +12,20 @@
  */
 
 return array(
+    'acl' => array(
+        'resources' => array(
+            'sbmparent' => array(
+                'allow' => array(
+                    'roles' => array('parent')
+                )
+            ),
+            'sbmparentconfig' => array(
+                'allow' => array(
+                    'roles' => array('parent')
+                )
+            )
+        ),
+    ),
     'controllers' => array(
         'invokables' => array(
             'SbmParent\Controller\Index' => 'SbmParent\Controller\IndexController',

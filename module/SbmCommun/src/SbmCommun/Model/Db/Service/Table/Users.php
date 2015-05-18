@@ -13,6 +13,8 @@
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use Zend\Db\Sql\Where;
+
 class Users extends AbstractSbmTable
 {
 
@@ -96,5 +98,18 @@ class Users extends AbstractSbmTable
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Cette méthode supprime l'enregistrement dont le token est indiqué.
+     * On doit avoir tokenalive=1 et confirme=0 et active=0.
+     * 
+     * @param string $token
+     */
+    public function deleteRecordByToken($token)
+    {
+        $where = new Where();
+        $where->literal('tokenalive=1')->literal('confirme=0')->literal('active=0')->equalTo('token', $token);
+        return $this->table_gateway->delete($where);
     }
 }

@@ -89,14 +89,26 @@ function blocAccordeon2cols($view, $label, $array2d)
 }
 // =============================================================================================
 $this->headLink()
-    ->prependStylesheet($this->basePath('/css/jquery/themes/redmond/jquery-ui-1.10.4.custom.min.css'))
+    ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
     ->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()
     ->appendFile($this->basePath('/js/jquery.min.js'))
-    ->appendFile($this->basePath('/js/jq/jquery.ui.core.min.js'))
-    ->appendFile($this->basePath('/js/jq/jquery.ui.widget.min.js'))
-    ->appendFile($this->basePath('/js/jq/jquery.ui.accordion.min.js'))
-    ->appendFile($this->basePath('/tinymce.cachefly.net/4.1/tinymce.min.js'));
+    ->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'))
+    ->appendFile('http://tinymce.cachefly.net/4.1/tinymce.min.js');
+$this->inlineScript()->captureStart();
+echo <<<'JS'
+tinymce.init({
+    selector: "textarea.wysiwyg",
+    language_url: "/js/tinymce/langs/fr_FR.js",
+    plugins: "advlist autolink autoresize charmap code hr insertdatetime nonbreaking searchreplace spellchecker table textcolor wordcount",
+    autoresize_min_height: 300,
+    autoresize_max_height: 400,
+    insertdatetime_formats: ["%d/%m/%Y", "%H:%M"],
+    spellchecker_languages: "+Français=fr"
+ });
+JS;
+$this->inlineScript()->captureEnd();
+// =============================================================================================
 
 $retour = $this->url('sbmadmin', array(
     'action' => 'pdf-liste',

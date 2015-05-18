@@ -293,6 +293,7 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     public function is_newRecord($id)
     {
+        if ($id === false) return true;
         try {
             $this->getRecord($id);
             return false;

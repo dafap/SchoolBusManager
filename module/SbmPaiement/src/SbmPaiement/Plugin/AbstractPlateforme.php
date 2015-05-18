@@ -323,6 +323,11 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
     {
         $this->config = $config;
     }
+    
+    protected function dumpConfig()
+    {
+        die(var_dump($this->config));
+    }
 
     /**
      * Renvoie le paramètre de config indiqué par la clé

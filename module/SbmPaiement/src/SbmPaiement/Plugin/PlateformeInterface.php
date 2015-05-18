@@ -37,7 +37,16 @@ interface PlateformeInterface
      * 
      * @param array $params  
      * 
-     * @return string
+     * @return array
      */
     public function prepareAppel($params);
+    
+    /**
+     * Reçoit un tableau obtenu par la méthode prepareAppel et renvoie une clé unique 
+     * 
+     * @param array $params
+     * 
+     * @return string
+     */
+    public function getUniqueId(array $params);
 }

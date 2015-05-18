@@ -11,6 +11,15 @@
  * @version 2014-1
  */
 return array(
+    'acl' => array(
+        'resources' => array(
+            'sbminstall' => array(
+                'allow' => array(
+                    'roles' => array('sadmin')
+                )
+            )
+        ),
+    ),
     'service_manager' => array(
         'invokables' => array(
             'SbmInstallation\DumpTables' => 'SbmInstallation\Model\DumpTables'

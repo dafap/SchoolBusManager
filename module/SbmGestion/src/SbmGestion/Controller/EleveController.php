@@ -5,7 +5,7 @@
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller
- * @filesource IndexController.php
+ * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 12 févr. 2014
@@ -33,36 +33,6 @@ use Zend\View\Model\Zend\View\Model;
 
 class EleveController extends AbstractActionController
 {
-
-    private function getFormAffectationDecision()
-    {
-        $values_options1 = $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Stations')
-            ->ouvertes();
-        $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
-        $form = new \SbmGestion\Form\AffectationDecision($this->params('page', 1), 2);
-        $form->remove('back');
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/eleve', array(
-            'action' => 'testvalidate'
-        )));
-        $form->setValueOptions('station1Id', $values_options1)
-            ->setValueOptions('station2Id', $values_options1)
-            ->setValueOptions('service1Id', $values_options2)
-            ->setValueOptions('service2Id', $values_options2);
-        return $form;
-    }
-
-    public function testAction()
-    {
-        $form = $this->getFormAffectationDecision();
-        
-        $view = new ViewModel(array(
-            'form' => $form
-        ));
-        $view->setTerminal(true);
-        return $view;
-    }
 
     public function indexAction()
     {
@@ -520,8 +490,8 @@ class EleveController extends AbstractActionController
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         $tEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
         $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
-        $qAffectations = $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations'); // à changer par une requête pour avoir les noms des arrêts
-                                                                                                       // les invariants
+        $qAffectations = $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations');
+        // les invariants
         $invariants = array();
         $historique = array();
         $odata0 = $tEleves->getRecord($eleveId);
@@ -558,7 +528,6 @@ class EleveController extends AbstractActionController
             ->setValueOptions('classeId', $clasSelect)
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setMaxLength($db->getMaxLengthArray('eleves', 'table'));
-        
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
@@ -597,7 +566,8 @@ class EleveController extends AbstractActionController
         $historique['responsable1']['dateCreation'] = $r->dateCreation;
         $historique['responsable1']['dateModification'] = $r->dateModification;
         $historique['responsable1']['dateDemenagement'] = $r->dateDemenagement;
-        if (! empty($tmp = $odata0->responsable2Id)) {
+        $tmp = $odata0->responsable2Id;
+        if (!empty($tmp)) {
             $r = $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Responsables')
                 ->getRecord($odata0->responsable2Id);
@@ -605,7 +575,6 @@ class EleveController extends AbstractActionController
             $historique['responsable2']['dateModification'] = $r->dateModification;
             $historique['responsable2']['dateDemenagement'] = $r->dateDemenagement;
         }
-        
         $affectations = array();
         foreach ($qAffectations->getAffectations($eleveId) as $row) {
             $affectations[] = $row;
@@ -675,153 +644,14 @@ class EleveController extends AbstractActionController
         return $viewmodel;
     }
 
-    /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
-     */
     public function elevePdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('eleves');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres_obj->exchangeArray(Session::get('criteres', array(), str_replace('pdf', 'liste', $this->getSessionNamespace())));
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setData(array(
-            'sm' => $this->getServiceLocator(),
-            'table' => 'Sbm\Db\Vue\Eleves',
-            'fields' => array(
-                'nom',
-                'prenom',
-                'dateN',
-                'commune1',
-                'station1',
-                'service1',
-                'tarifMontant',
-                array(
-                    'name' => 'secondeAdresse',
-                    'type' => 'boolean',
-                    'values' => array(
-                        false => '',
-                        true => 'G.A.'
-                    )
-                )
-            ),
-            'where' => $criteres_obj->getWhere(),
-            'orderBy' => array(
-                'nomSA',
-                'prenomSA'
-            )
-        ))
-            ->setHead(array(
-            'Nom',
-            'Prénom',
-            'Date n.',
-            'Commune 1',
-            'Station 1',
-            'Service 1',
-            'Tarif',
-            'G.A.'
-        ))
-            ->setPdfConfig(array(
-            'title' => 'Liste des élèves',
-            'header' => array(
-                'title' => 'Liste des élèves',
-                'string' => 'éditée par School Bus Manager le ' . date('d/m/Y à H:i')
-            )
-        ))
-            ->setTableConfig(array(
-            'thead' => array(
-                'cell' => array(
-                    'stretch' => 1
-                )
-            ),
-            'tbody' => array(
-                'cell' => array(
-                    'txt_precision' => array(
-                        - 1,
-                        - 1,
-                        0,
-                        - 1,
-                        0,
-                        0
-                    ),
-                    'stretch' => 1
-                )
-            ),
-            'column_widths' => array(
-                25,
-                15,
-                20,
-                55,
-                35,
-                15,
-                10,
-                9
-            )
-        ))
-            ->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->redirect()->toRoute('sbmgestion/eleve');
     }
 
     public function eleveSupprAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $eleveId = $this->params('id', - 1); // GET
-        $form = new ButtonForm(array(
-            'id' => $eleveId
-        ), array(
-            'supproui' => array(
-                'class' => 'confirm',
-                'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            )
-        ));
-        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Vue\Eleves');
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            if ($request->getPost('supproui', false)) { // confirmation
-                $eleveId = $this->params()->fromPost('id', false); // POST
-                if ($eleveId) {
-                    $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
-                    $tableEleves->deleteRecord($eleveId);
-                    $this->flashMessenger()->addSuccessMessage("L'enregistrement a été supprimé.");
-                } else {
-                    $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                }
-            } else { // abandon
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
-            }
-            return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                'action' => 'eleve-liste',
-                'page' => $currentPage
-            ));
-        } else {
-            if ($eleveId) {
-                $form->setData(array(
-                    'id' => $eleveId
-                ));
-            } else {
-                $this->flashMessenger()->addErrorMessage("Pas d'enregistrement à supprimer.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'eleve-liste',
-                    'page' => $currentPage
-                ));
-            }
-        }
-        
-        return new ViewModel(array(
-            'data' => $tableEleves->getRecord($eleveId),
-            'form' => $form,
-            'page' => $currentPage,
-            'eleveId' => $eleveId
-        ));
+        return $this->redirect()->toRoute('sbmgestion/eleve');
     }
 
     /**
@@ -889,8 +719,13 @@ class EleveController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
-                // controle le csrf et contrôle les datas
-                $tableResponsables->saveRecord($form->getData());
+                $oData = $form->getData();
+                if ($tableResponsables->saveRecord($oData)) {
+                    // on s'assure de rendre cette commune visible
+                    $this->getServiceLocator()
+                        ->get('Sbm\Db\table\Communes')
+                        ->setVisible($oData->communeId);
+                }
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
@@ -958,8 +793,13 @@ class EleveController extends AbstractActionController
         if (\array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
-                // controle le csrf et contrôle les datas
-                $tableResponsables->saveRecord($form->getData());
+                $oData = $form->getData();
+                if ($tableResponsables->saveRecord($oData)) {
+                    // on s'assure de rendre cette commune visible
+                    $this->getServiceLocator()
+                        ->get('Sbm\Db\table\Communes')
+                        ->setVisible($oData->communeId);
+                }
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 try {
                     return $this->redirectToOrigin()->back();

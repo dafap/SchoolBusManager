@@ -26,18 +26,13 @@
 	],
 	"time" : "2014-09-01",
 	"require" : {
-		"dafap/dafap-layout" : "dev-master",
 		"atukai/at-php-settings" : "dev-master",
 		"php" : ">=5.3.3",
-		"bjyoungblood/bjy-authorize" : "dev-master",
-		"zf-commons/zfc-user" : "dev-master",
 		"zendframework/zendframework" : "2.*",
-		"zf-commons/zfc-admin" : "dev-master",
 		"tecnick.com/tcpdf": "*"
 	},
 	"require-dev" : {
 		"zendframework/zftool" : "dev-master",
-		"bjyoungblood/bjy-profiler" : "dev-master",
 		"zendframework/zend-developer-tools" : "dev-master"
 	},
 	"minimum-stability" : "stable",

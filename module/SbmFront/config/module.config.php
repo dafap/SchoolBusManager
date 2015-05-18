@@ -19,6 +19,98 @@ if (! defined('APPL_NAME')) {
 }
 
 return array(
+    'acl' => array(
+        'resources' => array(
+            'login' => array(
+                'actions' => array(
+                    'annuler' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
+                    'confirm' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
+                    'creer-compte' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
+                    'login' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
+                    'home-page' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
+                    'mdp-demande' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
+                    'email-change' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        )
+                    ),
+                    'logout' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        )
+                    ),
+                    'mdp-change' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        )
+                    ),
+                    'mdp-reset' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        )
+                    ),
+                    'modif-compte' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        )
+                    ),
+                    'synchro-compte' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    ),
     'service_manager' => array(
         'invokables' => array(),
         'factories' => array()

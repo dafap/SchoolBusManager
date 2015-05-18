@@ -17,14 +17,7 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use SbmFront\Form\Login;
 use SbmCommun\Model\StdLib;
-use Zend\Crypt\Password\Bcrypt;
-use Zend\Session\Container;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Sql\Select;
-use SbmCommun\Filter\SansAccent;
-use SbmCartographie\Model\Point;
-use SbmCartographie\GoogleMaps\DistanceEtablissements;
-use SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites;
+use DafapMail\Model\Template as MailTemplate;
 
 class IndexController extends AbstractActionController
 {
@@ -51,11 +44,27 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $view = new ViewModel(array(
-            'args' => null,
-            'x' => 'Test'
-        ));
-        $view->setTerminal(true);
+        $mailTemplate = new MailTemplate('nouveau-compte');
+        // die(var_dump($mailTemplate));
+        die($mailTemplate->render('nouveau-compte', array(
+            'titre' => 'M.',
+            'nom' => 'TARTEMPION',
+            'prenom' => 'MAurice',
+            'url_confirme' => $this->url()
+                ->fromRoute('login', array(
+                'action' => 'confirm',
+                'id' => 'a123fe45'
+            ), array(
+                'force_canonical' => true
+            )),
+            'url_annule' => $this->url()
+                ->fromRoute('login', array(
+                'action' => 'annuler',
+                'id' => 'a123fe45'
+            ), array(
+                'force_canonical' => true
+            ))
+        )));
         return $view;
     }
 }

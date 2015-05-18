@@ -16,28 +16,31 @@
 $description = array();
 $description[] = '<b>' . implode(' ', array($this->responsable->titre, $this->responsable->nom, $this->responsable->prenom)) . '</b>';
 $description[] = $this->responsable->adresseL1;
-if (!empty($this->responsable->adresseL2)) {
+$tmp = $this->responsable->adresseL2;
+if (!empty($tmp)) {
     $description[] = $this->responsable->adresseL2;
 }
 $description[] = implode(' ', array($this->responsable->codePostal, $this->responsable->commune));
 $telephone = array();
-if (!empty($this->responsable->telephoneF)) {
+$tmp = $this->responsable->telephoneF;
+if (!empty($tmp)) {
     $telephone[] = $this->responsable->telephoneF;
 }
-if (!empty($this->responsable->telephoneP)) {
+$tmp = $this->responsable->telephoneP
+if (!empty($tmp)) {
     $telephone[] = $this->responsable->telephoneP;
 }
-if (!empty($this->responsable->telephoneT)) {
+$tmp = $this->responsable->telephoneT;
+if (!empty($tmp)) {
     $telephone[] = $this->responsable->telephoneT;
 }
 $tel = implode(' ', $telephone);
 if (!empty($tel)) {
-    $description[] = 'Tel.' . $tel;
+    $description[] = 'Tél.' . $tel;
 }
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
-//$this->headScript()->appendFile('http://www.dafap.dev/ccda/google/js/functions.js');
 $this->headScript()->captureStart();?>
 var marker;
 function initialiser() {

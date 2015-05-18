@@ -59,7 +59,9 @@ class ConfigController extends AbstractActionController
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         // on ouvre le formulaire avec l'identité verrouillée et on l'adapte
         $form = new FormResponsable();
-        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Communes')->desservies();
+        $value_options = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
@@ -128,7 +130,9 @@ class ConfigController extends AbstractActionController
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         // on ouvre le formulaire avec l'identité verrouillée et on l'adapte
         $form = new FormResponsable(true);
-        $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Communes')->desservies();
+        $value_options = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
@@ -227,8 +231,13 @@ class ConfigController extends AbstractActionController
             ));
             $tableResponsables->saveRecord($oData);
             $responsable->refresh();
-            $this->getServiceLocator()->get('Sbm\MajDistances')->pour($responsable->responsableId);
-            $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');return $this->redirect()->toRoute('login', array('action' => 'home-page'));
+            $this->getServiceLocator()
+                ->get('Sbm\MajDistances')
+                ->pour($responsable->responsableId);
+            $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');
+            return $this->redirect()->toRoute('login', array(
+                'action' => 'home-page'
+            ));
         }
         
         return new ViewModel(array(

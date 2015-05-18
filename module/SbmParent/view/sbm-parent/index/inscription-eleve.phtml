@@ -12,7 +12,7 @@
  * @date 20 avr. 2015
  * @version 2015-1
  */
-$this->headScript()->appendFile($this->basePath() . '/js/jquery-1.10.2.js');
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $this->headScript()->captureStart();
 ?>
 //copie / suppression de la div par le bouton radio
@@ -35,21 +35,25 @@ $(function() {
     }
   });
   // adapte le select de la commune au code postal
-  $("#enfant_ga").on('blur', '#r2codePostal', function() {
+  $("#enfant_ga").on('keyup', '#r2codePostal', function() {
     var valeur = $('#r2codePostal').val();
+    if (valeur.length==5) {
     $.ajax({
-				url : '/parent/getcommunesforselect/1/' + valeur,
-				success : function(data) {
+				url : '/sbmajaxparent/getcommunesforselect/codePostal:' + valeur,
+				dataType: 'json',
+				success : function(dataJson) {
 					$('#r2communeId').empty();
-					var opts = $.parseJSON(data);
-					$.each(opts, function(i, d) {
-	                    $('#r2communeId').append('<option value="' + d + '">' + i + '</option>');
-	                });
+					if (dataJson.success==1) {
+					    $.each(dataJson.data, function(k, d) {
+	                        $('#r2communeId').append('<option value="' + d + '">' + k + '</option>');
+	                    });
+	                }
 				},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
 				}
 			});
+	}
   });
 });
 <?php

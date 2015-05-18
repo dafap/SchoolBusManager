@@ -321,7 +321,11 @@ abstract class AbstractObjectData implements ObjectDataInterface
             }
             return $id;
         } else {
-            return $data_array[$this->getIdFieldName()];
+            if (array_key_exists($this->getIdFieldName(), $data_array)) {
+                return $data_array[$this->getIdFieldName()];
+            } else {
+                return false;
+            }
         }
     }
 

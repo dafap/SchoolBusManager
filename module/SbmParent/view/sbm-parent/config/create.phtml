@@ -36,6 +36,7 @@ echo $this->flashMessenger()->render('default');
 <?php 
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('responsableId'));
+echo $this->formHidden($this->form->get('userId'));
 echo $this->formHidden($this->form->get('nature'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>

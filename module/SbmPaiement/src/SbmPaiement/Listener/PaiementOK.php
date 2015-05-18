@@ -67,7 +67,6 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
     {
         $this->setServiceLocator($e->getTarget());
         $params = $e->getParams();
-        
         if ($params['type'] == 'CREDIT') {
             $params['paiement']['montant'] *= -.01;
         } else {

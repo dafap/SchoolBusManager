@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Controller du module SbmParent permettant de gérer les inscriptions des enfants
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmParent/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -25,6 +23,7 @@ use SbmCommun\Model\Strategy\Semaine;
 use SbmParent\Form\Enfant;
 use SbmParent\Form\Responsable2 as FormResponsable2;
 use SbmParent\Model\Responsable;
+use SbmParent\Model\Exception as CreateResponsableException;
 
 class IndexController extends AbstractActionController
 {
@@ -33,7 +32,7 @@ class IndexController extends AbstractActionController
     {
         try {
             $responsable = new Responsable($this->getServiceLocator());
-        } catch (Exception $e) {
+        } catch (CreateResponsableException $e) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'logout'
             ));
@@ -51,16 +50,6 @@ class IndexController extends AbstractActionController
             )),
             'affectations' => $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations')
         ));
-    }
-
-    public function getcommunesforselectAction()
-    {
-        $queryCommunes = $this->getServiceLocator()->get('Sbm\Db\Select\Communes');
-        $communes = $queryCommunes->codePostal($this->params('id'));
-        $communes = array_flip($communes);
-        $response = $this->getResponse();
-        $response->setContent(\Zend\Json\Json::encode($communes));
-        return $response;
     }
 
     public function inscriptionEleveAction()
@@ -191,7 +180,7 @@ class IndexController extends AbstractActionController
             $responsable = new Responsable($this->getServiceLocator());
             $authUserId = $this->getServiceLocator()
                 ->get('Dafap\Authenticate')
-                -by()
+                ->by()
                 ->getUserId();
         } catch (Exception $e) {
             return $this->redirect()->toRoute('login', array(
@@ -454,6 +443,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
+     * Cette méthode n'est pas utilisée pour SystemPay car elle n'ouvre pas correctement la page de paiement.
+     *
      * Doit lancer un évènement
      * - identifiant : 'SbmPaiement\AppelPlateforme'
      * - évènement : 'appelPaiement'

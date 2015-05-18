@@ -1,0 +1,25 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource nouveau-compte.phtml.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 17 mai 2015
+ * @version 2015-1
+ */
+
+?>
+<p>Bonjour <?php echo $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
+<p>Bienvenue au service des transports de la Communauté de communes du bassin Decazeville-Aubin.</p>
+
+<p>Vous avez oublié votre mot de passe.<br> 
+Pour en créer un nouveau, suivez le lien suivant :<br>
+    <?php echo $this->url_confirme;?></p>
+<p>Attention ! Ce lien ne fonctionne qu'une seule fois.</p>
+<p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
+<div style="text-align: center;"><b>Communauté de communes du bassin Decazeville-Aubin</b><br>Maison de l'industrie - BP68 - 12300 DECAZEVILLE<br>Tél. 05 65 43 95 00 - Email: transport@cc-decazeville-aubin.fr</div>

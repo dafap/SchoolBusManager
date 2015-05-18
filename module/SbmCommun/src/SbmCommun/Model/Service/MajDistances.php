@@ -74,8 +74,8 @@ class MajDistances implements FactoryInterface
      * Met à jour les distances pour tous les enfants du responsable indiqué.
      * L'enregistrement est fait dans la table scolarites, pour le millesime en cours.
      * (Un seul appel à l'API de google)
-     * 
-     * @param int $responsableId
+     *
+     * @param int $responsableId            
      */
     public function pour($responsableId)
     {
@@ -98,27 +98,28 @@ class MajDistances implements FactoryInterface
                 $destinations[] = $this->famille['etablissements'][$row['etablissementId']]['pt'];
             }
         }
-        
-        // appel de l'API
-        $result = $this->oDomicileEtablissements->uneOriginePlusieursDestinations($this->domicile, $destinations);
-        
-        // analyse du résultat. On n'a qu'un domicile donc qu'une distance par établissement. Cette distance est en mètres.
-        $j = 0;
-        foreach ($this->famille['etablissements'] as $etablissementId => &$array) {
-            $array['distance'] = $result[$j ++];
-        }
-        
-        // maj table scolarites (conversion des distances en km)
-        $tScolarites = $this->sm->get('Sbm\Db\Table\Scolarites');
-        $oData = $tScolarites->getObjData();
-        for ($i = 1; $i <= 2; $i ++) {
-            foreach ($this->famille['enfants'][$i] as $eleveId => $etablissementId) {
-                $oData->exchangeArray(array(
-                    'millesime' => $this->millesime,
-                    'eleveId' => $eleveId,
-                    'distanceR' . $i => round($this->famille['etablissements'][$etablissementId]['distance'] / 1000, 1)
-                ));
-                $tScolarites->saveRecord($oData);
+        if (! empty($destinations)) {
+            // appel de l'API
+            $result = $this->oDomicileEtablissements->uneOriginePlusieursDestinations($this->domicile, $destinations);
+            
+            // analyse du résultat. On n'a qu'un domicile donc qu'une distance par établissement. Cette distance est en mètres.
+            $j = 0;
+            foreach ($this->famille['etablissements'] as $etablissementId => &$array) {
+                $array['distance'] = $result[$j ++];
+            }
+            
+            // maj table scolarites (conversion des distances en km)
+            $tScolarites = $this->sm->get('Sbm\Db\Table\Scolarites');
+            $oData = $tScolarites->getObjData();
+            for ($i = 1; $i <= 2; $i ++) {
+                foreach ($this->famille['enfants'][$i] as $eleveId => $etablissementId) {
+                    $oData->exchangeArray(array(
+                        'millesime' => $this->millesime,
+                        'eleveId' => $eleveId,
+                        'distanceR' . $i => round($this->famille['etablissements'][$etablissementId]['distance'] / 1000, 1)
+                    ));
+                    $tScolarites->saveRecord($oData);
+                }
             }
         }
     }

@@ -11,6 +11,15 @@
  * @version 2014-1
  */
 return array(
+    'acl' => array(
+        'resources' => array(
+            'sbmadmin' => array(
+                'allow' => array(
+                    'roles' => array('admin')
+                )
+            )
+        ),
+    ),
     'liste' => array(
         'paginator' => array(
             'nb_libelles' => 15,

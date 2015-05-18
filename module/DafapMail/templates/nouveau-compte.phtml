@@ -1,0 +1,33 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource nouveau-compte.phtml.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 17 mai 2015
+ * @version 2015-1
+ */
+
+?>
+<p>Bonjour <?php echo $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
+<p>Bienvenue au service des transports de la Communauté de communes du bassin Decazeville-Aubin.</p>
+
+<p>Pour éviter la création non autorisée d'un compte en votre nom, nous avons mis en place un dispositif nécessitant votre validation.<br> 
+Si vous n'avez pas demandé à ouvrir ce compte, nous vous recommandons de suivre les instructions pour l'annuler.</p>
+
+<p><b>CONFIRMER LE COMPTE</b><br>
+Pour confirmer cette demande d'ouverture de compte, suivez le lien suivant :<br>
+    <?php echo $this->url_confirme;?></p>
+
+
+<p><b>ANNULER LE COMPTE</b><br>
+Si vous n'avez pas demandé l'ouverture de ce compte avec cette adresse de messagerie et si vous souhaitez annuler cette demande, suivez le lien suivant :<br>
+    <?php echo $this->url_annule;?></p>
+
+<p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
+<div style="text-align: center;"><b>Communauté de communes du bassin Decazeville-Aubin</b><br>Maison de l'industrie - BP68 - 12300 DECAZEVILLE<br>Tél. 05 65 43 95 00 - Email: transport@cc-decazeville-aubin.fr</div>

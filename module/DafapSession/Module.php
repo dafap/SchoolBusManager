@@ -26,6 +26,7 @@
 namespace DafapSession;
 
 use Zend\EventManager\EventInterface;
+use Zend\Mvc\MvcEvent;
 use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use Zend\Mvc\ModuleRouteListener;
@@ -35,10 +36,31 @@ class Module
 
     public function onBootstrap(EventInterface $e)
     {
-        $eventManager = $e->getApplication()->getEventManager();
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
         $this->bootstrapSession($e);
+        $eventManager = $e->getApplication()->getEventManager();
+        $eventManager->attach('route', array(
+            $this,
+            'bootstrapPermissions'
+        ), 100);
+        // $moduleRouteListener = new ModuleRouteListener();
+        // $moduleRouteListener->attach($eventManager);
+    }
+
+    public function bootstrapPermissions(EventInterface $e)
+    {
+        $application = $e->getApplication();
+        $sm = $application->getServiceManager();
+        $sharedManager = $application->getEventManager()->getSharedManager();
+        $router = $sm->get('router');
+        $request = $sm->get('request');
+        $matchedRoute = $router->match($request);
+        if (null !== $matchedRoute) {
+            $sharedManager->attach('Zend\Mvc\Controller\AbstractActionController', MvcEvent::EVENT_DISPATCH, function ($e) use($sm) {
+                $sm->get('ControllerPluginManager')
+                    ->get('DafapSessionAclRoutes')
+                    ->dispatch($e); // pass to the plugin...
+            }, 100);
+        }
     }
 
     public function bootstrapSession(EventInterface $e)

@@ -39,13 +39,15 @@ class IndexController extends AbstractActionController
         } elseif ($prg === false) {
             return $this->redirect()->toRoute('sbmparent');
         }
-        // prg contient le post
+        // prg contient le post array('montant' => ..., 'payer' => ...)
         $args = (array) $prg;
-        // $args = array('montant' => ..., 'payer' => ...)
+        
+        // préparation des données
         $preinscrits = $this->getServiceLocator()
             ->get('Sbm\Db\Query\ElevesScolarites')
             ->getElevesPreinscrits($responsable->responsableId);
         $elevesIds = array();
+        // ceux qui sont sélectionnés (selectionScolarite : selection dans table scolarites) sont mis en attente. Pas de paiement pour le moment.
         foreach ($preinscrits as $row) {
             if (! $row['selectionScolarite']) {
                 $elevesIds[] = $row['eleveId'];
@@ -64,6 +66,17 @@ class IndexController extends AbstractActionController
         );
         $objectPlateforme = $this->getServiceLocator()->get('SbmPaiement\Plugin\Plateforme');
         $args = $objectPlateforme->prepareAppel($params);
+        
+        // enregistrement de l'appel à paiement
+        $id = $objectPlateforme->getUniqueId($args);
+        $tAppels = $this->getServiceLocator()->get('Sbm\Db\Table\Appels');
+        $odata = $tAppels->getObjData();
+        foreach ($elevesIds as $eleveId) {
+            $odata->exchangeArray(array('referenceId' => $id, 'responsableId' => $responsable->responsableId, 'eleveId' => $eleveId));
+            $tAppels->saveRecord($odata);
+        }
+        
+        // préparation du formulaire
         $form = new \Zend\Form\Form('plugin-formulaire');
         foreach ($args as $key => $value) {
             $form->add(array(

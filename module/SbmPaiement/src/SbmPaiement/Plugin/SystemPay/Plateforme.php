@@ -5,13 +5,16 @@
  * La méthode `notification($data)` vérifie la signature puis lance un évènement 'paiementNotification' avec 
  * comme `target` le ServiceManager et comme `argv` le tableau des vads_ contenus dans $data
  * 
+ * La version 2 abandonne l'exploitation des champs `vads_nb_products` et `vads_product_refN` qui ne sont pas
+ * renvoyés dans la notification. Ajout de la méthode getUniqueId() et modification de la méthode prepareData()
+ * 
  * @project sbm
  * @package SbmPaiement/Plugin/SystemPay
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 31 mars 2015
- * @version 2015-1
+ * @version 2015-2
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -22,6 +25,7 @@ use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
 use Zend\Log\Logger;
+use Zend\Db\Sql\Where;
 use SbmCommun\Model\StdLib;
 use SbmPaiement\Plugin\AbstractPlateforme;
 use SbmPaiement\Plugin\Exception;
@@ -58,7 +62,7 @@ class Plateforme extends AbstractPlateforme
         $signature = $this->getSignature($data);
         if (!array_key_exists('signature', $data) || $signature != $data['signature']) {
             $this->error_no = 1001;
-            $this->error_msg = 'Erreur de signature';
+            $this->error_msg = 'Erreur de signature : ' . $signature;
             return false;
         }
         if (isset($data['vads_result'])) {
@@ -125,8 +129,8 @@ class Plateforme extends AbstractPlateforme
         $this->data['systempayId'] = null;
         
         // référence des élèves concernés
-        $nb_ref = $this->data['vads_nb_product'];
-        for ($eleveIds = array(), $i = 1; $i <= $nb_ref; $i ++) {
+        $nb_ref = $this->data['vads_nb_products'];
+        for ($eleveIds = array(), $i = 0; $i < $nb_ref; $i ++) {
             $eleveIds[] = $this->data['vads_product_ref' . $i];
         }
         $this->data['ref_eleveIds'] = implode('-', $eleveIds);
@@ -151,8 +155,11 @@ class Plateforme extends AbstractPlateforme
     }
 
     /**
+     * Modifié le 18 mai 2015 en raison de l'absence des champs vads_nb_products et vads_product_refN dans la réponse.
+     * Utilisation de la table `appels` pour retrouver les élèves concernés.
+     * ATTENTION ! this->data est Zend\Stdlib\Parameters
+     * 
      * (non-PHPdoc)
-     *
      * @see \SbmPaiement\Plugin\AbstractPlateforme::prepareData()
      */
     protected function prepareData()
@@ -176,9 +183,31 @@ class Plateforme extends AbstractPlateforme
             'millesime' => $this->getMillesime(),
             'eleveIds' => array()
         );
-        $nb_ref = $this->data['vads_nb_product'];
-        for ($i = 1; $i <= $nb_ref; $i ++) {
+        /**
+         * Abandon de cette partie en raison de l'absence de ces champs dans la notification
+         *
+        $nb_ref = $this->data['vads_nb_products'];
+        for ($i = 0; $i < $nb_ref; $i ++) {
             $this->scolarite['eleveIds'][] = $this->data['vads_product_ref' . $i];
+        }
+        */
+        // pour DEBUG
+        /*if (is_array($this->data)) {
+            $msg = 'this->data est un array';
+        } elseif (is_object($this->data)) {
+            $msg = 'this->data est ' . get_class($this->data);
+        } else {
+            $msg = gettype($this->data);
+        }
+        $this->logError(Logger::INFO, $msg, $this->data);*/
+        
+        $tAppels = $this->getServiceLocator()->get('Sbm\Db\Table\Appels');
+        $where = new Where();
+        // ATTENTION ! this->data est Zend\Stdlib\Parameters
+        $where->equalTo('referenceId', $this->getUniqueId($this->data->toArray()));
+        $rowset = $tAppels->fetchAll($where);
+        foreach ($rowset as $row) {
+            $this->scolarite['eleveIds'][] = $row->eleveId;
         }
     }
 
@@ -191,7 +220,8 @@ class Plateforme extends AbstractPlateforme
     private function getVadsTransId()
     {
         $size = 0;
-        if (($fp = fopen($this->getParam('uniqid_path') . '/uniqid.txt', 'a')) && flock($fp, LOCK_EX)) {
+        $fp = fopen($this->getParam('uniqid_path') . '/uniqid.txt', 'a');
+        if ($fp && flock($fp, LOCK_EX)) {
             fwrite($fp, '.');
             $stat = fstat($fp);
             $size = $stat['size'];
@@ -201,6 +231,8 @@ class Plateforme extends AbstractPlateforme
             }
             flock($fp, LOCK_UN);
             fclose($fp);
+        } else {
+            throw new Exception("Impossible d\'ouvrir le fichier 'uniqid.txt'.");
         }
         return sprintf('%06d', $size);
     }
@@ -230,6 +262,19 @@ class Plateforme extends AbstractPlateforme
         return $this->getParam('url_paiement');
     }
 
+    /**
+     * En fonction de la description technique du paquet à envoyer à la plate-forme de paiement
+     * (voir Guide d'implementation du formulaire de paiement Systempay 2.2 - doc version 3.0)
+     * 
+     * A noter que contrairement à ce que dit la documentation, les champs vads_nb_products et 
+     * vads_product_refN ne sont pas renvoyés dans le réponse. Aussi, une table des appels à 
+     * la plateforme enregistrera les rérérences des élèves concernés, pour pouvoir être traités
+     * au retour de la notification. Une clé unique de paiement doit être constituée et renvoyée 
+     * par la méthode getUniqueId()
+     * 
+     * (non-PHPdoc)
+     * @see \SbmPaiement\Plugin\PlateformeInterface::prepareAppel()
+     */
     public function prepareAppel($params)
     {
         $champs = array(
@@ -271,9 +316,21 @@ class Plateforme extends AbstractPlateforme
                 $result[$key] = $value;
         }
         $result['signature'] = $this->getSignature($result);
-        //die(var_dump($result));
         
         return $result;
+    }
+    
+    /**
+     * En fonction de la documentation, renvoie une clé unique de demande de transaction.
+     * Ici, vads_trans_id est unique sur la journée. On concatène donc à la date pour 
+     * obtenir une clé unique.
+     * 
+     * @param array $vadsPaquet
+     * @return string
+     */
+    public function getUniqueId(array $vadsPaquet) 
+    {
+        return $vadsPaquet['vads_trans_id'].$vadsPaquet['vads_trans_date'];
     }
 
     private function getVadsPaymentConfig($params)

@@ -12,7 +12,7 @@
  * @date 13 mai 2015
  * @version 2015-1
  */
-namespace DafapSession\Model\Authentication;
+namespace DafapSession\Authentication;
 
 use Zend\Authentication\Adapter\ValidatableAdapterInterface;
 use Zend\Authentication\Result;
@@ -66,10 +66,9 @@ class AdapterToken implements ValidatableAdapterInterface, ServiceLocatorAwareIn
         }
         $tUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
         try {
-            $odata = $tUsers->getRecordByToken($token);
+            $odata = $tUsers->getRecordByToken($this->identity);
             $identity = $odata->clearToken()->getArrayCopy();
-            unset($identity['mdp']);
-            unset($identity['token']);
+            unset($identity->token);
             return new Result(Result::SUCCESS, $identity, array('Identification confirmée.'));
         } catch (\Exception $e) {
             return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', array('Impossible de se connecter.'));

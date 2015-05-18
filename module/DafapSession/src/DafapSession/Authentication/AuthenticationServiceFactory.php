@@ -12,7 +12,7 @@
  * @date 13 mai 2015
  * @version 2015-1
  */
-namespace DafapSession\Model\Authentication;
+namespace DafapSession\Authentication;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\Authentication\Storage\Session;

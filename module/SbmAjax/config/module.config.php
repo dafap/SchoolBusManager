@@ -13,9 +13,11 @@
  * @version 2015-1
  */
 $controllers = array(
-    'sbmajaxeleve' => 'SbmAjax\Controller\EleveController',
-    'sbmajaxtransport' => 'SbmAjax\Controller\TransportController',
-    'sbmajaxfinance' => 'SbmAjax\Controller\FinanceController'
+    \SbmAjax\Controller\EleveController::ROUTE => 'SbmAjax\Controller\EleveController',
+    \SbmAjax\Controller\TransportController::ROUTE => 'SbmAjax\Controller\TransportController',
+    \SbmAjax\Controller\FinanceController::ROUTE => 'SbmAjax\Controller\FinanceController',
+    \SbmAjax\Controller\ParentController::ROUTE => 'SbmAjax\Controller\ParentController'
+    
 );
 $routes = array();
 foreach ($controllers as $key => $value) {
@@ -37,6 +39,30 @@ foreach ($controllers as $key => $value) {
     );
 }
 return array(
+    'acl' => array(
+        'resources' => array(
+            \SbmAjax\Controller\EleveController::ROUTE => array(
+                'allow' => array(
+                    'roles' => array('parent')
+                )
+            ),
+            \SbmAjax\Controller\FinanceController::ROUTE => array(
+                'allow' => array(
+                    'roles' => array('gestion')
+                )
+            ),
+            \SbmAjax\Controller\TransportController::ROUTE => array(
+                'allow' => array(
+                    'roles' => array('gestion')
+                )
+            ),
+            \SbmAjax\Controller\ParentController::ROUTE => array(
+                'allow' => array(
+                    'roles' => array('parent')
+                )
+            )
+        ),
+    ),
     'controllers' => array(
         // de préférence dans ce module, commencer les noms par jax (pour des routes commençant par ajax) et les laisser en minuscules
         'invokables' => $controllers

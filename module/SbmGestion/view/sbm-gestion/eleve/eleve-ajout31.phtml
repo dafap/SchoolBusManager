@@ -24,7 +24,7 @@
  * @version 2015-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery/jquery.js'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->captureStart();
 ?>
 function montreDebutFin(ancomplet) {
@@ -208,7 +208,7 @@ echo $this->formHidden($this->form->get('csrf'));
 echo $this->form()->closeTag();
 ?>
 	</div><?php // fiche_inner ?>
-    <div id="fiche-footer"></div>
+    <div id="fiche-footer">
+    <?php // var_dump($this->form->getMessages());?>
+    </div>
 </div>
-<?php //var_dump($this->data);?>
-<?php  var_dump($this->form->getMessages());?>

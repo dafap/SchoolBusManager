@@ -26,6 +26,7 @@ return array(
     'service_manager' => array(
         'invokables' => array(
             'Sbm\Db\ObjectData\Affectation' => 'SbmCommun\Model\Db\ObjectData\Affectation',
+            'Sbm\Db\ObjectData\Appel' => 'SbmCommun\Model\Db\ObjectData\Appel',
             'Sbm\Db\ObjectData\Circuit' => 'SbmCommun\Model\Db\ObjectData\Circuit',
             'Sbm\Db\ObjectData\Classe' => 'SbmCommun\Model\Db\ObjectData\Classe',
             'Sbm\Db\ObjectData\Commune' => 'SbmCommun\Model\Db\ObjectData\Commune',
@@ -55,6 +56,7 @@ return array(
             
             'Sbm\Db\DbLib' => 'SbmCommun\Model\Db\Service\DbLibService',
             'Sbm\Db\Table\Affectations' => 'SbmCommun\Model\Db\Service\Table\Affectations',
+            'Sbm\Db\Table\Appels' => 'SbmCommun\Model\Db\Service\Table\Appels',
             'Sbm\Db\Table\Circuits' => 'SbmCommun\Model\Db\Service\Table\Circuits',
             'Sbm\Db\Table\Classes' => 'SbmCommun\Model\Db\Service\Table\Classes',
             'Sbm\Db\Table\Communes' => 'SbmCommun\Model\Db\Service\Table\Communes',
@@ -79,6 +81,7 @@ return array(
             'Sbm\Db\System\Libelles' => 'SbmCommun\Model\Db\Service\Table\Sys\Libelles',
             
             'Sbm\Db\TableGateway\Affectations' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayAffectations',
+            'Sbm\Db\TableGateway\Appels' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayAppels',
             'Sbm\Db\TableGateway\Circuits' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayCircuits',
             'Sbm\Db\TableGateway\Classes' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayClasses',
             'Sbm\Db\TableGateway\Communes' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayCommunes',

@@ -25,10 +25,6 @@ class Module extends AbstractModule implements LocatorRegisteredInterface
     public function onBootstrap(MvcEvent $e)
     {
         $eventManager = $e->getApplication()->getEventManager();
-        $eventManager->attach('route', array(
-            $this,
-            'checkAuthenticated'
-        ));
         $config = $e->getApplication()
             ->getServiceManager()
             ->get('config');
@@ -39,41 +35,5 @@ class Module extends AbstractModule implements LocatorRegisteredInterface
         });
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-    }
-
-    public function checkAuthenticated(MvcEvent $e)
-    {
-        if (! $this->inListeBlanche($e)) {
-            $auth = $e->getApplication()->getServiceManager()->get('Dafap\Authenticate')->by();
-            if (!$auth->hasIdentity()) {
-                $e->getRouteMatch()->setParam('controller', 'SbmFront\Controller\Index')->setParam('action', 'index');
-            }
-        }
-    }
-
-    /**
-     * Contrôle si l'accès à cette action est autorisée aux anonymes.
-     * Les actions autorisées sont listées dans une liste blanche.
-     * 
-     * @param MvcEvent $e
-     */
-    public function inListeBlanche(MvcEvent $e)
-    {
-        // liste des routes ouvertes aux anonymes
-        $listeBlanche = array(
-            'SbmFront\Controller\Index' => array('index', 'test'),
-            'SbmFront\Controller\Login' => array('login', 'logout', 'mdp-demande', 'creer-compte', 'confirm'),
-            'SbmPaiement\Controller\Index' => array('notification')
-        );
-        // contrôle
-        $routeMatch = $e->getRouteMatch();
-        $controller = $routeMatch->getParam('controller');
-        $action = $routeMatch->getParam('action');
-        if (\array_key_exists($controller, $listeBlanche)) {
-            if (\in_array($action, $listeBlanche[$controller])) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -1741,7 +1741,6 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    // die(var_dump(StdLib::getParam('origine', $r->getPost())));
                     return $this->redirect()->toRoute('sbmgestion/transport', array(
                         'action' => StdLib::getParam('origine', $r->getPost()),
                         'page' => $currentPage

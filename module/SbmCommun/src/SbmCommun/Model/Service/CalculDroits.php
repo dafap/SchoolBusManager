@@ -145,13 +145,18 @@ class CalculDroits implements FactoryInterface
         $domiciles[0] = new Point($resp->x, $resp->y);
         $domiciles[0]->setAttribute('communeId', $resp->communeId);
         // résidence du 2e responsable
-        if (!empty($tmp = $elv->responsable2Id)) {
+        $tmp = $elv->responsable2Id;
+        if (!empty($tmp)) {
             $resp = $this->tResponsables->getRecord($elv->responsable2Id);
             $domiciles[1] = new Point($resp->x, $resp->y);
             $domiciles[1]->setAttribute('communeId', $resp->communeId);
         }
         // résidence de l'élève. Cette résidence remplace la résidence du 1er responsable
-        if (!empty($tmp = $scolarite->chez) && !empty($tmp =$scolarite->adresseL1) && !empty($tmp = $scolarite->codePostal) && !empty($tmp = $scolarite->communeId)) {
+        $tmp1 = $scolarite->chez;
+        $tmp2 = $scolarite->adresseL1;
+        $tmp3 = $scolarite->codePostal;
+        $tmp4 = $scolarite->communeId;
+        if (!empty($tmp1) && !empty($tmp2) && !empty($tmp3) && !empty($tmp4)) {
             $domiciles[0] = new Point($scolarite->x, $scolarite->y);
             $domiciles[0]->setAttribute('communeId', $scolarite->communeId);
         }

@@ -32,7 +32,7 @@ class CreateTables
 
     const BAD_TRIGGER = 203;
 
-    const DB_DESIGN_PATH = '/../../../db_design';
+    const DB_DESIGN_PATH =  '/../../../db_design';
 
     /**
      * Prend la valeur 'table', 'system' ou 'vue'
@@ -133,9 +133,13 @@ class CreateTables
     private function insereQueue($include_file)
     {
         if (! array_key_exists($include_file, $this->queue['db_design'])) {
-            $def = include (self::DB_DESIGN_PATH . "/$include_file");
+            $def = include (__DIR__ . self::DB_DESIGN_PATH . "/$include_file");
             if (! $this->isEntity($def)) {
-                $message = "Le fichier $include_file est incorrect.\n" . $this->err_msg;
+                $message = "Le fichier $include_file est incorrect.\n" . $this->err_msg . "\n";
+                $message .= "\n-----------------------------\n";
+                $message .= realpath(__DIR__ . self::DB_DESIGN_PATH) . "/$include_file\n";
+                $message .= file_get_contents(__DIR__ . self::DB_DESIGN_PATH . "/$include_file\n");
+                $message .= "\n-----------------------------\n";
                 throw new Exception($message, self::BAD_DESIGN);
             }
             if ($def['type'] != 'vue' && array_key_exists('foreign key', $def['structure'])) {
@@ -763,6 +767,7 @@ EOT;
             }
         }
         closedir($dossier);
+        asort($result);
         return $result;
     }
 

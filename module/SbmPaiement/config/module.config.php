@@ -24,6 +24,24 @@ if (! defined('MODULE_PAIEMENT_PATH')) {
     // define('ROOT_PATH', dirname(dirname(MODULE_PATH)));
 }
 return array(
+    'acl' => array(
+        'resources' => array(
+            'sbmpaiement' => array(
+                'allow' => array(
+                    'roles' => array('parent')
+                ),
+                'actions' => array(
+                    'notification' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
+                )
+            )
+        ),
+    ),
     'liste' => array(
         'paginator' => array(
             'nb_paiements' => 15

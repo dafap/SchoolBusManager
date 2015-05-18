@@ -35,6 +35,9 @@ class Module extends AbstractModule
     }
     
     /**
+     * Si on veut supprimer le layout uniquement pour les requêtes ajax on regarde la méthode isXmlHttpRequest().
+     * Ici, je supprime le layout pour toutes les requêtes adressées à ce module.
+     * 
      * @see https://samsonasik.wordpress.com/2012/12/02/zend-framework-2-disable-layout-in-specific-module/
      * @param MvcEvent $e
      */
@@ -44,8 +47,9 @@ class Module extends AbstractModule
         $sharedEvents->attach(__NAMESPACE__, 'dispatch', function($e) {
             $result = $e->getResult();
             if ($result instanceof \Zend\View\Model\ViewModel) {
+                // si on veut supprimer le layout uniquement pour ajax
                 //$result->setTerminal($e->getRequest()->isXmlHttpRequest());
-                //if you want no matter request is, the layout is disabled, you can
+                // si on veut supprimer le layout quelque soit le type de requête
                 //set true : $result->setTerminal(true);
                 $result->setTerminal(true);
             } else {

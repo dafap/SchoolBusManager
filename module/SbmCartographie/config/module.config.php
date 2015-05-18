@@ -12,6 +12,15 @@
  * @version 2015-1
  */
 return array(
+    'acl' => array(
+        'resources' => array(
+            'sbmcarte' => array(
+                'allow' => array(
+                    'roles' => array('parent')
+                )
+            )
+        ),
+    ),
     'cartographie' => array(
         'system' => 'Lambert06CC9zones',
         'nzone' => 44

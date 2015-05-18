@@ -56,8 +56,6 @@ class Adresse extends Element implements InputProviderInterface
     public function getInputSpecification()
     {
         $caracteres = '0-9A-Za-z' . self::MAJ_AUTORISEES . mb_strtolower(self::MAJ_AUTORISEES, 'utf-8') . '\' ';
-        //echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>';
-        //die(var_dump($caracteres));
         return array(
             'name' => $this->getName(),
             'required' => false,

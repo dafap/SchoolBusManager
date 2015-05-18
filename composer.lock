@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9fe388288aa7e152a6cb15b8c0057d24",
+    "hash": "98deb01587d4df3e6d34d0feb468a811",
     "packages": [
         {
             "name": "atukai/at-php-settings",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/atukai/AtPhpSettings.git",
-                "reference": "dbe85cabb4bc5a37a5f69de285c8aaf29b350e71"
+                "reference": "cee3c807f8d7242a1329ea42b27a27de8bbf4e0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/atukai/AtPhpSettings/zipball/dbe85cabb4bc5a37a5f69de285c8aaf29b350e71",
-                "reference": "dbe85cabb4bc5a37a5f69de285c8aaf29b350e71",
+                "url": "https://api.github.com/repos/atukai/AtPhpSettings/zipball/cee3c807f8d7242a1329ea42b27a27de8bbf4e0a",
+                "reference": "cee3c807f8d7242a1329ea42b27a27de8bbf4e0a",
                 "shasum": ""
             },
             "require": {
@@ -49,113 +49,7 @@
                 "php",
                 "zf2"
             ],
-            "time": "2014-08-28 08:41:42"
-        },
-        {
-            "name": "bjyoungblood/bjy-authorize",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bjyoungblood/BjyAuthorize.git",
-                "reference": "7553b9ec4f23fb665135d51c520b21289abf1c5e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bjyoungblood/BjyAuthorize/zipball/7553b9ec4f23fb665135d51c520b21289abf1c5e",
-                "reference": "7553b9ec4f23fb665135d51c520b21289abf1c5e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "zendframework/zend-cache": "~2.2",
-                "zendframework/zend-eventmanager": "~2.2",
-                "zendframework/zend-http": "~2.2",
-                "zendframework/zend-mvc": "~2.2",
-                "zendframework/zend-permissions-acl": "~2.2",
-                "zendframework/zend-servicemanager": "~2.2",
-                "zendframework/zend-view": "~2.2"
-            },
-            "require-dev": {
-                "doctrine/common": ">=2.3,<2.5-dev",
-                "phpunit/phpunit": "~3.7",
-                "satooshi/php-coveralls": "~0.6",
-                "squizlabs/php_codesniffer": "1.4.*",
-                "zendframework/zend-developer-tools": "0.*",
-                "zf-commons/zfc-user": "1.*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.5-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "BjyAuthorize\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com",
-                    "homepage": "http://ocramius.github.com/",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Ben Youngblood",
-                    "email": "bx.youngblood@gmail.com",
-                    "homepage": "http://bjyoungblood.com/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Zend\\Acl based firewall system for ZF2 dispatch protection",
-            "homepage": "https://github.com/bjyoungblood/BjyAuthorize",
-            "keywords": [
-                "acl",
-                "zf2",
-                "zfc-user"
-            ],
-            "time": "2014-11-24 16:24:12"
-        },
-        {
-            "name": "dafap/dafap-layout",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dafap/DafapLayout.git",
-                "reference": "569d767b7b4d5bf06c16ffb3e88eb5cae414f9c3"
-            },
-            "require": {
-                "zendframework/zendframework": "2.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "DafapLayout\\": "src/"
-                },
-                "classmap": [
-                    "./Module.php"
-                ]
-            },
-            "authors": [
-                {
-                    "name": "Alain Pomirol",
-                    "email": "pomirol@gmail.com"
-                }
-            ],
-            "description": "A ZF2 module for managing layouts.",
-            "homepage": "https://github.com/dafap/DafapLayout",
-            "keywords": [
-                "dafap",
-                "layout",
-                "php",
-                "zf2"
-            ],
-            "time": "2014-05-01 15:22:18"
+            "time": "2015-05-15 12:26:51"
         },
         {
             "name": "tecnick.com/tcpdf",
@@ -222,16 +116,16 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.4.1",
+            "version": "2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "3b3b6f3374525344097024e9a05bcf24e46e3011"
+                "reference": "6ca85dcf2e9de67beb9bffd4e121e5a3a730b649"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zf2/zipball/3b3b6f3374525344097024e9a05bcf24e46e3011",
-                "reference": "3b3b6f3374525344097024e9a05bcf24e46e3011",
+                "url": "https://api.github.com/repos/zendframework/zf2/zipball/6ca85dcf2e9de67beb9bffd4e121e5a3a730b649",
+                "reference": "6ca85dcf2e9de67beb9bffd4e121e5a3a730b649",
                 "shasum": ""
             },
             "require": {
@@ -335,7 +229,7 @@
                 "framework",
                 "zf2"
             ],
-            "time": "2015-05-07 17:08:57"
+            "time": "2015-05-11 16:17:05"
         },
         {
             "name": "zendframework/zendxml",
@@ -381,244 +275,9 @@
                 "zf2"
             ],
             "time": "2014-03-05 22:25:44"
-        },
-        {
-            "name": "zf-commons/zfc-admin",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ZF-Commons/ZfcAdmin.git",
-                "reference": "86794b7c3162516586c2e3e0d5814887bec58e95"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcAdmin/zipball/86794b7c3162516586c2e3e0d5814887bec58e95",
-                "reference": "86794b7c3162516586c2e3e0d5814887bec58e95",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "zendframework/zend-eventmanager": "2.*",
-                "zendframework/zend-loader": "2.*",
-                "zendframework/zend-modulemanager": "2.*",
-                "zendframework/zend-mvc": "2.*",
-                "zendframework/zend-navigation": "2.*"
-            },
-            "suggest": {
-                "bjyoungblood/bjy-authorize": "Access control to protect ZfcAdmin against unauthorized users"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "ZfcAdmin": "src/"
-                },
-                "classmap": [
-                    "./Module.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Shwalbe",
-                    "email": "martin.shwalbe@gmail.com"
-                },
-                {
-                    "name": "Jurian Sluiman",
-                    "email": "jurian@juriansluiman.nl",
-                    "homepage": "http://juriansluiman.nl/en/"
-                }
-            ],
-            "description": "A generic Admin module for ZF2.",
-            "homepage": "https://github.com/juriansluiman/ZfcAdmin",
-            "keywords": [
-                "zf2"
-            ],
-            "time": "2014-10-22 07:57:03"
-        },
-        {
-            "name": "zf-commons/zfc-base",
-            "version": "v0.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ZF-Commons/ZfcBase.git",
-                "reference": "fc68a49b58ba68584a9a4c44a1ca9df12b30d1bf"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcBase/zipball/fc68a49b58ba68584a9a4c44a1ca9df12b30d1bf",
-                "reference": "fc68a49b58ba68584a9a4c44a1ca9df12b30d1bf",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "zendframework/zend-db": "~2.1",
-                "zendframework/zend-eventmanager": "~2.1",
-                "zendframework/zend-loader": "~2.1",
-                "zendframework/zend-modulemanager": "~2.1",
-                "zendframework/zend-mvc": "~2.1",
-                "zendframework/zend-servicemanager": "~2.1",
-                "zendframework/zend-stdlib": "~2.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "ZfcBase": "src/"
-                },
-                "classmap": [
-                    "./Module.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "authors": [
-                {
-                    "name": "Kyle Spraggs",
-                    "email": "theman@spiffyjr.me",
-                    "homepage": "http://www.spiffyjr.me/"
-                },
-                {
-                    "name": "Evan Coury",
-                    "email": "me@evancoury.com",
-                    "homepage": "http://blog.evan.pro/"
-                }
-            ],
-            "description": "A set of genetic (abstract) classes which are commonly used across multiple modules.",
-            "homepage": "https://github.com/ZF-Commons/ZfcBase",
-            "keywords": [
-                "zf2"
-            ],
-            "time": "2013-05-02 12:33:49"
-        },
-        {
-            "name": "zf-commons/zfc-user",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ZF-Commons/ZfcUser.git",
-                "reference": "066ecc46fb66bf69b458ccb80afbcb1de597da58"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/066ecc46fb66bf69b458ccb80afbcb1de597da58",
-                "reference": "066ecc46fb66bf69b458ccb80afbcb1de597da58",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "zendframework/zend-authentication": "~2.1",
-                "zendframework/zend-crypt": "~2.1",
-                "zendframework/zend-form": "~2.1",
-                "zendframework/zend-http": "~2.1",
-                "zendframework/zend-inputfilter": "~2.1",
-                "zendframework/zend-loader": "~2.1",
-                "zendframework/zend-modulemanager": "~2.1",
-                "zendframework/zend-mvc": "~2.1",
-                "zendframework/zend-servicemanager": "~2.1",
-                "zendframework/zend-session": "~2.1",
-                "zendframework/zend-stdlib": "~2.1",
-                "zendframework/zend-validator": "~2.1",
-                "zendframework/zend-view": "~2.1",
-                "zf-commons/zfc-base": "~0.1.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": ">=3.7,<4",
-                "squizlabs/php_codesniffer": "1.4.*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "ZfcUser": "src/"
-                },
-                "classmap": [
-                    "./Module.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Kyle Spraggs",
-                    "email": "theman@spiffyjr.me",
-                    "homepage": "http://www.spiffyjr.me/"
-                },
-                {
-                    "name": "Evan Coury",
-                    "email": "me@evancoury.com",
-                    "homepage": "http://blog.evan.pro/"
-                },
-                {
-                    "name": "Daniel Strøm",
-                    "email": "ds@eye4web.dk",
-                    "homepage": "http://eye4web.dk/"
-                }
-            ],
-            "description": "A generic user registration and authentication module for ZF2. Supports multiple adapters with built-in support for Zend\\Db.",
-            "homepage": "https://github.com/ZF-Commons/ZfcUser",
-            "keywords": [
-                "Authentication",
-                "zf2"
-            ],
-            "time": "2015-03-22 15:04:56"
         }
     ],
     "packages-dev": [
-        {
-            "name": "bjyoungblood/bjy-profiler",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bjyoungblood/BjyProfiler.git",
-                "reference": "1d05f9b740fd1d8d840686fea257c8c26d3f757b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bjyoungblood/BjyProfiler/zipball/1d05f9b740fd1d8d840686fea257c8c26d3f757b",
-                "reference": "1d05f9b740fd1d8d840686fea257c8c26d3f757b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3",
-                "zendframework/zend-db": ">=2.1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "BjyProfiler": "src/"
-                },
-                "classmap": [
-                    "./Module.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ben Youngblood",
-                    "email": "bx.youngblood@gmail.com",
-                    "homepage": "http://bjyoungblood.com/"
-                }
-            ],
-            "description": "Database profiler for Zend\\Db (also plugin for ZendDeveloperTools)",
-            "homepage": "https://github.com/bjyoungblood/BjyProfiler",
-            "keywords": [
-                "db",
-                "profiler",
-                "zdt",
-                "zf2"
-            ],
-            "time": "2014-09-04 01:22:02"
-        },
         {
             "name": "zendframework/zend-developer-tools",
             "version": "dev-master",
@@ -799,18 +458,66 @@
                 "zf2"
             ],
             "time": "2014-04-22 18:35:37"
+        },
+        {
+            "name": "zf-commons/zfc-base",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ZF-Commons/ZfcBase.git",
+                "reference": "fc68a49b58ba68584a9a4c44a1ca9df12b30d1bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcBase/zipball/fc68a49b58ba68584a9a4c44a1ca9df12b30d1bf",
+                "reference": "fc68a49b58ba68584a9a4c44a1ca9df12b30d1bf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "zendframework/zend-db": "~2.1",
+                "zendframework/zend-eventmanager": "~2.1",
+                "zendframework/zend-loader": "~2.1",
+                "zendframework/zend-modulemanager": "~2.1",
+                "zendframework/zend-mvc": "~2.1",
+                "zendframework/zend-servicemanager": "~2.1",
+                "zendframework/zend-stdlib": "~2.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ZfcBase": "src/"
+                },
+                "classmap": [
+                    "./Module.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Kyle Spraggs",
+                    "email": "theman@spiffyjr.me",
+                    "homepage": "http://www.spiffyjr.me/"
+                },
+                {
+                    "name": "Evan Coury",
+                    "email": "me@evancoury.com",
+                    "homepage": "http://blog.evan.pro/"
+                }
+            ],
+            "description": "A set of genetic (abstract) classes which are commonly used across multiple modules.",
+            "homepage": "https://github.com/ZF-Commons/ZfcBase",
+            "keywords": [
+                "zf2"
+            ],
+            "time": "2013-05-02 12:33:49"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "dafap/dafap-layout": 20,
         "atukai/at-php-settings": 20,
-        "bjyoungblood/bjy-authorize": 20,
-        "zf-commons/zfc-user": 20,
-        "zf-commons/zfc-admin": 20,
         "zendframework/zftool": 20,
-        "bjyoungblood/bjy-profiler": 20,
         "zendframework/zend-developer-tools": 20
     },
     "prefer-stable": true,

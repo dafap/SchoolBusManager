@@ -32,7 +32,8 @@ class Paiements extends AbstractSbmTable
 
     public function saveRecord(ObjectDataInterface $obj_data)
     {
-        if (empty($obj_data->dateValeur)) {
+        $tmp = $obj_data->dateValeur;
+        if (empty($tmp)) {
             $dte = new \DateTime($obj_data->datePaiement);
             $obj_data->dateValeur = $dte->format('Y-m-d');
         }

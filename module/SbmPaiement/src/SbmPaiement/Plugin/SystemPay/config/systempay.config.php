@@ -29,7 +29,7 @@ return array(
     'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription',
     //'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription;SUCCESS_FOOTER_MSG_RETURN=Retour au site d\'inscription',  
     'vads_version' => 'V2',
-    'uniqid_path' => realpath(__DIR__ . '../../../../../../../data/share'),
+    'uniqid_path' => realpath(__DIR__ . '/../../../../../../../data/share'),
     // vads_trans_id_max doit être, d'après la documentation, compris entre 000000 et 899999,
     // doit être unique pour chaque transaction pour une boutique donnée sur la journée.
     // Lorsque la valeur maxi est atteinte, le vads_trans_id repart depuis 000001.

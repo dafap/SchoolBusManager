@@ -171,7 +171,6 @@ class Calculs
     public function getResultat($s)
     {
         if ($s=='') return '';
-        //if ($s != '%somme%') var_dump($s);
         if (array_key_exists($key = md5($s), $this->resultats))
             return $this->resultats[$key];
         
@@ -183,7 +182,6 @@ class Calculs
         for ($j = 0; $j < count($search); $j ++) {
             $replace[] = $this->{$this->expressions[$key]['functions'][$j]}($this->expressions[$key]['args'][$j]);
         }
-        //if ($s != '%somme%') die(var_dump($this->expressions, $search, $replace, str_replace($search, $replace, $s)));
         return $this->resultats[$key] = str_replace($search, $replace, $s);
     }
     

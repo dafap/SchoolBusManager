@@ -11,6 +11,15 @@
  * @version 2014-1
  */
 return array(
+    'acl' => array(
+        'resources' => array(
+            'sbmgestion' => array(
+                'allow' => array(
+                    'roles' => array('gestion')
+                )
+            )
+        ),
+    ),
     'liste' => array(
         'paginator' => array(
             'nb_circuits' => 15,

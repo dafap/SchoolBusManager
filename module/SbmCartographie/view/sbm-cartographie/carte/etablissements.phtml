@@ -81,7 +81,8 @@ foreach ($this->ptEtablissements as $pt) {
         )),
         'Tél. ' . $e->telephone,
     );
-    if (!empty($tmp = $e->email)) {
+    $tmp = $e->email;
+    if (!empty($tmp)) {
         $d[] = 'Email : ' . $e->email;
     }
     $tMarkers .= '{"lat":' . $pt->getLatitude() .',"lng":' . $pt->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre. '","title":"' . $e->nom .'","info":"' . implode('<br>', $d) ."\"},\n";
