@@ -112,4 +112,20 @@ class Users extends AbstractSbmTable
         $where->literal('tokenalive=1')->literal('confirme=0')->literal('active=0')->equalTo('token', $token);
         return $this->table_gateway->delete($where);
     }
+    
+    /**
+     * Coche ou décoche la sélection
+     * 
+     * @param int $userId
+     * @param bool $selection
+     */
+    public function setSelection($userId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'userId' => $userId,
+            'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
 }

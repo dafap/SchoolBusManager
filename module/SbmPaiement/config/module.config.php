@@ -77,5 +77,10 @@ return array(
                 'may_terminate' => true
             )
         )
+    ),
+    'sbm' => array(
+        'paiement' => array(
+            'path_filelog' => realpath(__DIR__ . '/../../../data/logs')
+        )
     )
 );

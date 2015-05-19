@@ -139,7 +139,8 @@ return array(
             
             'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
             'Sbm\Db\Query\ElevesScolarites' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites',
-            'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations'
+            'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations',
+            'Sbm\Db\Query\Users' => 'SbmCommun\Model\Db\Service\Query\User\Users'
         )
     ),
     'view_manager' => array(

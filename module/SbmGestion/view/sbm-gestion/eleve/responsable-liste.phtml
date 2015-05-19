@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Liste des responsables
  *
@@ -141,6 +142,10 @@ EOT;
                 'action' => 'responsable-localisation',
                 'page' => $this->page
             ));
+            $url_loger = $this->url('sbmgestion/eleve', array(
+                'action' => 'responsable-loger',
+                'page' => $this->page
+            ));
             $hiddens = array(
                 'responsableId' => $responsable->responsableId,
                 'info' => $identite,
@@ -155,14 +160,20 @@ EOT;
                 'modifier' => array(
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
-                    'title' => 'modifier le responsable ' . $identite,
+                    'title' => 'modifier la fiche de ' . $identite,
                     'onclick' => sprintf($js, "'modifier'")
                 ),
                 'localiser' => array(
                     'class' => 'fam-map-magnify',
                     'formaction' => $url_map,
-                    'title' => 'localiser le responsable ' . $identite . ' sur la carte',
+                    'title' => 'localiser le domicile de ' . $identite . ' sur la carte',
                     'onclick' => sprintf($js, "'localiser'")
+                ),
+                'loger' => array(
+                    'class' => 'fam-user-add',
+                    'formaction' => $url_loger,
+                    'title' => 'créer un compte pour ' . $identite,
+                    'onclick' => sprintf($js, "'loger'")
                 ),
                 'supprimer' => array(
                     'class' => 'fam-delete',
@@ -173,7 +184,7 @@ EOT;
                 'enfants' => array(
                     'class' => 'fam-group',
                     'formaction' => $url_group,
-                    'title' => 'groupe des enfants de ' . $identite,
+                    'title' => 'enfants de ' . $identite,
                     'onclick' => sprintf($js, "'enfants'")
                 ),
                 'paiements' => array(

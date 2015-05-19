@@ -15,7 +15,7 @@ return array(
         'resources' => array(
             'sbmadmin' => array(
                 'allow' => array(
-                    'roles' => array('admin')
+                    'roles' => array('admin', 'sadmin')
                 )
             )
         ),
@@ -23,7 +23,8 @@ return array(
     'liste' => array(
         'paginator' => array(
             'nb_libelles' => 15,
-            'nb_pdf' => 5
+            'nb_pdf' => 5,
+            'nb_users' => 20
         )
     ),
     'service_manager' => array(

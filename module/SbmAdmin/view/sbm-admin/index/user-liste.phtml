@@ -1,0 +1,164 @@
+<?php
+/**
+ * Liste des utilisateurs
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource user-liste.phtml.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 mai 2015
+ * @version 2015-1
+ */
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+    ->setAttribute('id', $id)
+    ->setValue($value);
+    return $view->formCheckbox($element);
+}
+$acategories = array(255 => 'Administrateur', 254 => 'Administrateur', 253 => 'Gestionnaire', 1 => 'Parent', 2 => 'Transporteur', 3 => 'Etablissement');
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$jsCallback = '';
+$jsTrigger = '';
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$users = $this->paginator->getCurrentItems();
+$url_ajouter = $this->url('sbmadmin', array(
+    'action' => 'user-ajout',
+    'page' => $this->page
+));
+$url_pdf = $this->url('sbmadmin', array(
+    'action' => 'user-pdf',
+    'page' => $this->page
+));
+$url_retour = $this->url('sbmadmin');
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ),
+    'rapports' => array(
+        'class' => 'fam-report',
+        'formaction' => $url_pdf,
+        'title' => 'Rapports à imprimer'
+    ),
+    'ajouter' => array(
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouvel utilisateur'
+    )
+);
+?>
+<h1>Liste des utilisateurs</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+	    <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	    <div class="flashMessenger float-right"><?php 
+		    echo $this->flashMessenger()->render('success');
+		    echo $this->flashMessenger()->render('warning');
+		    echo $this->flashMessenger()->render('error');
+		    echo $this->flashMessenger()->render('info');
+		    echo $this->flashMessenger()->render('default');
+		    ?></div>
+	</div>
+	<div id="liste-inner">
+	    <table class="users">
+		    <tbody>
+		        <tr><th>Nom</th><th>Prénom</th><th>Email</th><th>Catégorie</th><th>Sans mdp</th><th>Confirmé</th><th>Actif</th><th>Sélection</th></tr>
+          <?php foreach($users as $test => $user): ?>
+          <?php 
+          // selection
+          $modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxadmin/'+action+'selectionuser/userId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+          
+          $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $user->userId);
+          $jsCallback .= sprintf("$modele\n", $user->userId, $user->userId);
+          ?>
+                <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				    <td class="nom"><?php echo $this->escapeHtml($user->nom); ?></td>
+				    <td class="prenom"><?php echo $this->escapeHtml($user->prenom); ?></td>
+				    <td class="email"><?php echo $this->escapeHtml($user->email); ?></td>
+				    <td class="categorieId"><?php echo $this->escapeHtml($acategories[$user->categorieId]); ?></td>
+				    <td class="tokenalive centre"><?php echo $user->categorieId == 255 ? '' : ($user->tokenalive ? 'Oui' : ''); ?></td>
+				    <td class="confirme centre"><?php echo $user->categorieId == 255 ? '' : ($user->confirme ? '' : 'Non'); ?></td>
+				    <td class="active centre"><?php echo $user->categorieId == 255 ? '' : ($user->active ? '' : 'Non'); ?></td>
+				    <td class="selection centre"><?php echo $user->categorieId == 255 ? '' : renderCheckbox($this, 'selection', 'chk' . $user->userId, $user->selection)?></td>
+				    <td class="boutons">
+            <?php
+            $url_edit = $this->url('sbmadmin', array(
+                'action' => 'user-edit',
+                'page' => $this->page,
+            ));
+            $url_delete = $this->url('sbmadmin', array(
+                'action' => 'user-suppr',
+                'page' => $this->page,
+            ));
+            $url_group = $this->url('sbmadmin', array(
+                'action' => 'user-group',
+                'page' => $this->page,
+            ));
+            $hiddens = array(
+                'userId' => $user->userId,
+                'email' => $user->email
+            );
+            $buttons = array(
+                'modifier' => array(
+                    'class' => 'fam-pencil',
+                    'formaction' => $url_edit,
+                    'title' => 'modifier'
+                ),
+                'supprimer' => array(
+                    'class' => 'fam-delete',
+                    'formaction' => $url_delete,
+                    'title' => 'supprimer'
+                ),
+                'eleves' => array(
+                    'class' => 'fam-group',
+                    'formaction' => $url_group,
+                    'title' => 'fiche du responsable associé'
+                )
+            );
+            echo $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);
+            ?>
+				    </td>
+			    </tr>         
+        <?php endforeach;?>
+            </tbody>
+	    </table>
+	</div>
+	<div id="liste-footer">
+	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	    <div class="criteres-wrapper">
+        <?php echo $this->form()->openTag($this->criteres_form);?>
+        <?php echo $this->formCollection($this->criteres_form, true);?>
+        <?php echo $this->form()->closeTag();?>
+        </div>
+    </div>
+</div> 
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $jsTrigger;?>}
+<?php echo $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

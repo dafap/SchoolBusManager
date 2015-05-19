@@ -567,7 +567,7 @@ class EleveController extends AbstractActionController
         $historique['responsable1']['dateModification'] = $r->dateModification;
         $historique['responsable1']['dateDemenagement'] = $r->dateDemenagement;
         $tmp = $odata0->responsable2Id;
-        if (!empty($tmp)) {
+        if (! empty($tmp)) {
             $r = $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Responsables')
                 ->getRecord($odata0->responsable2Id);
@@ -669,7 +669,10 @@ class EleveController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Responsables')
-                ->paginator($args['where']),
+                ->paginator($args['where'], array(
+                'nom',
+                'prenom'
+            )),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_responsables', 10),
             'criteres_form' => $args['form']
@@ -1055,5 +1058,84 @@ class EleveController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+    }
+
+    public function responsableLogerAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'responsable-liste',
+                'page' => $this->params('page', 1)
+            ));
+        } else {
+            $args = $prg;
+            if (array_key_exists('logernon', $args) || ! array_key_exists('responsableId', $args)) {
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'responsable-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+        }
+        $tUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+        $responsable = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Responsables')
+            ->getRecord($args['responsableId']);
+        $email = $responsable->email;
+        if (empty($email)) {
+            $msg = 'Pour créer un compte il faut que ce responsable ait une adresse email.';
+            $form = null;
+        } else {
+            try {
+                $tUsers->getRecordByEmail($responsable->email);
+                $msg = 'Ce responsable a déjà un compte.';
+                $form = null;
+            } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                $msg = '';
+                $form = new ButtonForm(array(
+                    'responsableId' => null
+                ), array(
+                    'logeroui' => array(
+                        'class' => 'confirm',
+                        'value' => 'Confirmer',
+                            'class' => 'button default'
+                    ),
+                    'logernon' => array(
+                        'class' => 'confirm',
+                        'value' => 'Abandonner',
+                        'class' => 'button default'
+                    )
+                ));
+                if (array_key_exists('logeroui', $args)) {
+                    $form->setData($args);
+                    if ($form->isValid()) {
+                        $odata = $tUsers->getObjData();
+                        $adata = $responsable->getArrayCopy();
+                        $adata['userId'] = null;
+                        unset($adata['dateCreation']);
+                        unset($adata['dateModification']);
+                        $odata->exchangeArray($adata)->completeToCreate();
+                        $tUsers->saveRecord($odata);
+                        $this->flashMessenger()->addSuccessMessage('Le compte est créé.');
+                        return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                            'action' => 'responsable-liste',
+                            'page' => $this->params('page', 1)
+                        ));
+                    }
+                }
+                $form->setData(array(
+                    'responsableId' => $args['responsableId']
+                ));
+                
+            }
+        }
+        return new ViewModel(array(
+            'form' => $form,
+            'info' => $args['info'],
+            'msg' => $msg,
+            'page' => $this->params('page', 1)
+        ));
     }
 }

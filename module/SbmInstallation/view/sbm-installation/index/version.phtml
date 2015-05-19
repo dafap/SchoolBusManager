@@ -1,0 +1,50 @@
+<?php
+/**
+ * Version du logiciel et de PHP, de ZF2
+ *
+ * @project sbm
+ * @package SbmInstallation\view
+ * @filesource version.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 mai 2015
+ * @version 2015-1
+ */
+use Zend\Version\Version;
+
+define('SBM_VERSION', '1.0 CCDA');
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $this->url('sbminstall'),
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Versions installées</h1>
+<div id="version-wrapper" class="left-10px">
+	<div id="version-header"><?php echo $this->listeZoneActions(array(), $actions)?></div>
+	<div id="vesion-inner">
+		<dl>
+			<dt>Version de School bus manager</dt>
+			<dd><?php echo SBM_VERSION; ?></dd>
+			<dt>Version de PHP</dt>
+			<dd><?php echo phpversion();?></dd>
+			<dt>Version de ZF2</dt>
+			<dd>Version installée: <?php echo Version::VERSION;?><br>
+	    <?php if (Version::isLatest()):?>
+	    C'est la dernière version.
+	    <?php else :?>
+	    Il y a une nouvelle version <?php echo Version::getLatest();?>
+	    <?php endif;?>
+	</dd>
+		</dl>
+	</div>
+	<div id="version-footer">
+		<p class="sbm-description">Pour une nouvelle version de School bus
+			manager, noter son numéro dans le fichier `version.phtml` du module
+			SbmInstallation.</p>
+	</div>
+</div>

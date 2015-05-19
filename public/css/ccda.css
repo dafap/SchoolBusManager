@@ -25,6 +25,10 @@ input[type="submit"]:hover {
 th, td {
 	border-bottom: inherit;
 }
+dt {
+	font-weight: bold;
+	padding-top: 1rem;
+}
 /*-------- Classes générales ------*/
 .align-right {
 	text-align: right;
@@ -117,6 +121,9 @@ div.explication {
 	padding-left: 15px;
 	color: #804040;
 	
+}
+.hidden {
+	visibility: hidden;
 }
 /*-------- Erreurs -------------*/
 div#error_wrapper {
@@ -805,6 +812,30 @@ table.plugin {
 	border-radius: 20px 20px 0 0;
 	box-shadow: 1px 1px 5px #9d3c06;
 }
+/*-------------- Fiche user ------------------------*/
+#fiche-inner #user div.label {
+	display: inline-block;
+	width: 150px;
+	padding-left: 5px;
+}
+#fiche-inner #user #wrapper-commentaire textarea {
+	width : 99.5%;
+	border-radius: 4px 4px 4px 4px;
+	height: 6rem;
+}
+#fiche-inner #user #wrapper-commentaire label {
+	display: block;
+	float: left;
+	left: 20px;
+}
+#fiche-inner #user .col1 label {
+	display: inline-block;
+	width: 155px;
+}
+#fiche-inner #user .colsuiv label {
+	margin-left: 55px;
+	margin-right: 5px;
+}
 /*-------------- Largeur des inputs text ------------*/
 input.sbm-width-5c, select.sbm-width-5c {
 	width: 3em;
@@ -932,5 +963,22 @@ table.parent {
 	display: initial;
 	margin-right: 30px;
 }
-
+/*--------------------- Mail -------------------------------*/
+#mail textarea {
+	width: 99.5%;
+	height: 15rem;
+	border-radius: 4px 4px 4px 4px;
+}
+#mail input[type=text] {
+	width: 99.5%;
+	margin-bottom: 1rem;
+}
+#mail input[type=submit] {
+	margin-top: 0.5rem;
+}
+#mail label {
+	display: inline-block;
+	width: 120px;
+	margin-left: 5px;
+}
 

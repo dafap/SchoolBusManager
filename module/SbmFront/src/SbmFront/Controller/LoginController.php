@@ -65,10 +65,10 @@ class LoginController extends AbstractActionController
                 $auth->getAdapter()
                     ->setIdentity($data)
                     ->setCredential($data);
-                if ($auth->authenticate()->getCode() > 0) {
+                if ($result = $auth->authenticate()->getCode() > 0) {
                     return $this->homePageAction();
                 } else {
-                    foreach ($result->getMessages as $msg)
+                    foreach ($result->getMessages() as $msg)
                         $this->flashMessenger()->addErrorMessage($msg);
                     return $this->redirect()->toRoute('home');
                 }
@@ -294,7 +294,7 @@ class LoginController extends AbstractActionController
                 );
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
                 $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
-                $this->flashMessenger()->addInfoMessage('Un mail a été envoyé à l\'adresse indiquée. Consultez votre messagerie.');
+                $this->flashMessenger()->addInfoMessage('Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
                 // retour
                 return $this->redirect()->toRoute('home');
             }

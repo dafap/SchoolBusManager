@@ -204,21 +204,23 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         
-        /*$this->add(array(
-            'name' => 'aliasCG',
-            'type' => 'hidden',
-            'attributes' => array(
-                'id' => 'critere-aliasCG',
-                'maxlength' => '30',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Nom CG',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));*/
+        /*
+         * $this->add(array(
+         * 'name' => 'aliasCG',
+         * 'type' => 'hidden',
+         * 'attributes' => array(
+         * 'id' => 'critere-aliasCG',
+         * 'maxlength' => '30',
+         * 'class' => 'sbm-width-30c'
+         * ),
+         * 'options' => array(
+         * 'label' => 'Nom CG',
+         * 'error_attributes' => array(
+         * 'class' => 'sbm-error'
+         * )
+         * )
+         * ));
+         */
         
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
@@ -512,40 +514,42 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
-        /*$this->add(array(
-            'name' => 'tarifMontant',
-            'attributes' => array(
-                'type' => 'text',
-                'id' => 'critere-tarif',
-                'maxlength' => '11',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Tarif',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'prelevement',
-            'type' => 'Zend\Form\Element\Checkbox',
-            'attributes' => array(
-                'type' => 'checkbox',
-                'useHiddenElement' => true,
-                'options' => array(
-                    'checkedValue' => false,
-                    'uncheckedValue' => true
-                ),
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Prélevés',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));*/
+        /*
+         * $this->add(array(
+         * 'name' => 'tarifMontant',
+         * 'attributes' => array(
+         * 'type' => 'text',
+         * 'id' => 'critere-tarif',
+         * 'maxlength' => '11',
+         * 'class' => 'sbm-width-10c'
+         * ),
+         * 'options' => array(
+         * 'label' => 'Tarif',
+         * 'error_attributes' => array(
+         * 'class' => 'sbm-error'
+         * )
+         * )
+         * ));
+         * $this->add(array(
+         * 'name' => 'prelevement',
+         * 'type' => 'Zend\Form\Element\Checkbox',
+         * 'attributes' => array(
+         * 'type' => 'checkbox',
+         * 'useHiddenElement' => true,
+         * 'options' => array(
+         * 'checkedValue' => false,
+         * 'uncheckedValue' => true
+         * ),
+         * 'class' => 'sbm-checkbox'
+         * ),
+         * 'options' => array(
+         * 'label' => 'Prélevés',
+         * 'error_attributes' => array(
+         * 'class' => 'sbm-error'
+         * )
+         * )
+         * ));
+         */
         $this->add(array(
             'name' => 'etablissement',
             'attributes' => array(
@@ -599,6 +603,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
     }
+
     private function formElevesSpecification()
     {
         return array(
@@ -643,21 +648,23 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
-        /*$this->add(array(
-            'name' => 'aliasCG',
-            'attributes' => array(
-                'type' => 'hidden',
-                'id' => 'critere-aliasCG',
-                'maxlength' => '50',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Nom CG',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));*/
+        /*
+         * $this->add(array(
+         * 'name' => 'aliasCG',
+         * 'attributes' => array(
+         * 'type' => 'hidden',
+         * 'id' => 'critere-aliasCG',
+         * 'maxlength' => '50',
+         * 'class' => 'sbm-width-50c'
+         * ),
+         * 'options' => array(
+         * 'label' => 'Nom CG',
+         * 'error_attributes' => array(
+         * 'class' => 'sbm-error'
+         * )
+         * )
+         * ));
+         */
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
@@ -1221,21 +1228,23 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 )
             )
         ));
-        /*$this->add(array(
-            'name' => 'aliasCG',
-            'attributes' => array(
-                'type' => 'hidden',
-                'id' => 'critere-aliasCG',
-                'maxlength' => '45',
-                'class' => 'sbm-width-25c'
-            ),
-            'options' => array(
-                'label' => 'Nom CG',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));*/
+        /*
+         * $this->add(array(
+         * 'name' => 'aliasCG',
+         * 'attributes' => array(
+         * 'type' => 'hidden',
+         * 'id' => 'critere-aliasCG',
+         * 'maxlength' => '45',
+         * 'class' => 'sbm-width-25c'
+         * ),
+         * 'options' => array(
+         * 'label' => 'Nom CG',
+         * 'error_attributes' => array(
+         * 'class' => 'sbm-error'
+         * )
+         * )
+         * ));
+         */
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
@@ -1441,18 +1450,184 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         ));
     }
 
+    private function formUsers()
+    {
+        $this->add(array(
+            'name' => 'nom',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-nom',
+                'maxlength' => '30',
+                'class' => 'sbm-width-30c'
+            ),
+            'options' => array(
+                'label' => 'Nom',
+                'label_attributes' => array(
+                    'class' => 'sbm-first'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'email',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-nom',
+                'maxlength' => '80',
+                'class' => 'sbm-width-45c'
+            ),
+            'options' => array(
+                'label' => 'Email',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'categorieId',
+            'attributes' => array(
+                'id' => 'critere-categorieId',
+                'class' => 'sbm-width-30c'
+            ),
+            'options' => array(
+                'label' => 'Catégorie',
+                'empty_option' => 'Toutes',
+                'value_options' => array(
+                    '1' => 'Parent',
+                    '2' => 'Transporteur',
+                    '3' => 'Etablissement scolaire',
+                    '253' => 'Gestionnaire',
+                    '254' => 'Administrateur'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'tokenalive',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => 1,
+                    'uncheckedValue' => 0
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Mot de passe inactif',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'confirme',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => 0,
+                    'uncheckedValue' => 1
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Pas confirmés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'active',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => 0,
+                    'uncheckedValue' => 1
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Inactifs',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+    }
+
+    private function formUsersSpecification()
+    {
+        return array(
+            'categorieId' => array(
+                'required' => false
+            ),
+            'tokenalive' => array(
+                'required' => false
+            ),
+            'confirme' => array(
+                'required' => false
+            ),
+            'active' => array(
+                'required' => false
+            ),
+            'selection' => array(
+                'required' => false
+            )
+        );
+    }
+
     private function addGenericElements($elements)
     {
         foreach ($elements as $element) {
             $this->add($element);
         }
     }
-    
+
     private function genericSpecification()
     {
         $array = array();
         foreach ($this->getElementNames() as $elementName) {
-            $array[$elementName] = array('required' => false);
+            $array[$elementName] = array(
+                'required' => false
+            );
         }
         return $array;
     }

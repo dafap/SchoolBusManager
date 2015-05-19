@@ -50,7 +50,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'titre',
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
-                'id' => 'responsable-titre',
+                'id' => 'user-titre',
                 'class' => 'sbm-select1'
             ),
             'options' => array(
@@ -76,7 +76,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'nom',
             'type' => 'SbmCommun\Form\Element\NomPropre',
             'attributes' => array(
-                'id' => 'responsable-nom',
+                'id' => 'user-nom',
                 'class' => 'sbm-text30'
             ),
             'options' => array(
@@ -93,7 +93,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'prenom',
             'type' => 'SbmCommun\Form\Element\Prenom',
             'attributes' => array(
-                'id' => 'responsable-prenom',
+                'id' => 'user-prenom',
                 'class' => 'sbm-text30'
             ),
             'options' => array(
@@ -110,7 +110,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'email',
             'type' => 'Zend\Form\Element\Email',
             'attributes' => array(
-                'id' => 'respondable-telephone',
+                'id' => 'user-email',
                 'class' => 'sbm-text50'
             ),
             'options' => array(

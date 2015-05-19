@@ -13,6 +13,7 @@
  * @version 2015-1
  */
 $controllers = array(
+    \SbmAjax\Controller\AdminController::ROUTE => 'SbmAjax\Controller\AdminController',
     \SbmAjax\Controller\EleveController::ROUTE => 'SbmAjax\Controller\EleveController',
     \SbmAjax\Controller\TransportController::ROUTE => 'SbmAjax\Controller\TransportController',
     \SbmAjax\Controller\FinanceController::ROUTE => 'SbmAjax\Controller\FinanceController',
@@ -41,6 +42,11 @@ foreach ($controllers as $key => $value) {
 return array(
     'acl' => array(
         'resources' => array(
+            \SbmAjax\Controller\AdminController::ROUTE => array(
+                'allow' => array(
+                    'roles' => array('admin')
+                )
+            ),
             \SbmAjax\Controller\EleveController::ROUTE => array(
                 'allow' => array(
                     'roles' => array('parent')

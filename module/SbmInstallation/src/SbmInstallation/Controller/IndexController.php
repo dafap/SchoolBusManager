@@ -21,7 +21,6 @@ use SbmInstallation\Model\Exception;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
 use SbmInstallation\Model\DumpTables;
 use SbmCommun\Form\ButtonForm;
-use Zend\View\Model\Zend\View\Model;
 
 class IndexController extends AbstractActionController
 {
@@ -35,8 +34,103 @@ class IndexController extends AbstractActionController
         return new ViewModel();
     }
 
+    public function versionAction()
+    {}
+
+    public function fichierslogAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbminstall');
+        }
+        $config = $this->getServiceLocator()->get('config')['sbm']['paiement'];
+        $fileNamePaiement = strtolower($config['plateforme']) . '_error.log';
+        $filePaiement = $config['path_filelog'] . DIRECTORY_SEPARATOR . $fileNamePaiement;
+        $fileErrors = $this->getServiceLocator()->get('config')['php_settings']['error_log'];
+        if (array_key_exists('fichier', $args)) {
+            switch ($args['fichier']) {
+                case 'paiement':
+                    $config = $this->getServiceLocator()->get('config')['sbm']['paiement'];
+                    $filename = $fileNamePaiement;
+                    $filenameWithPath = $filePaiement;
+                    break;
+                case 'logerror':
+                    $filenameWithPath = $fileErrors;
+                    $parts = explode('/', $filenameWithPath);
+                    $filename = $parts[count($parts) - 1];
+                    break;
+                default:
+                    $this->redirect()->toRoute('sbminstall');
+                    break;
+            }
+            if (array_key_exists('drop', $args)) {
+                file_put_contents($filenameWithPath, '');
+            } else {
+                $fileinfo = finfo_open(FILEINFO_MIME_TYPE);
+                $contentType = finfo_file($fileinfo, $filenameWithPath);
+                
+                $response = new \Zend\Http\Response\Stream();
+                $response->setStream(fopen($filenameWithPath, 'r'));
+                $response->setStatusCode(200);
+                
+                $headers = new \Zend\Http\Headers();
+                $headers->addHeaderLine('Content-Type', $contentType)
+                    ->addHeaderLine('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                    ->addHeaderLine('Content-Length', filesize($filenameWithPath));
+                
+                $response->setHeaders($headers);
+                return $response;
+            }
+        }
+        return new ViewModel(array(
+            'form1' => new ButtonForm(array(
+                'fichier' => 'paiement'
+            ), array(
+                'drop' => array(
+                    'class' => 'confirm default',
+                    'value' => 'Vider le fichier'
+                ),
+                'download' => array(
+                    'class' => 'confirm default',
+                    'value' => 'Télécharger le fichier des transactions'
+                )
+            )),
+            'form2' => new ButtonForm(array(
+                'fichier' => 'logerror'
+            ), array(
+                'drop' => array(
+                    'class' => 'confirm default',
+                    'value' => 'Vider le fichier'
+                ),
+                'download' => array(
+                    'class' => 'confirm default',
+                    'value' => 'Télécharger le fichier d\'erreurs'
+                ),
+                'cancel' => array(
+                    'class' => 'confirm default',
+                    'value' => 'Quitter'
+                )
+            )),
+            'paiement' => array(
+                'date' => date('d/m/Y H:i:s', filemtime($filePaiement)),
+                'taille' => filesize($filePaiement),
+                'lignes' => count(file($filePaiement))
+            ),
+            'errors' => array(
+                'date' => date('d/m/Y H:i:s', filemtime($fileErrors)),
+                'taille' => filesize($fileErrors),
+                'lignes' => count(file($fileErrors))
+            )
+        ));
+    }
+
     /**
      * Simple besoin de développement - Cette méthode doit être supprimée dans la version finale
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function majResponsablesAction()

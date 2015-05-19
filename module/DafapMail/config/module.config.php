@@ -13,6 +13,15 @@
  * @version 2015-1
  */
 return array(
+    'acl' => array(
+        'resources' => array(
+            'dafapmail' => array(
+                'allow' => array(
+                    'roles' => array('parent')
+                )
+            )
+        ),
+    ),
     'sbm' => array(
         'mail' => array(
             'transport' => array(
@@ -29,14 +38,45 @@ return array(
                 ),*/
                 'transportSsl' => array(
                     'use_ssl' => false,
-                    'connection_type' => 'tls' // ssl | tls
-                )
-            ),            
+                    'connection_type' => 'tls'
+                ) // ssl | tls
+
+            ),
             'message' => array(
                 'type' => 'text/html',
                 'html_encoding' => \Zend\Mime\Mime::ENCODING_8BIT,
                 'message_encoding' => 'UTF-8'
             )
+        )
+    ),
+    'controllers' => array(
+        'invokables' => array(
+            'DafapMail\Controller\Index' => 'DafapMail\Controller\IndexController'
+        )
+    ),
+    'router' => array(
+        'routes' => array(
+            'dafapmail' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route' => '/mail[/:action]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+                    ),
+                    'defaults' => array(
+                        'module' => 'DafapMail',
+                        'controller' => 'DafapMail\Controller\Index',
+                        'action' => 'index'
+                    )
+                ),
+                'may_terminate' => true
+            )
+        )
+    ),
+    'view_manager' => array(
+        'template_map' => array(),
+        'template_path_stack' => array(
+            __DIR__ . '/../view'
         )
     )
 );

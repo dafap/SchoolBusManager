@@ -1,0 +1,43 @@
+<?php
+/**
+ * Page de gestion des fichiers log
+ *
+ * La page affiche pour chaque fichier log la taille, le nombre de lignes et la date de dernière entrée
+ * On peut les télécharger ou les vider
+ * 
+ * @project sbm
+ * @package SbmInstallation/view
+ * @filesource fichierslog.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 mai 2015
+ * @version 2015-1
+ */
+?>
+<h1>Téléchargement de fichiers log</h1>
+<div id="suppr-wrapper">
+	<dl>
+		<dt>Historique des transactions de la plateforme de paiement</dt>
+		<dd>Date de dernière écriture: <?php echo $this->paiement['date'];?></dd>
+		<dd>Nombre de lignes: <?php echo $this->paiement['lignes'];?></dd>
+		<dd>Taille: <?php echo $this->paiement['taille'];?></dd>
+		<dd>
+<?php
+echo $this->form()->openTag($this->form1);
+echo $this->formCollection($this->form1);
+echo $this->form()->closeTag();
+?>
+        </dd>
+		<dt>Fichier d'erreur PHP</dt>
+		<dd>Date de dernière écriture: <?php echo $this->errors['date'];?></dd>
+		<dd>Nombre de lignes: <?php echo $this->errors['lignes'];?></dd>
+		<dd>Taille: <?php echo $this->errors['taille'];?></dd>
+		<dd>
+<?php
+echo $this->form()->openTag($this->form2);
+echo $this->formCollection($this->form2);
+echo $this->form()->closeTag();
+?>
+        </dd>
+	</dl>
+</div>

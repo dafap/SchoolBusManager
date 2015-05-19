@@ -57,6 +57,13 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
     private $config = array();
 
     /**
+     * Nom du fichier log
+     *
+     * @var string
+     */
+    private $filelog;
+
+    /**
      * Nom de la plateforme de paiement (correspond à un plugin cad à un sous-répertoire de SbmPaiement\Model)
      *
      * @var string
@@ -75,17 +82,17 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      * @var array
      */
     protected $data;
-    
+
     /**
      * Données préparées pour enregistrer un paiement
-     * 
+     *
      * @var array
      */
     protected $paiement;
-    
+
     /**
      * Données préparées pour valider les fiches dans scolarites
-     * 
+     *
      * @var array
      */
     protected $scolarite;
@@ -103,13 +110,13 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      * @var string
      */
     protected $error_msg = '';
-    
+
     /**
      * Cette méthode est appelée à la fin de la méthode initConfig().
      * initConfig() lit la configuration enregistrée dans les fichiers de configuration standard ZF2 :
-     *   /config/autoload/sbm.global.php
-     *   /config/autoload/sbm.local.php
-     *   /module/SbmPaiement/config/module.config.php
+     * /config/autoload/sbm.global.php
+     * /config/autoload/sbm.local.php
+     * /module/SbmPaiement/config/module.config.php
      *
      * init() pourra lire ou inclure le fichier de configuration propre à chaque plugin qui se trouve
      * dans le dossier config du plugin. Par exemple : /module/SbmPaiement/src/SbmPaiement/Model/SystemPay/config/systempay.config.php
@@ -117,16 +124,16 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      * Après cet appel, la propriété config devra contenir toute la configuration.
      */
     abstract protected function init();
-    
+
     /**
      * Cette méthode est appelée par la méthode notification() pour controler la validité de la notification.
      * Cela peut être un contrôle de la signature ou une analyse du contenu de la notification.
      * S'il y a un problème, les propriétés error_no (n° d'erreur) et error_msg (message d'erreur) seront renseignées.
      * Si un traitement est nécessaire sur les données reçues, les données sous leur nouveau format seront placées dans
      * la propriété data de l'objet.
-    */
+     */
     abstract protected function validNotification(Parameters $data);
-    
+
     /**
      * Analyse le contenu de la propriété data pour savoir si le paiement a été réalisé par la plateforme.
      * S'il a échoué, les propriétés error_no (n° d'erreur) et error_msg (message d'erreur) seront renseignées.
@@ -134,24 +141,24 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      * la propriété data de l'objet, en remplacement des données initiales. En particulier, la référence de la commande
      * sera analysée pour retrouver les éléments qu'elle contient. (En effet, la référence peut dépendre des contraintes
      * de la plateforme)
-    */
+     */
     abstract protected function validPaiement();
-    
+
     /**
-     * Si le paiement est valide, il faut préparer les données en vue de l'envoie d'un évènement qui permettra le traitement 
+     * Si le paiement est valide, il faut préparer les données en vue de l'envoie d'un évènement qui permettra le traitement
      * dans les tables scolarites et paiements.
      * Voici les clés du tableau à fournir dans la propriété paiement :
      * - type : DEBIT ou CREDIT
      * - paiement : tableau contenant
-     *   - datePaiement
-     *   - dateValeur
-     *   - responsableId
-     *   - anneeScolaire
-     *   - exercice
-     *   - montant
-     *   - codeModeDePaiement
-     *   - codeCaisse
-     *   - reference
+     * - datePaiement
+     * - dateValeur
+     * - responsableId
+     * - anneeScolaire
+     * - exercice
+     * - montant
+     * - codeModeDePaiement
+     * - codeCaisse
+     * - reference
      * Voici la composition de la propriété scolarites
      * - type : DEBIT ou CREDIT
      * - millesime
@@ -161,7 +168,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
 
     /**
      * (non-PHPdoc)
-     * 
+     *
      * @see \Zend\EventManager\EventManagerAwareInterface::setEventManager()
      */
     public function setEventManager(EventManagerInterface $eventManager)
@@ -174,7 +181,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
 
     /**
      * (non-PHPdoc)
-     * 
+     *
      * @see \Zend\EventManager\EventsCapableInterface::getEventManager()
      */
     public function getEventManager()
@@ -247,7 +254,11 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
                     'plateforme'
                 ), $config))
             ), $config);
-            
+            $this->filelog = StdLib::getParamR(array(
+                'sbm',
+                'paiement',
+                'path_filelog'
+            ), $config) . DIRECTORY_SEPARATOR . strtolower($this->plateforme) . '_error.log';
             // initialisation particulière de la classe dérivée
             $this->init();
         }
@@ -323,7 +334,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
     {
         $this->config = $config;
     }
-    
+
     protected function dumpConfig()
     {
         die(var_dump($this->config));
@@ -383,36 +394,37 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
 
     /**
      * Donne le millesime
-     * 
+     *
      * @return int|string
      */
     protected function getMillesime()
     {
         return Session::get('millesime', date('Y'));
     }
-    
+
     /**
      * Donne l'année scolaire courante
-     * 
+     *
      * @return string
      */
     protected function getAnneeScolaire()
     {
         return Session::get('as')['libelle'];
     }
-    
+
     /**
      * Donne l'exercice budgétaire
-     * 
+     *
      * @return string
      */
     protected function getExercice()
     {
         return date('Y');
     }
-    
+
     /**
      * Renvoie le code du mode de paiement par CB
+     * 
      * @return integer
      */
     protected function getCodeModeDePaiement()
@@ -420,10 +432,10 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
         $table = $this->getServiceLocator()->get('Sbm\Db\System\Libelles');
         return $table->getCode('ModeDePaiement', 'CB');
     }
-    
+
     /**
-     * Renvoie le code de la caisse 
-     * 
+     * Renvoie le code de la caisse
+     *
      * @return integer
      */
     protected function getCodeCaisse()
@@ -431,7 +443,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
         $table = $this->getServiceLocator()->get('Sbm\Db\System\Libelles');
         return $table->getCode('Caisse', 'DFT');
     }
-    
+
     /**
      * Méthode d'écriture dans un fichier log
      *
@@ -446,7 +458,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
     {
         if (empty($this->logger)) {
             $filter = new Priority(StdLib::getParam('error_reporting', $this->config, Logger::WARN));
-            $writer = new Stream(realpath(__DIR__ . '/../../../../../data/logs') . DIRECTORY_SEPARATOR . strtolower($this->getPlateformeName()) . '_error.log');
+            $writer = new Stream($this->filelog);
             $writer->addFilter($filter);
             $this->logger = new Logger();
             $this->logger->addWriter($writer);

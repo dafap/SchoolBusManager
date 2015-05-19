@@ -1,0 +1,81 @@
+<?php
+/**
+ * Fiche du responsable associé à un user
+ *
+ * Pas de modification ni d'action sur cette page
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource user-group.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 mai 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmadmin', array(
+    'action' => 'user-liste',
+    'page' => $this->page
+));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Fiche du responsable associé à un compte d'utilisateur</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="zone-actions float-left">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+        <div class="float-left">
+            <ul style="margin-top: 0;" class="gras">
+                <li><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
+                <li>Identifiant: <?php echo $this->user->email;?></li>
+                <li>Créé le: <?php echo $this->user->dateCreation;?> - Modifié le: <?php echo $this->user->dateModification;?></li>
+            </ul>
+        </div>
+	</div>
+	<div id="fiche-inner">
+<?php if ($this->responsable === false) :?>
+        <p class="left-10px">Il n'y a pas de responsable associé à ce compte
+			d'utilisateur.</p>
+<?php else :?>
+        <fieldset id="user" class="page1">
+			<div>
+				<div class="label">Titre</div><?php echo $this->responsable->titre; ?></div>
+			<div>
+				<div class="label">Nom</div><?php echo $this->responsable->nom; ?></div>
+			<div>
+				<div class="label">Prénom</div><?php echo $this->responsable->prenom; ?></div>
+			<div>
+				<div class="label">Adresse</div><?php echo $this->responsable->adresseL1; ?></div>
+			<div>
+				<div class="label">Adresse</div><?php echo $this->responsable->adresseL2; ?></div>
+			<div>
+				<div class="label">Localité</div><?php echo $this->responsable->codePostal . ' ' . $this->responsable->commune; ?></div>
+			<div>
+				<div class="label">Téléphone</div><?php echo $this->responsable->telephoneF; ?></div>
+			<div>
+				<div class="label">Téléphone</div><?php echo $this->responsable->telephoneP; ?></div>
+			<div>
+				<div class="label">Téléphone</div><?php echo $this->responsable->telephoneT; ?></div>
+			<div>
+				<div class="label">Email</div><?php echo $this->responsable->email; ?></div>
+			<div>
+				<div class="label">Créé le</div><?php echo $this->responsable->dateCreation; ?></div>
+			<div>
+				<div class="label">Modifié le</div><?php echo $this->responsable->dateModification; ?></div>
+			<div class="clearfix">
+				<div class="label float-left">Commentaires</div>
+				<div class="float-left" style="width: 750px;"><?php echo $this->responsable->note; ?></div>
+			</div>
+		</fieldset>
+<?php endif;?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>

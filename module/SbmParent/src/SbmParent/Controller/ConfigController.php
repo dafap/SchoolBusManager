@@ -21,6 +21,7 @@ use SbmCommun\Model\StdLib;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\ButtonForm;
 use SbmParent\Model\Responsable;
+use Zend\Mvc\Controller\Plugin\Redirect;
 
 class ConfigController extends AbstractActionController
 {
@@ -28,6 +29,12 @@ class ConfigController extends AbstractActionController
     public function indexAction()
     {
         return new ViewModel();
+    }
+    
+    public function messageAction()
+    {
+        $retour = $this->url()->fromRoute('sbmparent');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('dafapmail');
     }
 
     public function modifCompteAction()
