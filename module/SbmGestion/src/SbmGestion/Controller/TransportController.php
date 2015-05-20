@@ -121,7 +121,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'circuitId' => $r->getResult()
                     ));
@@ -159,11 +159,11 @@ class TransportController extends AbstractActionController
             ),
             'form' => $form
         );
-        
-        $r = $this->supprData($params, function ($id, $tableCircuits) {
+        $sm = $this->getServiceLocator();
+        $r = $this->supprData($params, function ($id, $tableCircuits) use ($sm){
             return array(
                 'id' => $id,
-                'data' => $tableCircuits->getRecord($id)
+                'data' => $sm->get('Sbm\Db\Vue\Circuits')->getRecord($id)
             );
         });
         if ($r instanceof Response) {
@@ -180,7 +180,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'circuitId' => StdLib::getParam('id', $r->getResult())
@@ -228,7 +228,7 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'circuitId' => null
                 ));
@@ -385,40 +385,6 @@ class TransportController extends AbstractActionController
             'nb_pagination' => $this->getNbPagination('nb_classes', 15),
             'criteres_form' => $args['form']
         ));
-        
-        $currentPage = $this->params('page', 1);
-        $table_classes = $this->getServiceLocator()->get('Sbm\Db\Table\Classes');
-        
-        $config = $this->getServiceLocator()->get('Config');
-        $nb_classe_pagination = $config['liste']['paginator']['nb_classe_pagination'];
-        
-        $criteres_form = new CriteresForm('classes');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        
-        // récupère les données du post et met en session
-        $this->session = new SessionContainer($this->getSessionNamespace());
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $criteres_form->setData($request->getPost());
-            if ($criteres_form->isValid()) {
-                $criteres_obj->exchangeArray($criteres_form->getData());
-                $this->session->criteres = $criteres_obj->getArrayCopy();
-            } else {
-                $criteres_form->reset(); // nécessaire pour remettre en place les control, submit et cancel du formulaire qui peuvent être écrasés par le post
-            }
-        }
-        // récupère les données de la session si le post n'a pas validé
-        if (! $criteres_form->hasValidated() && isset($this->session->criteres)) {
-            $criteres_obj->exchangeArray($this->session->criteres);
-            $criteres_form->setData($criteres_obj->getArrayCopy());
-        }
-        
-        return new ViewModel(array(
-            'paginator' => $table_classes->paginator($criteres_obj->getWhere()),
-            'page' => $currentPage,
-            'nb_classe_pagination' => $nb_classe_pagination,
-            'criteres_form' => $criteres_form
-        ));
     }
 
     /**
@@ -457,7 +423,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'classeId' => $r->getResult()
                     ));
@@ -516,7 +482,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'classeId' => StdLib::getParam('id', $r->getResult())
@@ -560,7 +526,7 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'classeId' => null
                 ));
@@ -699,7 +665,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'communeId' => $r->getResult()
                     ));
@@ -758,7 +724,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'communeId' => StdLib::getParam('id', $r->getResult())
@@ -801,7 +767,7 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'communeId' => null
                 ));
@@ -950,7 +916,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'etablissementId' => $r->getResult()
                     ));
@@ -1009,7 +975,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'etablissementId' => StdLib::getParam('id', $r->getResult())
@@ -1059,7 +1025,7 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'etablissementId' => null
                 ));
@@ -1313,7 +1279,7 @@ class TransportController extends AbstractActionController
         
         return new ViewModel(array(
             'origine' => $origine,
-            'form' => $form,
+            'form' => $form->prepare(),
             'page' => $currentPage,
             'etablissementId' => $etablissementId,
             'serviceId' => $serviceId,
@@ -1394,7 +1360,7 @@ class TransportController extends AbstractActionController
             'service' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Services')
                 ->getRecord($serviceId),
-            'form' => $form
+            'form' => $form->prepare()
         ));
     }
 
@@ -1468,7 +1434,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'serviceId' => $r->getResult()
                     ));
@@ -1528,7 +1494,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'serviceId' => StdLib::getParam('id', $r->getResult())
@@ -1573,7 +1539,7 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'serviceId' => null
                 ));
@@ -1755,7 +1721,7 @@ class TransportController extends AbstractActionController
                         )
                     ));
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'stationId' => $r->getResult()
                     ));
@@ -1821,34 +1787,13 @@ class TransportController extends AbstractActionController
                         )
                     ));
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'stationId' => StdLib::getParam('id', $r->getResult())
                     ));
                     break;
             }
-        }
-        switch ($r) {
-            case $r instanceof Response:
-                return $r;
-                break;
-            case 'error':
-            case 'warning':
-            case 'success':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
-                    'action' => 'station-liste',
-                    'page' => $currentPage
-                ));
-                break;
-            default:
-                return new ViewModel(array(
-                    'form' => $form,
-                    'page' => $currentPage,
-                    'data' => $r['data'],
-                    'stationId' => $r['id']
-                ));
-                break;
         }
     }
 
@@ -1888,7 +1833,7 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'stationId' => null
                 ));
@@ -2077,7 +2022,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'transporteurId' => $r->getResult()
                     ));
@@ -2136,7 +2081,7 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'transporteurId' => StdLib::getParam('id', $r->getResult())
@@ -2182,7 +2127,7 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'transporteurId' => null
                 ));

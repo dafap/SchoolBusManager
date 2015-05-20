@@ -21,6 +21,7 @@
  * @date 15 févr. 2015
  * @version 2015-1
  */
+//die(realpath(__DIR__ . '/../../../vendor/zendframework/zendframework/resources/languages'));
 return array(
     'acl' => array(
         // association entre une categorieId (table users) et un rôle
@@ -43,7 +44,9 @@ return array(
         'resources' => array(
             'home' => array(
                 'allow' => array(
-                    'roles' => array('guest')
+                    'roles' => array(
+                        'guest'
+                    )
                 )
             )
         ),
@@ -77,11 +80,10 @@ return array(
                                          // 'remember_me_seconds' => 3600, // (int) Specifies how long to remember the session before clearing data
                 'save_path' => realpath(__DIR__ . '/../../../data/session')
             )
-        ) // (string) Defines the argument which is passed to the save handler
+        ), // (string) Defines the argument which is passed to the save handler
           // 'use_cookies' => true, // (boolean) Spécifie si le module utilisera les cookies pour stocker l'id de session côté client
           // 'use_only_cookies' => true, // (boolean) Spécifie si le module doit utiliser seulement les cookies pour stocker les identifiants de sessions du côté du navigateur
         
-        ,
         'storage' => 'Zend\Session\Storage\SessionArrayStorage',
         'save_handler' => null, // null ou un Zend\Session\SaveHandler\SaveHandlerInterface si nécessaire
         'validators' => array(
@@ -96,6 +98,9 @@ return array(
         ),
         'factories' => array(
             'Dafap\Authenticate' => 'DafapSession\Authentication\AuthenticationServiceFactory'
+        ),
+        'aliases' => array(
+            'translator' => 'MvcTranslator'
         )
     ),
     'controller_plugins' => array(

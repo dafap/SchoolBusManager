@@ -17,12 +17,12 @@ $url_admin = $this->url('sbmadmin');
 ?>
 <div class="centre">
 	<h1>Transports scolaires</h1>
-	<h3>Inscription et paiement en ligne</h3>
+	<h3 class="accueil">Inscription et paiement en ligne</h3>
 </div>
 <div class="table-page1">
 	<div class="row">
 		<div class="column1">
-		    <p><?php echo $this->msg; ?>
+		    <p class="premiere"><?php echo $this->msg; ?>
 			<p>Vous pouvez inscrire vos enfants en ligne au service de transport
 				scolaire organisé par la Communauté de communes du Bassin
 				Decazeville Aubin pour la prochaine année scolaire. Les inscriptions
@@ -30,7 +30,7 @@ $url_admin = $this->url('sbmadmin');
 			<p>Les paiements peuvent se faire :</p>
 			<ul>
 				<li>en ligne par carte bancaire, sur une connexion sécurisée,</li>
-				<li>ou par chèque, en se rendant à la Communauté de communes.</li>
+				<li>par chèque ou espèces, en se rendant à la Communauté de communes.</li>
 			</ul>
 			<p>Si c'est la première fois que vous utilisez ce service, vous devez
 				d'abord créer votre compte pour inscrire vos enfants. Cela nécessite
@@ -41,13 +41,13 @@ $url_admin = $this->url('sbmadmin');
 				transmises par email, vous pouvez entrer en donnant votre email et
 				votre mot de passe.</p>
 			<p>Pour tout autre renseignement ou tout autre mode d'inscription,
-				vous pouvez vous adresser directement au service à l'adresse :</p>
-			<div class="centre noir">
-				<?php echo $this->client['name'];?><br>
+				vous pouvez vous adresser directement au service Transport à l'adresse :</p>
+			<div class="centre">
+				<a href="<?php echo $this->accueil;?>" class="accueil"><?php echo $this->client['name'];?></a><br>
 				<?php echo $this->client['adresse'][0]; ?><br>
 				<?php echo $this->client['adresse'][1]; ?><br>
 				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
-				Tél. <?php echo $this->client['telephone']; ?>
+				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
 			</div>
 		</div>
 		<div class="column2">

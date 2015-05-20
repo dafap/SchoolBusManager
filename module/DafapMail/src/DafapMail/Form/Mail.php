@@ -16,10 +16,10 @@
  */
 namespace DafapMail\Form;
 
-use Zend\Form\Form;
+use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class Mail extends Form implements InputFilterProviderInterface
+class Mail extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($name = 'mail', $options = array())
@@ -94,6 +94,7 @@ class Mail extends Form implements InputFilterProviderInterface
     {
         return array(
             'subject' => array(
+                'name' => 'subject',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -105,6 +106,7 @@ class Mail extends Form implements InputFilterProviderInterface
                 )
             ),
             'body' => array(
+                'name' => 'body',
                 'required' => true,
                 'filters' => array(
                     array(

@@ -22,6 +22,7 @@ use Zend\Db\Sql\Expression;
 
 class Calendar extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la classe
      */
@@ -32,13 +33,11 @@ class Calendar extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\Calendar';
         $this->id_name = 'calendarId';
     }
-    
-    
+
     /**
      * Renvoie la liste des années scolaires
-     * 
-     * @return array
-     *  Toutes les colonnes de la table sont renvoyées en filtrant les lignes dont la nature est 'AS'
+     *
+     * @return array Toutes les colonnes de la table sont renvoyées en filtrant les lignes dont la nature est 'AS'
      */
     public function getAnneesScolaires()
     {
@@ -54,7 +53,7 @@ class Calendar extends AbstractSbmTable
         }
         return $result;
     }
-    
+
     public function getAnneeScolaire($millesime)
     {
         $resultset = $this->fetchAll("nature = 'AS' AND millesime = $millesime");
@@ -63,7 +62,7 @@ class Calendar extends AbstractSbmTable
         }
         return $resultset->current()->getArrayCopy();
     }
-    
+
     public function getMillesime($millesime)
     {
         $resultset = $this->fetchAll("millesime = $millesime", 'ordinal');
@@ -76,21 +75,25 @@ class Calendar extends AbstractSbmTable
         }
         return $result;
     }
-    
+
     /**
      * Renvoie le plus grand millesime utilisé
-     * 
+     *
      * @return int
      */
     public function getDernierMillesime()
     {
-        $select = $this->getTableGateway()->getSql()->select();
-        $select->columns(array('millesime' => new Expression('max(millesime)')));
+        $select = $this->getTableGateway()
+            ->getSql()
+            ->select();
+        $select->columns(array(
+            'millesime' => new Expression('max(millesime)')
+        ));
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();
         return $row->millesime;
     }
-    
+
     /**
      * Renvoie le plus grand millesime valide
      *
@@ -100,49 +103,64 @@ class Calendar extends AbstractSbmTable
     {
         $where1 = new Where();
         $where1->isNull('dateDebut')->OR->isNull('dateFin')->OR->isNull('echeance');
-        $select1 = $this->getTableGateway()->getSql()->select();
-        $select1->columns(array('millesime'))->where($where1);
+        $select1 = $this->getTableGateway()
+            ->getSql()
+            ->select();
+        $select1->columns(array(
+            'millesime'
+        ))->where($where1);
         
-        $where  = new Where();
+        $where = new Where();
         $where->literal('ouvert = 1')->notIn('millesime', $select1);
-        $select = $this->getTableGateway()->getSql()->select()->columns(array('millesime' => new Expression('max(millesime)')))->where($where);
+        $select = $this->getTableGateway()
+            ->getSql()
+            ->select()
+            ->columns(array(
+            'millesime' => new Expression('max(millesime)')
+        ))
+            ->where($where);
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();
         return $row->millesime;
     }
-    
+
     /**
      * Vérifie si la colonne date précisée ne contient pas de valeur NULL pour le millesime indiqué.
-     * 
-     * @param int millesime
-     *  Millesime à vérifier
+     *
+     * @param
+     *            int millesime
+     *            Millesime à vérifier
      * @param string $column
-     *  Nom de la colonne
-     *  
-     *  @return bool
+     *            Nom de la colonne
+     *            
+     * @return bool
      */
     private function isValidColDate($millesime, $column)
     {
         $where = new Where();
         $where->equalTo('millesime', $millesime)->isNull($column);
-        $select = $this->getTableGateway()->getSql()->select();
-        $select->columns(array('nb' => new Expression('count(*)')))->where($where);
+        $select = $this->getTableGateway()
+            ->getSql()
+            ->select();
+        $select->columns(array(
+            'nb' => new Expression('count(*)')
+        ))->where($where);
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();
         return $row->nb == 0;
     }
-    
+
     /**
      * Vérifie si les colonnes date d'un millesime précisé ne sont pas nulles.
-     * 
-     * @param int $millesime
+     *
+     * @param int $millesime            
      * @return boolean
      */
     public function isValidMillesime($millesime)
     {
         return $this->isValidColDate($millesime, 'dateDebut') && $this->isValidColDate($millesime, 'dateFin') && $this->isValidColDate($millesime, 'echeance');
     }
-    
+
     /**
      * Renvoie l'état du site vis à vis de la période d'inscripton.
      */
@@ -158,13 +176,26 @@ class Calendar extends AbstractSbmTable
         $aujourdhui = new DateTime();
         if ($aujourdhui < $dateDebut) {
             $msg = sprintf('La %s sera ouverte du %s au %s.', \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'));
-            return array('etat' => 0, 'msg' => $msg);
-        } elseif($aujourdhui > $dateFin) {
+            return array(
+                'etat' => 0,
+                'msg' => $msg
+            );
+        } elseif ($aujourdhui > $dateFin) {
             $msg = sprintf('La %s est close.', \mb_strtolower($row->description, 'utf-8'));
-            return array('etat' => 2, 'msg' => $msg);
+            return array(
+                'etat' => 2,
+                'msg' => $msg
+            );
         } else {
-            $msg = sprintf('La %s est ouverte du %s au %s.', \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'));
-            return array('etat' => 1, 'msg' => $msg);
+            $modele = <<<EOT
+La %s est ouverte du %s au %s. Au-delà du %s, les inscriptions se feront sur formulaire papier directement auprès de la Communauté de communes, et les places seront attribuées en fonctions des disponibilités sur les circuits existants à la rentrée scolaire
+EOT;
+            
+            $msg = sprintf($modele, \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'), $dateFin->format('d/m/Y'));
+            return array(
+                'etat' => 1,
+                'msg' => $msg
+            );
         }
     }
 }

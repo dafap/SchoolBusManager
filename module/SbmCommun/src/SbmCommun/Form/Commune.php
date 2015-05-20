@@ -277,6 +277,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'communeId' => array(
+                'name' => 'communeId',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -297,6 +298,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'nom' => array(
+                'name' => 'nom',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -311,6 +313,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'nom_min' => array(
+                'name' => 'nom_min',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -322,6 +325,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'alias' => array(
+                'name' => 'alias',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -336,6 +340,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'alias_min' => array(
+                'name' => 'alias_min',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -347,6 +352,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'aliasCG' => array(
+                'name' => 'aliasCG',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -358,9 +364,11 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'codePostal' => array(
+                'name' => 'codePostal',
                 'required' => true
             ),
             'departement' => array(
+                'name' => 'departement',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -381,6 +389,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'canton' => array(
+                'name' => 'canton',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -389,6 +398,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'population' => array(
+                'name' => 'population',
                 'required' => false,
                 'filters' => array(
                     array(

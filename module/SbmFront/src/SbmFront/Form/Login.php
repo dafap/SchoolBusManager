@@ -1,11 +1,11 @@
 <?php
 /**
- * Description courte du fichier
+ * Formulaire de login de la page d'accueil
  *
  * Description longue du fichier s'il y en a une
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmFront/Form
  * @filesource Login.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -14,10 +14,10 @@
  */
 namespace SbmFront\Form;
 
-use Zend\Form\Form;
+use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class Login extends Form implements InputFilterProviderInterface
+class Login extends AbstractSbmForm implements InputFilterProviderInterface
 {
     private $sm;
     
@@ -87,6 +87,7 @@ class Login extends Form implements InputFilterProviderInterface
         $db = $this->sm->get('Sbm\Db\DbLib');
         return array(
             'email' => array(
+                'name' => 'email',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -111,6 +112,7 @@ class Login extends Form implements InputFilterProviderInterface
                 )
             ),
             'mdp' => array(
+                'name' => 'mdp',
                 'required' => true,
                 'filters' => array(
                     array(

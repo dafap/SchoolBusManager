@@ -35,6 +35,7 @@ $this->headScript()->captureStart()?>
 function adaptedecision()
 {
     var district = document.getElementById("decision_district");
+    if (district) {
     var derogation = document.getElementById("decision_derogation");
     derogation.style.display = district.checked ? 'none' : '';
     document.getElementById("decision_motifDerogation").style.display = derogation.checked ? '' : 'none';
@@ -43,6 +44,7 @@ function adaptedecision()
     var subvention = document.getElementById("decision_subventionR");
     subvention.checked = false;
     subvention.style.display = accord.checked ? 'none' : '';
+    }
 }
 
 function initialiser() {
@@ -128,41 +130,18 @@ if ($this->op == 1) {
           <p class="description">Précisez le circuit, le point de montée et, en cas de correspondance, le point de descente et le circuit suivant.';
 }
 ?>
-			</div>
+	<?php
+if ($this->op > 1) {
+    echo $this->form($this->decision);
+}
+?>			</div>
 			</div>
 			<div id="carte-wrapper" class="float-right"
 				style="margin-right: 10px; width: 50%;">
 				<div id="carte-inner" style="height: 300px;"></div>
 			</div>
 		</div>
-		<div class="inner-form-auto">
-	<?php
-if ($this->op > 1) {
-    echo $this->form($this->decision);
-}
-?>
-        </div>
 	</div>
 	<div id="fiche-footer"></div>
 </div>
-<?php if (false):?>
-<p>
-	<i>Présenter une page en 4 parties :</i>
-</p>
-<ul>
-	<li>Les boutons d'actions suivantes :</li>
-	<ul>
-		<li>recherche de l'arrêt le plus proche sur un circuit desservant à
-			l'établissement scolaire et ayant des places disponibles<br> <i>Il
-				faudra sans doute une table etablissements-services</i>
-		</li>
-		<li>recherche des services desservant l'établissement avec places
-			disponibles</li>
-		<li>possibilité d'ajouter une autre affectation en incrémentant
-			correspondance (= 2)<br> <i>Cette nouvelle correspondance part de
-				station2Id et de service2Id. Il n'y a donc pas besoin de formulaire
-				car la descente est à l'établissement.</i>
-	
-	</ul>
-</ul>
-<?php endif;?>
+

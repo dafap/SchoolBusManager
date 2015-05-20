@@ -15,9 +15,9 @@
 namespace SbmFront\Form;
 
 use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Form\Form;
+use SbmCommun\Form\AbstractSbmForm;
 
-class MdpFirst extends Form implements InputFilterProviderInterface
+class MdpFirst extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($param = 'mdp-first')
@@ -96,6 +96,7 @@ class MdpFirst extends Form implements InputFilterProviderInterface
     {
         return array(
             'mdp' => array(
+                'name' => 'mdp',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -107,15 +108,18 @@ class MdpFirst extends Form implements InputFilterProviderInterface
                 ),
                 'validators' => array(
                     array(
-                        'name' => 'StringLength',
+                        'name' => 'SbmFront\Model\Validator\Mdp',
                         'options' => array(
-                            'min' => 6,
-                            'max' => 128
+                            'len' => 6,
+                            'min' => 1,
+                            'maj' => 1,
+                            'num' => 1
                         )
                     )
                 )
             ),
             'ctrl' => array(
+                'name' => 'ctrl',
                 'required' => true,
                 'filters' => array(
                     array(

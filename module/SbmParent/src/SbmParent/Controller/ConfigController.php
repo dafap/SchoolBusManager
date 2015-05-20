@@ -88,7 +88,7 @@ class ConfigController extends AbstractActionController
             $this->flashMessenger()->addWarningMessage('Données invalides');
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'responsableId' => $responsableId,
             'demenagement' => StdLib::getParam('demenagement', $args, false)
         ));
@@ -157,7 +157,7 @@ class ConfigController extends AbstractActionController
             $this->flashMessenger()->addWarningMessage('Données invalides');
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'responsableId' => $responsableId,
             'demenagement' => false
         ));
@@ -249,7 +249,7 @@ class ConfigController extends AbstractActionController
         
         return new ViewModel(array(
             'responsable' => $responsable,
-            'form' => $form
+            'form' => $form->prepare()
         ));
     }
 } 

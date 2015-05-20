@@ -41,6 +41,7 @@ class Bienvenue extends AbstractHelper
             ));
             $container = new Container('layout');
             $route = $container->home;
+            $url_home = $view->url('login', array('action' => 'home-page'));
             $url_compte = $view->url($route, array('action' => 'modif-compte'));
             $url_localisation = $view->url($route, array('action' => 'localisation'));
             $url_mdp = $view->url($route, array('action' => 'mdp-change'));
@@ -52,11 +53,12 @@ class Bienvenue extends AbstractHelper
        <li class="annee-scolaire">Année scolaire $annee_scolaire</li>
        <li class="bienvenue">Bienvenue $bienvenue
        <ul>
+           <li><a href="$url_home">Retour à mon espace</a></li> 
            <li><a href="$url_compte">Mon compte</a></li>
            <li><a href="$url_localisation">Mon domicile sur la carte</a></li>
            <li><a href="$url_mdp">Changer mon mot de passe</a></li>
            <li><a href="$url_email">Changer mon email</a></li>
-           <li><a href="$url_msg">Mes messages</a></li>
+           <li><a href="$url_msg">Ecrire au service de transport</a></li>
        </ul> 
        </li>        
        <li>| <a href="$logout"><i class="fam-door-out"></i>déconnexion</a></li>

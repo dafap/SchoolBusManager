@@ -48,8 +48,9 @@ class IndexController extends AbstractActionController
             ->getElevesPreinscrits($responsable->responsableId);
         $elevesIds = array();
         // ceux qui sont sélectionnés (selectionScolarite : selection dans table scolarites) sont mis en attente. Pas de paiement pour le moment.
+        // de même pour ceux qui sont à moins de 1 km et pour cex qu sont hors district
         foreach ($preinscrits as $row) {
-            if (! $row['selectionScolarite']) {
+            if (! $row['selectionScolarite'] && ($row['distanceR1'] >=1 || $row['distanceR2'] >=1) && $row['district']) {
                 $elevesIds[] = $row['eleveId'];
             }
         }

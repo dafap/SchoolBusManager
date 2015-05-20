@@ -33,7 +33,7 @@ return array(
     
 );
 */
-define('SBM_BASE_PATH', dirname(__FILE__) . '/../..');
+define('SBM_BASE_PATH', realpath(dirname(__FILE__) . '/../..'));
 return array(
-    // ...
+   
 );

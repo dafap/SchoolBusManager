@@ -121,7 +121,7 @@ class AddElevePhase2 extends AbstractSbmForm  implements InputFilterProviderInte
             'name' => 'etablissementId',
             'attributes' => array(
                 'id' => 'eleve-etablissementId',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-40c'
             ),
             'options' => array(
                 'label' => 'Etablissement',
@@ -383,6 +383,7 @@ class AddElevePhase2 extends AbstractSbmForm  implements InputFilterProviderInte
     {
         return array(
             'demandeR2' => array(
+                'name' => 'demandeR2',
                 'required' => false
             )
         );

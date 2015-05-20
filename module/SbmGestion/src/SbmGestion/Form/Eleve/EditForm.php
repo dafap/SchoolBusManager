@@ -558,12 +558,15 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'district' => array(
+                'name' => 'district',
                 'required' => false
             ),
             'responsable2Id' => array(
+                'name' => 'responsable2Id',
                 'required' => false
             ),
             'demandeR2' => array(
+                'name' => 'demandeR2',
                 'required' => false
             )
         );

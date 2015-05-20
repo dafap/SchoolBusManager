@@ -15,10 +15,10 @@
 namespace SbmFront\Form;
 
 use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Form\Form;
+use SbmCommun\Form\AbstractSbmForm;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class EmailChange extends Form implements InputFilterProviderInterface
+class EmailChange extends AbstractSbmForm implements InputFilterProviderInterface
 {
     /**
      * Service manager (nécessaire pour vérifier l'email)
@@ -124,7 +124,12 @@ class EmailChange extends Form implements InputFilterProviderInterface
     {
         $db = $this->sm->get('Sbm\Db\DbLib');
         return array(
+            'mdp' => array(
+                'name' => 'mdp',
+                'required' => true
+            ),
             'email_new' => array(
+                'name' => 'email_new',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -149,6 +154,7 @@ class EmailChange extends Form implements InputFilterProviderInterface
                 )
             ),
             'email_ctrl' => array(
+                'name' => 'email_ctrl',
                 'required' => true,
                 'filters' => array(
                     array(

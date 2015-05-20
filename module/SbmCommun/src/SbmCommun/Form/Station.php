@@ -197,9 +197,11 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'communeId' => array(
+                'name' => 'communeId',
                 'required' => true
             ),
             'nom' => array(
+                'name' => 'nom',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -211,6 +213,7 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                 ),
             ),
             'aliasCG' => array(
+                'name' => 'aliasCG',
                 'required' => false, 
                 'filters' => array(
                     array(
@@ -222,6 +225,7 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                 ),
             ),
             'codeCG' => array(
+                'name' => 'codeCG',
                 'required' => false, 
                 'filters' => array(
                     array(
@@ -233,6 +237,7 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                 ),
             ),
             'x' => array(
+                'name' => 'x',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -250,6 +255,7 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'y' => array(
+                'name' => 'y',
                 'required' => false,
                 'filters' => array(
                     array(

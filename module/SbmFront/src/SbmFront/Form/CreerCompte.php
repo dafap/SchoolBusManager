@@ -148,9 +148,11 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
         $db = $this->sm->get('Sbm\Db\DbLib');
         return array(
             'titre' => array(
+                'name' => 'titre',
                 'required' => true
             ),
             'email' => array(
+                'name' => 'email',
                 'required' => true,
                 'filters' => array(
                     array('name' => 'StripTags'),

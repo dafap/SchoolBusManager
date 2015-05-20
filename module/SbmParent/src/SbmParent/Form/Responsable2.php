@@ -214,39 +214,50 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
             return array(
                 
                 'r2telephoneF' => array(
+                    'name' => 'r2telephoneF',
                     'required' => false
                 ),
                 'r2email' => array(
+                    'name' => 'r2email',
                     'required' => false
                 )
             );
         } else {
             return array(
                 'r2titre' => array(
+                    'name' => 'r2titre',
                     'required' => false
                 ),
                 'r2nom' => array(
+                    'name' => 'r2nom',
                     'required' => false
                 ),
                 'r2prenom' => array(
+                    'name' => 'r2prenom',
                     'required' => false
                 ),
                 'r2adresseL1' => array(
+                    'name' => 'r2adresseL1',
                     'required' => false
                 ),
                 'r2adresseL2' => array(
+                    'name' => 'r2adresseL2',
                     'required' => false
                 ),
                 'r2codePostal' => array(
+                    'name' => 'r2codePostal',
                     'required' => false
                 ),
                 'r2communeId' => array(
+                    'name' => 'r2communeId',
                     'required' => false
                 ),
                 'r2telephoneF' => array(
+                    'name' => 'r2telephoneF',
                     'required' => false
                 ),
                 'r2email' => array(
+                    'name' => 'r2email',
                     'required' => false
                 )
             );

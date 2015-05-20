@@ -133,7 +133,7 @@ class LoginController extends AbstractActionController
             }
         }
         return new ViewModel(array(
-            'form' => $form
+            'form' => $form->prepare()
         ));
     }
 
@@ -300,7 +300,7 @@ class LoginController extends AbstractActionController
             }
         }
         return new ViewModel(array(
-            'form' => $form
+            'form' => $form->prepare()
         ));
     }
 
@@ -374,7 +374,7 @@ class LoginController extends AbstractActionController
             return $this->homePageAction();
         }
         return new ViewModel(array(
-            'form' => $form
+            'form' => $form->prepare()
         ));
     }
 
@@ -444,7 +444,7 @@ class LoginController extends AbstractActionController
             return $this->homePageAction();
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'email' => $email_old
         ));
     }
@@ -519,7 +519,7 @@ class LoginController extends AbstractActionController
             'action' => 'creer-compte'
         )));
         return new ViewModel(array(
-            'form' => $form
+            'form' => $form->prepare()
         ));
     }
 
@@ -567,7 +567,7 @@ class LoginController extends AbstractActionController
                 'action' => 'modif-compte'
             )));
             return new ViewModel(array(
-                'form' => $form,
+                'form' => $form->prepare(),
                 'email' => $identity['email']
             ));
         } else {

@@ -205,7 +205,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'class' => 'sbm-width-40c'
             ),
             'options' => array(
-                'label' => 'Adresse',
+                'label' => 'Complément d\'adresse',
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
@@ -461,53 +461,81 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
     {
         $spec = array(
             'titre2' => array(
+                'name' => 'titre2',
                 'required' => false
             ),
             'nom2' => array(
+                'name' => 'nom2',
                 'required' => false
             ),
             'prenom2' => array(
+                'name' => 'prenom2',
                 'required' => false
+            ),
+            'adresseL1' => array(
+                'name' => 'adresseL1',
+                'required' => true
             ),
             'codePostal' => array(
-                'required' => false
+                'name' => 'codePostal',
+                'required' => true
             ),
             'ancienAdresseL1' => array(
+                'name' => 'ancienAdresseL1',
                 'required' => false
             ),
             'ancienAdresseL2' => array(
+                'name' => 'ancienAdresseL2',
                 'required' => false
             ),
             'ancienCommuneId' => array(
+                'name' => 'ancienCommuneId',
                 'required' => false
             ),
             'ancienCodePostal' => array(
+                'name' => 'ancienCodePostal',
                 'required' => false
             ),
             'telephoneF' => array(
+                'name' => 'telephoneF',
                 'required' => false
             ),
             'telephoneP' => array(
+                'name' => 'telephoneP',
                 'required' => false
             ),
             'telephoneT' => array(
+                'name' => 'telephoneT',
                 'required' => false
             ),
             'email' => array(
+                'name' => 'email',
                 'required' => false
             ),
             'dateDemenagement' => array(
+                'name' => 'dateDemenagement',
                 'required' => false
             ),
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             )
         );
         if ($this->verrouille) {
             $spec['titre'] = array(
+                'name' => 'adresseL1',
+                'required' => false
+            );
+            $spec['titre'] = array(
+                'name' => 'codePostal',
+                'required' => false
+            );
+            $spec['titre'] = array(
+                'name' => 'titre',
                 'required' => false
             );
             $spec['demenagement'] = array(
+                'name' => 'demenagement',
                 'required' => false
             );
         }

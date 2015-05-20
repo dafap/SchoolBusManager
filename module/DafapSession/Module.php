@@ -1,6 +1,6 @@
 <?php
 /**
- * Module de configuration des sessions
+ * Module de configuration des sessions, des acl, des traductions
  *
  * Le fichier de configuration de ce module contient les paramètres de session dans un tableau de forme suivante :
  * array(
@@ -30,6 +30,7 @@ use Zend\Mvc\MvcEvent;
 use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use Zend\Mvc\ModuleRouteListener;
+use Zend\Validator\AbstractValidator;
 
 class Module
 {
@@ -42,10 +43,31 @@ class Module
             $this,
             'bootstrapPermissions'
         ), 100);
-        // $moduleRouteListener = new ModuleRouteListener();
-        // $moduleRouteListener->attach($eventManager);
+        $this->bootstrapTranslation($e);
     }
 
+    /**
+     * Mise en place des traductions
+     * 
+     * @param EventInterface $e
+     */
+    private function bootstrapTranslation(EventInterface $e)
+    {
+        $application = $e->getApplication();
+        $sm = $application->getServiceManager();
+        $translator = $sm->get('translator');
+        $translator->addTranslationFile(
+            'phpArray',
+            'vendor/zendframework/zendframework/resources/languages/fr/Zend_Validate.php'
+        );
+        AbstractValidator::setDefaultTranslator($translator);
+    }
+    
+    /**
+     * Mise en place des permissions
+     * 
+     * @param EventInterface $e
+     */
     public function bootstrapPermissions(EventInterface $e)
     {
         $application = $e->getApplication();
@@ -63,6 +85,11 @@ class Module
         }
     }
 
+    /**
+     * Mise en place des sessions
+     * 
+     * @param EventInterface $e
+     */
     public function bootstrapSession(EventInterface $e)
     {
         $session = $e->getApplication()

@@ -92,7 +92,7 @@ class IndexController extends AbstractActionController
         }
         $form->setData(array('userId' => $user['userId']));
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'user' => $user
         ));
     }

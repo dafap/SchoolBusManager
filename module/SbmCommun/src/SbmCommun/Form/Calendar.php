@@ -12,7 +12,9 @@
  */
 namespace SbmCommun\Form;
 
-class Calendar extends AbstractSbmForm
+use Zend\InputFilter\InputFilterProviderInterface;
+
+class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
 {
     public function __construct($param = 'calendar')
     {
@@ -140,5 +142,27 @@ class Calendar extends AbstractSbmForm
                 'class' => 'button default cancel'
             )
         ));
+    }
+    
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'description' => array(
+                'name' => 'description',
+                'required' => true
+            ),
+            'dateDebut' => array(
+                'name' => 'dateDebut',
+                'required' => true
+            ),
+            'dateFin' => array(
+                'name' => 'dateFin',
+                'required' => true
+            ),
+            'echeance' => array(
+                'name' => 'echeance',
+                'required' => false
+            )
+        );
     }
 }

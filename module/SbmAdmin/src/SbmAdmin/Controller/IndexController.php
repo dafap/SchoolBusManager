@@ -81,7 +81,7 @@ class IndexController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage
                 ));
                 // 'id' => null
@@ -120,7 +120,7 @@ class IndexController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'id' => $r->getResult()
                     ));
@@ -172,7 +172,7 @@ class IndexController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'id' => StdLib::getParam('id', $r->getResult())
@@ -284,7 +284,7 @@ class IndexController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'documentId' => null
                 ));
@@ -374,7 +374,7 @@ class IndexController extends AbstractActionController
             }
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'page' => $this->params('page', 1)
         ));
     }
@@ -420,7 +420,7 @@ class IndexController extends AbstractActionController
         $user = $tUser->getRecord($args['userId']);
         $form->setData($user->getArrayCopy());
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'user' => $user,
             'page' => $this->params('page', 1)
         ));
@@ -475,7 +475,7 @@ class IndexController extends AbstractActionController
                         ->getRecordByEmail($data->email) === false);
                     return new ViewModel(array(
                         'autorise' => $autorise,
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => $data,
                         'userId' => StdLib::getParam('id', $r->getResult()),

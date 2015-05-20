@@ -83,7 +83,7 @@ class AnneeScolaireController extends AbstractActionController
                 ->getArrayCopy());
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'millesime' => $millesime,
             'calendarId' => $calendarId
         ));

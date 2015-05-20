@@ -340,18 +340,23 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
         if ($this->phase == 1) {
             return array(
                 'fictif' => array(
+                    'name' => 'fictif',
                     'required' => false
                 ),
                 'derogation' => array(
+                    'name' => 'derogation',
                     'required' => true
                 ),
                 'accordR' . $this->trajet => array(
+                    'name' => 'accordR' . $this->trajet,
                     'required' => true
                 ),
                 'subventionR' . $this->trajet => array(
+                    'name' => 'subventionR' . $this->trajet,
                     'required' => true
                 ),
                 'motifDerogation' . $this->trajet => array(
+                    'name' => 'motifDerogation' . $this->trajet,
                     'required' => false,
                     'filters' => array(
                         array(
@@ -363,6 +368,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                     )
                 ),
                 'motifRefusR' . $this->trajet => array(
+                    'name' => 'motifRefusR' . $this->trajet,
                     'required' => false,
                     'filters' => array(
                         array(
@@ -377,9 +383,11 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
         } else {
             return array(
                 'station2Id' => array(
+                    'name' => 'station2Id',
                     'required' => false
                 ),
                 'service2Id' => array(
+                    'name' => 'service2Id',
                     'required' => false
                 )
             );

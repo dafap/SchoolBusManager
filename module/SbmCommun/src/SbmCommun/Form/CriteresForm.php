@@ -172,12 +172,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'serviceId' => array(
+                'name' => 'serviceId',
                 'required' => false
             ),
             'stationId' => array(
+                'name' => 'stationId',
                 'required' => false
             ),
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             )
         );
@@ -399,15 +402,19 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'membre' => array(
+                'name' => 'membre',
                 'required' => false
             ),
             'desservie' => array(
+                'name' => 'desservie',
                 'required' => false
             ),
             'visible' => array(
+                'name' => 'visible',
                 'required' => false
             ),
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             )
         );
@@ -608,6 +615,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             )
         );
@@ -693,9 +701,11 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             ),
             'commune' => array(
+                'name' => 'commune',
                 'required' => false
             )
         );
@@ -745,6 +755,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'ouvert' => array(
+                'name' => 'ouvert',
                 'required' => false
             )
         );
@@ -972,21 +983,27 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             ),
             'codeCaisse' => array(
+                'name' => 'codeCaisse',
                 'required' => false
             ),
             'codeModeDePaiement' => array(
+                'name' => 'codeModeDePaiement',
                 'required' => false
             ),
             'dateDepot' => array(
+                'name' => 'dateDepot',
                 'required' => false
             ),
             'datePaiement' => array(
+                'name' => 'datePaiement',
                 'required' => false
             ),
             'dateValeur' => array(
+                'name' => 'dateValeur',
                 'required' => false
             )
         );
@@ -1089,18 +1106,23 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'nomSA' => array(
+                'name' => 'nomSA',
                 'required' => false
             ),
             'commune' => array(
+                'name' => 'commune',
                 'required' => false
             ),
             'nbEleves' => array(
+                'name' => 'nbEleves',
                 'required' => false
             ),
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             ),
             'demenagement' => array(
+                'name' => 'demenagement',
                 'required' => false
             )
         );
@@ -1185,9 +1207,11 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             ),
             'transporteurId' => array(
+                'name' => 'transporteurId',
                 'required' => false
             )
         );
@@ -1273,9 +1297,11 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             ),
             'communeId' => array(
+                'name' => 'communeId',
                 'required' => false
             )
         );
@@ -1377,15 +1403,19 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             ),
             'rythme' => array(
+                'name' => 'rythme',
                 'required' => false
             ),
             'grille' => array(
+                'name' => 'grille',
                 'required' => false
             ),
             'mode' => array(
+                'name' => 'mode',
                 'required' => false
             )
         );
@@ -1597,18 +1627,23 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         return array(
             'categorieId' => array(
+                'name' => 'categorieId',
                 'required' => false
             ),
             'tokenalive' => array(
+                'name' => 'tokenalive',
                 'required' => false
             ),
             'confirme' => array(
+                'name' => 'confirme',
                 'required' => false
             ),
             'active' => array(
+                'name' => 'active',
                 'required' => false
             ),
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             )
         );
@@ -1626,6 +1661,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $array = array();
         foreach ($this->getElementNames() as $elementName) {
             $array[$elementName] = array(
+                'name' => $array[$elementName],
                 'required' => false
             );
         }

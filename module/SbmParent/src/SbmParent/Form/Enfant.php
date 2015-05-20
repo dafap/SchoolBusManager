@@ -196,13 +196,13 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
             'name' => 'demandeR2',
             'attributes' => array(
                 'id' => 'demandeR2',
-                'class' => 'sbm-radio',
+                'class' => 'sbmparent-enfant',
                 'value' => 0
             ),
             'options' => array(
                 'label' => 'Demande de transport pour cette adresse',
-                'label-attributes' => array(
-                    'sbm-label-radio'
+                'label_attributes' => array(
+                    'class' => 'sbm-radio-label'
                 ),
                 'value_options' => array(
                     '1' => 'Oui',
@@ -235,9 +235,11 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
         return array(
             
             'joursTransport' => array(
+                'name' => 'joursTransport',
                 'required' => true
             ),
             'demandeR2' => array(
+                'name' => 'demandeR2',
                 'required' => false
             )
         );

@@ -312,23 +312,29 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
     {
         $result = array(
             'dateDepot' => array(
+                'name' => 'dateDepot',
                 'required' => false
             ),
             'dateValeur' => array(
+                'name' => 'dateValeur',
                 'required' => false
             ),
             'banque' => array(
+                'name' => 'banque',
                 'required' => false
             ),
             'titulaire' => array(
+                'name' => 'titulaire',
                 'required' => false
             ),
             'reference' => array(
+                'name' => 'reference',
                 'required' => false
             )
         );
         if (\array_key_exists('note', $this->args) && $this->args['note']) {
             $result['note'] = array(
+                'name' => 'note',
                 'required' => true
             );
         }

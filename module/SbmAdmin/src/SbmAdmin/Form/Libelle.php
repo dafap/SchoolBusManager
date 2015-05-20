@@ -128,6 +128,7 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'nature' => array(
+                'name' => 'nature',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -145,6 +146,7 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'code' => array(
+                'name' => 'code',
                 'required' => true,
                 'filters' => array(
                     array(

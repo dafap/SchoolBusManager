@@ -39,5 +39,26 @@ abstract class AbstractSbmForm extends Form
         return $this;
     }
     
-    
+    /**
+     * Place une classe 'required' aux labels des champs obligatoires 
+     * (non-PHPdoc)
+     * @see \Zend\Form\Form::prepare()
+     */
+    public function prepare()
+    {
+        parent::prepare();
+        foreach ($this->getInputFilter()->getInputs() as $input) {
+            if ($input->isRequired()) {
+                $el = $this->get($input->getName());
+                $labelAttributes = (array) $el->getLabelAttributes();
+                if (array_key_exists('class', $labelAttributes)) {
+                    $labelAttributes['class'] .= ' required';
+                } else {
+                    $labelAttributes['class'] = 'required';
+                }
+                $el->setLabelAttributes($labelAttributes);
+            }
+        }
+        return $this;
+    }
 }

@@ -14,7 +14,7 @@
  */
 namespace SbmGestion\Form;
 
-use Zend\Form\Form;
+use SbmCommun\Form\AbstractSbmForm As Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
@@ -73,9 +73,11 @@ class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
     {
         return array(
             'paiementId' => array(
+                'name' => 'paiementId',
                 'required' => true
             ),
             'note' => array(
+                'name' => 'note',
                 'required' => true
             )
         );

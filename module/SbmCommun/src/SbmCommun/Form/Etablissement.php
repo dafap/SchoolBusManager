@@ -589,6 +589,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
     {
         return array(
             'etablissementId' => array(
+                'name' => 'etablissementId',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -602,6 +603,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
                 )
             ),
             'nom' => array(
+                'name' => 'nom',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -616,6 +618,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
                 )
             ),
             'alias' => array(
+                'name' => 'alias',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -630,6 +633,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
                 )
             ),
             'aliasCG' => array(
+                'name' => 'aliasCG',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -644,45 +648,59 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
                 )
             ),
             'adresse1' => array(
+                'name' => 'adresse1',
                 'required' => false
             ),
             'adresse2' => array(
+                'name' => 'adresse2',
                 'required' => false
             ),
             'codePostal' => array(
+                'name' => 'codePostal',
                 'required' => true
             ),
             'communeId' => array(
+                'name' => 'communeId',
                 'required' => true
             ),
             'niveau' => array(
+                'name' => 'niveau',
                 'required' => true
             ),
             'statut' => array(
+                'name' => 'statut',
                 'required' => true
             ),
             'visible' => array(
+                'name' => 'visible',
                 'required' => false
             ),
             'desservie' => array(
+                'name' => 'desservie',
                 'required' => false
             ),
             'regrPeda' => array(
+                'name' => 'regrPeda',
                 'required' => false
             ),
             'rattacheA' => array(
+                'name' => 'rattacheA',
                 'required' => false
             ),
             'telephone' => array(
+                'name' => 'telephone',
                 'required' => false
             ),
             'fax' => array(
+                'name' => 'fax',
                 'required' => false
             ),
             'email' => array(
+                'name' => 'email',
                 'required' => false
             ),
             'directeur' => array(
+                'name' => 'directeur',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -697,30 +715,39 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
                 )
             ),
             'jOuverture' => array(
+                'name' => 'jOuverture',
                 'required' => true
             ),
             'hMatin' => array(
+                'name' => 'hMatin',
                 'required' => false
             ),
             'hMidi' => array(
+                'name' => 'hMidi',
                 'required' => false
             ),
             'hAMidi' => array(
+                'name' => 'hAMidi',
                 'required' => false
             ),
             'hSoir' => array(
+                'name' => 'hSoir',
                 'required' => false
             ),
             'hGarderieOMatin' => array(
+                'name' => 'hGarderieOMatin',
                 'required' => false
             ),
             'hGarderieFMidi' => array(
+                'name' => 'hGarderieFMidi',
                 'required' => false
             ),
             'hGarderieFSoir' => array(
+                'name' => 'hGarderieFSoir',
                 'required' => false
             ),
             'x' => array(
+                'name' => 'x',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -738,6 +765,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
                 )
             ),
             'y' => array(
+                'name' => 'y',
                 'required' => false,
                 'filters' => array(
                     array(

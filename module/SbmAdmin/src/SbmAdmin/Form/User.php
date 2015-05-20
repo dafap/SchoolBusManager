@@ -252,15 +252,19 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
         $db = $this->sm->get('Sbm\Db\DbLib');
         return array(
             'titre' => array(
+                'name' => 'titre',
                 'required' => true
             ),
             'nom' => array(
+                'name' => 'nom',
                 'required' => true
             ),
             'prenom' => array(
+                'name' => 'prenom',
                 'required' => true
             ),
             'email' => array(
+                'name' => 'email',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -289,6 +293,7 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'categorieId' => array(
+                'name' => 'categorieId',
                 'required' => true
             )
         );

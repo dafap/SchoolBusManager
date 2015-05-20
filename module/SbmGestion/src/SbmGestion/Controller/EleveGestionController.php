@@ -172,7 +172,7 @@ class EleveGestionController extends AbstractActionController
         $point = new Point($eleve['xeta'], $eleve['yeta']);
         $ptEta = $d2etab->getProjection()->xyzVersgRGF93($point);
         return new ViewModel(array(
-            'decision' => $formDecision,
+            'decision' => $formDecision->prepare(),
             'op' => $args['op'],
             'page' => $page,
             'eleve' => $eleve,
@@ -293,7 +293,7 @@ class EleveGestionController extends AbstractActionController
         $form->setData(array('responsableId' => $responsableId, 'lat' => $pt->getLatitude(), 'lng' => $pt->getLongitude()));
         return new ViewModel(array(
             //'pt' => $pt,
-            'form' => $form,
+            'form' => $form->prepare(),
             'description' => $description,
             'responsable' => array(
                 $responsable->titre . ' ' . $responsable->nom . ' ' . $responsable->prenom,

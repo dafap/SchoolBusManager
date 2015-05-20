@@ -187,6 +187,7 @@ class AddElevePhase1 extends AbstractSbmForm implements InputFilterProviderInter
     {
         return array(
             'responsable2Id' => array(
+                'name' => 'responsable2Id',
                 'required' => false
             )
         );

@@ -111,6 +111,7 @@ class Classe extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'nom' => array(
+                'name' => 'nom',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -122,6 +123,7 @@ class Classe extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'aliasCG' => array(
+                'name' => 'aliasCG',
                 'required' => false,
                 'filters' => array(
                     array(

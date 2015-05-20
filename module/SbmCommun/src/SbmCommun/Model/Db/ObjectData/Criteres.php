@@ -79,7 +79,7 @@ class Criteres implements ArraySerializableInterface
     {
         $where = new Where();
         foreach ($this->data as $field => $value) {
-            if (! empty($value)) {
+            if (! empty($value) || (in_array($field, $strict) && $value == '0')) {
                 if (in_array($field, $strict)) {
                     $where->equalTo($field, $value);
                 } else {

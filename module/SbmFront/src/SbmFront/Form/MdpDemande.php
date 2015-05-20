@@ -14,10 +14,10 @@
  */
 namespace SbmFront\Form;
 
-use Zend\Form\Form;
+use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class MdpDemande extends Form implements InputFilterProviderInterface
+class MdpDemande extends AbstractSbmForm implements InputFilterProviderInterface
 {
     private $sm;
 
@@ -36,8 +36,8 @@ class MdpDemande extends Form implements InputFilterProviderInterface
             )
         ));
         $this->add(array(
-            'name' => 'email',
             'type' => 'Zend\Form\Element\Email',
+            'name' => 'email',
             'attributes' => array(
                 'id' => 'user-email',
                 'class' => 'sbm-page1',
@@ -78,6 +78,7 @@ class MdpDemande extends Form implements InputFilterProviderInterface
         $db = $this->sm->get('Sbm\Db\DbLib');
         return array(
             'email' => array(
+                'name' => 'email',
                 'required' => true,
                 'filters' => array(
                     array(

@@ -245,6 +245,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'serviceId' => array(
+                'name' => 'serviceId',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -261,6 +262,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'nom' => array(
+                'name' => 'nom',
                 'required' => true,
                 'filters' => array(
                     array(
@@ -272,6 +274,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'aliasCG' => array(
+                'name' => 'aliasCG',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -283,12 +286,15 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'transporteurId' => array(
+                'name' => 'transporteurId',
                 'required' => true
             ),
             'surEtatCG' => array(
+                'name' => 'surEtatCG',
                 'required' => false
             ),
             'nbPlaces' => array(
+                'name' => 'nbPlaces',
                 'required' => true,
                 'filters' => array(
                     array(

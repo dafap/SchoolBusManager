@@ -86,7 +86,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Jours de passage',
                 'label_attributes' => array(
-                    'class' => 'sbm-label'
+                    'class' => 'sbm-label-semaine'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -351,33 +351,43 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'serviceId' => array(
+                'name' => 'serviceId',
                 'required' => true
             ),
             'stationId' => array(
+                'name' => 'stationId',
                 'required' => true
             ),
             'semaine' => array(
+                'name' => 'semaine',
                 'required' => true
             ),
             'm1' => array(
+                'name' => 'm1',
                 'required' => false
             ),
             's1' => array(
+                'name' => 's1',
                 'required' => false
             ),
             'm2' => array(
+                'name' => 'm2',
                 'required' => false
             ),
             's2' => array(
+                'name' => 's2',
                 'required' => false
             ),
             'm3' => array(
+                'name' => 'm3',
                 'required' => false
             ),
             's3' => array(
+                'name' => 's3',
                 'required' => false
             ),
             'distance' => array(
+                'name' => 'distance',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -395,6 +405,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'typeArret' => array(
+                'name' => 'typeArret',
                 'required' => false,
                 'filters' => array(
                     array(
@@ -406,6 +417,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'commentaire' => array(
+                'name' => 'commentaire',
                 'required' => false,
                 'filters' => array(
                     array(

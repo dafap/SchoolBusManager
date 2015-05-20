@@ -81,6 +81,9 @@ dt {
 .noir {
 	color: black;
 }
+.nuit {
+	color: #000051;
+}
 .gris {
 	color: #c0c0c0;
 }
@@ -125,6 +128,13 @@ div.explication {
 .hidden {
 	visibility: hidden;
 }
+label.required:after {
+	color: #f78042;
+	content: ' *';
+}
+div.semaine {
+	width: 600px;
+}
 /*-------- Erreurs -------------*/
 div#error_wrapper {
 	width: 100%;
@@ -151,6 +161,10 @@ div#error_wrapper {
 #top-site a:hover {
 	color: black;
 	font-weight: bold;
+}
+#top-site div.float-left {
+	position: absolute;
+	top: -100px;
 }
 /*--------- Header -----------------*/
 #bandeau {
@@ -180,6 +194,10 @@ div#error_wrapper {
 #footer a:hover {
 	color: black;
 	font-weight: bold;
+}
+#footer div.float-right {
+	position: absolute;
+	top: -100px;
 }
 /*-------- Conteneur de la page ---*/
 #container-interface {
@@ -220,15 +238,14 @@ div.centre {
 	margin-left: auto;
 	margin-right: auto;
 }
-.column1 p {
-	text-align: justify;
-}
+
 fieldset.sbm-page1 {
 	border: 1px solid #f78042;
 	border-radius: 4px 4px 4px 4px;
 }
 input.sbm-page1 {
 	margin-bottom: 3px;
+	width: 167px;
 }
 input.sbm-signup {
 	height: 45px;
@@ -237,13 +254,28 @@ input.sbm-signup {
 	color: #578bcb;
 	color: #f78042;
 }
+.column1 p {
+	text-align: justify;
+}
+h3.accueil {
+	margin-bottom: 0;
+}
+a.accueil {
+	text-decoration: none;
+	font-size: inherit;
+	color: #000077;
+}
+a.accueil:hover {
+	font-weight: bold;
+	color: #000051;
+}
 /*---------- les labels ---------*/
 label.align-right {
 	margin-right: 3px;
 }
 label.sbm-label-page1 {
 	display: inline-block;
-	width: 95px;
+	width: 105px;
 }
 label.sbm-label-200px {
 	display: inline-block;
@@ -508,7 +540,11 @@ div#fiche-inner div.row-inner input.cancel {
 #fiche-inner #circuit label {
 	display: inline-block;
 	padding-left: 5px;
-	width: 120px;
+	width: 135px;
+}
+#fiche-inner #circuit label.sbm-label-semaine {
+	display: initial;
+	margin-right: 22px;
 }
 #fiche-inner #circuit input.submit {
 	margin-top: 6px;
@@ -560,7 +596,7 @@ div#fiche-inner div.row-inner input.cancel {
 	width: 140px;
 }
 #fiche-inner #eleve #commun-col2 label {
-	width: 100px;
+	width: 107px;
 }
 #fiche-inner #eleve #commun-col2-periode label {
 	width: inherit;
@@ -679,7 +715,7 @@ table.eleve-affectations td.last {
 #fiche-inner #paiement label {
 	display: inline-block;
 	padding-left: 5px;
-	width: 170px;
+	width: 175px;
 }
 #fiche-inner #paiement input.submit {
 	margin-top: 6px;
@@ -787,11 +823,11 @@ table.eleve-affectations td.last {
 #fiche-inner #tarif label {
 	display: inline-block;
 	padding-left: 5px;
-	width: 150px;
+	width: 155px;
 }
 #fiche-inner #tarif input.submit {
 	margin-top: 6px;
-	margin-left: 155px;	
+	margin-left: 160px;	
 }
 /*-------------- Fiche transporteurs ----------------*/
 #fiche-inner #transporteur label {
@@ -955,7 +991,7 @@ table.parent {
 #fiche-inner form#enfant div.enfant-label,
 #fiche-inner form#enfant label {
 	display: inline-block;
-	width: 215px;
+	width: 225px;
 	padding-left: 5px;
 }
 #fiche-inner form#enfant label.sbm-multi-label,

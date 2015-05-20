@@ -12,7 +12,7 @@
  */
 namespace SbmGestion\Form;
 
-use Zend\Form\Form;
+use SbmCommun\Form\AbstractSbmForm As Form;
 // use Zend\InputFilter\InputFilterProviderInterface;
 class EtablissementServiceSuppr extends Form // implements InputFilterProviderInterface
 {

@@ -32,10 +32,15 @@ class IndexController extends AbstractActionController
         $tCalendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
         $rEtat = $tCalendar->etatDuSite();
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'client' => StdLib::getParamR(array(
                 'sbm',
                 'client'
+            ), $this->getServiceLocator()->get('config')),
+            'accueil' => StdLib::getParamR(array(
+                'sbm',
+                'layout',
+                'accueil'
             ), $this->getServiceLocator()->get('config')),
             'etat' => $rEtat['etat'],
             'msg' => $rEtat['msg']

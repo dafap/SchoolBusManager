@@ -18,7 +18,7 @@
 	<div class="header-wrapper">
 		<ul>
 			<li><?php echo $this->escapeHtml($this->data->serviceId); ?></li>
-			<li><?php echo $this->escapeHtml($this->data->stationId); ?></li>
+			<li><?php echo $this->escapeHtml($this->data->station . ' - ' . $this->data->communeStation); ?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>

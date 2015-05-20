@@ -13,7 +13,9 @@
  */
 namespace SbmCommun\Form;
 
-class Transporteur extends AbstractSbmForm
+use Zend\InputFilter\InputFilterProviderInterface;
+
+class Transporteur extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct($param = 'transporteur')
@@ -290,24 +292,6 @@ class Transporteur extends AbstractSbmForm
                 )
             )
         ));
-        $this->add(array(
-            'name' => 'communeId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'transporteur-communeId',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une commune',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
         
         $this->add(array(
             'name' => 'submit',
@@ -327,5 +311,31 @@ class Transporteur extends AbstractSbmForm
                 'class' => 'button default cancel'
             )
         ));
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'nom' => array(
+                'name' => 'nom',
+                'required' => true
+            ),
+            'codePostal' => array(
+                'name' => 'codePostal',
+                'required' => true
+            ),
+            'communeId' => array(
+                'name' => 'communeId',
+                'required' => true
+            ),
+             'telephone' => array(
+                'name' => 'telephone',
+                'required' => true
+            ),
+            'email' => array(
+                'name' => 'email',
+                'required' => true
+            )
+        );
     }
 }

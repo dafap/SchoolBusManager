@@ -147,6 +147,7 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
     {
         return array(
             'nom' => array(
+                'name' => 'nom',
                 'requeried' => true,
                 'filters' => array(
                     array(
@@ -158,6 +159,7 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
                 )
             ),
             'montant' => array(
+                'name' => 'montant',
                 'required' => true,
                 'filters' => array(
                     array(

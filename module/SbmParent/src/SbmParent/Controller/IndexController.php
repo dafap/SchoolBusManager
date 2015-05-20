@@ -151,8 +151,8 @@ class IndexController extends AbstractActionController
             }
         }
         return new ViewModel(array(
-            'form' => $form,
-            'formga' => $formga,
+            'form' => $form->prepare(),
+            'formga' => $formga->prepare(),
             'responsable' => $responsable,
             'ga' => StdLib::getParam('ga', $args, 0),
             'userId' => $this->getServiceLocator()
@@ -338,8 +338,8 @@ class IndexController extends AbstractActionController
             Session::set('responsable2', $responsable2, $this->getSessionNamespace());
         }
         return new ViewModel(array(
-            'form' => $form,
-            'formga' => $formga,
+            'form' => $form->prepare(),
+            'formga' => $formga->prepare(),
             'responsable' => $responsable,
             'hasGa' => $hasGa,
             'responsable2' => $responsable2
@@ -432,7 +432,7 @@ class IndexController extends AbstractActionController
         }
         
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'eleve' => $this->getServiceLocator()
                 ->get('Sbm\Db\Query\ElevesScolarites')
                 ->getEleve($args['id']),

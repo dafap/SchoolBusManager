@@ -241,7 +241,7 @@ class FinanceController extends AbstractActionController
             $form->setData($init_form);
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'page' => $this->params('page', 1),
             'paiementId' => null,
             'hidden_responsableId' => $hidden_responsableId,
@@ -314,7 +314,7 @@ class FinanceController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'paiementId' => StdLib::getParam('paiementId', $r->getResult()),
                         'responsable' => StdLib::getParam('responsable', $r->getResult()),
@@ -337,7 +337,7 @@ class FinanceController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'paiementId' => $r['paiementId'],
                     'responsable' => $r['responsable'],
@@ -413,7 +413,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(array(
             'data' => $tablePaiements->getRecord($paiementId),
-            'form' => $form,
+            'form' => $form->prepare(),
             'page' => $this->params('page', 1),
             'paiementId' => $paiementId,
             'responsable' => $args['responsable'],
@@ -491,7 +491,7 @@ class FinanceController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'tarifId' => $r->getResult()
                     ));
@@ -550,7 +550,7 @@ class FinanceController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'tarifId' => StdLib::getParam('id', $r->getResult())
@@ -598,7 +598,7 @@ class FinanceController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(array(
-                    'form' => $form,
+                    'form' => $form->prepare(),
                     'page' => $currentPage,
                     'tarifId' => null
                 ));

@@ -198,7 +198,7 @@ class EleveController extends AbstractActionController
         return new ViewModel(array(
             'page' => $page,
             // form est le formulaire si les données ne sont pas validées (ou pas de données)
-            'form' => $form,
+            'form' => is_null($form) ? $form : $form->prepare(),
             // liste est null ou est un resultset à parcourir pour montrer la liste
             'eleves' => $resultset,
             // data = null ou contient les données validées à passer à nouveau en post
@@ -412,7 +412,7 @@ class EleveController extends AbstractActionController
         ));
         return new ViewModel(array(
             'page' => $page,
-            'form' => $form,
+            'form' => $form->prepare(),
             'info' => $info,
             'data' => $data
         ));
@@ -580,7 +580,7 @@ class EleveController extends AbstractActionController
             $affectations[] = $row;
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'page' => $currentPage, // nécessaire pour la compatibilité des appels
             'eleveId' => $eleveId, // nécessaire pour la compatibilité des appels
             'identite' => $identite, // nécessaire pour la compatibilité des appels
@@ -662,7 +662,7 @@ class EleveController extends AbstractActionController
     public function responsableListeAction()
     {
         // utilisation de PostRedirectGet par mesure de sécurité
-        $args = $this->initListe('responsables');
+        $args = $this->initListe('responsables', null, array('nbEleves'));
         if ($args instanceof Response)
             return $args;
         
@@ -737,7 +737,7 @@ class EleveController extends AbstractActionController
             }
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'page' => $this->params('page', 1),
             'responsableId' => $responsableId,
             'demenagement' => false
@@ -822,7 +822,7 @@ class EleveController extends AbstractActionController
             $identite = $array_data['titre'] . ' ' . $array_data['nom'] . ' ' . $array_data['prenom'];
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'page' => $this->params('page', 1),
             'responsableId' => $responsableId,
             'identite' => $identite,
@@ -860,21 +860,6 @@ class EleveController extends AbstractActionController
             'responsable' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Responsables')
                 ->getRecord($responsableId),
-            'page' => $currentPage,
-            'responsableId' => $responsableId
-        ));
-        
-        $currentPage = $this->params('page', 1);
-        $responsableId = $this->params('id', - 1); // GET
-        $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
-        $data = array();
-        $data['resp1'] = $tableEleves->duResponsable1($responsableId);
-        $data['resp2'] = $tableEleves->duResponsable2($responsableId);
-        $data['fact'] = $tableEleves->duResponsableFinancier($responsableId);
-        return new ViewModel(array(
-            'datagroup' => $tableResponsables->getRecord($responsableId),
-            'data' => $data,
             'page' => $currentPage,
             'responsableId' => $responsableId
         ));
@@ -923,7 +908,7 @@ class EleveController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(array(
-                        'form' => $form,
+                        'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'responsableId' => StdLib::getParam('id', $r->getResult()),
@@ -1034,7 +1019,7 @@ class EleveController extends AbstractActionController
         ));
         return new ViewModel(array(
             'point' => $pt,
-            'form' => $form,
+            'form' => $form->prepare(),
             'responsableId' => $args['responsableId'],
             'responsable' => $responsable
         ));
@@ -1132,7 +1117,7 @@ class EleveController extends AbstractActionController
             }
         }
         return new ViewModel(array(
-            'form' => $form,
+            'form' => $form->prepare(),
             'info' => $args['info'],
             'msg' => $msg,
             'page' => $this->params('page', 1)
