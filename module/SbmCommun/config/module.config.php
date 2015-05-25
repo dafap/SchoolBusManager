@@ -140,7 +140,7 @@ return array(
             'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
             'Sbm\Db\Query\ElevesScolarites' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites',
             'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations',
-            'Sbm\Db\Query\Users' => 'SbmCommun\Model\Db\Service\Query\User\Users'
+            'Sbm\Db\Query\Responsables' => 'SbmCommun\Model\Db\Service\Query\Responsable\Responsables'
         )
     ),
     'view_manager' => array(

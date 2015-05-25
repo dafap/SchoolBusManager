@@ -12,6 +12,31 @@
  */
 use SbmCommun\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
+$this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->captureStart();
+?>
+$(document).ready(function($){
+$("#help-preinscrits").trigger("click");
+$("#help-preinscrits").on("click", function(){
+    var content = $("#help-preinscrits-content").html();
+    $("#winpopup").dialog({
+            draggable:true,
+            modal: true,
+            autoOpen: false,
+            height:400,
+            width:600,
+            resizable: false,
+            title: $(this).attr('title')
+            //appendTo: content
+        });
+    $("#winpopup-content").html(content);
+    $("#winpopup").dialog("open");
+});
+});
+<?php
+$this->headScript()->captureEnd();
 
 $montantTotal = 0;
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
@@ -20,8 +45,8 @@ $enAttente = false;
 $nbPreinscrits = $this->preinscrits->count();
 $nbInscrits = $this->inscrits->count();
 $nbPaiements = $this->paiements->count();
-$dateLimite = date('d/m/Y', strtotime('+15 days'));
-
+// $dateLimite = date('d/m/Y', strtotime('+15 days'));
+$dateLimite = $this->dateLimite;
 $url_ajoutEleve = $this->url('sbmparent', array(
     'action' => 'inscription-eleve'
 ));
@@ -29,6 +54,9 @@ $url_payer = $this->url('sbmpaiement', array(
     'action' => 'formulaire'
 ));
 ?>
+<div id="winpopup">
+	<div id="winpopup-content" style="margin-left: 30px; margin-right: 30px;"></div>
+</div>
 <div class="flashMessenger float-right">
 <?php
 echo $this->flashMessenger()->render('success');
@@ -40,7 +68,7 @@ echo $this->flashMessenger()->render('default');
 </div>
 <h1>Espace parent</h1>
 <?php if ($nbInscrits == 0 && $nbPreinscrits == 0) : ?>
-<div class="explication">
+<div id="parent-wrapper" class="explication">
 	<p>Vous n'avez pas d'enfant inscrit.</p>
 	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez 
 globalement le paiement en ligne ou adressez votre paiment au service transport de la Communauté de 
@@ -58,10 +86,9 @@ Commune du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?>.</p>
 		les inscriptions.
 	</p>
 <?php
-    
     echo $this->listeZoneActions(array(), array(
         'inscrire' => array(
-            'class' => 'button default',
+            'class' => 'accueil default',
             'formaction' => $url_ajoutEleve,
             'value' => 'Inscrire un enfant'
         )
@@ -223,6 +250,25 @@ Commune du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?>.</p>
     ), $boutons);
     ?>
         </div>
+		<p class="sbm-description">
+			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> N'oubliez pas de payer ou d'envoyer votre paiement avant le <?php echo $dateLimite;?>.
+		</p>
+		<div id="help-preinscrits-content" class="invisible">
+			<p>Vous pouvez :</p>
+			<ul>
+				<li>payer en ligne à l'aide d'une carte bancaire ;</li>
+				<li>adresser un chèque du montant indiqué à l'adresse ci-dessous ;</li>
+				<li>vous rendre au service de transport pour payer en espèces.</li>
+			</ul>
+			<div class="centre">   
+				<?php echo $this->client['name'];?><br>
+				<?php echo $this->client['adresse'][0]; ?><br>
+				<?php echo $this->client['adresse'][1]; ?><br>
+				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
+				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
+		    </div>
+		    <p>N'oubliez pas de payer avant le <?php echo $dateLimite;?> !</p>
+		</div>
 	</div>
 	<div id="parent-paiements">
     <?php if ($nbPaiements) : ?>

@@ -173,17 +173,24 @@ class Calendar extends AbstractSbmTable
         $row = $resultset->current();
         $dateDebut = DateTime::createFromFormat('Y-m-d', $row->dateDebut);
         $dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin);
+        $echeance = DateTime::createFromFormat('Y-m-d', $row->echeance);
         $aujourdhui = new DateTime();
         if ($aujourdhui < $dateDebut) {
             $msg = sprintf('La %s sera ouverte du %s au %s.', \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'));
             return array(
                 'etat' => 0,
+                'dateDebut' => $dateDebut,
+                'dateFin' => $dateFin,
+                'echeance' => $echeance,
                 'msg' => $msg
             );
         } elseif ($aujourdhui > $dateFin) {
             $msg = sprintf('La %s est close.', \mb_strtolower($row->description, 'utf-8'));
             return array(
                 'etat' => 2,
+                'dateDebut' => $dateDebut,
+                'dateFin' => $dateFin,
+                'echeance' => $echeance,
                 'msg' => $msg
             );
         } else {
@@ -194,6 +201,9 @@ EOT;
             $msg = sprintf($modele, \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'), $dateFin->format('d/m/Y'));
             return array(
                 'etat' => 1,
+                'dateDebut' => $dateDebut->format('d/m/Y'),
+                'dateFin' => $dateFin->format('d/m/Y'),
+                'echeance' => $echeance->format('d/m/Y'),
                 'msg' => $msg
             );
         }

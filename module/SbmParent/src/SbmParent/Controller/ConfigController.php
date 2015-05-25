@@ -30,11 +30,13 @@ class ConfigController extends AbstractActionController
     {
         return new ViewModel();
     }
-    
+
     public function messageAction()
     {
         $retour = $this->url()->fromRoute('sbmparent');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('dafapmail');
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('dafapmail');
     }
 
     public function modifCompteAction()
@@ -62,18 +64,24 @@ class ConfigController extends AbstractActionController
         }
         // ici on a le tableau d'initialisation du formulaire dans $args
         $responsableId = $args['responsableId'];
+        $hasEnfantInscrit = $this->getServiceLocator()
+            ->get('Sbm\Db\Query\Responsables')
+            ->hasEnfantInscrit($responsableId);
         $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        // on ouvre le formulaire avec l'identité verrouillée et on l'adapte
+        // on ouvre le formulaire complet et on l'adapte
         $form = new FormResponsable();
-        $value_options = $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Communes')
-            ->desservies();
-        $form->setValueOptions('communeId', $value_options)
-            ->setValueOptions('ancienCommuneId', $value_options)
-            ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
-        unset($value_options);
-        
+        if ($hasEnfantInscrit) {
+            $form->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        } else {
+            $value_options = $this->getServiceLocator()
+                ->get('Sbm\Db\Select\Communes')
+                ->desservies();
+            $form->setValueOptions('communeId', $value_options)
+                ->setValueOptions('ancienCommuneId', $value_options)
+                ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+            unset($value_options);
+        }
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
         if (array_key_exists('submit', $args)) {
@@ -81,6 +89,7 @@ class ConfigController extends AbstractActionController
                 // controle le csrf et contrôle les datas
                 $tableResponsables->saveRecord($form->getData());
                 $responsable->refresh();
+                $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
                 return $this->redirect()->toRoute('login', array(
                     'action' => 'synchro-compte'
                 ));
@@ -88,8 +97,10 @@ class ConfigController extends AbstractActionController
             $this->flashMessenger()->addWarningMessage('Données invalides');
         }
         return new ViewModel(array(
+            'hasEnfantInscrit' => $hasEnfantInscrit,
             'form' => $form->prepare(),
             'responsableId' => $responsableId,
+            'responsable' => $responsable->getArrayCopy(),
             'demenagement' => StdLib::getParam('demenagement', $args, false)
         ));
     }

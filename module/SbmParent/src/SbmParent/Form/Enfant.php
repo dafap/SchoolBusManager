@@ -181,12 +181,16 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     array(
                         'value' => '1',
                         'label' => 'Oui',
-                        'attributes' => array('id' =>'btnradioga1') 
+                        'attributes' => array(
+                            'id' => 'btnradioga1'
+                        )
                     ),
                     array(
                         'value' => '0',
                         'label' => 'Non',
-                        'attributes' => array('id' => 'btnradioga0')
+                        'attributes' => array(
+                            'id' => 'btnradioga0'
+                        )
                     )
                 )
             )
@@ -207,6 +211,25 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'value_options' => array(
                     '1' => 'Oui',
                     '0' => 'Non'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Textarea',
+            'name' => 'commentaire',
+            'attributes' => array(
+                'id' => 'enfant_commentaire'
+            ),
+            'options' => array(
+                'label' => 'Commentaires à transmettre au service transport',
+                'label_attributes' => array(
+                    'class' => 'sbm-commentaire'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
                 )
             )
         ));
@@ -263,7 +286,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     )
                 ));
             }
-            // vérifie que l'élève n'est pas inscrit 
+            // vérifie que l'élève n'est pas inscrit
             if (empty($data['eleveId'])) {
                 // lorsqu'il s'agit d'un nouvel élève
                 $sa = new SansAccent();
@@ -273,29 +296,34 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     ->equalTo('dateN', $data['dateN'])
                     ->nest()
                     ->equalTo('responsable1Id', $data['responsable1Id'])->OR->equalTo('responsable2Id', $data['responsable1Id'])->unnest();
-                $ok = $this->sm->get('Sbm\Db\Table\Eleves')
-                    ->fetchAll($where)
-                    ->count() == 0;
+                $result = $this->sm->get('Sbm\Db\Table\Eleves')->fetchAll($where);
+                $ok = $result->count() == 0;
                 if (! $ok) {
-                    $this->setMessages(array(
-                        'prenom' => array(
-                            'existe' => 'Cet enfant est déjà enregistré.'
-                        )
-                    ));
+                    // reprise d'un enfant inscrit antérieurement (modif du 21/O5/2015)
+                    $data['eleveId'] = current($result->toArray())['eleveId'];
+                    $this->setData($data);
+                    $ok = parent::isValid();
+                    if (! $ok) {
+                        $this->setMessages(array(
+                            'prenom' => array(
+                                'existe' => 'Cet enfant est déjà enregistré.'
+                            )
+                        ));
+                    }
                 }
             } else {
                 // lorsqu'il s'agit d'une modification
                 $sa = new SansAccent();
                 $where = new Where();
                 $where->equalTo('nomSA', $sa->filter($data['nom']))
-                ->equalTo('prenomSA', $sa->filter($data['prenom']))
-                ->equalTo('dateN', $data['dateN'])
-                ->notEqualTo('eleveId', $data['eleveId'])
-                ->nest()
-                ->equalTo('responsable1Id', $data['responsable1Id'])->OR->equalTo('responsable2Id', $data['responsable2Id'])->unnest();
+                    ->equalTo('prenomSA', $sa->filter($data['prenom']))
+                    ->equalTo('dateN', $data['dateN'])
+                    ->notEqualTo('eleveId', $data['eleveId'])
+                    ->nest()
+                    ->equalTo('responsable1Id', $data['responsable1Id'])->OR->equalTo('responsable2Id', $data['responsable2Id'])->unnest();
                 $ok = $this->sm->get('Sbm\Db\Table\Eleves')
-                ->fetchAll($where)
-                ->count() == 0;
+                    ->fetchAll($where)
+                    ->count() == 0;
                 if (! $ok) {
                     $this->setMessages(array(
                         'prenom' => array(
@@ -309,16 +337,17 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
             return false;
         }
     }
-    
+
     /**
      * Traitement de l'élément 'joursTransport' dans les données reçues avant de charger le formulaire
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Zend\Form\Form::setData()
      */
     public function setData($data)
     {
-        if (is_array($data) && array_key_exists('joursTransport', $data) && !is_array($data['joursTransport'])) {
+        if (is_array($data) && array_key_exists('joursTransport', $data) && ! is_array($data['joursTransport'])) {
             $strategie = new Semaine();
             $data['joursTransport'] = $strategie->hydrate($data['joursTransport']);
         }

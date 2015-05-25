@@ -34,45 +34,61 @@ echo $this->flashMessenger()->render('default');
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('responsableId'));
 echo $this->formHidden($this->form->get('nature'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>
     <fieldset class="sbm-page1">
-    <div id="responsable-edit-ligne1" class="clearfix">
-        <div id="responsable-edit-titre" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('titre')); ?></div>
-        <div id="responsable-edit-nom" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('nom')); ?></div>
-        <div id="responsable-edit-prenom" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('prenom')); ?></div>
-    </div>
-    <div id="responsable-edit-ligne2" class="clearfix">
-        <div id="responsable-edit-titre2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('titre2')); ?></div>
-        <div id="responsable-edit-nom2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('nom2')); ?></div>
-        <div id="responsable-edit-prenom2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('prenom2')); ?></div>
-    </div>
-    <div id="responsable-edit-telephoneF" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephoneF')); ?></div>
-    <div id="responsable-edit-telephoneP" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephoneP')); ?></div>
-    <div id="responsable-edit-telephoneT" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephoneT')); ?></div>
-    <div id="responsable-edit-email" class="row-inner edit"><?php echo $this->formRow($this->form->get('email')); ?></div>
-    <div id="responsable-edit-adresseL1" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresseL1')); ?></div>
-    <div id="responsable-edit-adresseL2" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresseL2')); ?></div>
-    <div id="responsable-edit-codePostal" class="row-inner edit"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
-    <div id="responsable-edit-communeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
-    <div id="responsable-edit-demenagement" class="row-inner edit"><?php echo $this->formRow($this->form->get('demenagement')); ?></div>
-    <div id="responsable-edit-blocAncien"<?php echo $this->demenagement ? '' : 'style="display: none;"'; ?>>
-        <div id="responsable-edit-dateDemenagement" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateDemenagement')); ?></div>
-        <div id="responsable-edit-ancienAdresseL1" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienAdresseL1')); ?></div>
-        <div id="responsable-edit-ancienAdresseL2" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienAdresseL2')); ?></div>
-        <div id="responsable-edit-ancienCodePostal" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienCodePostal')); ?></div>
-        <div id="responsable-edit-ancienCommuneId" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienCommuneId')); ?></div>
-    </div>
-    <div id="responsable-edit-buttons" class="row-inner edit">
+			<div id="responsable-edit-ligne1" class="clearfix">
+				<div id="responsable-edit-titre" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('titre')); ?></div>
+				<div id="responsable-edit-nom" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+				<div id="responsable-edit-prenom" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('prenom')); ?></div>
+			</div>
+			<div id="responsable-edit-ligne2" class="clearfix">
+				<div id="responsable-edit-titre2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('titre2')); ?></div>
+				<div id="responsable-edit-nom2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('nom2')); ?></div>
+				<div id="responsable-edit-prenom2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('prenom2')); ?></div>
+			</div>
+			<div id="responsable-edit-telephoneF" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephoneF')); ?></div>
+			<div id="responsable-edit-telephoneP" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephoneP')); ?></div>
+			<div id="responsable-edit-telephoneT" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephoneT')); ?></div>
+			<!-- div id="responsable-edit-email" class="row-inner edit"><?php echo $this->formRow($this->form->get('email')); ?></div -->
+    <?php if ($this->hasEnfantInscrit) : ?>
+            <?php echo $this->formHidden($this->form->get('email'));?>
+            <?php echo $this->formHidden($this->form->get('adresseL1'));?>
+            <?php echo $this->formHidden($this->form->get('adresseL2'));?>
+            <?php echo $this->formHidden($this->form->get('codePostal'));?>
+            <?php echo $this->formHidden($this->form->get('communeId'));?>
+            <?php echo $this->formHidden($this->form->get('demenagement'));?>
+            <div id="responsable-edit-email" class="row-inner edit"><?php echo '<div class="enfant-label">Email</div>' . $this->responsable['email']; ?></div>
+            <div id="responsable-edit-adresseL1" class="row-inner edit"><?php echo '<div class="enfant-label">Adresse</div>' . $this->responsable['adresseL1']; ?></div>
+			<div id="responsable-edit-adresseL2" class="row-inner edit"><?php echo '<div class="enfant-label">Complément d\'adresse</div>' . $this->responsable['adresseL2']; ?></div>
+			<div id="responsable-edit-codePostal" class="row-inner edit"><?php echo '<div class="enfant-label">Code postal</div>' . $this->responsable['codePostal']; ?></div>
+			<div id="responsable-edit-communeId" class="row-inner edit"><?php echo '<div class="enfant-label">Commune</div>' . $this->responsable['commune']; ?></div>
+    <?php else : ?>
+            <div id="responsable-edit-email" class="row-inner edit"><?php echo '<div class="enfant-label">Email</div>' . $this->responsable['email']; ?></div>
+            <div id="responsable-edit-adresseL1" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresseL1')); ?></div>
+			<div id="responsable-edit-adresseL2" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresseL2')); ?></div>
+			<div id="responsable-edit-codePostal" class="row-inner edit"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
+			<div id="responsable-edit-communeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
+			<div id="responsable-edit-demenagement" class="row-inner edit"><?php echo $this->formRow($this->form->get('demenagement')); ?></div>
+    <?php endif; ?>
+    <div id="responsable-edit-blocAncien"
+				<?php echo $this->demenagement ? '' : 'style="display: none;"'; ?>>
+				<div id="responsable-edit-dateDemenagement" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateDemenagement')); ?></div>
+				<div id="responsable-edit-ancienAdresseL1" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienAdresseL1')); ?></div>
+				<div id="responsable-edit-ancienAdresseL2" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienAdresseL2')); ?></div>
+				<div id="responsable-edit-ancienCodePostal" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienCodePostal')); ?></div>
+				<div id="responsable-edit-ancienCommuneId" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienCommuneId')); ?></div>
+			</div>
+			<div id="responsable-edit-buttons" class="row-inner edit">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-    </fieldset>
+		</fieldset>
 <?php echo $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>
 </div>
-<?php 
+<?php
 $this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');

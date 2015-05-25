@@ -14,7 +14,23 @@
  */
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $this->headScript()->captureStart();
+$texteDemandeR2 = <<<EOT
+La Communauté de communes vous informe que le transport pour cette 2ème adresse ne sera validé qu’en fonction de la disponibilité des places sur les circuits existants. Vous serez informés prochainement des suites données à votre demande par mail. 
+EOT;
+
 ?>
+function phraseDemandeR2(state) {
+    var div=$("#demandeR2-text");
+    if (div.length==0) {
+        $('#r2enfant_demandeR2 fieldset').append('<div id="demandeR2-text"></div>');
+    }
+    div=$("#r2enfant_demandeR2 #demandeR2-text");
+    if (state) {
+        div.append('<?php echo $texteDemandeR2;?>');
+    } else {
+        div.empty();
+    }
+}
 //copie / suppression de la div par le bouton radio
 $(function() {
   // montre ou cache la partie du formulaire concernant la garde alternee
@@ -54,6 +70,11 @@ $(function() {
 				}
 			});
 	}
+  });
+  // ajoute un texte si demandeR2 est oui
+  $("#enfant_ga").on('click', 'input[type=radio][name=demandeR2]', function(){
+    var state=$(this).val()==1;
+    phraseDemandeR2(state);
   });
 });
 <?php
@@ -103,6 +124,7 @@ echo $this->formHidden($this->form->get('csrf'));
 			<div id="enfant-ajout-joursTransport" class="row-inner ajout"><?php echo $this->formRow($this->form->get('joursTransport')); ?></div>
 			<div id="enfant-ajout-ga" class="row-inner ajout"><?php echo $this->formRow($this->form->get('ga')); ?></div>
 			<div id="enfant_ga"></div>
+			<div id="user"><div id="wrapper-commentaire"><?php echo $this->formRow($this->form->get('commentaire'));?></div></div>
 			<div id="enfant-ajout-buttons" class="row-inner ajout">
         <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

@@ -10,21 +10,24 @@
  * @date 22 janv. 2014
  * @version 2014-1
  */
-
 return array(
     'acl' => array(
         'resources' => array(
             'sbmparent' => array(
                 'allow' => array(
-                    'roles' => array('parent')
+                    'roles' => array(
+                        'parent'
+                    )
                 )
             ),
             'sbmparentconfig' => array(
                 'allow' => array(
-                    'roles' => array('parent')
+                    'roles' => array(
+                        'parent'
+                    )
                 )
             )
-        ),
+        )
     ),
     'controllers' => array(
         'invokables' => array(
@@ -49,7 +52,7 @@ return array(
                         'action' => 'index'
                     )
                 ),
-                'may_terminate' => true,
+                'may_terminate' => true
             ),
             'sbmparentconfig' => array(
                 'type' => 'segment',
@@ -65,7 +68,7 @@ return array(
                         'action' => 'index'
                     )
                 ),
-                'may_terminate' => true,
+                'may_terminate' => true
             )
         )
     ),

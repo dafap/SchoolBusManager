@@ -73,7 +73,7 @@ class Semaine extends AbstractPower2
      */
     public static function getJours()
     {
-        return  array(
+        /*return  array(
             self::CODE_SEMAINE_LUNDI => 'lun',
             self::CODE_SEMAINE_MARDI => 'mar',
             self::CODE_SEMAINE_MERCREDI => 'mer',
@@ -81,7 +81,8 @@ class Semaine extends AbstractPower2
             self::CODE_SEMAINE_VENDREDI => 'ven',
             self::CODE_SEMAINE_SAMEDI => 'sam',
             self::CODE_SEMAINE_DIMANCHE => 'dim'
-        );
+        );*/
+        return \SbmCommun\Module::getSemaine();
     }
     
     /**

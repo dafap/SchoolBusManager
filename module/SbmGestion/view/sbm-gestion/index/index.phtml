@@ -19,7 +19,7 @@ $url_gest_transport = $this->url('sbmgestion/transport');
 $url_gest_change_as = $this->url('sbmgestion/anneescolaire');
 $url_gest_simulation = $this->url('sbmgestion/simul');
 $url_gest_parametre = $this->url('sbmgestion/config');
-
+$url_parent = $this->url('sbmparent');
 ?>
 <h1>Menu général de gestion</h1>
 <div id="menugeneral">
@@ -44,10 +44,12 @@ echo $this->flashMessenger()->render('default');
 					class="fam-bullet-go"></i>Gestion du réseau de transport</a></li>
 			<li><a href="<?php echo $url_gest_change_as; ?>"><i
 					class="fam-bullet-go"></i>Choix de l'année scolaire</a></li>
-			<li><a href="<?php echo $url_gest_simulation; ?>"><i
+			<!-- li><a href="<?php echo $url_gest_simulation; ?>"><i
 					class="fam-bullet-go"></i>Simulation d'organisation</a></li>
 			<li><a href="<?php echo $url_gest_parametre; ?>"><i
-					class="fam-bullet-go"></i>Configuration et paramètres</a></li>
+					class="fam-bullet-go"></i>Configuration et paramètres</a></li-->
+			<li><a href="<?php echo $url_parent; ?>"><i
+					class="fam-bullet-go"></i>Passer dans l'espace parent</a></li>
 		</ul>
 	</div>
 </div>

@@ -22,6 +22,8 @@ use Zend\EventManager\EventInterface;
 use ZfcBase\Module\AbstractModule;
 use Zend\View\Helper\Doctype;
 use DafapSession\Model\Session;
+use SbmCommun\Model\StdLib;
+use SbmCommun\Model\Strategy\Semaine;
 
 class Module extends AbstractModule implements BootstrapListenerInterface
 {
@@ -45,5 +47,28 @@ class Module extends AbstractModule implements BootstrapListenerInterface
             Session::set('millesime', $tCalendar->getDefaultMillesime());
         }
         Session::set('as', $tCalendar->getAnneeScolaire($millesime));
+        $application = $e->getParam('application');
+        $config = $application->getConfig();
+        $this->getSemaine(StdLib::getParamR(array(
+            'sbm',
+            'semaine'
+        ), $config, null));
+    }
+
+    public static function getSemaine($init = null)
+    {
+        static $semaine = array(
+            Semaine::CODE_SEMAINE_LUNDI => 'lun',
+            Semaine::CODE_SEMAINE_MARDI => 'mar',
+            Semaine::CODE_SEMAINE_MERCREDI => 'mer',
+            Semaine::CODE_SEMAINE_JEUDI => 'jeu',
+            Semaine::CODE_SEMAINE_VENDREDI => 'ven',
+            Semaine::CODE_SEMAINE_SAMEDI => 'sam',
+            Semaine::CODE_SEMAINE_DIMANCHE => 'dim'
+        );
+        if ($init) {
+            $semaine = $init;
+        }
+        return $semaine;
     }
 }

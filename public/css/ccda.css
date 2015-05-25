@@ -30,6 +30,9 @@ dt {
 	padding-top: 1rem;
 }
 /*-------- Classes générales ------*/
+i.fam-help:hover {
+	cursor: help;
+}
 .align-right {
 	text-align: right;
 }
@@ -123,7 +126,9 @@ div.explication {
 	padding-right: 15px;
 	padding-left: 15px;
 	color: #804040;
-	
+}
+.invisible {
+	display: none;
 }
 .hidden {
 	visibility: hidden;
@@ -963,6 +968,9 @@ label.sbm-form-auto:before {
 	line-height: 2;
 }
 /*---------------- Espace parents ---------------------------*/
+div#parent-wrapper {
+	min-height: 400px;
+}
 table.parent {
 	/*margin-left: auto;
 	margin-right: auto;
@@ -987,7 +995,15 @@ table.parent {
 	border-right-width: 0;
 	margin-right: 10px;
 }
-
+#parent-wrapper input.accueil {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 1em;
+	border: 1px solid #3489bc;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px 1px 5px #d9eaf4;
+}
 #fiche-inner form#enfant div.enfant-label,
 #fiche-inner form#enfant label {
 	display: inline-block;
@@ -998,6 +1014,11 @@ table.parent {
 #fiche-inner form#enfant label.sbm-radio-label {
 	display: initial;
 	margin-right: 30px;
+}
+#fiche-inner div.enfant-label {
+	display: inline-block;
+	width: 170px;
+	padding-left: 5px;
 }
 /*--------------------- Mail -------------------------------*/
 #mail textarea {

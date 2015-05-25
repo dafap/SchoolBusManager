@@ -33,9 +33,23 @@ class IndexController extends AbstractActionController
         try {
             $responsable = new Responsable($this->getServiceLocator());
         } catch (CreateResponsableException $e) {
-            return $this->redirect()->toRoute('login', array(
-                'action' => 'logout'
-            ));
+            if ($this->getServiceLocator()
+                ->get('Dafap\Authenticate')
+                ->by()
+                ->hasIdentity()) {
+                // il faut créer un responsable associé car la demande vient d'un gestionnaire ou autre administrateur
+                $this->flashMessenger()->addErrorMessage('Il faut compléter la fiche du responsable');
+                $retour = $this->url()->fromRoute('sbmparent');
+                return $this->redirectToOrigin()
+                    ->setBack($retour)
+                    ->toRoute('sbmparentconfig', array(
+                    'action' => 'create'
+                ));
+            } else {
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
         }
         $query = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesScolarites');
         $paiements = $this->getServiceLocator()->get('Sbm\Db\Vue\Paiements');
@@ -48,7 +62,19 @@ class IndexController extends AbstractActionController
             'paiements' => $paiements->fetchAll(array(
                 'responsableId' => $responsable->responsableId
             )),
-            'affectations' => $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations')
+            'affectations' => $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations'),
+            'dateLimite' => $this->getServiceLocator()
+                ->get('Sbm\Db\System\Calendar')
+                ->etatDuSite()['echeance'],
+            'client' => StdLib::getParamR(array(
+                'sbm',
+                'client'
+            ), $this->getServiceLocator()->get('config')),
+            'accueil' => StdLib::getParamR(array(
+                'sbm',
+                'layout',
+                'accueil'
+            ), $this->getServiceLocator()->get('config'))
         ));
     }
 
@@ -131,7 +157,10 @@ class IndexController extends AbstractActionController
                     )));
                 }
                 $tEleves->saveRecord($oData);
-                $eleveId = $tEleves->getTableGateway()->getLastInsertValue();
+                $eleveId = $oData->eleveId;
+                if (empty($eleveId)) {
+                    $eleveId = $tEleves->getTableGateway()->getLastInsertValue();
+                }
                 // Enregistre la scolarité
                 $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
                 $oData = $tScolarites->getObjData();
@@ -150,6 +179,9 @@ class IndexController extends AbstractActionController
                 return $this->redirect()->toRoute('sbmparent');
             }
         }
+        $formga->setValueOptions('r2communeId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->visibles());
         return new ViewModel(array(
             'form' => $form->prepare(),
             'formga' => $formga->prepare(),
@@ -337,6 +369,11 @@ class IndexController extends AbstractActionController
             }
             Session::set('responsable2', $responsable2, $this->getSessionNamespace());
         }
+        try {
+        $formga->setValueOptions('r2communeId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->visibles());
+        } catch ( \Zend\Form\Exception\InvalidElementException $e){}
         return new ViewModel(array(
             'form' => $form->prepare(),
             'formga' => $formga->prepare(),

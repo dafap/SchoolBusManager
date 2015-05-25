@@ -65,7 +65,8 @@ class LoginController extends AbstractActionController
                 $auth->getAdapter()
                     ->setIdentity($data)
                     ->setCredential($data);
-                if ($result = $auth->authenticate()->getCode() > 0) {
+                $result = $auth->authenticate();
+                if ($result->getCode() > 0) {
                     return $this->homePageAction();
                 } else {
                     foreach ($result->getMessages() as $msg)

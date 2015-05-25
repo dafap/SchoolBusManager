@@ -49,27 +49,7 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $mailTemplate = new MailTemplate('nouveau-compte');
-        // die(var_dump($mailTemplate));
-        die($mailTemplate->render('nouveau-compte', array(
-            'titre' => 'M.',
-            'nom' => 'TARTEMPION',
-            'prenom' => 'MAurice',
-            'url_confirme' => $this->url()
-                ->fromRoute('login', array(
-                'action' => 'confirm',
-                'id' => 'a123fe45'
-            ), array(
-                'force_canonical' => true
-            )),
-            'url_annule' => $this->url()
-                ->fromRoute('login', array(
-                'action' => 'annuler',
-                'id' => 'a123fe45'
-            ), array(
-                'force_canonical' => true
-            ))
-        )));
+        die(var_dump($this->getServiceLocator()->get('Sbm\Db\Query\Responsables')->getNbEnfantsInscrits(653)));
         return $view;
     }
 }
