@@ -2,7 +2,7 @@
 /**
  * Page de modification de l'inscription d'un enfant pour les responsables
  *
-  * @project sbm
+ * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
@@ -20,7 +20,9 @@ EOT;
 function phraseDemandeR2(state) {
     var div=$("#demandeR2-text");
     if (div.length==0) {
-        $('#r2enfant_demandeR2 fieldset').append('<div id="demandeR2-text"></div>');
+        $('#r2enfant_demandeR2 fieldset').append('
+<div id="demandeR2-text"></div>
+');
     }
     div=$("#r2enfant_demandeR2 #demandeR2-text");
     if (state) {
@@ -59,7 +61,9 @@ $(function() {
 					$('#r2communeId').empty();
 					if (dataJson.success==1) {
 					    $.each(dataJson.data, function(k, d) {
-	                        $('#r2communeId').append('<option value="' + d + '">' + k + '</option>');
+	                        $('#r2communeId').append('
+<option value="' + d + '">' + k + '</option>
+');
 	                    });
 	                }
 				},
@@ -78,7 +82,8 @@ $(function() {
 <?php
 $this->headScript()->captureEnd();
 // initialisation s'il y a garde alternée
-$this->inlineScript()->captureStart(); ?>
+$this->inlineScript()->captureStart();
+?>
 $(function() {
   if ($("#btnradioga1").is(':checked')) {
     bloc=$("#formga").clone();
@@ -94,7 +99,9 @@ $(function() {
       phraseDemandeR2(true);
   }
 });
-<?php $this->inlineScript()->captureEnd();
+<?php
+
+$this->inlineScript()->captureEnd();
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->nom, $this->responsable->prenom);
 if ($this->hasGa) {
     $r2identite = sprintf('%s %s %s', $this->responsable2['titre'], $this->responsable2['nom'], $this->responsable2['prenom']);
@@ -131,10 +138,16 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div class="enfant-label">Commune</div><?php echo $this->responsable->codePostal . ' ' . $this->responsable->commune; ?></div>
 			<div id="enfant-edit-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('etablissementId')); ?></div>
 			<div id="enfant-edit-classeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('classeId')); ?></div>
-			<div id="enfant-edit-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport')); ?></div>
-			<div id="enfant-edit-ga" class="row-inner edit"><?php echo $this->formRow($this->form->get('ga')); ?></div>
+			<div id="wrapper-radio" class="clearfix">
+				<div id="enfant-edit-joursTransport"
+					class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('joursTransport')); ?></div>
+				<div id="enfant-edit-ga" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('ga')); ?></div>
+				<div id="enfant-edit-fa" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('fa')); ?></div>
+			</div>
 			<div id="enfant_ga"></div>
-			<div id="user"><div id="wrapper-commentaire"><?php echo $this->formRow($this->form->get('commentaire'));?></div></div>
+			<div id="user">
+				<div id="wrapper-commentaire"><?php echo $this->formRow($this->form->get('commentaire'));?></div>
+			</div>
 			<div id="enfant-edit-buttons" class="row-inner edit">    		
             <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
@@ -158,11 +171,15 @@ echo $this->formHidden($this->form->get('csrf'));
 		<div id="enfant_email" class="row-inner edit"><?php  echo $this->formRow($this->formga->get('r2email'));?></div>
 		<div id="enfant_demandeR2" class="row-inner edit"><?php  echo $this->formRow($this->form->get('demandeR2'));?></div>
 <?php else : ?>
-        <div><div class="enfant-label">Responsable</div><?php echo $r2identite; ?></div>
-        <div><div class="enfant-label">Adresse</div><?php echo $r2adresseL1; ?></div>
-        <div><div class="enfant-label">Adresse</div><?php echo $r2adresseL2; ?></div>
-        <div><div class="enfant-label">Commune</div><?php echo $r2cp . ' ' . $r2commune; ?></div>
-        <div id="enfant_demandeR2" class="row-inner edit"><?php echo $this->formRow($this->form->get('demandeR2')); ?></div>
+        <div>
+			<div class="enfant-label">Responsable</div><?php echo $r2identite; ?></div>
+		<div>
+			<div class="enfant-label">Adresse</div><?php echo $r2adresseL1; ?></div>
+		<div>
+			<div class="enfant-label">Adresse</div><?php echo $r2adresseL2; ?></div>
+		<div>
+			<div class="enfant-label">Commune</div><?php echo $r2cp . ' ' . $r2commune; ?></div>
+		<div id="enfant_demandeR2" class="row-inner edit"><?php echo $this->formRow($this->form->get('demandeR2')); ?></div>
 <?php endif; ?>
     </div>
 </div>

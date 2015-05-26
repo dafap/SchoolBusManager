@@ -161,6 +161,7 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div class="input">en cours...</div>
 					</div>
 					<div id="wrapper-district"><?php echo $this->formRow($this->form->get('district'));?></div>
+					<div id="wrapper-fa"><?php echo $this->formRow($this->form->get('fa'));?></div>
 					<div id="wrapper-paiement"><?php echo $this->formRow($this->form->get('paiement'));?></div>
 					<div id="wrapper-ga"><?php echo empty($data['responsable2Id']) ? '' : 'Garde alternée';?></div>
 				</div>

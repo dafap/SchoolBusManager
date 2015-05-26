@@ -122,7 +122,8 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'value_options' => array(
                     '1' => 'Incrits',
                     '2' => 'Préinscrits',
-                    '3' => 'Rayés'
+                    '3' => 'Rayés',
+                    '4' => 'Famille d\'accueil'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'

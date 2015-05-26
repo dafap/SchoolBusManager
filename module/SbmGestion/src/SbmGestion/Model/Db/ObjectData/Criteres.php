@@ -62,13 +62,16 @@ class Criteres extends SbmCommunCriteres
         if (! empty($this->data['etat'])) {
             switch ($this->data['etat']) {
                 case 1:
-                    $where->literal('inscrit = 1')->literal('paiement = 1');
+                    $where->literal('inscrit = 1')->nest()->literal('paiement = 1')->OR->literal('fa=1')->unnest();
                     break;
                 case 2:
-                    $where->literal('inscrit = 1')->literal('paiement = 0');
+                    $where->literal('inscrit = 1')->literal('paiement = 0')->literal('fa=0');
                     break;
                 case 3:
-                    $where->literal('inscrit = 0')->literal('paiement = 1');
+                    $where->literal('inscrit = 0')->nest()->literal('paiement = 1')->OR->literal('fa=1')->unnest();
+                    break;
+                case 4:
+                    $where->literal('inscrit = 1')->literal('fa=1');
                     break;
             }
         }

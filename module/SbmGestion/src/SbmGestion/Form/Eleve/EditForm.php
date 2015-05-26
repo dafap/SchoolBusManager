@@ -137,7 +137,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'District',
                 'label_attributes' => array(
-                    'class' => 'sbm-label'
+                    'class' => 'sbm-label checkbox'
                 ),
                 'use_hidden_element' => true,
                 'checked_value' => '1',
@@ -196,6 +196,22 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'fa',
+            'attributes' => array(
+                'id' => 'eleve-fa'
+            ),
+            'options' => array(
+                'label' => 'Famille d\'accueil',
+                'label_attributes' => array(
+                    'class' => 'sbm-label checkbox'
+                ),
+                'use_hidden_element' => true,
+                'checked_value' => '1',
+                'unchecked_value' => '0'
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'ga',
             'attributes' => array(
                 'id' => 'eleve-ga'
@@ -203,7 +219,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Garde alternée',
                 'label_attributes' => array(
-                    'class' => 'sbm-label'
+                    'class' => 'sbm-label checkbox'
                 ),
                 'use_hidden_element' => true,
                 'checked_value' => '1',

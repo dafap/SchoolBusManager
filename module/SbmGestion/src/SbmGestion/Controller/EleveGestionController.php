@@ -29,7 +29,7 @@ class EleveGestionController extends AbstractActionController
     {
         // retour de liste par post. Evite le 'Confirmer le nouvel envoi du formulaire'
         $prg = $this->prg();
-        if ($prg instanceof response) {
+        if ($prg instanceof Response) {
             return $prg;
         }
         return new ViewModel();
@@ -37,10 +37,56 @@ class EleveGestionController extends AbstractActionController
 
     public function affecterListeAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('criteres', array());
+        } else {
+            $args = $prg;
+            $this->setToSession('criteres', $args);
+        }
+        $form = new \Zend\Form\Form('criteres');
+        $form->setAttribute('method', 'post');
+        $form->add(array(
+            'type' => 'Zend\Form\Element\Radio',
+            'name' => 'choix',
+            'attributes' => array(
+                'id' => 'choix-criteres',
+                'class' => 'sbm-radio'
+            ),
+            'options' => array(
+                'label' => 'Choisissez',
+                'value_options' => array(
+                    'inscrit' => 'Inscrits',
+                    'preinscrit' => 'Préinscrits'
+                )
+            )
+        ));
+        $form->add(array(
+            'type' => 'submit',
+            'name' => 'submit',
+            'attributes' => array(
+                'title' => 'Rechercher',
+                'id' => 'criteres-submit',
+                'autofocus' => 'autofocus',
+                'class' => 'fam-find button submit'
+            )
+        ));
+        if (array_key_exists('choix', $args)) {
+            $choix = $args['choix'];
+            //var_dump($args);
+        } else {
+            $choix = 'inscrit';
+        }
+        $form->setData(array('choix' => $choix));
         $query = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesScolarites');
         return new ViewModel(array(
-            'data' => $query->getElevesNonAffectes(),
-            'page' => $this->params('page', 1)
+            'criteres_form' => $form,
+            'paginator' => $choix == 'inscrit' ? $query->paginatorInscritsNonAffectes() : $query->paginatorPreinscritsNonAffectes(),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
+            'page' => $this->params('page', 1),
+            'title' => $choix == 'inscrit' ? 'inscrits' : 'préinscrits'
         ));
     }
 
@@ -100,7 +146,9 @@ class EleveGestionController extends AbstractActionController
             'page' => $page
         )));
         if ($args['op'] == 2) {
-            $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes();
+            $values_options1 = $this->getServiceLocator()
+                ->get('Sbm\Db\Select\Stations')
+                ->ouvertes();
             $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
             $formDecision->setValueOptions('station1Id', $values_options1)
                 ->setValueOptions('station2Id', $values_options1)
@@ -128,7 +176,9 @@ class EleveGestionController extends AbstractActionController
                         // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase 2. Pour le moment, mettre la décision en session
                         $this->setToSession('decision', $decision);
                         $formDecision = new AffectationDecision($args['trajet'], 2);
-                        $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes();
+                        $values_options1 = $this->getServiceLocator()
+                            ->get('Sbm\Db\Select\Stations')
+                            ->ouvertes();
                         $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
                         $formDecision->setValueOptions('station1Id', $values_options1)
                             ->setValueOptions('station2Id', $values_options1)
@@ -290,14 +340,21 @@ class EleveGestionController extends AbstractActionController
             ))));
             $description .= '<br>' . $responsable->codePostal . ' ' . $commune->nom;
         }
-        $form->setData(array('responsableId' => $responsableId, 'lat' => $pt->getLatitude(), 'lng' => $pt->getLongitude()));
+        $form->setData(array(
+            'responsableId' => $responsableId,
+            'lat' => $pt->getLatitude(),
+            'lng' => $pt->getLongitude()
+        ));
         return new ViewModel(array(
-            //'pt' => $pt,
+            // 'pt' => $pt,
             'form' => $form->prepare(),
             'description' => $description,
             'responsable' => array(
                 $responsable->titre . ' ' . $responsable->nom . ' ' . $responsable->prenom,
-                nl2br(trim(implode("\n", array($responsable->adresseL1, $responsable->adresseL2)))),
+                nl2br(trim(implode("\n", array(
+                    $responsable->adresseL1,
+                    $responsable->adresseL2
+                )))),
                 $responsable->codePostal . ' ' . $commune->nom
             )
         ));

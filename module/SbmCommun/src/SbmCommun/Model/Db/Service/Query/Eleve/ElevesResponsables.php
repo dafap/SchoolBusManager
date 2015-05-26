@@ -192,6 +192,7 @@ class ElevesResponsables implements FactoryInterface
             'inscrit' => 'inscrit',
             'gratuit' => 'gratuit',
             'paiement' => 'paiement',
+            'fa' => 'fa',
             'anneeComplete' => 'anneeComplete',
             'subventionR1' => 'subventionR1',
             'subventionR2' => 'subventionR2',

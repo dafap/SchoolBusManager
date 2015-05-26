@@ -104,7 +104,7 @@ class EleveController extends AbstractActionController
         }
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
-                ->get('Sbm\Db\Query\Eleves')
+                ->get('Sbm\Db\Query\ElevesResponsables')
                 ->paginatorScolaritesR2($criteres_obj->getWhere(), array(
                 'nom',
                 'prenom'
@@ -186,7 +186,7 @@ class EleveController extends AbstractActionController
                     ->nest()
                     ->equalTo('dateN', $odata->dateN)->or->equalTo('responsable1Id', $odata->responsable1Id)->or->equalTo('responsable2Id', $odata->responsable1Id)->or->equalTo('responsable1Id', StdLib::getParam('responsable2Id', $args, - 1))->or->equalTo('responsable2Id', StdLib::getParam('responsable2Id', $args, - 1))->unnest();
                 $resultset = $this->getServiceLocator()
-                    ->get('Sbm\Db\Query\Eleves')
+                    ->get('Sbm\Db\Query\ElevesResponsables')
                     ->withR2($where);
                 if ($resultset->count() == 0) {
                     // pas d'homonyme. On crée cet élève (22)
@@ -398,7 +398,7 @@ class EleveController extends AbstractActionController
         $where = new Where();
         $where->equalTo('eleveId', $eleveId);
         $data = $this->getServiceLocator()
-            ->get('Sbm\Db\Query\Eleves')
+            ->get('Sbm\Db\Query\ElevesResponsables')
             ->withR2($where)
             ->current();
         $form->setData(array(
@@ -850,7 +850,7 @@ class EleveController extends AbstractActionController
                 'page' => $currentPage
             ));
         }
-        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
+        $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Query\Eleves');
         $data = array();
         $data['resp1'] = $tableEleves->duResponsable1($responsableId);
         $data['resp2'] = $tableEleves->duResponsable2($responsableId);

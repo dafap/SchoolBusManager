@@ -19,6 +19,9 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate\Predicate;
+use Zend\Console\Prompt\Select;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
 
 class ElevesScolarites implements FactoryInterface
 {
@@ -67,10 +70,10 @@ class ElevesScolarites implements FactoryInterface
             'etablissementId' => 'etablissementId',
             'classeId' => 'classeId',
             'chez' => 'chez',
-            'adresseL1' => 'adresseL1',
-            'adresseL2' => 'adresseL2',
-            'codePostal' => 'codePostal',
-            'communeId' => 'communeId',
+            'adresseEleveL1' => 'adresseL1',
+            'adresseEleveL2' => 'adresseL2',
+            'codePostalEleve' => 'codePostal',
+            'communeEleveId' => 'communeId',
             'x' => 'x',
             'y' => 'y',
             'distanceR1' => 'distanceR1',
@@ -80,6 +83,7 @@ class ElevesScolarites implements FactoryInterface
             'inscrit' => 'inscrit',
             'gratuit' => 'gratuit',
             'paiement' => 'paiement',
+            'fa' => 'fa',
             'anneeComplete' => 'anneeComplete',
             'subventionR1' => 'subventionR1',
             'subventionR2' => 'subventionR2',
@@ -153,7 +157,7 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = clone $this->select;
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->and->literal('paiement = 1')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $where->equalTo('millesime', Session::get('millesime'))->and->nest()->literal('paiement = 1')->or->literal('fa=1')->unnest()->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
@@ -162,15 +166,27 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = clone $this->select;
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->and->literal('paiement = 0')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->literal('paiement = 0')
+            ->literal('fa=0')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
 
-    public function getElevesNonAffectes()
+    public function getInscritsNonAffectes()
+    {
+        $statement = $this->sql->prepareStatementForSqlObject($this->sqlInscritsNonAffectes());
+        return $statement->execute();
+    }
+    public function paginatorInscritsNonAffectes()
+    {
+        return new Paginator(new DbSelect($this->sqlInscritsNonAffectes(), $this->db->getDbAdapter()));
+    }
+    private function sqlInscritsNonAffectes()
     {
         $select = clone $this->select;
-        $select->join(array(
+        $select->quantifier($select::QUANTIFIER_DISTINCT)
+            ->join(array(
             'r' => $this->db->getCanonicName('responsables', 'table')
         ), 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId', array(
             'estR1' => new Expression('CASE WHEN r.responsableId=ele.responsable1Id THEN 1 ELSE 0 END'),
@@ -186,9 +202,11 @@ class ElevesScolarites implements FactoryInterface
             ->join(array(
             'aff' => $this->db->getCanonicName('affectations', 'table')
         ), 'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime', array(), $select::JOIN_LEFT);
-        // inscrit : bon millesime dans scolarites et paiement enregistré
+        // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
         $predicate1 = new Predicate();
-        $predicate1->equalTo('sco.millesime', Session::get('millesime'))->literal('paiement = 1');
+        $predicate1->equalTo('sco.millesime', Session::get('millesime'))
+            ->nest()
+            ->literal('paiement = 1')->or->literal('fa=1')->unnest();
         // demande non traitée
         $predicate2 = new Predicate();
         $predicate2->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal('sco.demandeR1 = 1')->unnest()->OR->nest()->literal('ele.responsable2Id=r.responsableId')->and->literal('sco.demandeR2 = 1')->unnest();
@@ -208,8 +226,69 @@ class ElevesScolarites implements FactoryInterface
         $where->predicate($predicate1)
             ->nest()
             ->predicate($predicate2)->or->predicate($predicate3)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $select->where($where)->order(array('nom', 'prenom'));
+    }
+
+    public function getPreinscritsNonAffectes()
+    {
+        $statement = $this->sql->prepareStatementForSqlObject($this->sqlPreinscritsNonAffectes());
         return $statement->execute();
+    }
+    public function paginatorPreinscritsNonAffectes()
+    {
+        return new Paginator(new DbSelect($this->sqlPreinscritsNonAffectes(), $this->db->getDbAdapter()));
+    }
+    private function sqlPreinscritsNonAffectes()
+    {
+        $select = clone $this->select;
+        $select->quantifier($select::QUANTIFIER_DISTINCT)
+            ->join(array(
+            'r' => $this->db->getCanonicName('responsables', 'table')
+        ), 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId', array(
+            'estR1' => new Expression('CASE WHEN r.responsableId=ele.responsable1Id THEN 1 ELSE 0 END'),
+            'responsableId' => 'responsableId',
+            'adresseL1' => 'adresseL1',
+            'adresseL2' => 'adresseL2'
+        ))
+            ->join(array(
+            'comresp' => $this->db->getCanonicName('communes', 'table')
+        ), 'r.communeId = comresp.communeId', array(
+            'commune' => 'nom'
+        ))
+            ->join(array(
+            'aff' => $this->db->getCanonicName('affectations', 'table')
+        ), 'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime', array(), $select::JOIN_LEFT);
+        // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
+        $predicate1 = new Predicate();
+        $predicate1->equalTo('sco.millesime', Session::get('millesime'))
+            ->literal('paiement = 0')
+            ->literal('fa=0');
+        // demande non traitée
+        $predicate2 = new Predicate();
+        $predicate2->nest()
+            ->literal('ele.responsable1Id = r.responsableId')
+            ->literal('sco.demandeR1 = 1')
+            ->unnest()->OR->nest()
+            ->literal('ele.responsable2Id=r.responsableId')
+            ->literal('sco.demandeR2 = 1')
+            ->unnest();
+        // accord mais pas d'affectation
+        $predicate3 = new Predicate();
+        $predicate3->isNull('aff.eleveId')
+            ->nest()
+            ->nest()
+            ->literal('ele.responsable1Id = r.responsableId')->and->literal('sco.demandeR1 = 2')
+            ->literal('sco.accordR1 = 1')
+            ->unnest()->or->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal('sco.demandeR1 = 2')
+            ->literal('sco.accordR2 = 1')
+            ->unnest()
+            ->unnest();
+        // composition du where
+        $where = new Where();
+        $where->predicate($predicate1)
+            ->nest()
+            ->predicate($predicate2)->or->predicate($predicate3)->unnest();
+        return $select->where($where)->order(array('nom', 'prenom'));
     }
 
     public function getDemandeGaDistanceR2Zero()
@@ -245,8 +324,7 @@ class ElevesScolarites implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
-    
-    
+
     public function getEnfants($responsableId, $ga = 1)
     {
         $select = clone $this->select;

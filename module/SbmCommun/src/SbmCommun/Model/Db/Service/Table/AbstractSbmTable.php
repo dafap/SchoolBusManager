@@ -152,7 +152,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      */
     public function getObjData()
     {
-        return $this->obj_data;
+        return clone $this->obj_data;
     }
 
     /**

@@ -56,33 +56,56 @@ $actions = array(
 	<div id="liste-inner">
 	<?php foreach ($this->data as $key => $liste) : ?>
 		<?php if ($liste->count()) : ?>
-			<?php switch ($key) :
-			    case 'resp1' : ?>
-			          <h3>Liste des élèves ayant cette personne comme responsable 1</h3>
-			    <?php break; 
-                case 'resp2' : ?>
-                      <h3>Liste des élèves ayant cette personne comme responsable 2</h3>
-			    <?php break; 
-                case 'fact' : ?>
-                      <h3>Liste des élèves ayant cette personne comme responsable financier</h3>                        
-			    <?php break;
-			    endswitch; ?>
+			<?php
+        
+switch ($key) :
+            case 'resp1':
+                ?>
+			          <h3>Liste des élèves ayant cette personne comme responsable
+			1</h3>
+			    <?php                
+                break;
+            case 'resp2':
+                ?>
+                      <h3>Liste des élèves ayant cette personne comme
+			responsable 2</h3>
+			    <?php
+                break;
+            case 'fact':
+                ?>
+                      <h3>Liste des élèves ayant cette personne comme
+			responsable financier</h3>                        
+			    <?php
+                break;
+        endswitch
+        ;
+        ?>
 			    <p>Il y a <?php echo count($liste); ?> élève<?php echo count($liste) > 1 ? 's' : ''; ?>.
-			    <table class="libelles">
-			        <tbody>
-				        <tr>
-				            <th>Nom</th><th>Prénom</th>
-				        </tr>
-			            <?php foreach ($liste as $row) : ?>
-			            <tr>
-			                <td><?php echo $row->nom; ?></td><td><?php echo $row->prenom; ?></td>
-			            </tr>
-			            <?php endforeach; ?>
-			        </tbody>
-			    </table>
-			    <?php endif;?>
-			<?php endforeach; ?>
-		</div>			
-	</div>
-	<div id="liste-footer"></div>
+		<table class="libelles">
+			<tbody>
+				<tr>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Inscrit en</th>
+					<th>Etablissement scolaire</th>
+				</tr>
+			    <?php foreach ($liste as $row) : ?>
+			    <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td><?php echo $row['nom']; ?></td>
+					<td><?php echo $row['prenom']; ?></td>
+					<?php if (is_null($row['millesime'])) : ?>
+					<td colspan="2">Non inscrit</td>
+					<?php else : ?>
+					<td><?php echo $row['millesime']?></td>
+					<td><?php echo $row['etablissement'] . ' - ' . $row['communeEtablissement'];?></td>
+					<?php endif;?>
+				</tr>
+			    <?php endforeach; ?>
+			</tbody>
+		</table>
+		<?php endif;?>
+    <?php endforeach; ?>
+    </div>
+</div>
+<div id="liste-footer"></div>
 </div>

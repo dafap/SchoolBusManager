@@ -42,6 +42,7 @@ return array(
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'paiement' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'fa' => 'tinyint(1) NOT NULL DEFAULT "0"', // famille d'accueil
             'anneeComplete' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'subventionR1' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'subventionR2' => 'tinyint(1) NOT NULL DEFAULT "0"',

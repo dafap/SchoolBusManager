@@ -175,7 +175,12 @@ class IndexController extends AbstractActionController
                 $tScolarites->saveRecord($oData);
                 $majDistances = $this->getServiceLocator()->get('Sbm\CalculDroitsTransport');
                 $majDistances->majDistancesDistrict($eleveId);
-                $this->flashMessenger()->addSuccessMessage('L\'enfant est enregistrée. Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                if ($oData->fa) {
+                    $this->flashMessenger()->addSuccessMessage('L\'enfant est inscrit.');
+                } else {
+                    $this->flashMessenger()->addSuccessMessage('L\'enfant est enregistré.');
+                    $this->flashMessenger()->addWarningMessage('Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                }              
                 return $this->redirect()->toRoute('sbmparent');
             }
         }

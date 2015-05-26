@@ -115,7 +115,7 @@ class Responsables implements FactoryInterface
      */
     public function withNbElevesInscrits(Where $where, $order = null)
     {
-        $where->literal('paiement=1')->equalTo('millesime', $this->millesime);
+        $where->nest()->literal('paiement=1')->OR->literal('fa=1')->unnest()->equalTo('millesime', $this->millesime);
         $select = clone $this->select;
         $select->join(array(
             'ele' => $this->db->getCanonicName('eleves', 'table')

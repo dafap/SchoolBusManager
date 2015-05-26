@@ -618,6 +618,9 @@ div#fiche-inner div.row-inner input.cancel {
 	padding-left: 5px;
 	min-width: 105px;
 }
+#fiche-inner #eleve #commun-col3 label.checkbox {
+	min-width: 130px;
+}
 #fiche-inner #eleve #commun div.input {
 	display: inline-block;
 }

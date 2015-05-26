@@ -14,6 +14,10 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+
 $url_retour = $this->url('sbmgestion/gestioneleve');
 $hiddens = array();
 $actions = array(
@@ -24,19 +28,19 @@ $actions = array(
     )
 );
 ?>
-<h1>Liste des élèves inscrits sans affectation</h1>
+<h1>Liste des élèves <?php echo $this->title;?> sans affectation</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
-    echo $this->flashMessenger()->render('success');
-    echo $this->flashMessenger()->render('warning');
-    echo $this->flashMessenger()->render('error');
-    echo $this->flashMessenger()->render('info');
-    echo $this->flashMessenger()->render('default');
-    ?></div>
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
-<?php if (count($this->data)): ?>
+<?php if (count($data)): ?>
 	<div id="liste-inner">
 		<table class="data">
 			<tbody>
@@ -49,9 +53,10 @@ $actions = array(
 					<th>Commune</th>
 					<th>Distance</th>
 				</tr>
-<?php foreach ($this->data as $row): ?>
+<?php foreach ($data as $row): ?>
 <?php $distance = $row['estR1'] ? $row['distanceR1'] : $row['distanceR2']; ?>
 <?php
+
         if ($row['district'] || $row['derogation']) {
             $tr_css = $distance < 1 ? 'alert' : ($distance < 3 ? 'warning' : '');
         } else {
@@ -78,7 +83,12 @@ $actions = array(
                 'title' => 'affecter'
             )
         );
-        $cle = implode('|', array($row['millesime'], $row['eleveId'], $row['estR1'] ? 1 : 2, $row['responsableId']));
+        $cle = implode('|', array(
+            $row['millesime'],
+            $row['eleveId'],
+            $row['estR1'] ? 1 : 2,
+            $row['responsableId']
+        ));
         ?>
             <tr
 					class="<?php echo $tr_css . ' ' . $this->cycle(array('even', 'odd'))->next(); ?>">
@@ -96,13 +106,26 @@ $actions = array(
 		</table>
 	</div>
 	<div id="liste-footer">
-		<p class="description">
-			<span class="alert">En rouge</span> les demandes qui ne semblent pas
-			être éligibles, à moins d'une dérogation.<br> <span class="warning">En
-				bleu</span> les demandes d'élèves situés entre 1km et 3km de
-			l'établissement scolaire.<br> En noir les demandes d'élèves ayant
-			droit.
-		</p>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="clearfix">
+			<div class="criteres-wrapper float-left">
+				<div class="clearfix">
+	                <?php echo $this->form()->openTag($this->criteres_form);?>
+	                <fieldset>
+	                <div style="display: inline-block"><?php echo $this->formRow($this->criteres_form->get('choix'));?></div>
+					<div style="display: inline-block" class="left-10px"><?php echo $this->formRow($this->criteres_form->get('submit'));?></div>
+					</fieldset>
+	                <?php echo $this->form()->closeTag();?>
+	            </div>
+			</div>
+			<p class="sbm-description float-right">
+				<span class="alert">En rouge</span> les demandes qui ne semblent pas
+				être éligibles, à moins d'une dérogation.<br> <span class="warning">En
+					bleu</span> les demandes d'élèves situés entre 1km et 3km de
+				l'établissement scolaire.<br> En noir les demandes d'élèves ayant
+				droit.
+			</p>
+		</div>
 	</div>
 <?php else: ?>
     <div id="liste-inner">
@@ -111,6 +134,3 @@ $actions = array(
 	<div id="liste-footer"></div>
 <?php endif; ?>
 </div>
-<p>
-	<i>Il faut rajouter un paginateur</i>
-</p>

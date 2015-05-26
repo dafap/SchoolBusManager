@@ -137,7 +137,8 @@ return array(
             'Sbm\Libelles\ModeDePaiement' => 'SbmCommun\Model\Db\Service\Select\LibellesModeDePaiement',            
             'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
             
-            'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
+            'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\Eleves',
+            'Sbm\Db\Query\ElevesResponsables' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
             'Sbm\Db\Query\ElevesScolarites' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites',
             'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations',
             'Sbm\Db\Query\Responsables' => 'SbmCommun\Model\Db\Service\Query\Responsable\Responsables'

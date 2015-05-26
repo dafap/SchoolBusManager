@@ -30,6 +30,7 @@ $latCentre = ($this->ptElv->getLatitude() + $this->ptEta->getLatitude()) / 2;
 $lngCentre = ($this->ptElv->getLongitude() + $this->ptEta->getLongitude()) / 2;
 // page html
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
 $this->headScript()->captureStart()?>
 function adaptedecision()
@@ -84,6 +85,28 @@ function initialiser() {
         infoEta.open(carte,markerEta);
     });
 }
+$(document).ready(function($) {
+$("#affectation-service1Id").on('change',function() {
+	    var valeur = $(this).val();
+	    $.ajax({
+	            url : '/sbmajaxeleve/getstationsforselect/serviceId:'+valeur,
+	            dataType: 'json',
+	            success : function(dataJson){
+	                $("#affectation-station1Id").empty();
+	                $("#affectation-station2Id").empty();
+	                if (dataJson.success) {
+	                    $.each(dataJson.data, function(k, d) {
+	                        $('#affectation-station1Id').append('<option value="' + k + '">' + d + '</option>');
+	                        $('#affectation-station2Id').append('<option value="' + k + '">' + d + '</option>');
+	                    });
+	                }
+	            },
+	            error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+	    });
+	});
+});
 <?php
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
@@ -127,7 +150,7 @@ if ($this->op == 1) {
 } else {
     // affichage des informations en texte;
     echo '<p>Transport accepté</p>
-          <p class="description">Précisez le circuit, le point de montée et, en cas de correspondance, le point de descente et le circuit suivant.';
+          <p class="sbm-description">Précisez le circuit, le point de montée et, en cas de correspondance, le point de descente et le circuit suivant.';
 }
 ?>
 	<?php

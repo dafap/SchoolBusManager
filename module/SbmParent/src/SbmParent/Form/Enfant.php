@@ -197,6 +197,37 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Radio',
+            'name' => 'fa',
+            'attributes' => array(
+                'id' => 'btnradiofa',
+                'class' => 'sbmparent-enfant',
+                'value' => '0'
+            ),
+            'options' => array(
+                'label' => 'Famille d\'accueil',
+                'label_attributes' => array(
+                    'class' => 'sbm-radio-label'
+                ),
+                'value_options' => array(
+                    array(
+                        'value' => '1',
+                        'label' => 'Oui',
+                        'attributes' => array(
+                            'id' => 'btnradiofa1'
+                        )
+                    ),
+                    array(
+                        'value' => '0',
+                        'label' => 'Non',
+                        'attributes' => array(
+                            'id' => 'btnradiofa0'
+                        )
+                    )
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Radio',
             'name' => 'demandeR2',
             'attributes' => array(
                 'id' => 'demandeR2',

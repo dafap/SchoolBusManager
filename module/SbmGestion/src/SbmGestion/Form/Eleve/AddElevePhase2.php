@@ -11,7 +11,7 @@
  * - si oui, passage en mode modification FIN
  * - si non, création de la scolarite (31)
  * (22) : enregistre le formulaire (Form1) et récupère le eleveId puis création de la scolarité (31)
- * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, demandeR1, demandeR2, commentaire
+ * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, fa, demandeR1, demandeR2, commentaire
  * - enregistre la scolarité
  * - passe en mode modification FIN
  * 
@@ -162,7 +162,23 @@ class AddElevePhase2 extends AbstractSbmForm  implements InputFilterProviderInte
             'options' => array(
                 'label' => 'District',
                 'label_attributes' => array(
-                    'class' => 'sbm-label'
+                    'class' => 'sbm-label checkbox'
+                ),
+                'use_hidden_element' => true,
+                'checked_value' => '1',
+                'unchecked_value' => '0'
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'fa',
+            'attributes' => array(
+                'id' => 'eleve-fa'
+            ),
+            'options' => array(
+                'label' => 'Famille d\'accueil',
+                'label_attributes' => array(
+                    'class' => 'sbm-label checkbox'
                 ),
                 'use_hidden_element' => true,
                 'checked_value' => '1',
@@ -179,7 +195,7 @@ class AddElevePhase2 extends AbstractSbmForm  implements InputFilterProviderInte
             'options' => array(
                 'label' => 'Paiement',
                 'label_attributes' => array(
-                    'class' => 'sbm-label'
+                    'class' => 'sbm-label checkbox'
                 ),
                 'use_hidden_element' => true,
                 'checked_value' => '1',
