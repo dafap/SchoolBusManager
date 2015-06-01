@@ -94,7 +94,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
             )
         ));
         $this->add(array(
-            'type' => 'Zend\Form\Element\Date',
+            'type' => 'Zend\Form\Element\DateSelect',
             'name' => 'dateN',
             'attributes' => array(
                 'id' => 'enfant_dateN',
@@ -108,7 +108,10 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 ),
-                'format' => 'Y-m-d'
+                //'format' => 'Y-m-d'
+                'create_empty_option' => true,
+                'min_year' => date('Y') - 25,
+                'max_year' => date('Y') - 2,
             )
         ));
         $this->add(array(

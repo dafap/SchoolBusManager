@@ -24,6 +24,7 @@ $url_tablealias = $this->url('sbminstall', array(
 ));
 $url_version = $this->url('sbminstall', array('action' => 'version'));
 $url_fichierslog = $this->url('sbminstall', array('action' => 'fichierslog'));
+$url_admin = $this->url('sbmadmin');
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
 <div id="menugeneral">
@@ -44,7 +45,7 @@ echo $this->flashMessenger()->render('default');
 			<li><a href="<?php echo $url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie des tables</a></li>
 			<li><a href="<?php echo $url_tablealias;?>"><i class="fam-bullet-go"></i>Liste des alias des
 					tables</a>
-		
+		    <li><a href="<?php echo $url_admin;?>"><i class="fam-bullet-go"></i>Espace de l'administrateur</a></li>
 		</ul>
 	</div>
 </div>

@@ -78,14 +78,16 @@ class AnneeScolaireController extends AbstractActionController
                     'millesime' => $millesime
                 ));
             }
+            $data = $request->getPost();
         } else {
-            $form->setData($table_calendar->getRecord($calendarId)
-                ->getArrayCopy());
+            $data = $table_calendar->getRecord($calendarId)->getArrayCopy();
+            $form->setData($data);
         }
         return new ViewModel(array(
             'form' => $form->prepare(),
             'millesime' => $millesime,
-            'calendarId' => $calendarId
+            'calendarId' => $calendarId,
+            'data' => $data
         ));
     }
 
@@ -101,13 +103,35 @@ class AnneeScolaireController extends AbstractActionController
         }
         $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
         $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
+        $auth = $this->getServiceLocator()
+        ->get('Dafap\Authenticate')
+        ->by('email');
         return new ViewModel(array(
             'as_libelle' => $as_libelle,
             'millesime' => $millesime,
-            'table' => $table_calendar->getMillesime($millesime)
+            'table' => $table_calendar->getMillesime($millesime),
+            'admin' => $auth->getCategorieId() > 253
         ));
     }
 
+    public function ouvrirAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        if (!array_key_exists('millesime', $prg) || !array_key_exists('ouvert', $prg)) {
+            return $this->redirect()->toRoute('sbmgestion/anneescolaire');
+        }
+        $tCalendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
+        if ($tCalendar->changeEtat($prg['millesime'], $prg['ouvert'])) {
+            $this->flashMessenger()->addSuccessMessage('L\'état de cette année scolaire a été modifié.');
+        } else {
+            $this->flashMessenger()->addErrorMessage('Impossible de modifier l\'état de cette année scolaire.');
+        }
+        return $this->redirect()->toRoute('sbmgestion/anneescolaire', array('action' => 'voir', 'millesime' => $prg['millesime']));
+    }
+    
     public function newAction()
     {
         $prg = $this->prg();

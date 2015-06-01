@@ -26,7 +26,7 @@ $("#help-preinscrits").on("click", function(){
             modal: true,
             autoOpen: false,
             height:400,
-            width:600,
+            width:610,
             resizable: false,
             title: $(this).attr('title')
             //appendTo: content
@@ -45,8 +45,8 @@ $enAttente = false;
 $nbPreinscrits = $this->preinscrits->count();
 $nbInscrits = $this->inscrits->count();
 $nbPaiements = $this->paiements->count();
-// $dateLimite = date('d/m/Y', strtotime('+15 days'));
-$dateLimite = $this->dateLimite;
+$etat = $this->etatSite['etat'];
+$dateLimite = $this->etatSite['echeance']->format('d/m/Y');
 $url_ajoutEleve = $this->url('sbmparent', array(
     'action' => 'inscription-eleve'
 ));
@@ -55,7 +55,8 @@ $url_payer = $this->url('sbmpaiement', array(
 ));
 ?>
 <div id="winpopup">
-	<div id="winpopup-content" style="margin-left: 30px; margin-right: 30px;"></div>
+	<div id="winpopup-content"
+		style="margin-left: 30px; margin-right: 30px;"></div>
 </div>
 <div class="flashMessenger float-right">
 <?php
@@ -69,31 +70,43 @@ echo $this->flashMessenger()->render('default');
 <h1>Espace parent</h1>
 <?php if ($nbInscrits == 0 && $nbPreinscrits == 0) : ?>
 <div id="parent-wrapper" class="explication">
-	<p>Vous n'avez pas d'enfant inscrit.</p>
-	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez 
-globalement le paiement en ligne ou adressez votre paiment au service transport de la Communauté de 
-Commune du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?>.</p>
+	<?php if ($etat == 0) :?>
+	<p>Vos enfants ne sont pas inscrits pour l'année scolaire prochaine.</p>
+	<p>Vous pourrez inscire vos enfants entre le <?php echo $this->etatSite['dateDebut']->format('d/m/Y');?> et le <?php echo $this->etatSite['dateFin']->format('d/m/Y');?>.</p>
+	<?php elseif ($etat == 1) :?>
+	<p>Vous n'avez pas encore d'enfant inscrit.</p>
+	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez le paiement en ligne ou adressez votre paiment au service transport de la Communauté de 
+communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de recevoir votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
+    <ul>
+    <?php foreach ($this->permanences as $row) :?>
+        <li><?php echo "Pour les habitants de $row";?></li>
+    <?php endforeach;?>
+    </ul>
 	<p>
 		<b>Les inscriptions ne seront prises en compte qu'une fois le paiement
-			enregistré.</b> Vous pouvez donc préinscrire vos enfants, mais vous
-		devez respecter la date limite de paiement sinon leurs préinscriptions
-		seront supprimées et leurs places ne seront plus réservées.
+			enregistré.</b>
 	</p>
-	<p>Un enfant ne peut être inscrit ou préinscrit que dans un seul
-		établissement scolaire.</p>
 	<p>
 		Cliquez sur le bouton <b><i>Inscrire un enfant</i></b> pour commencer
 		les inscriptions.
 	</p>
 <?php
-    echo $this->listeZoneActions(array(), array(
-        'inscrire' => array(
-            'class' => 'accueil default',
-            'formaction' => $url_ajoutEleve,
-            'value' => 'Inscrire un enfant'
-        )
-    ));
-    ?>
+        echo $this->listeZoneActions(array(), array(
+            'inscrire' => array(
+                'class' => 'accueil default',
+                'formaction' => $url_ajoutEleve,
+                'value' => 'Inscrire un enfant'
+            )
+        ));
+        ?>	<?php else :?>
+        <p>Vous n'avez pas d'enfant inscrit.</p>
+	<p>Les inscriptions en ligne sont fermées.</p>
+	<p>Pour inscrire un enfant, prenez contact avec le service transport de
+		la Communauté de communes Decazeville-Aubin. Au delà du <?php echo $dateLimite;?> les
+		places seront attribuées à la rentrée en fonction des disponibilités
+		dans les cars.</p>
+	<?php endif;?>
+
 </div>
 <?php else : ?>
 <div id="parent-wrapper">
@@ -140,6 +153,9 @@ Commune du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?>.</p>
             </tbody>
 			</table>
 		</fieldset>
+		<p class="sbm-description">
+			La carte des circuits et les horaires seront consultables ici à partir de la dernière semaine d'août.
+		</p>
     <?php endif; ?>
     </div>
 	<div id="parent-preinscrits">
@@ -180,30 +196,34 @@ Commune du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?>.</p>
             $hiddens = array(
                 'id' => $row['eleveId']
             );
-            $buttons = array(
-                'modifier' => array(
-                    'class' => 'button default left-10px',
-                    'formaction' => $url_edit,
-                    'title' => 'modifier la scolarité de ' . $row['prenom'],
-                    'value' => 'Modifier'
-                ),
-                'supprimer' => array(
-                    'class' => 'button default left-10px',
-                    'formaction' => $url_delete,
-                    'title' => 'supprimer l\'incription de ' . $row['prenom'],
-                    'value' => 'Supprimer'
-                )
-            );
-            if ($peutPayer) {
-                $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente';
-                $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' . $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
-                $attenteTitle .= ' la liste des inscriptions à payer';
-                $buttons['attente'] = array(
-                    'class' => 'button default left-10px',
-                    'formaction' => $url_attente,
-                    'title' => $attenteTitle,
-                    'value' => $attenteValue
+            if ($etat == 1) {
+                $buttons = array(
+                    'modifier' => array(
+                        'class' => 'button default left-10px',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier la scolarité de ' . $row['prenom'],
+                        'value' => 'Modifier'
+                    ),
+                    'supprimer' => array(
+                        'class' => 'button default left-10px',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer l\'incription de ' . $row['prenom'],
+                        'value' => 'Supprimer'
+                    )
                 );
+                if ($peutPayer) {
+                    $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente';
+                    $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' . $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
+                    $attenteTitle .= ' la liste des inscriptions à payer';
+                    $buttons['attente'] = array(
+                        'class' => 'button default left-10px',
+                        'formaction' => $url_attente,
+                        'title' => $attenteTitle,
+                        'value' => $attenteValue
+                    );
+                }
+            } else {
+                $buttons = array();
             }
             $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
             $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>';
@@ -223,42 +243,62 @@ Commune du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?>.</p>
 			</table>
 		</fieldset>
     <?php endif; ?>
+    <?php if ($etat == 1):?>
         <div class="bouton-inscrire clearfix">
         <?php
-    $boutons = array(
-        array(
-            'class' => 'button default float-right left-10px',
-            'formaction' => $url_ajoutEleve,
-            'value' => 'Inscrire un autre enfant'
-        )
-    );
-    if ($montantTotal > 0) {
-        if ($enAttente) {
-            $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
-        } else {
-            $payerTitle = "valider et payer toutes les inscriptions\nde la liste de enfants préinscrits.";
-        }
-        $boutons['payer'] = array(
-            'class' => 'button default float-right left-10px',
-            'formaction' => $url_payer,
-            'value' => 'Valider la liste et payer',
-            'title' => $payerTitle
+        $boutons = array(
+            array(
+                'class' => 'button default float-right left-10px',
+                'formaction' => $url_ajoutEleve,
+                'value' => 'Inscrire un autre enfant'
+            )
         );
-    }
-    echo $this->listeZoneActions(array(
-        'montant' => $montantTotal
-    ), $boutons);
-    ?>
+        if ($montantTotal > 0) {
+            if ($enAttente) {
+                $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
+            } else {
+                $payerTitle = "valider et payer toutes les inscriptions\nde la liste de enfants préinscrits.";
+            }
+            $boutons['payer'] = array(
+                'class' => 'button default float-right left-10px',
+                'formaction' => $url_payer,
+                'value' => 'Valider la liste et payer',
+                'title' => $payerTitle
+            );
+        }
+        echo $this->listeZoneActions(array(
+            'montant' => $montantTotal
+        ), $boutons);
+        ?>
         </div>
+    <?php endif;?>
+    <?php
+    switch ($etat) {
+        case 0:
+            $msg = '';
+            break;
+        case 1:
+            $msg = "N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
+            $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " . $this->permanences[0] . '.';
+            break;
+        default:
+            $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
+            $msg .= $this->permanences[0] . '.';
+            break;
+    }
+    ?>
 		<p class="sbm-description">
-			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> N'oubliez pas de payer ou d'envoyer votre paiement avant le <?php echo $dateLimite;?>.
+			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?php echo $msg;?>
 		</p>
 		<div id="help-preinscrits-content" class="invisible">
 			<p>Vous pouvez :</p>
 			<ul>
-				<li>payer en ligne à l'aide d'une carte bancaire ;</li>
-				<li>adresser un chèque du montant indiqué à l'adresse ci-dessous ;</li>
-				<li>vous rendre au service de transport pour payer en espèces.</li>
+				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire avant le <?php echo $dateLimite;?>. Vous recevrez
+					alors la carte de transport par la poste.</li>
+				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à l'adresse ci-dessous avant le <?php echo $dateLimite;?>. 
+				Vous recevrez alors la carte de transport par la poste.</li>
+				<li>vous rendre à la Communauté de communes (pour les habitant de <?php echo $this->permanences[0];?>) 
+				pour payer en espèces ou par chèque et retirer la carte de transport.</li>
 			</ul>
 			<div class="centre">   
 				<?php echo $this->client['name'];?><br>
@@ -267,7 +307,6 @@ Commune du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?>.</p>
 				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
 				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
 		    </div>
-		    <p>N'oubliez pas de payer avant le <?php echo $dateLimite;?> !</p>
 		</div>
 	</div>
 	<div id="parent-paiements">

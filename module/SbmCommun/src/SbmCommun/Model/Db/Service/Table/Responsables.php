@@ -61,7 +61,7 @@ class Responsables extends AbstractSbmTable
                 if (! $is_new) {
                     // dans ce cas, c'est le responsable. On ne le change pas.
                     $obj_data = $old_data;
-                }               
+                }   
             } catch(ExceptionObjectData $e) {
                 $is_new = true;
             }
@@ -167,8 +167,18 @@ class Responsables extends AbstractSbmTable
         return ($with_titre ? $record->titre . ' ' : '') . $record->nom . ' ' . $record->prenom;
     }
 
+    /**
+     * Renvoie un SbmCommun\Model\Db\ObjectDataInterface ou false s'il n'est pas trouvé.
+     * Renvoi false si email est vide.
+     * 
+     * @param string $email
+     * @return boolean|\Zend\Db\ResultSet\object
+     */
     public function getRecordByEmail($email)
     {
+        if (empty($email)) {
+            return false;
+        }
         $resultset = $this->fetchAll(array(
             'email' => $email
         ));

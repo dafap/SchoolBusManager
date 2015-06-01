@@ -70,8 +70,7 @@ class EleveController extends AbstractActionController
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('sbmgestion/eleve');
-                        ;
+                        return $this->redirect()->toRoute('sbmgestion');
                     }
                 } elseif (array_key_exists('origine', $args)) {
                     $this->redirectToOrigin()->setBack($args['origine']);
@@ -697,7 +696,7 @@ class EleveController extends AbstractActionController
         $args = $prg;
         // si $args contient la clé 'cancel' c'est un abandon de l'action
         if (\array_key_exists('cancel', $args)) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été enregistré.");
             return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'responsable-liste',
                 'page' => $this->params('page', 1)
@@ -729,7 +728,7 @@ class EleveController extends AbstractActionController
                         ->get('Sbm\Db\table\Communes')
                         ->setVisible($oData->communeId);
                 }
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
+                $this->flashMessenger()->addSuccessMessage("La fiche a été enregistrée.");
                 return $this->redirect()->toRoute('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
                     'page' => $this->params('page', 1)
@@ -1117,7 +1116,7 @@ class EleveController extends AbstractActionController
             }
         }
         return new ViewModel(array(
-            'form' => $form->prepare(),
+            'form' => is_null($form) ? null : $form->prepare(),
             'info' => $args['info'],
             'msg' => $msg,
             'page' => $this->params('page', 1)

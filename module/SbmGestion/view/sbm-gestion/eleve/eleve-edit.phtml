@@ -273,17 +273,17 @@ montreBlockAffectation($("#eleve-accordR1").is(":checked"),'r1');
 montreBlockAffectation($("#eleve-accordR2").is(":checked"),'r2');
 initAccord();
 $.ajax({
-		url : '/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable1Id").val(),
-		success : function(data){montreResponsable('r1',data);},
-		error : function(xhr, ajaxOptions, thrownError) {
+		url:'/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable1Id").val(),
+		success:function(data){montreResponsable('r1',data);},
+		error:function(xhr, ajaxOptions, thrownError) {
 			alert(xhr.status + " " + thrownError);
 		}
 });
 if ($("#eleve-responsable2Id").val()) {
 $.ajax({
-		url : '/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable2Id").val(),
-		success : function(data){montreResponsable('r2',data);},
-		error : function(xhr, ajaxOptions, thrownError) {
+		url:'/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable2Id").val(),
+		success:function(data){montreResponsable('r2',data);},
+		error:function(xhr, ajaxOptions, thrownError) {
 			alert(xhr.status + " " + thrownError);
 		}
 });
@@ -351,8 +351,8 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
 						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
 						<div id="wrapper-dateFin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateFin'));?></div>
-					</div id="commun-col2-derogation" class="clearfix">
-					<div>
+					</div>
+					<div id="commun-col2-derogation" class="clearfix">
 						<div id="wrapper-derogation" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('derogation'));?></div>
 						<div id="wrapper-motifDerogation"
 							class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('motifDerogation'));?></div>
@@ -539,7 +539,7 @@ echo $this->formHidden($this->form->get('csrf'));
 					</div>
 				</div>
 				<div id="tabs-3" class="sbm-tabs-container" class="clearfix">
-					<div id="" tabs-3-col1" class="float-left">
+					<div id="tabs-3-col1" class="float-left">
 						<h3>Identité de l'élève</h3>
 						<div id="#eleve-dateCreation">
 							<div class="eleve-tabs-3-col-1-label">Date de création</div><?php echo formatDate($this->historique['eleve']['dateCreation']);?></div>
@@ -551,7 +551,7 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div id="#scolarite-dateModification">
 							<div class="eleve-tabs-3-col-1-label">Date de modification</div><?php echo formatDate($this->historique['scolarite']['dateModification']);?></div>
 					</div>
-					<div id="" tabs-3-col2" class="float-left left-10px">
+					<div id="tabs-3-col2" class="float-left left-10px">
 						<h3>Responsable 1</h3>
 						<div id="#responsable1-dateCreation">
 							<div class="eleve-tabs-3-col-2-label">Date de création</div><?php echo formatDate($this->historique['responsable1']['dateCreation']);?></div>

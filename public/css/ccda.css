@@ -117,6 +117,9 @@ i.fam-help:hover {
 .left-95px {
 	margin-left: 70px;
 }
+.right-10px {
+	margin-right: 10px;
+}
 .input-error {
 	background-color: #ffcbbf;
 	border: 2px inset #db001b;
@@ -200,10 +203,6 @@ div#error_wrapper {
 	color: black;
 	font-weight: bold;
 }
-#footer div.float-right {
-	position: absolute;
-	top: -100px;
-}
 /*-------- Conteneur de la page ---*/
 #container-interface {
 	background-color: white;
@@ -217,7 +216,7 @@ div#error_wrapper {
 /*-------- Page accueil --------*/
 div.table-page1 {
 	display: table;
-	width: 90%;
+	width: 91%;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -243,7 +242,7 @@ div.centre {
 	margin-left: auto;
 	margin-right: auto;
 }
-
+div.sbm-page1,
 fieldset.sbm-page1 {
 	border: 1px solid #f78042;
 	border-radius: 4px 4px 4px 4px;
@@ -532,6 +531,7 @@ div#fiche-inner div.row-inner input.cancel {
 	margin-left: 120px;
 }
 /*-------------- Fiche calendrier -------------------*/
+#fiche-inner #calendar div.label,
 #fiche-inner #calendar label {
 	display: inline-block;
 	padding-left: 5px;
@@ -548,7 +548,7 @@ div#fiche-inner div.row-inner input.cancel {
 	width: 135px;
 }
 #fiche-inner #circuit label.sbm-label-semaine {
-	display: initial;
+	display: inline;
 	margin-right: 22px;
 }
 #fiche-inner #circuit input.submit {
@@ -703,8 +703,14 @@ table.eleve-affectations td.last {
 	margin-top: 6px;
 	margin-left: 300px;	
 }
+#fiche-inner #etablissement .cols-1 {
+	width: 52%;
+}
 #fiche-inner #etablissement .cols-2 {
-	width: 48%;
+	width: 46%;
+}
+#fiche-inner #etablissement .cols-3 {
+	width: 49.5%;
 }
 #fiche-inner #etablissement .rows-2 {
 	min-height: 5.5em;
@@ -806,7 +812,7 @@ table.eleve-affectations td.last {
 }
 #fiche-inner #responsable select#responsable-titre2 {
 	vertical-align: top;
-}
+} 
 /*-------------- Fiche services ---------------------*/
 #fiche-inner #service label {
 	display: inline-block;
@@ -877,42 +883,42 @@ table.plugin {
 	width: 155px;
 }
 #fiche-inner #user .colsuiv label {
-	margin-left: 55px;
+	margin-left: 43px;
 	margin-right: 5px;
 }
 /*-------------- Largeur des inputs text ------------*/
 input.sbm-width-5c, select.sbm-width-5c {
-	width: 3em;
+	width: 3.5em;
 }
 input.sbm-width-10c, select.sbm-width-10c {
 	width: 7em;
 }
 input.sbm-width-15c, select.sbm-width-15c {
-	width: 10em;
+	width: 10.5em;
 }
 input.sbm-width-20c, select.sbm-width-20c, textarea.sbm-width-20c {
-	width: 13em;
+	width: 14em;
 }
 input.sbm-width-25c, select.sbm-width-25c, textarea.sbm-width-25c {
-	width: 17em;
+	width: 17.5em;
 }
 input.sbm-width-30c, select.sbm-width-30c, textarea.sbm-width-30c {
-	width: 20em;
+	width: 21em;
 }
 input.sbm-width-35c, select.sbm-width-35c, textarea.sbm-width-35c {
-	width: 23em;
+	width: 24.5em;
 }
 input.sbm-width-40c, select.sbm-width-40c, textarea.sbm-width-40c {
-	width: 27em;
+	width: 28em;
 }
 input.sbm-width-45c, select.sbm-width-45c, textarea.sbm-width-45c {
-	width: 30em;
+	width: 31.5em;
 }
 input.sbm-width-50c, select.sbm-width-50c, textarea.sbm-width-50c {
-	width: 33em;
+	width: 35em;
 }
 input.sbm-width-55c, select.sbm-width-55c, textarea.sbm-width-55c {
-	width: 37em;
+	width: 38.5em;
 }
 textarea.sbm-width-40c, textarea.sbm-width-45c, textarea.sbm-width-50c, textarea.sbm-width-55c {
 	height: 4rem;
@@ -1015,7 +1021,7 @@ table.parent {
 }
 #fiche-inner form#enfant label.sbm-multi-label,
 #fiche-inner form#enfant label.sbm-radio-label {
-	display: initial;
+	display: inline;
 	margin-right: 30px;
 }
 #fiche-inner div.enfant-label {

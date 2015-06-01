@@ -51,9 +51,9 @@ echo $this->formHidden($this->form->get('csrf'));
     <div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
     <div id="paiement-edit-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice')); ?></div>
     <div id="paiement-edit-annee-scolaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('anneeScolaire')); ?></div>
-    <div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('datePaiement')); ?></div>
-    <div id="paiement-edit-date-valeur" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateValeur')); ?></div>
-    <div id="paiement-edit-date-depot" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateDepot')); ?></div>
+    <div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
+    <div id="paiement-edit-date-valeur" class="row-inner edit"><?php echo $this->formRowDate($this->form->get('dateValeur')); ?></div>
+    <div id="paiement-edit-date-depot" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
     <div id="paiement-edit-titulaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('titulaire')); ?></div>
     <div id="paiement-edit-banque" class="row-inner edit"><?php echo $this->formRow($this->form->get('banque')); ?></div>
     <div id="paiement-edit-reference" class="row-inner edit"><?php echo $this->formRow($this->form->get('reference')); ?></div>

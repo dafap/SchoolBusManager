@@ -28,9 +28,49 @@ return array(
                 'libelle' => 'Période d\'inscription',
                 'description' => '%libelle% %as%',
                 'exercice' => 0
-            ),            
+            ),
             array(
                 'ordinal' => 3,
+                'nature' => 'PERM',
+                'rang' => 1,
+                'libelle' => 'Permanence pour AUBIN',
+                'description' => 'Aubin le',
+                'exercice' => 0
+            ),
+            array(
+                'ordinal' => 4,
+                'nature' => 'PERM',
+                'rang' => 2,
+                'libelle' => 'Permanence pour CRANSAC',
+                'description' => 'Cransac le',
+                'exercice' => 0
+            ),
+            array(
+                'ordinal' => 5,
+                'nature' => 'PERM',
+                'rang' => 3,
+                'libelle' => 'Permanence pour DECAZEVILLE',
+                'description' => 'Decazeville le',
+                'exercice' => 0
+            ),
+            array(
+                'ordinal' => 6,
+                'nature' => 'PERM',
+                'rang' => 4,
+                'libelle' => 'Permanence pour FIRMI',
+                'description' => 'Firmi le',
+                'exercice' => 0
+            ),
+            array(
+                'ordinal' => 7,
+                'nature' => 'PERM',
+                'rang' => 5,
+                'libelle' => 'Permanence pour VIVIEZ',
+                'description' => 'Viviez le',
+                'exercice' => 0
+            ),
+            array(
+                'ordinal' => 8,
                 'nature' => 'VACA',
                 'rang' => 1,
                 'libelle' => 'Vacances de Toussaint',
@@ -38,7 +78,7 @@ return array(
                 'exercice' => 0
             ),
             array(
-                'ordinal' => 4,
+                'ordinal' => 9,
                 'nature' => 'VACA',
                 'rang' => 2,
                 'libelle' => 'Vacances de Noël',
@@ -46,7 +86,7 @@ return array(
                 'exercice' => 0
             ),
             array(
-                'ordinal' => 5,
+                'ordinal' => 10,
                 'nature' => 'VACA',
                 'rang' => 3,
                 'libelle' => 'Vacances d\'hiver',
@@ -54,14 +94,13 @@ return array(
                 'exercice' => 0
             ),
             array(
-                'ordinal' => 6,
+                'ordinal' => 11,
                 'nature' => 'VACA',
                 'rang' => 4,
                 'libelle' => 'Vacances de printemps',
                 'description' => 'Vacances de printemps %as%',
                 'exercice' => 0
             ),
-
         )
     )
 ); 

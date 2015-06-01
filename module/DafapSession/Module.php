@@ -48,25 +48,22 @@ class Module
 
     /**
      * Mise en place des traductions
-     * 
-     * @param EventInterface $e
+     *
+     * @param EventInterface $e            
      */
     private function bootstrapTranslation(EventInterface $e)
     {
         $application = $e->getApplication();
         $sm = $application->getServiceManager();
         $translator = $sm->get('translator');
-        $translator->addTranslationFile(
-            'phpArray',
-            'vendor/zendframework/zendframework/resources/languages/fr/Zend_Validate.php'
-        );
+        $translator->addTranslationFile('phpArray', 'vendor/zendframework/zendframework/resources/languages/fr/Zend_Validate.php');
         AbstractValidator::setDefaultTranslator($translator);
     }
-    
+
     /**
      * Mise en place des permissions
-     * 
-     * @param EventInterface $e
+     *
+     * @param EventInterface $e            
      */
     public function bootstrapPermissions(EventInterface $e)
     {
@@ -87,15 +84,20 @@ class Module
 
     /**
      * Mise en place des sessions
-     * 
-     * @param EventInterface $e
+     *
+     * @param EventInterface $e            
      */
     public function bootstrapSession(EventInterface $e)
     {
         $session = $e->getApplication()
             ->getServiceManager()
             ->get('DafapSessionManager');
-        $session->start();
+        try {
+            $session->start();
+        } catch (\Zend\Session\Exception\RuntimeException $e) {
+            $session->expireSessionCookie();
+            $session->start();
+        }
         
         $container = new Container('initialized');
         if (! isset($container->init)) {

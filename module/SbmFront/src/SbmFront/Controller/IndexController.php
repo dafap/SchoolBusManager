@@ -18,6 +18,7 @@ use Zend\View\Model\ViewModel;
 use SbmFront\Form\Login;
 use SbmCommun\Model\StdLib;
 use DafapMail\Model\Template as MailTemplate;
+use DafapSession\Model\Session;
 
 class IndexController extends AbstractActionController
 {
@@ -30,7 +31,6 @@ class IndexController extends AbstractActionController
             'action' => 'login'
         )));
         $tCalendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
-        $rEtat = $tCalendar->etatDuSite();
         return new ViewModel(array(
             'form' => $form->prepare(),
             'client' => StdLib::getParamR(array(
@@ -42,14 +42,15 @@ class IndexController extends AbstractActionController
                 'layout',
                 'accueil'
             ), $this->getServiceLocator()->get('config')),
-            'etat' => $rEtat['etat'],
-            'msg' => $rEtat['msg']
+            'as' => Session::get('as')['libelle'],
+            'etat' => $tCalendar->etatDuSite(),
+            'permanences' => $tCalendar->getPermanences()
         ));
     }
 
     public function testAction()
     {
-        die(var_dump($this->getServiceLocator()->get('Sbm\Db\Query\Responsables')->getNbEnfantsInscrits(653)));
+        die(var_dump(Session::get('millesime'), Session::get('as')));
         return $view;
     }
 }

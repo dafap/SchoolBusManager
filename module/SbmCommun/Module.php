@@ -37,14 +37,26 @@ class Module extends AbstractModule implements BootstrapListenerInterface
     {
         return __NAMESPACE__;
     }
-    
+
     public function onBootstrap(EventInterface $e)
     {
         $doctypeHelper = new Doctype();
         $doctypeHelper('HTML5');
-        $tCalendar = $e->getApplication()->getServiceManager()->get('Sbm\Db\System\Calendar'); 
-        for ($millesime = Session::get('millesime', false); !$millesime; $millesime = Session::get('millesime', false)) {
-            Session::set('millesime', $tCalendar->getDefaultMillesime());
+        $tCalendar = $e->getApplication()
+            ->getServiceManager()
+            ->get('Sbm\Db\System\Calendar');
+        if ($e->getApplication()
+            ->getServiceManager()
+            ->get('Dafap\Authenticate')
+            ->by()
+            ->hasIdentity()) {
+            
+            for ($millesime = Session::get('millesime', false); ! $millesime; $millesime = Session::get('millesime', false)) {
+                Session::set('millesime', $tCalendar->getDefaultMillesime());
+            }
+        } else {
+            $millesime = $tCalendar->getDefaultMillesime();
+            Session::set('millesime', $millesime);
         }
         Session::set('as', $tCalendar->getAnneeScolaire($millesime));
         $application = $e->getParam('application');

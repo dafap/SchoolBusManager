@@ -53,7 +53,10 @@ class IndexController extends AbstractActionController
         }
         $query = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesScolarites');
         $paiements = $this->getServiceLocator()->get('Sbm\Db\Vue\Paiements');
+        $tCalendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
         return new ViewModel(array(
+            'etatSite' => $tCalendar->etatDuSite(),
+            'permanences' => $tCalendar->getPermanences(),
             'inscrits' => $query->getElevesInscrits($responsable->responsableId),
             'preinscrits' => $query->getElevesPreinscrits($responsable->responsableId),
             'montant' => $this->getServiceLocator()
@@ -63,9 +66,6 @@ class IndexController extends AbstractActionController
                 'responsableId' => $responsable->responsableId
             )),
             'affectations' => $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations'),
-            'dateLimite' => $this->getServiceLocator()
-                ->get('Sbm\Db\System\Calendar')
-                ->etatDuSite()['echeance'],
             'client' => StdLib::getParamR(array(
                 'sbm',
                 'client'
@@ -103,7 +103,7 @@ class IndexController extends AbstractActionController
             'action' => 'inscription-eleve'
         )));
         $form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsDesservis'))
+            ->get('Sbm\Db\Select\EtablissementsVisibles'))
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours())
@@ -254,7 +254,7 @@ class IndexController extends AbstractActionController
             'action' => 'edit-eleve'
         )));
         $form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsDesservis'))
+            ->get('Sbm\Db\Select\EtablissementsVisibles'))
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours());

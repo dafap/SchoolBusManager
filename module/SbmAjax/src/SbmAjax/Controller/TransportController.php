@@ -20,7 +20,7 @@ use Zend\Json\Json;
 
 class TransportController extends AbstractActionController
 {
-    const ROUTE = 'sbmajaxfinance';
+    const ROUTE = 'sbmajaxtransport';
 
     /**
      * ajax - cocher la case sélection des circuits
@@ -210,7 +210,100 @@ class TransportController extends AbstractActionController
         }
     }
     
-    
+    /**
+     * ajax - cocher la case visible des établissements
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function checkvisibleetablissementAction()
+    {
+        try {
+            $etablissementId = $this->params('etablissementId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Etablissements')
+            ->setVisible($etablissementId, 1);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+    /**
+     * ajax - décocher la case visible des établissements
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function uncheckvisibleetablissementAction()
+    {
+        try {
+            $etablissementId = $this->params('etablissementId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Etablissements')
+            ->setVisible($etablissementId, 0);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+
+    /**
+     * ajax - cocher la case desservie des établissements
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function checkdesservietablissementAction()
+    {
+        try {
+            $etablissementId = $this->params('etablissementId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Etablissements')
+            ->setDesservie($etablissementId, 1);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+    /**
+     * ajax - décocher la case desservie des établissements
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function uncheckdesservietablissementAction()
+    {
+        try {
+            $etablissementId = $this->params('etablissementId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Etablissements')
+            ->setDesservie($etablissementId, 0);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+        
     /**
      * ajax - cocher la case sélection des services
      *

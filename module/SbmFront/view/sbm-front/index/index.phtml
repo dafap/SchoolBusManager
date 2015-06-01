@@ -14,6 +14,56 @@
 $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
 $url_admin = $this->url('sbmadmin');
+$url_carte = $this->url('sbmcarte', array('action' => 'etablissements'));
+
+if ($this->etat['etat'] == 0) {
+    // avant le début de la période d'inscription
+    $format = <<<EOT
+<p class="premiere">La période d'inscription %s sera ouverte du %s au %s.</p>
+<p>Durant cette période, vous pourrez inscrire vos enfants depuis ce site au service de transport scolaire organisé par la Communauté de communes du Bassin Decazeville Aubin. Les inscriptions ne seront définitives qu'après paiement des prestations demandées.</p>
+<p>Les paiements pourront se faire :</p><ul>
+<li>en ligne par carte bancaire, sur une connexion sécurisée, avant le %s pour recevoir la carte de transport par courrier ;</li>
+<li>au-delà, par chèque ou espèces, lors des permanences à la Communauté de communes pour les habitants de<ul>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+</ul></li></ul>
+<p>Cas particuliers des élèves domicilés à Rulhe-Auzits et des élèves utilisant la navette Agnac - La Bessenoits : l'inscription en ligne n'est pas disponible. Veuillez contacter le service Transport.</p>
+<p>Pour tout autre renseignement ou tout autre mode d'inscription, vous pouvez vous adresser directement au service Transport à l'adresse :</p>
+EOT;
+    
+    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);
+} elseif ($this->etat['etat'] == 1) {
+    // durant la période d'inscriptions
+    $format = <<<EOT
+<p class="premiere">La période d'inscription %s est ouverte du %s au %s.</p>
+<p>Vous pouvez inscrire vos enfants depuis ce site au service de transport scolaire organisé par la Communauté de communes du Bassin Decazeville Aubin. Les inscriptions ne seront définitives qu'après paiement des prestations demandées.</p>
+<p>Les paiements peuvent se faire :</p><ul>
+<li>en ligne par carte bancaire, sur une connexion sécurisée, avant le %s pour recevoir la carte de transport par courrier ;</li>
+<li>au-delà, par chèque ou espèces, lors des permanences à la Communauté de communes pour les habitants de<ul>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+</ul></li></ul>
+<p>Cas particuliers des élèves domicilés à Rulhe-Auzits et des élèves utilisant la navette Agnac - La Bessenoits : l'inscription en ligne n'est pas disponible. Veuillez contacter le service Transport.</p>
+<p>Pour tout autre renseignement ou tout autre mode d'inscription, vous pouvez vous adresser directement au service Transport à l'adresse :</p>
+EOT;
+    
+    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);    
+} else {
+    // après la période d'inscription
+    $format = <<<EOT
+<p class="premiere">La période d'inscription %s est close.</p>
+ <p>Vous pouvez consulter l’affectation de vos enfants, trouver les horaires, correspondre avec le service grâce à votre compte personnel.</p>
+<p>Pour tout renseignement ou pour une nouvelle inscription, adressez vous directement au service Transport à l'adresse :</p>
+EOT;
+    
+    $msg = sprintf($format, $this->as);
+}
 ?>
 <div class="centre">
 	<h1>Transports scolaires</h1>
@@ -22,26 +72,7 @@ $url_admin = $this->url('sbmadmin');
 <div class="table-page1">
 	<div class="row">
 		<div class="column1">
-		    <p class="premiere"><?php echo $this->msg; ?>
-			<p>Vous pouvez inscrire vos enfants en ligne au service de transport
-				scolaire organisé par la Communauté de communes du Bassin
-				Decazeville Aubin pour la prochaine année scolaire. Les inscriptions
-				ne seront définitives qu'après paiement des prestations demandées.</p>
-			<p>Les paiements peuvent se faire :</p>
-			<ul>
-				<li>en ligne par carte bancaire, sur une connexion sécurisée,</li>
-				<li>par chèque ou espèces, en se rendant à la Communauté de communes.</li>
-			</ul>
-			<p>Si c'est la première fois que vous utilisez ce service, vous devez
-				d'abord créer votre compte pour inscrire vos enfants. Cela nécessite
-				de donner votre adresse email et votre identité. Les instructions
-				pour poursuivre votre inscription seront envoyées à l'adresse
-				électronique que vous aurez donnée.</p>
-			<p>Si vous avez déjà créé votre compte et suivi les indications
-				transmises par email, vous pouvez entrer en donnant votre email et
-				votre mot de passe.</p>
-			<p>Pour tout autre renseignement ou tout autre mode d'inscription,
-				vous pouvez vous adresser directement au service Transport à l'adresse :</p>
+		    <?php echo $msg; ?>
 			<div class="centre">
 				<a href="<?php echo $this->accueil;?>" class="accueil"><?php echo $this->client['name'];?></a><br>
 				<?php echo $this->client['adresse'][0]; ?><br>
@@ -78,7 +109,7 @@ $url_admin = $this->url('sbmadmin');
 				</div>
 			</fieldset>
 			<p></p>
-			<?php if ($this->etat == 1): ?>
+			<?php if ($this->etat['etat'] == 1): ?>
 			<fieldset class="sbm-page1">
 			<div class="centre">
 					<h3>Nouvel utilisateur</h3>
@@ -86,8 +117,10 @@ $url_admin = $this->url('sbmadmin');
 					<div class="centre"><?php echo $this->formSubmit($this->form->get('signup')); ?></div>
 				</div>
 			</fieldset>
+			<p></p>
 			<?php endif;?>
 			<?php echo $this->form()->closeTag(); ?>
+			<div class="sbm-page1"><a href="<?php echo $url_carte;?>"><img alt="carte des établissements desservis" src="img/carte-ccda.png"></a></div>
 		</div>
 	</div>
 </div>

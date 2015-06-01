@@ -675,6 +675,50 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
          */
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'desservie',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Desservis',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'visible',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Visibles',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
             'attributes' => array(
                 'type' => 'checkbox',
@@ -1269,6 +1313,51 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
          * )
          * ));
          */
+        
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'ouverte',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Ouvertes',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'visible',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Visibles',
+                'label_attributes' => array(
+                    'class' => ''
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
@@ -1296,6 +1385,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formStationsSpecification()
     {
         return array(
+            'selection' => array(
+                'name' => 'ouverte',
+                'required' => false
+            ),
+            'selection' => array(
+                'name' => 'visible',
+                'required' => false
+            ),
             'selection' => array(
                 'name' => 'selection',
                 'required' => false

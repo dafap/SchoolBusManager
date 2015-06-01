@@ -4,8 +4,8 @@
  *
  *
  * @project sbm
- * @package SbmGestion
- * @filesource view/annee-scolaire/index.phtml
+ * @package SbmGestion/view/sbm-gestion/annee-scolaire
+ * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 25 avr. 2014
@@ -54,6 +54,7 @@ $actions = array(
 				    <th>Année scolaire</th>
 				    <th style="text-align: center; width: <?php echo $col_date_width; ?>px;">Date de début</th>
 				    <th style="text-align: center; width: <?php echo $col_date_width; ?>px;">Date de fin</th>
+				    <th>Etat</th>
 				    <th></th>
                 </tr>
 <?php foreach ($this->anneesScolaires as $as) :?>
@@ -78,6 +79,7 @@ $actions = array(
                     <td><?php echo $as['description'];?></td>
                     <td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateDebut']);?></td>
 				    <td style="text-align: center; width: <?php echo $col_date_width; ?>px;"><?php echo DateLib::formatDateFromMysql($as['dateFin']);?></td>
+				    <td><?php echo $as['ouvert'] ? 'Ouverte' : 'Fermée';?></td>
 				    <td>
 <?php if ($as['valid']) :?>
     <?php if ($as['millesime'] == $this->millesimeActif) :?>

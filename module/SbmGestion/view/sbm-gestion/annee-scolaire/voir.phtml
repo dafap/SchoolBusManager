@@ -1,12 +1,12 @@
 <?php
 /**
- * Description courte du fichier
+ * Page de présentation des éléments d'une année scolaire
  *
- * Description longue du fichier s'il y en a une
+ * Cette page vérifie si le paramétrage est complet. Elle permet d'ouvrir ou de fermer l'année scolaire.
  * 
- * @project project_name
- * @package package_name
- * @filesource new.phtml
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/anneescolaire
+ * @filesource voir.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 5 nov. 2014
@@ -14,7 +14,12 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/anneescolaire');
-$hiddens = array();
+$url_ouvrir = $this->url('sbmgestion/anneescolaire', array(
+    'action' => 'ouvrir'
+));
+$hiddens = array(
+    'millesime' => $this->millesime
+);
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -22,24 +27,60 @@ $actions = array(
         'title' => 'Retour'
     )
 );
+$etat = true;
+$ouvert = true;
+foreach ($this->table as $row) {
+    $etat &= ! is_null($row['dateDebut']) && ! is_null($row['dateFin']) && ! is_null($row['echeance']);
+    $ouvert &= $row['ouvert'] == 1;
+}
+if ($etat) {
+    if ($this->admin) {
+        if ($ouvert) {
+            $msg = 'L\'année scolaire est ouverte.';
+            $hiddens['ouvert'] = 0;
+            $actions['ouvrir'] = array(
+                'class' => 'fam-date-delete',
+                'formaction' => $url_ouvrir,
+                'title' => 'Fermer l\'année scolaire'
+            );
+        } else {
+            $msg = 'L\'année scolaire est fermée.';
+            $hiddens['ouvert'] = 1;
+            $actions['ouvrir'] = array(
+                'class' => 'fam-date-go',
+                'formaction' => $url_ouvrir,
+                'title' => 'Ouvrir l\'année scolaire'
+            );
+        }
+    } else {
+        if ($ouvert) {
+            $msg = 'L\'année scolaire est ouverte.';
+        } else {
+            $msg = 'L\'année scolaire est fermée.';
+        }
+        $msg .= ' Pour modifier son état passez en administrateur.';
+    }
+} else {
+    $msg = '<p>Complétez chaque ligne en précisant les dates de début, de fin et d\'échéance de chaque période.</p>';
+}
+
 ?>
 <h1>Edition de l'année scolaire <?php echo $this->as_libelle;?></h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="zone-actions">
-            <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-        </div>
-        <div class="flashMessenger float-right"><?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?></div>
+			<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
 	<div id="liste-inner">
-	<p>Complétez chaque ligne en précisant les dates de début et de fin de
-		chaque période.</p>
+	<?php echo $msg;?>
     <?php include 'calendar.inc.phtml';?>
     </div>
 </div>

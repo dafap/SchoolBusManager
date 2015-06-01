@@ -76,7 +76,7 @@ class ConfigController extends AbstractActionController
         } else {
             $value_options = $this->getServiceLocator()
                 ->get('Sbm\Db\Select\Communes')
-                ->desservies();
+                ->membres();
             $form->setValueOptions('communeId', $value_options)
                 ->setValueOptions('ancienCommuneId', $value_options)
                 ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
@@ -150,7 +150,7 @@ class ConfigController extends AbstractActionController
         $form = new FormResponsable(true);
         $value_options = $this->getServiceLocator()
             ->get('Sbm\Db\Select\Communes')
-            ->desservies();
+            ->membres();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
@@ -260,7 +260,8 @@ class ConfigController extends AbstractActionController
         
         return new ViewModel(array(
             'responsable' => $responsable,
-            'form' => $form->prepare()
+            'form' => $form->prepare(),
+            'config' => StdLib::getParamR(array('sbm','cartes', 'parent'), $this->getServiceLocator()->get('config'))
         ));
     }
 } 

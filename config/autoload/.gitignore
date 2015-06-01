@@ -3,3 +3,4 @@ local.php
 *.local.php
 *.dist
 /dist/
+/ccda/

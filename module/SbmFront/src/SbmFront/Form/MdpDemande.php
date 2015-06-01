@@ -104,4 +104,17 @@ class MdpDemande extends AbstractSbmForm implements InputFilterProviderInterface
             )
         );
     }
+    
+    public function isValid()
+    {
+        $result = parent::isValid();
+        if (!$result) {
+            $e = $this->get('email');
+            if (array_key_exists('noRecordFound', $e->getMessages())) {
+                $e->setMessages(array('Cet email est inconnu.'));
+            }
+        }
+        return $result;
+        
+    }
 }

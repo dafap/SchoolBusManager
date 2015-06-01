@@ -44,4 +44,21 @@ $(function() {
 				});
 		}
 	  });
+    $("label.help").trigger("click");
+    $("label.help").on("click", function(){
+        var content = $("#help-r2-content").html();
+        $("#winpopup").dialog({
+                draggable:true,
+                modal: true,
+                autoOpen: false,
+                height:400,
+                width:610,
+                resizable: false,
+                title: $(this).attr('title')
+                //appendTo: content
+            });
+        $("#winpopup-content").html(content);
+        $("#winpopup").dialog("open");
+    });
 });
+$("label.help").append('<i id="help" class="fam-help"></i>');

@@ -17,6 +17,7 @@ use Zend\Filter\StringToUpper;
 use Zend\Filter\StripTags;
 use Zend\Filter\StringTrim;
 use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\Form\FormInterface;
 
 class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
 {
@@ -51,7 +52,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
         
         $this->add(array(
             'name' => 'dateDepot',
-            'type' => 'Zend\Form\Element\DateTimeLocal',
+            'type' => 'SbmCommun\Form\Element\DateTimeSelect',
             'attributes' => array(
                 'id' => 'paiement-dateDepot'
             ),
@@ -60,12 +61,17 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'format' => 'Y-m-d\TH:i'
+                'create_empty_option' => true,
+                'min_year' => date('Y') - 10,
+                'max_year' => date('Y') + 1,
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
             )
         ));
         $this->add(array(
             'name' => 'datePaiement',
-            'type' => 'Zend\Form\Element\DateTimeLocal',
+            'type' => 'Zend\Form\Element\DateTimeSelect',
             'attributes' => array(
                 'id' => 'paiement-datePaiement'
             ),
@@ -74,12 +80,17 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'format' => 'Y-m-d\TH:i'
+                'create_empty_option' => true,
+                'min_year' => date('Y') - 10,
+                'max_year' => date('Y') + 1,
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
             )
         ));
         $this->add(array(
             'name' => 'dateValeur',
-            'type' => 'Zend\Form\Element\Date',
+            'type' => 'Zend\Form\Element\DateSelect',
             'attributes' => array(
                 'id' => 'paiement-dateValeur'
             ),
@@ -88,7 +99,12 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'format' => 'Y-m-d'
+                'create_empty_option' => true,
+                'min_year' => date('Y') - 10,
+                'max_year' => date('Y') + 1,
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
             )
         ));
         $this->add(array(
@@ -311,14 +327,6 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         $result = array(
-            'dateDepot' => array(
-                'name' => 'dateDepot',
-                'required' => false
-            ),
-            'dateValeur' => array(
-                'name' => 'dateValeur',
-                'required' => false
-            ),
             'banque' => array(
                 'name' => 'banque',
                 'required' => false
@@ -341,23 +349,15 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
         return $result;
     }
 
-    public function setData($data)
+    public function isValid()
     {
-        // adapte le format des datetime pour les éléments DateTimeLocal du formulaire
-        if (isset($data['datePaiement'])) {
-            $dte = new \DateTime($data['datePaiement']);
-            $data['datePaiement'] = $dte->format('Y-m-d\TH:i');
+        $data = $this->data;
+        if (empty($data['dateValeur']['year']) && empty($data['dateValeur']['month']) && empty($data['dateValeur']['day'])) {
+            $data['dateValeur']['year'] = $data['datePaiement']['year'];
+            $data['dateValeur']['month'] = $data['datePaiement']['month'];
+            $data['dateValeur']['day'] = $data['datePaiement']['day'];
         }
-        if (isset($data['dateDepot']) && ! empty($data['dateDepot'])) {
-            $dte = new \DateTime($data['dateDepot']);
-            $data['dateDepot'] = $dte->format('Y-m-d\TH:i');
-        } else {
-            $data['dateDepot'] = null;
-        }
-        if (empty($data['dateValeur'])) {
-            $data['dateValeur'] = null;
-        }
-        // appelle la méthode de ZF2
-        parent::setData($data);
+        $this->setData($data);
+        return parent::isValid();
     }
 }

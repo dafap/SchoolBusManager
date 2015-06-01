@@ -16,6 +16,8 @@ namespace SbmGestion\Controller;
 use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Db\Sql\Where;
+use DafapSession\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\Circuit as FormCircuit;
@@ -33,6 +35,7 @@ use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmGestion\Form\EtablissementServiceSuppr as FormEtablissementServiceSuppr;
 use SbmGestion\Form\SbmGestion\Form;
+use SbmCartographie\Model\Point;
 
 class TransportController extends AbstractActionController
 {
@@ -59,7 +62,8 @@ class TransportController extends AbstractActionController
     public function circuitListeAction()
     {
         $args = $this->initListe('circuits', function ($sm, $form) {
-            $form->setValueOptions('stationId', $sm->get('Sbm\Db\Select\Stations')->ouvertes());
+            $form->setValueOptions('stationId', $sm->get('Sbm\Db\Select\Stations')
+                ->ouvertes());
             $form->setValueOptions('serviceId', $sm->get('Sbm\Db\Select\Services'));
         }, array(
             'stationId'
@@ -68,6 +72,9 @@ class TransportController extends AbstractActionController
             return $args;
         
         $args['where']->equalTo('millesime', $this->getFromSession('millesime'));
+        $auth = $this->getServiceLocator()
+            ->get('Dafap\Authenticate')
+            ->by('email');
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Circuits')
@@ -77,7 +84,8 @@ class TransportController extends AbstractActionController
                 ->byCircuit(),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_circuits', 10),
-            'criteres_form' => $args['form']
+            'criteres_form' => $args['form'],
+            'admin' => $auth->getCategorieId() > 253
         ));
     }
 
@@ -94,7 +102,8 @@ class TransportController extends AbstractActionController
         $form->setValueOptions('serviceId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Stations')->ouvertes())
+            ->get('Sbm\Db\Select\Stations')
+            ->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
             'data' => array(
@@ -160,10 +169,11 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         $sm = $this->getServiceLocator();
-        $r = $this->supprData($params, function ($id, $tableCircuits) use ($sm){
+        $r = $this->supprData($params, function ($id, $tableCircuits) use($sm) {
             return array(
                 'id' => $id,
-                'data' => $sm->get('Sbm\Db\Vue\Circuits')->getRecord($id)
+                'data' => $sm->get('Sbm\Db\Vue\Circuits')
+                    ->getRecord($id)
             );
         });
         if ($r instanceof Response) {
@@ -203,7 +213,8 @@ class TransportController extends AbstractActionController
         $form->setValueOptions('serviceId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Stations')->ouvertes())
+            ->get('Sbm\Db\Select\Stations')
+            ->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
             'data' => array(
@@ -286,6 +297,55 @@ class TransportController extends AbstractActionController
             'circuit' => $circuit,
             'page' => $currentPage,
             'circuitId' => $circuitId
+        ));
+    }
+
+    /**
+     * Lors de la création d'une nouvelle année scolaire, la table des circuits pour ce millesime est vide.
+     * Cette action reprend les circuits de l'année précédente.
+     */
+    public function circuitDupliquerAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $dernierMillesime = $this->getServiceLocator()
+            ->get('Sbm\Db\System\Calendar')
+            ->getDernierMillesime();
+        if ($dernierMillesime != Session::get('millesime')) {
+            $this->flashMessenger()->addInfoMessage('La génération des circuits d\'une nouvelle année ne peut se faire que si cette année est active.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'circuit-liste',
+                'page' => 1
+            ));
+        }
+        $millesime = $dernierMillesime - 1;
+        $tCircuits = $this->getServiceLocator()->get('Sbm\Db\Table\Circuits');
+        $where = new Where();
+        $where->equalTo('millesime', $dernierMillesime);
+        $resultset = $tCircuits->fetchAll($where);
+        // die(var_dump($resultset->count()));
+        if ($resultset->count()) {
+            $this->flashMessenger()->addErrorMessage('Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'circuit-liste',
+                'page' => 1
+            ));
+        }
+        unset($where);
+        $where = new Where();
+        $where->equalTo('millesime', $millesime);
+        $resultset = $tCircuits->fetchAll($where);
+        foreach ($resultset as $row) {
+            $row->circuitId = null;
+            $row->millesime = $dernierMillesime;
+            $tCircuits->saveRecord($row);
+        }
+        $this->flashMessenger()->addSuccessMessage('Les circuits de la dernière année scolaire sont générés.');
+        return $this->redirect()->toRoute('sbmgestion/transport', array(
+            'action' => 'circuit-liste',
+            'page' => 1
         ));
     }
 
@@ -1102,6 +1162,127 @@ class TransportController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+    }
+
+    /**
+     * Localisation d'un établissement sur la carte et enregistrement de ses coordonnées
+     */
+    public function etablissementLocalisationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $this->flashMessenger()->addWarningMessage('Recommencez.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'etablissement-liste',
+                'page' => $this->params('page', 1)
+            ));
+        } else {
+            $args = $prg;
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage('Localisation abandonnée.');
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    'action' => 'etablissement-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+            if (! array_key_exists('etablissementId', $args)) {
+                $this->flashMessenger()->addErrorMessage('Action  interdite');
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
+        }
+        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
+        $etablissementId = $args['etablissementId'];
+        $tEtablissements = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
+        $form = new ButtonForm(array(
+            'etablissementId' => array(
+                'id' => 'etablissementId'
+            ),
+            'lat' => array(
+                'id' => 'lat'
+            ),
+            'lng' => array(
+                'id' => 'lng'
+            )
+        ), array(
+            'submit' => array(
+                'class' => 'button default submit left-95px',
+                'value' => 'Enregistrer la localisation'
+            ),
+            'cancel' => array(
+                'class' => 'button default cancel left-10px',
+                'value' => 'Abandonner'
+            )
+        ));
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/transport', array(
+            'action' => 'etablissement-localisation',
+            'page' => $this->params('page', 1)
+        )));
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                // transforme les coordonnées
+                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                // enregistre dans la fiche etablissement
+                $oData = $tEtablissements->getObjData();
+                $oData->exchangeArray(array(
+                    'etablissementId' => $etablissementId,
+                    'x' => $point->getX(),
+                    'y' => $point->getY()
+                ));
+                $tEtablissements->saveRecord($oData);
+                $this->flashMessenger()->addSuccessMessage('La localisation de l\'établissement est enregistrée.');
+                $this->flashMessenger()->addWarningMessage('Attention ! Les distances des domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    'action' => 'etablissement-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+        }
+        $etablissement = $tEtablissements->getRecord($etablissementId);
+        $commune = $this->getServiceLocator()
+        ->get('Sbm\Db\table\Communes')
+        ->getRecord($etablissement->communeId);
+        if ($etablissement->x == 0.0 && $etablissement->y == 0.0) {
+            // essayer de localiser par l'adresse avant de présenter la carte
+            $array = $this->getServiceLocator()
+            ->get('SbmCarto\Geocoder')
+            ->geocode($etablissement->adresse2 ?  : $etablissement->adresse1, $etablissement->codePostal, $commune->nom);
+            $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            $description = $array['adresse'];
+        } else {
+            $point = new Point($etablissement->x, $etablissement->y);
+            $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+            $description = nl2br(trim(implode("\n", array(
+                $etablissement->adresse1,
+                $etablissement->adresse2
+            ))));
+            $description .= '<br>' . $etablissement->codePostal . ' ' . $commune->nom;
+        }
+        $form->setData(array(
+            'etablissementId' => $etablissementId,
+            'lat' => $pt->getLatitude(),
+            'lng' => $pt->getLongitude()
+        ));
+        return new ViewModel(array(
+            // 'pt' => $pt,
+            'form' => $form->prepare(),
+            'description' => $description,
+            'etablissement' => array(
+                $etablissement->nom,
+                nl2br(trim(implode("\n", array(
+                    $etablissement->adresse1,
+                    $etablissement->adresse2
+                )))),
+                $etablissement->codePostal . ' ' . $commune->nom
+            ),
+            'config' => StdLib::getParamR(array('sbm', 'cartes', 'etablissements'), $this->getServiceLocator()->get('config'))
+        ));
     }
 
     /**

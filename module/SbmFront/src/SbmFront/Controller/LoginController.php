@@ -123,21 +123,29 @@ class LoginController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid() && $args['userId'] == $auth->getUserId()) {
                 $authUsr = $auth->getIdentity();
-                $odata = $tableUsers->getObjData()
-                    ->exchangeArray($authUsr)
-                    ->setMdp($args['userId'], $args['mdp'], $authUsr['gds'])
-                    ->confirme()
-                    ->completeForLogin();
-                $tableUsers->saveRecord($odata);
-                $this->flashMessenger()->addSuccessMessage('Votre compte est confirmé. Votre mot de passe est enregistré.');
+                try {
+                    $odata = $tableUsers->getObjData()
+                        ->exchangeArray($authUsr)
+                        ->setMdp($args['userId'], $args['mdp'], $authUsr['gds'])
+                        ->confirme()
+                        ->completeForLogin();
+                    $tableUsers->saveRecord($odata);
+                    $this->flashMessenger()->addSuccessMessage('Votre compte est confirmé. Votre mot de passe est enregistré.');
+                } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {
+                    // die(var_dump(/*$auth->authenticate()->getCode(), */$auth->hasIdentity(), $auth->getIdentity()));
+                    $this->flashMessenger()->addErrorMessage('Ce lien ne peut être utilisé qu\'une seule fois. Demandez-en un autre !');
+                }
                 return $this->homePageAction();
             }
+        }
+        if (! $auth->hasIdentity()) {
+            $this->flashMessenger()->addErrorMessage('Ce lien est invalide ou a déjà été utilisé. Demandez-en un autre !');
+            return $this->redirect()->toRoute('home');
         }
         return new ViewModel(array(
             'form' => $form->prepare()
         ));
     }
-
 
     /**
      * Entrée pour annuler une création d'un compte par token
@@ -152,7 +160,7 @@ class LoginController extends AbstractActionController
         }
         return $this->redirect()->toRoute('home');
     }
-    
+
     /**
      * En fonction de la catégorie de l'utilisateur,
      * - redirige vers une route par défaut (suivre redirect())
@@ -172,8 +180,8 @@ class LoginController extends AbstractActionController
                         $test = new Responsable($this->getServiceLocator());
                         if ($test->x == 0.0 || $test->y == 0.0) {
                             return $this->redirect()->toRoute('sbmparentconfig', array(
-                            'action' => 'localisation'
-                        ));
+                                'action' => 'localisation'
+                            ));
                         }
                     } catch (CreateResponsableException $e) {
                         $this->flashMessenger()->addErrorMessage('Il faut compléter la fiche du responsable');
@@ -266,36 +274,40 @@ class LoginController extends AbstractActionController
             if ($form->isValid()) {
                 $data = $form->getData();
                 $odata = $tUsers->getRecordByEmail($data->email)->setToken();
-                $tUsers->saveRecord($odata);
-                $this->flashMessenger()->addSuccessMessage('Demande enregistrée.');
-                // envoie l'email
-                $mailTemplate = new MailTemplate('oubli-mdp');
-                $params = array(
-                    'to' => array(
-                        array(
-                            'email' => $data->email,
-                            'name' => $odata->nom . ' ' . $odata->prenom
-                        )
-                    ),
-                    'subject' => 'Lien pour entrer dans le service d\'inscription',
-                    'body' => array(
-                        'html' => $mailTemplate->render(array(
-                            'titre' => $odata->titre,
-                            'nom' => $odata->nom,
-                            'prenom' => $odata->prenom,
-                            'url_confirme' => $this->url()
-                                ->fromRoute('login', array(
-                                'action' => 'confirm',
-                                'id' => $odata->token
-                            ), array(
-                                'force_canonical' => true
+                if ($odata->active) {
+                    $tUsers->saveRecord($odata);
+                    $this->flashMessenger()->addSuccessMessage('Demande enregistrée.');
+                    // envoie l'email
+                    $mailTemplate = new MailTemplate('oubli-mdp');
+                    $params = array(
+                        'to' => array(
+                            array(
+                                'email' => $data->email,
+                                'name' => $odata->nom . ' ' . $odata->prenom
+                            )
+                        ),
+                        'subject' => 'Lien pour entrer dans le service d\'inscription',
+                        'body' => array(
+                            'html' => $mailTemplate->render(array(
+                                'titre' => $odata->titre,
+                                'nom' => $odata->nom,
+                                'prenom' => $odata->prenom,
+                                'url_confirme' => $this->url()
+                                    ->fromRoute('login', array(
+                                    'action' => 'confirm',
+                                    'id' => $odata->token
+                                ), array(
+                                    'force_canonical' => true
+                                ))
                             ))
-                        ))
-                    )
-                );
-                $this->getEventManager()->addIdentifiers('SbmMail\Send');
-                $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
-                $this->flashMessenger()->addInfoMessage('Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
+                        )
+                    );
+                    $this->getEventManager()->addIdentifiers('SbmMail\Send');
+                    $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+                    $this->flashMessenger()->addInfoMessage('Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
+                } else {
+                    $this->flashMessenger()->addWarningMessage('Votre compte a été bloqué. Prenez contact avec le service organisateur.');
+                }
                 // retour
                 return $this->redirect()->toRoute('home');
             }

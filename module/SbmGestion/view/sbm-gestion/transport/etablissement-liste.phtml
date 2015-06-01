@@ -33,27 +33,54 @@ $ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-ajout',
     'page' => $this->page
 ));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_pdf = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-pdf',
     'page' => $this->page
 ));
-$carte = $this->url('sbmcarte', array('action' => 'etablissements'));
-$retour = $this->url('sbmgestion/transport');
-$hiddens = array('back' => $this->url('sbmgestion/transport', array('action' => 'etablissement-liste', 'page' => $this->page)));
+$url_carte = $this->url('sbmcarte', array(
+    'action' => 'etablissements'
+));
+$url_edit = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-edit',
+    'page' => $this->page
+));
+$url_delete = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-suppr',
+    'page' => $this->page
+));
+$url_relation = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service',
+    'page' => $this->page
+));
+$url_group = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-group',
+    'page' => $this->page
+));
+$url_localiser = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-localisation',
+    'page' => $this->page
+));
+$url_retour = $this->url('sbmgestion/transport');
+$hiddens = array(
+    'back' => $this->url('sbmgestion/transport', array(
+        'action' => 'etablissement-liste',
+        'page' => $this->page
+    ))
+);
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_retour,
         'title' => 'Retour'
     ),
     'rapports' => array(
         'class' => 'fam-report',
-        'formaction' => $pdf,
+        'formaction' => $url_pdf,
         'title' => 'Rapports à imprimer'
     ),
     'carte' => array(
         'class' => 'fam-map-magnify',
-        'formaction' => $carte,
+        'formaction' => $url_carte,
         'title' => 'Cartes des établissements'
     ),
     'ajouter' => array(
@@ -86,14 +113,16 @@ echo $this->flashMessenger()->render('default');
 					<th>Téléphone</th>
 					<th>Email</th>
 					<th>Inscrits</th>
+					<th>Desservis</th>
+					<th>Visible</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
         <?php foreach($etablissements as $test => $etablissement): ?>
-        <?php 
-        $nbInscrits = StdLib::getParam($etablissement->etablissementId, $this->t_nb_inscrits, 0); 
-        // selection
-        $modele = <<<EOT
+        <?php
+            $nbInscrits = StdLib::getParam($etablissement->etablissementId, $this->t_nb_inscrits, 0);
+            // selection
+            $modele = <<<EOT
 $("#chk%s").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
@@ -104,11 +133,33 @@ $("#chk%s").change(function() {
 				}
 			});
   });
+$("#vis%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'visibleetablissement/etablissementId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+$("#des%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'desservietablissement/etablissementId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });        
 EOT;
-        
-        $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $etablissement->etablissementId);
-        $jsCallback .= sprintf("$modele\n", $etablissement->etablissementId, $etablissement->etablissementId);
-        ?>
+            
+            $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $etablissement->etablissementId);
+            $jsTrigger .= sprintf("$('#vis%s').trigger('change');\n", $etablissement->etablissementId);
+            $jsTrigger .= sprintf("$('#des%s').trigger('change');\n", $etablissement->etablissementId);
+            $jsCallback .= str_replace('%s', $etablissement->etablissementId, "$modele\n"); // , $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId);
+            ?>
             <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 					<td class="etablissementid"><?php echo $this->escapeHtml($etablissement->etablissementId); ?></td>
@@ -118,25 +169,11 @@ EOT;
 					<td class="telephone"><?php echo $this->escapeHtml($etablissement->telephone); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($etablissement->email); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="centre desservi"><?php echo renderCheckbox($this, 'desservie', 'des' . $etablissement->etablissementId, $etablissement->desservie)?></td>
+					<td class="centre visible"><?php echo renderCheckbox($this, 'visible', 'vis' . $etablissement->etablissementId, $etablissement->visible)?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $etablissement->etablissementId, $etablissement->selection)?></td>
 					<td class="boutons">
             <?php
-            $url_edit = $this->url('sbmgestion/transport', array(
-                'action' => 'etablissement-edit',
-                'page' => $this->page
-            ));
-            $url_delete = $this->url('sbmgestion/transport', array(
-                'action' => 'etablissement-suppr',
-                'page' => $this->page
-            ));
-            $url_relation = $this->url('sbmgestion/transport', array(
-                'action' => 'etablissement-service',
-                'page' => $this->page
-            ));
-            $url_group = $this->url('sbmgestion/transport', array(
-                'action' => 'etablissement-group',
-                'page' => $this->page
-            ));
             $hiddens = array(
                 'etablissementId' => $etablissement->etablissementId
             );
@@ -146,6 +183,11 @@ EOT;
                     'formaction' => $url_edit,
                     'title' => 'modifier'
                 ),
+                'localiser' => array(
+                    'class' => 'fam-map-magnify',
+                    'formaction' => $url_localiser,
+                    'title' => 'position sur la carte'
+            ),
                 'supprimer' => array(
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,

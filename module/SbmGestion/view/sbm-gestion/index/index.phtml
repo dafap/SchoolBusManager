@@ -13,7 +13,15 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_gest_eleve = $this->url('sbmgestion/eleve');
+//$url_gest_eleve = $this->url('sbmgestion/eleve');
+$url_gest_eleves = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-liste',
+    'page' => $this->page
+));
+$url_gest_responsables = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-liste',
+    'page' => $this->page
+));
 $url_gest_finance = $this->url('sbmgestion/finance');
 $url_gest_transport = $this->url('sbmgestion/transport');
 $url_gest_change_as = $this->url('sbmgestion/anneescolaire');
@@ -36,8 +44,10 @@ echo $this->flashMessenger()->render('default');
     </div>
 	<div id="menugeneral-inner">
 		<ul>
-			<li><a href="<?php echo $url_gest_eleve; ?>"><i class="fam-bullet-go"></i>Gestion
+			<li><a href="<?php echo $url_gest_eleves; ?>"><i class="fam-bullet-go"></i>Gestion
 					des élèves</a></li>
+			<li><a href="<?php echo $url_gest_responsables; ?>"><i class="fam-bullet-go"></i>Gestion
+					des responsables</a></li>
 			<li><a href="<?php echo $url_gest_finance; ?>"><i
 					class="fam-bullet-go"></i>Gestion financière</a></li>
 			<li><a href="<?php echo $url_gest_transport; ?>"><i

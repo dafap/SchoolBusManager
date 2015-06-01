@@ -22,7 +22,6 @@ use Zend\Paginator\Adapter\DbSelect;
 use Zend\Paginator\Paginator;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\Service\Table\Exception;
-
 abstract class AbstractSbmTable implements FactoryInterface
 {
 
@@ -117,7 +116,11 @@ abstract class AbstractSbmTable implements FactoryInterface
         // à placer après join()
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
         $this->obj_data->setArrayMask($this->getColumnsNames());
+        try {
         $this->obj_data->setAreNullable($this->db->getAreNullableColumns($this->table_name, $this->table_type));
+        } catch (\SbmCommun\Model\Db\Exception $e) {
+            die('<!DOCTYPE Html><head><meta charset="utf-8"><title>SBM School Bus Manager</title></head><body>Il faut installer les tables dans la base de données.</body></html>');
+        }
         if (is_callable(array(
             $this->table_gateway->getResultSetPrototype(),
             'getHydrator'
@@ -253,7 +256,15 @@ abstract class AbstractSbmTable implements FactoryInterface
         if ($order !== null) {
             $select->order($order);
         }
-        return $this->table_gateway->selectWith($select);
+        try {
+            return $this->table_gateway->selectWith($select);
+        } catch (\Exception $e) {
+            $msg = __METHOD__ . ' - ' . $this->table_name;
+            if (is_string($where)) {
+                $msg .= ' WHERE = (' . $where . ')';
+            }
+            die("<!DOCTYPE Html><html><head></head><body>$msg</body></html>");
+        }
     }
 
     /**

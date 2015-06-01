@@ -50,8 +50,7 @@ echo $this->flashMessenger()->render('default');
 		<tr><td>Autorisation n°</td><td><b><?php echo $notification->vads_auth_number; ?></b></td></tr>
 		<tr><td>Email</td><td><b><?php echo $notification->vads_cust_email; ?></b></td></tr>
 		<tr><td>Référence du responsable</td><td><b><?php echo $notification->vads_cust_id; ?></b></td></tr>
-		<tr><td>Nom du responsable</td><td><b><?php echo $notification->vads_cust_last_name; ?></b></td></tr>
-		<tr><td>Prénom du responsable</td><td><b><?php echo $notification->vads_cust_first_name; ?></b></td></tr>
+		<tr><td>Nom du responsable</td><td><b><?php echo $notification->vads_cust_name; ?></b></td></tr>
 		<tr><td>Référence de la commande</td><td><b><?php echo $notification->vads_order_id; ?></b></td></tr>
 		<tr><td>Référence des élèves concernés</td><td><b><?php echo $notification->ref_eleveIds; ?></b></td></tr>
 		<tr><td>Certificat de paiement</td><td><b><?php echo $notification->vads_payment_certificate; ?></b></td></tr>

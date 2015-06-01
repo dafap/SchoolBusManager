@@ -41,7 +41,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'id' => 'transporteur-nom',
                 'autofocus' => 'autofocus',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-50c'
             ),
             'options' => array(
                 'label' => 'Nom du transporteur',
@@ -246,7 +246,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'type' => 'text',
             'attributes' => array(
                 'id' => 'transporteur-rib_domiciliation',
-                'class' => 'sbm-width-25c'
+                'class' => 'sbm-width-35c'
             ),
             'options' => array(
                 'label' => 'RIB - domiciliation',

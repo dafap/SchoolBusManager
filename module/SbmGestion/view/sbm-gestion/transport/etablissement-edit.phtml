@@ -36,7 +36,7 @@ echo $this->formHidden($this->form->get('etablissementId'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>
 <fieldset class="sbm-page1 clearfix">
-<div class="float-left cols-2">
+<div class="float-left cols-1">
   <div id="etablissement-edit-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeEtablissement')); ?></div>
   <div id="etablissement-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
   <div id="etablissement-edit-alias" class="row-inner edit"><?php echo $this->formRow($this->form->get('alias')); ?></div>
@@ -52,6 +52,7 @@ echo $this->formHidden($this->form->get('csrf'));
   <div id="etablissement-edit-rattacheA" class="row-inner edit"><?php echo $this->formRow($this->form->get('rattacheA')); ?></div>
   <div id="etablissement-edit-x" class="row-inner edit"><?php echo $this->formRow($this->form->get('x')); ?></div>
   <div id="etablissement-edit-y" class="row-inner edit"><?php echo $this->formRow($this->form->get('y')); ?></div>
+  <div id="etablissement-edit-desservie" class="row-inner edit"><?php echo $this->formRow($this->form->get('desservie')); ?></div>
   <div id="etablissement-edit-visible" class="row-inner edit"><?php echo $this->formRow($this->form->get('visible')); ?></div>
 </div>
 <div class="float-left cols-2">
@@ -59,13 +60,13 @@ echo $this->formHidden($this->form->get('csrf'));
   <div id="etablissement-edit-statut" class="row-inner edit multicheckbox"><?php echo $this->formRow($this->form->get('statut')); ?></div>
   <div id="etablissement-edit-jOuverture" class="row-inner edit multicheckbox"><?php echo $this->formRow($this->form->get('jOuverture')); ?></div>
   <div class="clearfix">
-    <div id="horaires-matin" class="row-inner edit float-left cols-2">
+    <div id="horaires-matin" class="row-inner edit float-left cols-3">
       <fieldset class=""><legend>Horaires du matin</legend>
       <div id="etablissement-edit-hMatin" class="row-inner edit"><?php echo $this->formRow($this->form->get('hMatin')); ?></div>
       <div id="etablissement-edit-hMidi" class="row-inner edit"><?php echo $this->formRow($this->form->get('hMidi')); ?></div>
       </fieldset>
     </div>
-    <div id="horaires-soir" class="row-inner edit float-left cols-2">
+    <div id="horaires-soir" class="row-inner edit float-left cols-3">
       <fieldset class=""><legend>Horaires de l'après-midi</legend>
       <div id="etablissement-edit-hAMidi" class="row-inner edit"><?php echo $this->formRow($this->form->get('hAMidi')); ?></div>
       <div id="etablissement-edit-hSoir" class="row-inner edit"><?php echo $this->formRow($this->form->get('hSoir')); ?></div>
@@ -73,12 +74,12 @@ echo $this->formHidden($this->form->get('csrf'));
     </div>
   </div>
   <div class="clearfix">
-    <div id="ouverture-garderie" class="row-inner edit float-left cols-2">
+    <div id="ouverture-garderie" class="row-inner edit float-left cols-3">
       <fieldset class="rows-2"><legend>Ouverture de la garderie</legend>
       <div id="etablissement-edit-hGarderieOMatin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('hGarderieOMatin')); ?></div>
       </fieldset>
     </div>
-    <div id="fermeture-garderie" class="row-inner edit float-left cols-2">
+    <div id="fermeture-garderie" class="row-inner edit float-left cols-3">
       <fieldset><legend>Fermeture de la garderie</legend>
       <div id="etablissement-edit-hGarderieFSoir" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('hGarderieFSoir')); ?></div>
       <div id="etablissement-edit-hGarderieFMidi" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('hGarderieFMidi')); ?></div>

@@ -2,14 +2,15 @@
 /**
  * Définition de l'élément 'Adresse' avec filtres et validateurs
  *
+ * Version qui met l'adresse en majuscules
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Form/Element
  * @filesource Adresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2014
- * @version 2014-1
+ * @date 30 mai 2015
+ * @version 2015-2
  */
 namespace SbmCommun\Form\Element;
 
@@ -31,7 +32,8 @@ class Adresse extends Element implements InputProviderInterface
     {
         if (is_null($this->validator)) {
             $premiere = '[1-9A-Z' . self::MAJ_AUTORISEES . ']';
-            $suite = '[0-9A-Za-z' . self::MAJ_AUTORISEES . mb_strtolower(self::MAJ_AUTORISEES, 'utf-8') . '\' ]*';
+            //$suite = '[0-9A-Za-z' . self::MAJ_AUTORISEES . mb_strtolower(self::MAJ_AUTORISEES, 'utf-8') . '\' ]*';
+            $suite = '[0-9A-Za-z' . self::MAJ_AUTORISEES . '\' ]*';
             $pattern = '/^' . $premiere . $suite . '$/';
             $validator = new RegexValidator($pattern);
             $validator->setMessage('Les caractères autorisés sont des lettres, l\' espace ou l\' apostrophe !', RegexValidator::NOT_MATCH);
@@ -74,7 +76,8 @@ class Adresse extends Element implements InputProviderInterface
                 // abreviations
                 array('name' => 'SbmCommun\Filter\Abreviations', 'options' => array('encoding' => 'utf-8', 'seuil' => 38)),
                 // met en majuscules, y compris les lettres accentuées et ligatures
-                array('name' => 'SbmCommun\Filter\StringUcfirst', 'options' => array('encoding' => 'utf-8', 'exceptions' => array('d', 'de', 'des', 'du', 'l', 'le', 'les', 'la', 'un', 'une')))
+                //array('name' => 'SbmCommun\Filter\StringUcfirst', 'options' => array('encoding' => 'utf-8', 'exceptions' => array('d', 'de', 'des', 'du', 'l', 'le', 'les', 'la', 'un', 'une')))
+                array('name' => 'Zend\Filter\StringToUpper', 'options' => array('encoding' => 'utf-8'))
             ),
             'validators' => array(
                 $this->getValidator(),

@@ -11,6 +11,7 @@
  * @version 2015-1
  */
 use \DateTime;
+ 
 function formatDate($date)
 {
     return DateTime::createFromFormat('YmdHis', $date)->format('d/m/Y H:i:s');
@@ -36,6 +37,9 @@ $pdf = $this->url('sbmpaiement', array(
     'action' => 'paiement-pdf',
     'page' => $this->page
 ));
+
+$config = include __DIR__ . '/../config/systempay.config.php';
+$url_marchand = $config['url_marchand'];
 $retour = $this->url('sbmgestion/finance');
 $hiddens = array();
 $actions = array(
@@ -48,6 +52,11 @@ $actions = array(
         'class' => 'fam-report',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
+    ),
+    'systempay' => array(
+        'class' => 'fam-house-link',
+        'formaction' => $url_marchand,
+        'title' => 'Systempay Back Office'
     )
 );
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
@@ -68,8 +77,8 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 		<table class="notifications">
 			<tbody>
 				<tr>
-					<th>Nom</th>
-					<th>Prénom</th>
+					<th>Prénom Nom</th>
+					<th>Email</th>
 					<th>Date</th>
 					<th>Id</th>
 					<th>Statut</th>
@@ -101,8 +110,8 @@ EOT;
             ?>
                 <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-					<td class="vads_cust_last_name"><?php echo $this->escapeHtml($notification->vads_cust_last_name); ?></td>
-					<td class="vads_cust_first_name"><?php echo $this->escapeHtml($notification->vads_cust_first_name); ?></td>
+					<td class="vads_cust_name"><?php echo $this->escapeHtml($notification->vads_cust_name); ?></td>
+					<td class="vads_cust_email"><?php echo $this->escapeHtml($notification->vads_cust_email); ?></td>
 					<td class="vads_trans_date"><?php echo $date_trans; ?></td>
 					<td class="vads_trans_id"><?php echo $this->escapeHtml($notification->vads_trans_id); ?></td>
 					<td class="vads_trans_status"><?php echo $this->escapeHtml($notification->vads_trans_status); ?></td>
@@ -127,8 +136,7 @@ Réponse de la banque : $notification->vads_auth_result
 Autorisation n° : $notification->vads_auth_number
 Email : $notification->vads_cust_email
 Référence du responsable : $notification->vads_cust_id
-Nom du responsable : $notification->vads_cust_last_name
-Prénom du responsable : $notification->vads_cust_first_name
+Nom du responsable : $notification->vads_cust_name
 Référence de la commande : $notification->vads_order_id
 Référence des élèves concernés : $notification->ref_eleveIds
 Certificat de paiement : $notification->vads_payment_certificate

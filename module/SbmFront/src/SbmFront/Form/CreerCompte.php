@@ -18,16 +18,20 @@ namespace SbmFront\Form;
 use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Db\Sql\Where;
+use SbmCommun\Filter\SansAccent;
+use Zend\Db\Sql\Zend\Db\Sql;
 
 class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterface
 {
+
     /**
      * Service manager (nécessaire pour vérifier l'email)
-     * 
+     *
      * @var ServiceLocatorInterface
      */
     private $sm;
-    
+
     public function __construct(ServiceLocatorInterface $sm, $param = 'compte')
     {
         $this->sm = $sm;
@@ -35,7 +39,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'userId',
-            'type' => 'hidden',
+            'type' => 'hidden'
         ));
         $this->add(array(
             'name' => 'csrf',
@@ -51,6 +55,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'user-titre',
+                'autofocus' => 'autofocus',
                 'class' => 'sbm-select1'
             ),
             'options' => array(
@@ -129,7 +134,6 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                 'type' => 'submit',
                 'value' => 'Demander la création du compte',
                 'id' => 'responsable-submit',
-                'autofocus' => 'autofocus',
                 'class' => 'button submit left-95px'
             )
         ));
@@ -143,6 +147,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             )
         ));
     }
+
     public function getInputFilterSpecification()
     {
         $db = $this->sm->get('Sbm\Db\DbLib');
@@ -155,12 +160,16 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                 'name' => 'email',
                 'required' => true,
                 'filters' => array(
-                    array('name' => 'StripTags'),
-                    array('name' => 'StringTrim')
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
                 ),
                 'validators' => array(
                     array(
-                     'name' => 'Zend\Validator\EmailAddress'
+                        'name' => 'Zend\Validator\EmailAddress'
                     ),
                     array(
                         'name' => 'Zend\Validator\Db\NoRecordExists',
@@ -173,5 +182,58 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                 )
             )
         );
+    }
+
+    public function isValid()
+    {
+        $result = parent::isValid();
+        if ($result) {
+            // vérifier qu'un compte de même nom et prénom n'existe pas déjà parmi les responsables et les users
+            $filterSA = new SansAccent();
+            // d'abord dans la table user pour savoir s'il n'y a pas un compte avec un autre email
+            $where = new Where();
+            $where->equalTo('nom', $this->data['nom'])->equalTo('prenom', $this->data['prenom']);
+            $tUsers = $this->sm->get('Sbm\Db\Table\Users');
+            $resultset = $tUsers->fetchAll($where);
+            if ($resultset->count()) {
+                $u = $resultset->current();
+                $msg = 'Vous avez déjà créé un compte avec l\'email ' . $u->email . ". Si vous ne vous connaissez pas le mot de passe, cliquez sur le lien `Mot de passe oublié` de la page d'accueil.\n";
+                $msg .= 'Si vous n\'avez plus accès à cet email rapprochez vous des services de la Communauté de communes pour faire modifier votre compte.';
+                $e = $this->get('prenom');
+                $e->setMessages(array(
+                    $msg
+                ));
+                $result = false;
+            } else {
+                // ensuite dans la table responsables pour savoir si entretemps une inscription papier n'a pas été enregistrée.
+                //@todo: il faudrait vérifier qu'aucune inscription n'a eu lieu cette année. Sinon, il va y avoir des demandes 
+                // nombreuses lors des renouvellements d'inscription.
+                unset($where);
+                $where = new Where();
+                $nomSA = $filterSA->filter($this->data['nom']);
+                $prenomSA = $filterSA->filter($this->data['prenom']);
+                $where->equalTo('nomSA', $nomSA)->equalTo('prenomSA', $prenomSA);
+                $tResponsables = $this->sm->get('Sbm\Db\Table\Responsables');
+                $resultset = $tResponsables->fetchAll($where);
+                if ($resultset->count()) {
+                    $msg = 'Il existe déjà une personne enregistrée avec ce nom et ce prénom. Rapprochez vous des services de la Communauté de communes pour vous faire créer un compte.';
+                    $e = $this->get('prenom');
+                    $e->setMessages(array(
+                        $msg
+                    ));
+                    $result = false;
+                }
+            }
+        } else {
+            $e = $this->get('email');
+            $messages = $e->getMessages();
+            if (array_key_exists('recordFound', $messages)) {
+                $msg = 'Un compte a déjà été créé avec cet email. Si vous ne vous souvenez plus du mot de passe, cliquez sur le lien `Mot de passe oublié` sur la page d\'accueil.';
+                $e->setMessages(array(
+                    $msg
+                ));
+            }
+        }
+        return $result;
     }
 }

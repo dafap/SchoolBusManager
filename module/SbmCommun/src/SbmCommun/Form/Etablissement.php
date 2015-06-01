@@ -518,6 +518,23 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'desservie',
+            'attributes' => array(
+                'id' => 'etablissement-desservie',
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Desservi',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'visible',
             'attributes' => array(
                 'id' => 'etablissement-visible',

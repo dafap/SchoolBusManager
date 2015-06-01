@@ -1,11 +1,11 @@
 <?php
 /**
- * Description courte du fichier
+ * Page de localisation du domicile du 2e responsable en cas de garde alternée (inscriptions en ligne)
  *
- * Description longue du fichier s'il y en a une
+ * Présente une carte et les boutons enregistrer ou abandonner
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve-gestion
  * @filesource ga-localisation-bymap.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -22,9 +22,33 @@ function initialiser() {
     var options = {
         center: latlng,
         zoom: 12,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        //mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: "OSM",
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            mapTypeIds: [
+                "OSM",
+                //google.maps.MapTypeId.ROADMAP, 
+                //google.maps.MapTypeId.SATELLITE, 
+                google.maps.MapTypeId.HYBRID, 
+                google.maps.MapTypeId.TERRAIN
+            ],
+            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+        },
+        streetViewControl: true
     };
     var carte = new google.maps.Map(document.getElementById('carte-inner'), options);
+    // define OSM map type pointing at the OpenStreetMap tile server
+    carte.mapTypes.set("OSM", new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+            return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+        },
+        tileSize: new google.maps.Size(256,256),
+        name: "OpenStreetMap",
+        maxZoom: 18,
+        opacity: 1,
+        alt: "Carte OpenStreetMap"
+    }));
     // initialisation du marker
     var optionsMarqueur = {
         map: carte,

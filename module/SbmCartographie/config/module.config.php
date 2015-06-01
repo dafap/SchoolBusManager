@@ -17,6 +17,15 @@ return array(
             'sbmcarte' => array(
                 'allow' => array(
                     'roles' => array('parent')
+                ),
+                'actions' => array(
+                    'etablissements' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
                 )
             )
         ),

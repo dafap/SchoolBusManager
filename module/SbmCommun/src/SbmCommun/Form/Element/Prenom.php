@@ -2,14 +2,15 @@
 /**
  * Définition de l'élément 'Prenom' avec filtres et validateurs
  *
+ * Version qui met le prénom en majuscules
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Form/Element
  * @filesource Prenom.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2014
- * @version 2014-1
+ * @date 30 mai 2015
+ * @version 2015-2
  */
 namespace SbmCommun\Form\Element;
 
@@ -31,11 +32,12 @@ class Prenom extends Element implements InputProviderInterface
     {
         if (is_null($this->validator)) {
             $premiere = '[A-Z' . self::MAJ_DIACRITIQUES . ']';
-            $suite = '[a-z' . mb_strtolower(self::MAJ_DIACRITIQUES, 'utf-8') . ']*';
+            //$suite = '[a-z' . mb_strtolower(self::MAJ_DIACRITIQUES, 'utf-8') . ']*';
+            $suite = '[A-Z' . self::MAJ_DIACRITIQUES . ']*';
             $mot = $premiere . $suite;
             $pattern = '/^' . $mot . '([\' -]' . $mot .')*$/';
             $validator = new RegexValidator($pattern);
-            $validator->setMessage('Les caractères autorisés sont des lettres, l\' espace, l\' apostrophe ou le tiret !', RegexValidator::NOT_MATCH);
+            $validator->setMessage('Les caractères autorisés sont des lettres, l\'espace, l\'apostrophe ou le tiret !', RegexValidator::NOT_MATCH);
             $this->validator = $validator;
         }
         return $this->validator;
@@ -71,7 +73,8 @@ class Prenom extends Element implements InputProviderInterface
                 // supprime les espaces en début et en fin
                 array('name' => 'Zend\Filter\StringTrim'),
                 // met en majuscules, y compris les lettres accentuées et ligatures
-                array('name' => 'SbmCommun\Filter\StringUcfirst', 'options' => array('encoding' => 'utf-8'))
+                //array('name' => 'SbmCommun\Filter\StringUcfirst', 'options' => array('encoding' => 'utf-8'))
+                array('name' => 'Zend\Filter\StringToUpper', 'options' => array('encoding' => 'utf-8'))
             ),
             'validators' => array(
                 $this->getValidator(),

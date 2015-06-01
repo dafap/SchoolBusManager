@@ -16,8 +16,8 @@
 return array(
     'name' => 'appels',
     'type' => 'table',
-    'drop' => true,
-    'edit_entity' => true,
+    'drop' => false,
+    'edit_entity' => false,
     'add_data' => false,
     'structure' => array(
         'fields' => array(

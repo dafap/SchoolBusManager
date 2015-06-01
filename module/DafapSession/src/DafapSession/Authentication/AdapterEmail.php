@@ -107,7 +107,7 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
                 return new Result(Result::FAILURE_CREDENTIAL_INVALID, '', array('Mot de passe incorrect ou compte bloqué.'));
             }
         } else {
-            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', array('Email inconnu.'));
+            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', array('Email inconnu ou compte inactif.'));
         }
     }
 

@@ -18,11 +18,11 @@
 <div id="footer">
   <div class="float-left">
   <?php echo $this->translate('School Bus Manager');?> : <a href="http://www.dafap.fr" target="_blank" title="Conception et r&eacute;alisation">Dafap informatique</a>
-  &copy;2013 - <?php echo date('Y')?> - <a href="https://www.ex2.com" title=" H&eacute;bergement web">Ex2Hosting</a> - <?php  echo $this->client_name; ?> 
+  &copy;2013 - <?php echo date('Y')?> - <a href="https://www.ex2.com" title=" H&eacute;bergement web">Ex2Hosting</a>
   </div>
   <div class="float-right"> 
   <?php 
-  // mentions légales, plan du site ... passés dans un tableau associatif {$name => $url}
+  // mentions légales, formulaire de contact ... passés dans un tableau associatif {$name => $url}
   $sep = '';
   foreach ((array) $this->footer_elements as $name => $url) {
       if (is_array($url)) {

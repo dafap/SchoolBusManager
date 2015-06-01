@@ -32,6 +32,9 @@ $this->paginator->setCurrentPageNumber($this->page);
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $circuits = $this->paginator->getCurrentItems();
+$url_dupliquer = $this->url('sbmgestion/transport', array(
+    'action' => 'circuit-dupliquer'
+));
 $ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'circuit-ajout',
     'page' => $this->page
@@ -53,12 +56,20 @@ $actions = array(
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
     ),
+    'dupliquer' => array(
+        'class' => 'fam-plugin-add',
+        'formaction' => $url_dupliquer,
+        'title' => 'Générer les circuits pour une nouvelle année scolaire'
+    ),
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $ajouter,
         'title' => 'Nouvel arrêt sur un circuit'
     )
 );
+if (!$this->admin) {
+    unset($actions['dupliquer']);
+}
 ?>
 <h1>Liste des circuits</h1>
 <div id="liste-wrapper">

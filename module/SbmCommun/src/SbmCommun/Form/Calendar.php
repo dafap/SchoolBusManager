@@ -57,7 +57,7 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'dateDebut',
-            'type' => 'Zend\Form\Element\Date',
+            'type' => 'Zend\Form\Element\DateSelect',
             'attributes' => array(
                 'id' => 'calendar-dateDebut',
             ),
@@ -66,7 +66,9 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'format' => 'Y-m-d',
+                'create_empty_option' => true,
+                'min_year' => date('Y') - 20,
+                'max_year' => date('Y') + 1,
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -74,7 +76,7 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'dateFin',
-            'type' => 'Zend\Form\Element\Date',
+            'type' => 'Zend\Form\Element\DateSelect',
             'attributes' => array(
                 'id' => 'calendar-dateFin',
             ),
@@ -83,7 +85,9 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'format' => 'Y-m-d',
+                'create_empty_option' => true,
+                'min_year' => date('Y') - 20,
+                'max_year' => date('Y') + 2,
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -91,7 +95,7 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'echeance',
-            'type' => 'Zend\Form\Element\Date',
+            'type' => 'Zend\Form\Element\DateSelect',
             'attributes' => array(
                 'id' => 'calendar-echeance',
             ),
@@ -100,7 +104,9 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'format' => 'Y-m-d',
+                'create_empty_option' => true,
+                'min_year' => date('Y') - 20,
+                'max_year' => date('Y') + 2,
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -161,7 +167,7 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
             ),
             'echeance' => array(
                 'name' => 'echeance',
-                'required' => false
+                'required' => true
             )
         );
     }

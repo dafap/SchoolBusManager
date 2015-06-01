@@ -154,7 +154,9 @@ return array(
         'invokables' => array(
             'listeLigneActions' => 'SbmCommun\Form\View\Helper\ListeLigneActions',
             'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',
-            'telephone' => 'SbmCommun\Form\View\Helper\Telephone'
+            'telephone' => 'SbmCommun\Form\View\Helper\Telephone',
+            'formRowDate' => 'SbmCommun\Form\View\Helper\FormRowDate',
+            'formRowDateTime' => 'SbmCommun\Form\View\Helper\FormRowDateTime'
         )
     )
 );

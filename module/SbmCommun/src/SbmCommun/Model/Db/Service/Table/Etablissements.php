@@ -185,5 +185,25 @@ class Etablissements extends AbstractSbmTable
         ));
         parent::saveRecord($oData);
     }
+    
+    public function setDesservie($etablissementId, $desservie)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'etablissementId' => $etablissementId,
+            'desservie' => $desservie
+        ));
+        parent::saveRecord($oData);
+    }
+
+    public function setVisible($etablissementId, $visible)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'etablissementId' => $etablissementId,
+            'visible' => $visible
+        ));
+        parent::saveRecord($oData);
+    }
 }
 

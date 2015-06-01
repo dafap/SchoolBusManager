@@ -1,6 +1,9 @@
 <?php
 /**
  * Page de modification de l'inscription d'un enfant pour les responsables
+ * 
+ * Attention !!!
+ * Vérifier en cas de mise en forme que le js n'a pas changé lignes 26 et 65
  *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
@@ -20,9 +23,7 @@ EOT;
 function phraseDemandeR2(state) {
     var div=$("#demandeR2-text");
     if (div.length==0) {
-        $('#r2enfant_demandeR2 fieldset').append('
-<div id="demandeR2-text"></div>
-');
+        $('#r2enfant_demandeR2 fieldset').append('<div id="demandeR2-text"></div>');
     }
     div=$("#r2enfant_demandeR2 #demandeR2-text");
     if (state) {
@@ -61,9 +62,7 @@ $(function() {
 					$('#r2communeId').empty();
 					if (dataJson.success==1) {
 					    $.each(dataJson.data, function(k, d) {
-	                        $('#r2communeId').append('
-<option value="' + d + '">' + k + '</option>
-');
+	                        $('#r2communeId').append('<option value="' + d + '">' + k + '</option>');
 	                    });
 	                }
 				},
@@ -127,7 +126,7 @@ echo $this->formHidden($this->form->get('csrf'));
     <fieldset class="sbm-page1">
 			<div id="enfant-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
 			<div id="enfant-edit-prenom" class="row-inner edit"><?php echo $this->formRow($this->form->get('prenom')); ?></div>
-			<div id="enfant-edit-dateN" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateN')); ?></div>
+			<div id="enfant-edit-dateN" class="row-inner edit"><?php echo $this->formRowDate($this->form->get('dateN')); ?></div>
 			<div>
 				<div class="enfant-label">Responsable</div><?php echo $identiteResponsable; ?></div>
 			<div>

@@ -54,7 +54,7 @@ class Circuits extends AbstractSbmTable
 
     public function setSelection($circuitId, $selection)
     {
-        $oData = $this->getObjData();
+        $oData = clone $this->getObjData();
         $oData->exchangeArray(array(
             'circuitId' => $circuitId,
             'selection' => $selection

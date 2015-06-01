@@ -1,6 +1,6 @@
 <?php
 /**
- * Gestion de la table système `documents`
+ * Gestion de la table système `calendar`
  *
  * (à déclarer dans module.config.php)
  * 
@@ -56,6 +56,10 @@ class Calendar extends AbstractSbmTable
 
     public function getAnneeScolaire($millesime)
     {
+        if (empty($millesime)) {
+            $msg = 'Il faut au moins ouvrir une année scolaire.';
+            die("<!DOCTYPE Html><html><head></head><body>$msg</body></html>");
+        }
         $resultset = $this->fetchAll("nature = 'AS' AND millesime = $millesime");
         if (! $resultset->count()) {
             throw new Exception(sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime, $millesime + 1));
@@ -163,6 +167,17 @@ class Calendar extends AbstractSbmTable
 
     /**
      * Renvoie l'état du site vis à vis de la période d'inscripton.
+     * Les dates sont données sous forme de DateTime.
+     * L'état du site est :<ul>
+     * <li>0 : inscriptions annoncées</li>
+     * <li>1 : inscriptions ouvertes</li>
+     * <li>2 : inscriptions fermées</li></ul>
+     *
+     * @return array Les clés du tableau sont :<ul>
+     *         <li>'etat' (0, 1 ou 2)</li>
+     *         <li>dateDebut (DateTime - début de la période d'inscription)</li>
+     *         <li>dateFin (DateTime - fin de la période d'inscription)</li>
+     *         <li>echeance (DateTime - date limite de paiement)</li></ul>
      */
     public function etatDuSite()
     {
@@ -176,37 +191,67 @@ class Calendar extends AbstractSbmTable
         $echeance = DateTime::createFromFormat('Y-m-d', $row->echeance);
         $aujourdhui = new DateTime();
         if ($aujourdhui < $dateDebut) {
-            $msg = sprintf('La %s sera ouverte du %s au %s.', \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'));
             return array(
                 'etat' => 0,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
-                'echeance' => $echeance,
-                'msg' => $msg
+                'echeance' => $echeance
             );
         } elseif ($aujourdhui > $dateFin) {
-            $msg = sprintf('La %s est close.', \mb_strtolower($row->description, 'utf-8'));
             return array(
                 'etat' => 2,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
-                'echeance' => $echeance,
-                'msg' => $msg
+                'echeance' => $echeance
             );
         } else {
-            $modele = <<<EOT
-La %s est ouverte du %s au %s. Au-delà du %s, les inscriptions se feront sur formulaire papier directement auprès de la Communauté de communes, et les places seront attribuées en fonctions des disponibilités sur les circuits existants à la rentrée scolaire
-EOT;
-            
-            $msg = sprintf($modele, \mb_strtolower($row->description, 'utf-8'), $dateDebut->format('d/m/Y'), $dateFin->format('d/m/Y'), $dateFin->format('d/m/Y'));
             return array(
                 'etat' => 1,
-                'dateDebut' => $dateDebut->format('d/m/Y'),
-                'dateFin' => $dateFin->format('d/m/Y'),
-                'echeance' => $echeance->format('d/m/Y'),
-                'msg' => $msg
+                'dateDebut' => $dateDebut,
+                'dateFin' => $dateFin,
+                'echeance' => $echeance
             );
         }
+    }
+    
+    /**
+     * Renvoie un tableau d'information sur les permanences
+     *
+     * @return array(string) - index à partir de 0
+     */
+    public function getPermanences($commune = null)
+    {
+        $millesime = $this->getDefaultMillesime();
+        $where = new Where();
+        $where->expression('millesime = ?', $millesime)->literal('Nature="PERM"');
+        if (!empty($commune)) {
+            $where->like('libelle', "%$commune%");
+        }
+        $resultset = $this->fetchAll($where, 'rang');
+        $result = array();
+        foreach ($resultset as $row) {
+            $result[] = $row->description;
+        }
+        return $result;
+    }
+
+    /**
+     * Change l'état d'une année scolaire.
+     * Une année scolaire peut être ouverte (1) ou fermée (0).
+     *
+     * @param int $millesime
+     *            millesime de l'année scolaire à traiter
+     * @param int $ouvert
+     *            Prend les valeurs 1 (ouvert) ou 0 (fermé)
+     * @return \Zend\Db\TableGateway\int
+     */
+    public function changeEtat($millesime, $ouvert = 1)
+    {
+        return $this->table_gateway->update(array(
+            'ouvert' => $ouvert
+        ), array(
+            'millesime' => $millesime
+        ));
     }
 }
  

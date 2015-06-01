@@ -19,6 +19,7 @@ $url_libelle_liste = $this->url('sbmadmin', array(
     'action' => 'libelle-liste'
 ));
 $url_droits = $this->url('sbmadmin', array('action' => 'user-liste'));
+$url_gestion = $this->url('sbmgestion');
 ?>
 <h1>Menu du module d'administration</h1>
 <div id="menugeneral">
@@ -34,9 +35,9 @@ echo $this->flashMessenger()->render('default');
 	<div  id="menugeneral-inner">
 		<ul>
 			<li><a href="<?php echo $url_droits; ?>"><i class="fam-bullet-go"></i>Gestion des utilisateurs</a></li>
-			<li><a href="<?php echo $url_libelle_liste; ?>"><i class="fam-bullet-go"></i>Gestion des libellés
-					de l'application</a></li>
+			<li><a href="<?php echo $url_libelle_liste; ?>"><i class="fam-bullet-go"></i>Gestion des libellés de l'application</a></li>
 			<li><a href="<?php echo $url_pdf_liste; ?>"><i class="fam-bullet-go"></i>Gestion des documents pdf</a></li>
+			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-bullet-go"></i>Espace des gestionnaires</a></li>
 		</ul>
 	</div>
 </div>

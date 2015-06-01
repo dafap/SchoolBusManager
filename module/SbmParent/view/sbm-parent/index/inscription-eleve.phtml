@@ -4,6 +4,9 @@
  *
  * L'élève est créé et sa scolarité est mise à jour. Il restera à saisir l'identité et l'adresse du second parent en cas de garde alternée.
  * 
+ * Attention !!!
+ * Vérifier en cas de mise en forme que le js n'a pas changé lignes 28 et 67
+ * 
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource inscription-eleve.phtml
@@ -22,9 +25,7 @@ EOT;
 function phraseDemandeR2(state) {
     var div=$("#demandeR2-text");
     if (div.length==0) {
-        $('#r2enfant_demandeR2 fieldset').append('
-<div id="demandeR2-text"></div>
-');
+        $('#r2enfant_demandeR2 fieldset').append('<div id="demandeR2-text"></div>');
     }
     div=$("#r2enfant_demandeR2 #demandeR2-text");
     if (state) {
@@ -63,9 +64,7 @@ $(function() {
 					$('#r2communeId').empty();
 					if (dataJson.success==1) {
 					    $.each(dataJson.data, function(k, d) {
-	                        $('#r2communeId').append('
-<option value="' + d + '">' + k + '</option>
-');
+	                        $('#r2communeId').append('<option value="' + d + '">' + k + '</option>');
 	                    });
 	                }
 				},
@@ -117,7 +116,7 @@ echo $this->formHidden($this->form->get('csrf'));
     <fieldset class="sbm-page1">
 			<div id="enfant-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
 			<div id="enfant-ajout-prenom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('prenom')); ?></div>
-			<div id="enfant-ajout-dateN" class="row-inner ajout"><?php echo $this->formRow($this->form->get('dateN')); ?></div>
+			<div id="enfant-ajout-dateN" class="row-inner ajout"><?php echo $this->formRowDate($this->form->get('dateN')); ?></div>
 			<div>
 				<div class="enfant-label">Responsable</div><?php echo $identiteResponsable; ?></div>
 			<div>

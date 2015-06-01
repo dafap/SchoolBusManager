@@ -60,7 +60,8 @@ class CarteController extends AbstractActionController
         }
         
         return new ViewModel(array(
-            'ptEtablissements' => $ptEtablissements
+            'ptEtablissements' => $ptEtablissements,
+            'config' => StdLib::getParamR(array('sbm', 'cartes', 'etablissements'), $this->getServiceLocator()->get('config'))
         ));
     }
     

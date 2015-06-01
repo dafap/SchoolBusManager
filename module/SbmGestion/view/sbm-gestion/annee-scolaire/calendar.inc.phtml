@@ -1,12 +1,10 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Affiche la liste des éléments d'une année scolaire
  * 
- * @project project_name
- * @package package_name
- * @filesource liste.inc.php
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/anneescolaire
+ * @filesource calendar.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 5 nov. 2014
@@ -19,6 +17,8 @@ use SbmCommun\Model\DateLib;
 	<tbody>
 		<tr>
 			<th></th>
+			<th>Nature</th>
+			<th>Libellé</th>
 			<th>Description</th>
 			<th>Date de début</th>
 			<th>Date de fin</th>
@@ -33,6 +33,8 @@ use SbmCommun\Model\DateLib;
             "odd"
         ))->next();?>">
 			<td><?php echo $element['ordinal'];?></td>
+			<td><?php echo $element['nature'];?></td>
+			<td><?php echo $element['libelle'];?></td>
 			<td><?php echo $element['description'];?></td>
 			<td><?php echo DateLib::formatDateFromMysql($element['dateDebut']);?></td>
 			<td><?php echo DateLib::formatDateFromMysql($element['dateFin']);?></td>

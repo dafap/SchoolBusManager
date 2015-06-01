@@ -16,6 +16,34 @@ return array(
             'sbmgestion' => array(
                 'allow' => array(
                     'roles' => array('gestion')
+                ),
+                'actions' => array(
+                    'ouvrir' => array(
+                        'deny' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        ),
+                        'allow' => array(
+                            'roles' => array(
+                                'admin'
+                            )
+                        ),
+                        'redirect_to' => 'sbmgestion/anneescolaire'
+                    ),
+                    'circuit-dupliquer' => array(
+                        'deny' => array(
+                            'roles' => array(
+                                'parent'
+                            )
+                        ),
+                        'allow' => array(
+                            'roles' => array(
+                                'admin'
+                            )
+                        ),
+                        'redirect_to' => 'sbmgestion/transport'
+                    )
                 )
             )
         ),
@@ -24,7 +52,7 @@ return array(
         'paginator' => array(
             'nb_circuits' => 15,
             'nb_classes' => 15,
-            'nb_communes' => 20,
+            'nb_communes' => 15,
             'nb_eleves' => 10,
             'nb_etablissements' => 15,
             'nb_paiements' => 10,

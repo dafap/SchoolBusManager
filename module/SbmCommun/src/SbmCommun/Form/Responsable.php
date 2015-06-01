@@ -128,9 +128,9 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'class' => 'sbm-width-15c'
             ),
             'options' => array(
-                'label' => 'Autre identité à la même adresse',
+                'label' => 'Autre responsable à la même adresse',
                 'label_attributes' => array(
-                    'class' => 'sbm-label responsable-titre'
+                    'class' => 'sbm-label help'
                 ),
                 'value_options' => array(
                     'M.' => 'Monsieur',
@@ -154,7 +154,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'class' => 'sbm-width-30c'
             ),
             'options' => array(
-                'label' => 'Autre nom',
+                'label' => 'Nom',
                 'label_attributes' => array(
                     'class' => 'sbm-label responsable-nom'
                 ),
@@ -171,7 +171,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'class' => 'sbm-width-30c'
             ),
             'options' => array(
-                'label' => 'Autre prénom',
+                'label' => 'Prénom',
                 'label_attributes' => array(
                     'class' => 'sbm-label responsable-prenom'
                 ),
@@ -553,5 +553,17 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             $e = $this->get($elementName);
             $e->setAttribute($attr, $attr);
         }
+    }
+    
+    public function isValid()
+    {
+        $result = parent::isValid();
+        // un des 3 numéros de téléphones doit être renseigné
+        if (empty($this->data['telephoneF']) && empty($this->data['telephoneP'] && empty($this->data['telephoneT']))) {
+            $result = false;
+            $element = $this->get('telephoneT');
+            $element->setMessages(array('Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'));
+        }
+        return $result;
     }
 }

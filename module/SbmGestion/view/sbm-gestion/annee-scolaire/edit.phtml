@@ -12,6 +12,35 @@
  * @version 2014-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+/*
+ * On n'utilise pas le datepicker parce qu'il faudrait écrire les conversions de format de date 
+ * à l'entrée et à la sortie. Sinon, le jquery fonctionne bien !
+ * 
+ * $this->headLink()->appendStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+ * $this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
+ * $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+ * $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/datepicker-fr.js'));
+ * $this->headScript()->captureStart();
+ * ?>
+ * $(document).ready(function($){
+ * $("#-calendar-dateDebut").datepicker({
+ * showOtherMonths:true,
+ * selectOtherMonth: true
+ * });
+ * $("#calendar-dateFin").datepicker({
+ * showOtherMonths:true,
+ * selectOtherMonth: true
+ * });
+ * $("#calendar-echeance").datepicker({
+ * showOtherMonths:true,
+ * selectOtherMonth: true
+ * });
+ * });
+ *
+ * <?php
+ * $this->headScript()->captureEnd();
+ */
+
 $as_libelle = sprintf("%4d-%4d", $this->millesime, $this->millesime + 1);
 $url_retour = $this->url('sbmgestion/anneescolaire', array(
     'action' => 'voir',
@@ -40,12 +69,21 @@ echo $this->formHidden($this->form->get('calendarId'));
 echo $this->formHidden($this->form->get('millesime'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>
-        <fieldset class="edit">
-			<div id="wrapper-description" class="row-inner edit"><?php echo $this->formRow($this->form->get('description'));?></div>
-			<div id="wrapper-dateDebut" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
-			<div id="wrapper-dateFin" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateFin'));?></div>
-			<div id="wrapper-echeance" class="row-inner edit"><?php echo $this->formRow($this->form->get('echeance'));?></div>
-			<div id="wrapper-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice'));?></div>
+        <fieldset class="page1">
+			<div id="wrapper-nature">
+				<div class="label">Nature</div><?php echo $this->data['nature'];?></div>
+			<div id="wrapper-libelle">
+				<div class="label">Libellé</div><?php echo $this->data['libelle'];?></div>
+			<div id="wrapper-description" class="row-inner edit">
+			    <?php echo $this->formRow($this->form->get('description'));?></div>
+			<div id="wrapper-dateDebut" class="row-inner edit">
+				<?php echo $this->formRowDate($this->form->get('dateDebut'));?></div>
+			<div id="wrapper-dateFin" class="row-inner edit">
+				<?php echo $this->formRowDate($this->form->get('dateFin'));?></div>
+			<div id="wrapper-echeance" class="row-inner edit">
+				<?php echo $this->formRowDate($this->form->get('echeance'));?></div>
+			<div id="wrapper-exercice" class="row-inner edit">
+			    <?php echo $this->formRow($this->form->get('exercice'));?></div>
 			<div id="wrapper-buttons" class="row-inner edit">
                 <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
             </div>
