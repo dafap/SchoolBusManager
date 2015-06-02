@@ -1030,7 +1030,8 @@ class EleveController extends AbstractActionController
             'point' => $pt,
             'form' => $form->prepare(),
             'responsableId' => $args['responsableId'],
-            'responsable' => $responsable
+            'responsable' => $responsable,
+            'config' => StdLib::getParamR(array('sbm','cartes', 'parent'), $this->getServiceLocator()->get('config'))
         ));
     }
 
