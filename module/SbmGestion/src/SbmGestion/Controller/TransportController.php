@@ -522,12 +522,21 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         
-        $r = $this->supprData($params, function ($id, $tableClasses) {
-            return array(
-                'id' => $id,
-                'data' => $tableClasses->getRecord($id)
-            );
-        });
+        try {
+            $r = $this->supprData($params, function ($id, $tableClasses) {
+                return array(
+                    'id' => $id,
+                    'data' => $tableClasses->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette classe parce que certains élèves y sont inscrits.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'classe-liste',
+                'page' => $currentPage
+            ));
+        }
+        
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -764,12 +773,21 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         
-        $r = $this->supprData($params, function ($id, $tableCommunes) {
-            return array(
-                'id' => $id,
-                'data' => $tableCommunes->getRecord($id)
-            );
-        });
+        try {
+            $r = $this->supprData($params, function ($id, $tableCommunes) {
+                return array(
+                    'id' => $id,
+                    'data' => $tableCommunes->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette commune car un enregistrement l\'utilise.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'commune-liste',
+                'page' => $currentPage
+            ));
+        }
+        
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1015,12 +1033,21 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         $vueEtablissement = $this->getServiceLocator()->get('Sbm\Db\Vue\Etablissements');
-        $r = $this->supprData($params, function ($id, $tableEtablissements) use($vueEtablissement) {
-            return array(
-                'id' => $id,
-                'data' => $vueEtablissement->getRecord($id)
-            );
-        });
+        try {
+            $r = $this->supprData($params, function ($id, $tableEtablissements) use($vueEtablissement) {
+                return array(
+                    'id' => $id,
+                    'data' => $vueEtablissement->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cet établissement car un enregistrement l\'utilise.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'etablissement-liste',
+                'page' => $currentPage
+            ));
+        }
+        
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1246,13 +1273,13 @@ class TransportController extends AbstractActionController
         }
         $etablissement = $tEtablissements->getRecord($etablissementId);
         $commune = $this->getServiceLocator()
-        ->get('Sbm\Db\table\Communes')
-        ->getRecord($etablissement->communeId);
+            ->get('Sbm\Db\table\Communes')
+            ->getRecord($etablissement->communeId);
         if ($etablissement->x == 0.0 && $etablissement->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
             $array = $this->getServiceLocator()
-            ->get('SbmCarto\Geocoder')
-            ->geocode($etablissement->adresse2 ?  : $etablissement->adresse1, $etablissement->codePostal, $commune->nom);
+                ->get('SbmCarto\Geocoder')
+                ->geocode($etablissement->adresse2 ?  : $etablissement->adresse1, $etablissement->codePostal, $commune->nom);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
             $description = $array['adresse'];
         } else {
@@ -1281,7 +1308,11 @@ class TransportController extends AbstractActionController
                 )))),
                 $etablissement->codePostal . ' ' . $commune->nom
             ),
-            'config' => StdLib::getParamR(array('sbm', 'cartes', 'etablissements'), $this->getServiceLocator()->get('config'))
+            'config' => StdLib::getParamR(array(
+                'sbm',
+                'cartes',
+                'etablissements'
+            ), $this->getServiceLocator()->get('config'))
         ));
     }
 
@@ -1655,12 +1686,21 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         $vueServices = $this->getServiceLocator()->get('Sbm\Db\Vue\Services');
-        $r = $this->supprData($params, function ($id, $tableServices) use($vueServices) {
-            return array(
-                'id' => $id,
-                'data' => $vueServices->getRecord($id)
-            );
-        });
+        try {
+            $r = $this->supprData($params, function ($id, $tableServices) use($vueServices) {
+                return array(
+                    'id' => $id,
+                    'data' => $vueServices->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce service car un enregistrement l\'utilise.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'service-liste',
+                'page' => $currentPage
+            ));
+        }
+        
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1921,6 +1961,13 @@ class TransportController extends AbstractActionController
     public function stationSupprAction()
     {
         $currentPage = $this->params('page', 1);
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $origine = $request->getPost('origine', false);
+            if ($origine) {
+                $this->redirectToOrigin()->setBack($origine);
+            }
+        }
         $form = new ButtonForm(array(
             'id' => null
         ), array(
@@ -1941,12 +1988,25 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         $vueStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
-        $r = $this->supprData($params, function ($id, $tableStations) use($vueStations) {
-            return array(
-                'id' => $id,
-                'data' => $vueStations->getRecord($id)
-            );
-        });
+        try {
+            $r = $this->supprData($params, function ($id, $tableStations) use($vueStations) {
+                return array(
+                    'id' => $id,
+                    'data' => $vueStations->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette station car un enregistrement l\'utilise.');
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    'action' => 'station-liste',
+                    'page' => $currentPage
+                ));
+            }
+        }
+        
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1954,19 +2014,16 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
-                        'action' => StdLib::getParam('origine', $r->getPost()),
-                        'page' => $currentPage
-                    ));
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $this->redirect()->toRoute('sbmgestion/transport', array(
+                            'action' => StdLib::getParam('origine', $r->getPost()),
+                            'page' => $currentPage
+                        ));
+                    }
                     break;
                 default:
-                    $form->add(array(
-                        'name' => 'origine',
-                        'type' => 'hidden',
-                        'attributes' => array(
-                            'value' => StdLib::getParam('origine', $r->getPost())
-                        )
-                    ));
                     return new ViewModel(array(
                         'form' => $form->prepare(),
                         'page' => $currentPage,
@@ -2242,12 +2299,21 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         $vuetransporteurs = $this->getServiceLocator()->get('Sbm\Db\Vue\Transporteurs');
-        $r = $this->supprData($params, function ($id, $tabletransporteurs) use($vuetransporteurs) {
-            return array(
-                'id' => $id,
-                'data' => $vuetransporteurs->getRecord($id)
-            );
-        });
+        try {
+            $r = $this->supprData($params, function ($id, $tabletransporteurs) use($vuetransporteurs) {
+                return array(
+                    'id' => $id,
+                    'data' => $vuetransporteurs->getRecord($id)
+                );
+            });
+        } catch (Exception $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce transporteur car il a un service.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'transporteur-liste',
+                'page' => $currentPage
+            ));
+        }
+        
         if ($r instanceof Response) {
             return $r;
         } else {

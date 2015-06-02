@@ -15,7 +15,10 @@ use SbmCommun\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$origine = 'stations-non-desservies';
+$origine = $this->url('sbmgestion/transport', array(
+    'action' => 'stations-non-desservies',
+    'page' => $this->page
+));
 $pdf = $this->url('sbmgestion/transport', array(
     'action' => 'stations-non-desservies-pdf',
     'page' => $this->page

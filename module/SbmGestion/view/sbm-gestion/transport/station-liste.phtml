@@ -29,7 +29,10 @@ $jsTrigger = '';
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $stations = $this->paginator->getCurrentItems();
-$origine = 'station-liste';
+$origine = $this->url('sbmgestion/transport', array(
+    'action' => 'station-liste',
+    'page' => $this->page
+));
 $ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'station-ajout',
     'page' => $this->page
