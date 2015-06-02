@@ -60,6 +60,21 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
         ));
         $this->add(array(
             'type' => 'text',
+            'name' => 'prenomSA',
+            'attributes' => array(
+                'id' => 'critere-prenom',
+                'maxlength' => '45',
+                'class' => 'sbm-width-45c'
+            ),
+            'options' => array(
+                'label' => 'Prénom',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'text',
             'name' => 'responsable',
             'attributes' => array(
                 'id' => 'critere-responsable',
@@ -68,6 +83,9 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
             ),
             'options' => array(
                 'label' => 'Responsable',
+                'label_attributes' => array(
+                    'class' => 'sbm-new-line'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -82,9 +100,6 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
             ),
             'options' => array(
                 'label' => 'Etablissement',
-                'label_attributes' => array(
-                    'class' => 'sbm-new-line'
-                ),
                 'empty_option' => 'Tout',
                 'error_attributes' => array(
                     'class' => 'sbm-error'

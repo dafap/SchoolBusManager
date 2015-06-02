@@ -50,6 +50,9 @@ class Criteres extends SbmCommunCriteres
         if (! empty($this->data['nomSA'])) {
             $where->like('ele.nomSA', $this->data['nomSA'] . '%');
         }
+        if (! empty($this->data['prenomSA'])) {
+            $where->like('ele.prenomSA', $this->data['prenomSA'] . '%');
+        }
         if (! empty($this->data['responsable'])) {
             $where->nest()->like('r1.nomSA', $this->data['responsable'] . '%')->OR->like('r2.nomSA', $this->data['responsable'] . '%')->unnest();
         }
