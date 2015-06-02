@@ -14,30 +14,26 @@
  */
 namespace SbmPaiement;
 
+use ZfcBase\Module\AbstractModule;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\Mvc\MvcEvent;
 use SbmCommun\Model\StdLib;
 
-class Module implements AutoloaderProviderInterface, ConfigProviderInterface
+class Module extends AbstractModule implements AutoloaderProviderInterface, ConfigProviderInterface
 {
-    public function getConfig()
+
+    public function getDir()
     {
-        return include __DIR__ . '/config/module.config.php';
+        return __DIR__;
     }
 
-    public function getAutoloaderConfig()
+    public function getNamespace()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
-                )
-            )
-        );
+        return __NAMESPACE__;
     }
-    
+
     public function onBootstrap(EventInterface $e)
     {
         $eventManager = $e->getTarget()->getEventManager();
