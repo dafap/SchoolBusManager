@@ -105,6 +105,10 @@ i.fam-help:hover {
 *:hover.sbm-description {
 	font-size: 95%;
 }
+p.important {
+	font-size: 1.2em;
+	color: #db001b;
+}
 .top-6px {
 	margin-top: 6px;
 }
