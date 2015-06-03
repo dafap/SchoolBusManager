@@ -46,7 +46,7 @@ class IndexController extends AbstractActionController
             $this->flashMessenger()->addWarningMessage('Aucun message envoyé.');
             try {
                 return $this->redirectToOrigin()->back();
-            } catch (\Exception $e) {
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                 return $this->redirect()->toRoute('login', array('action' => 'home-page'));
             }
         }
@@ -85,7 +85,7 @@ class IndexController extends AbstractActionController
                 $this->flashMessenger()->addInfoMessage('Un mail a été envoyé à l\'adresse indiquée. Consultez votre messagerie.');
                 try {
                     return $this->redirectToOrigin()->back();
-                } catch (\Exception $e) {
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                     return $this->redirect()->toRoute('login', array('action' => 'home-page'));
                 }
             }

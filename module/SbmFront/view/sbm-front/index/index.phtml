@@ -14,7 +14,9 @@
 $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
 $url_admin = $this->url('sbmadmin');
-$url_carte = $this->url('sbmcarte', array('action' => 'etablissements'));
+$url_carte = $this->url('sbmcarte', array(
+    'action' => 'etablissements'
+));
 
 if ($this->etat['etat'] == 0) {
     // avant le début de la période d'inscription
@@ -53,7 +55,7 @@ EOT;
 <p>Pour tout autre renseignement ou tout autre mode d'inscription, vous pouvez vous adresser directement au service Transport à l'adresse :</p>
 EOT;
     
-    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);    
+    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);
 } else {
     // après la période d'inscription
     $format = <<<EOT
@@ -82,14 +84,14 @@ EOT;
 			</div>
 		</div>
 		<div class="column2">
-		    <div class="flashMessenger">
-		    <?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?>
+			<div class="flashMessenger">
+		    <?php
+    echo $this->flashMessenger()->render('success');
+    echo $this->flashMessenger()->render('warning');
+    echo $this->flashMessenger()->render('error');
+    echo $this->flashMessenger()->render('info');
+    echo $this->flashMessenger()->render('default');
+    ?>
 		    </div>
 		    <?php echo $this->form()->openTag($this->form); ?>
 		    <fieldset class="sbm-page1">
@@ -111,16 +113,24 @@ EOT;
 			<p></p>
 			<?php if ($this->etat['etat'] == 1): ?>
 			<fieldset class="sbm-page1">
-			<div class="centre">
+				<div class="centre">
 					<h3>Nouvel utilisateur</h3>
 					<div class="sbm-description">(si vous n'avez pas de compte)</div>
-					<div class="centre"><?php echo $this->formSubmit($this->form->get('signup')); ?></div>
+					<div class="centre">
+						<a href="<?php echo $this->url('login', array('action' => 'creer-compte'));?>">
+					    <?php echo $this->formSubmit($this->form->get('signup')); ?>
+					    </a>
+					</div>
 				</div>
 			</fieldset>
 			<p></p>
 			<?php endif;?>
 			<?php echo $this->form()->closeTag(); ?>
-			<div class="sbm-page1"><a href="<?php echo $url_carte;?>"><img alt="carte des établissements desservis" src="img/carte-ccda.png"></a></div>
+			<div class="sbm-page1">
+				<a href="<?php echo $url_carte;?>"><img
+					alt="carte des établissements desservis"
+					src="img/logocarteetablissements.png"></a>
+			</div>
 		</div>
 	</div>
 </div>

@@ -47,10 +47,4 @@ class IndexController extends AbstractActionController
             'permanences' => $tCalendar->getPermanences()
         ));
     }
-
-    public function testAction()
-    {
-        die(var_dump(Session::get('millesime'), Session::get('as')));
-        return $view;
-    }
 }
