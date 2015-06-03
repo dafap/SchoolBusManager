@@ -356,7 +356,8 @@ class EleveGestionController extends AbstractActionController
                     $responsable->adresseL2
                 )))),
                 $responsable->codePostal . ' ' . $commune->nom
-            )
+            ),
+            'config' => StdLib::getParamR(array('sbm','cartes', 'parent'), $this->getServiceLocator()->get('config'))
         ));
     }
 }

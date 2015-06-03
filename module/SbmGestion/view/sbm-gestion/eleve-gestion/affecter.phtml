@@ -89,7 +89,7 @@ function initialiser() {
     }
     var markerElv = new google.maps.Marker(optionsMarqueur);
     var infoElv = new google.maps.InfoWindow({
-        content  : '<?php echo $descriptionElv;?>',
+        content  : "<?php echo $descriptionElv;?>",
         position : latlng
     });
     google.maps.event.addListener(markerElv, 'click', function() {
@@ -102,7 +102,7 @@ function initialiser() {
     }
     var markerEta = new google.maps.Marker(optionsMarqueur);
     var infoEta = new google.maps.InfoWindow({
-        content  : '<?php echo $descriptionEta;?>',
+        content  : "<?php echo $descriptionEta;?>",
         position : latlng
     });
     google.maps.event.addListener(markerEta, 'click', function() {
