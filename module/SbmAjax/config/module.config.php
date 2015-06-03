@@ -28,7 +28,7 @@ foreach ($controllers as $key => $value) {
             'route' => "/$key" . '[/:action][/:args]',
             'constraints' => array(
                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'args' => '[a-zA-Z][a-zA-Z0-9_-]*:[a-zA-Z0-9_\-\+]+(/[a-zA-Z][a-zA-Z0-9_-]*:[a-zA-Z0-9_\-\+]+)*'
+                'args' => '[a-zA-Z][a-zA-Z0-9_-]*:[a-zA-Z0-9_%\-\+]+(/[a-zA-Z][a-zA-Z0-9_-]*:[a-zA-Z0-9_%\-\+]+)*'
             ),
             'defaults' => array(
                 'module' => 'SbmAjax',

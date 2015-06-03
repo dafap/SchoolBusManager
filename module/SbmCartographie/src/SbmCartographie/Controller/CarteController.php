@@ -46,7 +46,7 @@ class CarteController extends AbstractActionController
         if (array_key_exists('cancel', $args)) {
             try {
                 $this->redirectToOrigin()->back();
-            } catch (\Exception $e) {
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                 $this->redirect()->toRoute('home');
             }
         }

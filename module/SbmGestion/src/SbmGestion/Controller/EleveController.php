@@ -954,10 +954,19 @@ class EleveController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
                 $this->setToSession('post', $args);
+            } elseif (array_key_exists('url1_retour', $args)) {
+                $this->redirectToOrigin()->setBack($args['url1_retour']);
+                unset($args['url1_retour']);
+                $this->setToSession('post', $args);
             }
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('La localisation de cette adresse n\'a pas été enregistrée.');
-                return $this->redirectToOrigin()->back();
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array('action' => 'responsable-liste'));
+                }
+                
             }
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
@@ -1010,7 +1019,11 @@ class EleveController extends AbstractActionController
                 $this->getServiceLocator()
                     ->get('Sbm\MajDistances')
                     ->pour($args['responsableId']);
-                return $this->redirectToOrigin()->back();
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array('action' => 'responsable-liste'));
+                }                
             }
         }
         // chercher le responsable dans la table

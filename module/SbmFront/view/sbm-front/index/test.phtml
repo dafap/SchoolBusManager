@@ -26,3 +26,11 @@ echo '</pre>var_dump(args) donne :';
 var_dump($this->args);
 echo 'X = ' . $this->x;
 echo '</div>';
+?>
+<form method="post">
+<div class="centre">
+<a href="<?php echo $this->url('home', array('action'=> 'test', 'param' => 'signup'));?>">
+<input type="submit" name="signup" value="Créer un compte" id="sbm-signup" class="default sbm-signup">
+</a>
+</div>
+</form>

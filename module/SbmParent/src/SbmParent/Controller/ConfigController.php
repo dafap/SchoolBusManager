@@ -33,7 +33,9 @@ class ConfigController extends AbstractActionController
 
     public function messageAction()
     {
-        $retour = $this->url()->fromRoute('sbmparent');
+        $retour = $this->url()->fromRoute('login', array(
+            'action' => 'home-page'
+        ));
         return $this->redirectToOrigin()
             ->setBack($retour)
             ->toRoute('dafapmail');
@@ -107,7 +109,9 @@ class ConfigController extends AbstractActionController
 
     public function mdpChangeAction()
     {
-        $retour = $this->url()->fromRoute('sbmparent');
+        $retour = $this->url()->fromRoute('login', array(
+            'action' => 'home-page'
+        ));
         return $this->redirect()->toRoute('login', array(
             'action' => 'mdp-change'
         ));
@@ -115,7 +119,9 @@ class ConfigController extends AbstractActionController
 
     public function emailChangeAction()
     {
-        $retour = $this->url()->fromRoute('sbmparent');
+        $retour = $this->url()->fromRoute('login', array(
+            'action' => 'home-page'
+        ));
         return $this->redirect()->toRoute('login', array(
             'action' => 'email-change'
         ));
@@ -163,7 +169,13 @@ class ConfigController extends AbstractActionController
                 // controle le csrf et contrôle les datas
                 $tableResponsables->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("La fiche a été enregistrée.");
-                return $this->redirectToOrigin()->back();
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('login', array(
+                        'action' => 'home-page'
+                    ));
+                }
             }
             $this->flashMessenger()->addWarningMessage('Données invalides');
         }
@@ -261,7 +273,11 @@ class ConfigController extends AbstractActionController
         return new ViewModel(array(
             'responsable' => $responsable,
             'form' => $form->prepare(),
-            'config' => StdLib::getParamR(array('sbm','cartes', 'parent'), $this->getServiceLocator()->get('config'))
+            'config' => StdLib::getParamR(array(
+                'sbm',
+                'cartes',
+                'parent'
+            ), $this->getServiceLocator()->get('config'))
         ));
     }
 } 

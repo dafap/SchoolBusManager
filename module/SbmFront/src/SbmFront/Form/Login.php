@@ -76,7 +76,6 @@ class Login extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'submit',
                 'value' => 'Créer un compte',
                 'id' => 'sbm-signup',
-                'autofocus' => 'autofocus',
                 'class' => 'default sbm-signup'
             )
         ));
