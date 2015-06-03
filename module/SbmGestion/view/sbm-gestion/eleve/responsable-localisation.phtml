@@ -44,11 +44,11 @@ $this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false
 $this->headScript()->captureStart();?>
 var marker;
 function initialiser() {
-    var latlng = new google.maps.LatLng(44.54, 2.264);
+    var latlng = new google.maps.LatLng(<?php echo $this->config['centre']['lat'];?>, <?php echo $this->config['centre']['lng'];?>);
     // initialisation des paramètres de la carte
     var options = {
         center: latlng,
-        zoom: 12,
+        zoom: <?php echo $this->config['zoom'];?>,
         //mapTypeId: google.maps.MapTypeId.ROADMAP
         mapTypeId: "OSM",
         mapTypeControl: true,
@@ -84,7 +84,7 @@ function initialiser() {
     }
     marker = new google.maps.Marker(optionsMarqueur);
     
-    var contentMarker = '<?php echo implode('<br/>', $description);?>';
+    var contentMarker = "<?php echo implode('<br/>', $description);?>";
  
 var infoWindow = new google.maps.InfoWindow({
     content  : contentMarker,

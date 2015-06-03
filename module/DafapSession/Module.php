@@ -25,16 +25,25 @@
  */
 namespace DafapSession;
 
+use ZfcBase\Module\AbstractModule;
 use Zend\EventManager\EventInterface;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\SessionManager;
 use Zend\Session\Container;
-use Zend\Mvc\ModuleRouteListener;
 use Zend\Validator\AbstractValidator;
 
-class Module
+class Module extends AbstractModule
 {
-
+    public function getDir()
+    {
+        return __DIR__;
+    }
+    
+    public function getNamespace()
+    {
+        return __NAMESPACE__;
+    }
+    
     public function onBootstrap(EventInterface $e)
     {
         $this->bootstrapSession($e);
@@ -177,22 +186,6 @@ class Module
                     Container::setDefaultManager($sessionManager);
                     return $sessionManager;
                 }
-            )
-        );
-    }
-
-    public function getConfig()
-    {
-        return include __DIR__ . '/config/module.config.php';
-    }
-
-    public function getAutoloaderConfig()
-    {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
-                )
             )
         );
     }

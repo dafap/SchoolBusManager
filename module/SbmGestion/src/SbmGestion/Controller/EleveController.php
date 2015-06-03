@@ -661,7 +661,9 @@ class EleveController extends AbstractActionController
     public function responsableListeAction()
     {
         // utilisation de PostRedirectGet par mesure de sécurité
-        $args = $this->initListe('responsables', null, array('nbEleves'));
+        $args = $this->initListe('responsables', null, array(
+            'nbEleves'
+        ));
         if ($args instanceof Response)
             return $args;
         
@@ -887,12 +889,20 @@ class EleveController extends AbstractActionController
             'form' => $form
         );
         $vueResponsables = $this->getServiceLocator()->get('Sbm\Db\Vue\Responsables');
-        $r = $this->supprData($params, function ($id, $tableResponsables) use($vueResponsables) {
-            return array(
-                'id' => $id,
-                'data' => $vueResponsables->getRecord($id)
-            );
-        });
+        try {
+            $r = $this->supprData($params, function ($id, $tableResponsables) use($vueResponsables) {
+                return array(
+                    'id' => $id,
+                    'data' => $vueResponsables->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce responsable car il a des enregistrements (élèves ou paiements) en liaison.');
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'responsable-liste',
+                'page' => $currentPage
+            ));
+        }
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1020,7 +1030,8 @@ class EleveController extends AbstractActionController
             'point' => $pt,
             'form' => $form->prepare(),
             'responsableId' => $args['responsableId'],
-            'responsable' => $responsable
+            'responsable' => $responsable,
+            'config' => StdLib::getParamR(array('sbm','cartes', 'parent'), $this->getServiceLocator()->get('config'))
         ));
     }
 
@@ -1084,7 +1095,7 @@ class EleveController extends AbstractActionController
                     'logeroui' => array(
                         'class' => 'confirm',
                         'value' => 'Confirmer',
-                            'class' => 'button default'
+                        'class' => 'button default'
                     ),
                     'logernon' => array(
                         'class' => 'confirm',
@@ -1112,7 +1123,6 @@ class EleveController extends AbstractActionController
                 $form->setData(array(
                     'responsableId' => $args['responsableId']
                 ));
-                
             }
         }
         return new ViewModel(array(

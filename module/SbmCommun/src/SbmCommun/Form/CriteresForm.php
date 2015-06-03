@@ -459,6 +459,24 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         $this->add(array(
+            'name' => 'prenomSA',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-prenom',
+                'maxlength' => '45',
+                'class' => 'sbm-width-45c'
+            ),
+            'options' => array(
+                'label' => 'Préom',
+                /*'label_attributes' => array(
+                 'class' => 'sbm-first'
+                ),*/
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
             'name' => 'responsable',
             'attributes' => array(
                 'type' => 'text',
@@ -1385,11 +1403,11 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formStationsSpecification()
     {
         return array(
-            'selection' => array(
+            'ouverte' => array(
                 'name' => 'ouverte',
                 'required' => false
             ),
-            'selection' => array(
+            'visible' => array(
                 'name' => 'visible',
                 'required' => false
             ),

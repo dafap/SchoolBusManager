@@ -13,22 +13,19 @@
  */
 namespace SbmCartographie;
 
-class Module
+use ZfcBase\Module\AbstractModule;
+
+class Module extends AbstractModule
 {
-    public function getConfig()
+
+    public function getDir()
     {
-        return include __DIR__ . '/config/module.config.php';
+        return __DIR__;
     }
-    
-    public function getAutoloaderConfig()
+
+    public function getNamespace()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
-                )
-            )
-        );
+        return __NAMESPACE__;
     }
 }
  

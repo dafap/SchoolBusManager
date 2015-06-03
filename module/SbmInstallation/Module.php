@@ -15,36 +15,27 @@
  */
 namespace SbmInstallation;
 
+use ZfcBase\Module\AbstractModule;
 use Zend\Stdlib\Glob;
 use Zend\Config\Factory as ConfigFactory;
 use Zend\Mvc\MvcEvent;
 
-class Module
+class Module extends AbstractModule
 {
+
     public function onBootstrap(MvcEvent $e)
     {
-        set_time_limit(600);   
+        set_time_limit(600);
         ini_set('memory_limit', '-1');
     }
-    public function getConfig()
+
+    public function getDir()
     {
-        $config = include __DIR__ . '/config/module.config.php';
-        /*$pattern = __DIR__ . '/db_design/*.php';
-        foreach (Glob::glob($pattern) as $filename) {
-            $value = basename($filename, '.php');
-            $config['db_design'][$value] = ConfigFactory::fromFile($filename);
-        }*/
-        return $config;
+        return __DIR__;
     }
 
-    public function getAutoloaderConfig()
+    public function getNamespace()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+        return __NAMESPACE__;
     }
 }

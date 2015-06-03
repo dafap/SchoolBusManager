@@ -529,13 +529,21 @@ class FinanceController extends AbstractActionController
             ),
             'form' => $form
         );
-        
-        $r = $this->supprData($params, function ($id, $tableTarifs) {
+        try {
+            $r = $this->supprData($params, function ($id, $tableTarifs) {
             return array(
                 'id' => $id,
                 'data' => $tableTarifs->getRecord($id)
             );
         });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce tarif parce qu\'il est affecté à certains élèves.');
+            return $this->redirect()->toRoute('sbmgestion/finance', array(
+                        'action' => 'tarif-liste',
+                        'page' => $currentPage
+                    ));
+        }
+        
         if ($r instanceof Response) {
             return $r;
         } else {
