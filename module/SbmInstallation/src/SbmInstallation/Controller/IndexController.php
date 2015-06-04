@@ -251,6 +251,30 @@ class IndexController extends AbstractActionController
             'vues' => $this->getDbTablesAlias('vue')
         ));
     }
+    
+    public function modifCompteAction()
+    {
+        $retour = $this->url()->fromRoute('sbminstall');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'modif-compte'));
+    }
+    
+    public function mdpChangeAction()
+    {
+        $retour = $this->url()->fromRoute('sbminstall');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'mdp-change'));
+    }
+    
+    public function emailChangeAction()
+    {
+        $retour = $this->url()->fromRoute('sbminstall');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'email-change'));
+    }
+    
+    public function messageAction()
+    {
+        $retour = $this->url()->fromRoute('sbminstall');
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('dafapmail');
+    }
 
     /**
      * Renvoie l'adapter donné par le ServiceManager factories

@@ -128,7 +128,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'class' => 'sbm-width-15c'
             ),
             'options' => array(
-                'label' => 'Autre responsable à la même adresse',
+                'label' => 'Conjoint',
                 'label_attributes' => array(
                     'class' => 'sbm-label help'
                 ),
