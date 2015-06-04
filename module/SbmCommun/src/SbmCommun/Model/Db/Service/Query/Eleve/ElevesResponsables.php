@@ -146,7 +146,9 @@ class ElevesResponsables implements FactoryInterface
 
     /**
      * Si on ne précise pas le millesime, on utilise le millesime courant
-     *
+     * Noter que pour examiner le contenu de la requête, on peut la transformer en tableau 
+     * par la fonction php iterator_to_array().
+     * 
      * @param Where $where            
      * @param string|array $order 
      * @param int $millesime            
