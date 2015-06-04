@@ -278,7 +278,8 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
             $msg = '';
             break;
         case 1:
-            $msg = "N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
+            $msg = "Si vous payez en ligne par carte bancaire <span class=\"important\">vous recevrez aussitôt une facturette par email</span> pour attester de votre paiement.";
+            $msg .= " N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
             $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " . $this->permanences[0] . '.';
             break;
         default:
@@ -294,7 +295,7 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
 			<p>Vous pouvez :</p>
 			<ul>
 				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire avant le <?php echo $dateLimite;?>. Vous recevrez
-					alors la carte de transport par la poste.</li>
+					alors une attestation de paiement par email et la carte de transport par la poste.</li>
 				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à l'adresse ci-dessous avant le <?php echo $dateLimite;?>. 
 				Vous recevrez alors la carte de transport par la poste.</li>
 				<li>vous rendre à la Communauté de communes (pour les habitant de <?php echo $this->permanences[0];?>) 
