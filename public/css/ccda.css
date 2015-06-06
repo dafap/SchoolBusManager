@@ -391,10 +391,14 @@ div.pagination {
 div.pagination .disabled {
 	display: none;
 }
+div.pagination span.nbItems, 
 div.pagination span.current {
 	color: orange;
 	margin-left: 3px;
 	margin-right: 3px;
+}
+div.pagination span.current {
+	border: 1px solid orange;
 }
 div.pagination a.page {
 	margin-left: 3px;
