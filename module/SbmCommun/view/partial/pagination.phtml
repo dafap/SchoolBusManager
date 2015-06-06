@@ -26,13 +26,14 @@ if (!isset($this->next)) {
 ?>
 <?php if (1 < (int) $this->pageCount) :?>
     <div class="pagination">
+        <span class="nbItems">Il y a <?php echo $this->totalItemCount;?> enregistrements</span>
         <a href="<?php echo $this->url($this->route, array('page' => $this->first), false, true); ?>" class="<?php echo $firstClassCss; ?>"><i class="fam-resultset-first"></i></a>
         <a href="<?php echo $this->url($this->route, array('page' => $this->previous), false, true); ?>" class="<?php echo $previousClassCss; ?>"><i class="fam-resultset-previous"></i></a>
 
         <?php 
         foreach ($this->pagesInRange as $p) {
             if ($p == $this->current) {
-                echo '<span class="current">' . $p . '</span>';
+                echo '<span class="current">' . $p . '/' . $this->pageCount . '</span>';
             } else {
                 echo '<a href="' . $this->url($this->route, array('page' => $p), false, true) . '" class="page">' . $p . '</a>';
             }
@@ -42,4 +43,6 @@ if (!isset($this->next)) {
         <a href="<?php echo $this->url($this->route, array('page' => $this->next), false, true); ?>" class="<?php echo $nextClassCss; ?>"><i class="fam-resultset-next"></i></a>
         <a href="<?php echo $this->url($this->route, array('page' => $this->last), false, true); ?>" class="<?php echo $lastClassCss; ?>"><i class="fam-resultset-last"></i></a>
     </div>
+<?php else:?>
+    <div class="pagination"><span class="current">Il y a <?php echo $this->totalItemCount;?> enregistrements</span></div>
 <?php endif;?>
