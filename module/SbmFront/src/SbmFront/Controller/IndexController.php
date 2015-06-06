@@ -19,6 +19,7 @@ use SbmFront\Form\Login;
 use SbmCommun\Model\StdLib;
 use DafapMail\Model\Template as MailTemplate;
 use DafapSession\Model\Session;
+use Zend\Db\Sql\Where;
 
 class IndexController extends AbstractActionController
 {
@@ -46,5 +47,15 @@ class IndexController extends AbstractActionController
             'etat' => $tCalendar->etatDuSite(),
             'permanences' => $tCalendar->getPermanences()
         ));
+    }
+    
+    public function testAction()
+    {
+        $where = new Where();
+        $where->like('r1.nomSA', 'MAR%');
+        $resultset = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesResponsables')->getLocaliation($where, array('nom_eleve', 'prenom_eleve'));
+        $data = iterator_to_array($resultset);
+        $fields = array_keys(current($data));
+        return $this->csvExport('foo.csv', $fields, $data);
     }
 }

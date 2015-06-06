@@ -86,7 +86,7 @@ class ElevesResponsables implements FactoryInterface
             'telephoneFR1' => 'telephoneF',
             'telephonePR1' => 'telephoneP',
             'telephoneTR1' => 'telephoneT',
-            'emailR1' => 'email',           
+            'emailR1' => 'email',
             'x1' => 'x',
             'y1' => 'y'
         ))
@@ -100,7 +100,7 @@ class ElevesResponsables implements FactoryInterface
 
     /**
      * Renvoie le résultat de la requête
-     * 
+     *
      * @param Where $where            
      * @param string|array $order            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
@@ -111,10 +111,12 @@ class ElevesResponsables implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
+
     public function paginatorR2(Where $where, $order = null)
     {
         return new Paginator(new DbSelect($this->selectR2($where, $order), $this->db->getDbAdapter()));
     }
+
     private function selectR2(Where $where, $order = null)
     {
         $select = clone $this->select;
@@ -146,11 +148,11 @@ class ElevesResponsables implements FactoryInterface
 
     /**
      * Si on ne précise pas le millesime, on utilise le millesime courant
-     * Noter que pour examiner le contenu de la requête, on peut la transformer en tableau 
+     * Noter que pour examiner le contenu de la requête, on peut la transformer en tableau
      * par la fonction php iterator_to_array().
-     * 
+     *
      * @param Where $where            
-     * @param string|array $order 
+     * @param string|array $order            
      * @param int $millesime            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
@@ -160,12 +162,14 @@ class ElevesResponsables implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
+
     public function paginatorScolaritesR2(Where $where, $order = null, $millesime = null)
     {
         return new Paginator(new DbSelect($this->selectScolaritesR2($where, $order), $this->db->getDbAdapter()));
     }
+
     private function selectScolaritesR2(Where $where, $order = null, $millesime = null)
-    { 
+    {
         if (is_null($millesime)) {
             $millesime = $this->millesime;
         }
@@ -242,6 +246,111 @@ class ElevesResponsables implements FactoryInterface
             'r2c' => $this->db->getCanonicName('communes', 'table')
         ), 'r2.communeId=r2c.communeId', array(
             'communeR2' => 'nom'
+        ), $select::JOIN_LEFT);
+        if (! is_null($order)) {
+            $select->order($order);
+        }
+        return $select->where($where);
+    }
+
+    /**
+     * Requête préparée renvoyant les positions géographiques des domiciles de l'élève (chez, responsable1, responsable2), 
+     * @param Where $where
+     * @param string $order
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getLocaliation(Where $where, $order = null)
+    {
+        $select = $this->selectLocalisation($where, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();;
+    }
+
+    private function selectLocalisation(Where $where, $order = null)
+    {
+        $where->equalTo('millesime', $this->millesime);
+        $sql = new Sql($this->db->getDbAdapter());
+        $select = $sql->select();
+        $select ->from(array(
+            'ele' => $this->db->getCanonicName('eleves', 'table')
+        ))
+            ->columns(array(
+            'id_ccda',
+            'numero',
+            'nom_eleve' => 'nomSA',
+            'prenom_eleve' => 'prenomSA',
+            'dateN'
+        ))
+            ->join(array(
+            'sco' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'ele.eleveId=sco.eleveId', array(
+            'transportGA' => new Expression('CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
+            'x_eleve' => 'x',
+            'y_eleve' => 'y',
+            'chez',
+            'adresseL1_chez' => 'adresseL1',
+            'adresseL2_chez' => 'adresseL2',
+            'codePostal_chez' => 'codePostal'
+        ))
+            ->join(array(
+            'comsco' => $this->db->getCanonicName('communes', 'table')
+        ), 'sco.communeId=comsco.communeId', array(
+            'commune_chez' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 'sco.etablissementId=eta.etablissementId', array(
+            'etablissement' => new Expression('CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
+            'x_etablissement' => 'x',
+            'y_etablissement' => 'y'
+        ))
+            ->join(array(
+            'cometa' => $this->db->getCanonicName('communes', 'table')
+        ), 'cometa.communeId=eta.communeId', array(
+            'commune_etablissement' => 'nom'
+        ))
+            ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 'sco.classeId=cla.classeId', array(
+            'classe' => 'nom'
+        ))
+            ->join(array(
+            'r1' => $this->db->getCanonicName('responsables', 'table')
+        ), 'r1.responsableId=ele.responsable1Id', array(
+            'responsable1' => new Expression('concat(r1.nom," ",r1.prenom)'),
+            'x_responsable1' => 'x',
+            'y_responsable1' => 'y',
+            'telephoneF_responsable1' => 'telephoneF',
+            'telephoneP_responsable1' => 'telephoneP',
+            'telephoneT_responsable1' => 'telephoneT',
+            'email_responsable1' => 'email',
+            'adresseL1_responsable1' => 'adresseL1',
+            'adresseL2_responsable1' => 'adresseL2',
+            'codePostal_responsable1' => 'codePostal'
+        ))
+            ->join(array(
+            'comr1' => $this->db->getCanonicName('communes', 'table')
+        ), 'comr1.communeId=r1.communeId', array(
+            'commune_responsable1' => 'nom'
+        ))
+            ->join(array(
+            'r2' => $this->db->getCanonicName('responsables', 'table')
+        ), 'r2.responsableId=ele.responsable2Id', array(
+            'responsable2' => new Expression('CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
+            'x_responsable2' => 'x',
+            'y_responsable2' => 'y',
+            'telephoneF_responsable2' => 'telephoneF',
+            'telephoneP_responsable2' => 'telephoneP',
+            'telephoneT_responsable2' => 'telephoneT',
+            'email_responsable2' => 'email',
+            'adresseL1_responsable2' => 'adresseL1',
+            'adresseL2_responsable2' => 'adresseL2',
+            'codePostal_responsable2' => 'codePostal'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'comr2' => $this->db->getCanonicName('communes', 'table')
+        ), 'comr2.communeId=r2.communeId', array(
+            'commune_responsable2' => 'nom'
         ), $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);

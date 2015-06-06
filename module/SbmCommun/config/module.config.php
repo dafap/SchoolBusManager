@@ -20,7 +20,8 @@ if (! defined('APPL_NAME')) {
 return array(
     'controller_plugins' => array(
         'invokables' => array(
-            'redirectToOrigin' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack'
+            'redirectToOrigin' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack',
+            'csvExport' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport'
         )
     ),
     'service_manager' => array(
