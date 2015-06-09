@@ -12,6 +12,8 @@
  * @date 18 juil. 2014
  * @version 2014-1
  */
+use SbmCommun\Model\DateLib;
+
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -241,7 +243,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="numero"><?php echo $eleve['numero']; ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
 					<td class="prenom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
-					<td class="dateN"><?php echo $this->escapeHtml($eleve['dateN']); ?></td>
+					<td class="dateN"><?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
 					<td class="responsable1"><?php echo $itemR1; ?></td>
 					<td class="responsable2"><?php echo $itemR2; ?></td>
 					<td class="etablissement"><?php echo $this->escapeHtml($eleve['etablissement'] . ' - ' . $eleve['communeEtablissement']);?></td>
