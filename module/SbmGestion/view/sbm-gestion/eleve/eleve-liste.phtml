@@ -12,6 +12,8 @@
  * @date 18 juil. 2014
  * @version 2014-1
  */
+use SbmCommun\Model\DateLib;
+
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -156,14 +158,15 @@ echo $this->flashMessenger()->render('default');
 	<div id="liste-inner">
 		<table class="eleves">
 			<tbody>
-				<tr>
+				<tr><th></th>
 					<th>Numéro</th>
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Né(e) le</th>
 					<th>Responsable 1</th>
-					<th>Responsable 2</th>
+					<th>Resp.2</th>
 					<th>Etablissement scolaire</th>
+					<th>Classe</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
@@ -238,13 +241,18 @@ echo $this->flashMessenger()->render('default');
             }
             ?>
          <tr class="<?php echo $tr_css;?>">
+                    <td>
+                    <?php echo $eleve['paiement'] ? '' : '<i class="fam-tag-orange" title="Préinscrit"></i>';?>
+                    <?php echo $eleve['affecte'] ? '' : '<i class="fam-chart-line-error" title="Sans affectation"></i>';?>
+                    </td>
 					<td class="numero"><?php echo $eleve['numero']; ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
 					<td class="prenom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
-					<td class="dateN"><?php echo $this->escapeHtml($eleve['dateN']); ?></td>
+					<td class="dateN"><?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
 					<td class="responsable1"><?php echo $itemR1; ?></td>
 					<td class="responsable2"><?php echo $itemR2; ?></td>
 					<td class="etablissement"><?php echo $this->escapeHtml($eleve['etablissement'] . ' - ' . $eleve['communeEtablissement']);?></td>
+					<td class="classe"><?php echo $this->escapeHtml($eleve['classe']);?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?></td>
 					<td class="boutons">
             <?php
