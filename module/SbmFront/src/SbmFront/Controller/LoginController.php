@@ -304,7 +304,7 @@ class LoginController extends AbstractActionController
                     );
                     $this->getEventManager()->addIdentifiers('SbmMail\Send');
                     $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
-                    $this->flashMessenger()->addInfoMessage('Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
+                    $this->flashMessenger()->addInfoMessage('Une réponse a été envoyée à l\'adresse indiquée. Consultez votre messagerie.');
                 } else {
                     $this->flashMessenger()->addWarningMessage('Votre compte a été bloqué. Prenez contact avec le service organisateur.');
                 }
