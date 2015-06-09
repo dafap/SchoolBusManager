@@ -43,7 +43,7 @@ class Criteres extends SbmCommunCriteres
     public function getWhere($strict = array())
     {
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'));
+        $where->equalTo('sco.millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
         }
@@ -143,6 +143,9 @@ class Criteres extends SbmCommunCriteres
         }
         if (! empty($this->data['selection'])) {
             $where->literal('ele.selection = 1');
+        }
+        if (!empty($this->data['nonaffecte'])) {
+            $where->isNull('aff.eleveId');
         }
         return $where;
     }

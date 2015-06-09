@@ -173,7 +173,7 @@ class ElevesResponsables implements FactoryInterface
         if (is_null($millesime)) {
             $millesime = $this->millesime;
         }
-        $where->equalTo('millesime', $millesime);
+        $where->equalTo('sco.millesime', $millesime);
         $select = clone $this->select;
         $select->join(array(
             'sco' => $this->db->getCanonicName('scolarites', 'table')
@@ -233,6 +233,11 @@ class ElevesResponsables implements FactoryInterface
             'communeEtablissement' => 'nom'
         ))
             ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 'cla.classeId = sco.classeId', array(
+            'classe' => 'nom'
+        ))
+            ->join(array(
             'r2' => $this->db->getCanonicName('responsables', 'table')
         ), 'ele.responsable2Id=r2.responsableId', array(
             'responsable2NomPrenom' => new Expression('CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
@@ -246,7 +251,13 @@ class ElevesResponsables implements FactoryInterface
             'r2c' => $this->db->getCanonicName('communes', 'table')
         ), 'r2.communeId=r2c.communeId', array(
             'communeR2' => 'nom'
-        ), $select::JOIN_LEFT);
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'aff' => $this->db->getCanonicName('affectations', 'table')
+        ), 'aff.millesime = sco.millesime And aff.eleveId = sco.eleveId', array(
+            'affecte' => new Expression('count(aff.eleveId) > 0')
+        ), $select::JOIN_LEFT)
+            ->group('ele.eleveId');
         if (! is_null($order)) {
             $select->order($order);
         }
@@ -254,16 +265,18 @@ class ElevesResponsables implements FactoryInterface
     }
 
     /**
-     * Requête préparée renvoyant les positions géographiques des domiciles de l'élève (chez, responsable1, responsable2), 
-     * @param Where $where
-     * @param string $order
+     * Requête préparée renvoyant les positions géographiques des domiciles de l'élève (chez, responsable1, responsable2),
+     *
+     * @param Where $where            
+     * @param string $order            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getLocalisation(Where $where, $order = null)
     {
         $select = $this->selectLocalisation($where, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();;
+        return $statement->execute();
+        ;
     }
 
     private function selectLocalisation(Where $where, $order = null)
@@ -271,7 +284,7 @@ class ElevesResponsables implements FactoryInterface
         $where->equalTo('millesime', $this->millesime);
         $sql = new Sql($this->db->getDbAdapter());
         $select = $sql->select();
-        $select ->from(array(
+        $select->from(array(
             'ele' => $this->db->getCanonicName('eleves', 'table')
         ))
             ->columns(array(

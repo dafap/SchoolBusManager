@@ -207,6 +207,25 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'nonaffecte',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sans affectation',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
             'attributes' => array(
                 'type' => 'checkbox',
@@ -224,7 +243,6 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 )
             )
         ));
-        
         $this->add(array(
             'type' => 'submit',
             'name' => 'submit',
