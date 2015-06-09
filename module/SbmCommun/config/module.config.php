@@ -20,7 +20,8 @@ if (! defined('APPL_NAME')) {
 return array(
     'controller_plugins' => array(
         'invokables' => array(
-            'redirectToOrigin' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack'
+            'redirectToOrigin' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack',
+            'csvExport' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport'
         )
     ),
     'service_manager' => array(
@@ -141,7 +142,9 @@ return array(
             'Sbm\Db\Query\ElevesResponsables' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
             'Sbm\Db\Query\ElevesScolarites' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites',
             'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations',
-            'Sbm\Db\Query\Responsables' => 'SbmCommun\Model\Db\Service\Query\Responsable\Responsables'
+            'Sbm\Db\Query\Responsables' => 'SbmCommun\Model\Db\Service\Query\Responsable\Responsables',
+            'Sbm\Db\Query\Etablissements' => 'SbmCommun\Model\Db\Service\Query\Etablissement\Etablissements',
+            'Sbm\Db\Query\Stations' => 'SbmCommun\Model\Db\Service\Query\Station\Stations'
         )
     ),
     'view_manager' => array(

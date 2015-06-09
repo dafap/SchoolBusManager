@@ -633,8 +633,8 @@ class EleveController extends AbstractActionController
         }
         $viewmodel = new ViewModel(array(
             'paginator' => $this->getServiceLocator()
-                ->get('Sbm\Db\Vue\Eleves')
-                ->paginator($where),
+                ->get('Sbm\Db\Query\ElevesResponsables')
+                ->paginatorScolaritesR2($where),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
             'criteres_form' => null

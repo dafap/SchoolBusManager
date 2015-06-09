@@ -25,6 +25,8 @@ use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\StdLib;
 use SbmAdmin\Form\User;
+use SbmAdmin\Form\Export as ExportForm;
+use SbmAdmin\Form\SbmAdmin\Form;
 
 class IndexController extends AbstractActionController
 {
@@ -520,28 +522,163 @@ class IndexController extends AbstractActionController
             'page' => $this->params('page', 1)
         ));
     }
+
+    public function exportAction()
+    {
+        return new ViewModel();
+    }
+
+    public function exportEleveAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $form = new ExportForm('eleve', $this->getServiceLocator());
+        if ($prg !== false) {
+            if (array_key_exists('cancel', $prg)) {
+                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+            } else {
+                $form->setData($prg);
+                if ($form->isValid()) {
+                    $where = $form->whereEleve();
+                    $resultset = $this->getServiceLocator()
+                        ->get('Sbm\Db\Query\ElevesResponsables')
+                        ->getLocalisation($where, array(
+                        'nom_eleve',
+                        'prenom_eleve'
+                    ));
+                    $data = iterator_to_array($resultset);
+                    if (! empty($data)) {
+                        $fields = array_keys(current($data));
+                        return $this->csvExport('eleves.csv', $fields, $data);
+                    } else {
+                        $this->flashMessenger()->addInfoMessage('Il n\'y a pas de données correspondant aux critères indiqués.');
+                    }
+                }
+            }
+        }
+        
+        return new ViewModel(array(
+            'form' => $form
+        ));
+    }
+
+    public function exportEtablissementAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $form = new ExportForm('etablissement', $this->getServiceLocator());
+        if ($prg !== false) {
+            if (array_key_exists('cancel', $prg)) {
+                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+            } else {
+                $form->setData($prg);
+                if ($form->isValid()) {
+                    $where = $form->whereEtablissement();
+                    $resultset = $this->getServiceLocator()
+                    ->get('Sbm\Db\Query\Etablissements')
+                    ->getLocalisation($where, array(
+                        'commune',
+                        'nom'
+                    ));
+                    $data = iterator_to_array($resultset);
+                    if (! empty($data)) {
+                        $fields = array_keys(current($data));
+                        return $this->csvExport('etablissements.csv', $fields, $data);
+                    } else {
+                        $this->flashMessenger()->addInfoMessage('Il n\'y a pas de données correspondant aux critères indiqués.');
+                    }
+                }
+            }
+        }
+        
+        return new ViewModel(array(
+            'form' => $form
+        ));
+    }
+
+    public function exportResponsableAction()
+    {
+        ;
+    }
+
+    public function exportStationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $form = new ExportForm('station', $this->getServiceLocator());
+        if ($prg !== false) {
+            if (array_key_exists('cancel', $prg)) {
+                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+            } else {
+                $form->setData($prg);
+                if ($form->isValid()) {
+                    $where = $form->whereStation();
+                    $resultset = $this->getServiceLocator()
+                    ->get('Sbm\Db\Query\Stations')
+                    ->getLocalisation($where, array(
+                        'commune',
+                        'nom'
+                    ));
+                    $data = iterator_to_array($resultset);
+                    if (! empty($data)) {
+                        $fields = array_keys(current($data));
+                        return $this->csvExport('stations.csv', $fields, $data);
+                    } else {
+                        $this->flashMessenger()->addInfoMessage('Il n\'y a pas de données correspondant aux critères indiqués.');
+                    }
+                }
+            }
+        }
+        
+        return new ViewModel(array(
+            'form' => $form
+        ));
+    }
     
+    // ===========================================================================================================
+    // méthodes du menu Bienvenue
+    //
     public function modifCompteAction()
     {
         $retour = $this->url()->fromRoute('sbmadmin');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'modif-compte'));
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('login', array(
+            'action' => 'modif-compte'
+        ));
     }
-    
+
     public function mdpChangeAction()
     {
         $retour = $this->url()->fromRoute('sbmadmin');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'mdp-change'));
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('login', array(
+            'action' => 'mdp-change'
+        ));
     }
-    
+
     public function emailChangeAction()
     {
         $retour = $this->url()->fromRoute('sbmadmin');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'email-change'));
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('login', array(
+            'action' => 'email-change'
+        ));
     }
-    
+
     public function messageAction()
     {
         $retour = $this->url()->fromRoute('sbmadmin');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('dafapmail');
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('dafapmail');
     }
 }
