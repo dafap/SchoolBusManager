@@ -53,7 +53,7 @@ class IndexController extends AbstractActionController
     {
         $where = new Where();
         $where->like('r1.nomSA', 'MAR%');
-        $resultset = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesResponsables')->getLocaliation($where, array('nom_eleve', 'prenom_eleve'));
+        $resultset = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesResponsables')->getLocalisation($where, array('nom_eleve', 'prenom_eleve'));
         $data = iterator_to_array($resultset);
         $fields = array_keys(current($data));
         return $this->csvExport('foo.csv', $fields, $data);

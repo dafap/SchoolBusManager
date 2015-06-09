@@ -20,8 +20,9 @@ $url_libelle_liste = $this->url('sbmadmin', array(
 ));
 $url_droits = $this->url('sbmadmin', array('action' => 'user-liste'));
 $url_gestion = $this->url('sbmgestion');
+$url_export = $this->url('sbmadmin', array('action'=> 'export'));
 ?>
-<h1>Menu du module d'administration</h1>
+<h1>Espace d'administration</h1>
 <div id="menugeneral">
 	<div class="flashMessenger">
 	<?php
@@ -35,6 +36,7 @@ echo $this->flashMessenger()->render('default');
 	<div  id="menugeneral-inner">
 		<ul>
 			<li><a href="<?php echo $url_droits; ?>"><i class="fam-bullet-go"></i>Gestion des utilisateurs</a></li>
+			<li><a href="<?php echo $url_export; ?>"><i class="fam-bullet-go"></i>Exportation des données géolocalisées</a></li>
 			<li><a href="<?php echo $url_libelle_liste; ?>"><i class="fam-bullet-go"></i>Gestion des libellés de l'application</a></li>
 			<li><a href="<?php echo $url_pdf_liste; ?>"><i class="fam-bullet-go"></i>Gestion des documents pdf</a></li>
 			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-bullet-go"></i>Espace des gestionnaires</a></li>

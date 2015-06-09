@@ -259,7 +259,7 @@ class ElevesResponsables implements FactoryInterface
      * @param string $order
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getLocaliation(Where $where, $order = null)
+    public function getLocalisation(Where $where, $order = null)
     {
         $select = $this->selectLocalisation($where, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);

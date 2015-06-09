@@ -37,7 +37,7 @@ class StationsForSelect implements FactoryInterface
     private $table_name;
 
     private $sql;
-
+    
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
@@ -55,6 +55,21 @@ class StationsForSelect implements FactoryInterface
         return $this;
     }
 
+    public function toutes()
+    {
+        $where = new Where();
+        $select = $this->sql->select($this->table_name);
+        $select->columns($this->columns)
+        ->order($this->order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = array();
+        foreach ($rowset as $row) {
+            $array[$row['stationId']] = $row['libelle'];
+        }
+        return $array;
+    }
+    
     public function ouvertes()
     {
         $where = new Where();
@@ -109,4 +124,5 @@ class StationsForSelect implements FactoryInterface
         }
         return $array;
     }
+
 }
