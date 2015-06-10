@@ -589,6 +589,73 @@ class EleveController extends AbstractActionController
         ));
     }
 
+    public function eleveInscrireAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 2));
+            if ($prg == false) {
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage('Action interdite');
+                    return $this->redirect()->toRoute('sbmgestion/eleve');
+                }
+            }
+        } elseif (array_key_exists('origine', $prg)) {
+            $this->redirectToOrigin()->setBack($prg['origine']);
+            unset($prg['origine']);
+        }
+        $this->setToSession('post', $prg, $this->getSessionNamespace('ajout', 2));
+        return $this->redirect()->toRoute('sbmgestion/eleve', array(
+            'action' => 'eleve-ajout21',
+            'page' => $this->params('page', 1)
+        ));
+    }
+
+    public function eleveRayerAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg == false) {
+            $prg = $this->getFromSession('post', false, $this->getSessionNamespace());
+            if ($prg == false) {
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage('Action interdite');
+                    return $this->redirect()->toRoute('sbmgestion/eleve');
+                }
+            }
+        } elseif (array_key_exists('origine', $prg)) {
+            $this->redirectToOrigin()->setBack($prg['origine']);
+            unset($prg['origine']);
+            $this->setToSession('post', $prg, $this->getSessionNamespace());
+        }
+        if (!array_key_exists('eleveId', $prg)) {
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                return $this->redirect()->toRoute('sbmgestion/eleve');
+            }
+        }
+        $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+        $scolarite = $tScolarites->getRecord(array('millesime' => Session::get('millesime'), 'eleveId' => $prg['eleveId']));
+        $scolarite->inscrit = 1 - $scolarite->inscrit;
+        $tScolarites->saveRecord($scolarite);
+        $msg = $scolarite->inscrit ? 'La fiche de cet élève a été activée.' : 'Cet élève a été rayé.';
+        $this->flashMessenger()->addSuccessMessage($msg);
+        try {
+            return $this->redirectToOrigin()->back();
+        } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+            return $this->redirect()->toRoute('sbmgestion/eleve');
+        }
+    }
+
     public function eleveGroupAction()
     {
         $currentPage = $this->params('page', 1);
@@ -862,7 +929,8 @@ class EleveController extends AbstractActionController
                 ->get('Sbm\Db\Vue\Responsables')
                 ->getRecord($responsableId),
             'page' => $currentPage,
-            'responsableId' => $responsableId
+            'responsableId' => $responsableId,
+            'query' => $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations')
         ));
     }
 
@@ -964,9 +1032,10 @@ class EleveController extends AbstractActionController
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', array('action' => 'responsable-liste'));
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'responsable-liste'
+                    ));
                 }
-                
             }
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
@@ -1022,8 +1091,10 @@ class EleveController extends AbstractActionController
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', array('action' => 'responsable-liste'));
-                }                
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'responsable-liste'
+                    ));
+                }
             }
         }
         // chercher le responsable dans la table
@@ -1044,7 +1115,11 @@ class EleveController extends AbstractActionController
             'form' => $form->prepare(),
             'responsableId' => $args['responsableId'],
             'responsable' => $responsable,
-            'config' => StdLib::getParamR(array('sbm','cartes', 'parent'), $this->getServiceLocator()->get('config'))
+            'config' => StdLib::getParamR(array(
+                'sbm',
+                'cartes',
+                'parent'
+            ), $this->getServiceLocator()->get('config'))
         ));
     }
 

@@ -53,6 +53,36 @@ class AffectationsServicesStations implements FactoryInterface
         return $this;
     }
 
+    /**
+     * Renvoie le ou les codes des services affectés à l'élève pour le domicile de ce responsable
+     *
+     * @param int $eleveId            
+     * @param int $responsableId            
+     * @param int $trajet
+     *            1 ou 2 selon que c'est le responsable n°1 ou n°2
+     *            
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getServices($eleveId, $responsableId, $trajet = null)
+    {
+        $select = clone $this->select;
+        $select->order(array(
+            'trajet',
+            'jours',
+            'sens',
+            'correspondance'
+        ));
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->equalTo('eleveId', $eleveId)
+            ->equalTo('responsableId', $responsableId);
+        if (isset($trajet)) {
+            $where->equalTo('trajet', $trajet);
+        }
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute();
+    }
+
     public function getAffectations($eleveId, $trajet = null)
     {
         $select = clone $this->select;

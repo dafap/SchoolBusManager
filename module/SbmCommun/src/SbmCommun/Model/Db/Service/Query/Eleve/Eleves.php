@@ -87,7 +87,7 @@ class Eleves implements FactoryInterface
             ->join(array(
             'sco' => $this->db->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId = sco.eleveId', array(
-            'millesime'
+            'millesime', 'paiement', 'inscrit'
         ), $select::JOIN_LEFT)
             ->join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')
