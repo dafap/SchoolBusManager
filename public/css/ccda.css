@@ -90,6 +90,9 @@ i.fam-help:hover {
 .gris {
 	color: #c0c0c0;
 }
+.barre {
+	text-decoration: line-through;
+}
 .page1 {
 	border: 1px solid #db001b;
 }
