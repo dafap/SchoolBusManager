@@ -118,6 +118,7 @@ echo $this->flashMessenger()->render('default');
 				</tr>
 			    <?php foreach ($liste as $row) : ?>
 			    <?php
+			$pictogrammes = array();
             if ($row['millesime'] == Session::get('millesime')) {
                 $url_edit = $this->url('sbmgestion/eleve', array(
                     'action' => 'eleve-edit',
@@ -139,7 +140,6 @@ echo $this->flashMessenger()->render('default');
                         'title' => $row['inscrit'] ? 'Rayer' : 'Activer'
                     )
                 );
-                $pictogrammes = array();
                 if ($row['paiement'] == 0) {
                     $pictogrammes[] = '<i class="fam-tag-orange" title="Préinscrit"></i>';
                 }
