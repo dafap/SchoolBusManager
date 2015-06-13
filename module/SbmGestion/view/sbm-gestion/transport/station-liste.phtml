@@ -29,69 +29,108 @@ $jsTrigger = '';
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $stations = $this->paginator->getCurrentItems();
-$origine = $this->url('sbmgestion/transport', array(
+$url_origine = $this->url('sbmgestion/transport', array(
     'action' => 'station-liste',
     'page' => $this->page
 ));
-$ajouter = $this->url('sbmgestion/transport', array(
+$url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'station-ajout',
     'page' => $this->page
 ));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_carte = $this->url('sbmcarte', array(
+    'action' => 'stations'
+));
+$url_pdf = $this->url('sbmgestion/transport', array(
     'action' => 'station-pdf',
     'page' => $this->page
 ));
-$nondesservies = $this->url('sbmgestion/transport', array(
+$url_nondesservies = $this->url('sbmgestion/transport', array(
     'action' => 'stations-non-desservies',
     'page' => $this->page
 ));
-$retour = $this->url('sbmgestion/transport');
+$url_localiser = $this->url('sbmgestion/transport', array(
+    'action' => 'station-localisation',
+    'page' => $this->page
+));
+$url_edit = $this->url('sbmgestion/transport', array(
+    'action' => 'station-edit',
+    'page' => $this->page
+));
+$url_delete = $this->url('sbmgestion/transport', array(
+    'action' => 'station-suppr',
+    'page' => $this->page
+));
+$url_relation = $this->url('sbmgestion/transport', array(
+    'action' => 'station-service',
+    'page' => $this->page
+));
+$url_group = $this->url('sbmgestion/transport', array(
+    'action' => 'station-group',
+    'page' => $this->page
+));
+$url_retour = $this->url('sbmgestion/transport');
 $hiddens = array();
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_retour,
         'title' => 'Retour'
     ),
     'rapports' => array(
         'class' => 'fam-report',
-        'formaction' => $pdf,
+        'formaction' => $url_pdf,
         'title' => 'Rapports à imprimer'
     ),
     'nondesservies' => array(
         'class' => 'fam-link-break',
-        'formaction' => $nondesservies,
+        'formaction' => $url_nondesservies,
         'title' => 'Non desservies'
     ),
+    'carte' => array(
+        'class' => 'fam-map-magnify',
+        'formaction' => $url_carte,
+        'title' => 'Carte des points d\'arrêt'
+    ),    
     'ajouter' => array(
         'class' => 'fam-add',
-        'formaction' => $ajouter,
+        'formaction' => $url_ajouter,
         'title' => 'Nouvelle station'
     )
 );
 ?>
 <h1>Liste des stations</h1>
 <div id="liste-wrapper">
-    <div id="liste-header" class="clearfix">
+	<div id="liste-header" class="clearfix">
 		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-	    <div class="flashMessenger float-right"><?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
 	<div id="liste-inner">
 		<table class="stations">
 			<tbody>
-			<tr><th>Commune</th><th>Nom</th><th>Visible</th><th>Ouverte</th><th>Inscrits</th><th>Sélect.</th><th></th></tr>
+				<tr>
+					<th>Commune</th>
+					<th>Nom</th>
+					<th>Visible</th>
+					<th>Ouverte</th>
+					<th>Inscrits</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
             <?php foreach($stations as $test => $station): ?>
-            <?php 
-            $nbInscrits = StdLib::getParamR(array($station->stationId, 'total'), $this->t_nb_inscrits, 0); 
-            $exces = !$station->ouverte && ($nbInscrits > 0); 
-            // selection
-            $modele = <<<EOT
+            <?php
+                $nbInscrits = StdLib::getParamR(array(
+                    $station->stationId,
+                    'total'
+                ), $this->t_nb_inscrits, 0);
+                $exces = ! $station->ouverte && ($nbInscrits > 0);
+                // selection
+                $modele = <<<EOT
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
@@ -103,72 +142,62 @@ $("#chk%d").change(function() {
 			});
   });
 EOT;
-            
-            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $station->stationId);
-            $jsCallback .= sprintf("$modele\n", $station->stationId, $station->stationId);
-            ?>
-                <tr class="<?php echo $this->cycle(array("even", "odd"))->next(); if ($exces) echo ' exces';?>">
-				    <td class="commune"><?php echo $this->escapeHtml($station->commune); ?></td>
-				    <td class="nom"><?php echo $this->escapeHtml($station->nom); ?></td>
-				    <td class="visible"><?php echo $station->visible ? 'Oui' : 'Non'; ?></td>
-				    <td class="ouverte"><?php echo $station->ouverte ? 'Oui' : 'Non'; ?></td>
-				    <td class="nbinscrits"><?php echo $nbInscrits; ?></td>
-				    <td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $station->stationId, $station->selection)?></td>
-				    <td class="boutons">
+                
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $station->stationId);
+                $jsCallback .= sprintf("$modele\n", $station->stationId, $station->stationId);
+                ?>
+                <tr
+					class="<?php echo $this->cycle(array("even", "odd"))->next(); if ($exces) echo ' exces';?>">
+					<td class="commune"><?php echo $this->escapeHtml($station->commune); ?></td>
+					<td class="nom"><?php echo $this->escapeHtml($station->nom); ?></td>
+					<td class="visible"><?php echo $station->visible ? 'Oui' : 'Non'; ?></td>
+					<td class="ouverte"><?php echo $station->ouverte ? 'Oui' : 'Non'; ?></td>
+					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $station->stationId, $station->selection)?></td>
+					<td class="boutons">
             <?php
-             $url_edit = $this->url('sbmgestion/transport', array(
-                 'action' => 'station-edit',
-                 'page' => $this->page,
-             ));
-             $url_delete = $this->url('sbmgestion/transport', array(
-                 'action' => 'station-suppr',
-                 'page' => $this->page,
-             ));
-             $url_relation = $this->url('sbmgestion/transport', array(
-                 'action' => 'station-service',
-                 'page' => $this->page
-             ));
-             $url_group = $this->url('sbmgestion/transport', array(
-                 'action' => 'station-group',
-                 'page' => $this->page,
-             ));
-             $hiddens = array(
-                 'stationId' => $station->stationId,
-                 'origine' => $origine
-             );
-             $buttons = array(
-                 'modifier' => array(
-                     'class' => 'fam-pencil',
-                     'formaction' => $url_edit,
-                     'title' => 'modifier'
-                 ),
-                 'supprimer' => array(
-                     'class' => 'fam-delete',
-                     'formaction' => $url_delete,
-                     'title' => 'supprimer'
-                 ),
-                 'services' => array(
-                     'class' => 'fam-table-relationship',
-                     'formaction' => $url_relation,
-                     'title' => sprintf('circuits desservant la station %s - %s', $station->nom, $station->commune)
-                 ),
-                 'eleves' => array(
-                     'class' => 'fam-group',
-                     'formaction' => $url_group,
-                     'title' => sprintf('élèves de la station %s - %s', $station->nom, $station->commune)
-                 )
-             );
-             echo $this->listeLigneActions($station->stationId, $hiddens, $buttons);
-            ?>
+                $hiddens = array(
+                    'stationId' => $station->stationId,
+                    'origine' => $url_origine
+                );
+                $buttons = array(
+                    'modifier' => array(
+                        'class' => 'fam-pencil',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier'
+                    ),
+                    'localiser' => array(
+                        'class' => 'fam-map-magnify',
+                        'formaction' => $url_localiser,
+                        'title' => 'position sur la carte'
+                    ),
+                    'supprimer' => array(
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ),
+                    'services' => array(
+                        'class' => 'fam-table-relationship',
+                        'formaction' => $url_relation,
+                        'title' => sprintf('circuits desservant la station %s - %s', $station->nom, $station->commune)
+                    ),
+                    'eleves' => array(
+                        'class' => 'fam-group',
+                        'formaction' => $url_group,
+                        'title' => sprintf('élèves de la station %s - %s', $station->nom, $station->commune)
+                    )
+                );
+                echo $this->listeLigneActions($station->stationId, $hiddens, $buttons);
+                ?>
 			        </td>
-			    </tr>         
+				</tr>         
             <?php endforeach;?>
             </tbody>
-	    </table>
-    </div>
+		</table>
+	</div>
 	<div id="liste-footer">
-		 <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
-		 <div class="criteres-wrapper">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="criteres-wrapper">
          <?php echo $this->form()->openTag($this->criteres_form);?>
          <?php echo $this->formCollection($this->criteres_form, true);?>
          <?php echo $this->form()->closeTag();?>

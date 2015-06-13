@@ -1272,6 +1272,7 @@ class TransportController extends AbstractActionController
             }
         }
         $etablissement = $tEtablissements->getRecord($etablissementId);
+        $description = '<b>' . $etablissement->nom . '</b></br>';
         $commune = $this->getServiceLocator()
             ->get('Sbm\Db\table\Communes')
             ->getRecord($etablissement->communeId);
@@ -1281,11 +1282,11 @@ class TransportController extends AbstractActionController
                 ->get('SbmCarto\Geocoder')
                 ->geocode($etablissement->adresse2 ?  : $etablissement->adresse1, $etablissement->codePostal, $commune->nom);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
-            $description = $array['adresse'];
+            $description .= $array['adresse'];
         } else {
             $point = new Point($etablissement->x, $etablissement->y);
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-            $description = nl2br(trim(implode("\n", array(
+            $description .= nl2br(trim(implode("\n", array(
                 $etablissement->adresse1,
                 $etablissement->adresse2
             ))));
@@ -2193,6 +2194,122 @@ class TransportController extends AbstractActionController
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 
+    /**
+     * Localisation d'une station sur la carte et enregistrement de ses coordonnées
+     */
+    public function stationLocalisationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $this->flashMessenger()->addWarningMessage('Recommencez.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'station-liste',
+                'page' => $this->params('page', 1)
+            ));
+        } else {
+            $args = $prg;
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage('Localisation abandonnée.');
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    'action' => 'station-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+            if (! array_key_exists('stationId', $args)) {
+                $this->flashMessenger()->addErrorMessage('Action  interdite');
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
+        }
+        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
+        $stationId = $args['stationId'];
+        $tStations = $this->getServiceLocator()->get('Sbm\Db\Table\Stations');
+        $form = new ButtonForm(array(
+            'stationId' => array(
+                'id' => 'stationId'
+            ),
+            'lat' => array(
+                'id' => 'lat'
+            ),
+            'lng' => array(
+                'id' => 'lng'
+            )
+        ), array(
+            'submit' => array(
+                'class' => 'button default submit left-95px',
+                'value' => 'Enregistrer la localisation'
+            ),
+            'cancel' => array(
+                'class' => 'button default cancel left-10px',
+                'value' => 'Abandonner'
+            )
+        ));
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/transport', array(
+                'action' => 'station-localisation',
+                'page' => $this->params('page', 1)
+            )));
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                // transforme les coordonnées
+                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                // enregistre dans la fiche station
+                $oData = $tStations->getObjData();
+                $oData->exchangeArray(array(
+                    'stationId' => $stationId,
+                    'x' => $point->getX(),
+                    'y' => $point->getY()
+                ));
+                $tStations->saveRecord($oData);
+                $this->flashMessenger()->addSuccessMessage('La localisation de la station est enregistrée.');
+                //$this->flashMessenger()->addWarningMessage('Attention ! Les distances des domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
+                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    'action' => 'station-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+        }
+        $station = $tStations->getRecord($stationId);
+        $commune = $this->getServiceLocator()
+        ->get('Sbm\Db\table\Communes')
+        ->getRecord($station->communeId);
+        $description = '<b>' . $station->nom . '</b></br>' . $commune->codePostal . ' ' . $commune->nom;
+        if ($station->x == 0.0 && $station->y == 0.0) {
+            // essayer de localiser par l'adresse avant de présenter la carte
+            $array = $this->getServiceLocator()
+            ->get('SbmCarto\Geocoder')
+            ->geocode($station->nom, $commune->codePostal, $commune->nom);
+            $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+        } else {
+            $point = new Point($station->x, $station->y);
+            $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+        }
+        $form->setData(array(
+            'stationId' => $stationId,
+            'lat' => $pt->getLatitude(),
+            'lng' => $pt->getLongitude()
+        ));
+        return new ViewModel(array(
+            // 'pt' => $pt,
+            'form' => $form->prepare(),
+            'description' => $description,
+            'station' => array(
+                $station->nom,
+                $commune->codePostal . ' ' . $commune->nom
+            ),
+            'config' => StdLib::getParamR(array(
+                'sbm',
+                'cartes',
+                'etablissements' // même configuration que pour les établissements (centrage de la carte et zoom)
+            ), $this->getServiceLocator()->get('config'))
+        ));
+    }
+    
     /**
      * =============================================== TRANSPORTEURS ==================================================
      */

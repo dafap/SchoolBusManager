@@ -22,12 +22,16 @@ use Zend\Http\PhpEnvironment\Response;
 
 class CarteController extends AbstractActionController
 {
+
     private $_initcarto;
+
     /**
      * projection utilisée
+     * 
      * @var \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface
      */
     private $projection;
+
     public function indexAction()
     {
         return new ViewModel();
@@ -38,7 +42,7 @@ class CarteController extends AbstractActionController
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
-        } 
+        }
         $args = (array) $prg;
         if (array_key_exists('back', $args)) {
             $this->redirectToOrigin()->setBack($args['back']);
@@ -61,13 +65,53 @@ class CarteController extends AbstractActionController
         
         return new ViewModel(array(
             'ptEtablissements' => $ptEtablissements,
-            'config' => StdLib::getParamR(array('sbm', 'cartes', 'etablissements'), $this->getServiceLocator()->get('config'))
+            'config' => StdLib::getParamR(array(
+                'sbm',
+                'cartes',
+                'etablissements'
+            ), $this->getServiceLocator()->get('config'))
         ));
     }
-    
+
+    public function stationsAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        if (array_key_exists('back', $args)) {
+            $this->redirectToOrigin()->setBack($args['back']);
+        }
+        if (array_key_exists('cancel', $args)) {
+            try {
+                $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                $this->redirect()->toRoute('home');
+            }
+        }
+        $this->init();
+        $tStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
+        $ptStations = array();
+        foreach ($tStations->fetchAll() as $station) {
+            $pt = new Point($station->x, $station->y);
+            $pt->setAttribute('station', $station);
+            $ptStations[] = $this->projection->xyzVersgRGF93($pt);
+        }
+        
+        return new ViewModel(array(
+            'ptStations' => $ptStations,
+            'config' => StdLib::getParamR(array(
+                'sbm',
+                'cartes', // on utilise la même configuration (centre, zoom) que pour les établissements
+                'etablissements'
+            ), $this->getServiceLocator()->get('config'))
+        ));
+    }
+
     private function init()
     {
-        if (!$this->_initcarto) {
+        if (! $this->_initcarto) {
             $ns = '\\' . explode('\\', __NAMESPACE__)[0] . '\\ConvertSystemGeodetic\\Projection\\';
             $config = $this->getServiceLocator()->get('Config');
             $this->system = $ns . StdLib::getParamR(array(
@@ -82,5 +126,4 @@ class CarteController extends AbstractActionController
             $this->_init = true;
         }
     }
-    
 } 

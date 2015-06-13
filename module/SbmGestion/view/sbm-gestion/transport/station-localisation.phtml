@@ -1,15 +1,15 @@
 <?php
 /**
- * Page de localisation d'un établissement scolaire
+ * Page de localisation d'une station
  *
- * La page présente une carte. Il suffit de cliquer sur la carte pour localiser l'établissement
+ * La page présente une carte. Il suffit de cliquer sur la carte pour localiser la station
  * 
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport
- * @filesource etablissement-localisation.phtml
+ * @filesource station-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juin 2015
+ * @date 13 juin 2015
  * @version 2015-1
  */
 // mise en place des JS de googleMaps
@@ -53,7 +53,7 @@ function initialiser() {
     var optionsMarqueur = {
         map: carte,
         position: new google.maps.LatLng(document.getElementById('lat').value, document.getElementById('lng').value),
-        title: 'établissement scolaire'
+        title: 'point d\'arrêt'
     }
     marker = new google.maps.Marker(optionsMarqueur);
     
@@ -77,7 +77,7 @@ function initialiser() {
     	   var optionsMarker = {
     	       map: carte,
     	       position: new google.maps.LatLng(latlng.lat(), latlng.lng()),
-    	       title: 'établissement scolaire'
+    	       title: 'point d\'arrêt'
     	   }
     	   marker = Marker(optionsMarker);
         }
@@ -90,12 +90,12 @@ $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart(); ?>
 initialiser();
 <?php $this->inlineScript()->captureEnd(); ?>
-<h1>Position d'un établissement scolaire sur la carte</h1>
+<h1>Position d'une station sur la carte</h1>
 <div id="carte-wrapper">
 	<div id="carte-header" class="clearfix">
-	    <div class="float-left"><ul style="margin-top:0;"><?php foreach ($this->etablissement as $ligne) echo '<li>' . $ligne . '</li>'; ?></ul></div>
+	    <div class="float-left"><ul style="margin-top:0;"><?php foreach ($this->station as $ligne) echo '<li>' . $ligne . '</li>'; ?></ul></div>
 		<div class="float-right left-10px" style="max-width: 700px;">
-			Cliquez sur la carte à l'emplacement de l'établissement scolaire puis cliquez
+			Cliquez sur la carte à l'emplacement de la station puis cliquez
 			sur le bouton <b>'Enregistrer la localisation'</b>. Utilisez le zoom pour plus de précision.<br>
 			<?php echo $this->form($this->form); ?>
 		</div>
