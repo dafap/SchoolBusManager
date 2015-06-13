@@ -635,7 +635,7 @@ class EleveController extends AbstractActionController
             unset($prg['origine']);
             $this->setToSession('post', $prg, $this->getSessionNamespace());
         }
-        if (!array_key_exists('eleveId', $prg)) {
+        if (! array_key_exists('eleveId', $prg)) {
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
@@ -644,7 +644,10 @@ class EleveController extends AbstractActionController
             }
         }
         $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
-        $scolarite = $tScolarites->getRecord(array('millesime' => Session::get('millesime'), 'eleveId' => $prg['eleveId']));
+        $scolarite = $tScolarites->getRecord(array(
+            'millesime' => Session::get('millesime'),
+            'eleveId' => $prg['eleveId']
+        ));
         $scolarite->inscrit = 1 - $scolarite->inscrit;
         $tScolarites->saveRecord($scolarite);
         $msg = $scolarite->inscrit ? 'La fiche de cet élève a été activée.' : 'Cet élève a été rayé.';
@@ -718,6 +721,156 @@ class EleveController extends AbstractActionController
     public function eleveSupprAction()
     {
         return $this->redirect()->toRoute('sbmgestion/eleve');
+    }
+
+    public function eleveLocalisationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false);
+            if ($args === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
+        } else {
+            $args = $prg;
+            // l'url de retour est dans la clé 'origine'
+            if (array_key_exists('origine', $args)) {
+                $this->redirectToOrigin()->setBack($args['origine']);
+                unset($args['origine']);
+                $this->setToSession('post', $args);
+            }
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage('La localisation de cet élève n\'a pas été enregistrée.');
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'eleve-edit'
+                    ));
+                }
+            }
+        }
+        // les outils de travail : formulaire et convertisseur de coordonnées
+        
+        // ici, il faut un formulaire permettant de saisir l'adresse particulière d'un élève. Le tout est enregistré dans scolarites
+        $form = new \SbmGestion\Form\Eleve\LocalisationAdresse();
+        $form->setAttribute('action', $this->url()
+            ->fromRoute('sbmgestion/eleve', array(
+            'action' => 'eleve-localisation'
+        )))
+            ->setValueOptions('communeId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies());
+        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
+        // chercher l'élève dans la table
+        $eleve = $this->getServiceLocator()
+            ->get('Sbm\Db\Query\ElevesScolarites')
+            ->getEleve($args['eleveId']);
+        // traitement de la réponse
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                // détermine le point. Il est reçu en gRGF93 et sera enregistré en XYZ
+                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                // enregistre les coordonnées dans la table
+                $tableScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+                $oData = $tableScolarites->getObjData();
+                $oData->exchangeArray($form->getData());
+                $oData->millesime = Session::get('millesime');
+                $oData->x = $point->getX();
+                $oData->y = $point->getY();
+                // calcul de la distance à l'établissement
+                $tableEtablissements = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
+                $etablissement = $tableEtablissements->getRecord($eleve['etablissementId']);
+                $pointEtablissement = new Point($etablissement->x, $etablissement->y);
+                $ptetab = $d2etab->getProjection()->XYZversgRGF93($pointEtablissement);
+                $d = $d2etab->calculDistance($pt, $ptetab);
+                $oData->distanceR1 = round($d / 1000, 1);
+                // enregistre
+                $tableScolarites->saveRecord($oData);
+                $this->flashMessenger()->addSuccessMessage('Cette adresse est enregistrée avec sa localisation.');
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                        'action' => 'eleve-edit'
+                    ));
+                }
+            }
+            // reprendre les données pour charger le formulaire
+            $data = $args;
+        } elseif (array_key_exists('remove', $args)) {
+            // cherche l'établissement
+            $tableEtablissements = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
+            $etablissement = $tableEtablissements->getRecord($eleve['etablissementId']);
+            $pointEtablissement = new Point($etablissement->x, $etablissement->y);
+            $ptetab = $d2etab->getProjection()->XYZversgRGF93($pointEtablissement);
+            // recherche le responsable1 pour calculer la distance
+            $eleveR1 = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesResponsables')->getEleveResponsable1($args['eleveId']);
+            $point = new Point($eleveR1['x1'], $eleveR1['y1']);
+            $pt = $d2etab->getProjection()->XYZversgRGF93($point);
+            $d = $d2etab->calculDistance($pt, $ptetab);
+            // supprimer les références à l'adresse perso de l'élève
+            $data = array(
+                'millesime' => Session::get('millesime'),
+                'eleveId' => $args['eleveId'],
+                'chez' => null,
+                'adresseL1' => null,
+                'adresseL2' => null,
+                'codePostal' => null,
+                'communeId' => null,
+                'x' => 0,
+                'y' => 0,
+                'distanceR1' => round($d / 1000, 1)
+            );
+            $tableScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+            $oData = $tableScolarites->getObjData();
+            $oData->exchangeArray($data);
+            // enregistre
+            $tableScolarites->saveRecord($oData);
+            $this->flashMessenger()->addSuccessMessage('Cette adresse a été effacée.');
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-edit'
+                ));
+            }
+        } else {
+            // préparer le Point dans le système gRGF93
+            $point = new Point($eleve['x'], $eleve['y']);
+            $pt = $d2etab->getProjection()->XYZversgRGF93($point);
+            // préparer le tableau de données pour initialiser le formulaire
+            $data = array(
+                'eleveId' => $args['eleveId'],
+                'lat' => $pt->getLatitude(),
+                'lng' => $pt->getLongitude(),
+                'chez' => $eleve['chez'],
+                'adresseL1' => $eleve['adresseEleveL1'],
+                'adresseL2' => $eleve['adresseEleveL2'],
+                'codePostal' => $eleve['codePostalEleve'],
+                'communeId' => $eleve['communeEleveId']
+            );
+        }
+        // charger le formulaire
+        $form->setData($data);
+        return new ViewModel(array(
+            'point' => $pt,
+            'form' => $form->prepare(),
+            'eleveId' => $args['eleveId'],
+            'eleve' => $eleve,
+            'config' => StdLib::getParamR(array(
+                'sbm',
+                'cartes',
+                'parent'
+            ), $this->getServiceLocator()->get('config'))
+        ));
     }
 
     /**
