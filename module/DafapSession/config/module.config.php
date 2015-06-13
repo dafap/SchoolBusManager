@@ -98,9 +98,6 @@ return array(
         ),
         'factories' => array(
             'Dafap\Authenticate' => 'DafapSession\Authentication\AuthenticationServiceFactory'
-        ),
-        'aliases' => array(
-            'translator' => 'MvcTranslator'
         )
     ),
     'controller_plugins' => array(

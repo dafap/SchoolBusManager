@@ -99,6 +99,22 @@ class ElevesResponsables implements FactoryInterface
     }
 
     /**
+     * Renvoie un tableau contenant les données de l'élève et de son responsable 1
+     * 
+     * @param int $eleveId
+     * @return array
+     */
+    public function getEleveResponsable1($eleveId)
+    {
+        $where = new Where();
+        $where->equalTo('eleveId', $eleveId);
+        $select = clone $this->select;
+        $select->where($where);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute()->current();
+    }
+    
+    /**
      * Renvoie le résultat de la requête
      *
      * @param Where $where            

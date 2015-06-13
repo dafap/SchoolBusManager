@@ -31,8 +31,8 @@ return array(
             'dateN' => 'date NOT NULL',
             'numero' => 'int(11) NOT NULL',
             'responsable1Id' => 'int(11) NOT NULL DEFAULT "0"',
-            'x1' => 'decimal(18,10) NOT NULL DEFAULT "1641520.6"', // decazeville, maison de l'industrie
-            'y1' => 'decimal(18,10) NOT NULL DEFAULT "3262032.5"', // decazeville, maison de l'industrie
+            'x1' => 'decimal(18,10) NOT NULL DEFAULT "0"', 
+            'y1' => 'decimal(18,10) NOT NULL DEFAULT "0"', 
             'geopt1' => 'GEOMETRY',
             'responsable2Id' => 'int(11) DEFAULT NULL',
             'x2' => 'decimal(18,10) DEFAULT NULL',

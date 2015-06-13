@@ -32,6 +32,7 @@ use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use Zend\Validator\AbstractValidator;
 use Zend\I18n\Translator\Resources;
+use Zend\I18n\Translator\Translator;
 
 class Module extends AbstractModule
 {
@@ -63,11 +64,8 @@ class Module extends AbstractModule
      */
     private function bootstrapTranslation(EventInterface $e)
     {
-        $application = $e->getApplication();
-        $sm = $application->getServiceManager();
-        $translator = $sm->get('translator');
-        //$translator->addTranslationFile('phpArray', 'vendor/zendframework/zendframework/resources/languages/fr/Zend_Validate.php');
-        $translator->addTranslationFile('phpArray', Resources::getBasePath(), Resources::getPatternForValidator());
+        $translator = $e->getApplication()->getServiceManager()->get('MvcTranslator');
+        $translator->addTranslationFile('phpArray', sprintf(Resources::getBasePath() . Resources::getPatternForValidator(), 'fr'));
         AbstractValidator::setDefaultTranslator($translator);
     }
 

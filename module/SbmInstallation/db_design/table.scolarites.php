@@ -32,8 +32,8 @@ return array(
             'adresseL2' => 'varchar(38) DEFAULT NULL',
             'codePostal' => 'varchar(5) DEFAULT NULL',
             'communeId' => 'varchar(6) DEFAULT NULL',
-            'x' => 'decimal(18,10) NOT NULL DEFAULT "1641520.6"', // decazeville, maison de l'industrie
-            'y' => 'decimal(18,10) NOT NULL DEFAULT "3262032.5"', // decazeville, maison de l'industrie
+            'x' => 'decimal(18,10) NOT NULL DEFAULT "0"', 
+            'y' => 'decimal(18,10) NOT NULL DEFAULT "0"',
             'geopt' => 'GEOMETRY DEFAULT NULL',
             'distanceR1' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'distanceR2' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
