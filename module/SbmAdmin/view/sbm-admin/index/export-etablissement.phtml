@@ -1,0 +1,46 @@
+<?php
+/**
+ * Exportation de données géolocalisées
+ * 
+ * Vue des critères d'exportation des établissements
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource export-etablissement.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 8 juin 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+?>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+	    <div class="flashMessenger float-right">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+        </div>
+        <h1>Exportation des établissements</h1>
+	</div>
+	<div id="fiche-inner">
+	<?php echo $this->form()->openTag($this->form);?>
+	    <fieldset>
+			<div class="row-inner"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form->get('communeId'));?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form->get('visible'));?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form->get('desservie'));?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form->get('statut'));?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form->get('niveau'));?></div>
+			<div>
+			<?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+			</div>
+		</fieldset>
+	<?php echo $this->form()->closeTag();?>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

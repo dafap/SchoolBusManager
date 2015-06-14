@@ -602,7 +602,38 @@ class IndexController extends AbstractActionController
 
     public function exportResponsableAction()
     {
-        ;
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $form = new ExportForm('responsable', $this->getServiceLocator());
+        if ($prg !== false) {
+            if (array_key_exists('cancel', $prg)) {
+                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+            } else {
+                $form->setData($prg);
+                if ($form->isValid()) {
+                    $where = $form->whereResponsable();
+                    $resultset = $this->getServiceLocator()
+                    ->get('Sbm\Db\Vue\Responsables')
+                    ->fetchAll($where, array(
+                        'commune',
+                        'nom'
+                    ));
+                    $data = $resultset->toArray();
+                    if (! empty($data)) {
+                        $fields = array_keys(current($data));
+                        return $this->csvExport('responsables.csv', $fields, $data);
+                    } else {
+                        $this->flashMessenger()->addInfoMessage('Il n\'y a pas de données correspondant aux critères indiqués.');
+                    }
+                }
+            }
+        }
+        
+        return new ViewModel(array(
+            'form' => $form
+        ));
     }
 
     public function exportStationAction()

@@ -1,0 +1,1057 @@
+@CHARSET "UTF-8";
+html {
+	background: #E5E0D4;
+	color: #333;
+}
+body {
+	color: inherit;
+	margin: auto;
+	font-size: 0.8125em;
+	font-family: Verdana, "Luxi sans", "Lucida Grande", Lucida, "Lucida Sans Unicode", sans-serif;
+	height: auto;
+	width: 1170px;
+	padding: 0;
+}
+input, select, textarea, button {
+	font-family: inherit;
+	font-size: 1em;
+}
+select {
+	letter-spacing: -1px;
+}
+input[type="submit"]:hover {
+	font-weight: bold;
+}
+th, td {
+	border-bottom: inherit;
+}
+dt {
+	font-weight: bold;
+	padding-top: 1rem;
+}
+/*-------- Classes générales ------*/
+i.fam-help:hover {
+	cursor: help;
+}
+.align-right {
+	text-align: right;
+}
+.centre {
+	text-align: center;
+}
+.clearfix {
+	zoom: 1;
+}
+.clearfix:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+.content {
+	padding-left: 2px;
+	padding-right: 2px;
+	min-height: 390px;
+	position:relative;
+}
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}
+.even {
+	background-color: #f3fafc;
+	border-bottom: 1px solid #e3eaec;
+}
+.odd {
+	border-bottom: 1px solid #e3eaec;
+}
+.alert {
+	color: #a94442;
+}
+
+.warning {
+	color: #31708f;
+}
+
+.exces {
+	color: red;
+	font-weight: bold;
+}
+.gras {
+	font-weight: bold;
+}
+.noir {
+	color: black;
+}
+.nuit {
+	color: #000051;
+}
+.gris {
+	color: #b0b0b0;
+}
+.barre {
+	text-decoration: line-through;
+}
+.page1 {
+	border: 1px solid #db001b;
+}
+.row-inner {
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
+.sbm-description {
+	font-size: 80%;
+	color: #999;
+	margin-bottom: 2px;
+}
+*:hover.sbm-description {
+	font-size: 95%;
+}
+.top-6px {
+	margin-top: 6px;
+}
+.top-18px {
+	margin-top: 18px;
+}
+.left-10px {
+	margin-left: 10px;
+}
+.left-95px {
+	margin-left: 70px;
+}
+.right-10px {
+	margin-right: 10px;
+}
+.input-error {
+	background-color: #ffcbbf;
+	border: 2px inset #db001b;
+}
+div.explication {
+	text-align: justify;
+	padding-right: 15px;
+	padding-left: 15px;
+	color: #804040;
+}
+.invisible {
+	display: none;
+}
+.hidden {
+	visibility: hidden;
+}
+label.required:after {
+	color: #f78042;
+	content: ' *';
+}
+div.semaine {
+	width: 600px;
+}
+/*-------- Erreurs -------------*/
+div#error_wrapper {
+	width: 100%;
+	overflow: auto;
+}
+.row-inner ul {
+	color: #db001b;
+}
+/*--------- TOP-SITE -----------------*/
+#top-site {
+	height: 20px;
+	margin: 0;
+	text-align: center;
+	font-size: 0.75em;
+	color: #999;
+	width: 100%;
+	padding: 0;
+}
+#top-site a {
+	color: #666;
+	padding: 1px 4px;
+	text-decoration: none;
+}
+#top-site a:hover {
+	color: black;
+	font-weight: bold;
+}
+#top-site div.float-left {
+	position: absolute;
+	top: -100px;
+}
+/*--------- Header -----------------*/
+#bandeau {
+	height: 195px;
+	margin: 0;
+	width: 100%;
+}
+.page1 #header #bandeau {
+	background-image: url("../img/bandeau-sbm.png");
+	background-repeat : no-repeat;
+}
+/*-------- Footer -----------------*/
+#footer {
+	color: #666;
+	font-size: 0.75em;
+	height: 23px;
+	margin: 0;
+	padding: 0;
+	padding-top: 15px;
+	clear: both;
+	overflow: hidden;
+}
+#footer a {
+	color: #666;
+	text-decoration: none;
+}
+#footer a:hover {
+	color: black;
+	font-weight: bold;
+}
+/*-------- Conteneur de la page ---*/
+#container-interface {
+	background-color: white;
+	text-align: left;
+	padding-bottom: 0.5em;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #333333;
+	overflow: hidden;
+}
+
+/*-------- Page accueil --------*/
+div.table-page1 {
+	display: table;
+	width: 91%;
+	margin-left: auto;
+	margin-right: auto;
+}
+div.table-page1 div.row {
+	display: table-row;
+}
+div.table-page1 div.column1 {
+	display: table-cell;
+	border-right: 10px solid white;
+}
+div.table-page1 div.column2 {
+	display: table-cell;
+	width: 29%;
+}
+div.table-page1 div.column2 a {
+	color: #f78042;
+	text-decoration: none;
+}
+div.table-page1 div.column2 a:hover {
+	font-weight: bold;
+}
+div.centre {
+	margin-left: auto;
+	margin-right: auto;
+}
+div.sbm-page1,
+fieldset.sbm-page1 {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+input.sbm-page1 {
+	margin-bottom: 3px;
+	width: 167px;
+}
+input.sbm-signup {
+	height: 45px;
+	border-radius: 4px 4px 4px 4px;
+	font-size: 120%;
+	color: #578bcb;
+	color: #f78042;
+}
+.column1 p {
+	text-align: justify;
+}
+h3.accueil {
+	margin-bottom: 0;
+}
+a.accueil {
+	text-decoration: none;
+	font-size: inherit;
+	color: #000077;
+}
+a.accueil:hover {
+	font-weight: bold;
+	color: #000051;
+}
+/*---------- les labels ---------*/
+label.align-right {
+	margin-right: 3px;
+}
+label.sbm-label-page1 {
+	display: inline-block;
+	width: 105px;
+}
+label.sbm-label-200px {
+	display: inline-block;
+	width: 200px;
+}
+label.sbm-label-top {
+	vertical-align: top;
+}
+/*---------- Bienvenue ----------*/
+#bienvenue {
+	float: right;
+	margin: 0;
+	padding: 0;
+	margin-right: 3px;
+	position: relative;
+}
+#bienvenue ul {
+	list-style: none;
+	-webkit-padding-start: 0;
+}
+#bienvenue ul#menu {
+	margin-top: 0;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+}
+#bienvenue ul#menu li {
+	float: left;
+	padding-left: 4px;
+}
+#bienvenue ul#menu li.annee-scolaire {
+	padding-right: 200px;
+	font-weight: bold;
+}
+#bienvenue ul#menu li.bienvenue {
+	position: relative;
+}
+#bienvenue a {
+	color: #1c94c4;
+	text-decoration: none;
+}
+#bienvenue a:hover {
+	font-weight: bold;
+}
+#bienvenue #menu ul {
+	opacity: 0;
+	visibility: hidden;
+	position: absolute;
+	top: 16px;
+	left: 0;
+	z-index: 9999;
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+	background-color: white;
+	padding-left: 0;
+}
+#bienvenue ul#menu li.bienvenue:hover ul {
+	opacity: 1;
+	visibility: visible;
+}
+#bienvenue #menu ul li {
+	float: none;
+	min-width: 200px;
+}
+/*------------ FlashMessenger ----------------*/
+.flashMessenger ul {
+	margin: 0;
+	border-radius: 4px 4px 4px 4px;
+}
+.flashMessenger ul.success {
+	color: #3c763d;
+	background-color: #dff0d8;
+	border-color: #3c763d;
+}
+.flashMessenger ul.warning {
+	color: #836738;
+	background-color: #f7d09d;
+	border-color: #836738;
+}
+.flashMessenger ul.error {
+	color: #a94442;
+	background-color: #f2dede;
+	border-color: #a94442;
+}
+.flashMessenger ul.info {
+	color: #31708f;
+	background-color: #d9edf7;
+	border-color: #31708f;
+}
+.flashMessenger ul.default {
+	color: #333;
+	background-color: #fcf8e3;
+	dorder-color: #333;
+}
+/*--------------- Pagination ----------------------------*/
+/* la pagination est dans un clearfix pour que ça marche */
+div.pagination {
+	float: right;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 20px;
+	color: #176f94;
+	font-size: 110%;
+	font-weight: bold;
+}
+div.pagination .disabled {
+	display: none;
+}
+div.pagination span.nbItems, 
+div.pagination span.current {
+	color: orange;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+div.pagination span.current {
+	border: 1px solid orange;
+}
+div.pagination a.page {
+	margin-left: 3px;
+	margin-right: 3px;
+	text-decoration: none;
+	color: #1c94c4
+}
+div.pagination a.page:hover {
+	color: #156486;
+}
+/*--------------- Menu général --------------*/
+#menugeneral-inner ul {
+	list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+#menugeneral-inner li {
+    padding-left: 25px;
+    margin-top: 3px;
+    margin-bottom: 6px; 
+}
+#menugeneral-inner a {
+	text-decoration: none;
+	color: #496f9c;
+}
+#menugeneral-inner a:hover {
+	font-weight: bold;
+}
+/*-------- Installation --------*/
+div#data-inner {
+	background-color: #f7fbf7;
+	text-align: left;
+	padding-bottom: 0.5em;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #333333;
+	overflow: auto;
+}
+#data-inner .even {
+	background-color: #e3f0e3;
+	border-bottom: 1px solid #badaba;
+}
+#data-inner .odd {
+	border-bottom: 1px solid #badaba;
+}
+#data-inner fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+#data-inner p {
+	font-style: italic;
+}
+#data-inner input.button,
+#data-inner input.confirm {
+	margin-left: 10px;
+}
+/*--------------- Suppression ---------------*/
+div#suppr-wrapper {
+	margin-left: 10em;
+}
+#suppr-wrapper fieldset {
+	border: 0;
+}
+#suppr-wrapper input.button,
+#suppr-wrapper input.confirm {
+	margin-left: 10px;
+}
+#suppr-wrapper textarea {
+	margin-left: 5px;
+}
+/*--------------- Listes --------------------*/
+div#liste-header {
+	margin-bottom: 10px;
+	position: relative;
+}
+div#liste-header input {
+	margin-left: 15px;
+}
+div#liste-inner {
+	min-height: 400px;
+}
+div#liste-footer .criteres-wrapper fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+div#liste-footer .criteres-wrapper input,
+div#liste-footer .criteres-wrapper select {
+	margin-left: 2px;
+	margin-right: 9px;
+}
+div#liste-footer .criteres-wrapper label.sbm-new-line {
+	display: initial;
+}
+div#liste-footer .criteres-wrapper label.sbm-new-line:before {
+	content: "\A\A";
+	white-space: pre;
+}
+div#liste-inner .serviceid {
+	width: 58px;
+}
+div#liste-inner .horaire {
+	width: 68px;
+}
+div#liste-inner .nbplaces,
+div#liste-inner .nbinscrits {
+	text-align: right;
+	padding-right: 3px;
+}
+div#liste-inner .codepostal {
+	text-align: center;
+}
+/*-------------- Fiches -----------------------------*/
+div#fiche-header {
+	margin-bottom: 10px;
+	position: relative;
+}
+div#fiche-header input {
+	margin-left: 15px;
+}
+div#fiche-inner {
+	min-height: 400px;
+}
+div#fiche-inner div.row-inner fieldset {
+	border: 1px solid #fdddcc;
+	border-radius: 4px 4px 4px 4px;
+}
+div#fiche-inner div.row-inner input.cancel {
+	margin-top: 6px;
+	margin-left: 20px;	
+}
+/*-------------- Fiche mdp --------------------------*/
+#fiche-inner #mdp label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 240px;
+}
+#fiche-inner #mdp input.submit {
+	margin-top: 6px;
+	margin-left: 120px;
+}
+/*-------------- Fiche calendrier -------------------*/
+#fiche-inner #calendar div.label,
+#fiche-inner #calendar label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 140px;
+}
+#fiche-inner #calendar input.submit {
+	margin-top: 6px;
+	margin-left: 120px;	
+}
+/*-------------- Fiche circuits ---------------------*/
+#fiche-inner #circuit label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 135px;
+}
+#fiche-inner #circuit label.sbm-label-semaine {
+	display: inline;
+	margin-right: 22px;
+}
+#fiche-inner #circuit input.submit {
+	margin-top: 6px;
+	margin-left: 120px;	
+}
+#circuit-edit-m3, 
+#circuit-edit-s3 {
+	display: none;
+}
+/*-------------- Fiche classes ----------------------*/
+#fiche-inner #classe label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 150px;
+}
+#fiche-inner #classe input.submit {
+	margin-top: 6px;
+	margin-left: 155px;	
+}
+/*------------- Fiche communes ----------------------*/
+#fiche-inner #commune label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 300px;
+}
+#fiche-inner #commune input.submit {
+	margin-top: 6px;
+	margin-left: 305px;	
+}
+
+/*-------------- Fiche eleves -----------------------*/
+#fiche-inner #eleve {
+	line-height: 1.2em;
+}
+#fiche-inner #eleve #commun-col1 {
+	width: 415px;
+}
+#fiche-inner #eleve #commun div.label {
+	display: inline-block;
+	padding-left: 5px;
+	min-width: 80px;
+}
+#fiche-inner #eleve #commun label {
+	display: inline-block;
+	padding-left: 5px;
+}
+#fiche-inner #eleve #commun-col1 div.label,
+#fiche-inner #eleve #commun-col1 label {
+	width: 140px;
+}
+#fiche-inner #eleve #commun-col2 label {
+	width: 107px;
+}
+#fiche-inner #eleve #commun-col2-periode label {
+	width: inherit;
+	margin-right: 3px;
+}
+#fiche-inner #eleve #commun-col3 > div {
+	min-height: 19px;
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
+#fiche-inner #eleve #commun-col3 div.label,
+#fiche-inner #eleve #commun-col3 label {
+	display: inline-block;
+	padding-left: 5px;
+	min-width: 105px;
+}
+#fiche-inner #eleve #commun-col3 label.checkbox {
+	min-width: 130px;
+}
+#fiche-inner #eleve #commun div.input {
+	display: inline-block;
+}
+#fiche-inner #eleve #tabs {
+	font-size: 1em;
+}
+#fiche-inner #eleve #tabs div.sbm-tabs-container {
+	min-height: 15em;
+}
+#fiche-inner #eleve #tabs a {
+	font-size: 0.8725em;
+}
+#fiche-inner #eleve #tabs label {
+	display: inline-block;
+	margin-right: 5px;
+	color: #333333;
+}
+#fiche-inner #eleve .wrapper-responsable {
+	min-height: 6em;
+	margin-left: 10px;
+}
+#fiche-inner #eleve #wrapper-joursTransport label {
+	width: 4em;
+	padding-left: 0;
+}
+#fiche-inner #eleve #wrapper-commentaire textarea {
+	width : 99.5%;
+	border-radius: 4px 4px 4px 4px;
+}
+#fiche-inner #eleve #wrapper-commentaire label {
+	display: block;
+	float: left;
+	left: 20px;
+}
+#fiche-inner #eleve .block-affectations h3 {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+}
+#fiche-inner #tabs-3 div.eleve-tabs-3-col-1-label {
+	display: inline-block;
+	width : 150px;
+	padding-left: 5px;
+}
+#fiche-inner #tabs-3 div.eleve-tabs-3-col-2-label,
+#fiche-inner #tabs-3 div.eleve-tabs-3-col-3-label {
+	display: inline-block;
+	width : 170px;
+	padding-left: 5px;
+}
+#fiche-inner #eleve #responsables div.cols {
+	min-width: 415px;
+}
+table.eleve-affectations {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+	max-width: 695px;
+}
+table.eleve-affectations td.next {
+	border-left: 1px solid #fdddcc;
+}
+table.eleve-affectations td.first {
+	width: 106px;
+}
+table.eleve-affectations td.second {
+	width: 81px;
+}
+table.eleve-affectations td.third {
+	width: 50px;
+}
+table.eleve-affectations td.last {
+	width: 42px;
+}
+/*-------------- Fiche etablissements ---------------*/
+#fiche-inner #etablissement label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 130px;
+}
+#fiche-inner #etablissement input.submit {
+	margin-top: 6px;
+	margin-left: 300px;	
+}
+#fiche-inner #etablissement .cols-1 {
+	width: 52%;
+}
+#fiche-inner #etablissement .cols-2 {
+	width: 46%;
+}
+#fiche-inner #etablissement .cols-3 {
+	width: 49.5%;
+}
+#fiche-inner #etablissement .rows-2 {
+	min-height: 5.5em;
+}
+/*-------------- Fiche libelles ---------------------*/
+#fiche-inner #libelle label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 70px;
+}
+#fiche-inner #libelle input.submit {
+	margin-top: 6px;
+	margin-left: 75px;	
+}
+/*-------------- Fiche paiements --------------------*/
+#fiche-inner #paiement label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 175px;
+}
+#fiche-inner #paiement input.submit {
+	margin-top: 6px;
+	margin-left: 175px;	
+}
+/*-------------- Fiche pdf --------------------------*/
+#fiche-inner .ui-widget {
+	font-size: 0.8125em;
+	font-family: Verdana, "Luxi sans", "Lucida Grande", Lucida, "Lucida Sans Unicode", sans-serif;
+}
+#fiche-inner #documentpdf .accordion1 .col1 fieldset {
+	max-width: 360px;
+}
+#fiche-inner #documentpdf label {
+	display: inline-block;
+	padding-left: 5px;
+}
+#fiche-inner #documentpdf .accordion1 .col1 label {
+	min-width: 130px;
+}
+#fiche-inner #documentpdf .accordion1 .col2 label {
+	min-width: 12em;
+}
+#fiche-inner #documentpdf .accordion2 .col1 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion2 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion3 .col1 label {
+	min-width: 22.5em;
+}
+#fiche-inner #documentpdf .accordion3 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion4 .col1 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf .accordion4 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion5 .col1 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf .accordion5 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion6 .col1 label {
+	min-width: 12em;
+}
+#fiche-inner #documentpdf .accordion6 .col2 label {
+	min-width: 15.5em;
+}
+#fiche-inner #documentpdf .accordion7 .col1 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf .accordion7 .col2 label {
+	min-width: 19em;
+}
+#fiche-inner #documentpdf input.submit {
+	margin-top: 6px;
+	margin-left: 300px;	
+}
+#fiche-inner #documentpdf .cols-2 {
+	width: 50%;
+}
+/*-------------- Fiche responsables ---------------------*/
+#fiche-inner #responsable label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+#fiche-inner #responsable label.responsable-nom {
+	width: 7em;
+	margin-left: 20px;
+}
+#fiche-inner #responsable label.responsable-prenom {
+	width: 8.5em;
+	margin-left: 20px;
+}
+#fiche-inner #responsable select#responsable-titre2 {
+	vertical-align: top;
+} 
+/*-------------- Fiche services ---------------------*/
+#fiche-inner #service label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+#fiche-inner #service input.submit {
+	margin-top: 6px;
+	margin-left: 175px;	
+}
+/*-------------- Fiche stations ---------------------*/
+#fiche-inner #station label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 140px;
+}
+#fiche-inner #station input.submit {
+	margin-top: 6px;
+	margin-left: 145px;	
+}
+/*-------------- Fiche tarifs -----------------------*/
+#fiche-inner #tarif label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 155px;
+}
+#fiche-inner #tarif input.submit {
+	margin-top: 6px;
+	margin-left: 160px;	
+}
+/*-------------- Fiche transporteurs ----------------*/
+#fiche-inner #transporteur label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 180px;
+}
+#fiche-inner #transporteur input.submit {
+	margin-top: 6px;
+	margin-left: 185px;	
+}
+/*-------------- Fiche plugin -----------------------*/
+table.plugin {
+	margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	border: 1px solid #f78042;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #9d3c06;
+}
+/*-------------- Fiche user ------------------------*/
+#fiche-inner #user div.label {
+	display: inline-block;
+	width: 150px;
+	padding-left: 5px;
+}
+#fiche-inner #user #wrapper-commentaire textarea {
+	width : 99.5%;
+	border-radius: 4px 4px 4px 4px;
+	height: 6rem;
+}
+#fiche-inner #user #wrapper-commentaire label {
+	display: block;
+	float: left;
+	left: 20px;
+}
+#fiche-inner #user .col1 label {
+	display: inline-block;
+	width: 155px;
+}
+#fiche-inner #user .colsuiv label {
+	margin-left: 43px;
+	margin-right: 5px;
+}
+/*-------------- Largeur des inputs text ------------*/
+input.sbm-width-5c, select.sbm-width-5c {
+	width: 3.5em;
+}
+input.sbm-width-10c, select.sbm-width-10c {
+	width: 7em;
+}
+input.sbm-width-15c, select.sbm-width-15c {
+	width: 10.5em;
+}
+input.sbm-width-20c, select.sbm-width-20c, textarea.sbm-width-20c {
+	width: 14em;
+}
+input.sbm-width-25c, select.sbm-width-25c, textarea.sbm-width-25c {
+	width: 17.5em;
+}
+input.sbm-width-30c, select.sbm-width-30c, textarea.sbm-width-30c {
+	width: 21em;
+}
+input.sbm-width-35c, select.sbm-width-35c, textarea.sbm-width-35c {
+	width: 24.5em;
+}
+input.sbm-width-40c, select.sbm-width-40c, textarea.sbm-width-40c {
+	width: 28em;
+}
+input.sbm-width-45c, select.sbm-width-45c, textarea.sbm-width-45c {
+	width: 31.5em;
+}
+input.sbm-width-50c, select.sbm-width-50c, textarea.sbm-width-50c {
+	width: 35em;
+}
+input.sbm-width-55c, select.sbm-width-55c, textarea.sbm-width-55c {
+	width: 38.5em;
+}
+textarea.sbm-width-40c, textarea.sbm-width-45c, textarea.sbm-width-50c, textarea.sbm-width-55c {
+	height: 4rem;
+}
+/*------------- Largeur des labels -----------------*/
+label.sbm-label-35dem {
+	width: 5em;
+}
+label.sbm-label-70dem {
+	width: 8.5em;
+}
+label.sbm-label-105dem {
+	width: 12em;
+}
+label.sbm-label-140dem {
+	width: 15.5em;
+}
+label.sbm-label-175dem {
+	width: 19em;
+}
+label.sbm-label-210dem {
+	width: 22.5em;
+}
+label.sbm-label-245dem {
+	width: 26em;
+}
+label.sbm-label-280dem {
+	width: 29.5em;
+}
+label.sbm-label-315dem {
+	width: 33em;
+}
+label.sbm-label-350dem {
+	width: 36.5em;
+}
+/*---------------- Formulaire automatique -------------------------*/
+/* utilisation de l'aide de vue $this->form($formulaire)      -    */
+/* le formulaire se trouve dans un conteneur de class="inner-form" */
+div.inner-form-auto {
+	position:relative;
+}
+.inner-form-auto input,
+.inner-form-auto select {
+	position: absolute;
+	left: 155px;
+}
+.inner-form-auto input.button {
+	position: relative;
+	top: 30px;
+	left: 0;
+	margin-left: 15px;
+}
+label.sbm-form-auto:before {
+	content: "\A";
+	white-space: pre;
+	line-height: 2;
+}
+/*---------------- Espace parents ---------------------------*/
+div#parent-wrapper {
+	min-height: 400px;
+}
+table.parent {
+	/*margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	/*border: 1px solid #9d3c06;*/
+	/*border-radius: 20px 20px 0 0;*/
+	/*box-shadow: 1px 1px 5px #9d3c06;*/
+}
+#parent-wrapper div.bouton-inscrire {
+	margin-top: 3px;
+	margin-bottom: 10px;
+	position:relative;
+	width: 95%;
+}
+#parent-wrapper input[type="submit"] {
+	font-size: 10px;
+	color: black;
+	background-color: #a1cbe5;
+	border-top-width: 0;
+	border-bottom-width: 0;
+	border-left-width: 0;
+	border-right-width: 0;
+	margin-right: 10px;
+}
+#parent-wrapper input.accueil {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 1em;
+	border: 1px solid #3489bc;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px 1px 5px #d9eaf4;
+}
+#fiche-inner form#enfant div.enfant-label,
+#fiche-inner form#enfant label {
+	display: inline-block;
+	width: 225px;
+	padding-left: 5px;
+}
+#fiche-inner form#enfant label.sbm-multi-label,
+#fiche-inner form#enfant label.sbm-radio-label {
+	display: inline;
+	margin-right: 30px;
+}
+#fiche-inner div.enfant-label {
+	display: inline-block;
+	width: 170px;
+	padding-left: 5px;
+}
+/*--------------------- Mail -------------------------------*/
+#mail textarea {
+	width: 99.5%;
+	height: 15rem;
+	border-radius: 4px 4px 4px 4px;
+}
+#mail input[type=text] {
+	width: 99.5%;
+	margin-bottom: 1rem;
+}
+#mail input[type=submit] {
+	margin-top: 0.5rem;
+}
+#mail label {
+	display: inline-block;
+	width: 120px;
+	margin-left: 5px;
+}
+

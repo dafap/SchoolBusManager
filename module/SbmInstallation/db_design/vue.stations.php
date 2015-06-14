@@ -65,6 +65,9 @@ return array(
                     array(
                         'field' => 'nom',
                         'alias' => 'commune'
+                    ),
+                    array(
+                        'field' => 'codePostal'
                     )
                 )
             )
