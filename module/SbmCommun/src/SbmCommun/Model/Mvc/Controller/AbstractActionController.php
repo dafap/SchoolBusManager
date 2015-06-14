@@ -34,6 +34,7 @@ use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
  */
 abstract class AbstractActionController extends ZendAbstractActionController
 {
+
     /**
      * Booléen qui prend sa valeur lors de l'utilisation de postRedirectGet dans les méthode initListe, initAjout, initEdit, initSuppr
      *
@@ -60,17 +61,20 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *
      * @param string $formName
      *            string : Le nom du formulaire est le nom de la table (ou de la vue) sur laquelle il porte.
-     *            array : Tableau de définition des éléments à créer dans le formulaire 
+     *            array : Tableau de définition des éléments à créer dans le formulaire
      * @param closure $initForm
-     *            Fonction anonyme lancée juste après la création du formulaire avec comme paramètres le service manager et le formulaire. 
+     *            Fonction anonyme lancée juste après la création du formulaire avec comme paramètres le service manager et le formulaire.
      *            Elle sert à initialiser les champs du formulaire, en particulier les listes déroulantes.
      * @param array $strictWhere
      *            Liste des champs du formulaire pour lesquels l'égalité est recherché. Pour les autres, on fait un Like
+     * @param array $aliasWhere
+     *            Liste des champs du formulaire qui sont des alias 
+     * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere() pour plus d'explications.
      *            
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
      *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme array('paginator' => ..., 'form' => ..., 'retour' => boolean)
      */
-    protected function initListe($formName, $initForm = null, $strictWhere = array())
+    protected function initListe($formName, $initForm = null, $strictWhere = array(), $aliasWhere = array())
     {
         $retour = false;
         $prg = $this->prg();
@@ -123,7 +127,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
         return array(
-            'where' => $criteres_obj->getWhere($strictWhere),
+            'where' => $criteres_obj->getWhere($strictWhere, $aliasWhere),
             'form' => $criteres_form,
             'retour' => $retour
         );
