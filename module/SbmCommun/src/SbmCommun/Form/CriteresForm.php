@@ -1078,8 +1078,8 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-nom',
-                'maxlength' => '45',
-                'class' => 'sbm-width-45c'
+                'maxlength' => '30',
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Nom',
@@ -1092,12 +1092,30 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         $this->add(array(
+            'name' => 'prenomSA',
+            'attributes' => array(
+                'type' => 'text',
+                'id' => 'critere-prenom',
+                'maxlength' => '30',
+                'class' => 'sbm-width-30c'
+            ),
+            'options' => array(
+                'label' => 'Prénom',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
             'name' => 'commune',
             'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-commune',
                 'maxlength' => '45',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-30c'
             ),
             'options' => array(
                 'label' => 'Commune',
@@ -1107,18 +1125,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'selection',
+            'type' => 'text',
+            'name' => 'nbEnfants',
             'attributes' => array(
-                'useHiddenElement' => false,
-                'options' => array(
-                    'checkedValue' => false,
-                    'uncheckedValue' => true
-                ),
-                'class' => 'sbm-checkbox'
+                'id' => 'critere-nbEnfants',
+                'maxlength' => 2,
+                'class' => 'sbm-width-5c'
             ),
             'options' => array(
-                'label' => 'Sélectionnés',
+                'label' => 'Nb d\'enfants',
                 'label_attributes' => array(
                     'class' => 'sbm-new-line'
                 ),
@@ -1128,11 +1143,39 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         $this->add(array(
+            'type' => 'text',
+            'name' => 'nbInscrits',
+            'attributes' => array(
+                'id' => 'critere-nbInscrits',
+                'maxlength' => 2,
+                'class' => 'sbm-width-5c'
+            ),
+            'options' => array(
+                'label' => 'Nb d\'inscrits',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'text',
+            'name' => 'nbPreinscrits',
+            'attributes' => array(
+                'id' => 'critere-nbPreinscits',
+                'maxlength' => 2,
+                'class' => 'sbm-width-5c'
+            ),
+            'options' => array(
+                'label' => 'Nb de préinscrits',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'demenagement',
             'attributes' => array(
-                
-                // 'type' => 'checkbox',
                 'useHiddenElement' => true,
                 'options' => array(
                     'checkedValue' => false,
@@ -1148,15 +1191,64 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             )
         ));
         $this->add(array(
-            'type' => 'text',
-            'name' => 'nbEleves',
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'inscrits',
             'attributes' => array(
-                'id' => 'critere-nbEleves',
-                'maxlength' => 2,
-                'class' => 'sbm-width-5c'
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
             ),
             'options' => array(
-                'label' => 'Nb d\'élèves',
+                'label' => 'Inscrits',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'preinscrits',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Préinscrits',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'selection',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sélectionnés',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -1171,20 +1263,40 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'nomSA',
                 'required' => false
             ),
+            'prenomSA' => array(
+                'name' => 'prenomSA',
+                'required' => false
+            ),
             'commune' => array(
                 'name' => 'commune',
                 'required' => false
             ),
-            'nbEleves' => array(
-                'name' => 'nbEleves',
+            'nbEnfants' => array(
+                'name' => 'nbEnfants',
                 'required' => false
             ),
-            'selection' => array(
-                'name' => 'selection',
+            'nbInscrits' => array(
+                'name' => 'nbInscrits',
+                'required' => false
+            ),
+            'nbPreinscrits' => array(
+                'name' => 'nbPreinscrits',
                 'required' => false
             ),
             'demenagement' => array(
                 'name' => 'demenagement',
+                'required' => false
+            ),
+            'inscrits' => array(
+                'name' => 'inscrits',
+                'required' => false
+            ),
+            'preinscrits' => array(
+                'name' => 'preinscrits',
+                'required' => false
+            ),
+            'selection' => array(
+                'name' => 'selection',
                 'required' => false
             )
         );

@@ -24,7 +24,7 @@ class Criteres implements ArraySerializableInterface
      *
      * @var array
      */
-    protected  $data = array();
+    protected $data = array();
 
     /**
      * Nom réel de la table dans la base de donnée
@@ -58,7 +58,7 @@ class Criteres implements ArraySerializableInterface
 
     /**
      * Prépare la structure de propriété data
-     * 
+     *
      * @param array $fields            
      */
     public function createDataStructure($fields)
@@ -70,17 +70,40 @@ class Criteres implements ArraySerializableInterface
     }
 
     /**
-     * Renvoie la clause Where à appliquer au paginator
+     * Renvoie la clause Where à appliquer au paginator.
+     * 
+     * Si on recherche dans une requête où le nom d'un champ se trouve dans plusieurs tables, il faut
+     * préfixer le nom du champ. On utilise alors le tableau alias de la façon suivante:
+     * Exemple: 'nomSA' => 'res.nomSA'
+     * 
+     * Si on recherche une expression, on on utilisera le tableau $alias en faisant précéder l'expression par 'Expression:'
+     * Exemple: 'nbEnfants' => 'Expression:count(ele.eleveId) = ?'
      *
+     * @param array $strict
+     *            Tableau simple des champs pour lesquels on recherche l'égalité (les autres sont des likes)
+     * @param array $alias
+     *            Tableau associatif des champs dont il faut changer le nom, la clé n'étant qu'un alias
+     *            
      * @return Zend\Db\Sql\Where
      *
      */
-    public function getWhere($strict = array())
+    public function getWhere($strict = array(), $alias = array())
     {
         $where = new Where();
         foreach ($this->data as $field => $value) {
             if (! empty($value) || (in_array($field, $strict) && $value == '0')) {
-                if (in_array($field, $strict)) {
+                $isExpression = false;
+                if (array_key_exists($field, $alias)) {
+                    $field = $alias[$field];
+                    $texpression = explode(':', $field);
+                    if (count($texpression) == 2 && strtolower($texpression[0]) == 'expression') {
+                        $expression = $texpression[1];
+                        $isExpression = true;
+                    }
+                }
+                if ($isExpression) {
+                    $where->expression($expression, $value);
+                } elseif (in_array($field, $strict)) {
                     $where->equalTo($field, $value);
                 } else {
                     $where->like($field, $value . '%');
