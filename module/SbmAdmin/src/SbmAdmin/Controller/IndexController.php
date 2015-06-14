@@ -488,7 +488,7 @@ class IndexController extends AbstractActionController
         }
     }
 
-    public function userGroupAction()
+    public function userLinkAction()
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {

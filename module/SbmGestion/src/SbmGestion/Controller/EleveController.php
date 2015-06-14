@@ -812,7 +812,9 @@ class EleveController extends AbstractActionController
             $pointEtablissement = new Point($etablissement->x, $etablissement->y);
             $ptetab = $d2etab->getProjection()->XYZversgRGF93($pointEtablissement);
             // recherche le responsable1 pour calculer la distance
-            $eleveR1 = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesResponsables')->getEleveResponsable1($args['eleveId']);
+            $eleveR1 = $this->getServiceLocator()
+                ->get('Sbm\Db\Query\ElevesResponsables')
+                ->getEleveResponsable1($args['eleveId']);
             $point = new Point($eleveR1['x1'], $eleveR1['y1']);
             $pt = $d2etab->getProjection()->XYZversgRGF93($point);
             $d = $d2etab->calculDistance($pt, $ptetab);
@@ -875,21 +877,30 @@ class EleveController extends AbstractActionController
 
     /**
      * Liste des responsables
-     *
+     * Passer nbEnfants, nbInscrits et nbPreinscrits en strict parce qu'on recherche l'égalité et que l'on veut pouvoir compter les "== 0"
+     * Ici, le formulaire de critères utilise des alias de champs puisque certains champs doivent être préfixés pour lever les ambiguités
+     * (voir requête 'Sbm\Db\Query\Responsables') et d'autres sont des expressions.
+     * 
      * @return ViewModel
      */
     public function responsableListeAction()
     {
-        // utilisation de PostRedirectGet par mesure de sécurité
         $args = $this->initListe('responsables', null, array(
-            'nbEleves'
+            'nbEnfants', 'nbInscrits', 'nbPreinscrits'
+        ), array(
+            'nomSA' => 'res.nomSA',
+            'selection' => 'res.selection',
+            'nbEnfants' => 'Expression:count(ele.eleveId) = ?',
+            'nbInscrits' => 'Expression:count(ins.eleveId) = ?',
+            'nbPreinscrits' => 'Expression:count(pre.eleveId) = ?',
+            'inscrits' => 'Expression:count(ins.eleveId) >= ?',
+            'preinscrits' => 'Expression:count(pre.eleveId) >= ?'
         ));
         if ($args instanceof Response)
             return $args;
-        
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
-                ->get('Sbm\Db\Vue\Responsables')
+                ->get('Sbm\Db\Query\Responsables')
                 ->paginator($args['where'], array(
                 'nom',
                 'prenom'

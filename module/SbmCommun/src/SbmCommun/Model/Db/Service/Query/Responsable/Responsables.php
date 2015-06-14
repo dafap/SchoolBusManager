@@ -17,9 +17,12 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate\Predicate;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
 
 class Responsables implements FactoryInterface
 {
@@ -58,7 +61,7 @@ class Responsables implements FactoryInterface
             'res' => $this->db->getCanonicName('responsables', 'table')
         ))
             ->columns(array(
-            'userId' => 'responsableId',
+            'responsableId' => 'responsableId',
             'selection' => 'selection',
             'dateCreation' => 'dateCreation',
             'dateModification' => 'dateModification',
@@ -77,14 +80,15 @@ class Responsables implements FactoryInterface
             'adresseL2' => 'adresseL2',
             'codePostal' => 'codePostal',
             'communeId' => 'communeId',
-            'ancienAdresseL1' => 'adresseL1',
-            'ancienAdresseL2' => 'adresseL2',
-            'ancienCodePostal' => 'codePostal',
-            'ancienCommuneId' => 'communeId',
+            'ancienAdresseL1' => 'ancienAdresseL1',
+            'ancienAdresseL2' => 'ancienAdresseL2',
+            'ancienCodePostal' => 'ancienCodePostal',
+            'ancienCommuneId' => 'ancienCommuneId',
             'email' => 'email',
             'telephoneF' => 'telephoneF',
             'telephoneP' => 'telephoneP',
             'telephoneT' => 'telephoneT',
+            'etiquette' => 'etiquette',
             'demenagement' => 'demenagement',
             'dateDemenagement' => 'dateDemenagement',
             'facture' => 'facture',
@@ -107,15 +111,17 @@ class Responsables implements FactoryInterface
     }
 
     /**
-     * Renvoie la liste des élèves inscrits répondant au where passé en paramètre, dans l'ordre demandé
-     * 
-     * @param Where $where
-     * @param string $order
+     * Renvoie la liste des responsables avec le nombre d'élèves inscrits répondant au where passé en paramètre, dans l'ordre demandé
+     *
+     * @param Where $where            
+     * @param string $order            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function withNbElevesInscrits(Where $where, $order = null)
     {
-        $where->nest()->literal('paiement=1')->OR->literal('fa=1')->unnest()->equalTo('millesime', $this->millesime);
+        $where->nest()->literal('paiement=1')->OR->literal('fa=1')
+            ->unnest()
+            ->equalTo('millesime', $this->millesime);
         $select = clone $this->select;
         $select->join(array(
             'ele' => $this->db->getCanonicName('eleves', 'table')
@@ -132,7 +138,7 @@ class Responsables implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
-    
+
     public function getNbEnfantsInscrits($responsableId)
     {
         $where = new Where();
@@ -140,9 +146,76 @@ class Responsables implements FactoryInterface
         $result = $this->withNbElevesInscrits($where);
         return $result->current()['nb'];
     }
-    
+
     public function hasEnfantInscrit($responsableId)
     {
         return $this->getNbEnfantsInscrits($responsableId) > 0;
+    }
+
+    /**
+     * Renvoie un paginator sur la requête donnant les responsables avec la commune et le nombre d'enfants
+     * connus, inscrits et préinscrits
+     *
+     * @param \Zend\Db\Sql\Where $where            
+     * @param array $order            
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginator($where, $order)
+    {
+        return new Paginator(new DbSelect($this->selectResponsables($where, $order), $this->db->getDbAdapter()));
+    }
+
+    /**
+     * Renvoie un Select définissant la requête
+     *
+     * @param \Zend\Db\Sql\Where $where            
+     * @param array $order            
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectResponsables($where, $order)
+    {
+        // préinscrits
+        $where1 = new Where();
+        $where1->literal('inscrit = 1')
+            ->literal('paiement = 0')
+            ->equalTo('millesime', $this->millesime);
+        $select1 = new Select();
+        $select1->from($this->db->getCanonicName('scolarites', 'table'))
+            ->columns(array(
+            'eleveId'
+        ))
+            ->where($where1);
+        // inscrits
+        $where2 = new Where();
+        $where2->literal('inscrit = 1')
+            ->literal('paiement = 1')
+            ->equalTo('millesime', $this->millesime);
+        $select2 = new Select();
+        $select2->from($this->db->getCanonicName('scolarites', 'table'))
+            ->columns(array(
+            'eleveId'
+        ))
+            ->where($where2);
+        
+        // requête principale
+        $select = clone $this->select;
+        $select->join(array(
+            'ele' => $this->db->getCanonicName('eleves', 'table')
+        ), 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', array(
+            'nbEnfants' => new Expression('count(ele.eleveId)')
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'pre' => $select1
+        ), 'ele.eleveId=pre.eleveId', array(
+            'nbPreinscrits' => new Expression('count(pre.eleveId)')
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'ins' => $select2
+        ), 'ele.eleveId=ins.eleveId', array(
+            'nbInscrits' => new Expression('count(ins.eleveId)')
+        ), $select::JOIN_LEFT)
+            ->group('responsableId')
+            ->order($order);
+        return $where->count() ? $select->having($where) : $select;
     }
 }
