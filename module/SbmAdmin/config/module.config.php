@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2015
- * @version 2015-1.0.6
+ * @date 22 janv. 2014
+ * @version 2014-1
  */
 return array(
     'acl' => array(
