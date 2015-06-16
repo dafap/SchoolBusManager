@@ -535,8 +535,16 @@ class EleveController extends AbstractActionController
                 ), $form->getData());
                 $tEleves->saveRecord($tEleves->getObjData()
                     ->exchangeArray($dataValid));
-                $tScolarites->saveRecord($tScolarites->getObjData()
+                $recalcul = $tScolarites->saveRecord($tScolarites->getObjData()
                     ->exchangeArray($dataValid));
+                if ($recalcul) {
+                    $majDistances = $this->getServiceLocator()->get('Sbm\CalculDroitsTransport');
+                    if ($odata1->district) {
+                        $majDistances->majDistancesDistrictSansPerte($eleveId);
+                    } else {
+                        $majDistances->majDistancesDistrict($eleveId);
+                    }
+                }
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 try {
                     return $this->redirectToOrigin()->back();
