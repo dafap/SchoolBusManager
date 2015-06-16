@@ -1907,6 +1907,13 @@ class TransportController extends AbstractActionController
     public function stationEditAction()
     {
         $currentPage = $this->params('page', 1);
+            $request = $this->getRequest();
+        if ($request->isPost()) {
+            $origine = $request->getPost('origine', false);
+            if ($origine) {
+                $this->redirectToOrigin()->setBack($origine);
+            }
+        }        
         $form = new FormStation();
         $form->setValueOptions('communeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Communes')
@@ -1929,10 +1936,7 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
-                        'action' => StdLib::getParam('origine', $r->getPost()),
-                        'page' => $currentPage
-                    ));
+                    return $this->redirectToOrigin()->back();
                     break;
                 default:
                     $form->add(array(
@@ -1955,8 +1959,6 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
-     * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *      
      * @return \Zend\View\Model\ViewModel
      */
     public function stationSupprAction()
