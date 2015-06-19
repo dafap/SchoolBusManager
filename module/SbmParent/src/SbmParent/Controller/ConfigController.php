@@ -19,7 +19,7 @@ use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Form\Responsable as FormResponsable;
-use SbmCommun\Form\ButtonForm;
+use SbmCommun\Form\LatLng as LatLngForm;
 use SbmParent\Model\Responsable;
 use Zend\Mvc\Controller\Plugin\Redirect;
 
@@ -206,23 +206,18 @@ class ConfigController extends AbstractActionController
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
         } else {
             $args = $prg;
-            if (array_key_exists('cancel', $args)) {
-                return $this->redirect()->toRoute('login', array(
-                    'action' => 'home-page'
-                ));
-            }
             $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
         }
         // ici, le pt est initialisé en lat, lng, degré
-        $form = new ButtonForm(array(
+        // nécessaire pour valider lat et lng
+        $configCarte = StdLib::getParamR(array(
+            'sbm',
+            'cartes',
+            'parent'
+        ), $this->getServiceLocator()->get('config'));
+        $form = new LatLngForm(array(
             'responsableId' => array(
                 'id' => 'responsableId'
-            ),
-            'lat' => array(
-                'id' => 'lat'
-            ),
-            'lng' => array(
-                'id' => 'lng'
             )
         ), array(
             'submit' => array(
@@ -233,7 +228,7 @@ class ConfigController extends AbstractActionController
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
             )
-        ));
+        ), $configCarte['valide']);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmparentconfig', array(
             'action' => 'localisation'
@@ -250,34 +245,38 @@ class ConfigController extends AbstractActionController
                     'action' => 'logout'
                 ));
             }
-            // @todo: Vérifier qu'on a cliqué dans la commune indiquée
-            $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
-            $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
-            $oData = $tableResponsables->getObjData();
-            $oData->exchangeArray(array(
-                'responsableId' => $responsable->responsableId,
-                'x' => $point->getX(),
-                'y' => $point->getY()
-            ));
-            $tableResponsables->saveRecord($oData);
-            $responsable->refresh();
-            $this->getServiceLocator()
-                ->get('Sbm\MajDistances')
-                ->pour($responsable->responsableId);
-            $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');
-            return $this->redirect()->toRoute('login', array(
-                'action' => 'home-page'
-            ));
+            // On vérifie qu'on a cliqué dans un rectangle autorisé
+            $form->setData($args);
+            if ($form->isValid()) {
+                if (array_key_exists('cancel', $args)) {
+                    return $this->redirect()->toRoute('login', array(
+                        'action' => 'home-page'
+                    ));
+                }
+                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
+                $oData = $tableResponsables->getObjData();
+                $oData->exchangeArray(array(
+                    'responsableId' => $responsable->responsableId,
+                    'x' => $point->getX(),
+                    'y' => $point->getY()
+                ));
+                $tableResponsables->saveRecord($oData);
+                $responsable->refresh();
+                $this->getServiceLocator()
+                    ->get('Sbm\MajDistances')
+                    ->pour($responsable->responsableId);
+                $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'home-page'
+                ));
+            }
         }
         
         return new ViewModel(array(
             'responsable' => $responsable,
             'form' => $form->prepare(),
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'parent'
-            ), $this->getServiceLocator()->get('config'))
+            'config' => $configCarte
         ));
     }
 } 

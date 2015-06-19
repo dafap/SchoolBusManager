@@ -12,34 +12,12 @@
  * @date 12 juin 2015
  * @version 2015-1
  */
+use SbmCommun\Model\StdLib;
+
 $nomEleve =  implode(' ', array($this->eleve['nom'], $this->eleve['prenom']));
 // calcul du contenu de l'infobulle
 $description = array();
 $description[] = '<b>' . $nomEleve . '</b>';
-//$description[] = $this->responsable->adresseL1;
-//$tmp = $this->responsable->adresseL2;
-//if (!empty($tmp)) {
-//    $description[] = $this->responsable->adresseL2;
-//}
-//$description[] = implode(' ', array($this->responsable->codePostal, $this->responsable->commune));
-//$telephone = array();
-//$tmp = $this->responsable->telephoneF;
-//if (!empty($tmp)) {
-//    $telephone[] = $this->responsable->telephoneF;
-//}
-//$tmp = $this->responsable->telephoneP;
-//if (!empty($tmp)) {
-//    $telephone[] = $this->responsable->telephoneP;
-//}
-//$tmp = $this->responsable->telephoneT;
-//if (!empty($tmp)) {
-//    $telephone[] = $this->responsable->telephoneT;
-//}
-//$tel = implode(' ', $telephone);
-//if (!empty($tel)) {
-//    $description[] = 'Tél.' . $tel;
-//}
-//$description[] = $this->responsable->email;
 
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
@@ -141,8 +119,14 @@ initialiser();
 	       </div>
 	   </fieldset>
     <?php echo $this->form()->closeTag();?>
-<?php
-//echo $this->form($this->form);
+<?php if ($this->form->getMessages()) {
+    $msg = $this->form->getMessages();
+    if (StdLib::array_keys_exists(array('lat', 'notBetween'), $msg) || StdLib::array_keys_exists(array('lng', 'notBetween'), $msg)) {
+?>
+            <p class="sbm-description important">La position indiquée n'est pas dans la zone géographique de l'organisateur.</p>
+<?php             
+    }
+}
 ?>
 		<p class="sbm-description">
 			Indiquez l'adresse de l'élève puis positionnez la sur la carte avant de cliquer

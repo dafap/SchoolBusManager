@@ -20,8 +20,38 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class LocalisationAdresse extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
-    public function __construct($name = 'chez', $options = array())
+    /**
+     * Dans un tableau simple, minimum et maximum autorisés pour la latitude
+     *
+     * @var array
+     */
+    private $latRange;
+    
+    /**
+     * Dans un tableau simple, minimum et maximum autorisés pour la longitude
+     *
+     * @var array
+     */
+    private $lngRange;
+    
+    public function __construct(array $valide, $name = 'chez', $options = array())
     {
+        $ok = array_key_exists('lat', $valide);
+        $ok &= array_key_exists('lng', $valide);
+        $ok &= count($valide['lat']) == 2;
+        $ok &= count($valide['lng']) == 2;
+        foreach ($valide['lat'] as $item) {
+            $ok &= is_numeric($item);
+        }
+        foreach ($valide['lng'] as $item) {
+            $ok &= is_numeric($item);
+        }
+        if (! $ok) {
+            throw new Exception(__METHOD__ . ' - Le paramètre "valide" est incorrect.');
+        }
+        $this->latRange = $valide['lat'];
+        $this->lngRange = $valide['lng'];
+        
         parent::__construct($name, $options);
         $this->setAttribute('method', 'post');
         $this->add(array(
@@ -166,11 +196,23 @@ class LocalisationAdresse extends AbstractSbmForm implements InputFilterProvider
             ),
             'lat' => array(
                 'name' => 'lat',
-                'required' => true
+                'required' => true,
+                'validators' => array(
+                    new \Zend\Validator\Between(array(
+                        'min' => $this->latRange[0],
+                        'max' => $this->latRange[1]
+                    ))
+                )
             ),
             'lng' => array(
                 'name' => 'lng',
-                'required' => true
+                'required' => true,
+                'validators' => array(
+                    new \Zend\Validator\Between(array(
+                        'min' => $this->lngRange[0],
+                        'max' => $this->lngRange[1]
+                    ))
+                )
             ),
             'adresseL1' => array(
                 'name' => 'adresseL1',

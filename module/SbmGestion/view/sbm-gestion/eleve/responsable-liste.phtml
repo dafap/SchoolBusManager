@@ -151,6 +151,8 @@ EOT;
             $hiddens = array(
                 'responsableId' => $responsable['responsableId'],
                 'info' => $identite,
+                'nbInscrits' => $responsable['nbInscrits'],
+                'nbPreinscrits' => $responsable['nbPreinscrits'],
                 'url1_retour' => $this->url('sbmgestion/eleve', array(
                     'action' => 'responsable-liste',
                     'page' => $this->page

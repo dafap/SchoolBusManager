@@ -17,7 +17,7 @@ namespace SbmGestion\Controller;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use SbmCartographie\Model\Point;
-use SbmCommun\Form\ButtonForm;
+use SbmCommun\Form\LatLng;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\StdLib;
 use SbmGestion\Form\AffectationDecision;
@@ -271,15 +271,15 @@ class EleveGestionController extends AbstractActionController
         $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
         $responsableId = $args['responsableId'];
         $tResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
-        $form = new ButtonForm(array(
+        // nécessaire pour valider lat et lng
+        $configCarte = StdLib::getParamR(array(
+            'sbm',
+            'cartes',
+            'parent'
+        ), $this->getServiceLocator()->get('config'));
+        $form = new LatLng(array(
             'responsableId' => array(
                 'id' => 'responsableId'
-            ),
-            'lat' => array(
-                'id' => 'lat'
-            ),
-            'lng' => array(
-                'id' => 'lng'
             )
         ), array(
             'submit' => array(
@@ -290,7 +290,7 @@ class EleveGestionController extends AbstractActionController
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
             )
-        ));
+        ), $configCarte['valide']);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/gestioneleve', array(
             'action' => 'ga-localisation-bymap',
@@ -357,7 +357,7 @@ class EleveGestionController extends AbstractActionController
                 )))),
                 $responsable->codePostal . ' ' . $commune->nom
             ),
-            'config' => StdLib::getParamR(array('sbm','cartes', 'parent'), $this->getServiceLocator()->get('config'))
+            'config' => $configCarte
         ));
     }
 }

@@ -20,6 +20,7 @@ use Zend\Db\Sql\Where;
 use DafapSession\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Form\ButtonForm;
+use SbmCommun\Form\LatLng;
 use SbmCommun\Form\Circuit as FormCircuit;
 use SbmCommun\Form\Classe as FormClasse;
 use SbmCommun\Form\Commune as FormCommune;
@@ -1224,15 +1225,14 @@ class TransportController extends AbstractActionController
         $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
         $etablissementId = $args['etablissementId'];
         $tEtablissements = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
-        $form = new ButtonForm(array(
+        $configCarte = StdLib::getParamR(array(
+                'sbm',
+                'cartes',
+                'etablissements'
+            ), $this->getServiceLocator()->get('config'));
+        $form = new LatLng(array(
             'etablissementId' => array(
                 'id' => 'etablissementId'
-            ),
-            'lat' => array(
-                'id' => 'lat'
-            ),
-            'lng' => array(
-                'id' => 'lng'
             )
         ), array(
             'submit' => array(
@@ -1243,7 +1243,7 @@ class TransportController extends AbstractActionController
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
             )
-        ));
+        ), $configCarte['valide']);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/transport', array(
             'action' => 'etablissement-localisation',
@@ -1309,11 +1309,7 @@ class TransportController extends AbstractActionController
                 )))),
                 $etablissement->codePostal . ' ' . $commune->nom
             ),
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'etablissements'
-            ), $this->getServiceLocator()->get('config'))
+            'config' => $configCarte
         ));
     }
 
@@ -2229,7 +2225,13 @@ class TransportController extends AbstractActionController
         $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
         $stationId = $args['stationId'];
         $tStations = $this->getServiceLocator()->get('Sbm\Db\Table\Stations');
-        $form = new ButtonForm(array(
+        // même configuration de carte que pour les etablissements
+        $configCarte = StdLib::getParamR(array(
+            'sbm',
+            'cartes',
+            'etablissements'
+        ), $this->getServiceLocator()->get('config'));
+        $form = new LatLng(array(
             'stationId' => array(
                 'id' => 'stationId'
             ),
@@ -2248,7 +2250,7 @@ class TransportController extends AbstractActionController
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
             )
-        ));
+        ), $configCarte['valide']);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/transport', array(
                 'action' => 'station-localisation',
@@ -2304,11 +2306,7 @@ class TransportController extends AbstractActionController
                 $station->nom,
                 $commune->codePostal . ' ' . $commune->nom
             ),
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'etablissements' // même configuration que pour les établissements (centrage de la carte et zoom)
-            ), $this->getServiceLocator()->get('config'))
+            'config' => $configCarte
         ));
     }
     
