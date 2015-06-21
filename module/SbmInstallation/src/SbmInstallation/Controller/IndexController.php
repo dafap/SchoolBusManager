@@ -128,42 +128,6 @@ class IndexController extends AbstractActionController
         ));
     }
 
-    /**
-     * Simple besoin de développement - Cette méthode doit être supprimée dans la version finale
-     *
-     * @return \Zend\View\Model\ViewModel
-     */
-    public function majResponsablesAction()
-    {
-        $ctrl = array();
-        $tResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
-        $tEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
-        $resultset = $tEleves->fetchAll();
-        foreach ($resultset as $row) {
-            if (! is_null($row->responsable2Id)) {
-                $responsableId = $row->responsable2Id;
-                $responsable = $tResponsables->getRecord($responsableId);
-                if ($responsable->x == 0.0) {
-                    $oData = $tResponsables->getObjData();
-                    $oData->exchangeArray(array(
-                        'responsableId' => $responsableId,
-                        'x' => $row->x2,
-                        'y' => $row->y2
-                    ));
-                    $tResponsables->saveRecord($oData);
-                    $ctrl[] = array(
-                        $responsableId,
-                        $row->x2,
-                        $row->y2
-                    );
-                }
-            }
-        }
-        return new ViewModel(array(
-            'args' => $ctrl
-        ));
-    }
-
     public function createTablesAction()
     {
         $create = new CreateTables($this->getDbConfig(), $this->getDbAdapter());
@@ -251,7 +215,7 @@ class IndexController extends AbstractActionController
             'vues' => $this->getDbTablesAlias('vue')
         ));
     }
-    
+        
     public function modifCompteAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
