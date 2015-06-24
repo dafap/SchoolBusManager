@@ -12,6 +12,7 @@
  * @version 2014-1
  */
 use SbmCommun\Model\StdLib;
+use SbmCartographie\Model\Point;
 
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -106,6 +107,7 @@ echo $this->flashMessenger()->render('default');
 		<table class="etablissements">
 			<tbody>
 				<tr>
+				    <th></th>
 					<th>Code</th>
 					<th>Nom</th>
 					<th>Commune</th>
@@ -120,6 +122,8 @@ echo $this->flashMessenger()->render('default');
 				</tr>
         <?php foreach($etablissements as $test => $etablissement): ?>
         <?php
+            $pt = new Point($etablissement->x, $etablissement->y);
+            $ptOk = $this->projection->isValid($pt, 'etablissements');
             $nbInscrits = StdLib::getParam($etablissement->etablissementId, $this->t_nb_inscrits, 0);
             // selection
             $modele = <<<EOT
@@ -162,6 +166,11 @@ EOT;
             ?>
             <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td>
+					<?php if (!$ptOk) : ?>
+					   <i class="fam-error"></i>
+					<?php endif;?>
+					</td>
 					<td class="etablissementid"><?php echo $this->escapeHtml($etablissement->etablissementId); ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($etablissement->nom); ?></td>
 					<td class="commune"><?php echo $this->escapeHtml($etablissement->commune); ?></td>
@@ -184,10 +193,10 @@ EOT;
                     'title' => 'modifier'
                 ),
                 'localiser' => array(
-                    'class' => 'fam-map-magnify',
+                    'class' => $ptOk ? 'fam-map-magnify' : 'fam-map-add',
                     'formaction' => $url_localiser,
-                    'title' => 'position sur la carte'
-            ),
+                    'title' => $ptOk ? 'position sur la carte' : 'position manquante'
+                ),
                 'supprimer' => array(
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,

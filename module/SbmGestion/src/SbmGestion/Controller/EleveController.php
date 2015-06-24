@@ -918,7 +918,8 @@ class EleveController extends AbstractActionController
             )),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_responsables', 10),
-            'criteres_form' => $args['form']
+            'criteres_form' => $args['form'],
+            'projection' => $this->getServiceLocator()->get('SbmCarto\Projection')
         ));
     }
 

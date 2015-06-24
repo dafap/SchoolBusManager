@@ -12,6 +12,7 @@
  * @version 2014-1
  */
 use SbmCommun\Model\StdLib;
+use SbmCartographie\Model\Point;
 
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -114,6 +115,7 @@ echo $this->flashMessenger()->render('default');
 		<table class="stations">
 			<tbody>
 				<tr>
+				    <th></th>
 					<th>Commune</th>
 					<th>Nom</th>
 					<th>Visible</th>
@@ -124,6 +126,8 @@ echo $this->flashMessenger()->render('default');
 				</tr>
             <?php foreach($stations as $test => $station): ?>
             <?php
+                $pt = new Point($station->x, $station->y);
+                $ptOk = $this->projection->isValid($pt, 'etablissements'); // stations et etablissements ont la même config
                 $nbInscrits = StdLib::getParamR(array(
                     $station->stationId,
                     'total'
@@ -148,6 +152,11 @@ EOT;
                 ?>
                 <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next(); if ($exces) echo ' exces';?>">
+					<td>
+					<?php if (!$ptOk) : ?>
+					   <i class="fam-error"></i>
+					<?php endif;?>
+					</td>
 					<td class="commune"><?php echo $this->escapeHtml($station->commune); ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($station->nom); ?></td>
 					<td class="visible"><?php echo $station->visible ? 'Oui' : 'Non'; ?></td>
@@ -167,9 +176,9 @@ EOT;
                         'title' => 'modifier'
                     ),
                     'localiser' => array(
-                        'class' => 'fam-map-magnify',
+                        'class' => $ptOk ? 'fam-map-magnify' : 'fam-map-add',
                         'formaction' => $url_localiser,
-                        'title' => 'position sur la carte'
+                        'title' => $ptOk ? 'position sur la carte' : 'position manquante'
                     ),
                     'supprimer' => array(
                         'class' => 'fam-delete',

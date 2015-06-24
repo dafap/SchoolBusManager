@@ -948,7 +948,8 @@ class TransportController extends AbstractActionController
                 ->byEtablissement(),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_etablissements', 10),
-            'criteres_form' => $args['form']
+            'criteres_form' => $args['form'],
+            'projection' => $this->getServiceLocator()->get('SbmCarto\Projection')
         ));
     }
 
@@ -1865,7 +1866,8 @@ class TransportController extends AbstractActionController
                 ->byStation(),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_stations', 10),
-            'criteres_form' => $args['form']
+            'criteres_form' => $args['form'],
+            'projection' => $this->getServiceLocator()->get('SbmCarto\Projection')
         ));
     }
 

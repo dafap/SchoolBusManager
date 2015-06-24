@@ -2,14 +2,15 @@
 /**
  * Définition d'un point et des opérations qui s'appliquent à un point
  *
+ * version 2 : ajout des méthodes setLatLngRange(), setXYRange() et isValid()
  * 
  * @project sbm
  * @package SbmCartographie/Model
  * @filesource Point.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2015
- * @version 2015-1
+ * @date 21 juin 2015
+ * @version 2015-2
  */
 namespace SbmCartographie\Model;
 
@@ -60,11 +61,11 @@ class Point
 
     /**
      * Attributs du point
-     * 
+     *
      * @var array
      */
     private $attributes = array();
-    
+
     /**
      * Unité si nécessaire
      *
@@ -78,6 +79,36 @@ class Point
      * @var array
      */
     private $plat = array();
+
+    /**
+     * Intervalle de validité des latitudes
+     * (en degrés)
+     *
+     * @var array index 0 et 1
+     */
+    private $latRange = array();
+
+    /**
+     * Intervalle de validité des longitudes
+     * (en degrés)
+     *
+     * @var array index 0 et 1
+     */
+    private $lngRange = array();
+
+    /**
+     * Intervalle de validité de x
+     *
+     * @var array index 0 et 1
+     */
+    private $xRange = array();
+
+    /**
+     * Intervalle de validité de y
+     *
+     * @var array index 0 et 1
+     */
+    private $yRange = array();
 
     /**
      * Constructeur
@@ -171,12 +202,12 @@ class Point
                 break;
         }
     }
-    
+
     /**
      * Affecte une valeur à un attribut
-     * 
-     * @param string $attribut
-     * @param mixed $value
+     *
+     * @param string $attribut            
+     * @param mixed $value            
      */
     public function setAttribute($attribut, $value)
     {
@@ -185,8 +216,8 @@ class Point
 
     /**
      * Renvoie la valeur de l'attribut ou null s'il n'existe pas
-     * 
-     * @param string $attribut
+     *
+     * @param string $attribut            
      * @return mixed|NULL
      */
     public function getAttribute($attribut)
@@ -197,6 +228,7 @@ class Point
             return null;
         }
     }
+
     /**
      * Selon que le point est cartésien (XY ou XYZ) ou géographique (longitude, latitude)
      * - pour un point cartésien, unite est vide ''
@@ -375,19 +407,76 @@ class Point
         $this->y = $latitude;
         $this->unite = $unite;
     }
-    
+
     /**
      * Renvoie le point transformé aux coordonnées et unité de $p
      * mais garde tous ses paramètres et attributs.
-     * 
-     * @param Point $p
+     *
+     * @param Point $p            
      */
-    public function transforme(Point $p) {
+    public function transforme(Point $p)
+    {
         $this->x = $p->getX();
-        $this->y =$p->getY();
+        $this->y = $p->getY();
         $this->z = $p->getZ();
         $this->unite = $p->getUnite();
         return $this;
+    }
+
+    /**
+     * Fixe les intervalles de validité de latitude et longitude
+     *
+     * @param array $latRange
+     *            index 0 et 1, en degrés
+     * @param array $lngRange
+     *            index 0 et 1, en degrés
+     */
+    public function setLatLngRange(array $latRange, array $lngRange)
+    {
+        $this->latRange = $latRange;
+        $this->lngRange = $lngRange;
+        return $this;
+    }
+
+    /**
+     * Fixe les intervalles de validité de x et y
+     *
+     * @param array $xRange            
+     * @param array $yRange            
+     */
+    public function setXYRange(array $xRange, array $yRange)
+    {
+        $this->xRange = $xRange;
+        $this->yRange = $yRange;
+        return $this;
+    }
+
+    /**
+     * Vérifie si le point est dans la zone indiquée par latRange et lngRange
+     * L'intérieur d'un rectangle est caractérisé par (x-x1)(x-x2) <=0 et (y-y1)(y-y2) <= 0
+     * où x1 et x2 sont les bornes de l'une des coordonnées et y1 et y2 sont les bornes de l'autre.
+     *
+     * @throws Exception
+     * @return boolean
+     */
+    public function isValid()
+    {
+        if (empty($this->unite)) {
+            if (empty($this->xRange) || empty($this->yRange)) {
+                throw new Exception('Les intervalles de validité de x et de y ne sont pas initialisés.');
+            }
+            $ok = ($this->x - $this->xRange[0]) * ($this->x - $this->xRange[1]) <= 0;
+            $ok &= ($this->y - $this->yRange[0]) * ($this->y - $this->yRange[1]) <= 0;
+        } else {
+            if (empty($this->latRange) || empty($this->lngRange)) {
+                throw new Exception('Les intervalles de validité de la latitude et de la longitude ne sont pas initialisés.');
+            }
+            $lat = $this->getLatitude('degré');
+            $lng = $this->getLongitude('degré');
+            $ok = ($lat - $this->latRange[0]) * ($lat - $this->latRange[1]) <= 0;
+            $ok &= ($lng - $this->lngRange[0]) * ($lng - $this->lngRange[1]) <= 0;
+        }
+        return $ok;
     }
 }
  
