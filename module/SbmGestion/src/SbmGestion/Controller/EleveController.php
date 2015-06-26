@@ -18,6 +18,7 @@ use Zend\View\Model\JsonModel;
 use Zend\Json\Json;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate;
 use DafapSession\Model\Session;
 use SbmCartographie\Model\Point;
@@ -26,7 +27,7 @@ use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\LatLng;
+use SbmCommun\Form\LatLng as LatLngForm;
 use SbmGestion\Form\Eleve\EditForm as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
@@ -891,24 +892,30 @@ class EleveController extends AbstractActionController
      * Passer nbEnfants, nbInscrits et nbPreinscrits en strict parce qu'on recherche l'égalité et que l'on veut pouvoir compter les "== 0"
      * Ici, le formulaire de critères utilise des alias de champs puisque certains champs doivent être préfixés pour lever les ambiguités
      * (voir requête 'Sbm\Db\Query\Responsables') et d'autres sont des expressions.
-     * 
+     *
      * @return ViewModel
      */
     public function responsableListeAction()
     {
+        $projection = $this->getServiceLocator()->get('SbmCarto\Projection');
+        $rangeX = $projection->getRangeX();
+        $rangeY = $projection->getRangeY();
+        $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
+        
         $args = $this->initListe('responsables', null, array(
-            'nbEnfants', 'nbInscrits', 'nbPreinscrits'
+            'nbEnfants',
+            'nbInscrits',
+            'nbPreinscrits'
         ), array(
             'nomSA' => 'res.nomSA',
             'selection' => 'res.selection',
-            'nbEnfants' => 'Expression:count(ele.eleveId) = ?',
-            'nbInscrits' => 'Expression:count(ins.eleveId) = ?',
-            'nbPreinscrits' => 'Expression:count(pre.eleveId) = ?',
-            'inscrits' => 'Expression:count(ins.eleveId) >= ?',
-            'preinscrits' => 'Expression:count(pre.eleveId) >= ?'
+            'inscrits' => 'Literal:count(ins.eleveId) > 0',
+            'preinscrits' => 'Literal:count(pre.eleveId) > 0',
+            'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
         ));
         if ($args instanceof Response)
             return $args;
+        
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Query\Responsables')
@@ -1318,7 +1325,7 @@ class EleveController extends AbstractActionController
 
     /**
      * Créer un compte user à un responsable saisi manuellement
-     * 
+     *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
     public function responsableLogerAction()
@@ -1397,7 +1404,7 @@ class EleveController extends AbstractActionController
                                     'nom' => $odata->nom,
                                     'prenom' => $odata->prenom,
                                     'url_confirme' => $this->url()
-                                    ->fromRoute('login', array(
+                                        ->fromRoute('login', array(
                                         'action' => 'confirm',
                                         'id' => $odata->token
                                     ), array(

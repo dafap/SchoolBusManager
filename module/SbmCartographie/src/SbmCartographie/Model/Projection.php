@@ -159,4 +159,25 @@ class Projection extends AbstractProjection implements ProjectionInterface, Serv
             ->setXYRange($this->rangeX[$nature], $this->rangeY[$nature])
             ->isValid();
     }
+    
+    public function getRangeLat()
+    {
+        $this->init();
+        return $this->rangeLat;
+    }
+    public function getRangeLng()
+    {
+        $this->init();
+        return $this->rangeLng;
+    }
+    public function getRangeX()
+    {
+        $this->init();
+        return $this->rangeX;
+    }
+    public function getRangeY()
+    {
+        $this->init();
+        return $this->rangeY;
+    }
 }
