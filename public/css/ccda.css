@@ -430,6 +430,9 @@ div.pagination a.page:hover {
 #menugeneral-inner a:hover {
 	font-weight: bold;
 }
+#menugeneral {
+	min-width: 300px;
+}
 /*-------- Installation --------*/
 div#data-inner {
 	background-color: #f7fbf7;
@@ -988,6 +991,45 @@ label.sbm-form-auto:before {
 	line-height: 2;
 }
 /*---------------- Espace parents ---------------------------*/
+div#tableau-de-bord table.float-left {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+div#tableau-de-bord table.bleu {
+	background-color: #f3fafc;
+	border: solid 1px #31708f
+}
+div#tableau-de-bord table.rose {
+	background-color: #fef3ed;
+	border: solid 1px #f78042;
+}
+div#tableau-de-bord table.jaune {
+	background-color: #fff8dd;
+	border: solid 1px #fecc22;
+}
+div#tableau-de-bord td {
+	border: 0px;
+}
+div#tableau-de-bord .bleu tr.separateur td {
+	border-bottom: solid 1px #31708f;
+}
+div#tableau-de-bord .rose tr.separateur td {
+	border-bottom: solid 1px #f78042;
+}
+div#tableau-de-bord .jaune tr.separateur td {
+	border-bottom: solid 1px #fecc22;
+}
+div#tableau-de-bord td.effectif{
+	text-align:right;
+	padding-right: 6px;
+	width: 4em;
+}
+div#tableau-de-bord td.euro{
+	text-align:right;
+	padding-right: 6px;
+	width: 11em;
+}
+
 div#parent-wrapper {
 	min-height: 400px;
 }

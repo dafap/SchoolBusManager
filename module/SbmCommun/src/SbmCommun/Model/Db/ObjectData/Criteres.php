@@ -15,6 +15,7 @@ namespace SbmCommun\Model\Db\ObjectData;
 
 use Zend\Stdlib\ArraySerializableInterface;
 use Zend\Db\Sql\Where;
+use Zend\View\Helper\Navigation\Breadcrumbs;
 
 class Criteres implements ArraySerializableInterface
 {
@@ -93,15 +94,25 @@ class Criteres implements ArraySerializableInterface
         foreach ($this->data as $field => $value) {
             if (! empty($value) || (in_array($field, $strict) && $value == '0')) {
                 $isExpression = false;
+                $isLiteral = false;
                 if (array_key_exists($field, $alias)) {
                     $field = $alias[$field];
                     $texpression = explode(':', $field);
-                    if (count($texpression) == 2 && strtolower($texpression[0]) == 'expression') {
+                    if (count($texpression) == 2) {
                         $expression = $texpression[1];
-                        $isExpression = true;
+                        switch (strtolower($texpression[0])) {
+                            case 'literal':
+                                $isLiteral = true;
+                                break;
+                            case 'expresssion':
+                                $isExpression = true;
+                                break;
+                        }
                     }
                 }
-                if ($isExpression) {
+                if ($isLiteral) {
+                    $where->literal($expression);
+                } elseif ($isExpression) {
                     $where->expression($expression, $value);
                 } elseif (in_array($field, $strict)) {
                     $where->equalTo($field, $value);

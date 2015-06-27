@@ -18,6 +18,7 @@ use Zend\View\Model\JsonModel;
 use Zend\Json\Json;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate;
 use DafapSession\Model\Session;
 use SbmCartographie\Model\Point;
@@ -26,10 +27,12 @@ use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Form\ButtonForm;
+use SbmCommun\Form\LatLng as LatLngForm;
 use SbmGestion\Form\Eleve\EditForm as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
 use Zend\View\Model\Zend\View\Model;
+use DafapMail\Model\Template as MailTemplate;
 
 class EleveController extends AbstractActionController
 {
@@ -535,8 +538,16 @@ class EleveController extends AbstractActionController
                 ), $form->getData());
                 $tEleves->saveRecord($tEleves->getObjData()
                     ->exchangeArray($dataValid));
-                $tScolarites->saveRecord($tScolarites->getObjData()
+                $recalcul = $tScolarites->saveRecord($tScolarites->getObjData()
                     ->exchangeArray($dataValid));
+                if ($recalcul) {
+                    $majDistances = $this->getServiceLocator()->get('Sbm\CalculDroitsTransport');
+                    if ($odata1->district) {
+                        $majDistances->majDistancesDistrictSansPerte($eleveId);
+                    } else {
+                        $majDistances->majDistancesDistrict($eleveId);
+                    }
+                }
                 $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 try {
                     return $this->redirectToOrigin()->back();
@@ -756,9 +767,14 @@ class EleveController extends AbstractActionController
             }
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
-        
+        // nécessaire pour valider lat et lng
+        $configCarte = StdLib::getParamR(array(
+            'sbm',
+            'cartes',
+            'parent'
+        ), $this->getServiceLocator()->get('config'));
         // ici, il faut un formulaire permettant de saisir l'adresse particulière d'un élève. Le tout est enregistré dans scolarites
-        $form = new \SbmGestion\Form\Eleve\LocalisationAdresse();
+        $form = new \SbmGestion\Form\Eleve\LocalisationAdresse($configCarte['valide']);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/eleve', array(
             'action' => 'eleve-localisation'
@@ -774,9 +790,9 @@ class EleveController extends AbstractActionController
         // traitement de la réponse
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
+            $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
             if ($form->isValid()) {
                 // détermine le point. Il est reçu en gRGF93 et sera enregistré en XYZ
-                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
                 $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
                 // enregistre les coordonnées dans la table
                 $tableScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
@@ -867,11 +883,7 @@ class EleveController extends AbstractActionController
             'form' => $form->prepare(),
             'eleveId' => $args['eleveId'],
             'eleve' => $eleve,
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'parent'
-            ), $this->getServiceLocator()->get('config'))
+            'config' => $configCarte
         ));
     }
 
@@ -880,24 +892,30 @@ class EleveController extends AbstractActionController
      * Passer nbEnfants, nbInscrits et nbPreinscrits en strict parce qu'on recherche l'égalité et que l'on veut pouvoir compter les "== 0"
      * Ici, le formulaire de critères utilise des alias de champs puisque certains champs doivent être préfixés pour lever les ambiguités
      * (voir requête 'Sbm\Db\Query\Responsables') et d'autres sont des expressions.
-     * 
+     *
      * @return ViewModel
      */
     public function responsableListeAction()
     {
+        $projection = $this->getServiceLocator()->get('SbmCarto\Projection');
+        $rangeX = $projection->getRangeX();
+        $rangeY = $projection->getRangeY();
+        $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
+        
         $args = $this->initListe('responsables', null, array(
-            'nbEnfants', 'nbInscrits', 'nbPreinscrits'
+            'nbEnfants',
+            'nbInscrits',
+            'nbPreinscrits'
         ), array(
             'nomSA' => 'res.nomSA',
             'selection' => 'res.selection',
-            'nbEnfants' => 'Expression:count(ele.eleveId) = ?',
-            'nbInscrits' => 'Expression:count(ins.eleveId) = ?',
-            'nbPreinscrits' => 'Expression:count(pre.eleveId) = ?',
-            'inscrits' => 'Expression:count(ins.eleveId) >= ?',
-            'preinscrits' => 'Expression:count(pre.eleveId) >= ?'
+            'inscrits' => 'Literal:count(ins.eleveId) > 0',
+            'preinscrits' => 'Literal:count(pre.eleveId) > 0',
+            'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
         ));
         if ($args instanceof Response)
             return $args;
+        
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Query\Responsables')
@@ -907,7 +925,8 @@ class EleveController extends AbstractActionController
             )),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_responsables', 10),
-            'criteres_form' => $args['form']
+            'criteres_form' => $args['form'],
+            'projection' => $this->getServiceLocator()->get('SbmCarto\Projection')
         ));
     }
 
@@ -1203,15 +1222,15 @@ class EleveController extends AbstractActionController
             }
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
-        $form = new ButtonForm(array(
+        // nécessaire pour valider lat et lng
+        $configCarte = StdLib::getParamR(array(
+            'sbm',
+            'cartes',
+            'parent'
+        ), $this->getServiceLocator()->get('config'));
+        $form = new LatLngForm(array(
             'responsableId' => array(
                 'id' => 'responsableId'
-            ),
-            'lat' => array(
-                'id' => 'lat'
-            ),
-            'lng' => array(
-                'id' => 'lng'
             )
         ), array(
             'submit' => array(
@@ -1222,13 +1241,14 @@ class EleveController extends AbstractActionController
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
             )
-        ));
+        ), $configCarte['valide']);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/eleve', array(
             'action' => 'responsable-localisation'
         )));
-        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
+        
         // traitement de la réponse
+        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
         if (array_key_exists('submit', $args)) {
             $form->setData(array(
                 'responsableId' => $args['responsableId'],
@@ -1279,11 +1299,7 @@ class EleveController extends AbstractActionController
             'form' => $form->prepare(),
             'responsableId' => $args['responsableId'],
             'responsable' => $responsable,
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'parent'
-            ), $this->getServiceLocator()->get('config'))
+            'config' => $configCarte
         ));
     }
 
@@ -1307,6 +1323,11 @@ class EleveController extends AbstractActionController
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 
+    /**
+     * Créer un compte user à un responsable saisi manuellement
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function responsableLogerAction()
     {
         $prg = $this->prg();
@@ -1366,6 +1387,36 @@ class EleveController extends AbstractActionController
                         $odata->exchangeArray($adata)->completeToCreate();
                         $tUsers->saveRecord($odata);
                         $this->flashMessenger()->addSuccessMessage('Le compte est créé.');
+                        
+                        // envoie un email
+                        $mailTemplate = new MailTemplate('ouverture-compte');
+                        $params = array(
+                            'to' => array(
+                                array(
+                                    'email' => $odata->email,
+                                    'name' => $odata->nom . ' ' . $odata->prenom
+                                )
+                            ),
+                            'subject' => 'Ouverture d\'un compte',
+                            'body' => array(
+                                'html' => $mailTemplate->render(array(
+                                    'titre' => $odata->titre,
+                                    'nom' => $odata->nom,
+                                    'prenom' => $odata->prenom,
+                                    'url_confirme' => $this->url()
+                                        ->fromRoute('login', array(
+                                        'action' => 'confirm',
+                                        'id' => $odata->token
+                                    ), array(
+                                        'force_canonical' => true
+                                    ))
+                                ))
+                            )
+                        );
+                        $this->getEventManager()->addIdentifiers('SbmMail\Send');
+                        $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+                        $this->flashMessenger()->addInfoMessage('Un mail a été envoyé à l\'adresse indiquée pour donner les instructions d\'accès.');
+                        
                         return $this->redirect()->toRoute('sbmgestion/eleve', array(
                             'action' => 'responsable-liste',
                             'page' => $this->params('page', 1)

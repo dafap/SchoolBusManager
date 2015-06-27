@@ -21,7 +21,6 @@
  * @date 15 févr. 2015
  * @version 2015-1
  */
-//die(realpath(__DIR__ . '/../../../vendor/zendframework/zendframework/resources/languages'));
 return array(
     'acl' => array(
         // association entre une categorieId (table users) et un rôle
@@ -29,6 +28,7 @@ return array(
             1 => 'parent',
             2 => 'transporteur',
             3 => 'etablissement',
+            200 => 'consultation',
             253 => 'gestion',
             254 => 'admin',
             255 => 'sadmin'
@@ -36,6 +36,9 @@ return array(
         // hiérarchie des rôles
         'roles' => array(
             'guest' => null,
+            'transporteur' => 'guest',
+            'etablissement' => 'guest',
+            'consultation' => 'guest',
             'parent' => 'guest',
             'gestion' => 'parent',
             'admin' => 'gestion',
@@ -52,6 +55,9 @@ return array(
         ),
         // routes de redirection lorsque l'accès n'est pas autorisé (en fonction du rôle)
         'redirectTo' => array(
+            'transporteur' => 'login',
+            'etablissement' => 'login',
+            'consultation' => 'login',
             'parent' => 'sbmparent',
             'gestion' => 'sbmgestion',
             'admin' => 'sbmadmin',

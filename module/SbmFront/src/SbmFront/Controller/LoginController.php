@@ -133,13 +133,13 @@ class LoginController extends AbstractActionController
                     $this->flashMessenger()->addSuccessMessage('Votre compte est confirmé. Votre mot de passe est enregistré.');
                 } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {
                     // die(var_dump(/*$auth->authenticate()->getCode(), */$auth->hasIdentity(), $auth->getIdentity()));
-                    $this->flashMessenger()->addErrorMessage('Ce lien ne peut être utilisé qu\'une seule fois. Demandez-en un autre !');
+                    $this->flashMessenger()->addErrorMessage('Ce lien ne peut être utilisé qu\'une seule fois. Identifiez-vous ou cliquez sur mot de passe oublié.');
                 }
                 return $this->homePageAction();
             }
         }
         if (! $auth->hasIdentity()) {
-            $this->flashMessenger()->addErrorMessage('Ce lien est invalide ou a déjà été utilisé. Demandez-en un autre !');
+            $this->flashMessenger()->addErrorMessage('Ce lien est invalide ou a déjà été utilisé. Identifiez-vous ou cliquez sur mot de passe oublié.');
             return $this->redirect()->toRoute('home');
         }
         return new ViewModel(array(

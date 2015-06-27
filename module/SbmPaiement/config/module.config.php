@@ -38,6 +38,20 @@ return array(
                             )
                         )
                     ),
+                    'liste' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'consultation'
+                            )
+                        )
+                    ),
+                    'voir' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'consultation'
+                            )
+                        )
+                    )
                 )
             )
         ),

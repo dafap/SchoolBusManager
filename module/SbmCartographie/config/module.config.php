@@ -26,6 +26,13 @@ return array(
                             )
                         )
                     ),
+                    'stations' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
                 )
             )
         ),
@@ -42,7 +49,8 @@ return array(
     'service_manager' => array(
         'invokables' => array(
             'SbmCarto\DistanceEtablissements' => 'SbmCartographie\GoogleMaps\DistanceEtablissements',
-            'SbmCarto\Geocoder' => 'SbmCartographie\GoogleMaps\Geocoder'
+            'SbmCarto\Geocoder' => 'SbmCartographie\GoogleMaps\Geocoder',
+            'SbmCarto\Projection' => 'SbmCartographie\Model\Projection'
         )
     ),
     'controllers' => array(

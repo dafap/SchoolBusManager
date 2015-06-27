@@ -40,7 +40,7 @@ class Criteres extends SbmCommunCriteres
      *
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere()
      */
-    public function getWhere($strict = array())
+    public function getWhere($strict = array(), $alias = array())
     {
         $where = new Where();
         $where->equalTo('sco.millesime', Session::get('millesime'));

@@ -21,7 +21,7 @@ return array(
                     'ouvrir' => array(
                         'deny' => array(
                             'roles' => array(
-                                'parent'
+                                'gestion'
                             )
                         ),
                         'allow' => array(
@@ -34,7 +34,7 @@ return array(
                     'circuit-dupliquer' => array(
                         'deny' => array(
                             'roles' => array(
-                                'parent'
+                                'gestion'
                             )
                         ),
                         'allow' => array(

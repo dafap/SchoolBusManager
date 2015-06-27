@@ -12,10 +12,6 @@
  * @version 2014-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine,
-    'page' => $this->page
-));
 $pdf = $this->url('sbmgestion/transport', array(
     'action' => 'station-group-pdf',
     'page' => $this->page
@@ -28,7 +24,7 @@ $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\'
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $this->origine,
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
