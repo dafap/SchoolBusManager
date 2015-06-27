@@ -737,6 +737,25 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'localisation',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sans localisation',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
             'attributes' => array(
                 'type' => 'checkbox',
@@ -768,6 +787,10 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'commune' => array(
                 'name' => 'commune',
+                'required' => false
+            ),
+            'localisation' => array(
+                'name' => 'preinscrits',
                 'required' => false
             )
         );
@@ -1314,7 +1337,6 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'preinscrits',
                 'required' => false
             ),
-
             'localisation' => array(
                 'name' => 'preinscrits',
                 'required' => false
@@ -1514,6 +1536,24 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'localisation',
+            'attributes' => array(
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Sans localisation',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
             'attributes' => array(
                 'type' => 'checkbox',
@@ -1553,6 +1593,10 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'communeId' => array(
                 'name' => 'communeId',
+                'required' => false
+            ),
+            'localisation' => array(
+                'name' => 'preinscrits',
                 'required' => false
             )
         );
