@@ -26,6 +26,13 @@ return array(
                             )
                         )
                     ),
+                    'stations' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    ),
                 )
             )
         ),
