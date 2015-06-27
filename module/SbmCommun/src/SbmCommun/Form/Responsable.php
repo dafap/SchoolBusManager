@@ -199,7 +199,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
         ));
         $this->add(array(
             'name' => 'adresseL2',
-            'type' => 'text',
+            'type' => 'SbmCommun\Form\Element\Adresse',
             'attributes' => array(
                 'id' => 'responsable-adresseL2',
                 'class' => 'sbm-width-40c'
@@ -319,7 +319,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
         ));
         $this->add(array(
             'name' => 'ancienAdresseL1',
-            'type' => 'text',
+            'type' => 'SbmCommun\Form\Element\Adresse',
             'attributes' => array(
                 'id' => 'responsable-ancienAdresseL1',
                 'class' => 'sbm-width-40c'
@@ -336,7 +336,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
         ));
         $this->add(array(
             'name' => 'ancienAdresseL2',
-            'type' => 'text',
+            'type' => 'SbmCommun\Form\Element\Adresse',
             'attributes' => array(
                 'id' => 'responsable-ancienAdresseL2',
                 'class' => 'sbm-width-40c'

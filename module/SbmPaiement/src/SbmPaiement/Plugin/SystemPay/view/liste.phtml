@@ -10,11 +10,10 @@
  * @date 6 avr. 2015
  * @version 2015-1
  */
-use \DateTime;
  
 function formatDate($date)
 {
-    return DateTime::createFromFormat('YmdHis', $date)->format('d/m/Y H:i:s');
+    return \DateTime::createFromFormat('YmdHis', $date)->format('d/m/Y H:i:s');
 }
 
 function renderCheckbox($view, $name, $id, $value)

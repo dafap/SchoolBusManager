@@ -51,11 +51,7 @@ class IndexController extends AbstractActionController
     
     public function testAction()
     {
-        $where = new Where();
-        $where->like('r1.nomSA', 'MAR%');
-        $resultset = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesResponsables')->getLocalisation($where, array('nom_eleve', 'prenom_eleve'));
-        $data = iterator_to_array($resultset);
-        $fields = array_keys(current($data));
-        return $this->csvExport('foo.csv', $fields, $data);
+        $stats = $this->getServiceLocator()->get('Sbm\Statistiques\Paiement');
+        die(var_dump($stats->getSumByAsMode()));
     }
 }

@@ -31,7 +31,7 @@ class NomPropre extends Element implements InputProviderInterface
         if (is_null($this->validator)) {
             $pattern = '/^' . self::LETTRES . '([\' -]' . self::LETTRES .')*$/';
             $validator = new RegexValidator($pattern);
-            $validator->setMessage('Les caractères autorisés sont des lettres, l\' espace, l\' apostrophe ou le tiret !', RegexValidator::NOT_MATCH);
+            $validator->setMessage('Les caractères autorisés sont des lettres, l\'espace, l\'apostrophe ou le tiret !', RegexValidator::NOT_MATCH);
             $this->validator = $validator;
         }
         return $this->validator;

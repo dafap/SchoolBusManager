@@ -45,7 +45,7 @@ class Scolarites extends AbstractSbmTable
     }
 
     /**
-     * Renvoie true si l'établissement a changé ou si c'est un nouvel enregistrement
+     * Renvoie true si l'établissement a changé ou si c'est un nouvel enregistrement ou si district == 0
      *
      * (non-PHPdoc)
      * 
@@ -53,8 +53,10 @@ class Scolarites extends AbstractSbmTable
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
+        $changeEtab = false;
         try {
             $old_data = $this->getRecord($obj_data->getId());
+            $changeEtab = $old_data->district == 0; // pour forcer l'actualisation de district
             $is_new = false;
         } catch (Exception $e) {
             $is_new = true;
@@ -67,10 +69,10 @@ class Scolarites extends AbstractSbmTable
         } else {
             // on vérifie si des données ont changé
             if ($obj_data->isUnchanged($old_data)) {
-                return false;
+                return $changeEtab;
             }
             try {
-                $changeEtab = $obj_data->etablissementId != $old_data->etablissementId;
+                $changeEtab |= $obj_data->etablissementId != $old_data->etablissementId;
             } catch (ObjectDataException $e) {
                 $changeEtab = false;
             }
