@@ -173,6 +173,13 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
                 'validators' => array(
                     array(
                         'name' => 'SbmCommun\Model\Validator\Decimal'
+                    ),
+                    array(
+                        'name' => 'Zend\Validator\GreaterThan',
+                        'options' => array(
+                            'min' => 0,
+                            'inclusive' => false
+                        )
                     )
                 )
             )

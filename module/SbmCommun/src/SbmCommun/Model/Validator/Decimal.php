@@ -1,6 +1,6 @@
 <?php
 /**
- * Validateur pour un nombre décimal positif
+ * Validateur pour un nombre décimal positif (qui peut être entier)
  *
  * Cela fonctionne que le séparateur décimal soit , ou .
  * 
@@ -18,11 +18,11 @@ use Zend\Validator\AbstractValidator;
 
 class Decimal extends AbstractValidator
 {
-    const PATTERN = '/^[0-9]+[.,][0-9]*$/';
+    const PATTERN = '/^[0-9]+(?:[.,][0-9]+)?$/';
     const FLOAT = 'float';
     
     protected $messageTemplates = array(
-        self::FLOAT => "'%value%' n'est pas un décimal."
+        self::FLOAT => "'%value%' n'est pas un décimal positif."
     );
     
     public function isValid($value)

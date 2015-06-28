@@ -221,8 +221,11 @@ class FinanceController extends AbstractActionController
             if ($form->isValid()) {
                 // sauvegarde après avoir validé les datas
                 $tablePaiements->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
+                // validation des paiements dans les fiches scolarites
+                $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+                $tScolarites->setPaiement($this->getFromSession('millesime'), $args['eleveId']);
                 // retour à la liste
+                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
                 return $this->redirect()->toRoute('sbmgestion/finance', array(
                     'action' => 'paiement-liste',
                     'page' => $this->params('page', 1)

@@ -28,7 +28,7 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Descripteur de la base de données
      *
-     * @var DbLib
+     * @var \SbmCommun\Model\Db\Service\DbLibService
      */
     protected $db;
 
