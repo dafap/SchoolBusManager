@@ -279,14 +279,17 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
         if ($config['responsableId']) {
             $this->add(array(
                 'name' => 'responsableId',
-                'type' => 'hidden'
+                'type' => 'hidden',
+                'attributes' => array(
+                    'id' => 'responsableId'
+                )
             ));
         } else {
             $this->add(array(
                 'name' => 'responsableId',
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => array(
-                    'id' => 'paiement-responsable-id',
+                    'id' => 'responsableId',
                     'autofocus' => 'autofocus',
                     'class' => 'sbm-width-30c'
                 ),
@@ -338,6 +341,31 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'reference' => array(
                 'name' => 'reference',
                 'required' => false
+            ),
+            'montant' => array(
+                'name' => 'montant',
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmCommun\Model\Validator\Decimal'
+                    ),
+                    array(
+                        'name' => 'Zend\Validator\GreaterThan',
+                        'options' => array(
+                            'min' => 0,
+                            'inclusive' => false
+                        )
+                    )
+                )
             )
         );
         if (\array_key_exists('note', $this->args) && $this->args['note']) {
