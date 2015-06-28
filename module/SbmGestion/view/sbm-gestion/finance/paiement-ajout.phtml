@@ -2,9 +2,11 @@
 /**
  * Ecran de saisie d'un encaissement
  *
- * Il s'agit pour le moment d'une entrée générale où le responsable n'est pas connu.
- * Ensuite, on adaptera l'écran au cas où le responsable est déjà connu 
- * (par exemple à partir de la liste des paiements d'un responsables ou de la fiche d'un responsable)
+ * S'il s'agit d'une entrée où le responsable n'est pas connu, on propose de choisir le responsable dans un Select
+ * sinon (appel depuis la liste des paiements d'un responsables ou de la fiche d'un responsable), le responsableId est dans un Hidden.
+ * 
+ * En ajax, une fois le responsable précisé, on présente la liste des élèves préinscrits avec une case à cocher pour le sélectionner.
+ * La sélection d'un enfant entraine le recalcul de la somme à payer, mais il est possible de surcharge cette valeur manuellement.
  * 
  * @project sbm
  * @package module\SbmGestion\view\sbm-gestion\finance
@@ -15,7 +17,78 @@
  * @version 2015-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmgestion/finance', array('action'=> 'paiement-liste', 'page' => $this->page));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->captureStart();
+?>
+function chargeListe() {
+    var valeur = $("#responsableId").val() | 0;
+	$.ajax({
+	    url : '/sbmajaxfinance/listepreinscrits/responsableId:'+valeur,
+	    dataType: 'json',
+	    success : function(dataJson){
+	        $("#tbody-preinscrits").empty();
+	        $("#tbody-preinscrits").append("<tr><th>Nom</th><th>Prénom</th><th>Montant</th><th></th></tr>");
+	        if (dataJson.success) {
+	            $.each(dataJson.data, function(k, d) {
+	                var nom = d['nom'];
+	                var prenom = d['prenom'];
+	                var montant = d['montant'];
+	                var checkbox = "<input type=\"checkbox\" name=\"eleveId[]\" value=\""+d['eleveId']+" checked\">";
+	                $('#tbody-preinscrits').append("<tr><td>"+nom+"</td><td>"+prenom+"</td><td>"+montant+"</td><td>"+checkbox+"</td></tr>");
+	            });
+	        }
+	    },
+	    error : function(xhr, ajaxOptions, thrownError) {
+		    alert(xhr.status + " " + thrownError);
+		}
+    });
+}
+function totalAPayer() {
+    var total = 0.0;
+    $("#tbody-preinscrits > tr:not(:first)").each(function(i) {
+        var element = $("td:nth-child(4) > input[type=checkbox]")[i];
+        if ($(element).is(':checked')) {
+            var cellMontant = $(element).parent().parent().find("td:nth-child(3)")[0];
+            total=total+parseFloat($(cellMontant).text());
+        }
+    });
+    return total;  
+}
+$(document).ready(function() {
+  $("#responsableId").change(function() {
+      chargeListe();
+  }).trigger('change');
+  $("#tbody-preinscrits").on('click', "input[type=checkbox]", function() {
+      $("#paiement-montant").val(parseFloat(totalAPayer()).toFixed(2));
+  });
+  $("#paiement").submit(function(){
+      var btn = $(document.activeElement);
+      if ($(btn).length && $(btn).is("[name]") && $(btn).attr("name")=="cancel") {
+          return true;
+      }
+      var sommeDue=totalAPayer();
+      var montant=$("#paiement-montant").val() | 0;
+      if (montant>0 && sommeDue==0) {
+          return confirm("Vous n'avez pas coché d'enfant ; ce paiement ne validera pas les préinscriptions. Confirmez-vous ?");
+      } 
+      if (montant!=sommeDue) {
+          return confirm("Le montant indiqué ne correspond pas aux enfants cochés. Confirmez-vous ?");
+      }
+      return true;
+  });
+});
+<?php 
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+chargeListe();
+<?php 
+$this->inlineScript()->captureEnd();
+
+$retour = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-liste',
+    'page' => $this->page
+));
 $hiddens = array();
 $actions = array(
     'retour' => array(
@@ -36,34 +109,47 @@ $actions = array(
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('paiementId'));
 echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="edit">';
 ?>
-    <fieldset class="sbm-page1">
+        <div class="float-left left-10px">
+	       <fieldset class="sbm-page1">
 <?php if ($this->hidden_responsableId) : ?>
 <?php echo $this->formHidden($this->form->get('responsableId')); ?>
 <?php else : ?>
-    <div id="paiement-edit-responsableId" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsableId')); ?></div>
+                <div id="paiement-edit-responsableId" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsableId')); ?></div>
 <?php endif; ?>
 
-    <div id="paiement-edit-code-caisse" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeCaisse')); ?></div>
-    <div id="paiement-edit-montant" class="row-inner edit"><?php echo $this->formRow($this->form->get('montant')); ?></div>
-    <div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
-    <div id="paiement-edit-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice')); ?></div>
-    <div id="paiement-edit-annee-scolaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('anneeScolaire')); ?></div>
-    <div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
-    <div id="paiement-edit-date-valeur" class="row-inner edit"><?php echo $this->formRowDate($this->form->get('dateValeur')); ?></div>
-    <div id="paiement-edit-date-depot" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
-    <div id="paiement-edit-titulaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('titulaire')); ?></div>
-    <div id="paiement-edit-banque" class="row-inner edit"><?php echo $this->formRow($this->form->get('banque')); ?></div>
-    <div id="paiement-edit-reference" class="row-inner edit"><?php echo $this->formRow($this->form->get('reference')); ?></div>
-    <div id="paiement-edit-buttons" class="row-inner edit">
+                <div id="paiement-edit-code-caisse" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeCaisse')); ?></div>
+		        <div id="paiement-edit-montant" class="row-inner edit"><?php echo $this->formRow($this->form->get('montant')); ?></div>
+		        <div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
+				<div id="paiement-edit-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice')); ?></div>
+				<div id="paiement-edit-annee-scolaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('anneeScolaire')); ?></div>
+				<div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
+				<div id="paiement-edit-date-valeur" class="row-inner edit"><?php echo $this->formRowDate($this->form->get('dateValeur')); ?></div>
+				<div id="paiement-edit-date-depot" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
+				<div id="paiement-edit-titulaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('titulaire')); ?></div>
+				<div id="paiement-edit-banque" class="row-inner edit"><?php echo $this->formRow($this->form->get('banque')); ?></div>
+				<div id="paiement-edit-reference" class="row-inner edit"><?php echo $this->formRow($this->form->get('reference')); ?></div>
+				<div id="paiement-edit-buttons" class="row-inner edit">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-    </fieldset>
+			</fieldset>
+		</div>
+		<div class="float-left left-10px">
+		    <fieldset class="sbm-page1">
+		         <h3>Liste des enfants préinscrits de ce responsable</h3>
+		         <table>
+		             <tbody id="tbody-preinscrits">
+		                 <tr><th>Nom</th><th>Prénom</th><th></th></tr>
+		             </tbody>
+		         </table>
+		         <p class="sbm-description">Cochez les enfants concernés par ce paiement.</p>
+		    </fieldset>
+		</div>
 <?php echo $this->form()->closeTag(); ?>
     </div><?php // fiche-inner ?>
 	<div id="fiche-footer"></div>
-</div> <?php // fiche-wrapper ?>
+</div>
+<?php // fiche-wrapper ?>

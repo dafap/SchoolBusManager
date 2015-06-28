@@ -1,6 +1,7 @@
 <?php
 /**
  * Requêtes permettant d'obtenir les enfants inscrits ou préinscrits d'un responsable donné
+ * (enregistré dans module.config.php sous l'alias 'Sbm\Db\Query\ElevesScolarites')
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Eleve
@@ -169,6 +170,18 @@ class ElevesScolarites implements FactoryInterface
         $where->equalTo('millesime', Session::get('millesime'))
             ->literal('paiement = 0')
             ->literal('fa=0')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute();
+    }
+    
+    public function getElevesPreinscritsWithMontant($responsableId)
+    {
+        $select = clone $this->select;
+        $select->join(array('tar' => $this->db->getCanonicName('tarifs', 'table')), 'tar.tarifId = sco.tarifId', array('montant', 'nomTarif' => 'nom'));
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+        ->literal('paiement = 0')
+        ->literal('fa=0')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }

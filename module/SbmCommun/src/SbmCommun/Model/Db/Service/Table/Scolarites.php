@@ -16,6 +16,8 @@ namespace SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use SbmCommun\Model\Db\ObjectData\Exception as ObjectDataException;
+use Zend\Db\Sql\Update;
+use Zend\Db\Sql\Where;
 
 class Scolarites extends AbstractSbmTable
 {
@@ -48,7 +50,7 @@ class Scolarites extends AbstractSbmTable
      * Renvoie true si l'établissement a changé ou si c'est un nouvel enregistrement ou si district == 0
      *
      * (non-PHPdoc)
-     * 
+     *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
      */
     public function saveRecord(ObjectDataInterface $obj_data)
@@ -81,5 +83,28 @@ class Scolarites extends AbstractSbmTable
         
         parent::saveRecord($obj_data);
         return $changeEtab;
+    }
+
+    /**
+     * Met à jour un ensemble de lignes définies par millesime, eleveId
+     *
+     * @param int $millesime
+     *            Millésime sur lequel on travaille
+     * @param array $aEleveId
+     *            Tableau de eleveId à mettre à jour
+     * @param bool $paiement
+     *            Indique s'il faut valider (true par défaut) ou invalider (false) le paiement
+     *            
+     * @return int Nombre de lignes mises à jour
+     */
+    public function setPaiement($millesime, $aEleveId, $paiement = true)
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $millesime)->in('eleveId', $aEleveId);
+        $update = $this->table_gateway->getSql()->update();
+        $update->set(array(
+            'paiement' => $paiement ? 1 : 0
+        ))->where($where);
+        return $this->table_gateway->updateWith($update);
     }
 }
