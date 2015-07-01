@@ -1,6 +1,6 @@
 <?php
 /**
- * Controller principal du module DafapTcpdf
+ * Controller principal du module SbmPdf
  *
  * Gestion des la création et de la modification des documents pdf
  * 

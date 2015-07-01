@@ -218,7 +218,7 @@ define('K_TCPDF_CALLS_IN_HTML', true);
 define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
 
 /**
- * Indiquer la langue utilisée. Elle doit correspondre à un fichier dans src/DafapTcpdf/Model/lang de nom PDF_LANG . '.php'
+ * Indiquer la langue utilisée. Elle doit correspondre à un fichier dans src/SbmPdf/Model/lang de nom PDF_LANG . '.php'
  */
 define('PDF_LANG', 'fra');
 

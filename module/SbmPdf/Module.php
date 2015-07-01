@@ -16,6 +16,7 @@
  
  use ZfcBase\Module\AbstractModule;
  use Zend\Mvc\MvcEvent;
+ use SbmPdf\Listener\PdfListener;
  
  
  class Module extends AbstractModule
@@ -30,8 +31,9 @@
          return __NAMESPACE__;
      }
      
-     public function onBoostrap(MvcEvent $e)
+     public function onBootstrap(MvcEvent $e)
      {
+         
          $eventManager = $e->getTarget()->getEventManager();
          $eventManager->attach(new PdfListener());
      }

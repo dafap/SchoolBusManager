@@ -17,11 +17,9 @@
 namespace SbmPdf\Model;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Tag\Cloud\Decorator\HtmlCloud;
 use SbmCommun\Model\StdLib;
 use Zend\Db\Sql\Where;
 use Zend\Stdlib\ArrayObject;
-use Zend\Captcha\Dumb;
 
 class Tcpdf extends \TCPDF
 {

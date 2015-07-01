@@ -15,7 +15,6 @@ namespace SbmPdf\Listener;
 
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
-
 use SbmPdf\Model\Tcpdf as Pdf;
 
 class PdfListener implements ListenerAggregateInterface
