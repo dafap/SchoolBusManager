@@ -189,7 +189,7 @@ class DbLibService implements FactoryInterface
             $this->structureTable($tableName, $type);
         }
         $result = array();
-        foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {          
+        foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {
             $result[$colName] = $descriptor['is_nullable'];
         }
         return $result;
@@ -237,9 +237,9 @@ class DbLibService implements FactoryInterface
     }
 
     /**
-     * Renvoie un tableau indexé de la forme (nom_réel => nom de l'entité, .
-     *
-     * ..)
+     * Renvoie un tableau indexé de la forme (nom_réel => nom de l'entité,...)
+     * 
+     * @return array
      */
     public function getTableList()
     {
@@ -258,6 +258,43 @@ class DbLibService implements FactoryInterface
                 $nom,
                 '(' . $type . ')'
             ));
+        }
+        asort($result);
+        return $result;
+    }
+
+    /**
+     * Renvoie un tableau de la forme (alias => libellé de l'entité,...)
+     * 
+     * @return array
+     */
+    public function getTableAliasList()
+    {
+        $result = array();
+        $filters = array(
+            'Sbm\\Db\\Table\\',
+            'Sbm\\Db\\System\\',
+            'Sbm\\Db\\Vue\\'
+        );
+        $config = $this->sm->get('config');
+        foreach (array_keys($config['service_manager']['factories']) as $alias) {
+            foreach ($filters as $f) {
+                if (strpos($alias, $f) !== false) {
+                    $parts = explode('\\', $alias);
+                    $parts[0] = $parts[3];
+                    if ($parts[2] == 'System') {
+                        $parts[1] = '(Table système)';
+                    } elseif ($parts[2] == 'Vue') {
+                        $parts[1] = '(Données complètes)';
+                    } else {
+                        $parts[1] = '(Table)';
+                    }
+                    unset($parts[2]);
+                    unset($parts[3]);
+                    $result[$alias] = implode(' ', $parts);
+                    break;
+                }
+            }
         }
         asort($result);
         return $result;

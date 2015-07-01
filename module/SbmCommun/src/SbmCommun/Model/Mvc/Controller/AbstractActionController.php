@@ -68,9 +68,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param array $strictWhere
      *            Liste des champs du formulaire pour lesquels l'égalité est recherché. Pour les autres, on fait un Like
      * @param array $aliasWhere
-     *            Liste des champs du formulaire qui sont des alias 
+     *            Liste des champs du formulaire qui sont des alias
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere() pour plus d'explications.
-     *            
+     *     
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
      *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme array('paginator' => ..., 'form' => ..., 'retour' => boolean)
      */
@@ -145,7 +145,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param callable|null $renvoyer
      *            Fonction perpettant d'extraire des données de POST ($args après PostRedirectGet)
      *            
-     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post, ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
+     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post,
+     *         ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
      *         ou le résultat de la fonction $renvoyer (souvent une fonction anonyme)
      */
     protected function addData($params, $renvoyer = null)
@@ -198,8 +199,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param string $renvoyer
      *            Fonction de construction de la réponse. Son paramètre sont $args (paramètres fournis en post ou en session)
      *            
-     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post, ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
-     *         ou le résultat de la fonction $renvoyer (souvent une fonction anonyme)
+     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post,
+     *         ou un \SbmCommun\Model\Mvc\Controller\EditResponse contenant les données à renvoyer
      */
     protected function editData($params, $renvoyer = null)
     {

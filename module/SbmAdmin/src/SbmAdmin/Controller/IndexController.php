@@ -20,13 +20,11 @@ use Zend\Session\Container as SessionContainer;
 use Zend\Db\Sql\Where;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Form\CriteresForm;
-use SbmAdmin\Form\DocumentPdf as FormDocumentPdf;
+use SbmCommun\Model\StdLib;
 use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\ButtonForm;
-use SbmCommun\Model\StdLib;
 use SbmAdmin\Form\User;
 use SbmAdmin\Form\Export as ExportForm;
-use SbmAdmin\Form\SbmAdmin\Form;
 
 class IndexController extends AbstractActionController
 {
@@ -239,89 +237,6 @@ class IndexController extends AbstractActionController
             ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-    }
-
-    public function pdfListeAction()
-    {
-        $args = $this->initListe('pdf');
-        if ($args instanceof Response)
-            return $args;
-        
-        return new ViewModel(array(
-            'paginator' => $this->getServiceLocator()
-                ->get('Sbm\Db\System\Documents')
-                ->paginator($args['where']),
-            'page' => $this->params('page', 1),
-            'nb_pagination' => $this->getNbPagination('nb_pdf', 10),
-            'criteres_form' => $args['form']
-        ));
-    }
-
-    public function pdfAjoutAction()
-    {
-        $currentPage = $this->params('page', 1);
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        $form = new FormDocumentPdf($this->getServiceLocator());
-        $form->setValueOptions('recordSource', $db->getTableList());
-        $params = array(
-            'data' => array(
-                'table' => 'documents',
-                'type' => 'system',
-                'alias' => 'Sbm\Db\System\Documents'
-            ),
-            'form' => $form
-        );
-        $r = $this->addData($params);
-        switch ($r) {
-            case $r instanceof Response:
-                return $r;
-                break;
-            case 'error':
-            case 'warning':
-            case 'success':
-                return $this->redirect()->toRoute('sbmadmin', array(
-                    'action' => 'pdf-liste',
-                    'page' => $currentPage
-                ));
-                break;
-            default:
-                return new ViewModel(array(
-                    'form' => $form->prepare(),
-                    'page' => $currentPage,
-                    'documentId' => null
-                ));
-                break;
-        }
-    }
-
-    public function pdfEditAction()
-    {
-        ;
-    }
-
-    public function pdfDupliquerAction()
-    {
-        ;
-    }
-
-    public function pdfSupprAction()
-    {
-        ;
-    }
-
-    public function pdfGroupAction()
-    {
-        ;
-    }
-
-    public function pdfPdfAction()
-    {
-        ;
-    }
-
-    public function pdfTexteAction()
-    {
-        return new ViewModel();
     }
 
     public function userListeAction()
@@ -537,7 +452,9 @@ class IndexController extends AbstractActionController
         $form = new ExportForm('eleve', $this->getServiceLocator());
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
-                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+                return $this->redirect()->toRoute('sbmadmin', array(
+                    'action' => 'export'
+                ));
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
@@ -573,14 +490,16 @@ class IndexController extends AbstractActionController
         $form = new ExportForm('etablissement', $this->getServiceLocator());
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
-                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+                return $this->redirect()->toRoute('sbmadmin', array(
+                    'action' => 'export'
+                ));
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereEtablissement();
                     $resultset = $this->getServiceLocator()
-                    ->get('Sbm\Db\Query\Etablissements')
-                    ->getLocalisation($where, array(
+                        ->get('Sbm\Db\Query\Etablissements')
+                        ->getLocalisation($where, array(
                         'commune',
                         'nom'
                     ));
@@ -609,14 +528,16 @@ class IndexController extends AbstractActionController
         $form = new ExportForm('responsable', $this->getServiceLocator());
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
-                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+                return $this->redirect()->toRoute('sbmadmin', array(
+                    'action' => 'export'
+                ));
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereResponsable();
                     $resultset = $this->getServiceLocator()
-                    ->get('Sbm\Db\Vue\Responsables')
-                    ->fetchAll($where, array(
+                        ->get('Sbm\Db\Vue\Responsables')
+                        ->fetchAll($where, array(
                         'commune',
                         'nom'
                     ));
@@ -645,14 +566,16 @@ class IndexController extends AbstractActionController
         $form = new ExportForm('station', $this->getServiceLocator());
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
-                return $this->redirect()->toRoute('sbmadmin', array('action' => 'export'));
+                return $this->redirect()->toRoute('sbmadmin', array(
+                    'action' => 'export'
+                ));
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereStation();
                     $resultset = $this->getServiceLocator()
-                    ->get('Sbm\Db\Query\Stations')
-                    ->getLocalisation($where, array(
+                        ->get('Sbm\Db\Query\Stations')
+                        ->getLocalisation($where, array(
                         'commune',
                         'nom'
                     ));
