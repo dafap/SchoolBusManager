@@ -1,0 +1,53 @@
+<?php
+/**
+ * Vue du module SbmAdmin, controller PdfController, affichant un formulaire de saisie de texte pour des documents pdf
+ * Plugins de TinyMCE utilisés :
+ * - advlist : options pour les listes numérotées et listes à bulle
+ * - autolink : transforme à la volée dans le texte une url en lien
+ * - autoresize : préciser les hauteurs mini et maxi à la suite 
+ * - charmap : table de caractères spéciaux (bouton Insérer)
+ * - code : montre le code source dans une fenêtre popup (bouton Outils)
+ * - hr : pour placer une ligne horizontale dans le document (bouton Insérer)
+ * - insertdatetime : pour insérer la date ou l'heure (bouton Insérer)
+ * - nonbreaking : pour insérer un espace insécable (bouton Insérer)
+ * - searchreplace : pour trouver / remplacer (bouton Editer)
+ * - spellchecker : à voir où placer la référence du dictionnaire
+ * - table : outil de création de tables
+ * - textcolor : palette de couleurs pour le texte et le fond (mais construire la toolbar)
+ *
+ * @project sbm
+ * @package SbmAdmin/view/pdf
+ * @filesource pdf-texte.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 août 2014
+ * @version 2014-1
+ */
+// css particulières pour ce formulaire
+
+// javascript pour ce formulaire 
+// 1. inclure '//tinymce.cachefly.net/4.1/tinymce.min.js'' dans la liste des scripts à charger dans dafap-layout.global.php (solution CDN)
+// 2. placer le fichier de traduction dans le projet : 'public/js/tinymce/langs/fr_FR.js'
+// 3. inclure le script de configuration ci-dessous.
+$this->inlineScript()->captureStart();
+echo <<<'JS'
+tinymce.init({
+    selector: "textarea.wysiwyg",
+    language_url: "/js/tinymce/langs/fr_FR.js",
+    plugins: "advlist autolink autoresize charmap code hr insertdatetime nonbreaking searchreplace spellchecker table textcolor wordcount",
+    autoresize_min_height: 300,
+    autoresize_max_height: 400,
+    insertdatetime_formats: ["%d/%m/%Y", "%H:%M"],
+    spellchecker_languages: "+Français=fr"
+ });
+JS;
+$this->inlineScript()->captureEnd();
+
+// composition de la page
+?>
+<h1>Saisie d'un texte</h1>
+<form method="post">
+    <textarea class="wysiwyg">Saisissez le votre texte et mettez-le en forme.</textarea>
+    <p></p>
+    <textarea>Saisissez le votre texte sans mise en forme.</textarea>
+</form>
