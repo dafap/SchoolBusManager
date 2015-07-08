@@ -163,8 +163,8 @@ echo $this->flashMessenger()->render('default');
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Né(e) le</th>
-					<th>Responsable 1</th>
-					<th>Resp.2</th>
+					<th>Responsables</th>
+					<th title="garde alternée">G.A.</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
 					<th>Sélect.</th>
@@ -219,8 +219,10 @@ echo $this->flashMessenger()->render('default');
                     'style' => 'display: inline;'
                 ));
                 $itemR2 .= $r;
+                $ga = true;
             } else {
                 $itemR2 = '';
+                $ga = false;
             }
             // selection
             $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve['eleveId']);
@@ -249,8 +251,12 @@ echo $this->flashMessenger()->render('default');
 					<td class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
 					<td class="prenom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
 					<td class="dateN"><?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
-					<td class="responsable1"><?php echo $itemR1; ?></td>
-					<td class="responsable2"><?php echo $itemR2; ?></td>
+					<td class="responsables"><?php echo $itemR1; ?>
+					<?php if ($ga):?>
+					    <br/><?php echo $itemR2; ?>
+					<?php endif;?>
+					</td>
+					<td<?php echo $ga ? ' title="garde alternée"' : '';?>><?php echo empty($itemR2)? '' : 'G.A.';?></td>
 					<td class="etablissement"><?php echo $this->escapeHtml($eleve['etablissement'] . ' - ' . $eleve['communeEtablissement']);?></td>
 					<td class="classe"><?php echo $this->escapeHtml($eleve['classe']);?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?></td>
