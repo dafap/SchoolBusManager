@@ -59,18 +59,17 @@ function initAccord() {
 // cette fonction pour bloquer ou non les checkbox accordR1 et accordR2 au chargement de la page
 if ($disableAccordR1) {
     echo '$("#eleve-accordR1").attr("disabled", true);' . PHP_EOL;
-    // echo '$("#block-affectationsr1").show();' . PHP_EOL;
+    echo '$("input[name=accordR1][type=hidden]").val(1);' . PHP_EOL;
 } else {
     echo '$("#eleve-accordR1").removeAttr("disabled");' . PHP_EOL;
-    ;
-    // echo '$("#block-affectationsr1").hide();' . PHP_EOL;
+    echo '$("input[name=accordR1][type=hidden]").val(0);' . PHP_EOL;
 }
 if ($disableAccordR2) {
     echo '$("#eleve-accordR2").attr("disabled", true);' . PHP_EOL;
-    // echo '$("#block-affectationsr2").show();' . PHP_EOL;
+    echo '$("input[name=accordR2][type=hidden]").val(1);' . PHP_EOL;
 } else {
     echo '$("#eleve-accordR2").removeAttr("disabled");' . PHP_EOL;
-    // echo '$("#block-affectationsr2").hide();' . PHP_EOL;
+    echo '$("input[name=accordR2][type=hidden]").val(0);' . PHP_EOL;
 }
 ?>
 }
@@ -149,7 +148,8 @@ function majBlockaffectations(trajet) {
 				$('html', 'body').css('cursor','auto');
 			}
 	});
-	args2='eleveId:<?php echo $this->eleveId;?>/trajet:'+trajet;
+	var args2='eleveId:<?php echo $this->eleveId;?>/trajet:'+trajet;
+	var args3="input[name=accordR"+trajet+"][type=hidden]";
 	$.ajax({
 	        url : '/sbmajaxeleve/enableaccordbutton/'+args2,
 	        dataType: 'json',
@@ -157,8 +157,10 @@ function majBlockaffectations(trajet) {
 	            var myid = "#eleve-accordR"+trajet;
 	            if (dataJson.enable) {
 	                $(myid).removeAttr('disabled');
+	                $(args3).val(0);
 	            } else {
 	                $(myid).attr('disabled','disabled');
+	                $(args3).val(1);
 	            }
 	        },
 	        error : function(xhr, ajaxOptions, throxnError){
@@ -196,8 +198,17 @@ $("#eleve-accordR1").click(function(){
     });
 });
 $("#eleve-accordR2").click(function(){
-    montreMotifSubvention($(this).is(":checked"),'r2');
-    montreBlockAffectation($(this).is(":checked"),'r2');
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+        url:'/sbmajaxeleve/'+action+'accordR2/eleveId:<?php echo $this->eleveId;?>',
+        success:function(data){
+            montreMotifSubvention(action=='check','r2');
+            montreBlockAffectation(action=='check','r2');
+        },
+        error:function(xhr,ajaxOptions,thrownError){
+            alert(xhr.status+' '+thrownError);
+        }
+    });
 });
 $("input[type='text'][name^='distanceR']").dblclick(function(){
     $(this).css("cursor", "wait");

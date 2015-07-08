@@ -98,7 +98,7 @@ class Eleves extends AbstractSbmTable
         $oData->exchangeArray(array('eleveId' => $eleveId, 'selection' => $selection));
         parent::saveRecord($oData);
     }
-
+    
     private function numeroOccupe($n)
     {
         $where = new Where();

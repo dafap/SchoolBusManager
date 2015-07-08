@@ -197,7 +197,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            tableau associatif dont les clés sont 'form' et 'data'.
      *            La clé 'data' est elle-même associée à un tableau associatif dont les clés sont 'table', 'type', 'alias' et 'id'
      * @param string $renvoyer
-     *            Fonction de construction de la réponse. Son paramètre sont $args (paramètres fournis en post ou en session)
+     *            Fonction de construction de la réponse. Son paramètre est $args (tableau des paramètres fournis en post ou en session)
      *            
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post,
      *         ou un \SbmCommun\Model\Mvc\Controller\EditResponse contenant les données à renvoyer

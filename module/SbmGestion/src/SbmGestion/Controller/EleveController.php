@@ -538,6 +538,7 @@ class EleveController extends AbstractActionController
                 ), $form->getData());
                 $tEleves->saveRecord($tEleves->getObjData()
                     ->exchangeArray($dataValid));
+                $dataScolarites = $tScolarites->getObjData()->exchangeArray($dataValid);
                 $recalcul = $tScolarites->saveRecord($tScolarites->getObjData()
                     ->exchangeArray($dataValid));
                 if ($recalcul) {

@@ -173,7 +173,7 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($eleves as $test => $eleve): ?>
         <?php
             // responsable 1
-            $r = $this->escapehtml($eleve['responsable1NomPrenom']);
+            $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES, 'utf-8', false);
             $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', array(
                 'responsableId' => $eleve['responsable1Id'],
                 'info' => $r,
@@ -197,7 +197,7 @@ echo $this->flashMessenger()->render('default');
             $itemR1 .= $r;
             // responsable 2
             if ($eleve['responsable2Id']) {
-                $r = $this->escapehtml($eleve['responsable2NomPrenom']);
+                $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), ENT_QUOTES, 'utf-8', false);
                 $itemR2 = $this->listeLigneActions($eleve['eleveId'] . 'r2', array(
                     'responsableId' => $eleve['responsable2Id'],
                     'info' => $r,
