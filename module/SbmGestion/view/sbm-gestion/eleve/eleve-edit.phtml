@@ -183,8 +183,17 @@ $("#fiche-inner input[name=demandeR2]").click(function(){
     montreDemande('r2');
 });
 $("#eleve-accordR1").click(function(){
-    montreMotifSubvention($(this).is(":checked"),'r1');
-    montreBlockAffectation($(this).is(":checked"),'r1');
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+        url:'/sbmajaxeleve/'+action+'accordR1/eleveId:<?php echo $this->eleveId;?>',
+        success:function(data){
+            montreMotifSubvention(action=='check','r1');
+            montreBlockAffectation(action=='check','r1');
+        },
+        error:function(xhr,ajaxOptions,thrownError){
+            alert(xhr.status+' '+thrownError);
+        }
+    });
 });
 $("#eleve-accordR2").click(function(){
     montreMotifSubvention($(this).is(":checked"),'r2');
@@ -261,7 +270,7 @@ $("#tabs").on('click', "i[data-button=btnaffectation]", function(){
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
-
+$("#tabs").tabs();
 montreDebutFin($("#eleve-anneeComplete").is(":checked"));
 montreMotifDerogation($("#eleve-derogation").is(":checked"));
 montreOngletGa($("#eleve-ga").is(":checked"));
@@ -288,7 +297,6 @@ $.ajax({
 		}
 });
 }
-$("#tabs").tabs();
 <?php
 $this->inlineScript()->captureEnd();
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
