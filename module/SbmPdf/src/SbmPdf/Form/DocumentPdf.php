@@ -15,12 +15,16 @@
 namespace SbmPdf\Form;
 
 use Zend\Form\Form;
+use Zend\InputFilter\InputFilterProviderInterface;
+use SbmCommun\Model\Strategy\Color;
 use SbmPdf\Model\TcpdfFonts;
 use SbmPdf\Model\Tcpdf;
 
-class DocumentPdf extends Form
+class DocumentPdf extends Form implements InputFilterProviderInterface
 {
+
     private $fonts;
+
     private $sm;
 
     public function __construct($sm, $param = 'documentpdf')
@@ -29,14 +33,16 @@ class DocumentPdf extends Form
         $fonts = new TcpdfFonts();
         parent::__construct($param);
         $this->setAttribute('method', 'post');
-        //$this->setAttribute('id', 'accordion');
         $this->add(array(
             'name' => 'documentId',
-            'type' => 'hidden'
+            'type' => 'hidden',
+            'attributes' => array(
+                'id' => 'documentId'
+            )
         ));
         $this->add(array(
             'name' => 'type',
-            'type' => 'hidden',
+            'type' => 'hidden'
         ));
         $this->add(array(
             'name' => 'csrf',
@@ -60,10 +66,11 @@ class DocumentPdf extends Form
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
+                'empty_option' => 'Choisissez une disposition',
                 'value_options' => array(
                     'Tabulaire' => 'Présentation tabulaire',
-                    'BlocVertical' => 'Présentation verticale',
-                    'BlocFiche' => 'Présentation en fiches'
+                    'Texte' => 'Page de texte',
+                    'Etiquette' => 'Etiquettes'
                 ),
                 'empty_option' => 'Choisissez la disposition',
                 'error_attributes' => array(
@@ -155,10 +162,14 @@ class DocumentPdf extends Form
             )
         ));
         $this->add(array(
-            'name' => 'recordSource',
+            'type' => 'hidden',
+            'name' => 'recordSource'
+        ));
+        $this->add(array(
             'type' => 'Zend\Form\Element\Select',
+            'name' => 'TrecordSource',
             'attributes' => array(
-                'id' => 'documentpdf-recordSource',
+                'id' => 'TrecordSource',
                 'class' => 'sbm-width-35c'
             ),
             'options' => array(
@@ -167,6 +178,24 @@ class DocumentPdf extends Form
                     'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez une source de données',
+                'disable_inarray_validator' => true,
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Textarea',
+            'name' => 'RrecordSource',
+            'attributes' => array(
+                'id' => 'RrecordSource',
+                'class' => 'sbm-width-40c'
+            ),
+            'options' => array(
+                'label' => 'Requête',
+                'label_attributes' => array(
+                    'class' => 'sbm-label-top'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -310,7 +339,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'creator',
-            'type' => 'hidden',
+            'type' => 'hidden'
         ));
         $this->add(array(
             'name' => 'author',
@@ -761,7 +790,7 @@ class DocumentPdf extends Form
                     'class' => 'sbm-error'
                 )
             )
-        ));              
+        ));
         $this->add(array(
             'name' => 'pageheader_font_style',
             'type' => 'text',
@@ -798,7 +827,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'pageheader_text_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_text_color',
                 'class' => 'sbm-width-10c'
@@ -815,7 +844,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'pageheader_line_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_line_color',
                 'class' => 'sbm-width-10c'
@@ -829,7 +858,7 @@ class DocumentPdf extends Form
                     'class' => 'sbm-error'
                 )
             )
-        ));  
+        ));
         $this->add(array(
             'name' => 'pagefooter_templateId',
             'type' => 'Zend\Form\Element\Select',
@@ -938,7 +967,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'pagefooter_text_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_text_color',
                 'class' => 'sbm-width-10c'
@@ -955,7 +984,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'pagefooter_line_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-pagefooter_line_color',
                 'class' => 'sbm-width-10c'
@@ -988,7 +1017,7 @@ class DocumentPdf extends Form
                     'class' => 'sbm-error'
                 )
             )
-        ));        
+        ));
         $this->add(array(
             'name' => 'page_format',
             'type' => 'Zend\Form\Element\Select',
@@ -1255,7 +1284,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre1_text_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre1_text_color',
                 'class' => 'sbm-width-10c'
@@ -1289,7 +1318,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre1_line_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre1_line_color',
                 'class' => 'sbm-width-10c'
@@ -1360,7 +1389,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre2_text_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre2_text_color',
                 'class' => 'sbm-width-10c'
@@ -1394,7 +1423,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre2_line_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre2_line_color',
                 'class' => 'sbm-width-10c'
@@ -1465,7 +1494,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre3_text_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre3_text_color',
                 'class' => 'sbm-width-10c'
@@ -1499,7 +1528,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre3_line_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre3_line_color',
                 'class' => 'sbm-width-10c'
@@ -1570,7 +1599,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre4_text_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre4_text_color',
                 'class' => 'sbm-width-10c'
@@ -1604,7 +1633,7 @@ class DocumentPdf extends Form
         ));
         $this->add(array(
             'name' => 'titre4_line_color',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Color',
             'attributes' => array(
                 'id' => 'documentpdf-titre4_line_color',
                 'class' => 'sbm-width-10c'
@@ -1655,9 +1684,762 @@ class DocumentPdf extends Form
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'documentpdf-cancel',
-                'class' => 'button default cancel'
+                'class' => 'button default'
             )
         ));
+        $this->add(array(
+            'name' => 'tableau',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Mise en forme du tableau',
+                'id' => 'documentpdf-tableau',
+                'class' => 'button default',
+                'style' => 'display: none;'
+            )
+        ));
+        $this->add(array(
+            'name' => 'texte',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Mise en forme du texte',
+                'id' => 'documentpdf-texte',
+                'class' => 'button default',
+                'style' => 'display: none;'
+            )
+        ));
+        $this->add(array(
+            'name' => 'etiquette',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Mise en forme des étiquettes',
+                'id' => 'documentpdf-etiquette',
+                'class' => 'button default',
+                'style' => 'display: none;'
+            )
+        ));
+    }
+
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'name' => array(
+                'name' => 'name',
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'recordSource' => array(
+                'name' => 'recordSource',
+                'required' => true,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmPdf\Model\Filter\NomTable',
+                        'options' => array(
+                            'sm' => $this->sm
+                        )
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'SbmPdf\Model\Validator\RecordSource',
+                        'options' => array(
+                            'sm' => $this->sm
+                        )
+                    )
+                )
+            ),
+            'TrecordSource' => array(
+                'name' => 'TrecordSource',
+                'required' => false
+            ),
+            
+            'RrecordSource' => array(
+                'name' => 'RrecordSource',
+                'required' => false
+            ),
+            'filter' => array(
+                'name' => 'filter',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'orderBy' => array(
+                'name' => 'orderBy',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'out_name' => array(
+                'name' => 'out_name',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'title' => array(
+                'name' => 'title',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'docheader_subtitle' => array(
+                'name' => 'docheader_subtitle',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'author' => array(
+                'name' => 'author',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'subject' => array(
+                'name' => 'subject',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'keywords' => array(
+                'name' => 'keywords',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'docheader_margin' => array(
+                'name' => 'docheader_margin',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'docfooter_margin' => array(
+                'name' => 'docfooter_margin',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'docfooter_templateId' => array(
+                'name' => 'docfooter_templateId',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'docfooter_title' => array(
+                'name' => 'docfooter_title',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'docfooter_string' => array(
+                'name' => 'docfooter_string',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'pageheader_margin' => array(
+                'name' => 'pageheader_margin',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'pageheader_font_size' => array(
+                'name' => 'pageheader_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'pageheader_logo_width' => array(
+                'name' => 'pageheader_logo_width',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'pageheader_font_style' => array(
+                'name' => 'pageheader_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'pageheader_logo' => array(
+                'name' => 'pageheader_logo',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'pageheader_title' => array(
+                'name' => 'pageheader_title',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'pageheader_string' => array(
+                'name' => 'pageheader_string',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'pagefooter_font_size' => array(
+                'name' => 'pagefooter_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'pagefooter_margin' => array(
+                'name' => 'pagefooter_margin',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'pagefooter_font_style' => array(
+                'name' => 'pagefooter_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'pagefooter_string' => array(
+                'name' => 'pagefooter_string',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'page_margin_top' => array(
+                'name' => 'page_margin_top',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'page_margin_bottom' => array(
+                'name' => 'page_margin_bottom',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'page_margin_left' => array(
+                'name' => 'page_margin_left',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'page_margin_right' => array(
+                'name' => 'page_margin_right',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'main_font_size' => array(
+                'name' => 'main_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'data_font_size' => array(
+                'name' => 'data_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'url_path_images' => array(
+                'name' => 'url_path_images',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'image_blank' => array(
+                'name' => 'image_blank',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'main_font_style' => array(
+                'name' => 'main_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'data_font_style' => array(
+                'name' => 'data_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'titre1_font_style' => array(
+                'name' => 'titre1_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'titre2_font_style' => array(
+                'name' => 'titre2_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'titre3_font_style' => array(
+                'name' => 'titre3_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'titre4_font_style' => array(
+                'name' => 'titre4_font_style',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'titre1_font_size' => array(
+                'name' => 'titre1_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'titre2_font_size' => array(
+                'name' => 'titre2_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'titre3_font_size' => array(
+                'name' => 'titre3_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            ),
+            'titre4_font_size' => array(
+                'name' => 'titre4_font_size',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    public function setData($data)
+    {
+        $strategieColor = new Color();
+        foreach ($data as $key => &$value) {
+            if (substr($key, - 6) == '_color') {
+                $value = $strategieColor->hydrate($value);
+            }
+        }
+        if (isset($data['recordSource'])) {
+            if (empty($data['TrecordSource'])) {
+                $data['TrecordSource'] = $data['recordSource'];
+            }
+            if (empty($data['RrecordSource'])) {
+                $data['RrecordSource'] = $data['recordSource'];
+            }
+        } else {
+            unset($data['TrecordSource'], $data['RrecordSource']);
+        }
+        parent::setData($data);
+    }
+
+    /**
+     * Le validateur est sur l'élément recordSource (hidden) alors que les contrôles visibles sont TrecordSource (table) ou RrecordSource (requête).
+     * 1/ affecter recordSource de la valeur du contrôle visible
+     * 2/ calculer isValid()
+     * 3/ si une erreur est sur recordSource, affecter cette erreur sur le contrôle visible
+     * 
+     * (non-PHPdoc)
+     * @see \Zend\Form\Form::isValid()
+     */
+    public function isValid()
+    {
+        $visibleElementName = $this->data['recordSourceType'] . 'recordSource';
+        $this->data['recordSource'] = $this->data[$visibleElementName];
+        $ok = parent::isValid();
+        var_dump($this->getMessages());
+        if (! $ok) {
+            $ehidden = $this->get('recordSource');
+            if (!empty($ehidden->getMessages())) {
+                $evisible = $this->get($visibleElementName);
+                var_dump($ehidden->getMessages());
+                $evisible->setMessages($ehidden->getMessages());
+            }
+        }
+        return $ok;
     }
 
     public function setMaxLength(array $array)
@@ -1672,19 +2454,19 @@ class DocumentPdf extends Form
             } catch (Exception $e) {}
         }
     }
-    
+
     public function setValueOptions($element, array $values_options)
     {
         $e = $this->get($element);
         $e->setValueOptions($values_options);
     }
-    
+
     private function getTemplateList($section)
     {
         $pdf = new Tcpdf();
         $templateSectionMethod = 'template' . $section . 'method';
         $methods = get_class_methods($pdf);
-        $list = array();        
+        $list = array();
         foreach ($methods as $method) {
             if (strpos(strtolower($method), $templateSectionMethod) === 0) {
                 $id = substr($method, strlen($templateSectionMethod));

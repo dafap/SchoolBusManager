@@ -208,8 +208,8 @@ class CalculDroits implements FactoryInterface
             $oData->exchangeArray(array(
                 'millesime' => $this->millesime,
                 'eleveId' => $eleveId,
-                'distanceR1' => $this->distance['R1'],
-                'distanceR2' => $this->distance['R2'],
+                'distanceR1' => round($this->distance['R1'], 1),
+                'distanceR2' => round($this->distance['R2'], 1),
                 'district' => 1
             ));
             $this->tScolarites->saveRecord($oData);

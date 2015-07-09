@@ -30,7 +30,14 @@ function listeElements($view, $array)
         if ($view->form->has($element)) {
             $e = $view->form->get($element);
             $l = ceil(mb_strlen($e->getLabel(), 'utf-8') * 2.1 / 15) * 35;
-            $e->setLabelAttributes(array('class' => sprintf('sbm-label-%ddem', $l)));
+            $labelAttributes = $e->getLabelAttributes();
+            $ajoutClassAttribute = sprintf('sbm-label-%ddem', $l);
+            if (array_key_exists('class', $labelAttributes)) {
+                $labelAttributes['class'] .= ' ' . $ajoutClassAttribute;
+            } else {
+                $labelAttributes['class'] = $ajoutClassAttribute;
+            }
+            $e->setLabelAttributes(array('class' => $labelAttributes['class']));
             echo "<div id=\"pdf-edit-$element\" class=\"row-inner edit\">" . $view->formRow($view->form->get($element)) . '</div>';
         } else {
             echo "<div id=\"pdf-edit-$element\" class=\"row-inner edit\">$element pas encore défini dans SbmPdf\Form\DocumentPdf.</div>";
@@ -79,7 +86,45 @@ $this->headLink()
 $this->headScript()
 ->appendFile($this->basePath('/js/jquery.min.js'))
 ->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'))
-->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+->appendFile($this->basePath('js/tinymce/tinymce.min.js'))
+->captureStart();
+?>
+function voirBouton(disposition)
+{
+  var documentId = $("#documentId").val();
+  $("#documentpdf-tableau").hide();
+  $("#documentpdf-texte").hide();
+  $("#documentpdf-etiquette").hide();
+  if (documentId!='' && documentId!=0) {
+    if (disposition == "Tabulaire"){
+      $("#documentpdf-tableau").show();
+    } else if (disposition == "Texte"){
+      $("#documentpdf-texte").show();
+    } else if (disposition == "Etiquette"){
+      $("#documentpdf-etiquette").show();
+    } 
+  } 
+}
+function voirRecordSource()
+{
+  if ($("#documentpdf_recordSourceType").val() == 'T') {
+    $("#RrecordSource").hide();
+    $("#TrecordSource").show();
+  } else {
+    $("#TrecordSource").hide();
+    $("#RrecordSource").show();
+  }
+}
+$(document).ready(function($){
+  $("#documentpdf-disposition").change(function(){
+    voirBouton($(this).val());
+  });
+  $("#documentpdf_recordSourceType").change(function(){
+    voirRecordSource();
+  });
+});
+<?php 
+$this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
 tinymce.init({
@@ -93,10 +138,14 @@ tinymce.init({
     insertdatetime_formats: ["%d/%m/%Y", "%H:%M"],
     spellchecker_languages: "+Français=fr"
  });
- $( "#accordion" ).accordion();
+ $("#accordion").accordion();
+ voirRecordSource();
+ voirBouton($("#documentpdf-disposition").val());
 <?php 
 $this->inlineScript()->captureEnd();
 // =============================================================================================
+$tableau = $this->form->get('tableau');
+$tableau->setAttribute('formaction', $this->url('sbmpdf', array('action' => 'table-liste', 'page' => $this->page)));
 
 $url_retour = $this->url('sbmpdf', array(
     'action' => 'pdf-liste',
@@ -125,6 +174,7 @@ echo $this->formHidden($this->form->get('documentId'));
 echo $this->formHidden($this->form->get('type'));
 echo $this->formHidden($this->form->get('csrf'));
 echo $this->formHidden($this->form->get('creator'));
+echo $this->formHidden($this->form->get('recordSource'));
 ?>
         <div id="accordion">
 <?php 
@@ -139,7 +189,8 @@ blocAccordeon2cols($this, 'Caractéristiques du document', array(
     ),
     2 => array(
         'recordSourceType',
-        'recordSource',
+        'TrecordSource',
+        'RrecordSource',
         'filter',
         'orderBy',
         'disposition'
@@ -271,6 +322,9 @@ blocAccordeon2cols($this, 'Titres', array(
         </div>
         <div id="pdf-edit-buttons" class="row-inner edit">
 	    <?php echo $this->formSubmit($this->form->get('submit')); ?>
+	    <?php echo $this->formSubmit($tableau); ?>
+	    <?php echo $this->formSubmit($this->form->get('texte')); ?>
+	    <?php echo $this->formSubmit($this->form->get('etiquette')); ?>
 	    <?php echo $this->formSubmit($this->form->get('cancel')); ?>
         </div>
         <?php echo $this->form()->closeTag(); ?>

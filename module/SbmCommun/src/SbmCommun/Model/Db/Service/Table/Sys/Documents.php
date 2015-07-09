@@ -15,9 +15,11 @@
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
+use SbmCommun\Model\Strategy\Color;
 
 class Documents extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la classe
      */
@@ -28,7 +30,16 @@ class Documents extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\Documents';
         $this->id_name = 'documentId';
     }
-    
+
+    protected function setStrategies()
+    {
+        foreach ($this->getColumnsNames() as $columnName) {
+            if (substr($columnName, - 6) == '_color') {
+                $this->hydrator->addStrategy($columnName, new Color());
+            }
+        }
+    }
+
     public function getConfig($documentId)
     {
         return $this->getRecord($documentId)->getArrayCopy();

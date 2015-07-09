@@ -17,6 +17,8 @@ namespace SbmCommun\Model\Db\Service\Table\Sys;
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use Zend\Db\ResultSet\ResultSet;
+use SbmCommun\Model\Strategy\Color;
+
 
 class DocTables extends AbstractSbmTable
 {
@@ -29,6 +31,15 @@ class DocTables extends AbstractSbmTable
         $this->table_type = 'system';
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocTables';
         $this->id_name = 'doctableId';
+    }
+    
+    protected function setStrategies()
+    {
+        foreach ($this->getColumnsNames() as $columnName) {
+            if (substr($columnName, - 6) == '_color') {
+                $this->hydrator->addStrategy($columnName, new Color());
+            }
+        }
     }
     
     /**

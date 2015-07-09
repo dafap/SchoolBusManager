@@ -533,15 +533,42 @@ class EleveController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
+                $millesime = Session::get('millesime');
                 $dataValid = array_merge(array(
-                    'millesime' => Session::get('millesime')
+                    'millesime' => $millesime
                 ), $form->getData());
+                // changeR1 et changeR2 indiquent s'il faut mette à jour en cascade le changement de responsable dans la table affectations
+                if (!$dataValid['ga'] && !empty($dataValid['responsable2Id'])) {
+                    $dataValid['responsable2Id'] = '';
+                }
+                $changeR1 = $dataValid['responsable1Id'] != $odata0->responsable1Id;
+                $changeR2 = false;
+                if (!is_null($odata0->responsable2Id)) {
+                    $changeR2 = empty($dataValid['responsable2Id']) || $dataValid['responsable2Id'] != $odata0->responsable2Id;
+                }
+                // enregistrement dans la table eleves
                 $tEleves->saveRecord($tEleves->getObjData()
                     ->exchangeArray($dataValid));
-                $dataScolarites = $tScolarites->getObjData()->exchangeArray($dataValid);
+                // maj en cascade dans la table affectations
+                $tAffectations = $this->getServiceLocator()->get('Sbm\Db\Table\Affectations');
+                if ($changeR1) {
+                    // maj du responsableId
+                    $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable1Id, $dataValid['responsable1Id']);
+                }
+                if ($changeR2) {
+                    if (empty($dataValid['responsable2Id'])) {
+                        // suppression des affectations relatives à cet élève pour ce millesime
+                        $tAffectations->deleteResponsableId($millesime, $eleveId, $odata0->responsable2Id);
+                    } else {
+                        // maj du responsableId
+                        $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable2Id, $dataValid['responsable2Id']);
+                    }
+                }
+                // enregistrement dans la table scolarites
                 $recalcul = $tScolarites->saveRecord($tScolarites->getObjData()
-                    ->exchangeArray($dataValid));
-                if ($recalcul) {
+                    ->exchangeArray($dataValid));      
+                // recalcul des droits et des distances en cas de modification de la destination ou d'une origine          
+                if ($recalcul || $changeR1 || $changeR2) {
                     $majDistances = $this->getServiceLocator()->get('Sbm\CalculDroitsTransport');
                     if ($odata1->district) {
                         $majDistances->majDistancesDistrictSansPerte($eleveId);
