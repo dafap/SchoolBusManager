@@ -532,7 +532,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'docfooter_string',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Textarea',
             'attributes' => array(
                 'id' => 'documentpdf-docfooter_string',
                 'class' => 'sbm-width-45c'
@@ -540,7 +540,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Texte du pied de document',
                 'label_attributes' => array(
-                    'class' => 'sbm-label'
+                    'class' => 'sbm-label-top'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -2053,6 +2053,13 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ),
                     array(
                         'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
                     )
                 )
             ),
@@ -2065,6 +2072,13 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ),
                     array(
                         'name' => 'StringTrim'
+                    ),
+                    array(
+                        'name' => 'SbmCommun\Filter\Decimal',
+                        'options' => array(
+                            'separateur' => '.',
+                            'car2sep' => ','
+                        )
                     )
                 )
             ),
@@ -2077,13 +2091,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ),
                     array(
                         'name' => 'StringTrim'
-                    ),
-                    array(
-                        'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
-                            'separateur' => '.',
-                            'car2sep' => ','
-                        )
                     )
                 )
             ),
@@ -2096,13 +2103,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ),
                     array(
                         'name' => 'StringTrim'
-                    ),
-                    array(
-                        'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
-                            'separateur' => '.',
-                            'car2sep' => ','
-                        )
                     )
                 )
             ),
@@ -2430,12 +2430,10 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         $visibleElementName = $this->data['recordSourceType'] . 'recordSource';
         $this->data['recordSource'] = $this->data[$visibleElementName];
         $ok = parent::isValid();
-        var_dump($this->getMessages());
         if (! $ok) {
             $ehidden = $this->get('recordSource');
             if (!empty($ehidden->getMessages())) {
                 $evisible = $this->get($visibleElementName);
-                var_dump($ehidden->getMessages());
                 $evisible->setMessages($ehidden->getMessages());
             }
         }

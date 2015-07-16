@@ -4,6 +4,8 @@
  *
  * Les fonctions évaluées sont : 
  *   %date%
+ *   %heure%
+ *   %millesime%
  *   %compte%
  *   %compte(condition)% où condition est une chaine compatible à la classe Conditions
  *   %somme(num_colonne) où num_colonne est le numéro de colonne en partant de 1 pour la première
@@ -46,6 +48,7 @@
 namespace SbmPdf\Model;
 
 use SbmCommun\Model\StdLib;
+use DafapSession\Model\Session;
 
 class Calculs
 {
@@ -221,6 +224,16 @@ class Calculs
         return date('H:i:s');
     }
 
+    /**
+     * Renvoie le millesime courant
+     * 
+     * @return int
+     */
+    public function millesime()
+    {
+        return Session::get('millesime');
+    }
+    
     /**
      * Renvoie le nombre de lignes du tableau dans l'intervalle fixé par la méthode range.
      *

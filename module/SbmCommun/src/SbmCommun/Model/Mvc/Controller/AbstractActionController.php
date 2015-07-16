@@ -144,12 +144,14 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            la clé 'data' est un tableau associatif dont les clés sont 'table', 'type' et 'alias'
      * @param callable|null $renvoyer
      *            Fonction perpettant d'extraire des données de POST ($args après PostRedirectGet)
+     * @param callable|null $initform
+     *            Fonction d'initialisation du formulaire. Son paramètre est $args (tableau des paramètres fournis en post ou en session)
      *            
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post,
      *         ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
      *         ou le résultat de la fonction $renvoyer (souvent une fonction anonyme)
      */
-    protected function addData($params, $renvoyer = null)
+    protected function addData($params, $renvoyer = null, $initform = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -172,6 +174,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         $form = $params['form'];
         $form->setMaxLength($db->getMaxLengthArray($params['data']['table'], $params['data']['type']));
+        if (is_callable($initform)) {
+            $initform($args);
+        }
         $form->bind($table->getObjData());
         if ($isPost) {
             $form->setData($args);
@@ -196,13 +201,15 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param array $params
      *            tableau associatif dont les clés sont 'form' et 'data'.
      *            La clé 'data' est elle-même associée à un tableau associatif dont les clés sont 'table', 'type', 'alias' et 'id'
-     * @param string $renvoyer
+     * @param callable|null $renvoyer
      *            Fonction de construction de la réponse. Son paramètre est $args (tableau des paramètres fournis en post ou en session)
+     * @param callable|null $initform
+     *            Fonction d'initialisation du formulaire. Son paramètre est $args (tableau des paramètres fournis en post ou en session)
      *            
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post,
      *         ou un \SbmCommun\Model\Mvc\Controller\EditResponse contenant les données à renvoyer
      */
-    protected function editData($params, $renvoyer = null)
+    protected function editData($params, $renvoyer = null, $initform = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -233,6 +240,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
         
         $form = $params['form'];
         $form->setMaxLength($db->getMaxLengthArray($params['data']['table'], $params['data']['type']));
+        if (is_callable($initform)) {
+            $initform($args);
+        }
         $form->bind($table->getObjData());
         
         if ($isPost) {

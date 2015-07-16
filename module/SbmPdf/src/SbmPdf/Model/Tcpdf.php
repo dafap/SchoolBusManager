@@ -18,6 +18,7 @@ namespace SbmPdf\Model;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmCommun\Model\StdLib;
+use DafapSession\Model\Session;
 use Zend\Db\Sql\Where;
 use Zend\Stdlib\ArrayObject;
 
@@ -409,7 +410,9 @@ class Tcpdf extends \TCPDF
     protected function getOrderBy()
     {
         $orderBy = $this->getConfig('document', 'orderBy', null);
-        return empty($orderBy) ? $this->getParam('orderBy', null) : $orderBy;
+        $orderBy = empty($orderBy) ? $this->getParam('orderBy', null) : $orderBy;
+        $orderBy = str_replace('  ', ' ', str_replace(',', ', ', $orderBy));
+        return $orderBy;
     }
 
     protected function getRecordSourceType()
@@ -1012,38 +1015,7 @@ class Tcpdf extends \TCPDF
          * Ecriture du document
          */
         // thead
-        if ($this->getConfig(array(
-            'doctable',
-            'thead'
-        ), 'visible', false)) {
-            foreach ($this->getConfig('doctable', 'columns', array()) as $column) {
-                if (is_numeric($column['thead'])) {
-                    $align = $column['thead_align'] == 'standard' ? 'R' : $column['thead_align'];
-                } else {
-                    $align = $column['thead_align'] == 'standard' ? 'L' : $column['thead_align'];
-                }
-                $this->Cell($column['width'], $this->getConfig(array(
-                    'doctable',
-                    'thead'
-                ), 'row_height'), StdLib::formatData($column['thead'], $column['thead_precision'], $column['thead_completion']), $this->getConfig(array(
-                    'doctable',
-                    'thead'
-                ), 'cell_border'), 0, $align, 1, $this->getConfig(array(
-                    'doctable',
-                    'thead'
-                ), 'cell_link'), $column['thead_stretch'], $this->getConfig(array(
-                    'doctable',
-                    'thead'
-                ), 'cell_ignore_min_height'), $this->getConfig(array(
-                    'doctable',
-                    'thead'
-                ), 'cell_calign'), $this->getConfig(array(
-                    'doctable',
-                    'thead'
-                ), 'cell_valign'));
-            }
-            $this->Ln();
-        }
+        $this->templateDocBodyMethod1Thead();
         
         // tbody
         if ($this->getConfig(array(
@@ -1053,7 +1025,35 @@ class Tcpdf extends \TCPDF
             $this->configGraphicSectionTable('tbody');
             $columns = $this->getConfig('doctable', 'columns', array());
             $fill = 0;
+            // index des sauts de page
+            $idx_nl = $idx_page = array();
+            for ($i = 0; $i < count($columns); $i++) {
+                if ($columns[$i]['nl']) {
+                    $idx_nl[] = $i;
+                }
+                $idx_page[$i] = null;
+                $this->data['index'][1]['nl']['debut'] = 0;
+            }
             foreach ($this->getDataForTable() as $row) {
+                // saut de page pour un changement de valeur d'une colonne 
+                $nl = false;
+                foreach ($idx_nl as $i) {
+                    if (!empty($idx_page[$i]) && $idx_page[$i] != $row[$i]) {
+                        $nl = true;
+                        $idx_page[$i] = $row[$i];
+                        break;
+                    }
+                    $idx_page[$i] = $row[$i];
+                }
+                if ($nl) {
+                    $this->templateDocBodyMethod1Tfoot($this->data['index'][1]['nl']['debut'], $this->data['index'][1]['current'] - 1);
+                    $this->data['index'][1]['nl']['debut'] = $this->data['index'][1]['current'];
+                    $this->AddPage();
+                    $this->configGraphicSectionTable('thead');
+                    $this->templateDocBodyMethod1Thead();
+                    $this->configGraphicSectionTable('tbody');
+                }
+                // tbody
                 for ($j = 0; $j < count($row); $j ++) {
                     if (is_numeric($row[$j])) {
                         $align = $columns[$j]['tbody_align'] == 'standard' ? 'R' : $columns[$j]['tbody_align'];
@@ -1087,6 +1087,55 @@ class Tcpdf extends \TCPDF
         }
         
         // tfoot
+        $this->templateDocBodyMethod1Tfoot($this->data['index'][1]['nl']['debut']);
+        
+        $this->Cell($sum_width * $ratio, 0, '', 'T');
+    }
+    
+    /**
+     * Ecriture du thead pour ce template
+     */
+    private function templateDocBodyMethod1Thead()
+    {
+        if ($this->getConfig(array(
+            'doctable',
+            'thead'
+        ), 'visible', false)) {
+            foreach ($this->getConfig('doctable', 'columns', array()) as $column) {
+                if (is_numeric($column['thead'])) {
+                    $align = $column['thead_align'] == 'standard' ? 'R' : $column['thead_align'];
+                } else {
+                    $align = $column['thead_align'] == 'standard' ? 'L' : $column['thead_align'];
+                }
+                $this->Cell($column['width'], $this->getConfig(array(
+                    'doctable',
+                    'thead'
+                ), 'row_height'), StdLib::formatData($column['thead'], $column['thead_precision'], $column['thead_completion']), $this->getConfig(array(
+                    'doctable',
+                    'thead'
+                ), 'cell_border'), 0, $align, 1, $this->getConfig(array(
+                    'doctable',
+                    'thead'
+                ), 'cell_link'), $column['thead_stretch'], $this->getConfig(array(
+                    'doctable',
+                    'thead'
+                ), 'cell_ignore_min_height'), $this->getConfig(array(
+                    'doctable',
+                    'thead'
+                ), 'cell_calign'), $this->getConfig(array(
+                    'doctable',
+                    'thead'
+                ), 'cell_valign'));
+            }
+            $this->Ln();
+        }
+    }
+    
+    /**
+     * Ecriture du tfoot pour ce template
+     */
+    private function templateDocBodyMethod1Tfoot($debut = 0, $fin = null)
+    {
         if ($this->getConfig(array(
             'doctable',
             'tfoot'
@@ -1095,7 +1144,8 @@ class Tcpdf extends \TCPDF
             $index = 0;
             foreach ($this->getConfig('doctable', 'columns', array()) as $column) {
                 // calcul sur la colonne $index
-                $oCalculs = new Calculs($this->data[1], ++$index);
+                $oCalculs = new Calculs($this->data[1], ++ $index);
+                $oCalculs->range($debut, $fin);
                 $value = $oCalculs->getResultat($column['tfoot']);
                 //
                 if (is_numeric($value)) {
@@ -1125,8 +1175,6 @@ class Tcpdf extends \TCPDF
             }
             $this->Ln();
         }
-        
-        $this->Cell($sum_width * $ratio, 0, '', 'T');
     }
 
     protected function initConfigDoctable($ordinal_table = 1)
@@ -1149,10 +1197,12 @@ class Tcpdf extends \TCPDF
 
     /**
      * Renvoie le tableau des données pour la table $ordinal_table.
-     * Initialise le tableau s'il est vide.
+     * Initialise le tableau s'il est vide ou si $force.
      *
      * @param int $ordinal_table            
-     * @param boolean $force            
+     * @param boolean $force
+     *            force une initialisation du tableau
+     *            
      * @throws Exception
      * @return array
      */
@@ -1160,15 +1210,18 @@ class Tcpdf extends \TCPDF
     {
         if ($force || empty($this->data[$ordinal_table])) {
             $this->data[$ordinal_table] = array();
+            // lecture de la description des colonnes
+            $table_columns = $this->getConfig('doctable', 'columns', array());
             if ($this->getRecordSourceType() == 'T') {
                 // La source doit être enregistrée dans le ServiceManager (table ou vue MySql) sinon exception
                 $table = $this->getRecordSourceTable();
-                // lecture de la description des colonnes. Si absente, on configure toutes les colonnes de la source
-                $table_columns = $this->getConfig('doctable', 'columns', array());
+                // si la description des colonnes est vide, on configure toutes les colonnes de la source
                 if (empty($table_columns)) {
+                    $ordinal_position = 1;
                     foreach ($table->getColumnsNames() as $column_name) {
                         $column = require (__DIR__ . '/default/doccolumns.inc.php');
                         $column['thead'] = $column['tbody'] = $column_name;
+                        $column['ordinal_position'] = $ordinal_position ++;
                         $table_columns[] = $column;
                     }
                     $this->config['doctable']['columns'] = $table_columns;
@@ -1203,37 +1256,57 @@ class Tcpdf extends \TCPDF
                 }
                 $this->config['doctable']['columns'] = $table_columns;
             } else {
-                // c'est une requête Sql. Il n'y a pas de description des colonnes dans la table doccolumns. On va en créer un par défaut.
-                $this->data[$ordinal_table] = array();
-                if ($this->getServiceLocator()->has($this->getConfig('document', 'recordSource', ''))) {
-                    $sql = $this->getConfig('document', 'recordSource', '');
-                }
+                // c'est une requête Sql. S'il n'y a pas de description des colonnes dans la table doccolumns alors on en crée une par défaut.
+                $sql = $this->getConfig('document', 'recordSource', '');
+                // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
+                $sql = str_replace(array(
+                    '%date%',
+                    '%heure%',
+                    '%millesime%',
+                    '%userId%'
+                ), array(
+                    date('Y-m-d'),
+                    date('H:i:s'),
+                    Session::get('millesime'),
+                    $this->sm->get('Dafap\Authenticate')
+                        ->by()
+                        ->getUserId()
+                ), $sql);
+                //
                 $dbAdapter = $this->getServiceLocator()
                     ->get('Sbm\Db\DbLib')
                     ->getDbAdapter();
+                
                 try {
-                    foreach ($dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE) as $row) {
-                        // $row est un ArrayObject
-                        $ligne = array();
-                        $table_columns = array();
-                        foreach ($row as $key => $value) {
-                            if (empty($table_columns[$key])) {
+                    $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                    if ($rowset->count()) {
+                        // si la description des colonnes est vide, on configure toutes les colonnes de la source
+                        if (empty($table_columns)) {
+                            $ordinal_position = 1;
+                            foreach (array_keys($rowset->current()->getArrayCopy()) as $column_name) {
                                 $column = require (__DIR__ . '/default/doccolumns.inc.php');
-                                $column['thead'] = trim($column['tbody'] = $key, '`');
+                                $column['thead'] = $column['tbody'] = $column_name;
+                                $column['ordinal_position'] = $ordinal_position ++;
                                 $table_columns[] = $column;
                             }
-                            $ligne[] = $value;
-                            // adapte la largeur de la colonne si nécessaire
-                            $value_width = $this->GetStringWidth($value, PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
-                            if ($value_width > $table_columns[$key]['width']) {
-                                $table_columns[$key]['width'] = $value_width;
-                            }
+                            $this->config['doctable']['columns'] = $table_columns;
                         }
-                        $this->data[$ordinal_table][] = $ligne;
+                        foreach ($rowset as $row) {
+                            // $row est un ArrayObject
+                            $ligne = array();
+                            for ($key = 0; $key < count($table_columns); $key ++) {
+                                $ligne[] = $value = $row[$table_columns[$key]['tbody']];
+                                // adapte la largeur de la colonne si nécessaire
+                                $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                                $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
+                                if ($value_width > $table_columns[$key]['width']) {
+                                    $table_columns[$key]['width'] = $value_width;
+                                }
+                            }
+                            $this->data[$ordinal_table][] = $ligne;
+                            $this->config['doctable']['columns'] = $table_columns;
+                        }
                     }
-                    $this->config['doctable']['columns'] = $table_columns;
-                    $this->config['doctable']['thead']['visible'] = true;
-                    $this->config['doctable']['tfoot']['visible'] = false;
                 } catch (\Exception $e) {
                     $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s", $sql);
                     throw new Exception($message, $e->getCode(), $e->getPrevious());

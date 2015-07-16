@@ -41,6 +41,7 @@ return array(
             'filter' => 'text NOT NULL',
             'width' => 'int(11) NOT NULL DEFAULT "0"', // laisser à 0 pour que Tcpdf calcule la valeur nécessaire
             'truncate' => 'tinyint(1) NOT NULL DEFAULT "0"', // couper à la taille de la colonne (oui 1/non 0)
+            'nl' => 'tinyint(1) NOT NULL DEFAULT "0"', // saut de page après un changement de valeur dans cette colonne (oui 1/non 0)
         ),
         'primary_key' => array(
             'doccolumnId'

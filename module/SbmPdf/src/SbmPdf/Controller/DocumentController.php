@@ -156,7 +156,9 @@ class DocumentController extends AbstractActionController
             ),
             'form' => $form
         );
-        $r = $this->editData($params);
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        });
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -188,54 +190,96 @@ class DocumentController extends AbstractActionController
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
     public function pdfDupliquerAction()
-    {
+    {        
         $currentPage = $this->params('page', 1);
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        $form = new FormDocumentPdf($this->getServiceLocator());
-        $form->setValueOptions('TrecordSource', $db->getTableAliasList());
-        $params = array(
-            'data' => array(
-                'table' => 'documents',
-                'type' => 'system',
-                'alias' => 'Sbm\Db\System\Documents'
-            ),
-            'form' => $form
-        );
-        // $r renvoie un Zend\Http\PhpEnvironment\Response ou une chaine compte-rendu ou documentId ou -1 (si le formulaire n'a pas validé)
-        $r = $this->addData($params, function ($post) {
-            return isset($post['documentId']) ? $post['documentId'] : - 1;
-        });
-        switch ($r) {
-            case $r instanceof Response:
-                return $r;
-                break;
-            case 'error':
-            case 'warning':
-            case 'success':
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            if ($args === false) {
+                $this->flashMessenger()->addErrorMessage("Action interdite.");
                 return $this->redirect()->toRoute('sbmpdf', array(
                     'action' => 'pdf-liste',
                     'page' => $currentPage
                 ));
-                break;
-            default:
-                // $r est soit -1, soit $documentId
-                if ($r > 0) {
-                    $data = $this->getServiceLocator()
-                        ->get('Sbm\Db\System\Documents')
-                        ->getRecord($r)
-                        ->getArrayCopy();
-                    $data['documentId'] = null;
-                    $form->setData($data);
-                }
-                $view = new ViewModel(array(
-                    'form' => $form->prepare(),
-                    'page' => $currentPage,
-                    'documentId' => null
+            }
+            $isPost = false;
+        } else {
+            $args = $prg;
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage("Aucun enregistrement n'a été ajouté.");
+                return $this->redirect()->toRoute('sbmpdf', array(
+                    'action' => 'pdf-liste',
+                    'page' => $currentPage
                 ));
-                $view->setTemplate('sbm-pdf/document/pdf-edit.phtml');
-                return $view;
-                break;
+            }
+            $isPost = array_key_exists('submit', $args);
+            unset($args['submit']);
+            $this->setToSession('post', $args, $this->getSessionNamespace());
         }
+        $tDocuments = $this->getServiceLocator()->get('Sbm\Db\System\Documents');
+        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
+        $form = new FormDocumentPdf($this->getServiceLocator());
+        $form->setValueOptions('TrecordSource', $db->getTableAliasList());
+        $form->setMaxLength($db->getMaxLengthArray('documents', 'system'));
+        $form->bind($tDocuments->getObjData());
+        if ($isPost) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $oData = $form->getData();
+                $tDocuments->saveRecord($oData);
+                $documentId = $oData->documentId;
+                if (empty($documentId)) {
+                    $documentId = $tDocuments->getTableGateway()->getLastInsertValue();
+                }
+                $this->flashMessenger()->addSuccessMessage("Un nouvel enregistrement a été ajouté.");
+                // création des sections dans doctables
+                if ($oData->disposition == 'Tabulaire') {
+                    $tDoctables = $this->getServiceLocator()->get('Sbm\Db\System\Doctables');
+                    $oDoctable = $tDoctables->getObjData();
+                    $defaults = include (__DIR__ . '/../Model/default/doctables.inc.php');
+                    foreach (array(
+                        'thead',
+                        'tbody',
+                        'tfoot'
+                    ) as $section) {
+                        $defaults[$section]['documentId'] = $documentId;
+                        $oDoctable->exchangeArray($defaults[$section]);
+                        $oDoctable->section = $section;
+                        $tDoctables->saveRecord($oDoctable);
+                    }
+                }
+                // création des colonnes du tableau
+                
+                // retour à la liste des documents pdf
+                return $this->redirect()->toRoute('sbmpdf', array(
+                    'action' => 'pdf-liste',
+                    'page' => $currentPage
+                ));
+            }
+        } else {
+            // initialisation du formulaire
+            $documentId = isset($args['documentId']) ? $args['documentId'] : - 1;
+            if ($documentId > 0) {
+                $data = $this->getServiceLocator()
+                    ->get('Sbm\Db\System\Documents')
+                    ->getRecord($documentId)
+                    ->getArrayCopy();
+                unset($data['documentId']);
+                $form->setData($data);
+            } else {
+                $defaults = array_merge($db->getColumnDefaults('documents', 'system'), include (__DIR__ . '/../Model/default/documents.inc.php'));
+                $form->setData($defaults);
+            }
+        }
+        $view = new ViewModel(array(
+            'form' => $form->prepare(),
+            'page' => $currentPage,
+            'documentId' => null
+        ));
+        $view->setTemplate('sbm-pdf/document/pdf-edit.phtml');
+        return $view;
     }
 
     public function pdfSupprAction()
@@ -298,6 +342,20 @@ class DocumentController extends AbstractActionController
                     break;
             }
         }
+    }
+
+    public function pdfApercuAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $this->flashMessenger()->addInfoMessage('Retour à la liste des documents');
+            return $this->redirect()->toRoute('sbmpdf');
+        }
+        $documentId = $prg['documentId'];
+        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+        $call_pdf->setParam('documentId', $documentId)->renderPdf();
     }
 
     public function pdfGroupAction()
@@ -448,10 +506,15 @@ class DocumentController extends AbstractActionController
                 $this->setToSession('post', $args, $this->getSessionNamespace());
             }
         }
-        return new ViewModel(array(
-            'data' => $this->getServiceLocator()
+        try {
+            $data = $this->getServiceLocator()
                 ->get('Sbm\Db\System\DocTables\Columns')
-                ->getConfig($args['documentId'], $args['ordinal_table']),
+                ->getConfig($args['documentId'], $args['ordinal_table']);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $data = array();
+        }
+        return new ViewModel(array(
+            'data' => $data,
             'page' => $this->params('page', 1),
             'document' => $args
         ));
@@ -460,9 +523,8 @@ class DocumentController extends AbstractActionController
     public function colonneEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
-        $form = new FormDocColumn($this->getServiceLocator());
-        
+        $sm = $this->getServiceLocator();
+        $form = new FormDocColumn($sm);
         $params = array(
             'data' => array(
                 'table' => 'doccolumns',
@@ -474,6 +536,13 @@ class DocumentController extends AbstractActionController
         );
         $r = $this->editData($params, function ($post) {
             return $post;
+        }, function ($post) use($sm, $form) {
+            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $form->setValueOptions('tbody', $columns->getListeForSelect());
+            $form->setData(array(
+                'name' => $post['name'],
+                'recordSource' => $post['recordSource']
+            ));
         });
         if ($r instanceof Response) {
             return $r;
@@ -499,11 +568,167 @@ class DocumentController extends AbstractActionController
     }
 
     public function colonneAjoutAction()
-    {}
+    {
+        $currentPage = $this->params('page', 1);
+        $sm = $this->getServiceLocator();
+        $form = new FormDocColumn($sm);
+        $params = array(
+            'data' => array(
+                'table' => 'doccolumns',
+                'type' => 'system',
+                'alias' => 'Sbm\Db\System\DocTables\Columns'
+            ),
+            // 'id' => 'doccolumnId'
+            'form' => $form
+        );
+        $r = $this->addData($params, function ($post) {
+            return $post;
+        }, function ($post) use($sm, $form) {
+            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $form->setValueOptions('tbody', $columns->getListeForSelect());
+        });
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmpdf', array(
+                    'action' => 'colonne-liste',
+                    'page' => $currentPage
+                ));
+                break;
+            default:
+                $form->setData(array(
+                    'documentId' => $r['documentId'],
+                    'name' => $r['name'],
+                    'recordSource' => $r['recordSource'],
+                    'ordinal_position' => $r['new_position']
+                ));
+                $view = new ViewModel(array(
+                    'form' => $form->prepare(),
+                    'page' => $currentPage,
+                    'document' => $r
+                ));
+                $view->setTemplate('sbm-pdf/document/colonne-edit.phtml');
+                return $view;
+                break;
+        }
+    }
 
     public function colonneDupliquerAction()
-    {}
+    {
+        $currentPage = $this->params('page', 1);
+        $sm = $this->getServiceLocator();
+        $form = new FormDocColumn($sm);
+        $params = array(
+            'data' => array(
+                'table' => 'doccolumns',
+                'type' => 'system',
+                'alias' => 'Sbm\Db\System\DocTables\Columns'
+            ),
+            // 'id' => 'doccolumnId'
+            'form' => $form
+        );
+        $r = $this->addData($params, function ($post) {
+            return $post;
+        }, function ($post) use($sm, $form) {
+            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $form->setValueOptions('tbody', $columns->getListeForSelect());
+            $form->setData(array(
+                'name' => $post['name'],
+                'recordSource' => $post['recordSource']
+            ));
+        });
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmpdf', array(
+                    'action' => 'colonne-liste',
+                    'page' => $currentPage
+                ));
+                break;
+            default:
+                $tDocColumns = $this->getServiceLocator()->get('Sbm\Db\System\DocTables\Columns');
+                $acolonne = $tDocColumns->getRecord($r['doccolumnId'])->getArrayCopy();
+                $acolonne['ordinal_position'] = $r['new_position'];
+                unset($r['ordinal_position']);
+                unset($acolonne['doccolumnId']);
+                $form->setData($acolonne);
+                $view = new ViewModel(array(
+                    'form' => $form->prepare(),
+                    'page' => $currentPage,
+                    'document' => $r
+                ));
+                $view->setTemplate('sbm-pdf/document/colonne-edit.phtml');
+                return $view;
+                break;
+        }
+    }
 
     public function colonneSupprAction()
-    {}
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new ButtonForm(array(
+            'id' => null
+        ), array(
+            'supproui' => array(
+                'class' => 'confirm',
+                'value' => 'Confirmer'
+            ),
+            'supprnon' => array(
+                'class' => 'confirm',
+                'value' => 'Abandonner'
+            )
+        ));
+        $params = array(
+            'data' => array(
+                'alias' => 'Sbm\Db\System\DocTables\Columns',
+                'id' => 'doccolumnId'
+            ),
+            'form' => $form
+        );
+        try {
+            $r = $this->supprData($params, function ($id, $tDocColumns) {
+                return array(
+                    'id' => $id,
+                    'data' => $tDocColumns->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette colonne.');
+            return $this->redirect()->toRoute('sbmpdf', array(
+                'action' => 'colonne-liste',
+                'page' => $currentPage
+            ));
+        }
+        
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmpdf', array(
+                        'action' => 'colonne-liste',
+                        'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                        'form' => $form->prepare(),
+                        'page' => $currentPage,
+                        'data' => StdLib::getParam('data', $r->getResult()),
+                        'doccolumnId' => StdLib::getParam('id', $r->getResult())
+                    ));
+                    break;
+            }
+        }
+    }
 }

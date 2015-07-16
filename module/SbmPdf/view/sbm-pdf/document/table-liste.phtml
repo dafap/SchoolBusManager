@@ -1,0 +1,126 @@
+<?php
+/**
+ * Cette vue présente la liste des 3 parties d'un tableau dans un document pdf (thead, tbody, tfoot)
+ * 
+ * Variables de cette vue :
+ * - data
+ * - page
+ * - document
+ *
+ * Depuis cette liste, il est possible de mettre en forme chaque partie et d'accéder à la liste des colonnes.
+ * Il n'y a pas de bouton suppression car les parties sont détruites en cascade lorsqu'on demande la suppression du document.
+ * Par contre, si elles ne sont pas utilisées, il suffit de les déclarer non visible dans la configuration.
+ * 
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource table-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 juil. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_cancel = $this->url('sbmpdf');
+$url_edit = $this->url('sbmpdf', array(
+    'action' => 'table-edit',
+    'page' => $this->page
+));
+$url_colonne = $this->url('sbmpdf', array(
+    'action' => 'colonne-liste',
+    'page' => $this->page
+));
+$retour = $this->url('sbmpdf', array(
+    'action' => 'pdf-edit',
+    'page' => $this->page
+));
+
+$hiddens = array(
+    'documentId' => $this->document['documentId'],
+    'name' => $this->document['name'],
+    'ordinal_table' => $this->document['ordinal_table'],
+    'recordSource' => $this->document['recordSource']
+);
+$actions = array(
+    'homepdf' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_cancel,
+        'title' => 'Liste des documents'
+    ),
+    'retour' => array(
+        'class' => 'fam-book-previous',
+        'formaction' => $retour,
+        'title' => 'Configuration du document'
+    ),
+    'colonnes' => array(
+        'formaction' => $url_colonne,
+        'class' => 'button default',
+        'value' => 'Liste des colonnes',
+        'title' => 'Définition et mise en forme des colonnes'
+    )
+);
+$buttons = array(
+    'modifier' => array(
+        'class' => 'fam-pencil',
+        'formaction' => $url_edit,
+        'title' => 'modifier'
+    )
+);
+?>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="float-left">
+			<h1>Liste des sections d'un tableau pour un document pdf</h1>
+			<ul>
+				<li>Document: <?php echo $this->document['name'];?></li>
+				<li>Numéro du tableau: <?php echo $this->document['ordinal_table'];?></li>
+				<li>Source du document: <?php echo $this->document['recordSource'];?></li>
+			</ul>
+            <?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="pdf">
+			<tbody>
+				<tr>
+					<th>Section</th>
+					<th>Description</th>
+					<th>Visible</th>
+					<th>Largeur</th>
+					<th>Hauteur<br />de ligne
+					</th>
+					<th></th>
+				</tr>
+            <?php foreach($data as $section => $row): ?>
+                <tr
+					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td class="section"><?php echo $this->escapeHtml($row['section']); ?></td>
+					<td class="description"><?php echo $this->escapeHtml($row['description']); ?></td>
+					<td class="visible"><?php echo $row['visible'] ? 'Oui' : 'Non'; ?></td>
+					<td class="width"><?php echo $row['width']; ?></td>
+					<td class="row_height"><?php echo $row['row_height']; ?></td>
+					<td class="boutons">
+            <?php
+                $hiddens = array(
+                    'doctableId' => $row['doctableId'],
+                    'documentId' => $row['documentId'],
+                    'name' => $this->document['name'],
+                    'ordinal_table' => $row['ordinal_table'],
+                    'recordSource' => $this->document['recordSource']
+                );
+                echo $this->listeLigneActions($row['doctableId'], $hiddens, $buttons);
+                ?>
+				    </td>
+				</tr>         
+        <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer"></div>
+</div>

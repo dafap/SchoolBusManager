@@ -8,8 +8,8 @@
  * @filesource Service/DbLibService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mai 2014
- * @version 2014-1
+ * @date 4 mai 2014, 12 juillet 2015
+ * @version 2014-2
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -147,6 +147,22 @@ class DbLibService implements FactoryInterface
     }
 
     /**
+     * Renvoie un tableau des noms de colonnes pour une table dont le nom simple et le type sont donnés.
+     *
+     * @param string $tableName
+     *            nom simple
+     * @param string $type
+     *            table|vue|system
+     *            
+     * @return array
+     */
+    public function getColumns($tableName, $type)
+    {
+        $table = $this->metadata->getTable($this->getCanonicName($tableName, $type));
+        return $table->getColumns();
+    }
+
+    /**
      * Renvoie un tableau des valeurs par défaut des colonnes pour les colonnes ayant une valeur par défaut.
      * Pour les colonnes `millesime` la valeur par défaut est la valeur courante en session.
      *
@@ -238,7 +254,7 @@ class DbLibService implements FactoryInterface
 
     /**
      * Renvoie un tableau indexé de la forme (nom_réel => nom de l'entité,...)
-     * 
+     *
      * @return array
      */
     public function getTableList()
@@ -265,7 +281,7 @@ class DbLibService implements FactoryInterface
 
     /**
      * Renvoie un tableau de la forme (alias => libellé de l'entité,...)
-     * 
+     *
      * @return array
      */
     public function getTableAliasList()
@@ -315,8 +331,7 @@ class DbLibService implements FactoryInterface
             throw new Exception(sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", $type == 'vue' ?  : $type == 'table' ?  : 'table système', $tableName));
         }
         $result = array();
-        $table = $this->metadata->getTable($this->getCanonicName($tableName, $type));
-        foreach ($table->getColumns() as $column) {
+        foreach ($this->getColumns($tableName, $type) as $column) {
             $result[$column->getName()]['data_type'] = $column->getDataType();
             $result[$column->getName()]['column_default'] = $column->getColumnDefault();
             $result[$column->getName()]['is_nullable'] = $column->getIsNullable();

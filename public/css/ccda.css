@@ -302,6 +302,7 @@ label.sbm-label-top {
 	padding: 0;
 	margin-right: 3px;
 	position: relative;
+	z-index:100;
 }
 #bienvenue ul {
 	list-style: none;
