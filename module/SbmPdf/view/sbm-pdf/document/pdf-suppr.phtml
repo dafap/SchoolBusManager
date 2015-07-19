@@ -1,0 +1,30 @@
+<?php
+/**
+ * Page de suppression d'un document pdf
+ *
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource pdf-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 juin 2015
+ * @version 2015-1
+ */
+?>
+<h1>Suppression d'un document pdf</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du document :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li>de nom <b><?php echo $this->escapeHtml($this->data->name); ?></b></li>
+			<li>dont le titre est <b><?php echo $this->escapeHtml($this->data->title); ?></b></li>
+			<li>dont la source est <b><?php echo $this->escapeHtml($this->data->recordSource); ?></b></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

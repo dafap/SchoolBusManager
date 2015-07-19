@@ -390,4 +390,100 @@ class EleveController extends AbstractActionController
             'success' => 1
         )));
     }
+    
+    /**
+     * ajax - cocher la case accordR1 des élèves
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function checkaccordR1Action()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Scolarites')
+            ->setAccord(Session::get('millesime'), $eleveId, 'R1', 1);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+    
+    /**
+     * ajax - décocher la case accordR1 des élèves
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function uncheckaccordR1Action()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Scolarites')
+            ->setAccord(Session::get('millesime'), $eleveId, 'R1', 0);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }    
+    
+    /**
+     * ajax - cocher la case accordR2 des élèves
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function checkaccordR2Action()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Scolarites')
+                ->setAccord(Session::get('millesime'), $eleveId, 'R2', 1);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+
+    /**
+     * ajax - décocher la case accordR2 des élèves
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function uncheckaccordR2Action()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Scolarites')
+                ->setAccord(Session::get('millesime'), $eleveId, 'R2', 0);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
 }

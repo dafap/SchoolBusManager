@@ -106,7 +106,6 @@ echo $this->flashMessenger()->render('default');
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Adresse</th>
-					<th>Adresse</th>
 					<th>Code<br>postal
 					</th>
 					<th>Commune</th>
@@ -147,8 +146,11 @@ EOT;
 					<td class="titre"><?php echo $ttr = $this->escapeHtml($responsable['titre']); ?></td>
 					<td class="nom"><?php echo $nm = $this->escapeHtml($responsable['nom']); ?></td>
 					<td class="prenom"><?php echo $prn = $this->escapeHtml($responsable['prenom']); ?></td>
-					<td class="adresseL1"><?php echo $this->escapehtml($responsable['adresseL1']); ?></td>
-					<td class="adresseL2"><?php echo $this->escapehtml($responsable['adresseL2']); ?></td>
+					<td class="adresse"><?php echo $this->escapehtml($responsable['adresseL1']); ?>
+					<?php if(!empty($responsable['adresseL2'])):?>
+					   <br/><?php echo $this->escapehtml($responsable['adresseL2']); ?>
+					<?php endif;?>
+					</td>
 					<td class="centre codePostal"><?php echo $this->escapeHtml($responsable['codePostal']); ?></td>
 					<td class="commune"><?php echo $cmn =$this->escapehtml($responsable['commune']); ?></td>
 					<td class="centre gris nbEleves"><?php echo $responsable['nbEnfants']; ?></td>

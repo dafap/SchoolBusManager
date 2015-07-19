@@ -9,7 +9,6 @@ return array(
     'modules' => array(
         'DafapSession',
         'AtPhpSettings',
-        'DafapTcpdf',
         'ZfcBase',
         'SbmFront',
         'DafapMail',
@@ -19,6 +18,7 @@ return array(
         'SbmParent',
         'SbmPaiement',
         'SbmCommun',
+        'SbmPdf',
         'SbmCartographie',
         'SbmAjax'
     ),

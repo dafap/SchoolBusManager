@@ -26,7 +26,22 @@ return array(
         'primary_key' => array(
             'docaffectationId'
         ),
-        'engine' => 'MyISAM',
+        'foreign key' => array(
+            array(
+                'key' => 'documentId',
+                'references' => array(
+                    'table' => 'documents',
+                    'fields' => array(
+                        'documentId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'CASCADE'
+                    )
+                )
+            )
+        ),
+        'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     )

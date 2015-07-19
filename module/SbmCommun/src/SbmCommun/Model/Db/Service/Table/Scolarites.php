@@ -107,4 +107,49 @@ class Scolarites extends AbstractSbmTable
         ))->where($where);
         return $this->table_gateway->updateWith($update);
     }
+
+    /**
+     * Coche ou décoche le champ accordRi (i=1 ou 2)
+     *
+     * @param int $millesime
+     *            Millesime sur lequel on travaille
+     * @param int $eleveId
+     *            identifiant d'un eleve
+     * @param string $r
+     *            R1 ou R2
+     * @param bool $accord
+     *            0 ou 1
+     */
+    public function setAccord($millesime, $eleveId, $r, $accord)
+    {
+        // die(var_dump($eleveId, $r, $accord));
+        $champ = "accord$r";
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'millesime' => $millesime,
+            'eleveId' => $eleveId,
+            $champ => $accord
+        ));
+        // die(var_dump($oData));
+        parent::saveRecord($oData);
+    }
+
+    /**
+     * Affecte le champ inscrit
+     *
+     * @param int $millesime            
+     * @param int $eleveId            
+     * @param int $inscrit
+     *            0 (rayer) ou 1 (inscrit)
+     */
+    public function setInscrit($millesime, $eleveId, $inscrit)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'millesime' => $millesime,
+            'eleveId' => $eleveId,
+            'inscrit' => $inscrit
+        ));
+        parent::saveRecord($oData);
+    }
 }

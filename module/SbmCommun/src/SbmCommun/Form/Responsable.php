@@ -559,7 +559,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
     {
         $result = parent::isValid();
         // un des 3 numéros de téléphones doit être renseigné
-        if (empty($this->data['telephoneF']) && empty($this->data['telephoneP'] && empty($this->data['telephoneT']))) {
+        if (empty($this->data['telephoneF']) && empty($this->data['telephoneP']) && empty($this->data['telephoneT'])) {
             $result = false;
             $element = $this->get('telephoneT');
             $element->setMessages(array('Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'));

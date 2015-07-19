@@ -302,6 +302,7 @@ label.sbm-label-top {
 	padding: 0;
 	margin-right: 3px;
 	position: relative;
+	z-index:100;
 }
 #bienvenue ul {
 	list-style: none;
@@ -702,7 +703,7 @@ table.eleve-affectations td.second {
 	width: 81px;
 }
 table.eleve-affectations td.third {
-	width: 50px;
+	width: 55px;
 }
 table.eleve-affectations td.last {
 	width: 42px;
@@ -1100,4 +1101,16 @@ table.parent {
 	width: 120px;
 	margin-left: 5px;
 }
-
+/*---------------------- Documents ------------------------*/
+#fiche-inner .sbm-document-table label {
+	display: inline-block;
+	width: 450px;
+	padding-left: 5px;
+}
+#fiche-inner .sbm-document-table fieldset {
+	border: 1px solid #fdddcc;
+	border-radius: 4px 4px 4px 4px;
+}
+#fiche-inner .sbm-document-table fieldset label {
+	width: auto;
+}

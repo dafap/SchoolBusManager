@@ -32,7 +32,7 @@ return array(
             'vads_cust_email' => 'char(150)',
             'vads_cust_id' => 'int(11) NOT NULL',
             'vads_cust_last_name' => 'varchar(30) NOT NULL',
-            'vads_cust_first_name' => 'varchar(30) NOT NULL',                       
+            'vads_cust_name' => 'varchar(30) NOT NULL',                       
             'vads_order_id' => 'varchar(32) NOT NULL',
             'ref_eleveIds' => 'varchar(255)',
             'vads_payment_certificate' => 'varchar(40) NOT NULL DEFAULT ""',

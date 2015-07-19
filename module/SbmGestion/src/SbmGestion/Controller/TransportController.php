@@ -326,7 +326,6 @@ class TransportController extends AbstractActionController
         $where = new Where();
         $where->equalTo('millesime', $dernierMillesime);
         $resultset = $tCircuits->fetchAll($where);
-        // die(var_dump($resultset->count()));
         if ($resultset->count()) {
             $this->flashMessenger()->addErrorMessage('Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
@@ -352,7 +351,7 @@ class TransportController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function circuitPdfAction()
@@ -646,7 +645,7 @@ class TransportController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function classePdfAction()
@@ -896,7 +895,7 @@ class TransportController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function communePdfAction()
@@ -1173,7 +1172,7 @@ class TransportController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function etablissementPdfAction()
@@ -1817,7 +1816,7 @@ class TransportController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function servicePdfAction()
@@ -2181,7 +2180,7 @@ class TransportController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function stationPdfAction()
@@ -2605,7 +2604,7 @@ class TransportController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function transporteurPdfAction()
