@@ -133,4 +133,23 @@ class Scolarites extends AbstractSbmTable
         // die(var_dump($oData));
         parent::saveRecord($oData);
     }
+
+    /**
+     * Affecte le champ inscrit
+     *
+     * @param int $millesime            
+     * @param int $eleveId            
+     * @param int $inscrit
+     *            0 (rayer) ou 1 (inscrit)
+     */
+    public function setInscrit($millesime, $eleveId, $inscrit)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'millesime' => $millesime,
+            'eleveId' => $eleveId,
+            'inscrit' => $inscrit
+        ));
+        parent::saveRecord($oData);
+    }
 }

@@ -77,6 +77,8 @@ class Affectations extends AbstractSbmTable
                 }
                 $this->table_gateway->update($data, $array_where);
             }
+        } else {
+            parent::deleteRecord($item);
         }
     }
 

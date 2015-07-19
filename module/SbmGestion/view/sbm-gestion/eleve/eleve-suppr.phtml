@@ -8,21 +8,33 @@
  * @filesource eleve-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juillet 2014
- * @version 2014-1
+ * @date 17 juillet 2015
+ * @version 2015-1
  */
 ?>
-<h1>Suppression d'un élève</h1>
-<p>Vous avez demandé la suppression de l'élève :</p>
-<ul>
-    <li><?php echo $this->escapeHtml($this->data->nom); ?></li>
-    <li><?php echo $this->escapeHtml($this->data->prenom); ?></li>
-    <li>né le <?php echo $this->escapehtml($this->data->dateN); ?></li>
-    <li>habitant <?php echo $this->escapehtml($this->data->adress1L1); ?> à <?php echo $this->escapehtml($this->data->commune1); ?></li>
-</ul>
-<p>Confirmez-vous ?</p>
-<?php 
+<h1>Suppression d'une inscription</h1>
+<div id="suppr-wrapper">
+	<p>Vous souhaitez supprimer l'inscription de :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
+			<li>Scolarisé à <?php echo $this->eleve['etablissement'] . ' - ' . $this->eleve['communeEtablissement']; ?></li>
+	        <?php if ($this->affectations->count() > 0) : ?>
+	        <li>Affecté sur :
+				<ul>
+	            <?php foreach ($this->affectations as $affectation) :?>
+	               <li><?php echo $affectation['service1Id'] . ' (' . $affectation['transporteur1'] . ')'; ?></li>
+	            <?php endforeach; ?>
+	            </ul>
+			</li>
+	        <?php endif; ?>
+        </ul>
+	</div>
+	<p>Pour supprimer définitivement la fiche de cet élève, cliquez sur le bouton "Supprimer".</p>
+	<p>Pour supprimer l'inscription tout en gardant sa trace dans l'historique, cliquez sur le bouton "Rayer"</p>
+<?php
 echo $this->form()->openTag($form);
 echo $this->formCollection($form);
 echo $this->form()->closeTag();
 ?>
+</div>
