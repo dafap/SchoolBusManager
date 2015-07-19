@@ -1956,7 +1956,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $array = array();
         foreach ($this->getElementNames() as $elementName) {
             $array[$elementName] = array(
-                'name' => $array[$elementName],
+                'name' => $elementName,
                 'required' => false
             );
         }

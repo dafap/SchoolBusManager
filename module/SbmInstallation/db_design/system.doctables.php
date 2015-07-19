@@ -53,7 +53,7 @@ return array(
                     ),
                     'on' => array(
                         'update' => 'CASCADE',
-                        'delete' => 'RESTRICT'
+                        'delete' => 'CASCADE'
                     )
                 )
             )

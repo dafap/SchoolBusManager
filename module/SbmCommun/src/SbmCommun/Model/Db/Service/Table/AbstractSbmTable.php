@@ -22,6 +22,7 @@ use Zend\Paginator\Adapter\DbSelect;
 use Zend\Paginator\Paginator;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\Service\Table\Exception;
+
 abstract class AbstractSbmTable implements FactoryInterface
 {
 
@@ -117,7 +118,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
         $this->obj_data->setArrayMask($this->getColumnsNames());
         try {
-        $this->obj_data->setAreNullable($this->db->getAreNullableColumns($this->table_name, $this->table_type));
+            $this->obj_data->setAreNullable($this->db->getAreNullableColumns($this->table_name, $this->table_type));
         } catch (\SbmCommun\Model\Db\Exception $e) {
             die('<!DOCTYPE Html><head><meta charset="utf-8"><title>SBM School Bus Manager</title></head><body>Il faut installer les tables dans la base de données.</body></html>');
         }
@@ -259,11 +260,16 @@ abstract class AbstractSbmTable implements FactoryInterface
         try {
             return $this->table_gateway->selectWith($select);
         } catch (\Exception $e) {
-            $msg = __METHOD__ . ' - ' . $this->table_name;
-            if (is_string($where)) {
-                $msg .= ' WHERE = (' . $where . ')';
+            $msg = __METHOD__ . ' - ' . $this->table_name . "\n";
+            if (getenv('APPLICATION_ENV') == 'development') {
+                $msg .= $e->getMessage();
+                if (is_string($where)) {
+                    $msg .= "\n WHERE = (" . $where . ')';
+                } else {
+                    $msg .= "\n" . $select->getSqlString();
+                }
             }
-            die("<!DOCTYPE Html><html><head></head><body>$msg</body></html>");
+            die("<!DOCTYPE Html><html><head></head><body><pre>$msg</pre></body></html>");
         }
     }
 
@@ -304,7 +310,8 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     public function is_newRecord($id)
     {
-        if ($id === false) return true;
+        if ($id === false)
+            return true;
         try {
             $this->getRecord($id);
             return false;

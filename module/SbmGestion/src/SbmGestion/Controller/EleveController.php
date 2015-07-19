@@ -31,7 +31,6 @@ use SbmCommun\Form\LatLng as LatLngForm;
 use SbmGestion\Form\Eleve\EditForm as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
-use Zend\View\Model\Zend\View\Model;
 use DafapMail\Model\Template as MailTemplate;
 
 class EleveController extends AbstractActionController
@@ -533,14 +532,42 @@ class EleveController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
+                $millesime = Session::get('millesime');
                 $dataValid = array_merge(array(
-                    'millesime' => Session::get('millesime')
+                    'millesime' => $millesime
                 ), $form->getData());
+                // changeR1 et changeR2 indiquent s'il faut mette à jour en cascade le changement de responsable dans la table affectations
+                if (! $dataValid['ga'] && ! empty($dataValid['responsable2Id'])) {
+                    $dataValid['responsable2Id'] = '';
+                }
+                $changeR1 = $dataValid['responsable1Id'] != $odata0->responsable1Id;
+                $changeR2 = false;
+                if (! is_null($odata0->responsable2Id)) {
+                    $changeR2 = empty($dataValid['responsable2Id']) || $dataValid['responsable2Id'] != $odata0->responsable2Id;
+                }
+                // enregistrement dans la table eleves
                 $tEleves->saveRecord($tEleves->getObjData()
                     ->exchangeArray($dataValid));
+                // maj en cascade dans la table affectations
+                $tAffectations = $this->getServiceLocator()->get('Sbm\Db\Table\Affectations');
+                if ($changeR1) {
+                    // maj du responsableId
+                    $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable1Id, $dataValid['responsable1Id']);
+                }
+                if ($changeR2) {
+                    if (empty($dataValid['responsable2Id'])) {
+                        // suppression des affectations relatives à cet élève pour ce millesime
+                        $tAffectations->deleteResponsableId($millesime, $eleveId, $odata0->responsable2Id);
+                    } else {
+                        // maj du responsableId
+                        $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable2Id, $dataValid['responsable2Id']);
+                    }
+                }
+                // enregistrement dans la table scolarites
                 $recalcul = $tScolarites->saveRecord($tScolarites->getObjData()
                     ->exchangeArray($dataValid));
-                if ($recalcul) {
+                // recalcul des droits et des distances en cas de modification de la destination ou d'une origine
+                if ($recalcul || $changeR1 || $changeR2) {
                     $majDistances = $this->getServiceLocator()->get('Sbm\CalculDroitsTransport');
                     if ($odata1->district) {
                         $majDistances->majDistancesDistrictSansPerte($eleveId);
@@ -731,7 +758,94 @@ class EleveController extends AbstractActionController
 
     public function eleveSupprAction()
     {
-        return $this->redirect()->toRoute('sbmgestion/eleve');
+        $prg = $this->prg();
+        $rayer = $supprimer = false;
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            if ($args === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite.');
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+        } else {
+            $args = $prg;
+            if (array_key_exists('cancel', $args) || ! array_key_exists('eleveId', $args)) {
+                $this->flashMessenger()->addWarningMessage('Abandon de la suppression.');
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+            $rayer = array_key_exists('rayer', $args);
+            $supprimer = array_key_exists('confirmer', $args);
+            unset($args['rayer'], $args['confirmer']);
+            $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
+        $form = new ButtonForm(array(
+            'eleveId' => $args['eleveId']
+        ), array(
+            'confirmer' => array(
+                'class' => 'confirm',
+                'value' => 'Supprimer',
+                'title' => 'Cette action est irréversible.'
+            ),
+            'rayer' => array(
+                'class' => 'confirm',
+                'value' => 'Rayer',
+                'title' => 'L\'élève ne sera plus inscrit mais restera enregistré dans la base.'
+            ),
+            'cancel' => array(
+                'class' => 'confirm',
+                'value' => 'Abandonner'
+            )
+        ));
+        $millesime = Session::get('millesime');
+        if ($rayer) {
+            $where = new Where();
+            $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Affectations')
+                ->deleteRecord($where);
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Scolarites')
+                ->setInscrit($millesime, $args['eleveId'], 0);
+            $this->flashMessenger()->addSuccessMessage('L\'élève a été rayée.');
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'eleve-liste',
+                'page' => $this->params('page', 1)
+            ));
+        } elseif ($supprimer) {
+            $where = new Where();
+            $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Affectations')
+                ->deleteRecord($where);
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Scolarites')
+                ->deleteRecord($where);
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Eleves')
+                ->deleteRecord($args['eleveId']);
+            $this->flashMessenger()->addSuccessMessage('L\'inscription a été supprimée.');
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'eleve-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        return new ViewModel(array(
+            'form' => $form->prepare(),
+            'page' => $this->params('page', 1),
+            'eleve' => $this->getServiceLocator()
+                ->get('Sbm\Db\Query\ElevesScolarites')
+                ->getEleve($args['eleveId']),
+            'affectations' => $this->getServiceLocator()
+                ->get('Sbm\Db\Query\AffectationsServicesStations')
+                ->getCorrespondances($args['eleveId'])
+        ));
     }
 
     public function eleveLocalisationAction()

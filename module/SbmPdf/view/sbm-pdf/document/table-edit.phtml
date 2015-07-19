@@ -1,0 +1,94 @@
+<?php
+/**
+ * Page de paramétrage des sections d'un tableau à inclure dans un document pdf
+ *
+ * Cette vue présente un formulaire de l'une des 3 sections thead, tbody et ftoot d'un tableau.
+ * 
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource table-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 juil. 2015
+ * @version 2015-1
+ */
+$this->headLink()->prependStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$btn_colonne = $this->form->get('colonnes');
+$btn_colonne->setAttribute('formaction', $this->url('sbmpdf', array(
+    'action' => 'colonne-liste',
+    'page' => $this->page
+)));
+$this->form->setAttribute('action', $this->url('sbmpdf', array(
+    'action' => 'table-edit',
+    'page' => $this->page
+)));
+$url_retour = $this->url('sbmpdf', array(
+    'action' => 'table-liste',
+    'page' => $this->page
+));
+$hiddens = array(
+    'documentId' => $this->section['documentId'],
+    'name' => $this->section['name'],
+    'ordinal_table' => $this->section['ordinal_table'],
+    'recordSource' => $this->section['recordSource']
+);
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Configuration d'une section d'un tableau</h1>
+<ul>
+	<li>Document: <?php echo $this->section['name'];?></li>
+	<li>Numéro du tableau: <?php echo $this->section['ordinal_table'];?></li>
+	<li>Source du document: <?php echo $this->section['recordSource'];?></li>
+	<li>Section du tableau: <?php echo $this->section['section'];?></li>
+</ul>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+	   <fieldset class="sbm-page1">
+	   <?php
+        echo $this->form()->openTag($this->form); // le formulaire doit avoir id="accordion" pour que ça marche
+        echo $this->formHidden($this->form->get('doctableId'));
+        echo $this->formHidden($this->form->get('documentId'));
+        echo $this->formHidden($this->form->get('name'));
+        echo $this->formHidden($this->form->get('ordinal_table'));
+        echo $this->formHidden($this->form->get('recordSource'));
+        echo $this->formHidden($this->form->get('section'));
+        echo $this->formHidden($this->form->get('csrf'));
+        ?>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('description'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('visible'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('width'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('row_height'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('cell_border'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('cell_align'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('cell_link'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('cell_stretch'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('cell_ignore_min_height'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('cell_calign'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('cell_valign'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('draw_color'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('line_width'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('fill_color'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('text_color'));?></div>
+        <div class="sbm-document-table"><?php echo $this->formRow($this->form->get('font_style'));?></div>
+        <div id="pdf-edit-buttons" class="row-inner edit">
+	    <?php echo $this->formSubmit($this->form->get('submit')); ?>
+	    <?php echo $this->formSubmit($btn_colonne); ?>
+	    <?php echo $this->formSubmit($this->form->get('cancel')); ?>
+        </div>
+        <?php echo $this->form()->closeTag(); ?>
+        </fieldset>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

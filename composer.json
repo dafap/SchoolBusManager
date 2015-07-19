@@ -27,7 +27,8 @@
         "atukai/at-php-settings": "dev-master",
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.*",
-        "tecnick.com/tcpdf": "*"
+        "tecnick.com/tcpdf": "*",
+        "zf-commons/zfc-base": "*"
     },
     "require-dev": {
         "zendframework/zftool": "dev-master",
@@ -36,10 +37,6 @@
     "minimum-stability": "stable",
     "repositories": {
         "0": {
-            "type": "git",
-            "url": "https://github.com/dafap/DafapLayout.git"
-        },
-        "1": {
             "type": "package",
             "package": {
                 "name": "tecnick.com/tcpdf",

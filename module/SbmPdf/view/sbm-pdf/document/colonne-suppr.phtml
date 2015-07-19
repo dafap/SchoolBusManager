@@ -1,0 +1,31 @@
+<?php
+/**
+ * Page de suppression d'un tarif
+ *
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource colonne-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 juil. 2015
+ * @version 2015-1
+ */
+?>
+<h1>Suppression d'une colonne dans un document Pdf</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de la colonne suivante :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li>Colonne n° : <?php echo $this->data->ordinal_position; ?></li>
+			<li>En-tête de la colonne : <?php echo $this->escapeHtml($this->data->thead); ?></li>
+			<li>Contenu de la colonne : <?php echo $this->escapeHtml($this->data->tbody); ?></li>
+			<li>Dans la dernière ligne: <?php echo $this->escapeHtml($this->data->tfoot); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

@@ -50,10 +50,10 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
     {
         return array(
             array(
-                'name' => 'vads_cust_last_name',
+                'name' => 'vads_cust_name',
                 'attributes' => array(
                     'type' => 'text',
-                    'id' => 'critere-vads_cust_last_name',
+                    'id' => 'critere-vads_cust_name',
                     'class' => 'sbm-width-30c',
                     'maxlegth' => '30'
                 ),

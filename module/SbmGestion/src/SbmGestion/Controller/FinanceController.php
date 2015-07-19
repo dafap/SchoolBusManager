@@ -642,7 +642,7 @@ class FinanceController extends AbstractActionController
 
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener DafapTcpdf\Listener\PdfListener lancera la création du pdf)
+     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
      * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function tarifPdfAction()
