@@ -401,6 +401,42 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formCommunesSpecification()
     {
         return array(
+            'departement' => array(
+                'name' => 'departement',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'canton' => array(
+                'name' => 'canton',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'codePostal' => array(
+                'name' => 'codePostal',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'nom' => array(
+                'name' => 'nom',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'membre' => array(
                 'name' => 'membre',
                 'required' => false
@@ -632,6 +668,87 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formElevesSpecification()
     {
         return array(
+            'numero' => array(
+                'name' => 'numero',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'nomSA' => array(
+                'name' => 'nomSA',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'prenomSA' => array(
+                'name' => 'prenomSA',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'responsable' => array(
+                'name' => 'responsable',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'commune' => array(
+                'name' => 'commune',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'station' => array(
+                'name' => 'station',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'service' => array(
+                'name' => 'service',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'etablissement' => array(
+                'name' => 'etablissement',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'classe' => array(
+                'name' => 'classe',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'selection' => array(
                 'name' => 'selection',
                 'required' => false
@@ -781,6 +898,24 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formEtablissementsSpecification()
     {
         return array(
+            'commune' => array(
+                'name' => 'commune',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'nom' => array(
+                'name' => 'nom',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'selection' => array(
                 'name' => 'selection',
                 'required' => false
@@ -800,7 +935,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         $this->add(array(
             'name' => 'nature',
-            'attribues' => array(
+            'attributes' => array(
                 'type' => 'text',
                 'id' => 'critere-nature',
                 'maxlength' => '20',
@@ -839,6 +974,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formLibellesSpecification()
     {
         return array(
+            'nature' => array(
+                'name' => 'nature',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'ouvert' => array(
                 'name' => 'ouvert',
                 'required' => false
@@ -1067,6 +1211,60 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formPaiementsSpecification()
     {
         return array(
+            'responsable' => array(
+                'name' => 'responsable',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'exercice' => array(
+                'name' => 'exercice',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'anneeScolaire' => array(
+                'name' => 'anneeScolaire',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'titulaire' => array(
+                'name' => 'titulaire',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'banque' => array(
+                'name' => 'banque',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'reference' => array(
+                'name' => 'reference',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'selection' => array(
                 'name' => 'selection',
                 'required' => false
@@ -1303,27 +1501,57 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         return array(
             'nomSA' => array(
                 'name' => 'nomSA',
-                'required' => false
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
             ),
             'prenomSA' => array(
                 'name' => 'prenomSA',
-                'required' => false
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
             ),
             'commune' => array(
                 'name' => 'commune',
-                'required' => false
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
             ),
             'nbEnfants' => array(
                 'name' => 'nbEnfants',
-                'required' => false
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
             ),
             'nbInscrits' => array(
                 'name' => 'nbInscrits',
-                'required' => false
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
             ),
             'nbPreinscrits' => array(
                 'name' => 'nbPreinscrits',
-                'required' => false
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
             ),
             'demenagement' => array(
                 'name' => 'demenagement',
@@ -1426,6 +1654,24 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formServicesSpecification()
     {
         return array(
+            'serviceId' => array(
+                'name' => 'serviceId',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'nom' => array(
+                'name' => 'nom',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'selection' => array(
                 'name' => 'selection',
                 'required' => false
@@ -1579,6 +1825,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formStationsSpecification()
     {
         return array(
+            'nom' => array(
+                'name' => 'nom',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'ouverte' => array(
                 'name' => 'ouverte',
                 'required' => false
@@ -1697,6 +1952,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formTarifsSpecification()
     {
         return array(
+            'montant' => array(
+                'name' => 'montant',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'selection' => array(
                 'name' => 'selection',
                 'required' => false
@@ -1959,6 +2223,12 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => $elementName,
                 'required' => false
             );
+            $element = $this->get($elementName);
+            if ($element->getAttribute('type') == 'text') {
+                $array[$elementName]['filters'] = array(
+                    'name' => 'StringTrim'
+                );
+            }
         }
         return $array;
     }
