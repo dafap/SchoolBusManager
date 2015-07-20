@@ -100,6 +100,8 @@ class Tcpdf extends \TCPDF
      * @var array
      */
     private $config = array();
+    
+    private $sbm_columns = array();
 
     /**
      * Buffer contenant les données à placer dans le document, initialisé par la méthode getData() si nécessaire
@@ -965,13 +967,14 @@ class Tcpdf extends \TCPDF
         );
         $this->data['calculs'][1] = array();
         
+        $this->sbm_columns = $this->getConfig('doctable', 'columns', array());
         // prend en compte le titre de la colonne pour la largeur à prévoir
         if ($this->getConfig(array(
             'doctable',
             'thead'
         ), 'visible', false)) {
             $this->configGraphicSectionTable('thead');
-            foreach ($this->getConfig('doctable', 'columns', array()) as &$column) {
+            foreach ($this->sbm_columns as &$column) {
                 // vérifie si la largeur est suffisante pour écrire le titre
                 $value_width = $this->GetStringWidth($column['thead'], $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), trim($this->getConfig(array(
                     'doctable',
@@ -989,7 +992,7 @@ class Tcpdf extends \TCPDF
         $pagedim = $this->getPageDimensions();
         $max_width = $pagedim['wk'] - $pagedim['lm'] - $pagedim['rm'];
         $sum_width = 0;
-        foreach ($this->getConfig('doctable', 'columns', array()) as $column) {
+        foreach ($this->sbm_columns as $column) {
             $sum_width += $column['width'];
         }
         if (($table_width = $this->getConfig(array(
@@ -1002,7 +1005,7 @@ class Tcpdf extends \TCPDF
         }
         
         // largeur des colonnes
-        foreach ($this->getConfig('doctable', 'columns', array()) as &$column) {
+        foreach ($this->sbm_columns as &$column) {
             if ($ratio < 1) {
                 $column['thead_stretch'] = 1;
                 $column['tbody_stretch'] = 1;
@@ -1023,7 +1026,7 @@ class Tcpdf extends \TCPDF
             'tbody'
         ), 'visible', false)) {
             $this->configGraphicSectionTable('tbody');
-            $columns = $this->getConfig('doctable', 'columns', array());
+            $columns = $this->sbm_columns;
             $fill = 0;
             // index des sauts de page
             $idx_nl = $idx_page = array();
@@ -1101,7 +1104,7 @@ class Tcpdf extends \TCPDF
             'doctable',
             'thead'
         ), 'visible', false)) {
-            foreach ($this->getConfig('doctable', 'columns', array()) as $column) {
+            foreach ($this->sbm_columns as $column) {
                 if (is_numeric($column['thead'])) {
                     $align = $column['thead_align'] == 'standard' ? 'R' : $column['thead_align'];
                 } else {
@@ -1142,7 +1145,7 @@ class Tcpdf extends \TCPDF
         ), 'visible', false)) {
             $this->configGraphicSectionTable('tfoot');
             $index = 0;
-            foreach ($this->getConfig('doctable', 'columns', array()) as $column) {
+            foreach ($this->sbm_columns as $column) {
                 // calcul sur la colonne $index
                 $oCalculs = new Calculs($this->data[1], ++ $index);
                 $oCalculs->range($debut, $fin);
