@@ -258,25 +258,68 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
     public function getInputFilterSpecification()
     {
         return array(
+            'numero' => array(
+                'name' => 'numero',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'nomSA' => array(
+                'name' => 'nomSA',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'prenomSA' => array(
+                'name' => 'prenomSA',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
+            'responsable' => array(
+                'name' => 'responsable',
+                'required' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                )
+            ),
             'etablissementId' => array(
+                'name' => 'etablissementId',
                 'required' => false
             ),
             'classeId' => array(
+                'name' => 'classeId',
                 'required' => false
             ),
             'etat' => array(
+                'name' => 'etat',
                 'required' => false
             ),
             'demande' => array(
+                'name' => 'demande',
                 'required' => false
             ),
             'decision' => array(
+                'name' => 'decision',
                 'required' => false
             ),
             'derogation' => array(
+                'name' => 'derogation',
                 'required' => false
             ),
             'selection' => array(
+                'name' => 'selection',
                 'required' => false
             )
         );
