@@ -95,7 +95,7 @@ class EleveController extends AbstractActionController
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
             if ($criteres_form->isValid()) {
-                $criteres_obj->exchangeArray($args);
+                $criteres_obj->exchangeArray($criteres_form->getData());
             }
         }
         // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas de post ou invalide)
