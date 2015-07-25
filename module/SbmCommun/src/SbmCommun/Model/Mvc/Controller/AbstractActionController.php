@@ -428,4 +428,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
     {
         Session::set($param, $value, $sessionNamespace);
     }
+    
+    protected function removeInSession($param, $sessionNamespace = Session::SBM_DG_SESSION) 
+    {
+        Session::remove($param, $sessionNamespace);
+    }
 }
