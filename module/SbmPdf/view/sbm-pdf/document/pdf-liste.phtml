@@ -107,7 +107,7 @@ echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
 	<div id="liste-inner">
-		<table class="pdf">
+		<table class="liste-inner pdf">
 			<tbody>
 				<tr>
 					<th>Id</th>
@@ -116,7 +116,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Filtre</th>
 					<th>Ordre</th>
 					<th>Format</th>
-					<th>Orientation</th>
+					<th title="Orientation">Or.</th>
 					<th>Entête de doc.</th>
 					<th>Fin de doc.</th>
 					<th>Haut de page</th>
@@ -158,15 +158,15 @@ echo $this->flashMessenger()->render('default');
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 					<td class="documentId"><?php echo $doc->documentId; ?></td>
 					<td class="name"><?php echo $this->escapeHtml($doc->name); ?></td>
-					<td class="recordSource"><?php echo $this->escapeHtml($doc->recordSource); ?></td>
+					<td class="recordSource"><div style="max-width: 400px;"><?php echo nl2br($this->escapeHtml($doc->recordSource)); ?></div></td>
 					<td class="filter"><?php echo $this->escapeHtml($doc->filter); ?></td>
 					<td class="orderBy"><?php echo $this->escapeHtml($doc->orderBy); ?></td>
 					<td class="pdf_page_format"><?php echo $doc->page_format; ?></td>
 					<td class="pdf_page_orientation"><?php echo $doc->page_orientation; ?></td>
 					<td class="docheader" <?php echo $doc_title;?>><?php echo $doc->docheader ? 'Oui' : ''; ?></td>
 					<td class="docfooter" <?php echo $doc_footer;?>><?php echo $doc->docfooter ? 'Oui' : ''; ?></td>
-					<td class="pageheader"<?php echo $page_title;?>"><?php echo $doc->pageheader ? 'Oui' : ''; ?></td>
-					<td class="pagefooter"<?php echo $page_footer;?>"><?php echo $doc->pagefooter ? 'Oui' : ''; ?></td>
+					<td class="pageheader"<?php echo $page_title;?>><?php echo $doc->pageheader ? 'Oui' : ''; ?></td>
+					<td class="pagefooter"<?php echo $page_footer;?>><?php echo $doc->pagefooter ? 'Oui' : ''; ?></td>
 					<td class="boutons">
             <?php
                 $hiddens = array(
