@@ -26,7 +26,7 @@
     "require": {
         "atukai/at-php-settings": "dev-master",
         "php": ">=5.3.3",
-        "zendframework/zendframework": "2.*",
+        "zendframework/zendframework": "2.4.*",
         "tecnick.com/tcpdf": "*",
         "zf-commons/zfc-base": "*"
     },
