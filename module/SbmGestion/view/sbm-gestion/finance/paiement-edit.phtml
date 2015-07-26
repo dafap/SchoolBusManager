@@ -13,8 +13,13 @@
  * @version 2015-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmgestion/finance', array('action'=> 'paiement-liste', 'page' => $this->page));
-$hiddens = array();
+$retour = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-liste',
+    'page' => $this->page
+));
+$hiddens = array(
+    'op' => $this->h2 ? '' : 'retour'
+);
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -34,7 +39,7 @@ $actions = array(
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('paiementId'));
 echo $this->formHidden($this->form->get('csrf'));
@@ -47,21 +52,22 @@ echo $this->formHidden($this->form->get('csrf'));
 <?php endif; ?>
 
     <div id="paiement-edit-code-caisse" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeCaisse')); ?></div>
-    <div id="paiement-edit-montant" class="row-inner edit"><?php echo $this->formRow($this->form->get('montant')); ?></div>
-    <div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
-    <div id="paiement-edit-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice')); ?></div>
-    <div id="paiement-edit-annee-scolaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('anneeScolaire')); ?></div>
-    <div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
-    <div id="paiement-edit-date-valeur" class="row-inner edit"><?php echo $this->formRowDate($this->form->get('dateValeur')); ?></div>
-    <div id="paiement-edit-date-depot" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
-    <div id="paiement-edit-titulaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('titulaire')); ?></div>
-    <div id="paiement-edit-banque" class="row-inner edit"><?php echo $this->formRow($this->form->get('banque')); ?></div>
-    <div id="paiement-edit-reference" class="row-inner edit"><?php echo $this->formRow($this->form->get('reference')); ?></div>
-    <div id="paiement-edit-note" class="row-inner edit"><?php echo $this->formRow($this->form->get('note')); ?></div>
-    <div id="paiement-edit-buttons" class="row-inner edit">
+			<div id="paiement-edit-montant" class="row-inner edit"><?php echo $this->formRow($this->form->get('montant')); ?></div>
+			<div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
+			<div id="paiement-edit-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice')); ?></div>
+			<div id="paiement-edit-annee-scolaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('anneeScolaire')); ?></div>
+			<div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
+			<div id="paiement-edit-date-valeur" class="row-inner edit"><?php echo $this->formRowDate($this->form->get('dateValeur')); ?></div>
+			<div id="paiement-edit-date-depot" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
+			<div id="paiement-edit-titulaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('titulaire')); ?></div>
+			<div id="paiement-edit-banque" class="row-inner edit"><?php echo $this->formRow($this->form->get('banque')); ?></div>
+			<div id="paiement-edit-reference" class="row-inner edit"><?php echo $this->formRow($this->form->get('reference')); ?></div>
+			<div id="paiement-edit-note" class="row-inner edit"><?php echo $this->formRow($this->form->get('note')); ?></div>
+			<div id="paiement-edit-buttons" class="row-inner edit">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-    </fieldset>
+		</fieldset>
 <?php echo $this->form()->closeTag(); ?>
     </div><?php // fiche-inner ?>
 	<div id="fiche-footer"></div>
-</div> <?php // fiche-wrapper ?>
+</div>
+<?php // fiche-wrapper ?>

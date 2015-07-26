@@ -14,7 +14,9 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_finance_encaissements = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-liste'
+    'action' => 'paiement-liste',
+    'page' => 1,
+    'id' => 'tous'
 ));
 $url_finance_tarifs = $this->url('sbmgestion/finance', array(
     'action' => 'tarif-liste'
