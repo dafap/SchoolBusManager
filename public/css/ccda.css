@@ -295,6 +295,10 @@ label.sbm-label-200px {
 label.sbm-label-top {
 	vertical-align: top;
 }
+.label-120 label {
+	display: inline-block;
+	width: 120px;
+}
 /*---------- Bienvenue ----------*/
 #bienvenue {
 	float: right;

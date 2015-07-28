@@ -52,7 +52,10 @@ class IndexController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\System\Libelles')
-                ->paginator($args['where'], array('nature', 'code')),
+                ->paginator($args['where'], array(
+                'nature',
+                'code'
+            )),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_libelles', 10),
             'criteres_form' => $args['form']
@@ -234,8 +237,8 @@ class IndexController extends AbstractActionController
         $call_pdf->setParam('documentId', 'Liste des libellés');
         if (! empty($criteres)) {
             $call_pdf->setParam('where', $criteres_obj->getWhere())
-            ->setParam('criteres', $criteres)
-            ->setParam('strict', array(
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
                 'empty' => array(),
                 'not empty' => array(
                     'ouvert'
@@ -467,12 +470,21 @@ class IndexController extends AbstractActionController
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereEleve();
-                    $resultset = $this->getServiceLocator()
-                        ->get('Sbm\Db\Query\ElevesResponsables')
-                        ->getLocalisation($where, array(
-                        'nom_eleve',
-                        'prenom_eleve'
-                    ));
+                    if ($prg['lot']) {
+                        $resultset = $this->getServiceLocator()
+                            ->get('Sbm\Db\Query\AffectationsServicesStations')
+                            ->getLocalisation($where, array(
+                            'nom_eleve',
+                            'prenom_eleve'
+                        ));
+                    } else {
+                        $resultset = $this->getServiceLocator()
+                            ->get('Sbm\Db\Query\ElevesResponsables')
+                            ->getLocalisation($where, array(
+                            'nom_eleve',
+                            'prenom_eleve'
+                        ));
+                    }
                     $data = iterator_to_array($resultset);
                     if (! empty($data)) {
                         $fields = array_keys(current($data));

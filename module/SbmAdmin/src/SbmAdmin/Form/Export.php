@@ -60,7 +60,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             'name' => 'submit',
             'attributes' => array(
                 'id' => 'export-cancel',
-                'class' => 'button default cancel',
+                'class' => 'button default submit left-95px',
                 'value' => 'Extraire les données'
             )
         ));
@@ -90,7 +90,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'id_ccda',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'id_ccda'
+            ),
             'options' => array(
                 'label' => 'Code CCDA'
             )
@@ -98,7 +100,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'numero',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'numero'
+            ),
             'options' => array(
                 'label' => 'Numéro'
             )
@@ -106,7 +110,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'nom_eleve',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'nom_eleve'
+            ),
             'options' => array(
                 'label' => 'Nom'
             )
@@ -114,7 +120,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'prenom_eleve',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'prenom_eleve'
+            ),
             'options' => array(
                 'label' => 'Prénom'
             )
@@ -122,7 +130,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'etablissementId',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'etablissementId'
+            ),
             'options' => array(
                 'label' => 'Etablissement',
                 'empty_option' => 'Tous',
@@ -134,7 +144,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'classeId',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'classeId'
+            ),
             'options' => array(
                 'label' => 'Classe',
                 'empty_option' => 'Toutes',
@@ -146,7 +158,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'responsable1',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'responsable1'
+            ),
             'options' => array(
                 'label' => 'Responsable 1'
             )
@@ -154,7 +168,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId_responsable1',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'communeId_responsable1'
+            ),
             'options' => array(
                 'label' => 'Commune R1',
                 'empty_option' => 'Toutes',
@@ -167,7 +183,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'responsable2',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'responsable2'
+            ),
             'options' => array(
                 'label' => 'Responsable 2'
             )
@@ -175,7 +193,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId_responsable2',
-            'attributes' => array(),
+            'attributes' => array(
+                'id' => 'communeId_responsable2'
+            ),
             'options' => array(
                 'label' => 'Commune R2',
                 'empty_option' => 'Toutes',
@@ -212,6 +232,20 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     '0' => 'Non',
                     '1' => 'Oui',
                     '2' => 'Tous'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Radio',
+            'name' => 'lot',
+            'attributes' => array(
+                'value' => '1'
+            ),
+            'options' => array(
+                'label' => 'Quels élèves exporter ?',
+                'value_options' => array(
+                    '0' => 'Tous, sans l\'affectation',
+                    '1' => 'Uniquement les élèves ayant une affectation'
                 )
             )
         ));
@@ -337,6 +371,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             ->nest()
             ->literal('accordR1 = 1')->or->literal('accordR2 = 1')->unnest();
         $data = $this->getData();
+        
         if (! empty($data['id_ccda'])) {
             $where->equalTo('ele.id_ccda', $data['id_ccda']);
         }
@@ -355,17 +390,32 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         if (! empty($data['classeId'])) {
             $where->equalTo('sco.classeId', $data['classeId']);
         }
-        if (! empty($data['responsable1'])) {
-            $where->like('r1.nom', $data['responsable1'] . '%');
-        }
-        if (! empty($data['communeId_responsable1'])) {
-            $where->equalTo('r1.communeId', $data['communeId_responsable1']);
-        }
-        if (! empty($data['responsable2'])) {
-            $where->like('r2.nom', $data['responsable2'] . '%');
-        }
-        if (! empty($data['communeId_responsable2'])) {
-            $where->equalTo('r2.communeId', $data['communeId_responsable2']);
+        if ($data['lot']) {
+            if (! empty($data['responsable1'])) {
+                $where->literal('trajet = 1')->like('res.nom', $data['responsable1'] . '%');
+            }
+            if (! empty($data['communeId_responsable1'])) {
+                $where->literal('trajet = 1')->equalTo('res.communeId', $data['communeId_responsable1']);
+            }
+            if (! empty($data['responsable2'])) {
+                $where->literal('trajet = 2')->like('res.nom', $data['responsable2'] . '%');
+            }
+            if (! empty($data['communeId_responsable2'])) {
+                $where->literal('trajet = 2')->equalTo('res.communeId', $data['communeId_responsable2']);
+            }
+        } else {
+            if (! empty($data['responsable1'])) {
+                $where->like('r1.nom', $data['responsable1'] . '%');
+            }
+            if (! empty($data['communeId_responsable1'])) {
+                $where->equalTo('r1.communeId', $data['communeId_responsable1']);
+            }
+            if (! empty($data['responsable2'])) {
+                $where->like('r2.nom', $data['responsable2'] . '%');
+            }
+            if (! empty($data['communeId_responsable2'])) {
+                $where->equalTo('r2.communeId', $data['communeId_responsable2']);
+            }
         }
         if (isset($data['ga'])) {
             if ($data['ga'] == '0') {
@@ -390,7 +440,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'etablissementId',
-            'attributes' => array(),
+            'attributes' => array('id' => 'etablissementId'),
             'options' => array(
                 'label' => 'Etablissement',
                 'empty_option' => 'Tous',
@@ -401,7 +451,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array(),
+            'attributes' => array('id' => 'communeId'),
             'options' => array(
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
@@ -540,7 +590,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'nomSA',
-            'attributes' => array(),
+            'attributes' => array('id' => 'nomSA'),
             'options' => array(
                 'label' => 'Nom',
                 'label_attributes' => array(
@@ -554,7 +604,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array(),
+            'attributes' => array('id' => 'communeId'),
             'options' => array(
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
@@ -570,6 +620,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
             'attributes' => array(
+                'id' => 'selection',
                 'useHiddenElement' => false,
                 'options' => array(
                     'checkedValue' => false,
@@ -591,6 +642,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'demenagement',
             'attributes' => array(
+                'id' => 'demenagement',
                 'useHiddenElement' => true,
                 'options' => array(
                     'checkedValue' => false,
@@ -608,7 +660,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'nbEleves',
-            'attributes' => array(),
+            'attributes' => array('id' => 'nbEleves'),
             'options' => array(
                 'label' => 'Nb d\'élèves',
                 'error_attributes' => array(
@@ -696,7 +748,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'stationId',
-            'attributes' => array(),
+            'attributes' => array('id' => 'stationId'),
             'options' => array(
                 'label' => 'Station',
                 'empty_option' => 'Toutes',
@@ -708,7 +760,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array(),
+            'attributes' => array('id' => 'communeId'),
             'options' => array(
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
