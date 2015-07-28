@@ -105,6 +105,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
                     unset($args['origine']);
                 }
                 $this->sbm_isPost = true;
+                unset($args['submit']);
                 Session::set('post', $args, $this->getSessionNamespace());
             }
         }

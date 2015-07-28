@@ -16,8 +16,12 @@ namespace SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use SbmCommun\Model\Db\ObjectData\Exception as ObjectDataException;
+use SbmCommun\Model\DateLib;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Update;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Zend\Db\Sql;
 
 class Scolarites extends AbstractSbmTable
 {
@@ -151,5 +155,47 @@ class Scolarites extends AbstractSbmTable
             'inscrit' => $inscrit
         ));
         parent::saveRecord($oData);
+    }
+
+    /**
+     * Renvoie la date de dernière édition des cartes
+     */
+    public function getLastDateCarte()
+    {
+        $select = $this->table_gateway->getSql()
+            ->select()
+            ->columns(array(
+            'lastDateCarte' => new Expression('MAX(dateCarte)')
+        ));
+        $rowset = $this->table_gateway->selectWith($select);
+        return $rowset->current()->lastDateCarte;
+    }
+
+    /**
+     * Enregistre la date-temps actuelle dans dateCarte pour toutes les fiches dont dateCarte est antérieur à dateDebut
+     *
+     * @param string $dateDebut
+     *            date au format Y-m-d H:i:s
+     *            
+     * @return int
+     */
+    public function prepareDateCarteForNewEdition($millesime, $dateDebut)
+    {
+        $where1 = new Where();
+        $where1->expression('millesime = ?', $millesime);
+        $select = new Select($this->db->getCanonicName('affectations', 'table'));
+        $select->columns(array(
+            'eleveId'
+        ))
+            ->where($where1)
+            ->quantifier(Select::QUANTIFIER_DISTINCT);
+        $now = DateLib::nowToMysql();
+        $where = new Where();
+        $where->expression('millesime = ?', $millesime)
+            ->lessThan('dateCarte', $dateDebut)
+            ->in('eleveId', $select);
+        return $this->getTableGateway()->update(array(
+            'dateCarte' => $now
+        ), $where);
     }
 }

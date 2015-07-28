@@ -29,6 +29,7 @@ use Zend\View\View;
 use SbmGestion\Form\FinancePaiementSuppr;
 use SbmCommun\Form\SbmCommun\Form;
 use SbmCommun\Model\StdLib;
+use DafapSession\Model\Session;
 
 class FinanceController extends AbstractActionController
 {
@@ -111,9 +112,9 @@ class FinanceController extends AbstractActionController
         if ($responsableId == - 1) {
             // pas de $responsableId - gestion de tous les paiements
             $criteres_form = new CriteresForm('paiements');
-            $value_options = $this->getServiceLocator()->get('Sbm\Libelles\Caisse');
+            $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Libelles')->caisse();
             $criteres_form->setValueOptions('codeCaisse', $value_options);
-            $value_options = $this->getServiceLocator()->get('Sbm\Libelles\ModeDePaiement');
+            $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Libelles')->modeDePaiement();
             $criteres_form->setValueOptions('codeModeDePaiement', $value_options);
             $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
             // récupère les données du post pour les mettre en session si ce n'est pas un retour de niveau 2
@@ -238,9 +239,9 @@ class FinanceController extends AbstractActionController
             'page' => $this->params('page', 1)
         )))
             ->setValueOptions('codeCaisse', $this->getServiceLocator()
-            ->get('Sbm\Libelles\Caisse'))
+            ->get('Sbm\Db\Select\Libelles')->caisse())
             ->setValueOptions('codeModeDePaiement', $this->getServiceLocator()
-            ->get('Sbm\Libelles\ModeDePaiement'))
+            ->get('Sbm\Db\Select\Libelles')->modeDePaiement())
             ->setMaxLength($db->getMaxLengthArray('paiements', 'table'));
         if (! $hidden_responsableId) {
             $form->setValueOptions('responsableId', $this->getServiceLocator()
@@ -308,9 +309,9 @@ class FinanceController extends AbstractActionController
             'page' => $currentPage
         )))
             ->setValueOptions('codeCaisse', $this->getServiceLocator()
-            ->get('Sbm\Libelles\Caisse'))
+            ->get('Sbm\Db\Select\Libelles')->caisse())
             ->setValueOptions('codeModeDePaiement', $this->getServiceLocator()
-            ->get('Sbm\Libelles\ModeDePaiement'));
+            ->get('Sbm\Db\Select\Libelles')->modeDePaiement());
         if (! $hidden_responsableId) {
             $form->setValueOptions('responsableId', $this->getServiceLocator()
                 ->get('Sbm\Db\Select\Responsables'));
@@ -662,21 +663,26 @@ class FinanceController extends AbstractActionController
         
         $criteres_form = new CriteresForm('tarifs');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 6)
-            ->setParam('recordSource', 'Sbm\Db\Table\Tarifs')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'grille',
-            'mode',
-            'rythme',
-            'nom'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des tarifs');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+            ->setParam('criteres', $criteres)
+            ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'rythme',
+                    'grille',
+                    'mode',
+                    'selection'
+                )
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }

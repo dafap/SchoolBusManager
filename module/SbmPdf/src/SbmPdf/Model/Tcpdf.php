@@ -100,7 +100,7 @@ class Tcpdf extends \TCPDF
      * @var array
      */
     private $config = array();
-    
+
     private $sbm_columns = array();
 
     /**
@@ -110,6 +110,12 @@ class Tcpdf extends \TCPDF
      */
     private $data = array();
 
+    /**
+     *
+     * @param ServiceLocatorInterface $sm            
+     * @param array $params
+     *            Tableau de paramètres passés par l'évènement renderPdf
+     */
     public function __construct(ServiceLocatorInterface $sm = null, $params = array())
     {
         if (is_null($sm))
@@ -394,9 +400,19 @@ class Tcpdf extends \TCPDF
         $this->setFooterMargin($this->getConfig('document', 'pagefooter_margin', PDF_MARGIN_FOOTER));
     }
 
+    /**
+     * Renvoie le documentId, que l'on ait passé le documentId ou le name dans l'appel de l'évènement.
+     *
+     * @return int
+     */
     protected function getDocumentId()
     {
-        return $this->getParam('documentId', 1);
+        $documentId = $this->getParam('documentId', 1);
+        if (! is_numeric($documentId)) {
+            $table_documents = $this->getServiceLocator()->get('Sbm\Db\System\Documents');
+            $documentId = $table_documents->getDocumentId($documentId);
+        }
+        return $documentId;
     }
 
     protected function getWhere()
@@ -455,7 +471,7 @@ class Tcpdf extends \TCPDF
         $table_documents = $this->getServiceLocator()->get('Sbm\Db\System\Documents');
         try {
             $this->config['document'] = $table_documents->getConfig($this->getDocumentId());
-        } catch (\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $this->config['document'] = require (__DIR__ . '/default/documents.inc.php');
         }
     }
@@ -950,7 +966,7 @@ class Tcpdf extends \TCPDF
          * Identifiant du template
          */
         if (is_string($param) && $param == '?') {
-            return 'Corps de document par défaut';
+            return 'Document contenant un tableau de données';
         }
         
         /**
@@ -1030,7 +1046,7 @@ class Tcpdf extends \TCPDF
             $fill = 0;
             // index des sauts de page
             $idx_nl = $idx_page = array();
-            for ($i = 0; $i < count($columns); $i++) {
+            for ($i = 0; $i < count($columns); $i ++) {
                 if ($columns[$i]['nl']) {
                     $idx_nl[] = $i;
                 }
@@ -1038,10 +1054,10 @@ class Tcpdf extends \TCPDF
                 $this->data['index'][1]['nl']['debut'] = 0;
             }
             foreach ($this->getDataForTable() as $row) {
-                // saut de page pour un changement de valeur d'une colonne 
+                // saut de page pour un changement de valeur d'une colonne
                 $nl = false;
                 foreach ($idx_nl as $i) {
-                    if (!empty($idx_page[$i]) && $idx_page[$i] != $row[$i]) {
+                    if (! empty($idx_page[$i]) && $idx_page[$i] != $row[$i]) {
                         $nl = true;
                         $idx_page[$i] = $row[$i];
                         break;
@@ -1094,7 +1110,7 @@ class Tcpdf extends \TCPDF
         
         $this->Cell($sum_width * $ratio, 0, '', 'T');
     }
-    
+
     /**
      * Ecriture du thead pour ce template
      */
@@ -1133,7 +1149,7 @@ class Tcpdf extends \TCPDF
             $this->Ln();
         }
     }
-    
+
     /**
      * Ecriture du tfoot pour ce template
      */
@@ -1281,6 +1297,36 @@ class Tcpdf extends \TCPDF
                     ->getDbAdapter();
                 
                 try {
+                    $criteres = $this->getParam('criteres', array());
+                    $strict = $this->getParam('strict', array(
+                        'empty' => array(),
+                        'not empty' => array()
+                    ));
+                    $expressions = $this->getParam('expression', array());
+                    if (! empty($criteres) || ! empty($expressions)) {
+                        $where = array();
+                        foreach ($criteres as $key => $value) {
+                            if (in_array($key, $expressions))
+                                continue;
+                            if (in_array($key, $strict['empty'])) {
+                                $where[] = "tmp.$key = \"$value\"";
+                            } elseif (in_array($key, $strict['not empty'])) {
+                                if (empty($value))
+                                    continue;
+                                $where[] = "tmp.$key = \"$value\"";
+                            } else {
+                                if (empty($value))
+                                    continue;
+                                $where[] = "tmp.$key Like \"$value%\"";
+                            }
+                        }
+                        foreach ($expressions as $expression) {
+                            $where[] = $expression;
+                        }
+                        if (! empty($where)) {
+                            $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
+                        }
+                    }
                     $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
                         // si la description des colonnes est vide, on configure toutes les colonnes de la source
@@ -1311,8 +1357,8 @@ class Tcpdf extends \TCPDF
                         }
                     }
                 } catch (\Exception $e) {
-                    $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s", $sql);
-                    throw new Exception($message, $e->getCode(), $e->getPrevious());
+                    $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s\nCode erreur: %s", $sql, $e->getCode());
+                    throw new Exception($message, 0, $e->getPrevious());
                 }
             }
         }
@@ -1437,6 +1483,148 @@ class Tcpdf extends \TCPDF
                 break;
         }
         return $result;
+    }
+    
+    // =======================================================================================================
+    // Modèle pour imprimer des étiquettes
+    //
+    /**
+     * Modèle pour imprimer des étiquettes.
+     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
+     *
+     * @param string $param
+     *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
+     *            
+     * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
+     */
+    public function templateDocBodyMethod2($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Etiquettes';
+        }
+        
+        // initialisation de la liste des champs
+        $this->initConfigDocfields();
+    }
+
+    /**
+     * Renvoie un tableau de données pour les étiquettes.
+     *
+     * @param bool $force
+     *            force l'initialisation des données par lecture de la base
+     *            
+     * @return array
+     */
+    protected function getDataForEtiquettes($force = false)
+    {
+        if ($force || empty($this->data)) {
+            $this->data = array();
+            if ($this->getRecordSourceType() == 'T') {
+                // La source doit être enregistrée dans le ServiceManager (table ou vue MySql) sinon exception
+                $table = $this->getRecordSourceTable();
+                // lecture des données
+                foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
+                    $etiquette = array();
+                    foreach ($table_columns as &$column) {
+                        $etiquette[] = $value = StdLib::translateData($row->{$column['tbody']}, $column['filter']);
+                        // adapte la largeur de la colonne si nécessaire
+                        $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                        $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
+                        if ($value_width > $column['width']) {
+                            $column['width'] = $value_width;
+                        }
+                        unset($column);
+                    }
+                    $this->data[$ordinal_table][] = $etiquette;
+                }
+                $this->config['doctable']['columns'] = $table_columns;
+            } else {
+                // c'est une requête Sql. S'il n'y a pas de description des colonnes dans la table doccolumns alors on en crée une par défaut.
+                $sql = $this->getConfig('document', 'recordSource', '');
+                // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
+                $sql = str_replace(array(
+                    '%date%',
+                    '%heure%',
+                    '%millesime%',
+                    '%userId%'
+                ), array(
+                    date('Y-m-d'),
+                    date('H:i:s'),
+                    Session::get('millesime'),
+                    $this->sm->get('Dafap\Authenticate')
+                        ->by()
+                        ->getUserId()
+                ), $sql);
+                //
+                $dbAdapter = $this->getServiceLocator()
+                    ->get('Sbm\Db\DbLib')
+                    ->getDbAdapter();
+                
+                try {
+                    $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                    if ($rowset->count()) {
+                        // si la description des colonnes est vide, on configure toutes les colonnes de la source
+                        if (empty($table_columns)) {
+                            $ordinal_position = 1;
+                            foreach (array_keys($rowset->current()->getArrayCopy()) as $column_name) {
+                                $column = require (__DIR__ . '/default/doccolumns.inc.php');
+                                $column['thead'] = $column['tbody'] = $column_name;
+                                $column['ordinal_position'] = $ordinal_position ++;
+                                $table_columns[] = $column;
+                            }
+                            $this->config['doctable']['columns'] = $table_columns;
+                        }
+                        foreach ($rowset as $row) {
+                            // $row est un ArrayObject
+                            $etiquette = array();
+                            for ($key = 0; $key < count($table_columns); $key ++) {
+                                $etiquette[] = $value = $row[$table_columns[$key]['tbody']];
+                                // adapte la largeur de la colonne si nécessaire
+                                $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                                $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
+                                if ($value_width > $table_columns[$key]['width']) {
+                                    $table_columns[$key]['width'] = $value_width;
+                                }
+                            }
+                            $this->data[$ordinal_table][] = $etiquette;
+                            $this->config['doctable']['columns'] = $table_columns;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s", $sql);
+                    throw new Exception($message, $e->getCode(), $e->getPrevious());
+                }
+            }
+        }
+        return $this->data;
+    }
+    
+    // =======================================================================================================
+    // Modèle pour imprimer des cartes
+    //
+    /**
+     * Modèle pour imprimer les cartes de transport.
+     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
+     *
+     * @param string $param
+     *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
+     *            
+     * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
+     */
+    public function templateDocBodyMethod3($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Cartes de transport';
+        }
+        
+        // initialisation de la liste des champs
+        $this->initConfigDocfields();
     }
 }
 

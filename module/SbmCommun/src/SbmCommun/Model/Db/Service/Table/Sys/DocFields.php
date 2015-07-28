@@ -27,4 +27,18 @@ class DocFields extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocFields';
         $this->id_name = 'docfieldId';
     }
+    
+    public function getConfig($documentId)
+    {
+        $where = "documentId = $documentId";
+        $resultset = $this->fetchAll($where, 'ordinal_position');
+        if (! $resultset->count()) {
+            throw new Exception(sprintf(_("Could not find rows '%s' in table %s"), $where, $this->table_name));
+        }
+        $result = array();
+        foreach ($resultset as $row) {
+            $result[] = $row->getArrayCopy();
+        }
+        return $result;
+    }
 }

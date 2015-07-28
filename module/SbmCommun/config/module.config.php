@@ -125,7 +125,7 @@ return array(
             'Sbm\Db\VueGateway\Stations' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayStations',
             'Sbm\Db\VueGateway\Transporteurs' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayTransporteurs',
             
-            // 'Sbm\Db\Select\Calendar' => 'SbmCommun\Model\Db\Service\Select\Calendar',
+            'Sbm\Db\Select\DatesCartes' => 'SbmCommun\Model\Db\Service\Select\DatesCartes',
             'Sbm\Db\Select\Classes' => 'SbmCommun\Model\Db\Service\Select\Classes',
             'Sbm\Db\Select\Communes' => 'SbmCommun\Model\Db\Service\Select\CommunesForSelect',
             'Sbm\Db\Select\EtablissementsDesservis' => 'SbmCommun\Model\Db\Service\Select\EtablissementsDesservis',
@@ -134,8 +134,7 @@ return array(
             'Sbm\Db\Select\Services' => 'SbmCommun\Model\Db\Service\Select\Services',
             'Sbm\Db\Select\Stations' => 'SbmCommun\Model\Db\Service\Select\StationsForSelect',
             'Sbm\Db\Select\Transporteurs' => 'SbmCommun\Model\Db\Service\Select\Transporteurs',
-            'Sbm\Libelles\Caisse' => 'SbmCommun\Model\Db\Service\Select\LibellesCaisse',
-            'Sbm\Libelles\ModeDePaiement' => 'SbmCommun\Model\Db\Service\Select\LibellesModeDePaiement',            
+            'Sbm\Db\Select\Libelles' => 'SbmCommun\Model\Db\Service\Select\LibelleForSelect',
             'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
             
             'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\Eleves',
