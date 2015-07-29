@@ -29,6 +29,7 @@ use Zend\View\View;
 use SbmGestion\Form\FinancePaiementSuppr;
 use SbmCommun\Form\SbmCommun\Form;
 use SbmCommun\Model\StdLib;
+use DafapSession\Model\Session;
 
 class FinanceController extends AbstractActionController
 {
@@ -60,21 +61,36 @@ class FinanceController extends AbstractActionController
          */
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres dans la route et éventuellement dans la session (cas du paginator)
+            // ce n'était pas un post.
             $is_post = false;
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            // appel depuis finances, paginator, back, F5, redirect de sortie de paiementAjoutAction, paiementEditAction ou paiementSupprAction
+            if ($this->params('id', '') == 'tous') {
+                // appel depuis finances : pas de post, éventuellement des criteres
+                $args = array();
+                $this->removeInSession('post', $this->getSessionNamespace());
+            } else {
+                // F5, back ou un redirect de sortie : reprendre le contexte d'avant en session
+                $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            }
         } else {
-            // c'est le tableau qui correspond au post après redirection; on le met en session
+            // suite à un post,
+            // l'appel provient du formulaire de criteres ou de la liste des responsables ou de la sortie d'un paiement-ajout ou d'un paiement-edit
+            // séparer les criteres et le post en session
             $is_post = true;
-            $args = $prg;
+            if (array_key_exists('op', $prg)) {
+                // arrive de la liste des responsables
+                $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+                $args = array_merge($args, $prg);
+            } else {
+                // vient du formulaire des critères ou de la sortie d'un paiement-ajout ou d'un paiement-edit
+                $args = $prg;
+            }
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
-        // ici, $args contient ce qu'il y avait dans $_POST ou dans un $_POST précédemment mis en session.
         
-        // la page vient de la route (comaptibilité du paginateur)
+        // la page vient de la route (compatibilité du paginateur)
         $currentPage = $this->params('page', 1);
         // le reste vient de $args
         $responsableId = array_key_exists('responsableId', $args) ? $args['responsableId'] : - 1;
@@ -96,9 +112,9 @@ class FinanceController extends AbstractActionController
         if ($responsableId == - 1) {
             // pas de $responsableId - gestion de tous les paiements
             $criteres_form = new CriteresForm('paiements');
-            $value_options = $this->getServiceLocator()->get('Sbm\Libelles\Caisse');
+            $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Libelles')->caisse();
             $criteres_form->setValueOptions('codeCaisse', $value_options);
-            $value_options = $this->getServiceLocator()->get('Sbm\Libelles\ModeDePaiement');
+            $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Libelles')->modeDePaiement();
             $criteres_form->setValueOptions('codeModeDePaiement', $value_options);
             $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
             // récupère les données du post pour les mettre en session si ce n'est pas un retour de niveau 2
@@ -129,20 +145,36 @@ class FinanceController extends AbstractActionController
         } else {
             // gestion des paiements du $responsableId.
             // L'appel peut provenir de la liste des responsables, de la fiche d'un responsable ou de la liste des paiements.
-            // Ici, on ne présente pas le formulaire de cirtères (pas nécessaire)
-            $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
+            // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
             $where = new Where();
             $where->expression('responsableId = ?', $responsableId);
+            if (array_key_exists('nbPreinscrits', $args)) {
+                $nomPrenom = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables')->getNomPrenom($responsableId, true);
+                $nbInscrits = $args['nbInscrits'];
+                $nbPreinscrits = $args['nbPreinscrits'];
+            } else {
+                $responsable = $this->getServiceLocator()
+                    ->get('Sbm\Db\Query\Responsables')
+                    ->withEffectifs($where, array(
+                    'responsableId'
+                ))
+                    ->current();
+                $nomPrenom = sprintf('%s %s %s', $responsable['titre'], $responsable['nom'], $responsable['prenom']);
+                $nbInscrits = $responsable['nbInscrits'];
+                $nbPreinscrits = $responsable['nbPreinscrits'];
+            }
             
             return new ViewModel(array(
                 'paginator' => $tablePaiements->paginator($where, $order),
                 'nb_pagination' => $nb_paiements,
                 'criteres_form' => null,
                 'h2' => true,
-                'responsable' => $tableResponsables->getNomPrenom($responsableId, true),
-                'tarif' => $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs')->getMontant('inscription'),
-                'nbInscrits' => $args['nbInscrits'],
-                'nbPreinscrits' => $args['nbPreinscrits'],
+                'responsable' => $nomPrenom,
+                'tarif' => $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Tarifs')
+                    ->getMontant('inscription'),
+                'nbInscrits' => $nbInscrits,
+                'nbPreinscrits' => $nbPreinscrits,
                 'page' => $currentPage,
                 'responsableId' => $responsableId,
                 'url1_retour' => $url1_retour,
@@ -207,9 +239,9 @@ class FinanceController extends AbstractActionController
             'page' => $this->params('page', 1)
         )))
             ->setValueOptions('codeCaisse', $this->getServiceLocator()
-            ->get('Sbm\Libelles\Caisse'))
+            ->get('Sbm\Db\Select\Libelles')->caisse())
             ->setValueOptions('codeModeDePaiement', $this->getServiceLocator()
-            ->get('Sbm\Libelles\ModeDePaiement'))
+            ->get('Sbm\Db\Select\Libelles')->modeDePaiement())
             ->setMaxLength($db->getMaxLengthArray('paiements', 'table'));
         if (! $hidden_responsableId) {
             $form->setValueOptions('responsableId', $this->getServiceLocator()
@@ -277,9 +309,9 @@ class FinanceController extends AbstractActionController
             'page' => $currentPage
         )))
             ->setValueOptions('codeCaisse', $this->getServiceLocator()
-            ->get('Sbm\Libelles\Caisse'))
+            ->get('Sbm\Db\Select\Libelles')->caisse())
             ->setValueOptions('codeModeDePaiement', $this->getServiceLocator()
-            ->get('Sbm\Libelles\ModeDePaiement'));
+            ->get('Sbm\Db\Select\Libelles')->modeDePaiement());
         if (! $hidden_responsableId) {
             $form->setValueOptions('responsableId', $this->getServiceLocator()
                 ->get('Sbm\Db\Select\Responsables'));
@@ -303,7 +335,8 @@ class FinanceController extends AbstractActionController
             }
             return array(
                 'paiementId' => $post['paiementId'],
-                'responsable' => $responsable
+                'responsable' => $responsable,
+                'h2' => $post['h2']
             );
         });
         if ($r instanceof Response) {
@@ -324,32 +357,11 @@ class FinanceController extends AbstractActionController
                         'page' => $currentPage,
                         'paiementId' => StdLib::getParam('paiementId', $r->getResult()),
                         'responsable' => StdLib::getParam('responsable', $r->getResult()),
+                        'h2' => StdLib::getParam('h2', $r->getResult()),
                         'hidden_responsableId' => $hidden_responsableId
                     ));
                     break;
             }
-        }
-        switch ($r) {
-            case $r instanceof Response:
-                return $r;
-                break;
-            case 'error':
-            case 'warning':
-            case 'success':
-                return $this->redirect()->toRoute('sbmgestion/finance', array(
-                    'action' => 'paiement-liste',
-                    'page' => $currentPage
-                ));
-                break;
-            default:
-                return new ViewModel(array(
-                    'form' => $form->prepare(),
-                    'page' => $currentPage,
-                    'paiementId' => $r['paiementId'],
-                    'responsable' => $r['responsable'],
-                    'hidden_responsableId' => $hidden_responsableId
-                ));
-                break;
         }
     }
 
@@ -537,17 +549,17 @@ class FinanceController extends AbstractActionController
         );
         try {
             $r = $this->supprData($params, function ($id, $tableTarifs) {
-            return array(
-                'id' => $id,
-                'data' => $tableTarifs->getRecord($id)
-            );
-        });
+                return array(
+                    'id' => $id,
+                    'data' => $tableTarifs->getRecord($id)
+                );
+            });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce tarif parce qu\'il est affecté à certains élèves.');
             return $this->redirect()->toRoute('sbmgestion/finance', array(
-                        'action' => 'tarif-liste',
-                        'page' => $currentPage
-                    ));
+                'action' => 'tarif-liste',
+                'page' => $currentPage
+            ));
         }
         
         if ($r instanceof Response) {
@@ -651,21 +663,26 @@ class FinanceController extends AbstractActionController
         
         $criteres_form = new CriteresForm('tarifs');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 6)
-            ->setParam('recordSource', 'Sbm\Db\Table\Tarifs')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'grille',
-            'mode',
-            'rythme',
-            'nom'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des tarifs');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+            ->setParam('criteres', $criteres)
+            ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'rythme',
+                    'grille',
+                    'mode',
+                    'selection'
+                )
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }

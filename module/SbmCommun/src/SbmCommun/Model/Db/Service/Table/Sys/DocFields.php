@@ -1,7 +1,7 @@
 <?php
 /**
- * Description
- *
+ * Gestion de la table système `docfields`
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package SbmCommun/Model/Service/Table/Sys
@@ -14,6 +14,7 @@
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
+use SbmCommun\Model\Db\Service\Table\Exception;
 
 class DocFields extends AbstractSbmTable
 {
@@ -26,5 +27,19 @@ class DocFields extends AbstractSbmTable
         $this->table_type = 'system';
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocFields';
         $this->id_name = 'docfieldId';
+    }
+    
+    public function getConfig($documentId)
+    {
+        $where = "documentId = $documentId";
+        $resultset = $this->fetchAll($where, 'ordinal_position');
+        if (! $resultset->count()) {
+            throw new Exception(sprintf(_("Could not find rows '%s' in table %s"), $where, $this->table_name));
+        }
+        $result = array();
+        foreach ($resultset as $row) {
+            $result[] = $row->getArrayCopy();
+        }
+        return $result;
     }
 }

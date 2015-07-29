@@ -18,9 +18,11 @@ use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use SbmCartographie\Model\Point;
 use SbmCommun\Form\LatLng;
+use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\StdLib;
 use SbmGestion\Form\AffectationDecision;
+use DafapSession\Model\Session;
 
 class EleveGestionController extends AbstractActionController
 {
@@ -75,11 +77,13 @@ class EleveGestionController extends AbstractActionController
         ));
         if (array_key_exists('choix', $args)) {
             $choix = $args['choix'];
-            //var_dump($args);
+            // var_dump($args);
         } else {
             $choix = 'inscrit';
         }
-        $form->setData(array('choix' => $choix));
+        $form->setData(array(
+            'choix' => $choix
+        ));
         $query = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesScolarites');
         return new ViewModel(array(
             'criteres_form' => $form,
@@ -359,5 +363,120 @@ class EleveGestionController extends AbstractActionController
             ),
             'config' => $configCarte
         ));
+    }
+
+    public function cartesAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $vue = true;
+        $args = (array) $prg;
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'eleve-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        $millesime = Session::get('millesime');
+        $tCalendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
+        $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
+        $form1 = new ButtonForm(array(), array(
+            'nouvelle' => array(
+                'class' => 'button default submit left-95px',
+                'value' => 'Préparer une nouvelle édition'
+            ),
+            'cancel' => array(
+                'class' => 'button default cancel',
+                'value' => 'Retour à la liste des élèves'
+            )
+        ));
+        $form2 = new \SbmGestion\Form\SelectionCartes();
+        $form2->setValueOptions('dateReprise', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\DatesCartes'))
+            ->setData(array(
+            'selection' => 'nouvelle',
+            'critere' => 'tous',
+            'document' => 'Liste de contrôle des cartes'
+        ));
+        if (array_key_exists('nouvelle', $args)) {
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Scolarites')
+                ->prepareDateCarteForNewEdition($millesime, $dateDebut);
+            $form2->setValueOptions('dateReprise', $this->getServiceLocator()
+                ->get('Sbm\Db\Select\DatesCartes'));
+        } elseif (array_key_exists('submit', $args)) {
+            $form2->setData($args);
+            if ($form2->isValid()) {
+                $criteres = array();
+                $expression = array(
+                    "millesime = $millesime",
+                    'inscrit=1'
+                );
+                switch ($args['critere']) {
+                    case 'inscrits':
+                        $expression[] = 'paiement = 1';
+                        break;
+                    case 'preinscrits':
+                        $expression[] = 'paiement = 0';
+                        break;
+                    default: // tous
+                        break;
+                }
+                switch ($args['selection']) {
+                    case 'nouvelle':
+                        $lastDateCarte = $this->getServiceLocator()
+                            ->get('Sbm\Db\Table\Scolarites')
+                            ->getLastDateCarte();
+                        $expression[] = "dateCarte = '$lastDateCarte'";
+                        break;
+                    case 'reprise':
+                        $dateReprise = $args['dateReprise'];
+                        $expression[] = "dateCarte = '$dateReprise'";
+                        break;
+                    case 'selection':
+                        $expression = array(
+                            "millesime = $millesime",
+                            'selection = 1'
+                        );
+                        break;
+                }
+                $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+                $call_pdf->setParam('documentId', $args['document'])
+                    ->setParam('criteres', $criteres)
+                    ->setParam('strict', array(
+                    'empty' => array(),
+                    'not empty' => array()
+                ))
+                    ->setParam('expression', $expression)
+                    ->renderPdf();
+                $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+                $vue = false; // la http response est lancée par renderPdf()
+            }
+        }
+        if ($vue) {
+            $lastDateCarte = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Scolarites')
+                ->getLastDateCarte();
+            if ($lastDateCarte < $dateDebut) {
+                $e = $form2->get('selection');
+                $e->unsetValueOption('nouvelle')->unsetValueOption('reprise');
+                $form2->setData(array(
+                    'selection' => 'selection'
+                ));
+            }
+            return new ViewModel(array(
+                'form1' => $form1,
+                'form2' => $form2,
+                'lastDateCarte' => $lastDateCarte,
+                'dateDebut' => $dateDebut
+            ));
+        }
+    }
+
+    public function duplicataCarteAction()
+    {
+        ;
     }
 }

@@ -1,11 +1,11 @@
 <?php
 /**
- * Description courte du fichier
+ * Formulaire de saisie/modification d'une colonne d'un tableau d'un document pdf
  *
- * Description longue du fichier s'il y en a une
+ * Description de la structure de la table
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmPdf\Form
  * @filesource DocColumn.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

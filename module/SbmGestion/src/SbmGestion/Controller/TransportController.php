@@ -67,6 +67,7 @@ class TransportController extends AbstractActionController
                 ->ouvertes());
             $form->setValueOptions('serviceId', $sm->get('Sbm\Db\Select\Services'));
         }, array(
+            'serviceId',
             'stationId'
         ));
         if ($args instanceof Response)
@@ -360,60 +361,25 @@ class TransportController extends AbstractActionController
         
         $criteres_form = new CriteresForm('circuits');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setData(array(
-            'sm' => $this->getServiceLocator(),
-            'table' => 'Sbm\Db\Vue\Circuits',
-            'fields' => array(
-                'serviceId',
-                'arret',
-                'distance',
-                'h1',
-                'h2'
-            ),
-            'where' => $criteres_obj->getWhere(),
-            'orderBy' => 'nom'
-        ))
-            ->setHead(array(
-            'Code service',
-            'Arrêt',
-            'Distance',
-            'Horaire 1',
-            'Horaire 2'
-        ))
-            ->setPdfConfig(array(
-            'title' => 'Liste des circuits',
-            'header' => array(
-                'title' => 'Liste des circuits',
-                'string' => 'éditée par School Bus Manager le ' . date('d/m/Y à H:i')
-            )
-        ))
-            ->setTableConfig(array(
-            'tbody' => array(
-                'cell' => array(
-                    'txt_precision' => array(
-                        0,
-                        0,
-                        3,
-                        0,
-                        0
-                    )
+        $call_pdf->setParam('documentId', 'Liste des circuits');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'serviceId',
+                    'stationId',
+                    'selection'
                 )
-            ),
-            'column_widths' => array(
-                64,
-                30,
-                30,
-                20,
-                36
-            )
-        ))
-            ->renderPdf();
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -654,17 +620,23 @@ class TransportController extends AbstractActionController
         
         $criteres_form = new CriteresForm('classes');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 1)
-            ->setParam('recordSource', 'Sbm\Db\Table\Classes')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', 'classeId')
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des classes');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'selection'
+                )
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -904,20 +876,26 @@ class TransportController extends AbstractActionController
         
         $criteres_form = new CriteresForm('communes');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 2)
-            ->setParam('recordSource', 'Sbm\Db\Table\Communes')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'departement',
-            'nom'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des communes');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'membre',
+                    'desservice',
+                    'visible',
+                    'selection'
+                )
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -925,7 +903,22 @@ class TransportController extends AbstractActionController
     /**
      * =============================================== ETABLISSEMENTS ==================================================
      */
-    
+    /**
+     * Critère de sélection commun aux établissements et aux stations.
+     * La localisation géographique est dans un rectangle défini dans la config (voir config/autoload/sbm.local.php)
+     * (paramètres dans cartes - etablissements - valide)
+     * 
+     * @return string
+     */
+    private function critereLocalisation()
+    {
+        $projection = $this->getServiceLocator()->get('SbmCarto\Projection');
+        $rangeX = $projection->getRangeX();
+        $rangeY = $projection->getRangeY();
+        $pasLocalisaton = 'Not((x Between %d And %d) And (y Between %d And %d))';
+        return sprintf($pasLocalisaton, $rangeX['etablissements'][0], $rangeX['etablissements'][1], $rangeY['etablissements'][0], $rangeY['etablissements'][1]);
+    }
+
     /**
      * Liste des etablissements
      * (avec pagination)
@@ -934,13 +927,8 @@ class TransportController extends AbstractActionController
      */
     public function etablissementListeAction()
     {
-        $projection = $this->getServiceLocator()->get('SbmCarto\Projection');
-        $rangeX = $projection->getRangeX();
-        $rangeY = $projection->getRangeY();
-        $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
-        
         $args = $this->initListe('etablissements', null, array(), array(
-            'localisation' => sprintf($pasLocalisaton, $rangeX['etablissements'][0], $rangeX['etablissements'][1], $rangeY['etablissements'][0], $rangeY['etablissements'][1])
+            'localisation' => 'Literal:' . $this->critereLocalisation()
         ));
         if ($args instanceof Response)
             return $args;
@@ -1181,20 +1169,30 @@ class TransportController extends AbstractActionController
         
         $criteres_form = new CriteresForm('etablissements');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 3)
-            ->setParam('recordSource', 'Sbm\Db\Vue\Etablissements')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'commune',
-            'nom'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des établissements');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere(array(), array(
+                'localisation' => 'Literal:' . $this->critereLocalisation()
+            )))
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'desservice',
+                    'visible',
+                    'selection'
+                )
+            ))
+                ->setParam('expression', array(
+                sprintf('localisation %s', $this->critereLocalisation())
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -1823,21 +1821,27 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         
+        
         $criteres_form = new CriteresForm('services');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 4)
-            ->setParam('recordSource', 'Sbm\Db\Vue\Services')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'serviceId'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des services');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+            ->setParam('criteres', $criteres)
+            ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'transporteurId',
+                    'selection'
+                )
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -1854,18 +1858,13 @@ class TransportController extends AbstractActionController
      */
     public function stationListeAction()
     {
-        $projection = $this->getServiceLocator()->get('SbmCarto\Projection');
-        $rangeX = $projection->getRangeX();
-        $rangeY = $projection->getRangeY();
-        $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
-        
         $args = $this->initListe('stations', function ($sm, $form) {
             $form->setValueOptions('communeId', $sm->get('Sbm\Db\Select\Communes')
                 ->desservies());
         }, array(
             'communeId'
         ), array(
-            'localisation' => sprintf($pasLocalisaton, $rangeX['etablissements'][0], $rangeX['etablissements'][1], $rangeY['etablissements'][0], $rangeY['etablissements'][1])
+            'localisation' => 'Literal:' . $this->critereLocalisation()
         ));
         if ($args instanceof Response)
             return $args;
@@ -2189,20 +2188,30 @@ class TransportController extends AbstractActionController
         
         $criteres_form = new CriteresForm('stations');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 5)
-            ->setParam('recordSource', 'Sbm\Db\Vue\Stations')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'commune',
-            'nom'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des stations');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere(array('communeId'), array(
+                'localisation' => 'Literal:' . $this->critereLocalisation()
+            )))
+            ->setParam('criteres', $criteres)
+            ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'ouverte',
+                    'visible',
+                    'selection'
+                )
+            ))
+            ->setParam('expression', array(
+                sprintf('localisation %s', $this->critereLocalisation())
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -2613,19 +2622,23 @@ class TransportController extends AbstractActionController
         
         $criteres_form = new CriteresForm('transporteurs');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 7)
-            ->setParam('recordSource', 'Sbm\Db\Vue\Transporteurs')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'nom'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des transporteurs');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+            ->setParam('criteres', $criteres)
+            ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'selection'
+                )
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }

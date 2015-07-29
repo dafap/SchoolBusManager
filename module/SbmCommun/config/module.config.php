@@ -48,6 +48,7 @@ return array(
             'Sbm\Db\SysObjectData\DocAffectation' => 'SbmCommun\Model\Db\ObjectData\Sys\DocAffectation',
             'Sbm\Db\SysObjectData\DocColumn' => 'SbmCommun\Model\Db\ObjectData\Sys\DocColumn',
             'Sbm\Db\SysObjectData\DocField' => 'SbmCommun\Model\Db\ObjectData\Sys\DocField',
+            'Sbm\Db\SysObjectData\DocLabel' => 'SbmCommun\Model\Db\ObjectData\Sys\DocLabel',
             'Sbm\Db\SysObjectData\DocTable' => 'SbmCommun\Model\Db\ObjectData\Sys\DocTable',
             'Sbm\Db\SysObjectData\Libelle' => 'SbmCommun\Model\Db\ObjectData\Sys\Libelle'
         ),
@@ -77,6 +78,7 @@ return array(
             'Sbm\Db\System\Documents' => 'SbmCommun\Model\Db\Service\Table\Sys\Documents',
             'Sbm\Db\System\DocAffectations' => 'SbmCommun\Model\Db\Service\Table\Sys\DocAffectations',
             'Sbm\Db\System\DocFields' => 'SbmCommun\Model\Db\Service\Table\Sys\DocFields',
+            'Sbm\Db\System\DocLabels' => 'SbmCommun\Model\Db\Service\Table\Sys\DocLabels',
             'Sbm\Db\System\DocTables' => 'SbmCommun\Model\Db\Service\Table\Sys\DocTables',
             'Sbm\Db\System\DocTables\Columns' => 'SbmCommun\Model\Db\Service\Table\Sys\DocColumns',
             'Sbm\Db\System\Libelles' => 'SbmCommun\Model\Db\Service\Table\Sys\Libelles',
@@ -103,6 +105,7 @@ return array(
             'Sbm\Db\SysTableGateway\DocAffectations' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocAffectations',
             'Sbm\Db\SysTableGateway\DocColumns' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocColumns',
             'Sbm\Db\SysTableGateway\DocFields' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocFields',
+            'Sbm\Db\SysTableGateway\DocLabels' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocLabels',
             'Sbm\Db\SysTableGateway\DocTables' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocTables',
             'Sbm\Db\SysTableGateway\Libelles' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayLibelles',
             
@@ -125,7 +128,7 @@ return array(
             'Sbm\Db\VueGateway\Stations' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayStations',
             'Sbm\Db\VueGateway\Transporteurs' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayTransporteurs',
             
-            // 'Sbm\Db\Select\Calendar' => 'SbmCommun\Model\Db\Service\Select\Calendar',
+            'Sbm\Db\Select\DatesCartes' => 'SbmCommun\Model\Db\Service\Select\DatesCartes',
             'Sbm\Db\Select\Classes' => 'SbmCommun\Model\Db\Service\Select\Classes',
             'Sbm\Db\Select\Communes' => 'SbmCommun\Model\Db\Service\Select\CommunesForSelect',
             'Sbm\Db\Select\EtablissementsDesservis' => 'SbmCommun\Model\Db\Service\Select\EtablissementsDesservis',
@@ -134,8 +137,7 @@ return array(
             'Sbm\Db\Select\Services' => 'SbmCommun\Model\Db\Service\Select\Services',
             'Sbm\Db\Select\Stations' => 'SbmCommun\Model\Db\Service\Select\StationsForSelect',
             'Sbm\Db\Select\Transporteurs' => 'SbmCommun\Model\Db\Service\Select\Transporteurs',
-            'Sbm\Libelles\Caisse' => 'SbmCommun\Model\Db\Service\Select\LibellesCaisse',
-            'Sbm\Libelles\ModeDePaiement' => 'SbmCommun\Model\Db\Service\Select\LibellesModeDePaiement',            
+            'Sbm\Db\Select\Libelles' => 'SbmCommun\Model\Db\Service\Select\LibelleForSelect',
             'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
             
             'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\Eleves',

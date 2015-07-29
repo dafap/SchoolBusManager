@@ -12,7 +12,7 @@
  * @version 2014-1
  */
 use SbmCommun\Model\StdLib;
- 
+
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -60,25 +60,38 @@ $actions = array(
 <h1>Liste des services</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-	    <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-	    <div class="flashMessenger float-right"><?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?></div>
+		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
 	<div id="liste-inner">
 		<table class="liste-inner services">
 			<tbody>
-			    <tr><th>Code</th><th>Nom</th><th>Alias</th><th>Transporteur</th><th>Opérateur</th><th>Capacité</th><th>Inscrits</th><th>Sélect.</th><th></th></tr>
+				<tr>
+					<th>Code</th>
+					<th>Nom</th>
+					<th>Alias</th>
+					<th>Transporteur</th>
+					<th>Opérateur</th>
+					<th>Capacité</th>
+					<th>Inscrits</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
             <?php foreach($services as $test => $service): ?>
-            <?php 
-            $nbInscrits = StdLib::getParamR(array($service->serviceId, 'total'), $this->t_nb_inscrits, 0); 
-            $exces = $service->nbPlaces < $nbInscrits; 
-            // selection
-            $modele = <<<EOT
+            <?php
+                $nbInscrits = StdLib::getParamR(array(
+                    $service->serviceId,
+                    'total'
+                ), $this->t_nb_inscrits, 0);
+                $exces = $service->nbPlaces < $nbInscrits;
+                // selection
+                $modele = <<<EOT
 $("#chk%s").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
@@ -90,66 +103,71 @@ $("#chk%s").change(function() {
 			});
   });
 EOT;
-            
-            $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $service->serviceId);
-            $jsCallback .= sprintf("$modele\n", $service->serviceId, $service->serviceId);
-            ?>
-                <tr class="<?php echo $this->cycle(array("even", "odd"))->next();
-                                 if ($exces) echo ' exces';
-                           ?>">
+                
+                $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $service->serviceId);
+                $jsCallback .= sprintf("$modele\n", $service->serviceId, $service->serviceId);
+                ?>
+                <tr
+					class="<?php echo $this->cycle(array(
+                    "even",
+                    "odd"
+                ))->next();
+                if ($exces)
+                    echo ' exces';
+                ?>">
 					<td class="serviceid"><?php echo $this->escapeHtml($service->serviceId); ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($service->nom); ?></td>
 					<td class="aliascg"><?php echo $this->escapeHtml($service->aliasCG); ?></td>
 					<td class="transporteur"><?php echo $this->escapeHtml($service->transporteur); ?></td>
-					<td class="operateur"><?php echo $this->escapeHtml($service->operateur); ?></td>					
+					<td class="operateur"><?php echo $this->escapeHtml($service->operateur); ?></td>
 					<td class="nbplaces"><?php echo $this->escapeHtml($service->nbPlaces); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $service->serviceId, $service->selection)?></td>
 					<td class="boutons">
             <?php
-            $url_edit = $this->url('sbmgestion/transport', array(
-                'action' => 'service-edit',
-                'page' => $this->page,
-            ));
-            $url_delete = $this->url('sbmgestion/transport', array(
-                'action' => 'service-suppr',
-                'page' => $this->page,
-            ));
-            $url_relation = $this->url('sbmgestion/transport', array(
-                'action' => 'service-etablissement',
-                'page' => $this->page
-            ));
-            $url_group = $this->url('sbmgestion/transport', array(
-                'action' => 'service-group',
-                'page' => $this->page,
-            ));
-            $hiddens = array(
-                'serviceId' => $service->serviceId
-            );
-            $buttons = array(
-                'modifier' => array(
-                    'class' => 'fam-pencil',
-                    'formaction' => $url_edit,
-                    'title' => 'modifier'
-                ),
-                'supprimer' => array(
-                    'class' => 'fam-delete',
-                    'formaction' => $url_delete,
-                    'title' => 'supprimer'
-                ),
-                'etablissements' => array(
-                    'class' => 'fam-table-relationship',
-                    'formaction' => $url_relation,
-                    'title' => 'établissements desservis par le circuit ' . $service->serviceId
-                ),
-                'eleves' => array(
-                    'class' => 'fam-group',
-                    'formaction' => $url_group,
-                    'title' => 'élèves inscrits sur le circuit ' . $service->serviceId
-                )
-            );
-            echo $this->listeLigneActions($service->serviceId, $hiddens, $buttons);
-            ?>
+                $url_edit = $this->url('sbmgestion/transport', array(
+                    'action' => 'service-edit',
+                    'page' => $this->page
+                ));
+                $url_delete = $this->url('sbmgestion/transport', array(
+                    'action' => 'service-suppr',
+                    'page' => $this->page
+                ));
+                $url_relation = $this->url('sbmgestion/transport', array(
+                    'action' => 'service-etablissement',
+                    'page' => $this->page
+                ));
+                $url_group = $this->url('sbmgestion/transport', array(
+                    'action' => 'service-group',
+                    'page' => $this->page
+                ));
+                $hiddens = array(
+                    'serviceId' => $service->serviceId
+                );
+                $buttons = array(
+                    'modifier' => array(
+                        'class' => 'fam-pencil',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier'
+                    ),
+                    'supprimer' => array(
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ),
+                    'etablissements' => array(
+                        'class' => 'fam-table-relationship',
+                        'formaction' => $url_relation,
+                        'title' => 'établissements desservis par le circuit ' . $service->serviceId
+                    ),
+                    'eleves' => array(
+                        'class' => 'fam-group',
+                        'formaction' => $url_group,
+                        'title' => 'élèves inscrits sur le circuit ' . $service->serviceId
+                    )
+                );
+                echo $this->listeLigneActions($service->serviceId, $hiddens, $buttons);
+                ?>
 			        </td>
 				</tr>         
             <?php endforeach;?>

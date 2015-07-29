@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Détermine la liste des colonnes d'une table ou d'une requête
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmPdf/Model
  * @filesource Columns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -15,6 +13,7 @@
 namespace SbmPdf\Model;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
+use DafapSession\Model\Session;
 
 class Columns
 {
@@ -87,9 +86,22 @@ class Columns
     
     protected function sqlListeDesChamps()
     {
-        $sql = $this->recordSource;        
+        // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
+        $sql = str_replace(array(
+            '%date%',
+            '%heure%',
+            '%millesime%',
+            '%userId%'
+        ), array(
+            date('Y-m-d'),
+            date('H:i:s'),
+            Session::get('millesime'),
+            $this->sm->get('Dafap\Authenticate')
+            ->by()
+            ->getUserId()
+        ), $this->recordSource);
         $result = array();
-        $rowset = $this->db->getDbAdapter()->query($this->recordSource, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $rowset = $this->db->getDbAdapter()->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
         if ($rowset->count()) {
             $keys = array_keys($rowset->current()->getArrayCopy());
             $result = array_combine($keys, $keys);

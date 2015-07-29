@@ -24,7 +24,7 @@ return array(
     ),
     'liste' => array(
         'paginator' => array(
-            'nb_pdf' => 10,
+            'nb_pdf' => 1,
         )
     ),
     'service_manager' => array(

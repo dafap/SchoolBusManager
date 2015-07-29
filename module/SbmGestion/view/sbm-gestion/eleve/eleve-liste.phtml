@@ -115,6 +115,10 @@ $url_map = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-localisation',
     'page' => $this->page
 ));
+$url_cartes = $this->url('sbmgestion/gestioneleve', array(
+    'action' => 'cartes',
+    'page' => $this->page
+));
 $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
 $url_retour = $this->url('sbmgestion');
 
@@ -130,6 +134,11 @@ $actions = array(
         'class' => 'fam-report',
         'formaction' => $url_rapports,
         'title' => 'Rapports à imprimer'
+    ),
+    'cartes' => array(
+        'class' => 'fam-vcard',
+        'formaction' => $url_cartes,
+        'title' => 'Edition des cartes'
     ),
     'gestion' => array(
         'class' => 'fam-application-side-expand',

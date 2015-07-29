@@ -44,6 +44,16 @@ class Liste implements FactoryInterface
             's' => $this->db->getCanonicName('scolarites', 'table')
         ), 'e.eleveId=s.eleveId', array())
             ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 's.etablissementId = eta.etablissementId', array(
+            'etablissement' => 'nom'
+        ))
+            ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 's.classeId = cla.classeId', array(
+            'classe' => 'nom'
+        ))
+            ->join(array(
             'a' => $this->db->getCanonicName('affectations', 'table')
         ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
             ->join(array(
@@ -90,7 +100,7 @@ class Liste implements FactoryInterface
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
         $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        //die($statement->getSql());
+        // die($statement->getSql());
         return $statement->execute();
     }
 
@@ -114,6 +124,11 @@ class Liste implements FactoryInterface
             ->join(array(
             's' => $this->db->getCanonicName('scolarites', 'table')
         ), 'e.eleveId=s.eleveId', array())
+            ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 's.etablissementId = eta.etablissementId', array(
+            'etablissement' => 'nom'
+        ))
             ->join(array(
             'r' => $this->db->getCanonicName('responsables', 'table')
         ), 'r.responsableId=e.responsable1Id OR r.responsableId=e.responsable2Id', array())
@@ -177,7 +192,7 @@ class Liste implements FactoryInterface
     public function byEtablissement($millesime, $etablissementId, $order = array('commune', 'nom', 'prenom'))
     {
         $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->equalTo('etablissementId', $etablissementId);
+        $where->equalTo('s.millesime', $millesime)->equalTo('s.etablissementId', $etablissementId);
         $this->select->where($where)
             ->order($order)
             ->columns(array(
@@ -245,6 +260,7 @@ class Liste implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($this->select);
         return $statement->execute();
     }
+
     /**
      * Renvoie la liste des élèves pour un millesime et un transporteur donnés
      *

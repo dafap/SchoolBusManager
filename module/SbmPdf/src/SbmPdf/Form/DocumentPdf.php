@@ -66,13 +66,12 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'empty_option' => 'Choisissez une disposition',
+                'empty_option' => 'Choisissez la disposition',
                 'value_options' => array(
                     'Tabulaire' => 'Présentation tabulaire',
                     'Texte' => 'Page de texte',
                     'Etiquette' => 'Etiquettes'
                 ),
-                'empty_option' => 'Choisissez la disposition',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )

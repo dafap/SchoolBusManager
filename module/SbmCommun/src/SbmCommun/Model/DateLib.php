@@ -42,7 +42,7 @@ class DateLib
     }
 
     /**
-     * Reçoit une dateTime au format Mysql (an-mois-jour heure:mn:s) et renvoie une dateTime au format FR (jour/mois/an heure:mn:s)
+     * Reçoit une dateTime au format Mysql (an-mois-jour heure:min:s) et renvoie une dateTime au format FR (jour/mois/an heure:min:s)
      *
      * @param string $d            
      *
@@ -86,7 +86,7 @@ class DateLib
     }
 
     /**
-     * Reçoit une dateTime au format FR (jour/mois/an heure:mn:s) et renvoie une dateTime au format Mysql (an-mois-jour heure:mn:s)
+     * Reçoit une dateTime au format FR (jour/mois/an heure:min:s) et renvoie une dateTime au format Mysql (an-mois-jour heure:min:s)
      *
      * @param string $d            
      *
@@ -107,12 +107,18 @@ class DateLib
         }
     }
     
+    /**
+     * Renvoie la date-heure actuelle au format (jour/mois/an heure:min:s)
+     */
     public static function nowToMysql()
     {
         $date = new DateTime();
         return $date->format('Y-m-d H:i:s');
     }
     
+    /**
+     * Renvoie la date actuelle au format (jour/mois/an)
+     */
     public static function todayToMysql()
     {
         $date = new DateTime();

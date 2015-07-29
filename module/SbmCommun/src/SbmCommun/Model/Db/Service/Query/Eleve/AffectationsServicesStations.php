@@ -18,18 +18,38 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
 
 class AffectationsServicesStations implements FactoryInterface
 {
 
+    /**
+     *
+     * @var \SbmCommun\Model\Db\Service\DbLibService
+     */
     protected $db;
 
+    /**
+     *
+     * @var int
+     */
+    protected $millesime;
+
+    /**
+     *
+     * @var \Zend\Db\Sql\Sql
+     */
     protected $sql;
 
+    /**
+     *
+     * @var \Zend\Db\Sql\Select
+     */
     protected $select;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        $this->millesime = Session::get('millesime');
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
         $this->sql = new Sql($this->db->getDbAdapter());
         $this->select = $this->sql->select()
@@ -73,7 +93,7 @@ class AffectationsServicesStations implements FactoryInterface
             'correspondance'
         ));
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
+        $where->equalTo('millesime', $this->millesime)
             ->equalTo('eleveId', $eleveId)
             ->equalTo('responsableId', $responsableId);
         if (isset($trajet)) {
@@ -124,7 +144,7 @@ class AffectationsServicesStations implements FactoryInterface
             'correspondance'
         ));
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->and->equalTo('eleveId', $eleveId);
+        $where->equalTo('millesime', $this->millesime)->and->equalTo('eleveId', $eleveId);
         if (isset($trajet)) {
             $where->equalTo('trajet', $trajet);
         }
@@ -178,8 +198,132 @@ class AffectationsServicesStations implements FactoryInterface
             'commune2' => 'nom'
         ), $select::JOIN_LEFT);
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->and->equalTo('eleveId', $eleveId);
+        $where->equalTo('millesime', $this->millesime)->and->equalTo('eleveId', $eleveId);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
+    }
+
+    public function getLocalisation(Where $where, $order = null)
+    {
+        $select = $this->selectLocalisation($where, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    private function selectLocalisation(Where $where, $order = null)
+    {
+        $where->equalTo('aff.millesime', $this->millesime);
+        $sql = new Sql($this->db->getDbAdapter());
+        $select = clone $this->select;
+        ;
+        $select->columns(array(
+            'millesime' => 'millesime',
+            'trajet' => 'trajet'
+        ))
+            ->join(array(
+            'ele' => $this->db->getCanonicName('eleves', 'table')
+        ), 'ele.eleveId=aff.eleveId', array(
+            'id_ccda',
+            'numero',
+            'nom_eleve' => 'nomSA',
+            'prenom_eleve' => 'prenomSA',
+            'dateN'
+        ))
+            ->join(array(
+            'sco' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'ele.eleveId=sco.eleveId', array(
+            'transportGA' => new Expression('CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
+            'x_eleve' => 'x',
+            'y_eleve' => 'y',
+            'chez',
+            'adresseL1_chez' => 'adresseL1',
+            'adresseL2_chez' => 'adresseL2',
+            'codePostal_chez' => 'codePostal'
+        ))
+            ->join(array(
+            'comsco' => $this->db->getCanonicName('communes', 'table')
+        ), 'sco.communeId=comsco.communeId', array(
+            'commune_chez' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 'sco.etablissementId=eta.etablissementId', array(
+            'etablissement' => new Expression('CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
+            'x_etablissement' => 'x',
+            'y_etablissement' => 'y'
+        ))
+            ->join(array(
+            'cometa' => $this->db->getCanonicName('communes', 'table')
+        ), 'cometa.communeId=eta.communeId', array(
+            'commune_etablissement' => 'nom'
+        ))
+            ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 'sco.classeId=cla.classeId', array(
+            'classe' => 'nom'
+        ))
+            ->join(array(
+            'res' => $this->db->getCanonicName('responsables', 'table')
+        ), 'res.responsableId=aff.responsableId', array(
+            'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
+            'x_responsable' => 'x',
+            'y_responsable' => 'y',
+            'telephoneF_responsable' => 'telephoneF',
+            'telephoneP_responsable' => 'telephoneP',
+            'telephoneT_responsable' => 'telephoneT',
+            'email_responsable' => 'email',
+            'adresseL1_responsable' => 'adresseL1',
+            'adresseL2_responsable' => 'adresseL2',
+            'codePostal_responsable' => 'codePostal'
+        ))
+            ->join(array(
+            'comres' => $this->db->getCanonicName('communes', 'table')
+        ), 'comres.communeId=res.communeId', array(
+            'commune_responsable' => 'nom'
+        ))
+            ->join(array(
+            'ser1' => $this->db->getCanonicName('services', 'table')
+        ), 'ser1.serviceId=aff.service1Id', array(
+            'service1' => 'serviceId'
+        ))
+            ->join(array(
+            'tra1' => $this->db->getCanonicName('transporteurs', 'table')
+        ), 'ser1.transporteurId=tra1.transporteurId', array(
+            'transporteur1' => 'nom'
+        ))
+            ->join(array(
+            'sta1' => $this->db->getCanonicName('stations', 'table')
+        ), 'aff.station1Id = sta1.stationId', array(
+            'station1' => 'nom'
+        ))
+            ->join(array(
+            'com1' => $this->db->getCanonicName('communes', 'table')
+        ), 'sta1.communeId = com1.communeId', array(
+            'commune1' => 'nom'
+        ))
+            ->join(array(
+            'ser2' => $this->db->getCanonicName('services', 'table')
+        ), 'ser2.serviceId=aff.service2Id', array(
+            'service2' => 'serviceId'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'tra2' => $this->db->getCanonicName('transporteurs', 'table')
+        ), 'ser2.transporteurId=tra2.transporteurId', array(
+            'transporteur2' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'sta2' => $this->db->getCanonicName('stations', 'table')
+        ), 'aff.station2Id = sta2.stationId', array(
+            'station2' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'com2' => $this->db->getCanonicName('communes', 'table')
+        ), 'sta2.communeId = com2.communeId', array(
+            'commune2' => 'nom'
+        ), $select::JOIN_LEFT);
+        if (! is_null($order)) {
+            $select->order($order);
+        }        
+        return $select->where($where);
     }
 }
