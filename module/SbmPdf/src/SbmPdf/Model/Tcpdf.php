@@ -21,6 +21,7 @@ use SbmCommun\Model\StdLib;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Where;
 use Zend\Stdlib\ArrayObject;
+use SbmCommun\Model\DateLib;
 
 class Tcpdf extends \TCPDF
 {
@@ -354,6 +355,8 @@ class Tcpdf extends \TCPDF
                 $this->setPrintHeader($this->getConfig('document', 'docfooter_pageheader', false));
             }
             $this->AddPage();
+        } else {
+            $this->SetY($this->GetY(), true);
         }
         // dans tous les cas, on place le pied de page correctement
         $this->setPrintFooter($this->getConfig('document', 'docfooter_pagefooter', false));
@@ -429,7 +432,10 @@ class Tcpdf extends \TCPDF
     {
         $orderBy = $this->getConfig('document', 'orderBy', null);
         $orderBy = empty($orderBy) ? $this->getParam('orderBy', null) : $orderBy;
-        $orderBy = str_replace('  ', ' ', str_replace(',', ', ', $orderBy));
+        if (! empty($orderBy)) {
+            // formater correctectement la chaine avec un espace après les virgules
+            $orderBy = str_replace('  ', ' ', str_replace(',', ', ', $orderBy));
+        }
         return $orderBy;
     }
 
@@ -474,6 +480,42 @@ class Tcpdf extends \TCPDF
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $this->config['document'] = require (__DIR__ . '/default/documents.inc.php');
         }
+    }
+
+    /**
+     *
+     * @param string $nameStyle
+     *            l'un des noms suivants : main, data, titre1, titre2, titre2, titre4
+     * @param string $style
+     *            combinaison des lettres BIUDO (B:gras, I:italic, U:souligné, D:barré, O:surligné)
+     * @param string $taille
+     *            en pt
+     * @param array|string $color
+     *            en RGB, la chaine en hexa avec ou sans le #, ou la chaine composée de 3 vakeurs séparées par virgule ou tableau de 3 cases
+     */
+    protected function setStyle($nameStyle, $style = null, $size = null, $color = null)
+    {
+        $f = fopen('debug-style.txt', 'a');
+        fputs($f, $nameStyle . "\n");
+        $key = $nameStyle . '_font_family';
+        $family = $this->getConfig('document', $key, PDF_FONT_NAME_MAIN);
+        if (is_null($style)) {
+            $key = $nameStyle . '_font_style';
+            $style = $this->getConfig('document', $key, '');
+        }
+        if (is_null($size)) {
+            $key = $nameStyle . '_font_size';
+            $size = $this->getConfig('document', $key, '');
+        }
+        fputs($f, "$family - $style - $size\n");
+        $this->SetFont($family, $style, $size);
+        if (is_null($color)) {
+            $key = $nameStyle . '_text_color';
+            $color = $this->getConfig('document', $key, '000000');
+        }
+        fputs($f, "$color\n");
+        fclose($f);
+        $this->SetTextColorArray($this->convertColor($color));
     }
 
     /**
@@ -1323,8 +1365,15 @@ class Tcpdf extends \TCPDF
                         foreach ($expressions as $expression) {
                             $where[] = $expression;
                         }
+                        $orderBy = $this->getOrderBy();
                         if (! empty($where)) {
-                            $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
+                            if (empty($orderBy)) {
+                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
+                            } else {
+                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where) . " ORDER BY " . $orderBy;
+                            }
+                        } elseif (! empty($orderBy)) {
+                            $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
                         }
                     }
                     $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
@@ -1506,41 +1555,82 @@ class Tcpdf extends \TCPDF
             return 'Etiquettes';
         }
         
-        // initialisation de la liste des champs
-        $this->initConfigDocfields();
+        $label = new Label($this->getServiceLocator(), $this->getDocumentId());
+        // pour le moment, planche entière
+        // par la suite, pour commencer à l'étiquette colonne $j, rangée $k :
+        // $label->setCurrentColumn($j); // optionnel
+        // $label->setCurrentRow($k); // optionnel
+        list ($this->x, $this->y) = $label->xyStart();
+        $descripteur = $label->descripteurData();
+        foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            for ($j = 0; $j < count($etiquetteData); $j ++) {
+                $this->setStyle($descripteur[$j]['style']);
+                $txt = $etiquetteData[$j];
+                $txtLabel = $descripteur[$j]['label'];
+                if (! empty($txtLabel)) {
+                    $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0, $label->alignLab($j), 0, '', $label->stretchLab($j));
+                    $this->x += $label->labelSpace($j);
+                }
+                $this->Cell($label->wCell($j), $label->hCell($j), $txt, 0, 0, $label->alignCell($j), 0, '', $label->stretchCell($j));
+                list ($this->x, $this->y) = $label->Ln($j);
+            }
+            if (($xy = $label->NextPosition($j)) == false) {
+                $this->AddPage();
+                list ($this->x, $this->y) = $label->NewPage();
+            } else {
+                list ($this->x, $this->y) = $xy;
+            }
+        }
     }
 
     /**
      * Renvoie un tableau de données pour les étiquettes.
      *
+     * @param array $descripteur
+     *            décrit chaque ligne dans un tableau avec les clés 'fieldname', 'filter', 'format', 'label'
      * @param bool $force
      *            force l'initialisation des données par lecture de la base
      *            
      * @return array
      */
-    protected function getDataForEtiquettes($force = false)
+    protected function getDataForEtiquettes($descripteur, $force = false)
     {
         if ($force || empty($this->data)) {
+            // prépare les filtres pour le décodage des données (notamment booléennes)
+            foreach ($descripteur as &$column) {
+                $column['filter'] = preg_replace(array(
+                    '/^\s+/',
+                    '/\s+$/'
+                ), '', $column['filter']);
+                if (! empty($column['filter'])) {
+                    $column['filter'] = StdLib::getArrayFromString($column['filter']);
+                } else {
+                    $column['filter'] = array();
+                }
+                unset($column);
+            }
             $this->data = array();
             if ($this->getRecordSourceType() == 'T') {
                 // La source doit être enregistrée dans le ServiceManager (table ou vue MySql) sinon exception
                 $table = $this->getRecordSourceTable();
-                // lecture des données
+                // lecture des données et application du filtre et du format
                 foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
-                    $etiquette = array();
-                    foreach ($table_columns as &$column) {
-                        $etiquette[] = $value = StdLib::translateData($row->{$column['tbody']}, $column['filter']);
-                        // adapte la largeur de la colonne si nécessaire
-                        $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
-                        $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
-                        if ($value_width > $column['width']) {
-                            $column['width'] = $value_width;
+                    $ligne = array();
+                    foreach ($descripteur as $column) {
+                        $value = StdLib::translateData($row->{$column['fieldname']}, $column['filter']);
+                        if ($column['is_date']) {
+                            if (! empty($column['format']) && stripos('h', $column['format']) !== false) {
+                                $value = DateLib::formatDateTimeFromMysql($value);
+                            } else {
+                                $value = DateLib::formatDateFromMysql($value);
+                            }
+                        } elseif (! empty($column['format'])) {
+                            $value = sprintf($column['format'], $value);
                         }
-                        unset($column);
+                        $ligne[] = $value;
                     }
-                    $this->data[$ordinal_table][] = $etiquette;
+                    $this->data[] = $ligne;
                 }
-                $this->config['doctable']['columns'] = $table_columns;
             } else {
                 // c'est une requête Sql. S'il n'y a pas de description des colonnes dans la table doccolumns alors on en crée une par défaut.
                 $sql = $this->getConfig('document', 'recordSource', '');
@@ -1564,33 +1654,66 @@ class Tcpdf extends \TCPDF
                     ->getDbAdapter();
                 
                 try {
+                    $criteres = $this->getParam('criteres', array());
+                    $strict = $this->getParam('strict', array(
+                        'empty' => array(),
+                        'not empty' => array()
+                    ));
+                    $expressions = $this->getParam('expression', array());
+                    if (! empty($criteres) || ! empty($expressions)) {
+                        $where = array();
+                        foreach ($criteres as $key => $value) {
+                            if (in_array($key, $expressions))
+                                continue;
+                            if (in_array($key, $strict['empty'])) {
+                                $where[] = "tmp.$key = \"$value\"";
+                            } elseif (in_array($key, $strict['not empty'])) {
+                                if (empty($value))
+                                    continue;
+                                $where[] = "tmp.$key = \"$value\"";
+                            } else {
+                                if (empty($value))
+                                    continue;
+                                $where[] = "tmp.$key Like \"$value%\"";
+                            }
+                        }
+                        foreach ($expressions as $expression) {
+                            $where[] = $expression;
+                        }
+                        $orderBy = $this->getOrderBy();
+                        if (! empty($where)) {
+                            if (empty($orderBy)) {
+                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
+                            } else {
+                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where) . " ORDER BY " . $orderBy;
+                            }
+                        } elseif (! empty($orderBy)) {
+                            $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
+                        }
+                    }
                     $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
-                        // si la description des colonnes est vide, on configure toutes les colonnes de la source
-                        if (empty($table_columns)) {
-                            $ordinal_position = 1;
-                            foreach (array_keys($rowset->current()->getArrayCopy()) as $column_name) {
-                                $column = require (__DIR__ . '/default/doccolumns.inc.php');
-                                $column['thead'] = $column['tbody'] = $column_name;
-                                $column['ordinal_position'] = $ordinal_position ++;
-                                $table_columns[] = $column;
-                            }
-                            $this->config['doctable']['columns'] = $table_columns;
-                        }
                         foreach ($rowset as $row) {
                             // $row est un ArrayObject
                             $etiquette = array();
-                            for ($key = 0; $key < count($table_columns); $key ++) {
-                                $etiquette[] = $value = $row[$table_columns[$key]['tbody']];
-                                // adapte la largeur de la colonne si nécessaire
-                                $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
-                                $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
-                                if ($value_width > $table_columns[$key]['width']) {
-                                    $table_columns[$key]['width'] = $value_width;
+                            for ($key = 0; $key < count($descripteur); $key ++) {
+                                if (empty($descripteur[$key]['fieldname'])) {
+                                    $value = '';
+                                } else {
+                                    $value = StdLib::translateData($row[$descripteur[$key]['fieldname']], $descripteur[$key]['filter']);
+                                    if ($descripteur[$key]['is_date']) {
+                                        if (! empty($descripteur[$key]['format']) && stripos('h', $descripteur[$key]['format']) !== false) {
+                                            $value = DateLib::formatDateTimeFromMysql($value);
+                                        } else {
+                                            $value = DateLib::formatDateFromMysql($value);
+                                        }
+                                    } elseif (! empty($descripteur[$key]['format'])) {
+                                        $value = sprintf($descripteur[$key]['format'], $value);
+                                    }
                                 }
+                                $etiquette[] = $value;
                             }
-                            $this->data[$ordinal_table][] = $etiquette;
-                            $this->config['doctable']['columns'] = $table_columns;
+                            $this->data[] = $etiquette;
                         }
                     }
                 } catch (\Exception $e) {
@@ -1623,8 +1746,61 @@ class Tcpdf extends \TCPDF
             return 'Cartes de transport';
         }
         
-        // initialisation de la liste des champs
-        $this->initConfigDocfields();
+        $label = new Carte($this->getServiceLocator(), $this->getDocumentId());
+        // pour le moment, planche entière
+        // par la suite, pour commencer à l'étiquette colonne $j, rangée $k :
+        // $label->setCurrentColumn($j); // optionnel
+        // $label->setCurrentRow($k); // optionnel
+        list ($x, $y) = $label->xyStart();
+        $this->SetXY($x, $y);
+        // le descripteur est indexé à partir de 0
+        $descripteur = $label->descripteurData();
+        
+        foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            // partie graphique
+            $origine = array(
+                $this->x,
+                $this->y
+            );
+            $this->templateDocBodyMethod3Picture();
+            list ($x, $y) = $origine;
+            $this->SetXY($x, $y);
+            // partie texte - etiquetteData est indexé à partir de 0
+            for ($i = 0; $i < count($etiquetteData); $i ++) {
+                $this->setStyle($descripteur[$i]['style']);
+                $txtLabel = $descripteur[$i]['label'];
+                if (!empty($txtLabel)) {
+                    $txt[] = $txtLabel;
+                }
+                if ($descripteur[$i]['data']) {
+                    $txt[] = $etiquetteData[$i];
+                }
+                $this->SetX($label->X($i));
+                $this->Cell($label->wCell($i), $label->hCell($i), implode(' ', $txt), 0, 0, $label->alignCell($i), 0, '', $label->stretchCell($i));
+                unset($txt);
+                list ($x, $y) = $label->Ln($i);
+                $this->SetXY($x, $y);
+            }
+            if (($xy = $label->NextPosition($i)) == false) {
+                $this->AddPage();
+                list ($this->x, $this->y) = $label->NewPage();
+            } else {
+                list ($this->x, $this->y) = $xy;
+            }
+        }
+    }
+
+    private function templateDocBodyMethod3Picture()
+    {
+        $path = $this->getConfig('document', 'url_path_images'); // se termine par /
+        $x = $this->x;
+        $y = $this->y;
+        $file = $path . 'logocartegauche.jpg';
+        $this->Image($file, $x, $y, 9.5, 13, '', '', '', true, 300);
+        $file = $path . 'logocartedroite.jpg';
+        $this->Image($file, $x + 56, $y, 23, 13, '', '', '', true, 300);
+        $border_style = array('width' => 0.25, 'cap' => 'round', 'join' => 'round', 'dash' => '1,2', 'color' => array(247, 128, 66));
+        $this->Rect($x + 56, $y + 17, 23, 29, 'D', array('all' => $border_style)); // 
     }
 }
 

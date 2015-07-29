@@ -295,9 +295,21 @@ label.sbm-label-200px {
 label.sbm-label-top {
 	vertical-align: top;
 }
+.label-80 label {
+	display: inline-block;
+	width: 80px;
+}
 .label-120 label {
 	display: inline-block;
 	width: 120px;
+}
+.label-240 label {
+	display: inline-block;
+	width: 240px;
+}
+.label-360 label {
+	display: inline-block;
+	width: 360px;
 }
 /*---------- Bienvenue ----------*/
 #bienvenue {

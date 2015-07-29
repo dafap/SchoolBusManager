@@ -1,0 +1,105 @@
+<?php
+/**
+ * Ecran de saisie des paramètres des étiquettes
+ *
+ * 
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource etiquette-format.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 juil. 2015
+ * @version 2015-1
+ */
+$this->headLink()->
+// ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
+appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_cancel = $this->url('sbmpdf', array(
+    'action' => 'pdf-liste',
+    'page' => $this->page
+));
+$url_retour = $this->url('sbmpdf', array(
+    'action' => 'pdf-edit',
+    'page' => $this->page
+));
+$url_fields = $this->url('sbmpdf', array(
+    'action' => 'field-liste',
+    'page' => $this->page
+));
+
+$hiddens = array(
+    'documentId' => $this->document['documentId'],
+    'name' => $this->document['name'],
+    'recordSource' => $this->document['recordSource']
+);
+
+$actions = array(
+    'homepdf' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_cancel,
+        'title' => 'Liste des documents'
+    ),
+    'retour' => array(
+        'class' => 'fam-book-previous',
+        'formaction' => $url_retour,
+        'title' => 'Configuration du document'
+    ),
+    'champs' => array(
+        'formaction' => $url_fields,
+        'class' => 'button default',
+        'value' => 'Liste des champs',
+        'title' => 'Définition et mise en forme du contenu de l\'étiquette'
+    )
+);
+?>
+<h1>Paramétrage des étiquettes</h1>
+<ul>
+	<li>Document: <?php echo $this->document['name'];?></li>
+	<li>Source du document: <?php echo $this->document['recordSource'];?></li>
+</ul>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner" class="clearfix">
+		<fieldset class="sbm-page1">
+	   <?php
+    echo $this->form()->openTag($this->form); // le formulaire doit avoir id="accordion" pour que ça marche
+    echo $this->formHidden($this->form->get('doclabelId'));
+    echo $this->formHidden($this->form->get('documentId'));
+    echo $this->formHidden($this->form->get('name'));
+    echo $this->formHidden($this->form->get('recordSource'));
+    echo $this->formHidden($this->form->get('csrf'));
+    ?>
+        <div class="float-left">
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('cols_number'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('rows_number'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('label_width'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('label_height'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('margin_left'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('margin_top'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('x_space'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('y_space'));?></div>
+			</div>
+			<div class="float-left left-95px">
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('padding_top'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('padding_right'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('padding_bottom'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('padding_left'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('border'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('border_dash'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('border_width'));?></div>
+				<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('border_color'));?></div>
+			</div>
+			<div class="row-inner">
+	    <?php echo $this->formSubmit($this->form->get('submit')); ?>
+	    <?php echo $this->formSubmit($this->form->get('cancel')); ?>
+        </div>
+        <?php echo $this->form()->closeTag(); ?>
+        </fieldset>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

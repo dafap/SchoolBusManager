@@ -1,7 +1,7 @@
 <?php
 /**
- * Description
- *
+ * Gestion de la table système `docfields`
+ * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package SbmCommun/Model/Service/Table/Sys
@@ -14,6 +14,7 @@
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
+use SbmCommun\Model\Db\Service\Table\Exception;
 
 class DocFields extends AbstractSbmTable
 {

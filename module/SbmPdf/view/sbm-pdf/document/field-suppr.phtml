@@ -1,0 +1,32 @@
+<?php
+/**
+ * Page de suppression d'un champ dans un document pdf (hors présentation tabulaire)
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource field-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 juil. 2015
+ * @version 2015-1
+ */
+?>
+<h1>Suppression d'un champ dans un document Pdf (hors présentation tabulaire)</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du champ suivant :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li>Champ n° : <?php echo $this->data->ordinal_position; ?></li>
+			<li>Champ : <?php echo $this->escapeHtml($this->data->fieldname); ?></li>
+			<li>Libellé : <?php echo $this->data->has_label ?$this->escapeHtml($this->data->label) : '(sans étiquette)'; ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

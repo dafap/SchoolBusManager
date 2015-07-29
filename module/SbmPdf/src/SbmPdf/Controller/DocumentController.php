@@ -21,6 +21,7 @@ use SbmPdf\Form\DocumentPdf as FormDocumentPdf;
 use SbmPdf\Form\DocTable as FormDocTable;
 use SbmPdf\Form\DocColumn as FormDocColumn;
 use SbmPdf\Form\DocField as FormDocField;
+use SbmPdf\Form\DocLabel as FormDocLabel;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmPdf\Form\SbmPdf\Form;
@@ -100,10 +101,10 @@ class DocumentController extends AbstractActionController
                     $documentId = $tDocuments->getTableGateway()->getLastInsertValue();
                 }
                 $this->flashMessenger()->addSuccessMessage("Un nouvel enregistrement a été ajouté.");
-                // création des sections dans doctables
+                // création des sections dans doctables, de la fiche étiquette ou de la fiche texte
                 switch ($oData->disposition) {
                     case 'Tabulaire':
-                        $tDoctables = $this->getServiceLocator()->get('Sbm\Db\System\Doctables');
+                        $tDoctables = $this->getServiceLocator()->get('Sbm\Db\System\DocTables');
                         $oDoctable = $tDoctables->getObjData();
                         $defaults = include (__DIR__ . '/../Model/default/doctables.inc.php');
                         foreach (array(
@@ -118,6 +119,12 @@ class DocumentController extends AbstractActionController
                         }
                         break;
                     case 'Etiquette':
+                        $tDoclabels = $this->getServiceLocator()->get('Sbm\Db\System\DocLabels');
+                        $oDoclabel = $tDoclabels->getObjData();
+                        $defaults = include (__DIR__ . '/../Model/default/doclabels.inc.php');                      
+                        $defaults['documentId'] = $documentId;
+                        $oDoclabel->exchangeArray($defaults);
+                        $tDoclabels->saveRecord($oDoclabel);                       
                         break;
                     default: // Texte
                         break;
@@ -242,21 +249,33 @@ class DocumentController extends AbstractActionController
                     $documentId = $tDocuments->getTableGateway()->getLastInsertValue();
                 }
                 $this->flashMessenger()->addSuccessMessage("Un nouvel enregistrement a été ajouté.");
-                // création des sections dans doctables
-                if ($oData->disposition == 'Tabulaire') {
-                    $tDoctables = $this->getServiceLocator()->get('Sbm\Db\System\Doctables');
-                    $oDoctable = $tDoctables->getObjData();
-                    $defaults = include (__DIR__ . '/../Model/default/doctables.inc.php');
-                    foreach (array(
-                        'thead',
-                        'tbody',
-                        'tfoot'
-                    ) as $section) {
-                        $defaults[$section]['documentId'] = $documentId;
-                        $oDoctable->exchangeArray($defaults[$section]);
-                        $oDoctable->section = $section;
-                        $tDoctables->saveRecord($oDoctable);
-                    }
+                // création des sections dans doctables, de la fiche étiquette ou de la fiche texte
+                switch ($oData->disposition) {
+                    case 'Tabulaire':
+                        $tDoctables = $this->getServiceLocator()->get('Sbm\Db\System\DocTables');
+                        $oDoctable = $tDoctables->getObjData();
+                        $defaults = include (__DIR__ . '/../Model/default/doctables.inc.php');
+                        foreach (array(
+                            'thead',
+                            'tbody',
+                            'tfoot'
+                        ) as $section) {
+                            $defaults[$section]['documentId'] = $documentId;
+                            $oDoctable->exchangeArray($defaults[$section]);
+                            $oDoctable->section = $section;
+                            $tDoctables->saveRecord($oDoctable);
+                        }
+                        break;
+                    case 'Etiquette':
+                        $tDoclabels = $this->getServiceLocator()->get('Sbm\Db\System\DocLabels');
+                        $oDoclabel = $tDoclabels->getObjData();
+                        $defaults = include (__DIR__ . '/../Model/default/doclabels.inc.php');
+                        $defaults['documentId'] = $documentId;
+                        $oDoclabel->exchangeArray($defaults);
+                        $tDoclabels->saveRecord($oDoclabel);
+                        break;
+                    default: // Texte
+                        break;
                 }
                 // création des colonnes du tableau
                 
@@ -749,9 +768,57 @@ class DocumentController extends AbstractActionController
     }
     
     // ============================================================================================
+    /**
+     * Reçoit par post les paramètres suivants :
+     * - disposition (uniquement au moment de l'appel)
+     * - documentId
+     * - name
+     * - recordSource
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function etiquetteFormatAction()
     {
-        ;
+        $currentPage = $this->params('page', 1);
+        $form = new FormDocLabel();
+        $params = array(
+            'data' => array(
+                'table' => 'doclabels',
+                'type' => 'system',
+                'alias' => 'Sbm\Db\System\DocLabels',
+                'id' => 'documentId'
+            ),
+            'form' => $form
+        );
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        }, function ($post) use($form) {
+            $form->setData(array(
+                'name' => $post['name'],
+                'recordSource' => $post['recordSource']
+            ));
+        });
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmpdf', array(
+                        'action' => 'pdf-liste',
+                        'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                        'form' => $form->prepare(),
+                        'page' => $currentPage,
+                        'document' => $r->getResult()
+                    ));
+                    break;
+            }
+        }
     }
     
     // ============================================================================================
@@ -879,7 +946,7 @@ class DocumentController extends AbstractActionController
                     'documentId' => $r['documentId'],
                     'name' => $r['name'],
                     'recordSource' => $r['recordSource'],
-                    'ordinal_position' => $r['new_position']
+                    'ordinal_position' => array_key_exists('new_position', $r) ? $r['new_position'] : 1
                 ));
                 $view = new ViewModel(array(
                     'form' => $form->prepare(),

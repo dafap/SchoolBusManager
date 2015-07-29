@@ -48,6 +48,7 @@ return array(
             'Sbm\Db\SysObjectData\DocAffectation' => 'SbmCommun\Model\Db\ObjectData\Sys\DocAffectation',
             'Sbm\Db\SysObjectData\DocColumn' => 'SbmCommun\Model\Db\ObjectData\Sys\DocColumn',
             'Sbm\Db\SysObjectData\DocField' => 'SbmCommun\Model\Db\ObjectData\Sys\DocField',
+            'Sbm\Db\SysObjectData\DocLabel' => 'SbmCommun\Model\Db\ObjectData\Sys\DocLabel',
             'Sbm\Db\SysObjectData\DocTable' => 'SbmCommun\Model\Db\ObjectData\Sys\DocTable',
             'Sbm\Db\SysObjectData\Libelle' => 'SbmCommun\Model\Db\ObjectData\Sys\Libelle'
         ),
@@ -77,6 +78,7 @@ return array(
             'Sbm\Db\System\Documents' => 'SbmCommun\Model\Db\Service\Table\Sys\Documents',
             'Sbm\Db\System\DocAffectations' => 'SbmCommun\Model\Db\Service\Table\Sys\DocAffectations',
             'Sbm\Db\System\DocFields' => 'SbmCommun\Model\Db\Service\Table\Sys\DocFields',
+            'Sbm\Db\System\DocLabels' => 'SbmCommun\Model\Db\Service\Table\Sys\DocLabels',
             'Sbm\Db\System\DocTables' => 'SbmCommun\Model\Db\Service\Table\Sys\DocTables',
             'Sbm\Db\System\DocTables\Columns' => 'SbmCommun\Model\Db\Service\Table\Sys\DocColumns',
             'Sbm\Db\System\Libelles' => 'SbmCommun\Model\Db\Service\Table\Sys\Libelles',
@@ -103,6 +105,7 @@ return array(
             'Sbm\Db\SysTableGateway\DocAffectations' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocAffectations',
             'Sbm\Db\SysTableGateway\DocColumns' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocColumns',
             'Sbm\Db\SysTableGateway\DocFields' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocFields',
+            'Sbm\Db\SysTableGateway\DocLabels' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocLabels',
             'Sbm\Db\SysTableGateway\DocTables' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocTables',
             'Sbm\Db\SysTableGateway\Libelles' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayLibelles',
             

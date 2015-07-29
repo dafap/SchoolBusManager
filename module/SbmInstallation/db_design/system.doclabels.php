@@ -38,7 +38,7 @@ return array(
             'border_color' => 'varchar(20) NOT NULL DEFAULT "000000"'
         ),
         'primary_key' => array(
-            'doctableId'
+            'doclabelId'
         ),
         'foreign key' => array(
             array(

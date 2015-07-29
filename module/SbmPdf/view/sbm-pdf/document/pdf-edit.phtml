@@ -146,6 +146,10 @@ $this->inlineScript()->captureEnd();
 // =============================================================================================
 $tableau = $this->form->get('tableau');
 $tableau->setAttribute('formaction', $this->url('sbmpdf', array('action' => 'table-liste', 'page' => $this->page)));
+$texte = $this->form->get('texte');
+$texte->setAttribute('formaction', $this->url('sbmpdf', array('action' => 'texte-format', 'page' => $this->page)));
+$etiquette = $this->form->get('etiquette');
+$etiquette->setAttribute('formaction', $this->url('sbmpdf', array('action' => 'etiquette-format', 'page' => $this->page)));
 
 $url_retour = $this->url('sbmpdf', array(
     'action' => 'pdf-liste',
@@ -323,8 +327,8 @@ blocAccordeon2cols($this, 'Titres', array(
         <div id="pdf-edit-buttons" class="row-inner edit">
 	    <?php echo $this->formSubmit($this->form->get('submit')); ?>
 	    <?php echo $this->formSubmit($tableau); ?>
-	    <?php echo $this->formSubmit($this->form->get('texte')); ?>
-	    <?php echo $this->formSubmit($this->form->get('etiquette')); ?>
+	    <?php echo $this->formSubmit($texte); ?>
+	    <?php echo $this->formSubmit($etiquette); ?>
 	    <?php echo $this->formSubmit($this->form->get('cancel')); ?>
         </div>
         <?php echo $this->form()->closeTag(); ?>
