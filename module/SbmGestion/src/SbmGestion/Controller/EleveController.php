@@ -558,6 +558,7 @@ class EleveController extends AbstractActionController
                     if (empty($dataValid['responsable2Id'])) {
                         // suppression des affectations relatives à cet élève pour ce millesime
                         $tAffectations->deleteResponsableId($millesime, $eleveId, $odata0->responsable2Id);
+                        $dataValid['demandeR2'] = 0;
                     } else {
                         // maj du responsableId
                         $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable2Id, $dataValid['responsable2Id']);

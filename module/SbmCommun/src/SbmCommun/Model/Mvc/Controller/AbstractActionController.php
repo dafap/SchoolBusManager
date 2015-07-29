@@ -105,6 +105,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
                     unset($args['origine']);
                 }
                 $this->sbm_isPost = true;
+                unset($args['submit']);
                 Session::set('post', $args, $this->getSessionNamespace());
             }
         }
@@ -427,5 +428,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
     protected function setToSession($param, $value, $sessionNamespace = Session::SBM_DG_SESSION)
     {
         Session::set($param, $value, $sessionNamespace);
+    }
+    
+    protected function removeInSession($param, $sessionNamespace = Session::SBM_DG_SESSION) 
+    {
+        Session::remove($param, $sessionNamespace);
     }
 }

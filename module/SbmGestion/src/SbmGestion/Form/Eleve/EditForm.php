@@ -103,7 +103,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'empty_options' => 'Choisissez un établissement scolaire',
+                'empty_option' => 'Choisissez un établissement scolaire',
                 'error_attributes' => array(
                     'class' => 'sbm_error'
                 )
@@ -121,7 +121,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'empty_options' => 'Choisissez une classe',
+                'empty_option' => 'Choisissez une classe',
                 'error_attributes' => array(
                     'class' => 'sbm_error'
                 )
@@ -290,7 +290,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
-                'empty_options' => 'Choisissez un responsable',
+                'empty_option' => 'Choisissez un responsable',
                 'error_attributes' => array(
                     'class' => 'sbm_error'
                 )

@@ -21,7 +21,10 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_cancel = $this->url('sbmpdf');
+$url_cancel = $this->url('sbmpdf', array(
+    'action' => 'pdf-liste',
+    'page' => $this->page
+));
 $url_edit = $this->url('sbmpdf', array(
     'action' => 'table-edit',
     'page' => $this->page

@@ -153,6 +153,20 @@ class Responsables implements FactoryInterface
     }
 
     /**
+     * Renvoie le résultat d'une requête avec nombre d'enfants, d'inscrits et de préinscrits
+     * 
+     * @param \Zend\Db\Sql\Where $where
+     * @param array $order
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function withEffectifs($where, $order = null)
+    {
+        $select = $this->selectResponsables($where, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+    
+    /**
      * Renvoie un paginator sur la requête donnant les responsables avec la commune et le nombre d'enfants
      * connus, inscrits et préinscrits
      *

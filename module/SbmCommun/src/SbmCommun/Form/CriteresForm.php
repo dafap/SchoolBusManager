@@ -934,11 +934,10 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private function formLibelles()
     {
         $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
             'name' => 'nature',
             'attributes' => array(
-                'type' => 'text',
-                'id' => 'critere-nature',
-                'maxlength' => '20',
+                'id' => 'critere-code-caisse',
                 'class' => 'sbm-width-20c'
             ),
             'options' => array(
@@ -946,6 +945,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'label_attributes' => array(
                     'class' => 'sbm-first'
                 ),
+                'empty_option' => 'Toutes',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -976,12 +976,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         return array(
             'nature' => array(
                 'name' => 'nature',
-                'required' => false,
-                'filters' => array(
-                    array(
-                        'name' => 'StringTrim'
-                    )
-                )
+                'required' => false
             ),
             'ouvert' => array(
                 'name' => 'ouvert',
@@ -1587,7 +1582,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'class' => 'sbm-width-10c'
             ),
             'options' => array(
-                'label' => 'Numéro',
+                'label' => 'Code',
                 'label_attributes' => array(
                     'class' => 'sbm-first'
                 ),

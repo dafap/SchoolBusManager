@@ -21,7 +21,7 @@ return array(
                     'ouvrir' => array(
                         'deny' => array(
                             'roles' => array(
-                                'gestion'
+                                'parent'
                             )
                         ),
                         'allow' => array(
@@ -34,7 +34,7 @@ return array(
                     'circuit-dupliquer' => array(
                         'deny' => array(
                             'roles' => array(
-                                'gestion'
+                                'parent'
                             )
                         ),
                         'allow' => array(
@@ -53,7 +53,7 @@ return array(
             'nb_circuits' => 15,
             'nb_classes' => 15,
             'nb_communes' => 15,
-            'nb_eleves' => 10,
+            'nb_eleves' => 15,
             'nb_etablissements' => 15,
             'nb_paiements' => 10,
             'nb_responsables' => 15,

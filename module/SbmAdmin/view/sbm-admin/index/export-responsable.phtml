@@ -30,13 +30,13 @@ echo $this->flashMessenger()->render('default');
 	</div>
 	<div id="fiche-inner">
 	<?php echo $this->form()->openTag($this->form);?>
-	    <fieldset>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('nomSA'));?></div>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('communeId'));?></div>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('selection'));?></div>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('demenagement'));?></div>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('nbEleves'));?></div>
-			<div>
+	    <fieldset class="sbm-page1">
+			<div class="row-inner label-120"><?php echo $this->formRow($this->form->get('nomSA'));?></div>
+			<div class="row-inner label-120"><?php echo $this->formRow($this->form->get('communeId'));?></div>
+			<div class="row-inner label-120"><?php echo $this->formRow($this->form->get('selection'));?></div>
+			<div class="row-inner label-120"><?php echo $this->formRow($this->form->get('demenagement'));?></div>
+			<div class="row-inner label-120"><?php echo $this->formRow($this->form->get('nbEleves'));?></div>
+			<div class="row-inner">
 			<?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
 			</div>
 		</fieldset>

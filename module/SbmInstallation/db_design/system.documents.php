@@ -24,7 +24,7 @@ return array(
             // document
             'documentId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'type' => 'char(3) NOT NULL DEFAULT "pdf"',
-            'disposition' => 'varchar(12) NOT NULL DEFAULT "Tabulaire"', // Tabulaire, BlocVertical, BlocFiche
+            'disposition' => 'varchar(12) NOT NULL DEFAULT "Tabulaire"', // Tabulaire, Texte, Etiquette
             'name' => 'varchar(32) NOT NULL',
             'out_mode' => 'varchar(2) NOT NULL DEFAULT "I"', // I (inline), D (force download), F (file on server), S (string), FI (F + I), FD (F + D), E (base64 mime multi-part email attachment)
             'out_name' => 'varchar(32) NULL DEFAULT "document-sbm.pdf"',

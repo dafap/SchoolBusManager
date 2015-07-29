@@ -25,6 +25,8 @@ use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\ButtonForm;
 use SbmAdmin\Form\User;
 use SbmAdmin\Form\Export as ExportForm;
+use DafapSession;
+use DafapSession\Model\Session;
 
 class IndexController extends AbstractActionController
 {
@@ -40,14 +42,20 @@ class IndexController extends AbstractActionController
 
     public function libelleListeAction()
     {
-        $args = $this->initListe('libelles');
+        $args = $this->initListe('libelles', function ($sm, $form) {
+            $form->setValueOptions('nature', $sm->get('Sbm\Db\Select\Libelles')
+                ->nature());
+        });
         if ($args instanceof Response)
             return $args;
         
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\System\Libelles')
-                ->paginator($args['where']),
+                ->paginator($args['where'], array(
+                'nature',
+                'code'
+            )),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_libelles', 10),
             'criteres_form' => $args['form']
@@ -221,20 +229,23 @@ class IndexController extends AbstractActionController
         
         $criteres_form = new CriteresForm('libelles');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $session = new SessionContainer(str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (isset($session->criteres)) {
-            $criteres_obj->exchangeArray($session->criteres);
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
         }
-        
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 9)
-            ->setParam('recordSource', 'Sbm\Db\System\Libelles')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'nature',
-            'code'
-        ))
-            ->renderPdf();
+        $call_pdf->setParam('documentId', 'Liste des libellés');
+        if (! empty($criteres)) {
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'ouvert'
+                )
+            ));
+        }
+        $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -459,12 +470,21 @@ class IndexController extends AbstractActionController
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereEleve();
-                    $resultset = $this->getServiceLocator()
-                        ->get('Sbm\Db\Query\ElevesResponsables')
-                        ->getLocalisation($where, array(
-                        'nom_eleve',
-                        'prenom_eleve'
-                    ));
+                    if ($prg['lot']) {
+                        $resultset = $this->getServiceLocator()
+                            ->get('Sbm\Db\Query\AffectationsServicesStations')
+                            ->getLocalisation($where, array(
+                            'nom_eleve',
+                            'prenom_eleve'
+                        ));
+                    } else {
+                        $resultset = $this->getServiceLocator()
+                            ->get('Sbm\Db\Query\ElevesResponsables')
+                            ->getLocalisation($where, array(
+                            'nom_eleve',
+                            'prenom_eleve'
+                        ));
+                    }
                     $data = iterator_to_array($resultset);
                     if (! empty($data)) {
                         $fields = array_keys(current($data));

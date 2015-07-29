@@ -7,12 +7,29 @@
  * @filesource version.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2015
- * @version 2015-1
+ * @date 29 juillet 2015
+ * @version 2015-1.4.0
  */
 use Zend\Version\Version;
+use \TCPDF_STATIC;
+use Zend\Json\Json;
 
-define('SBM_VERSION', '1.3.5-CCDA');
+define('SBM_VERSION', '1.4.0-CCDA');
+
+function versionTcpdfGitHub()
+{
+    $context = stream_context_create(
+        array(
+            'http' => array(
+                'user_agent' => sprintf('Sbm/%s', SBM_VERSION),
+            ),
+        )
+    );
+    $url = 'https://api.github.com/repos/tecnickcom/TCPDF/tags';
+    $apiResponse = file_get_contents($url, false, $context);
+    $decodedResponse = Json::decode($apiResponse, Json::TYPE_ARRAY);
+    return $decodedResponse[0]['name'];
+}
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $actions = array(
@@ -39,7 +56,15 @@ $actions = array(
 	    <?php else :?>
 	    Il y a une nouvelle version <?php echo Version::getLatest();?>
 	    <?php endif;?>
-	</dd>
+	        </dd>
+			<dt>Version de TCPDF</dt>
+			<dd>Version installée: <?php echo $vtcpdf = TCPDF_STATIC::getTCPDFVersion();?><br>
+		<?php if ($vtcpdf == versionTcpdfGitHub()) :?>
+		C'est la dernière version.
+		<?php else :?>
+		Il y a une nouvelle version <?php echo versionTcpdfGitHub();?>
+		<?php endif;?>
+			</dd>
 		</dl>
 	</div>
 	<div id="version-footer">

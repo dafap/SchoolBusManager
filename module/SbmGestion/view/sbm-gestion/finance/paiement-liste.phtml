@@ -48,21 +48,21 @@ if (! $this->h2) {
 ?>
 
 <div id="liste-wrapper">
-    <div id="liste-header" class="clearfix">
+	<div id="liste-header" class="clearfix">
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
 echo $this->flashMessenger()->render('error');
 echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
-?></div>	
-        <h1>Liste des paiements</h1>
+?></div>
+		<h1>Liste des paiements</h1>
 <?php if ($this->h2): ?>
         <h2>Paiements effectués par <?php echo $this->responsable; ?></h2>
-        <p class="left-10px">Total du : <?php echo $fmt->formatCurrency(($this->nbInscrits + $this->nbPreinscrits) * $this->tarif, 'EUR');?>
+		<p class="left-10px">Total du : <?php echo $fmt->formatCurrency(($this->nbInscrits + $this->nbPreinscrits) * $this->tarif, 'EUR');?>
             <span class="left-95px">Payé : <?php echo $fmt->formatCurrency($this->nbInscrits * $this->tarif, 'EUR');?></span>
-		    <span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($this->nbPreinscrits * $this->tarif, 'EUR');?></span>
-        </p>
+			<span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($this->nbPreinscrits * $this->tarif, 'EUR');?></span>
+		</p>
 <?php endif; ?>	
 		<div class="float-left">
 <?php
@@ -75,6 +75,20 @@ $url_imprimer = $this->url('sbmgestion/finance', array(
     'action' => 'paiement-imprimer',
     'page' => $this->page
 ));
+$url_edit = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-edit',
+    'page' => $this->page
+));
+$url_delete = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-suppr',
+    'page' => $this->page
+));
+if (! $this->h2) {
+    $url_group = $this->url('sbmgestion/finance', array(
+        'action' => 'paiement-liste'
+    ));
+}
+
 $hiddens = array(
     'url1_retour' => $this->url1_retour,
     'url2_retour' => $this->url2_retour,
@@ -108,10 +122,8 @@ $actions = array(
     )
 );
 echo $this->listeZoneActions($hiddens, $actions);
-
 ?>
         </div>
-
 	</div>
 	<div id="liste-inner">
 		<table class="paiements">
@@ -146,8 +158,7 @@ EOT;
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $paiement->paiementId);
             $jsCallback .= sprintf("$modele\n", $paiement->paiementId, $paiement->paiementId);
             ?>
-         <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+                <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 					<td class="responsable"><?php echo $r = $this->escapeHtml($paiement->responsable); ?></td>
 					<td class="montant"><?php echo $m = $fmt->formatCurrency($paiement->montant, 'EUR'); ?></td>
 					<td class="caisse"><?php echo $cs = $this->escapeHtml($paiement->caisse); ?></td>
@@ -160,32 +171,14 @@ EOT;
             $title_voir = 'Année scolaire : ' . $paiement->anneeScolaire . "\n" . 'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' . $paiement->titulaire . "\n" . 'Banque : ' . $paiement->banque . "\n" . 'Référence : ' . $paiement->reference . "\n" . 'Date de dépôt : ' . DateLib::formatDateTimeFromMysql($paiement->dateDepot);
             $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" . 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" . 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" . $title_voir;
             $js_voir = 'javascript:window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' . str_replace("\n", '; ', $texte_voir) . '\');return false;';
-            $url_edit = $this->url('sbmgestion/finance', array(
-                'action' => 'paiement-edit',
-                'page' => $this->page
-            ));
-            $url_delete = $this->url('sbmgestion/finance', array(
-                'action' => 'paiement-suppr',
-                'page' => $this->page
-            ));
-            if (! $this->h2) {
-                $url_group = $this->url('sbmgestion/finance', array(
-                    'action' => 'paiement-liste'
-                ));
-            }
-            $hiddens = array(
-                'url1_retour' => $this->url1_retour,
-                'url2_retour' => $this->url2_retour,
-                'paiementId' => $paiement->paiementId,
-                'h2' => $this->h2,
+            $hiddens['paiementId'] = $paiement->paiementId;
                 /*
                  * Pour responsableId il y a 2 cas :
                  *  - si h2 == true alors responsableId correspond au responsableId de la liste et de la ligne (liste des paiements d'un responsable)
                  *  - si h2 == false alors responsableId correspond au responsableId de la ligne. Dans ce cas, le responsableId de la liste est -1.
                  */
-                'responsableId' => $paiement->responsableId,
-                'responsable' => $this->escapeHtml($paiement->responsable)
-            );
+            $hiddens['responsableId'] = $paiement->responsableId;
+            $hiddens['responsable'] = $this->escapeHtml($paiement->responsable);
             // ne pas utiliser de guillement dans la chaine $js
             $js = 'javascript:window.document.getElementById(\'op' . $paiement->paiementId . '\').value=%s;';
             $buttons = array(
