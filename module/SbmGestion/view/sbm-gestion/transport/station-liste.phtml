@@ -70,7 +70,7 @@ $url_group = $this->url('sbmgestion/transport', array(
     'page' => $this->page
 ));
 $url_retour = $this->url('sbmgestion/transport');
-$hiddens = array();
+$hiddens = array('back' => $url_origine);
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
