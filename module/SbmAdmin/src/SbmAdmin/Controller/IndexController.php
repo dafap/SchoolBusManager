@@ -655,4 +655,10 @@ class IndexController extends AbstractActionController
             ->setBack($retour)
             ->toRoute('dafapmail');
     }
+    
+    public function localisationAction()
+    {
+        $this->flashMessenger()->addWarningMessage('La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');
+        return $this->redirect()->toRoute('sbmadmin');
+    }
 }

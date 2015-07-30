@@ -1348,10 +1348,31 @@ class Tcpdf extends \TCPDF
                     $expressions = $this->getParam('expression', array());
                     if (! empty($criteres) || ! empty($expressions)) {
                         $where = array();
+                        $where_or = array();
                         foreach ($criteres as $key => $value) {
                             if (in_array($key, $expressions))
                                 continue;
-                            if (in_array($key, $strict['empty'])) {
+                            if (is_array($value)) {
+                                // je considère sans tester la validité que $value est un bloc OR composé simple c'est à dire que
+                                // c'est un tableau de ($key_bloc => $value_bloc) où chaque clé et chaque valeur est une chaine
+                                // (en particulier $value_bloc n'est jamais un tableau, sinon il faudrait une récursivité)
+                                // on testera si le champ $key_bloc est dans strict ; il n'y a pas d'expression dans le bloc_OR
+                                $bloc_or = array();
+                                foreach ($value as $key_bloc => $value_bloc) {
+                                    if (in_array($key_bloc, $strict['empty'])) {
+                                        $bloc_or[] = "tmp.$key_bloc = \"$value_bloc\"";
+                                    } elseif (in_array($key_bloc, $strict['not empty'])) {
+                                        if (empty($value_bloc))
+                                            continue;
+                                        $bloc_or[] = "tmp.$key_bloc = \"$value_bloc\"";
+                                    } else {
+                                        if (empty($value_bloc))
+                                            continue;
+                                        $bloc_or[] = "tmp.$key_bloc Like \"$value_bloc%\"";
+                                    }
+                                }
+                                $where_or[] = $bloc_or;
+                            } elseif (in_array($key, $strict['empty'])) {
                                 $where[] = "tmp.$key = \"$value\"";
                             } elseif (in_array($key, $strict['not empty'])) {
                                 if (empty($value))
@@ -1365,7 +1386,11 @@ class Tcpdf extends \TCPDF
                         }
                         foreach ($expressions as $expression) {
                             $where[] = $expression;
-                        }                        
+                        }
+                        foreach ($where_or as $bloc_or) {
+                            $where_tmp = '(' . implode(' OR ', $bloc_or) . ')';
+                            $where[] = $where_tmp;
+                        }
                         if (! empty($where)) {
                             if (empty($orderBy)) {
                                 $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
@@ -1378,7 +1403,6 @@ class Tcpdf extends \TCPDF
                     } elseif (! empty($orderBy)) {
                         $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
                     }
-                    //die($orderBy);
                     $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
                         // si la description des colonnes est vide, on configure toutes les colonnes de la source
@@ -1409,6 +1433,7 @@ class Tcpdf extends \TCPDF
                         }
                     }
                 } catch (\Exception $e) {
+                    die($sql);
                     $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s\nCode erreur: %s", $sql, $e->getCode());
                     throw new Exception($message, 0, $e->getPrevious());
                 }

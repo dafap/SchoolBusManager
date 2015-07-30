@@ -1,0 +1,206 @@
+<?php
+/**
+ * Liste des élèves
+ * 
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/index
+ * @filesource tr-eleves.phtml.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 juil. 2015
+ * @version 2015-1
+ */
+use SbmCommun\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
+// (ne pas mettre de guillemet dans la chaine)
+$js_op = 'javascript:window.document.getElementById(\'op%s%s\').value=\'%s\';';
+
+// le paginateur
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+try {
+    $eleves = $this->paginator->getCurrentItems();
+} catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+    // affichage d'une page d'erreur
+    ?>
+<h1>Liste des élèves</h1>
+<div id="liste-wrapper">
+	<div id="liste-inner">
+		<pre>
+	  <?php echo $e->getMessage();?>
+	</pre>
+	</div>
+	<div id="liste-footer">
+		<div class="criteres-wrapper">
+<?php
+    if (! is_null($this->criteres_form)) {
+        echo $this->form()->openTag($this->criteres_form);
+        echo $this->formCollection($this->criteres_form, true);
+        echo $this->form()->closeTag();
+        return;
+    }
+    ?>
+        </div>
+	</div>
+</div>
+<?php
+    // fin du catch (affichage d'une page d'erreur)
+}
+
+// les url à utiliser
+$url_ici = $this->url('sbmportail', array(
+    'action' => 'tr-eleves',
+    'page' => $this->page
+));
+$url_responsable = $this->url('sbmportail', array(
+    'action' => 'tr-responsable',
+    'page' => $this->page
+));
+$url_group = $this->url('sbmportail', array(
+    'action' => 'tr-famille',
+    'page' => $this->page
+));
+$url_rapports = $this->url('sbmportail', array(
+    'action' => 'tr-pdf',
+    'page' => $this->page
+));
+$url_map = $this->url('sbmcarte', array(
+    'action' => 'eleves',
+    'page' => $this->page
+));
+$url_retour = $this->url('sbmportail', array(
+    'action' => 'retour'
+));
+
+// le formulaire des actions du haut de page - aide de vue listeZoneActions()
+$hiddens = array();
+$actions = array(
+    'cancel' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_ici,
+        'title' => 'Retour'
+    ),
+    'rapports' => array(
+        'class' => 'fam-report',
+        'formaction' => $url_rapports,
+        'title' => 'Liste à imprimer'
+    )
+);
+?>
+<h1>Liste des élèves</h1>
+<div id="liste-wrapper">
+<div id="liste-header" class="clearfix">
+<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+</div>
+<div id="liste-inner">
+	<table class="eleves">
+		<tbody>
+			<tr>
+				<th>N°carte</th>
+				<th>Nom</th>
+				<th>Prénom</th>
+				<th>Né(e) le</th>
+				<th>Responsables</th>
+				<th>Etablissement scolaire</th>
+				<th>Classe</th>
+				<th>Circuits</th>
+				<th>Arrêt</th>
+				<th></th>
+			</tr>
+        <?php foreach($eleves as $test => $eleve): ?>
+        <?php
+            // responsable 
+            $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable']), ENT_QUOTES, 'utf-8', false);
+            $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', array(
+                'responsableId' => $eleve['responsableId'],
+                'info' => $r,
+                'origine' => $url_ici
+            ), array(
+                'r1' => array(
+                    'class' => 'fam-magnifier',
+                    'formaction' => $url_responsable,
+                    'title' => 'Voir sa fiche',
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'voir r1')
+                ),
+                /*'localiser' => array(
+                    'class' => 'fam-map-magnify',
+                    'formaction' => $url_map,
+                    'title' => 'Localiser cette adresse sur la carte',
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'localiser r1')
+                )*/
+            ), array(
+                'style' => 'display: inline;'
+            ));
+$itemR1 = $r;//            $itemR1 .= $r;
+            // tr css
+            $tr_css = $this->cycle(array(
+                "even",
+                "odd"
+            ))->next();
+            if (! $eleve['inscrit']) {
+                $tr_css .= ' barre';
+            }
+            // circuit
+            $circuit = $eleve['service1Id'];
+            if (! empty($eleve['service2Id']))
+                $circuit .= '<br/>' . $eleve['service2Id'];
+            // arrêt
+            $arret = $eleve['station1'];
+            if (! empty($eleve['station2']))
+                $arret .= '<br/>' . $eleve['station2'];
+            ?>
+         <tr class="<?php echo $tr_css;?>">
+				<td class="numero align-right"><?php echo $eleve['numero']; ?></td>
+				<td class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
+				<td class="nom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
+				<td class="dateN"><?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
+				<td class="responsables"><?php echo $itemR1; ?></td>
+				<td class="etablissement"><?php echo $this->escapeHtml($eleve['etablissement'] /*. ' - ' . $eleve['communeEtablissement']*/);?></td>
+				<td class="classe"><?php echo $this->escapeHtml($eleve['classe']);?></td>
+				<td><?php echo $circuit;?></td>
+				<td><?php echo $arret;?></td>
+				<td class="boutons">
+            <?php
+            $hiddens = array(
+                'eleveId' => $eleve['eleveId'],
+                'info' => $eleve['nom'] . ' ' . $eleve['prenom'],
+                'origine' => $url_ici
+            );
+            $buttons = array(
+                'famille' => array(
+                    'class' => 'fam-group',
+                    'formaction' => $url_group,
+                    'title' => 'élèves de la même famille',
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', trim($eleve['responsableId']), '|')
+                )
+            );
+            //echo $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);
+            ?>
+				</td>
+			</tr>         
+        <?php endforeach;?>
+    </tbody>
+	</table>
+</div>
+<div id="liste-footer">
+	<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	<div class="criteres-wrapper">
+		<?php
+
+if (! is_null($this->criteres_form)) {
+    echo $this->form()->openTag($this->criteres_form);
+    echo $this->formCollection($this->criteres_form, true);
+    echo $this->form()->closeTag();
+}
+?>
+	    </div>

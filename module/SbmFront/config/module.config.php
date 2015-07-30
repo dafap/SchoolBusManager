@@ -68,21 +68,21 @@ return array(
                     'email-change' => array(
                         'allow' => array(
                             'roles' => array(
-                                'parent', 'consultation', 'transporteur', 'etablissement'
+                                'parent', 'secretariat', 'transporteur', 'etablissement'
                             )
                         )
                     ),
                     'logout' => array(
                         'allow' => array(
                             'roles' => array(
-                                'parent', 'consultation', 'transporteur', 'etablissement'
+                                'parent', 'secretariat', 'transporteur', 'etablissement'
                             )
                         )
                     ),
                     'mdp-change' => array(
                         'allow' => array(
                             'roles' => array(
-                                'parent', 'consultation', 'transporteur', 'etablissement'
+                                'parent', 'secretariat', 'transporteur', 'etablissement'
                             )
                         )
                     ),
@@ -96,7 +96,7 @@ return array(
                     'modif-compte' => array(
                         'allow' => array(
                             'roles' => array(
-                                'parent', 'consultation', 'transporteur', 'etablissement'
+                                'parent', 'secretariat', 'transporteur', 'etablissement'
                             )
                         )
                     ),

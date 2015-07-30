@@ -1,0 +1,62 @@
+<?php
+/**
+ * Page d'accueil du portail pour les transporteurs
+ *
+ * 
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/index
+ * @filesource tr-index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 juil. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_eleves = $this->url('sbmportail', array('action' => 'tr-eleves'));
+$url_circuits = $this->url('sbmportail', array('action' => 'tr-circuits'));
+$url_carte_stations = $this->url('sbmportail', array('action' => 'tr-carte-stations'));
+$url_carte_etablissements = $this->url('sbmportail', array('action' => 'tr-carte-etablissements'));
+
+?>
+<h1>Portail des transports scolaires</h1>
+<h3>Pour les transporteurs</h3>
+<!-- div class="float-left">
+		<h2>Quelques chiffres</h2>
+		<table class="bleu float-left">
+			<tbody>
+				<tr>
+					<td>Nombre d'élèves à transporter</td>
+					<td class="effectif"><?php echo $this->elevesATransporter ?:0;?></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="float-left">
+			<table class="rose ">
+				<tbody>
+					<tr>
+						<td>Nombre de circuits</td>
+						<td class="effectif"><?php echo $this->nbCircuits;?></td>
+					</tr>
+				</tbody>
+			</table>
+			<p></p>
+		</div>
+	</div-->
+	<div id="menugeneral" class="float-right">
+		<div id="menugeneral-header">
+			<h2>Menu</h2>
+		</div>
+		<div id="menugeneral-inner">
+			<ul>
+				<li><a href="<?php echo $url_eleves; ?>"><i
+						class="fam-bullet-go"></i>Liste des élèves</a></li>
+				<!--  li><a href="<?php echo $url_circuits; ?>"><i
+						class="fam-bullet-go"></i>Liste des circuits</a></li-->
+				<li><a href="<?php echo $url_carte_stations; ?>"><i
+						class="fam-bullet-go"></i>Carte des points d'arrêts</a></li>
+				<li><a href="<?php echo $url_carte_etablissements; ?>"><i
+						class="fam-bullet-go"></i>Carte des établissements scolaires</a></li>
+			</ul>
+		</div>
+	</div>
