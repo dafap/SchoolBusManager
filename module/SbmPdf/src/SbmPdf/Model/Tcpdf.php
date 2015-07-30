@@ -1339,6 +1339,7 @@ class Tcpdf extends \TCPDF
                     ->getDbAdapter();
                 
                 try {
+                    $orderBy = $this->getOrderBy();
                     $criteres = $this->getParam('criteres', array());
                     $strict = $this->getParam('strict', array(
                         'empty' => array(),
@@ -1364,8 +1365,7 @@ class Tcpdf extends \TCPDF
                         }
                         foreach ($expressions as $expression) {
                             $where[] = $expression;
-                        }
-                        $orderBy = $this->getOrderBy();
+                        }                        
                         if (! empty($where)) {
                             if (empty($orderBy)) {
                                 $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
@@ -1375,7 +1375,10 @@ class Tcpdf extends \TCPDF
                         } elseif (! empty($orderBy)) {
                             $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
                         }
+                    } elseif (! empty($orderBy)) {
+                        $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
                     }
+                    //die($orderBy);
                     $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
                         // si la description des colonnes est vide, on configure toutes les colonnes de la source
@@ -1769,7 +1772,7 @@ class Tcpdf extends \TCPDF
             for ($i = 0; $i < count($etiquetteData); $i ++) {
                 $this->setStyle($descripteur[$i]['style']);
                 $txtLabel = $descripteur[$i]['label'];
-                if (!empty($txtLabel)) {
+                if (! empty($txtLabel)) {
                     $txt[] = $txtLabel;
                 }
                 if ($descripteur[$i]['data']) {
@@ -1799,8 +1802,20 @@ class Tcpdf extends \TCPDF
         $this->Image($file, $x, $y, 9.5, 13, '', '', '', true, 300);
         $file = $path . 'logocartedroite.jpg';
         $this->Image($file, $x + 56, $y, 23, 13, '', '', '', true, 300);
-        $border_style = array('width' => 0.25, 'cap' => 'round', 'join' => 'round', 'dash' => '1,2', 'color' => array(247, 128, 66));
-        $this->Rect($x + 56, $y + 17, 23, 29, 'D', array('all' => $border_style)); // 
+        $border_style = array(
+            'width' => 0.25,
+            'cap' => 'round',
+            'join' => 'round',
+            'dash' => '1,2',
+            'color' => array(
+                247,
+                128,
+                66
+            )
+        );
+        $this->Rect($x + 56, $y + 17, 23, 29, 'D', array(
+            'all' => $border_style
+        )); //
     }
 }
 
