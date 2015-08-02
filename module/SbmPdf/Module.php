@@ -1,11 +1,13 @@
 <?php
 /**
- * Description courte du fichier
+ * Module de gestion des documents Pdf
  *
- * Description longue du fichier s'il y en a une
+ * Mise en place d'un listener pour l'évènement pdfRender
+ * Traitement de l'évènement pour créer des documents pdf
+ * Gestion d'un ensemble de tables permettant de paramétrer les documents pdf à créer
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmPdf
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

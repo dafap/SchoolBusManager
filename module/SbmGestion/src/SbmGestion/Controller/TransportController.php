@@ -252,8 +252,6 @@ class TransportController extends AbstractActionController
     /**
      * renvoie la liste des élèves inscrits pour un circuit donné
      *
-     * @todo : à faire
-     *      
      * @return \Zend\View\Model\ViewModel
      */
     public function circuitGroupAction()

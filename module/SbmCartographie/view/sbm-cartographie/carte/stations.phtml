@@ -109,12 +109,7 @@ initialiser();
 <div id="carte-wrapper">
 	<div id="carte-header" class="clearfix">
 		<div class="float-left left-10px"><?php
-echo $this->listeZoneActions(array(
-    'back' => $this->url('sbmgestion/transport', array(
-        'action' => 'station-liste',
-        'page' => $this->page
-    ))
-), array(
+echo $this->listeZoneActions(array(), array(
     'cancel' => array(
         'class' => 'fam-door-out',
         'title' => 'Retour'

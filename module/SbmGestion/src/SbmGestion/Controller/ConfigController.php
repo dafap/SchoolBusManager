@@ -48,4 +48,10 @@ class ConfigController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmgestion');
         return $this->redirectToOrigin()->setBack($retour)->toRoute('dafapmail');
     }
+    
+    public function localisationAction()
+    {
+        $this->flashMessenger()->addWarningMessage('La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');
+        return $this->redirect()->toRoute('sbmgestion');
+    }
 }

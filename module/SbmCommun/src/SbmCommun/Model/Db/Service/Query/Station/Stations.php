@@ -78,6 +78,11 @@ class Stations implements FactoryInterface
             'com' => $this->db->getCanonicName('communes', 'table')
         ), 'sta.communeId=com.communeId', array(
             'commune' => 'nom'
+        ))
+            ->join(array(
+            'cir' => $this->db->getCanonicName('circuits', 'table')
+        ), 'cir.stationId = sta.stationId', array(
+            'serviceId'
         ));
         if (! is_null($order)) {
             $select->order($order);

@@ -1,0 +1,100 @@
+<?php
+/**
+ * Fiche du transporteur associé à un user
+ *
+ * S'il n'y a pas d'association, on présente un formulaire de création d'une relation
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource user-transporteur.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 août 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmadmin', array(
+    'action' => 'user-liste',
+    'page' => $this->page
+));
+$url_suppr = $this->url('sbmadmin', array(
+    'action' => 'user-transporteur-suppr',
+    'page' => $this->page
+));
+$hiddens = array(
+    'userId' => $this->user->userId,
+    'transporteurId' => $this->transporteur ? $this->transporteur->transporteurId : null
+);
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ),
+    'suppr' => array(
+        'class' => 'fam-group-delete',
+        'formaction' => $url_suppr,
+        'title' => 'Supprimer la relation entre cet utilisateur et ce transporteur'
+    )
+);
+?>
+<h1>Transporteur associé à un compte d'utilisateur</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="zone-actions">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+		<div class="float-left">
+			<fieldset style="margin-top: 0;" class="sbm-page1 gras">
+			<legend>Utilisateur</legend>
+				<div><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?><br>&nbsp;</div>
+				<div>Identifiant: <?php echo $this->user->email;?><br>&nbsp;</div>
+				<div>Créé le: <?php echo $this->user->dateCreation;?></div>
+				<div>Modifié le: <?php echo $this->user->dateModification;?></div>
+			</fieldset>
+		</div>
+		<div class="float-left">
+<?php if ($this->transporteur === false) :?>
+        <p class="left-10px">Il n'y a pas de transporteur associé à ce
+				compte d'utilisateur.</p>
+		<?php
+    echo $this->form()->openTag($this->form);
+    ?>
+        <fieldset class="sbm-page1">
+    <?php
+    echo $this->formHidden($this->form->get('csrf'));
+    echo $this->formHidden($this->form->get('userId'));
+    ?>
+            <div id="user-transporteur-ajout-transporteurId"
+					class="row-inner ajout"><?php echo $this->formRow($this->form->get('transporteurId'));?></div>
+				<div id="classe-ajout-buttons" class="row-inner ajout">
+			    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+			</fieldset>
+    <?php echo $this->form()->closeTag();?>
+<?php else :?>
+        <fieldset id="user" class="sbm-page1">
+        <legend>Transporteur</legend>
+				<div>
+					<div class="label">Nom</div><?php echo $this->transporteur->nom; ?></div>
+				<div>
+					<div class="label">Adresse</div><?php echo $this->transporteur->adresse1; ?></div>
+				<div>
+					<div class="label">Adresse</div><?php echo $this->transporteur->adresse2; ?></div>
+				<div>
+					<div class="label">Localité</div><?php echo $this->transporteur->codePostal . ' ' . $this->transporteur->commune; ?></div>
+				<div>
+					<div class="label">Téléphone</div><?php echo $this->transporteur->telephone; ?></div>
+				<div>
+					<div class="label">Fax</div><?php echo $this->transporteur->fax; ?></div>
+				<div>
+					<div class="label">Email</div><?php echo $this->transporteur->email; ?></div>
+				<div>
+					<div class="label">SIRET</div><?php echo $this->transporteur->siret; ?></div>
+			</fieldset>
+<?php endif;?>
+        </div>
+	</div>
+	<div id="fiche-footer"></div>
+</div>
