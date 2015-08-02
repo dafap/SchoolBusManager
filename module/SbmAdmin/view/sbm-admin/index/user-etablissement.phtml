@@ -1,0 +1,88 @@
+<?php
+/**
+ * Fiche du etablissement associé à un user
+ *
+ * S'il n'y a pas d'association, on présente un formulaire de création d'une relation
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource user-etablissement.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 août 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmadmin', array(
+    'action' => 'user-liste',
+    'page' => $this->page
+));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Fiche du etablissement associé à un compte d'utilisateur</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="zone-actions float-left">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+		<div class="float-left">
+			<ul style="margin-top: 0;" class="gras">
+				<li><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
+				<li>Identifiant: <?php echo $this->user->email;?></li>
+				<li>Créé le: <?php echo $this->user->dateCreation;?> - Modifié le: <?php echo $this->user->dateModification;?></li>
+			</ul>
+		</div>
+	</div>
+	<div id="fiche-inner">
+<?php if ($this->etablissement === false) :?>
+        <p class="left-10px">Il n'y a pas de etablissement associé à ce
+			compte d'utilisateur.</p>
+		<?php
+    echo $this->form()->openTag($this->form);
+    ?>
+        <fieldset class="sbm-page1">
+    <?php
+        echo $this->formHidden($this->form->get('csrf'));
+        echo $this->formHidden($this->form->get('userId'));
+    ?>
+            <div id="user-etablissement-ajout-etablissementId"
+				class="row-inner ajout"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
+			<div id="classe-ajout-buttons" class="row-inner ajout">
+			    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+    <?php echo $this->form()->closeTag();?>
+<?php else :?>
+        <fieldset id="user" class="page1">
+			<div>
+				<div class="label">Nom</div><?php echo $this->etablissement->nom; ?></div>
+			<div>
+				<div class="label">Adresse</div><?php echo $this->etablissement->adresse1; ?></div>
+			<div>
+				<div class="label">Adresse</div><?php echo $this->etablissement->adresse2; ?></div>
+			<div>
+				<div class="label">Localité</div><?php echo $this->etablissement->codePostal . ' ' . $this->etablissement->commune; ?></div>
+			<div>
+				<div class="label">Téléphone</div><?php echo $this->etablissement->telephone; ?></div>
+			<div>
+				<div class="label">Fax</div><?php echo $this->etablissement->fax; ?></div>
+			<div>
+				<div class="label">Email</div><?php echo $this->etablissement->email; ?></div>
+			<div>
+				<div class="label">Directeur</div><?php echo $this->etablissement->directeur; ?></div>
+			<div>
+				<div class="label">Horaires du matin</div>de <?php echo $this->etablissement->hMatin; ?> à <?php echo $this->etablissement->hMidi; ?></div>
+			<div>
+				<div class="label">de l'après-midi</div>de <?php echo $this->etablissement->hAMidi; ?> à <?php echo $this->etablissement->hSoir; ?></div>
+				
+		</fieldset>
+<?php endif;?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>

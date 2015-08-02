@@ -1,0 +1,106 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ * 
+ * @project project_name
+ * @package package_name
+ * @filesource tr-circuits.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 août 2015
+ * @version 2015-1
+ */
+use SbmCommun\Model\StdLib;
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$circuits = $this->paginator->getCurrentItems();
+
+$url_group = $this->url('sbmportail', array(
+    'action' => 'tr-circuit-group',
+    'page' => $this->page
+));
+$url_retour = $this->url('sbmportail', array(
+    'action' => 'tr-index'
+));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Détail du circuit <?php echo $this->escapeHtml($this->service->serviceId); ?> - <?php echo $this->escapeHtml($this->service->nom); ?></h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Arrêt</th>
+					<th>Type</th>
+					<th>Mont.</th>
+					<th>Desc.</th>
+					<th class="horaire">Matin</th>
+					<th class="horaire">Soir</th>
+					<th class="horaire">Mercredi</th>
+					<th class="nbinscrits">Inscrits</th>
+					<th></th>
+				</tr>
+            <?php foreach($circuits as $test => $circuit): ?>
+            <?php
+                $nbInscrits = StdLib::getParamR(array(
+                    $circuit->circuitId,
+                    'total'
+                ), $this->t_nb_inscrits, 0);
+                ?>
+                <tr
+					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td class="station"><?php echo $this->escapeHtml($circuit->station); ?></td>
+					<td class="type-arret"><?php echo $this->escapeHtml($circuit->typeArret); ?></td>
+					<td class="centre montee"><?php echo $circuit->montee ? 'X' : ''; ?></td>
+					<td class="centre descente"><?php echo $circuit->descente ? 'X' : ''; ?></td>
+					<td class="horaire"><?php echo $circuit->m1; ?></td>
+					<td class="horaire"><?php echo $circuit->s1; ?></td>
+					<td class="horaire"><?php echo $circuit->s2; ?></td>
+					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="boutons">
+             <?php
+                $hiddens = array(
+                    'serviceId' => $circuit->serviceId,
+                    'circuitId' => $circuit->circuitId
+                );
+                $buttons = array(
+                    'eleves' => array(
+                        'class' => 'fam-group',
+                        'formaction' => $url_group,
+                        'title' => sprintf('élèves du circuit %s à l\'arrêt %s', $circuit->serviceId, $circuit->station)
+                    )
+                );
+                echo $this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);
+                ?>
+				</td>
+				</tr>          
+            <?php endforeach;?>
+            </tbody>
+		</table>
+
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	</div>
+</div>

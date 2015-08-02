@@ -11,6 +11,7 @@ return array(
         'AtPhpSettings',
         'ZfcBase',
         'SbmFront',
+        'SbmPortail',
         'DafapMail',
         'SbmInstallation',
         'SbmGestion',

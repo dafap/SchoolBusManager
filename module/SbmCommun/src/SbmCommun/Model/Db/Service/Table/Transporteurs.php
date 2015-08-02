@@ -13,6 +13,8 @@
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use Zend\Db\Sql\Where;
+
 class Transporteurs extends AbstractSbmTable
 {
     /**
@@ -34,6 +36,18 @@ class Transporteurs extends AbstractSbmTable
             'selection' => $selection
         ));
         parent::saveRecord($oData);
+    }
+    
+    public function getTransporteurId($email)
+    {
+        $where = new Where();
+        $where->equalTo('email', $email);
+        $result = $this->fetchAll($where);
+        if ($result->count() == 1) {
+            return $result->current()->transporteurId;
+        } else {
+            throw new \Exception('Impossible de trouver ce transporteur');
+        }
     }
 }
 

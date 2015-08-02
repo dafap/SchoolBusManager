@@ -19,6 +19,8 @@ use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
 
 class AffectationsServicesStations implements FactoryInterface
 {
@@ -323,7 +325,80 @@ class AffectationsServicesStations implements FactoryInterface
         ), $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
-        }        
+        }
+        return $select->where($where);
+    }
+
+    public function paginatorScolaritesR($where, $order = null, $millesime = null)
+    {
+        $select = $this->selectScolaritesR($where, $order);
+        //die($select->getSqlString());
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    /**
+     * 
+     * @param unknown $where
+     * @param string $order
+     * @param string $millesime
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectScolaritesR($where, $order = null, $millesime = null)
+    {
+        $select = clone $this->select;
+        $select->join(array(
+            'ele' => $this->db->getCanonicName('eleves', 'table')
+        ), 'ele.eleveId=aff.eleveId', array(
+            'numero',
+            'nom',
+            'nomSA',
+            'prenom',
+            'prenomSA',
+            'dateN'
+        ))
+            ->join(array(
+            'res' => $this->db->getCanonicName('responsables', 'table')
+        ), 'res.responsableId=aff.responsableId', array(
+            'responsable' => new Expression('concat(res.nom," ",res.prenom)')
+        ))
+            ->join(array(
+            'sco' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'sco.eleveId=aff.eleveId AND sco.millesime=aff.millesime', array(
+            'inscrit',
+            'paiement',
+            'fa'
+        ))
+            ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 'sco.etablissementId=eta.etablissementId', array(
+            'etablissement' => new Expression('CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END')
+        ))
+            ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 'sco.classeId=cla.classeId', array(
+            'classe' => 'nom'
+        ))
+            ->join(array(
+            'sta1' => $this->db->getCanonicName('stations', 'table')
+        ), 'sta1.stationId=aff.station1Id', array(
+            'station1' => 'nom'
+        ),$select::JOIN_LEFT)
+            ->join(array(
+            'sta2' => $this->db->getCanonicName('stations', 'table')
+        ), 'sta2.stationId=aff.station2Id', array(
+            'station2' => 'nom'
+        ),$select::JOIN_LEFT)
+            ->join(array(
+            'ser1' => $this->db->getCanonicName('services', 'table')
+        ), 'ser1.serviceId=aff.service1Id', array(
+            'transporteur1' => 'nom'
+        ))
+            ->join(array(
+            'ser2' => $this->db->getCanonicName('services', 'table')
+        ), 'ser2.serviceId=aff.service2Id', array(
+            'transporteur2' => 'nom'
+        ),$select::JOIN_LEFT);
+        
         return $select->where($where);
     }
 }

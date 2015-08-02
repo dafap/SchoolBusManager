@@ -139,6 +139,7 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
                     '1' => 'Parent',
                     '2' => 'Transporteur',
                     '3' => 'Etablissement scolaire',
+                    '200' => 'Secrétariat',
                     '253' => 'Gestionnaire',
                     '254' => 'Administrateur'
                 ),

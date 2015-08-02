@@ -28,7 +28,7 @@ return array(
             1 => 'parent',
             2 => 'transporteur',
             3 => 'etablissement',
-            200 => 'consultation',
+            200 => 'secretariat',
             253 => 'gestion',
             254 => 'admin',
             255 => 'sadmin'
@@ -38,7 +38,7 @@ return array(
             'guest' => null,
             'transporteur' => 'guest',
             'etablissement' => 'guest',
-            'consultation' => 'guest',
+            'secretariat' => 'guest',
             'parent' => 'guest',
             'gestion' => 'parent',
             'admin' => 'gestion',
@@ -55,15 +55,13 @@ return array(
         ),
         // routes de redirection lorsque l'accès n'est pas autorisé (en fonction du rôle)
         'redirectTo' => array(
-            'transporteur' => 'login',
-            'etablissement' => 'login',
-            'consultation' => 'login',
+            'transporteur' => 'sbmportail',
+            'etablissement' => 'sbmportail',
+            'secretariat' => 'sbmportail',
             'parent' => 'sbmparent',
             'gestion' => 'sbmgestion',
             'admin' => 'sbmadmin',
-            'sadmin' => 'sbminstall',
-            'etablissement' => 'sbmeta',
-            'transporteur' => 'sbmtra'
+            'sadmin' => 'sbminstall'
         )
     ),
     'dafap_session' => array(
