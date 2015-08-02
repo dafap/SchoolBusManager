@@ -147,10 +147,10 @@ EOT;
                     'formaction' => $url_delete,
                     'title' => 'supprimer'
                 ),
-                'eleves' => array(
+                'relation' => array(
                     'class' => 'fam-group-link',
                     'formaction' => $url_group,
-                    'title' => 'fiche du responsable associé'
+                    'title' => 'fiche du compte associé (responsable, transporteur ou établissement)'
                 )
             );
             echo $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);

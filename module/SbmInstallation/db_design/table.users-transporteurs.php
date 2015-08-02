@@ -1,39 +1,38 @@
 <?php
 /**
- * Structure de la table des `etablissementsServices`
+ * Structure de la table `usersTransporteurs`
  *
- * 
  * @project sbm
  * @package SbmInstallation/db_design
- * @filesource table.etablissements-services.php
+ * @filesource table.users-transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2015
+ * @date 31 juil. 2015
  * @version 2015-1
  */
 
 return array(
-    'name' => 'etablissements-services',
+    'name' => 'users-transporteurs',
     'type' => 'table',
-    'drop' => false,
-    'edit_entity' => false,
-    'add_data' => false,
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
     'structure' => array(
         'fields' => array(
-            'etablissementId' => 'char(8) NOT NULL',
-            'serviceId' => 'varchar(11) NOT NULL',
+            'userId' => 'int(11) NOT NULL',
+            'transporteurId' => 'int(11) NOT NULL'
         ),
         'primary_key' => array(
-            'etablissementId',
-            'serviceId'
+            'userId',
+            'transporteurId'
         ),
         'foreign key' => array(
             array(
-                'key' => 'etablissementId',
+                'key' => 'userId',
                 'references' => array(
-                    'table' => 'etablissements',
+                    'table' => 'users',
                     'fields' => array(
-                        'etablissementId'
+                        'userId'
                     ),
                     'on' => array(
                         'update' => 'CASCADE',
@@ -42,11 +41,11 @@ return array(
                 )
             ),
             array(
-                'key' => 'serviceId',
+                'key' => 'transporteurId',
                 'references' => array(
-                    'table' => 'services',
+                    'table' => 'transporteurs',
                     'fields' => array(
-                        'serviceId'
+                        'transporteurId'
                     ),
                     'on' => array(
                         'update' => 'CASCADE',
@@ -59,8 +58,5 @@ return array(
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ),
-
-    // 'data' => include __DIR__ . '/data/data.services.php',
-    // 'data' => array('after' => array('transporteurs'),'include' => __DIR__ . '/data/data.services.php')
-    'data' => __DIR__ . '/data/data.etablissements-services.php'
+    'data' => __DIR__ . '/data/data.users-transporteurs.php'
 );

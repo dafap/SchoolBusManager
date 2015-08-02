@@ -61,9 +61,7 @@ return array(
             'parent' => 'sbmparent',
             'gestion' => 'sbmgestion',
             'admin' => 'sbmadmin',
-            'sadmin' => 'sbminstall',
-            'etablissement' => 'sbmeta',
-            'transporteur' => 'sbmtra'
+            'sadmin' => 'sbminstall'
         )
     ),
     'dafap_session' => array(

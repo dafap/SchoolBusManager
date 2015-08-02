@@ -2,6 +2,10 @@
 /**
  * Page d'accueil du portail pour les transporteurs
  *
+ * Les variables définies dans cette vue sont :
+ * - elevesATransporter
+ * - services
+ * - statServices
  * 
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
@@ -13,17 +17,35 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_eleves = $this->url('sbmportail', array('action' => 'tr-eleves'));
-$url_circuits = $this->url('sbmportail', array('action' => 'tr-circuits'));
-$url_carte_stations = $this->url('sbmportail', array('action' => 'tr-carte-stations'));
-$url_carte_etablissements = $this->url('sbmportail', array('action' => 'tr-carte-etablissements'));
+$url_eleves = $this->url('sbmportail', array(
+    'action' => 'tr-eleves'
+));
+$url_circuits = $this->url('sbmportail', array(
+    'action' => 'tr-circuits'
+));
+$url_carte_stations = $this->url('sbmportail', array(
+    'action' => 'tr-carte-stations'
+));
+$url_carte_etablissements = $this->url('sbmportail', array(
+    'action' => 'tr-carte-etablissements'
+));
 
 ?>
-<h1>Portail des transports scolaires</h1>
-<h3>Pour les transporteurs</h3>
-<!-- div class="float-left">
-		<h2>Quelques chiffres</h2>
-		<table class="bleu float-left">
+<div id="tableau-de-bord" class="clearfix">
+	<div class="flashMessenger float-right">
+	<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+    </div>
+	<h1>Portail des transports scolaires</h1>
+	<!-- h3>Pour les transporteurs</h3-->
+	<div class="float-left">
+	<?php if ($this->elevesATransporter):?>
+		<table class="bleu">
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves à transporter</td>
@@ -31,28 +53,43 @@ $url_carte_etablissements = $this->url('sbmportail', array('action' => 'tr-carte
 				</tr>
 			</tbody>
 		</table>
-		<div class="float-left">
-			<table class="rose ">
-				<tbody>
-					<tr>
-						<td>Nombre de circuits</td>
-						<td class="effectif"><?php echo $this->nbCircuits;?></td>
-					</tr>
-				</tbody>
-			</table>
-			<p></p>
-		</div>
-	</div-->
+	<?php endif;?>
+		<p></p>
+	<?php if ($this->services):?>
+		<table class="rose ">
+			<tbody>
+				<?php foreach ($this->services as $service):?>
+				    <?php
+        $hiddens = array(
+            'serviceId' => $service->serviceId
+        );
+        $buttons = array(
+            'horaires' => array(
+                'class' => 'fam-clock-red',
+                'formaction' => $url_circuits,
+                'title' => 'Fiche horaires et informations'
+            )
+        );
+        ?>
+				<tr>
+					<td><?php echo $service->serviceId;?></td>
+					<td><?php echo $service->nom;?></td>
+					<td class="effectif"><?php echo $this->statServices[$service->serviceId]['total'];?></td>
+					<td><?php echo $this->listeLigneActions($service->serviceId, $hiddens, $buttons);?></td>
+				</tr>
+				<?php endforeach;?>				
+			</tbody>
+		</table>
+	<?php endif;?>	
+	</div>
 	<div id="menugeneral" class="float-right">
 		<div id="menugeneral-header">
 			<h2>Menu</h2>
 		</div>
 		<div id="menugeneral-inner">
 			<ul>
-				<li><a href="<?php echo $url_eleves; ?>"><i
-						class="fam-bullet-go"></i>Liste des élèves</a></li>
-				<!--  li><a href="<?php echo $url_circuits; ?>"><i
-						class="fam-bullet-go"></i>Liste des circuits</a></li-->
+				<li><a href="<?php echo $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
+						des élèves</a></li>
 				<li><a href="<?php echo $url_carte_stations; ?>"><i
 						class="fam-bullet-go"></i>Carte des points d'arrêts</a></li>
 				<li><a href="<?php echo $url_carte_etablissements; ?>"><i
@@ -60,3 +97,4 @@ $url_carte_etablissements = $this->url('sbmportail', array('action' => 'tr-carte
 			</ul>
 		</div>
 	</div>
+</div>

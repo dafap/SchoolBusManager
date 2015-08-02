@@ -19,6 +19,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use DafapSession\Model\Session;
 use SbmCommun\Model\StdLib;
+use Zend\Db\Sql\Where;
 
 class IndexController extends AbstractActionController
 {
@@ -33,6 +34,8 @@ class IndexController extends AbstractActionController
                 'action' => 'home-page'
             ));
         }
+        // pour le moment, j'utilise la même entrée pour tous les rôles.
+        // Le filtre programmé va limiter la vue aux données concernant l'utilisateur
         switch ($auth->getCategorieId()) {
             case 2:
                 return $this->redirect()->toRoute('sbmportail', array(
@@ -41,7 +44,7 @@ class IndexController extends AbstractActionController
                 break;
             case 3:
                 return $this->redirect()->toRoute('sbmportail', array(
-                    'action' => 'et-index'
+                    'action' => 'tr-index'
                 ));
                 break;
             case 200:
@@ -49,7 +52,7 @@ class IndexController extends AbstractActionController
             case 254:
             case 255:
                 return $this->redirect()->toRoute('sbmportail', array(
-                    'action' => 'ccda-index'
+                    'action' => 'tr-index'
                 ));
                 break;
             default:
@@ -71,12 +74,22 @@ class IndexController extends AbstractActionController
         }
     }
 
+    /**
+     * Non utilisé pour le moment
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function ccdaIndexAction()
     {
         // reprendre le tableau de bord complet du gestionnaire
         return new ViewModel();
     }
 
+    /**
+     * Non utilisé pour le moment
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function etIndexAction()
     {
         return new ViewModel(array(
@@ -86,11 +99,50 @@ class IndexController extends AbstractActionController
         ));
     }
 
+    /**
+     * Entrée des transporteurs
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function trIndexAction()
     {
+        $auth = $this->getServiceLocator()
+            ->get('Dafap\Authenticate')
+            ->by('email');
+        if (! $auth->hasIdentity()) {
+            return $this->redirect()->toRoute('login', array(
+                'action' => 'home-page'
+            ));
+        }
+        $userId = $auth->getUserId();
+        try {
+            $transporteurId = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\UsersTransporteurs')
+                ->getTransporteurId($userId);
+            $stats = $this->getServiceLocator()
+                ->get('Sbm\Db\Eleve\Effectif')
+                ->bytransporteur();
+            $elevesATransporter = $stats[$transporteurId]['total'];
+            $services = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Services')
+                ->fetchAll(array(
+                'transporteurId' => $transporteurId
+            ));
+            $stats = $this->getServiceLocator()
+                ->get('Sbm\Db\Eleve\Effectif')
+                ->transporteurByService($transporteurId);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $transporteurId = null;
+            $elevesATransporter = '';
+            $services = array();
+            $stats = array();
+        }
+        
+        // die(var_dump($stats));
         return new ViewModel(array(
-            'elevesATransporter' => 'xxx',
-            'nbCircuits' => 'yyy'
+            'elevesATransporter' => $elevesATransporter,
+            'services' => $services,
+            'statServices' => $stats
         ));
     }
 
@@ -104,8 +156,8 @@ class IndexController extends AbstractActionController
                 'action' => 'home-page'
             ));
         }
-        $identity = $auth->getIdentity();
-        $email = $identity['email'];
+        $userId = $auth->getUserId();
+        // $email = $identity['email'];
         
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -169,12 +221,37 @@ class IndexController extends AbstractActionController
         
         switch ($auth->getCategorieId()) {
             case 2:
+                // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
+                try {
+                    $right = $this->getServiceLocator()
+                        ->get('Sbm\Db\Table\UsersTransporteurs')
+                        ->getTransporteurId($userId);
+                    $where = $criteres_obj->getWhere()
+                        ->nest()
+                        ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
+                    $paginator = $this->getServiceLocator()
+                        ->get('Sbm\Db\Query\AffectationsServicesStations')
+                        ->paginatorScolaritesR($where, array(
+                        'nom',
+                        'prenom'
+                    ));
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage('Votre compte n\'est pas associé à un transporteur. Contactez le service des transports scolaires');
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $this->redirect()->toRoute('sbmportail', array(
+                            'action' => 'tr-index'
+                        ));
+                    }
+                }
+                break;
+            case 3:
+                // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
                 $right = $this->getServiceLocator()
-                    ->get('Sbm\Db\Table\transporteurs')
-                    ->getTransporteurId($email);
-                $where = $criteres_obj->getWhere()
-                    ->nest()
-                    ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
+                    ->get('Sbm\Db\Table\UsersEtablissements')
+                    ->getEtablissementId($userId);
+                $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
                 $paginator = $this->getServiceLocator()
                     ->get('Sbm\Db\Query\AffectationsServicesStations')
                     ->paginatorScolaritesR($where, array(
@@ -182,9 +259,14 @@ class IndexController extends AbstractActionController
                     'prenom'
                 ));
                 break;
-            case 3:
-                break;
             case 200:
+                $where = $criteres_obj->getWhere();
+                $paginator = $this->getServiceLocator()
+                    ->get('Sbm\Db\Query\AffectationsServicesStations')
+                    ->paginatorScolaritesR($where, array(
+                    'nom',
+                    'prenom'
+                ));
                 break;
             default:
                 $paginator = $this->getServiceLocator()
@@ -220,7 +302,8 @@ class IndexController extends AbstractActionController
             ));
         }
         $identity = $auth->getIdentity();
-        $email = $identity['email'];
+        $userId = $auth->getUserId();
+        // $email = $identity['email'];
         $currentPage = $this->params('page', 1);
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
@@ -240,8 +323,8 @@ class IndexController extends AbstractActionController
         switch ($auth->getCategorieId()) {
             case 2:
                 $right = $this->getServiceLocator()
-                    ->get('Sbm\Db\Table\transporteurs')
-                    ->getTransporteurId($email);
+                    ->get('Sbm\Db\Table\UsersTransporteurs')
+                    ->getTransporteurId($userId);
                 $where = $criteres_obj->getWhere()
                     ->nest()
                     ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
@@ -277,9 +360,84 @@ class IndexController extends AbstractActionController
 
     public function trCircuitsAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            if ($args === false || ! array_key_exists('serviceId', $args)) {
+                return $this->redirect()->toRoute('sbmportail', array(
+                    'action' => 'tr-index'
+                ));
+            }
+        } else {
+            $args = $prg;
+            if (array_key_exists('horaires', $args)) {
+                $this->setToSession('post', $args, $this->getSessionNamespace());
+            }
+        }
+        $serviceId = $args['serviceId'];
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))->equalTo('serviceId', $serviceId);
         return new ViewModel(array(
-            'nb_pagination' => 'xxx',
-            'page' => 'yyy'
+            'service' => $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Services')
+                ->getRecord($serviceId),
+            't_nb_inscrits' => $this->getServiceLocator()
+                ->get('Sbm\Db\Eleve\Effectif')
+                ->byCircuit(),
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Circuits')
+                ->paginator($where, array(
+                'm1'
+            )),
+            'nb_pagination' => $this->getNbPagination('nb_circuits', 10),
+            'page' => $this->params('page', 1)
+        ));
+    }
+
+    public function trCircuitGroupAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            if ($args === false || ! array_key_exists('serviceId', $args) || ! array_key_exists('circuitId', $args)) {
+                return $this->redirect()->toRoute('sbmportail', array(
+                    'action' => 'tr-index'
+                ));
+            }
+        } else {
+            $args = $prg;
+            if (array_key_exists('eleves', $args)) {
+                $this->setToSession('post', $args, $this->getSessionNamespace());
+            }
+        }
+        $circuitId = $args['circuitId'];
+        $circuit = $this->getServiceLocator()
+            ->get('Sbm\Db\Vue\Circuits')
+            ->getRecord($circuitId);
+        return new ViewModel(array(
+            'data' => $this->getServiceLocator()
+                ->get('Sbm\Db\Eleve\Liste')
+                ->byCircuit($this->getFromSession('millesime'), array(
+                array(
+                    'service1Id' => $circuit->serviceId,
+                    'station1Id' => $circuit->stationId
+                ),
+                'or',
+                array(
+                    'service2Id' => $circuit->serviceId,
+                    'station2Id' => $circuit->stationId
+                )
+            ), array(
+                'nom',
+                'prenom'
+            )),
+            'circuit' => $circuit,
+            'serviceId' => $args['serviceId'],
+            'page' => $this->params('page', 1)
         ));
     }
 

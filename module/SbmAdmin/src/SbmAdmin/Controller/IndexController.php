@@ -25,6 +25,7 @@ use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\ButtonForm;
 use SbmAdmin\Form\User;
 use SbmAdmin\Form\Export as ExportForm;
+use SbmAdmin\Form\UserRelation;
 use DafapSession;
 use DafapSession\Model\Session;
 
@@ -414,6 +415,18 @@ class IndexController extends AbstractActionController
         }
     }
 
+    /**
+     * Cette méthode est appelée par post
+     * 1/ depuis user-liste.phtml avec les paramètres :
+     * - userId
+     * - email (n'est plus nécessaire pour retrouver le responsableId car on lit la fiche du user)
+     * 2/ depuis user-link.phtml avec les paramètres :
+     * - userId
+     * - transporteurId ou etablissementId
+     * - submit ou cancel
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function userLinkAction()
     {
         $prg = $this->prg();
@@ -428,7 +441,7 @@ class IndexController extends AbstractActionController
             }
         } else {
             $args = $prg;
-            if (array_key_exists('cancel', $args) || ! array_key_exists('email', $args)) {
+            if (array_key_exists('cancel', $args) || ! array_key_exists('userId', $args)) {
                 return $this->redirect()->toRoute('sbmadmin', array(
                     'action' => 'user-liste',
                     'page' => $this->params('page', 1)
@@ -437,14 +450,121 @@ class IndexController extends AbstractActionController
                 $this->setToSession('post', $args);
             }
         }
-        // récupère l'email pour rechercher un responsable
-        return new ViewModel(array(
-            'user' => $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Users')
-                ->getRecord($args['userId']),
-            'responsable' => $this->getServiceLocator()
-                ->get('Sbm\Db\Vue\Responsables')
-                ->getRecordByEmail($args['email']),
+        // récupère la fiche de l'user
+        $user = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Users')
+            ->getRecord($args['userId']);
+        switch ($user->categorieId) {
+            case 2:
+                $tUsersTransporteurs = $this->getServiceLocator()->get('Sbm\Db\Table\UsersTransporteurs');
+                if ($tUsersTransporteurs->hasTransporteur($args['userId'])) {
+                    $transporteurId = $tUsersTransporteurs->getTransporteurId($args['userId']);
+                    $viewmodel = new ViewModel(array(
+                        'user' => $user,
+                        'transporteur' => $this->getServiceLocator()
+                            ->get('Sbm\Db\Vue\Transporteurs')
+                            ->getRecord($transporteurId),
+                        'form' => false,
+                        'page' => $this->params('page', 1)
+                    ));
+                } else {
+                    $form = new UserRelation('transporteur');
+                    $form->setValueOptions('transporteurId', $this->getServiceLocator()
+                        ->get('Sbm\Db\Select\Transporteurs'))
+                        ->bind($tUsersTransporteurs->getObjData());
+                    if (array_key_exists('submit', $args)) {
+                        $form->setData($args);
+                        if ($form->isValid()) {
+                            $tUsersTransporteurs->saveRecord($form->getData());
+                            $this->flashMessenger()->addSuccessMessage('Relation crée entre un utilisateur et un transporteur');
+                            return $this->redirect()->toRoute('sbmadmin', array(
+                                'action' => 'user-liste',
+                                'page' => $this->params('page', 1)
+                            ));
+                        }
+                    }
+                    $form->setData(array(
+                        'userId' => $args['userId']
+                    ));
+                    $viewmodel = new ViewModel(array(
+                        'user' => $user,
+                        'transporteur' => false,
+                        'form' => $form
+                    ));
+                }
+                $viewmodel->setTemplate('sbm-admin/index/user-transporteur');
+                break;
+            case 3:
+                $tUsersEtablissements = $this->getServiceLocator()->get('Sbm\Db\Table\UsersEtablissements');
+                if ($tUsersEtablissements->hasEtablissement($args['userId'])) {
+                    $etablissementId = $tUsersEtablissements->getEtablissementId($args['userId']);
+                    $viewmodel = new ViewModel(array(
+                        'user' => $user,
+                        'etablissement' => $this->getServiceLocator()
+                            ->get('Sbm\Db\Vue\Etablissements')
+                            ->getRecord($etablissementId),
+                        'form' => false,
+                        'page' => $this->params('page', 1)
+                    ));
+                } else {
+                    $form = new UserRelation('etablissement');
+                    $form->setValueOptions('etablissementId', $this->getServiceLocator()
+                        ->get('Sbm\Db\Select\EtablissementsDesservis'))
+                        ->bind($tUsersEtablissements->getObjData());
+                    if (array_key_exists('submit', $args)) {
+                        $form->setData($args);
+                        if ($form->isValid()) {
+                            $tUsersEtablissements->saveRecord($form->getData());
+                            $this->flashMessenger()->addSuccessMessage('Relation crée entre un utilisateur et un établissement');
+                            return $this->redirect()->toRoute('sbmadmin', array(
+                                'action' => 'user-liste',
+                                'page' => $this->params('page', 1)
+                            ));
+                        }
+                    }
+                    $form->setData(array(
+                        'userId' => $args['userId']
+                    ));
+                    $viewmodel = new ViewModel(array(
+                        'user' => $user,
+                        'etablissement' => false,
+                        'form' => $form
+                    ));
+                }
+                $viewmodel->setTemplate('sbm-admin/index/user-etablissement');
+                break;
+            default:
+                // récupère la fiche d'un responsable par son email (ancien comportement)
+                $viewmodel = new ViewModel(array(
+                    'user' => $user,
+                    'responsable' => $this->getServiceLocator()
+                        ->get('Sbm\Db\Vue\Responsables')
+                        ->getRecordByEmail($user->email),
+                    'page' => $this->params('page', 1)
+                ));
+                break;
+        }
+        return $viewmodel;
+    }
+
+    public function userTransporteurSupprAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        if (! array_key_exists('userId', $args) || ! array_key_exists('transporteurId', $args)) {
+            return $this->redirect()->toRoute('sbmadmin', array(
+                'action' => 'user-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        $tUsersTransporteurs = $this->getServiceLocator()->get('Sbm\Db\Table\UsersTransporteurs');
+        $tUsersTransporteurs->deleteRecord(array('userId' => $args['userId'], 'transporteurId' => $args['transporteurId']));
+        $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+        return $this->redirect()->toRoute('sbmadmin', array(
+            'action' => 'user-liste',
             'page' => $this->params('page', 1)
         ));
     }
@@ -655,7 +775,7 @@ class IndexController extends AbstractActionController
             ->setBack($retour)
             ->toRoute('dafapmail');
     }
-    
+
     public function localisationAction()
     {
         $this->flashMessenger()->addWarningMessage('La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');
