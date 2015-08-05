@@ -44,7 +44,7 @@ class IndexController extends AbstractActionController
                 break;
             case 3:
                 return $this->redirect()->toRoute('sbmportail', array(
-                    'action' => 'tr-index'
+                    'action' => 'et-index'
                 ));
                 break;
             case 200:
@@ -52,7 +52,7 @@ class IndexController extends AbstractActionController
             case 254:
             case 255:
                 return $this->redirect()->toRoute('sbmportail', array(
-                    'action' => 'tr-index'
+                    'action' => 'ccda-index'
                 ));
                 break;
             default:
@@ -67,35 +67,107 @@ class IndexController extends AbstractActionController
     {
         try {
             return $this->redirectToOrigin()->back();
-        } catch (Exception $e) {
-            return $this->redirect()->toRoute('login', array(
-                'action' => 'home-page'
-            ));
+        } catch (\Exception $e) {
+            return $this->redirect()->toRoute('sbmportail');
         }
     }
 
     /**
-     * Non utilisé pour le moment
+     * Entrée des services de la CCDA en consultation
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function ccdaIndexAction()
     {
-        // reprendre le tableau de bord complet du gestionnaire
-        return new ViewModel();
+        $statEleve = $this->getServiceLocator()->get('Sbm\Statistiques\Eleve');
+        $statResponsable = $this->getServiceLocator()->get('Sbm\Statistiques\Responsable');
+        $statPaiement = $this->getServiceLocator()->get('Sbm\Statistiques\Paiement');
+        $millesime = Session::get('millesime');
+        return new ViewModel(array(
+            'elevesEnregistres' => current($statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
+            'elevesInscrits' => current($statEleve->getNbInscritsByMillesime($millesime))['effectif'],
+            'elevesPreinscrits' => current($statEleve->getNbPreinscritsByMillesime($millesime))['effectif'],
+            'elevesRayes' => current($statEleve->getNbRayesByMillesime($millesime))['effectif'],
+            'elevesFamilleAcceuil' => current($statEleve->getNbFamilleAccueilByMillesime($millesime))['effectif'],
+            'elevesGardeAlternee' => current($statEleve->getNbGardeAlterneeByMillesime($millesime))['effectif'],
+            'elevesMoins1km' => current($statEleve->getNbMoins1KmByMillesime($millesime))['effectif'],
+            'elevesDe1A3km' => current($statEleve->getNbDe1A3KmByMillesime($millesime))['effectif'],
+            'eleves3kmEtPlus' => current($statEleve->getNb3kmEtPlusByMillesime($millesime))['effectif'],
+            'responsablesEnregistres' => current($statResponsable->getNbEnregistres())['effectif'],
+            'responsablesAvecEnfant' => current($statResponsable->getNbAvecEnfant())['effectif'],
+            'responsablesSansEnfant' => current($statResponsable->getNbSansEnfant())['effectif'],
+            'responsablesHorsZone' => current($statResponsable->getNbCommuneNonMembre())['effectif'],
+            'responsablesDemenagement' => current($statResponsable->getNbDemenagement())['effectif'],
+            'paiements' => $statPaiement->getSumByAsMode($millesime)
+        ));
+    }
+    
+    public function ccdaCircuitsAction()
+    {
+        try {
+            $services = $this->getServiceLocator()
+            ->get('Sbm\Db\Query\Services')
+            ->paginatorServicesWithEtablissements();
+            $stats = $this->getServiceLocator()
+            ->get('Sbm\Db\Eleve\Effectif')
+            ->byService();
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $services = array();
+            $stats = array();
+        }
+        
+        //die(var_dump($stats));
+        return new ViewModel(array(
+            'paginator' => $services,
+            'statServices' => $stats,
+            'page' => $this->params('page', 1)
+        ));
     }
 
     /**
-     * Non utilisé pour le moment
+     * Entrée des etablissements
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function etIndexAction()
     {
+        $auth = $this->getServiceLocator()
+        ->get('Dafap\Authenticate')
+        ->by('email');
+        if (! $auth->hasIdentity()) {
+            return $this->redirect()->toRoute('login', array(
+                'action' => 'home-page'
+            ));
+        }
+        $userId = $auth->getUserId();
+        try {
+            $etablissementId = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\UsersEtablissements')
+            ->getEtablissementId($userId);
+            
+            $stats = $this->getServiceLocator()
+            ->get('Sbm\Db\Eleve\Effectif')
+            ->byEtablissement(true);
+            
+            $elevesTransportes = $stats[$etablissementId];
+            
+            $services = $this->getServiceLocator()
+            ->get('Sbm\Db\Query\Services')
+            ->getServicesGivenEtablissement($etablissementId);
+            $stats = $this->getServiceLocator()
+            ->get('Sbm\Db\Eleve\Effectif')
+            ->byServiceGivenEtablissement($etablissementId);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $elevesTransportes = '';
+            $services = array();
+            $stats = array();
+        }
+        
+        // die(var_dump($stats));
         return new ViewModel(array(
-            'elevesTransportes' => 'xxx',
-            'circuits' => array(),
-            'transporteurs' => array()
+            'elevesTransportes' => $elevesTransportes,
+            'services' => $services,
+            'statServices' => $stats
         ));
     }
 
@@ -121,7 +193,7 @@ class IndexController extends AbstractActionController
                 ->getTransporteurId($userId);
             $stats = $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
-                ->bytransporteur();
+                ->byTransporteur();
             $elevesATransporter = $stats[$transporteurId]['total'];
             $services = $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Services')
@@ -180,7 +252,7 @@ class IndexController extends AbstractActionController
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                         return $this->redirect()->toRoute('sbmportail', array(
-                            'action' => 'tr-index'
+                            'action' => 'index'
                         ));
                     }
                 } elseif (array_key_exists('origine', $args)) {
@@ -330,13 +402,19 @@ class IndexController extends AbstractActionController
                     ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
                 $filtre = $criteres_obj->getCriteres();
                 $expressions[] = "(transporteur1Id = $right OR transporteur2Id = $right)";
-                $documentId = 'List élèves portail transporteur';
-                
+                $documentId = 'List élèves portail transporteur';                
                 break;
             case 3:
+                $right = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\UsersEtablissements')
+                ->getEtablissementId($userId);
+                $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
+                $filtre = $criteres_obj->getCriteres();
+                $expressions[] = "(etablissementId = \"$right\")";
+                $documentId = 'List élèves portail transporteur';
                 break;
-            case 200:
-                break;
+            //case 200:
+                //break;
             default:
                 $where = $criteres_obj->getWhere();
                 $criteres = array_merge($criteres, array(
@@ -392,7 +470,8 @@ class IndexController extends AbstractActionController
                 'm1'
             )),
             'nb_pagination' => $this->getNbPagination('nb_circuits', 10),
-            'page' => $this->params('page', 1)
+            'page' => $this->params('page', 1),
+            'origine' => StdLib::getParam('origine', $args)
         ));
     }
 
@@ -443,7 +522,7 @@ class IndexController extends AbstractActionController
 
     public function trCarteEtablissementsAction()
     {
-        $this->redirectToOrigin()->setBack('/portail/tr-index');
+        $this->redirectToOrigin()->setBack('/portail/index');
         return $this->redirect()->toRoute('sbmcarte', array(
             'action' => 'etablissements'
         ));
@@ -451,7 +530,7 @@ class IndexController extends AbstractActionController
 
     public function trCarteStationsAction()
     {
-        $this->redirectToOrigin()->setBack('/portail/tr-index');
+        $this->redirectToOrigin()->setBack('/portail/index');
         return $this->redirect()->toRoute('sbmcarte', array(
             'action' => 'stations'
         ));

@@ -106,13 +106,20 @@ class Effectif implements FactoryInterface
         return $result;
     }
 
-    public function byEtablissement()
+    /**
+     * Tableau d'effectifs des établissements
+     *
+     * @param bool $transportes
+     *            si true alors ne compte que les élèves ayant au moins un transport
+     * @return array
+     */
+    public function byEtablissement($transportes = false)
     {
         // SELECT etablissementId, count(*) FROM sbm_scolarites GROUP BY etablissementId
         $result = array();
         $rowset = $this->requeteCl('etablissementId', array(), array(
             'etablissementId'
-        ));
+        ), $transportes);
         foreach ($rowset as $row) {
             $result[$row['etablissementId']] = $row['effectif'];
         }
@@ -362,9 +369,9 @@ class Effectif implements FactoryInterface
         return $statement->execute();
     }
 
-    private function requeteCl($column, $where, $group)
+    private function requeteCl($column, $where, $group, $transportes = false)
     {
-        $where['millesime'] = $this->millesime;
+        $where['s.millesime'] = $this->millesime;
         $select = $this->sql->select();
         $select->from(array(
             's' => $this->tableName['scolarites']
@@ -375,6 +382,11 @@ class Effectif implements FactoryInterface
         ))
             ->where($where)
             ->group($group);
+        if ($transportes) {
+            $select->join(array(
+                'a' => $this->tableName['affectations']
+            ), 'a.millesime = s.millesime AND a.eleveId = s.eleveId', array());
+        }
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
@@ -415,7 +427,9 @@ class Effectif implements FactoryInterface
             ))
                 ->where($where)
                 ->group($group)
-                ->having(function(Having $where){$where->isNotNull('communeId');});
+                ->having(function (Having $where) {
+                $where->isNotNull('communeId');
+            });
         } else {
             $on = sprintf('e.responsable%sId=r.responsableId', $rang);
             $select->from(array(
@@ -426,8 +440,10 @@ class Effectif implements FactoryInterface
             ), 'e.eleveId=s.eleveId', array())
                 ->join(array(
                 'r' => $this->tableName['responsables']
-            ), $on, array('column' => $column))
-            ->columns(array(
+            ), $on, array(
+                'column' => $column
+            ))
+                ->columns(array(
                 'effectif' => new Expression('count(*)')
             ))
                 ->where($where)

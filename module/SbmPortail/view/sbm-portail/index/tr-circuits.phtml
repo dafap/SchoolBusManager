@@ -24,7 +24,7 @@ $url_group = $this->url('sbmportail', array(
     'page' => $this->page
 ));
 $url_retour = $this->url('sbmportail', array(
-    'action' => 'tr-index'
+    'action' => empty($this->origine) ? 'index' : $this->origine
 ));
 $hiddens = array();
 $actions = array(
