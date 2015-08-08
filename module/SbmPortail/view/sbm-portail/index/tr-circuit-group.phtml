@@ -13,7 +13,7 @@
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmportail', array(
-    'action' => 'tr-circuits',
+    'action' => empty($this->origine) ? 'tr-circuits' : $this->origine,
     'page' => $this->page
 ));
 $hiddens = array(
