@@ -74,6 +74,10 @@ $url_map = $this->url('sbmcarte', array(
 $url_retour = $this->url('sbmportail', array(
     'action' => 'retour'
 ));
+$url_telephones = $this->url('sbmportail', array(
+    'action' => 'tr-extraction-telephones',
+    'page' => $this->page
+));
 
 // le formulaire des actions du haut de page - aide de vue listeZoneActions()
 $hiddens = array();
@@ -89,6 +93,13 @@ $actions = array(
         'title' => 'Liste à imprimer'
     )
 );
+if ($this->categorie == 2) {
+    $actions['telephones'] = array(
+        'class' => 'fam-telephone',
+        'formaction' => $url_telephones,
+        'title' => 'Extraction des numéros de téléphones portables'
+    );
+}
 ?>
 <h1>Liste des élèves</h1>
 <div id="liste-wrapper">

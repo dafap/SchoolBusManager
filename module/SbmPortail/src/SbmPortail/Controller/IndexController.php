@@ -101,22 +101,22 @@ class IndexController extends AbstractActionController
             'paiements' => $statPaiement->getSumByAsMode($millesime)
         ));
     }
-    
+
     public function ccdaCircuitsAction()
     {
         try {
             $services = $this->getServiceLocator()
-            ->get('Sbm\Db\Query\Services')
-            ->paginatorServicesWithEtablissements();
+                ->get('Sbm\Db\Query\Services')
+                ->paginatorServicesWithEtablissements();
             $stats = $this->getServiceLocator()
-            ->get('Sbm\Db\Eleve\Effectif')
-            ->byService();
+                ->get('Sbm\Db\Eleve\Effectif')
+                ->byService();
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $services = array();
             $stats = array();
         }
         
-        //die(var_dump($stats));
+        // die(var_dump($stats));
         return new ViewModel(array(
             'paginator' => $services,
             'statServices' => $stats,
@@ -132,8 +132,8 @@ class IndexController extends AbstractActionController
     public function etIndexAction()
     {
         $auth = $this->getServiceLocator()
-        ->get('Dafap\Authenticate')
-        ->by('email');
+            ->get('Dafap\Authenticate')
+            ->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'home-page'
@@ -142,28 +142,27 @@ class IndexController extends AbstractActionController
         $userId = $auth->getUserId();
         try {
             $etablissementId = $this->getServiceLocator()
-            ->get('Sbm\Db\Table\UsersEtablissements')
-            ->getEtablissementId($userId);
+                ->get('Sbm\Db\Table\UsersEtablissements')
+                ->getEtablissementId($userId);
             
             $stats = $this->getServiceLocator()
-            ->get('Sbm\Db\Eleve\Effectif')
-            ->byEtablissement(true);
+                ->get('Sbm\Db\Eleve\Effectif')
+                ->byEtablissement(true);
             
             $elevesTransportes = $stats[$etablissementId];
             
             $services = $this->getServiceLocator()
-            ->get('Sbm\Db\Query\Services')
-            ->getServicesGivenEtablissement($etablissementId);
+                ->get('Sbm\Db\Query\Services')
+                ->getServicesGivenEtablissement($etablissementId);
             $stats = $this->getServiceLocator()
-            ->get('Sbm\Db\Eleve\Effectif')
-            ->byServiceGivenEtablissement($etablissementId);
+                ->get('Sbm\Db\Eleve\Effectif')
+                ->byServiceGivenEtablissement($etablissementId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $elevesTransportes = '';
             $services = array();
             $stats = array();
         }
         
-        // die(var_dump($stats));
         return new ViewModel(array(
             'elevesTransportes' => $elevesTransportes,
             'services' => $services,
@@ -229,7 +228,6 @@ class IndexController extends AbstractActionController
             ));
         }
         $userId = $auth->getUserId();
-        // $email = $identity['email'];
         
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -317,6 +315,7 @@ class IndexController extends AbstractActionController
                         ));
                     }
                 }
+                $categorie = 2;
                 break;
             case 3:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
@@ -330,6 +329,7 @@ class IndexController extends AbstractActionController
                     'nom',
                     'prenom'
                 ));
+                $categorie = 3;
                 break;
             case 200:
                 $where = $criteres_obj->getWhere();
@@ -341,6 +341,7 @@ class IndexController extends AbstractActionController
                 ));
                 break;
             default:
+                $categorie = 200;
                 $paginator = $this->getServiceLocator()
                     ->get('Sbm\Db\Query\ElevesResponsables')
                     ->paginatorScolaritesR2($criteres_obj->getWhere(), array(
@@ -351,6 +352,7 @@ class IndexController extends AbstractActionController
         }
         
         return new ViewModel(array(
+            'categorie' => $categorie,
             'paginator' => $paginator,
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
@@ -375,7 +377,6 @@ class IndexController extends AbstractActionController
         }
         $identity = $auth->getIdentity();
         $userId = $auth->getUserId();
-        // $email = $identity['email'];
         $currentPage = $this->params('page', 1);
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
@@ -402,19 +403,19 @@ class IndexController extends AbstractActionController
                     ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
                 $filtre = $criteres_obj->getCriteres();
                 $expressions[] = "(transporteur1Id = $right OR transporteur2Id = $right)";
-                $documentId = 'List élèves portail transporteur';                
+                $documentId = 'List élèves portail transporteur';
                 break;
             case 3:
                 $right = $this->getServiceLocator()
-                ->get('Sbm\Db\Table\UsersEtablissements')
-                ->getEtablissementId($userId);
+                    ->get('Sbm\Db\Table\UsersEtablissements')
+                    ->getEtablissementId($userId);
                 $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
                 $filtre = $criteres_obj->getCriteres();
                 $expressions[] = "(etablissementId = \"$right\")";
-                $documentId = 'List élèves portail transporteur';
+                $documentId = 'List élèves portail etab';
                 break;
-            //case 200:
-                //break;
+            // case 200:
+            // break;
             default:
                 $where = $criteres_obj->getWhere();
                 $criteres = array_merge($criteres, array(
@@ -534,6 +535,50 @@ class IndexController extends AbstractActionController
         return $this->redirect()->toRoute('sbmcarte', array(
             'action' => 'stations'
         ));
+    }
+
+    public function trExtractionTelephonesAction()
+    {
+        $auth = $this->getServiceLocator()
+            ->get('Dafap\Authenticate')
+            ->by('email');
+        if (! $auth->hasIdentity()) {
+            return $this->redirect()->toRoute('login', array(
+                'action' => 'home-page'
+            ));
+        }
+        $userId = $auth->getUserId();
+        $right = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\UsersTransporteurs')
+            ->getTransporteurId($userId);
+        $currentPage = $this->params('page', 1);
+        
+        $criteres_form = new \SbmPortail\Form\CriteresForm();
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres($criteres_form->getElementNames());
+        $criteres = Session::get('post', array(), $this->getSessionNamespace('tr-eleves'));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
+        }
+        $where = $criteres_obj->getWhere()
+            ->nest()
+            ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
+        
+        $resultset = $this->getServiceLocator()
+            ->get('Sbm\Db\Query\AffectationsServicesStations')
+            ->getTelephonesPortables($where);
+        $data = iterator_to_array($resultset);
+        if (! empty($data)) {
+            $fields = array_keys(current($data));
+            // s'il faut utiliser l'enclosure pour telephone, rajouter une callback en 4e parametre de csvExport()
+            // (voir http://stackoverflow.com/questions/2489553/forcing-fputcsv-to-use-enclosure-for-all-fields)
+            return $this->csvExport('telephones.csv', $fields, $data);
+        } else {
+            $this->flashMessenger()->addInfoMessage('Il n\'y a pas de données correspondant aux critères indiqués.');
+            return $this->redirect()->toRoute('sbmportail', array(
+                'action' => 'tr-eleves',
+                'page' => $this->params('page', 1)
+            ));
+        }
     }
     
     // ===========================================================================================================

@@ -16,6 +16,7 @@ namespace SbmCommun\Model\Db\Service\Query\Eleve;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Session;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
@@ -332,15 +333,15 @@ class AffectationsServicesStations implements FactoryInterface
     public function paginatorScolaritesR($where, $order = null, $millesime = null)
     {
         $select = $this->selectScolaritesR($where, $order);
-        //die($select->getSqlString());
+        // die($select->getSqlString());
         return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
     }
 
     /**
-     * 
-     * @param unknown $where
-     * @param string $order
-     * @param string $millesime
+     *
+     * @param unknown $where            
+     * @param string $order            
+     * @param string $millesime            
      * @return \Zend\Db\Sql\Select
      */
     private function selectScolaritesR($where, $order = null, $millesime = null)
@@ -382,12 +383,12 @@ class AffectationsServicesStations implements FactoryInterface
             'sta1' => $this->db->getCanonicName('stations', 'table')
         ), 'sta1.stationId=aff.station1Id', array(
             'station1' => 'nom'
-        ),$select::JOIN_LEFT)
+        ), $select::JOIN_LEFT)
             ->join(array(
             'sta2' => $this->db->getCanonicName('stations', 'table')
         ), 'sta2.stationId=aff.station2Id', array(
             'station2' => 'nom'
-        ),$select::JOIN_LEFT)
+        ), $select::JOIN_LEFT)
             ->join(array(
             'ser1' => $this->db->getCanonicName('services', 'table')
         ), 'ser1.serviceId=aff.service1Id', array(
@@ -397,8 +398,116 @@ class AffectationsServicesStations implements FactoryInterface
             'ser2' => $this->db->getCanonicName('services', 'table')
         ), 'ser2.serviceId=aff.service2Id', array(
             'transporteur2' => 'nom'
-        ),$select::JOIN_LEFT);
-        
+        ), $select::JOIN_LEFT);
+        if (!empty($order)) {
+            $select->order($order);
+        }
         return $select->where($where);
+    }
+
+    /**
+     * Requête renvoyant téléphones portables pour les fiches filtrées par $where
+     *
+     * @param \Zend\Db\Sql\Where $where            
+     *
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getTelephonesPortables(Where $where)
+    {
+        $select = $this->selectTelephonesPortables($where);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    /**
+     * Paginator sur le même modèle que la requête précédente
+     *
+     * @param Where $where            
+     *
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginatorTelephonesPortables(Where $where)
+    {
+        $select = $this->selectTelephonesPortables($where);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    private function selectTelephonesPortables(Where $where)
+    {
+        $selectBase = clone $this->select;
+        $selectBase->join(array(
+            'ser1' => $this->db->getCanonicName('services', 'table')
+        ), 'ser1.serviceId = aff.service1Id', array())
+            ->join(array(
+            'ser2' => $this->db->getCanonicName('services', 'table')
+        ), 'ser2.serviceId = aff.service2Id', array(), Select::JOIN_LEFT)
+            ->join(array(
+            'sco' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', array())
+            ->join(array(
+            'res' => $this->db->getCanonicName('responsables', 'table')
+        ), 'aff.responsableId = res.responsableId', array(
+            'responsable' => new Expression('concat(res.nomSA, " ", res.prenomSA)'),
+            'telephoneF',
+            'telephoneP',
+            'telephoneT'
+        ))
+            ->join(array( // utile uniquement pour filtrer sur nomSA, prenomSA ou numero
+            'ele' => $this->db->getCanonicName('eleves', 'table')
+        ), 'ele.eleveId = aff.eleveid', array())
+            ->where($where);
+        // dans le champ des téléphones fixes
+        $whereF = new Where();
+        $whereF->like('telephoneF', '06%')->or->like('telephoneF', '07%');
+        $selectF = $this->sql->select();
+        $selectF->from(array(
+            'telF' => $selectBase
+        ))
+            ->columns(array(
+            'responsable',
+            'telephone' => 'telephoneF'
+        ))
+            ->where($whereF);
+        // dans le champ des téléphones portables
+        $whereP = new Where();
+        $whereP->like('telephoneP', '06%')->or->like('telephoneP', '07%');
+        $selectP = $this->sql->select();
+        $selectP->from(array(
+            'telP' => $selectBase
+        ))
+            ->columns(array(
+            'responsable',
+            'telephone' => 'telephoneP'
+        ))
+            ->where($whereP);
+        // dans le champ des téléphones du travail
+        $whereT = new Where();
+        $whereT->like('telephoneT', '06%')->or->like('telephoneT', '07%');
+        $selectT = $this->sql->select();
+        $selectT->from(array(
+            'telT' => $selectBase
+        ))
+            ->columns(array(
+            'responsable',
+            'telephone' => 'telephoneT'
+        ))
+            ->where($whereT);
+        
+        $selectT->combine($selectP);
+        
+        $selectFPT = $this->sql->select();
+        $selectFPT->from(array(
+            'telPT' => $selectT
+        ));
+        $selectFPT->combine($selectF);
+        $select = $this->sql->select();
+        $select->from(array(
+            'telFPT' => $selectFPT
+        ))
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->order('responsable');
+        
+        // die(@$select->getSqlString());
+        return $select;
     }
 }
