@@ -201,7 +201,7 @@ class LoginController extends AbstractActionController
                 case 3:
                 case 200:
                     Session::set('home', 'sbmportail', 'layout');
-                    return $this->redirect()->toRoute('sbmportail', array('action' => 'tr-index'));
+                    return $this->redirect()->toRoute('sbmportail', array('action' => 'index'));
                     break;
                 case 253:
                     Session::set('home', 'sbmgestion/config', 'layout');

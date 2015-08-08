@@ -65,6 +65,7 @@ class Stations implements FactoryInterface
 
     private function selectLocalisation(Where $where, $order = null)
     {
+        $where->equalTo('millesime', $this->millesime);
         $select = clone $this->sql->select();
         $select->from(array(
             'sta' => $this->db->getCanonicName('stations', 'table')

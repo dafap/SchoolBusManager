@@ -18,7 +18,7 @@ return array(
             'sbmportail' => array(
                 'allow' => array(
                     'roles' => array(
-                        'transporteur', 'gestion'
+                        'transporteur', 'etablissement', 'secretariat', 'gestion'
                     )
                 )
             )

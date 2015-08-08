@@ -152,6 +152,7 @@ return array(
             'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations',
             'Sbm\Db\Query\Responsables' => 'SbmCommun\Model\Db\Service\Query\Responsable\Responsables',
             'Sbm\Db\Query\Etablissements' => 'SbmCommun\Model\Db\Service\Query\Etablissement\Etablissements',
+            'Sbm\Db\Query\Services' => 'SbmCommun\Model\Db\Service\Query\Service\Services',
             'Sbm\Db\Query\Stations' => 'SbmCommun\Model\Db\Service\Query\Station\Stations',
             'Sbm\Statistiques\Eleve' => 'SbmCommun\Model\Db\Service\Query\Eleve\Statistiques',
             'Sbm\Statistiques\Paiement' => 'SbmCommun\Model\Db\Service\Query\Paiement\Statistiques',
