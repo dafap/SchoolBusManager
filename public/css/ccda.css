@@ -311,43 +311,42 @@ label.sbm-label-top {
 	display: inline-block;
 	width: 360px;
 }
-/*---------- Bienvenue ----------*/
-#bienvenue {
-	float: right;
+/*---------- Menu dynamique ----------*/
+div.menu {
 	margin: 0;
 	padding: 0;
 	margin-right: 3px;
 	position: relative;
 	z-index:100;
 }
-#bienvenue ul {
+div.menu ul {
 	list-style: none;
 	-webkit-padding-start: 0;
 }
-#bienvenue ul#menu {
+div.menu ul.menubar {
 	margin-top: 0;
 	-webkit-margin-before: 0;
 	-webkit-margin-after: 0;
 }
-#bienvenue ul#menu li {
+div.menu ul.menubar li {
 	float: left;
-	padding-left: 4px;
+	margin-left: 15px;
 }
-#bienvenue ul#menu li.annee-scolaire {
+div.menu ul.menubar li.annee-scolaire {
 	padding-right: 200px;
 	font-weight: bold;
 }
-#bienvenue ul#menu li.bienvenue {
+div.menu ul.menubar li.onglet {
 	position: relative;
 }
-#bienvenue a {
+div.menu a {
 	color: #1c94c4;
 	text-decoration: none;
 }
-#bienvenue a:hover {
+div.menu a:hover {
 	font-weight: bold;
 }
-#bienvenue #menu ul {
+div.menu ul.menubar ul {
 	opacity: 0;
 	visibility: hidden;
 	position: absolute;
@@ -359,13 +358,22 @@ label.sbm-label-top {
 	background-color: white;
 	padding-left: 0;
 }
-#bienvenue ul#menu li.bienvenue:hover ul {
+div.menu ul.menubar li.onglet:hover ul {
 	opacity: 1;
 	visibility: visible;
 }
-#bienvenue #menu ul li {
+div.menu ul.menubar ul li {
 	float: none;
 	min-width: 200px;
+	margin-left: 0;
+	padding-left: 4px;
+}
+div.menu input[type=submit] {
+	cursor: pointer;
+}
+div.menu ul.menubar ul li input {
+	border: none;
+	background: none;
 }
 /*------------ FlashMessenger ----------------*/
 .flashMessenger ul {
@@ -496,9 +504,6 @@ div#liste-header {
 	margin-bottom: 10px;
 	position: relative;
 }
-div#liste-header input {
-	margin-left: 15px;
-}
 div#liste-inner {
 	min-height: 400px;
 }
@@ -536,9 +541,6 @@ div#liste-inner .codepostal {
 div#fiche-header {
 	margin-bottom: 10px;
 	position: relative;
-}
-div#fiche-header input {
-	margin-left: 15px;
 }
 div#fiche-inner {
 	min-height: 400px;

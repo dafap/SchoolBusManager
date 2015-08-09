@@ -47,14 +47,14 @@ if (empty($this->etablissementId)) {
 <h1><?php echo nl2br($h1); ?></h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
-	<?php echo $this->listeZoneActions($hiddens, $actions);?>
+		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 	</div>
 	<div id="fiche-inner">
 <?php
 echo $this->form()->openTag($this->form);
 ?>
     <fieldset class="sbm-page1">
-<?php 
+<?php
 echo $this->formHidden($this->form->get('origine'));
 echo $this->formHidden($this->form->get('csrf'));
 if (empty($this->etablissementId)) {
@@ -68,8 +68,10 @@ if (empty($this->etablissementId)) {
     <div id="classe-ajout-buttons" class="row-inner ajout">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
     </div>
-    </fieldset>
-<?php echo $this->form()->closeTag();
+		</fieldset>
+<?php
+
+echo $this->form()->closeTag();
 ?>
     </div>
 	<div id="fiche-footer"></div>

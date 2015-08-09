@@ -56,7 +56,7 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-report',
+        'class' => 'fam-printer',
         'formaction' => $url_pdf,
         'title' => 'Rapports à imprimer'
     ),
@@ -95,7 +95,8 @@ $buttons = array(
 	<div id="liste-header" class="clearfix">
 		<div class="float-left">
 			<h1>Liste des documents pdf</h1>
-	        <?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	        <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	    </div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');

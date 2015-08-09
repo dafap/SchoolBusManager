@@ -20,6 +20,7 @@ use SbmCommun\Model\StdLib;
 use DafapMail\Model\Template as MailTemplate;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Where;
+use Zend\Navigation\Service\ConstructedNavigationFactory;
 
 class IndexController extends AbstractActionController
 {
@@ -48,10 +49,27 @@ class IndexController extends AbstractActionController
             'permanences' => $tCalendar->getPermanences()
         ));
     }
-    
+
     public function testAction()
     {
-        $stats = $this->getServiceLocator()->get('Sbm\Statistiques\Paiement');
-        die(var_dump($stats->getSumByAsMode()));
+        $config = array(
+            array(
+                'label' => 'Home',
+                'route' => 'home'
+            ),
+            array(
+                'label' => 'Plan',
+                'route' => 'sbmcarte',
+                'action' => 'etablissements'
+            )
+        );
+        // your config here
+        
+        $factory = new ConstructedNavigationFactory($config);
+        $navigation = $factory->createService($this->getServiceLocator());
+        
+        return new ViewModel(array(
+            'monMenu' => $navigation
+        ));
     }
 }

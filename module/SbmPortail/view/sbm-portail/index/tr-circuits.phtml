@@ -38,7 +38,7 @@ $actions = array(
 <h1>Détail du circuit <?php echo $this->escapeHtml($this->service->serviceId); ?> - <?php echo $this->escapeHtml($this->service->nom); ?></h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');

@@ -24,8 +24,8 @@
  * @filesource ListeLigneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 janv. 2015
- * @version 2015-1
+ * @date 09 août 2015
+ * @version 2015-2
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -90,13 +90,14 @@ class ListeLigneActions extends AbstractHelper
      */
     public function __invoke($id, $hiddens = array(), $buttons = array(), $attributes = array())
     {
-        $result = $this->openForm($id, $attributes);
+        $result = '<div class="menu">';
+        $result .= $this->openForm($id, $attributes);
         if (! array_key_exists('op', $hiddens)) {
             $hiddens['op'] = null;
         }
         $result .= $this->getHiddens($id, $hiddens);
         $result .= $this->getButtons($id, $buttons);
-        return $result . $this->closeForm();
+        return $result . $this->closeForm() . "</div>\n";
     }
 
     private function getButtons($id, $buttons)

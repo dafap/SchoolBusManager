@@ -92,7 +92,8 @@ $buttons = array(
 				<li>Document: <?php echo $this->document['name'];?></li>
 				<li>Source du document: <?php echo $this->document['recordSource'];?></li>
 			</ul>
-            <?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+            <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+        </div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');

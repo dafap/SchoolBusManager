@@ -28,7 +28,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 <h1>Détail d'une notification de paiement</h1>
 <div class="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
