@@ -1,8 +1,8 @@
 <?php
 /**
- * Description courte du fichier
+ * Controller principal du module SbmGestion
  *
- * Description longue du fichier s'il y en a une
+ * Méthodes utilisées pour gérer la localisation des responsables et la création des cartes de transport
  * 
  * @project project_name
  * @package package_name

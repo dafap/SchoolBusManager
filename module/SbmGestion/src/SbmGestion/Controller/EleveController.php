@@ -1,7 +1,7 @@
 <?php
 /**
  * Controller principal du module SbmGestion
- *
+ * Méthodes utilisées pour gérer les élèves et les responsables
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller

@@ -18,17 +18,25 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 // à faire en premier
 // et faire l'action du controller
 
-$ajouter = $this->url('sbmgestion/transport', array(
+$url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service-ajout', // voir si on peut faire une seule action
     'page' => $this->page
 ));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_pdf = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service-pdf', // voir si on peut faire une seule action
     'page' => $this->page
 ));
-$retour = $this->url('sbmgestion/transport', array(
+$url_retour = $this->url('sbmgestion/transport', array(
     'action' => 'service-etablissement',
     'page' => $this->page
+));
+$url_delete = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service-suppr',
+    'page' => $this->page
+));
+$url_group = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service-group',
+    'id' => $this->page
 ));
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
@@ -41,21 +49,22 @@ $hiddens = array(
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
-        'formaction' => $pdf,
+        'class' => 'fam-printer',
+        'formaction' => $url_pdf,
         'title' => 'Rapports à imprimer'
     ),
     'ajouter' => array(
         'class' => 'fam-add',
-        'formaction' => $ajouter,
+        'formaction' => $url_ajouter,
         'title' => 'Nouvel établissement'
     )
 );
+
 ?>
 <h1>Liste des établissements desservis par
 <?php echo $this->service->serviceId . ' - ' . $this->service->nom; ?>
@@ -91,7 +100,7 @@ echo $this->flashMessenger()->render('default');
                 <tr
 					class="<?php
                 
-echo $this->cycle(array(
+                echo $this->cycle(array(
                     "even",
                     "odd"
                 ))->next();
@@ -107,14 +116,6 @@ echo $this->cycle(array(
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="boutons">
             <?php
-                $url_delete = $this->url('sbmgestion/transport', array(
-                    'action' => 'etablissement-service-suppr',
-                    'page' => $this->page
-                ));
-                $url_group = $this->url('sbmgestion/transport', array(
-                    'action' => 'etablissement-service-group',
-                    'page' => $this->page
-                ));
                 $hiddens = array(
                     'etablissementId' => $etablissement->etablissementId,
                     'serviceId' => $service->serviceId,

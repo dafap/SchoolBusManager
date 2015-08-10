@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Validateur pour la plage Ip autorisée
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmCommun/Model/Validator
  * @filesource PlageIp.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

@@ -30,7 +30,8 @@ $jsTrigger = '';
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $etablissements = $this->paginator->getCurrentItems();
-$ajouter = $this->url('sbmgestion/transport', array(
+
+$url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-ajout',
     'page' => $this->page
 ));
@@ -51,11 +52,11 @@ $url_delete = $this->url('sbmgestion/transport', array(
 ));
 $url_relation = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service',
-    'page' => $this->page
+    'id' => $this->page
 ));
 $url_group = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-group',
-    'page' => $this->page
+    'id' => $this->page
 ));
 $url_localiser = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-localisation',
@@ -86,7 +87,7 @@ $actions = array(
     ),
     'ajouter' => array(
         'class' => 'fam-add',
-        'formaction' => $ajouter,
+        'formaction' => $url_ajouter,
         'title' => 'Nouvel établissement scolaire'
     )
 );
@@ -184,7 +185,7 @@ EOT;
 					<td class="boutons">
             <?php
             $hiddens = array(
-                'etablissementId' => $etablissement->etablissementId
+                'etablissementId' => $etablissement->etablissementId,
             );
             $buttons = array(
                 'modifier' => array(

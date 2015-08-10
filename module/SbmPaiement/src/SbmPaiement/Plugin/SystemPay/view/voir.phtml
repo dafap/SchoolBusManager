@@ -15,7 +15,9 @@ $retour = $this->url('sbmpaiement', array(
     'action' => 'liste',
     'page' => $this->page
 ));
-$hiddens = array();
+$hiddens = array(
+    'op' => 'retour'
+);
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -38,34 +40,124 @@ echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
 	<div id="fiche-inner">
-	    <table class="plugin"><tbody>
-		<tr><td>Mode</td><td><b><?php echo $notification->vads_ctx_mode; ?></b></td></tr>
-		<tr><td>Type d'opération</td><td><b><?php echo $notification->vads_operation_type; ?></b></td></tr>
-		<tr><td>Date de la transaction</td><td><b><?php echo $notification->vads_trans_date; ?></b></td></tr>
-		<tr><td>Référence de la transaction</td><td><b><?php echo $notification->vads_trans_id; ?></b></td></tr>
-		<tr><td>Statut de la transaction</td><td><b><?php echo $notification->vads_trans_status; ?></b></td></tr>
-		<tr><td>Résultat de la transaction</td><td><b><?php echo $notification->vads_result; ?></b></td></tr>
-		<tr><td>Complément du résultat</td><td><b><?php echo $notification->vads_extra_result; ?></b></td></tr>
-		<tr><td>Réponse de la banque</td><td><b><?php echo $notification->vads_auth_result; ?></b></td></tr>
-		<tr><td>Autorisation n°</td><td><b><?php echo $notification->vads_auth_number; ?></b></td></tr>
-		<tr><td>Email</td><td><b><?php echo $notification->vads_cust_email; ?></b></td></tr>
-		<tr><td>Référence du responsable</td><td><b><?php echo $notification->vads_cust_id; ?></b></td></tr>
-		<tr><td>Nom du responsable</td><td><b><?php echo $notification->vads_cust_name; ?></b></td></tr>
-		<tr><td>Référence de la commande</td><td><b><?php echo $notification->vads_order_id; ?></b></td></tr>
-		<tr><td>Référence des élèves concernés</td><td><b><?php echo $notification->ref_eleveIds; ?></b></td></tr>
-		<tr><td>Certificat de paiement</td><td><b><?php echo $notification->vads_payment_certificate; ?></b></td></tr>
-		<tr><td>Configuration du paiement</td><td><b><?php echo $notification->vads_payment_config; ?></b></td></tr>
-		<tr><td>Erreur retournée</td><td><b><?php echo $notification->vads_payment_error; ?></b></td></tr>
-		<tr><td>Numéro de l'échéance</td><td><b><?php echo $notification->vads_sequence_number; ?></b></td></tr>
-		<tr><td>Délai de remise</td><td><b><?php echo $notification->vads_capture_delay; ?></b></td></tr>
-		<tr><td>Montant</td><td><b><?php echo $fmt->formatCurrency($notification->vads_amount/100, 'EUR'); ?></b></td></tr>
-		<tr><td>Monnaie</td><td><b><?php echo $notification->vads_currency; ?></b></td></tr>
-		<tr><td>Carte enrôlée 3DSecure</td><td><b><?php echo $notification->vads_threeds_enrolled; ?></b></td></tr>
-		<tr><td>Statut 3DSecure</td><td><b><?php echo $notification->vads_threeds_status; ?></b></td></tr>
-		<tr><td>Carte bancaire</td><td><b><?php echo $notification->vads_card_brand; ?></b></td></tr>
-		<tr><td>Pays origine de la carte bancaire</td><td><b><?php echo $notification->vads_card_country; ?></b></td></tr>
-		<tr><td>Numéro de la carte</td><td><b><?php echo $notification->vads_card_number; ?></b></td></tr>
-		<tr><td>Date d'expiration de la carte</td><td><b><?php echo $notification->vads_expiry_month . '/' . $notification->vads_expiry_year; ?></b></td></tr>
-		<tr><td>Code de la banque</td><td><b><?php echo $notification->vads_expiry_year; ?></b></td></tr>
-		<tr><td>Code du produit de paiement</td><td><b><?php echo $notification->vads_bank_product; ?></b></td></tr></tbody></table>
+		<table class="plugin">
+			<tbody>
+				<tr>
+					<td>Mode</td>
+					<td><b><?php echo $notification->vads_ctx_mode; ?></b></td>
+				</tr>
+				<tr>
+					<td>Type d'opération</td>
+					<td><b><?php echo $notification->vads_operation_type; ?></b></td>
+				</tr>
+				<tr>
+					<td>Date de la transaction</td>
+					<td><b><?php echo $notification->vads_trans_date; ?></b></td>
+				</tr>
+				<tr>
+					<td>Référence de la transaction</td>
+					<td><b><?php echo $notification->vads_trans_id; ?></b></td>
+				</tr>
+				<tr>
+					<td>Statut de la transaction</td>
+					<td><b><?php echo $notification->vads_trans_status; ?></b></td>
+				</tr>
+				<tr>
+					<td>Résultat de la transaction</td>
+					<td><b><?php echo $notification->vads_result; ?></b></td>
+				</tr>
+				<tr>
+					<td>Complément du résultat</td>
+					<td><b><?php echo $notification->vads_extra_result; ?></b></td>
+				</tr>
+				<tr>
+					<td>Réponse de la banque</td>
+					<td><b><?php echo $notification->vads_auth_result; ?></b></td>
+				</tr>
+				<tr>
+					<td>Autorisation n°</td>
+					<td><b><?php echo $notification->vads_auth_number; ?></b></td>
+				</tr>
+				<tr>
+					<td>Email</td>
+					<td><b><?php echo $notification->vads_cust_email; ?></b></td>
+				</tr>
+				<tr>
+					<td>Référence du responsable</td>
+					<td><b><?php echo $notification->vads_cust_id; ?></b></td>
+				</tr>
+				<tr>
+					<td>Nom du responsable</td>
+					<td><b><?php echo $notification->vads_cust_name; ?></b></td>
+				</tr>
+				<tr>
+					<td>Référence de la commande</td>
+					<td><b><?php echo $notification->vads_order_id; ?></b></td>
+				</tr>
+				<tr>
+					<td>Référence des élèves concernés</td>
+					<td><b><?php echo $notification->ref_eleveIds; ?></b></td>
+				</tr>
+				<tr>
+					<td>Certificat de paiement</td>
+					<td><b><?php echo $notification->vads_payment_certificate; ?></b></td>
+				</tr>
+				<tr>
+					<td>Configuration du paiement</td>
+					<td><b><?php echo $notification->vads_payment_config; ?></b></td>
+				</tr>
+				<tr>
+					<td>Erreur retournée</td>
+					<td><b><?php echo $notification->vads_payment_error; ?></b></td>
+				</tr>
+				<tr>
+					<td>Numéro de l'échéance</td>
+					<td><b><?php echo $notification->vads_sequence_number; ?></b></td>
+				</tr>
+				<tr>
+					<td>Délai de remise</td>
+					<td><b><?php echo $notification->vads_capture_delay; ?></b></td>
+				</tr>
+				<tr>
+					<td>Montant</td>
+					<td><b><?php echo $fmt->formatCurrency($notification->vads_amount/100, 'EUR'); ?></b></td>
+				</tr>
+				<tr>
+					<td>Monnaie</td>
+					<td><b><?php echo $notification->vads_currency; ?></b></td>
+				</tr>
+				<tr>
+					<td>Carte enrôlée 3DSecure</td>
+					<td><b><?php echo $notification->vads_threeds_enrolled; ?></b></td>
+				</tr>
+				<tr>
+					<td>Statut 3DSecure</td>
+					<td><b><?php echo $notification->vads_threeds_status; ?></b></td>
+				</tr>
+				<tr>
+					<td>Carte bancaire</td>
+					<td><b><?php echo $notification->vads_card_brand; ?></b></td>
+				</tr>
+				<tr>
+					<td>Pays origine de la carte bancaire</td>
+					<td><b><?php echo $notification->vads_card_country; ?></b></td>
+				</tr>
+				<tr>
+					<td>Numéro de la carte</td>
+					<td><b><?php echo $notification->vads_card_number; ?></b></td>
+				</tr>
+				<tr>
+					<td>Date d'expiration de la carte</td>
+					<td><b><?php echo $notification->vads_expiry_month . '/' . $notification->vads_expiry_year; ?></b></td>
+				</tr>
+				<tr>
+					<td>Code de la banque</td>
+					<td><b><?php echo $notification->vads_expiry_year; ?></b></td>
+				</tr>
+				<tr>
+					<td>Code du produit de paiement</td>
+					<td><b><?php echo $notification->vads_bank_product; ?></b></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>

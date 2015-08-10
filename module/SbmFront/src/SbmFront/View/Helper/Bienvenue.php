@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Aide de vue pour afficher le menu du haut (année scolaire, bienvenue, logout)
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmFront/View/Helper
  * @filesource Bienvenue.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

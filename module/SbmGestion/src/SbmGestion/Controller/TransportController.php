@@ -1,7 +1,7 @@
 <?php
 /**
  * Controller principal du module SbmGestion
- *
+ * Gestion des données du réseau de transport
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller
@@ -382,6 +382,11 @@ class TransportController extends AbstractActionController
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 
+    public function circuitGroupPdfAction()
+    {
+        // lance la création d'une liste d'élève avec comme filtre le circuitId reçu en post
+    }
+
     /**
      * =============================================== CLASSES ==================================================
      */
@@ -574,6 +579,7 @@ class TransportController extends AbstractActionController
      */
     public function classeGroupAction()
     {
+        $pageRetour = $this->params('id', - 1);
         $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -584,25 +590,32 @@ class TransportController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         $classeId = StdLib::getParam('classeId', $args, - 1);
         if ($classeId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'classe-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
         return new ViewModel(array(
-            'data' => $this->getServiceLocator()
+            'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byClasse($this->getFromSession('millesime'), $classeId, array(
+                ->paginatorByClasse($this->getFromSession('millesime'), $classeId, array(
                 'nom',
                 'prenom'
             )),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 15),
             'classe' => $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Classes')
                 ->getRecord($classeId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'classeId' => $classeId
         ));
     }
@@ -830,6 +843,7 @@ class TransportController extends AbstractActionController
      */
     public function communeGroupAction()
     {
+        $pageRetour = $this->params('id', - 1);
         $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -840,25 +854,32 @@ class TransportController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         $communeId = StdLib::getParam('communeId', $args, - 1);
         if ($communeId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'commune-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
         return new ViewModel(array(
-            'data' => $this->getServiceLocator()
+            'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byCommune($this->getFromSession('millesime'), $communeId, array(
+                ->paginatorByCommune($this->getFromSession('millesime'), $communeId, array(
                 'nom',
                 'prenom'
             )),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 15),
             'commune' => $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Communes')
                 ->getRecord($communeId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'communeId' => $communeId
         ));
     }
@@ -905,7 +926,7 @@ class TransportController extends AbstractActionController
      * Critère de sélection commun aux établissements et aux stations.
      * La localisation géographique est dans un rectangle défini dans la config (voir config/autoload/sbm.local.php)
      * (paramètres dans cartes - etablissements - valide)
-     * 
+     *
      * @return string
      */
     private function critereLocalisation()
@@ -1121,6 +1142,7 @@ class TransportController extends AbstractActionController
      */
     public function etablissementGroupAction()
     {
+        $pageRetour = $this->params('id', - 1);
         $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -1131,27 +1153,32 @@ class TransportController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
         if ($etablissementId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'etablissement-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
-        
         return new ViewModel(array(
-            'data' => $this->getServiceLocator()
+            'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byEtablissement($this->getFromSession('millesime'), $etablissementId, array(
+                ->paginatorByEtablissement($this->getFromSession('millesime'), $etablissementId, array(
                 'nom',
                 'prenom'
             )),
-            // 'paginator' => $table_eleves->paginator(),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 15),
             'etablissement' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Etablissements')
                 ->getRecord($etablissementId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'etablissementId' => $etablissementId
         ));
     }
@@ -1344,6 +1371,12 @@ class TransportController extends AbstractActionController
             }
         }
         $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         if ($etablissementId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             $cancel = true;
@@ -1351,17 +1384,18 @@ class TransportController extends AbstractActionController
         if ($cancel) {
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'etablissement-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
         $table = $this->getServiceLocator()->get('Sbm\Db\Vue\EtablissementsServices');
+        $where = new Where();
+        $where->equalTo('etablissementId', $etablissementId);
         return new ViewModel(array(
             'etablissement' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Etablissements')
                 ->getRecord($etablissementId),
-            'data' => $table->fetchAll(array(
-                'etablissementId' => $etablissementId
-            )),
+            'paginator' => $table->paginator($where),
+            'nb_pagination' => 15,
             't_nb_inscrits' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
                 ->byServiceGivenEtablissement($etablissementId),
@@ -1394,6 +1428,12 @@ class TransportController extends AbstractActionController
             }
         }
         $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         if ($serviceId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             $cancel = true;
@@ -1401,7 +1441,7 @@ class TransportController extends AbstractActionController
         if ($cancel) {
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'service-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
         $table = $this->getServiceLocator()->get('Sbm\Db\Vue\EtablissementsServices');
@@ -1416,6 +1456,7 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Eleve\Effectif')
                 ->byEtablissementGivenService($serviceId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'serviceId' => $serviceId
         ));
     }
@@ -1574,6 +1615,63 @@ class TransportController extends AbstractActionController
                 ->getRecord($serviceId),
             'form' => $form->prepare()
         ));
+    }
+
+    /**
+     * renvoie la liste des élèves inscrits pour un etablissement donné et un service donné
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function etablissementServiceGroupAction()
+    {
+        $pageRetour = $this->params('id', - 1);
+        $currentPage = $this->params('page', 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
+        $serviceId = StdLib::getParam('serviceId', $args, - 1);
+        if ($etablissementId == - 1 || $serviceId == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'etablissement-liste',
+                'page' => $pageRetour
+            ));
+        }
+        $viewModel = new ViewModel(array(
+            'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Eleve\Liste')
+                ->paginatorByEtablissementService($this->getFromSession('millesime'), $etablissementId, $serviceId, array(
+                'nom',
+                'prenom'
+            )),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 15),
+            'etablissement' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Etablissements')
+                ->getRecord($etablissementId),
+            'service' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Services')
+                ->getRecord($serviceId),
+            'page' => $currentPage,
+            'pageRetour' => $pageRetour,
+            'etablissementId' => $etablissementId,
+            'serviceId' => $serviceId,
+            'origine' => StdLib::getParam('origine', $args, 'etablissement-service')
+        ));
+        $viewModel->setTemplate('sbm-gestion/transport/service-group.phtml');
+        return $viewModel;
     }
 
     /**
@@ -1775,6 +1873,7 @@ class TransportController extends AbstractActionController
      */
     public function serviceGroupAction()
     {
+        $pageRetour = $this->params('id', - 1);
         $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -1785,28 +1884,36 @@ class TransportController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         $serviceId = StdLib::getParam('serviceId', $args, - 1);
         if ($serviceId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'service-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
         
         return new ViewModel(array(
-            'data' => $this->getServiceLocator()
+            'h1' => 'Groupe des élèves inscrits sur un service',
+            'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byService($this->getFromSession('millesime'), $serviceId, array(
+                ->paginatorByService($this->getFromSession('millesime'), $serviceId, array(
                 'nom',
                 'prenom'
             )),
-            // 'paginator' => $table_eleves->paginator(),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 15),
             'service' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Services')
                 ->getRecord($serviceId),
             'page' => $currentPage,
-            'serviceId' => $serviceId
+            'pageRetour' => $pageRetour,
+            'serviceId' => $serviceId,
+            'origine' => StdLib::getParam('origine', $args, 'service-liste')
         ));
     }
 
@@ -1819,7 +1926,6 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         
-        
         $criteres_form = new CriteresForm('services');
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
         $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
@@ -1830,8 +1936,8 @@ class TransportController extends AbstractActionController
         $call_pdf->setParam('documentId', 'Liste des services');
         if (! empty($criteres)) {
             $call_pdf->setParam('where', $criteres_obj->getWhere())
-            ->setParam('criteres', $criteres)
-            ->setParam('strict', array(
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
                 'empty' => array(),
                 'not empty' => array(
                     'transporteurId',
@@ -2193,11 +2299,13 @@ class TransportController extends AbstractActionController
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
         $call_pdf->setParam('documentId', 'Liste des stations');
         if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere(array('communeId'), array(
+            $call_pdf->setParam('where', $criteres_obj->getWhere(array(
+                'communeId'
+            ), array(
                 'localisation' => 'Literal:' . $this->critereLocalisation()
             )))
-            ->setParam('criteres', $criteres)
-            ->setParam('strict', array(
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
                 'empty' => array(),
                 'not empty' => array(
                     'ouverte',
@@ -2205,7 +2313,7 @@ class TransportController extends AbstractActionController
                     'selection'
                 )
             ))
-            ->setParam('expression', array(
+                ->setParam('expression', array(
                 sprintf('localisation %s', $this->critereLocalisation())
             ));
         }
@@ -2528,7 +2636,6 @@ class TransportController extends AbstractActionController
      */
     public function transporteurGroupAction()
     {
-        $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -2538,27 +2645,35 @@ class TransportController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
         if ($transporteurId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'transporteur-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
         
         return new ViewModel(array(
-            'data' => $this->getServiceLocator()
+            'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->bytransporteur($this->getFromSession('millesime'), $transporteurId, array(
+                ->paginatorBytransporteur($this->getFromSession('millesime'), $transporteurId, array(
                 'nom',
                 'prenom'
             )),
-            // 'paginator' => $table_eleves->paginator(),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 15),
             'transporteur' => $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Transporteurs')
                 ->getRecord($transporteurId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'transporteurId' => $transporteurId
         ));
     }
@@ -2570,7 +2685,6 @@ class TransportController extends AbstractActionController
      */
     public function transporteurServiceAction()
     {
-        $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -2580,24 +2694,30 @@ class TransportController extends AbstractActionController
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
         $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
         if ($transporteurId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'transporteur-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
-        
+        $where = new Where();
+        $where->equalTo('transporteurId', $transporteurId);
         return new ViewModel(array(
-            'data' => $this->getServiceLocator()
+            'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Services')
-                ->fetchAll(array(
-                'transporteurId' => $transporteurId
-            ), array(
+                ->paginator($where, array(
                 'serviceId'
             )),
-            // 'paginator' => $table_eleves->paginator(),
+            'nb_pagination' => 15,
             't_nb_inscrits' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
                 ->transporteurByService($transporteurId),
@@ -2605,6 +2725,7 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Table\Transporteurs')
                 ->getRecord($transporteurId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'transporteurId' => $transporteurId
         ));
     }
@@ -2628,8 +2749,8 @@ class TransportController extends AbstractActionController
         $call_pdf->setParam('documentId', 'Liste des transporteurs');
         if (! empty($criteres)) {
             $call_pdf->setParam('where', $criteres_obj->getWhere())
-            ->setParam('criteres', $criteres)
-            ->setParam('strict', array(
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
                 'empty' => array(),
                 'not empty' => array(
                     'selection'

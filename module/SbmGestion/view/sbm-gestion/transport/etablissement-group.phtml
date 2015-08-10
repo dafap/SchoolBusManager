@@ -14,7 +14,7 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-liste',
-    'page' => $this->page
+    'page' => $this->pageRetour
 ));
 $pdf = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-group-pdf',
@@ -33,13 +33,17 @@ $actions = array(
         'onclick' => $js_retour
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
+        'class' => 'fam-printer',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
     )
 );
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
 ?>
-<h1>Groupe des élèves inscrits dans un établissement</h1>
+<h1>Groupe des élèves transportés d'un établissement</h1>
 <div id="liste-wrapper">
 	<div id="liste-title">
 		<ul>
@@ -50,7 +54,7 @@ $actions = array(
 	<div id="liste-header">
 		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?php echo $this->paginator->getAdapter()->count(); ?> prises en charge.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -67,7 +71,7 @@ $actions = array(
 					<th>Classe</th>
 				</tr>
 			<?php
-foreach ($this->data as $row) {
+foreach ($data as $row) {
     echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
     foreach ($row as $item) {
         echo '<td>' . $item . '</td>';
@@ -79,8 +83,6 @@ foreach ($this->data as $row) {
 		</table>
 	</div>
 	<div id="liste-footer">
-		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
-		</p>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
 	</div>
 </div>

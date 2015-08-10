@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Formulaire de choix des tables à sauvegarder
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmInstallation/Form
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

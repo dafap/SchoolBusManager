@@ -1433,7 +1433,7 @@ class Tcpdf extends \TCPDF
                         }
                     }
                 } catch (\Exception $e) {
-                    die($sql);
+                    die(nl2br(__METHOD__ . "\n$sql"));
                     $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s\nCode erreur: %s", $sql, $e->getCode());
                     throw new Exception($message, 0, $e->getPrevious());
                 }

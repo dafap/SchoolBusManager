@@ -1,4 +1,17 @@
 <?php
+/**
+ * Module principal de l'application
+ *
+ * Propose la page d'accueil et les méthodes pour se loger
+ *
+ * @project sbm
+ * @package SbmFront
+ * @filesource Module.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 01 févr. 2014
+ * @version 2014-1
+ */
 namespace SbmFront;
 
 use Zend\Mvc\ModuleRouteListener;
