@@ -19,10 +19,16 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
 
 class Liste implements FactoryInterface
 {
 
+    /**
+     *
+     * @var \SbmCommun\Model\Db\Service\DbLibService
+     */
     private $db;
 
     private $dbAdapter;
@@ -115,9 +121,22 @@ class Liste implements FactoryInterface
      */
     public function byClasse($millesime, $classeId, $order = array('commune', 'nom', 'prenom'))
     {
+        $select = $this->selectByClasse($millesime, $classeId, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    public function paginatorByClasse($millesime, $classeId, $order = array('commune', 'nom', 'prenom'))
+    {
+        $select = $this->selectByClasse($millesime, $classeId, $order);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    private function selectByClasse($millesime, $classeId, $order)
+    {
         $select = $this->sql->select();
         $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->equalTo('classeId', $classeId);
+        $where->equalTo('s.millesime', $millesime)->equalTo('classeId', $classeId)->NEST->literal('accordR1 = 1')->or->literal('accordR2=1')->unnest();
         $select->from(array(
             'e' => $this->db->getCanonicName('eleves', 'table')
         ))
@@ -149,8 +168,7 @@ class Liste implements FactoryInterface
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ))
             ->quantifier(Select::QUANTIFIER_DISTINCT);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $select;
     }
 
     /**
@@ -164,9 +182,25 @@ class Liste implements FactoryInterface
      */
     public function byCommune($millesime, $communeId, $order = array('nom', 'prenom'))
     {
+        $select = $this->selectByCommune($millesime, $communeId, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($this->select);
+        return $statement->execute();
+    }
+
+    public function paginatorByCommune($millesime, $communeId, $order = array('nom', 'prenom'))
+    {
+        $select = $this->selectByCommune($millesime, $communeId, $order);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    private function selectByCommune($millesime, $communeId, $order)
+    {
         $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->NEST->equalTo('s.communeId', $communeId)->OR->equalTo('r.communeId', $communeId);
-        $this->select->where($where)
+        $where->equalTo('s.millesime', $millesime)
+            ->nest()
+            ->equalTo('s.communeId', $communeId)->OR->equalTo('r.communeId', $communeId)->unnest();
+        $select = clone $this->select;
+        $select->where($where)
             ->order($order)
             ->columns(array(
             'nom',
@@ -176,8 +210,7 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        return $statement->execute();
+        return $select;
     }
 
     /**
@@ -189,11 +222,25 @@ class Liste implements FactoryInterface
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function byEtablissement($millesime, $etablissementId, $order = array('commune', 'nom', 'prenom'))
+    public function byEtablissement($millesime, $etablissementId, $order = array('nom', 'prenom'))
+    {
+        $select = $this->selectByEtablissement($millesime, $etablissementId, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($this->select);
+        return $statement->execute();
+    }
+
+    public function paginatorByEtablissement($millesime, $etablissementId, $order = array('nom', 'prenom'))
+    {
+        $select = $this->selectByEtablissement($millesime, $etablissementId, $order);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    private function selectByEtablissement($millesime, $etablissementId, $order)
     {
         $where = new Where();
         $where->equalTo('s.millesime', $millesime)->equalTo('s.etablissementId', $etablissementId);
-        $this->select->where($where)
+        $select = clone $this->select;
+        $select->where($where)
             ->order($order)
             ->columns(array(
             'nom',
@@ -203,8 +250,55 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
+        return $select;
+    }
+
+    /**
+     * Renvoie la liste des élèves pour un millesime, un établissement et un service donnés
+     *
+     * @param int $millesime            
+     * @param int $etablissementId            
+     * @param string|array $order            
+     *
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function byEtablissementService($millesime, $etablissementId, $serviceId, $order = array('nom', 'prenom'))
+    {
+        $select = $this->selectByEtablissementService($millesime, $etablissementId, $serviceId, $order);
         $statement = $this->sql->prepareStatementForSqlObject($this->select);
         return $statement->execute();
+    }
+
+    public function paginatorByEtablissementService($millesime, $etablissementId, $serviceId, $order = array('nom', 'prenom'))
+    {
+        $select = $this->selectByEtablissementService($millesime, $etablissementId, $serviceId, $order);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    private function selectByEtablissementService($millesime, $etablissementId, $serviceId, $order)
+    {
+        $where = new Where();
+        $where->equalTo('s.millesime', $millesime)
+            ->equalTo('s.etablissementId', $etablissementId)
+            ->nest()
+            ->equalTo('aff.service1Id', $serviceId)->or->equalTo('aff.service2Id', $serviceId)->unnest();
+        $select = clone $this->select;
+        $select->join(array(
+            'aff' => $this->db->getCanonicName('affectations', 'table')
+        ), 's.eleveId = aff.eleveId And s.millesime = aff.millesime', array())
+            ->where($where)
+            ->order($order)
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns(array(
+            'nom',
+            'prenom',
+            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
+            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
+            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
+            'commune' => new Literal('IFNULL(d.nom, c.nom)')
+        ));
+        //die($select->getSqlString());
+        return $select;
     }
 
     /**
@@ -218,9 +312,23 @@ class Liste implements FactoryInterface
      */
     public function byService($millesime, $serviceId, $order = array('commune', 'nom', 'prenom'))
     {
+        $select = $this->selectByService($millesime, $serviceId, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    public function paginatorByService($millesime, $serviceId, $order = array('commune', 'nom', 'prenom'))
+    {
+        $select = $this->selectByService($millesime, $serviceId, $order);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    private function selectByService($millesime, $serviceId, $order)
+    {
         $where = new Where();
         $where->equalTo('s.millesime', $millesime)->NEST->equalTo('service1Id', $serviceId)->OR->equalTo('service2Id', $serviceId)->UNNEST;
-        $this->select->where($where)
+        $select = clone $this->select;
+        $select->where($where)
             ->order($order)
             ->columns(array(
             'nom',
@@ -230,8 +338,7 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        return $statement->execute();
+        return $select;
     }
 
     /**
@@ -262,6 +369,72 @@ class Liste implements FactoryInterface
     }
 
     /**
+     * Renvoie la liste des élèves pour un millesime et un tarif donnés
+     *
+     * @param int $millesime            
+     * @param int $tarifId            
+     * @param string|array $order            
+     *
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function byTarif($millesime, $tarifId, $order = array('nom', 'prenom'))
+    {
+        $select = $this->selectByTarif($millesime, $tarifId, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    public function paginatorByTarif($millesime, $tarifId, $order = array('nom', 'prenom'))
+    {
+        $select = $this->selectByTarif($millesime, $tarifId, $order);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+
+    private function selectByTarif($millesime, $tarifId, $order)
+    {
+        $select = $this->sql->select();
+        $where = new Where();
+        $where->equalTo('s.millesime', $millesime)->equalTo('tarifId', $tarifId);
+        $select->from(array(
+            'e' => $this->db->getCanonicName('eleves', 'table')
+        ))
+            ->join(array(
+            's' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'e.eleveId=s.eleveId', array())
+            ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 's.etablissementId = eta.etablissementId', array(
+            'etablissement' => 'nom'
+        ))
+            ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 's.classeId = cla.classeId', array(
+            'classe' => 'nom'
+        ))
+            ->join(array(
+            'r' => $this->db->getCanonicName('responsables', 'table')
+        ), 'r.responsableId=e.responsable1Id OR r.responsableId=e.responsable2Id', array())
+            ->join(array(
+            'c' => $this->db->getCanonicName('communes', 'table')
+        ), 'r.communeId=c.communeId', array())
+            ->join(array(
+            'd' => $this->db->getCanonicName('communes', 'table')
+        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
+            ->where($where)
+            ->order($order)
+            ->columns(array(
+            'nom',
+            'prenom',
+            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
+            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
+            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
+            'commune' => new Literal('IFNULL(d.nom, c.nom)')
+        ))
+            ->quantifier(Select::QUANTIFIER_DISTINCT);
+        return $select;
+    }
+
+    /**
      * Renvoie la liste des élèves pour un millesime et un transporteur donnés
      *
      * @param int $millesime            
@@ -272,9 +445,23 @@ class Liste implements FactoryInterface
      */
     public function byTransporteur($millesime, $transporteurId, $order = array('commune', 'nom', 'prenom'))
     {
+        $select = $this->selectByTransporteur($millesime, $transporteurId, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+    
+    public function paginatorByTransporteur($millesime, $transporteurId, $order = array('commune', 'nom', 'prenom'))
+    {
+        $select = $this->selectByTransporteur($millesime, $transporteurId, $order);
+        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+    }
+    
+    private function selectByTransporteur($millesime, $transporteurId, $order)
+    {
         $where = new Where();
         $where->equalTo('s.millesime', $millesime)->NEST->equalTo('s1.transporteurId', $transporteurId)->OR->equalTo('s2.transporteurId', $transporteurId)->UNNEST;
-        $this->select->join(array(
+        $select = clone $this->select;
+        $select->join(array(
             's1' => $this->db->getCanonicName('services', 'table')
         ), 's1.serviceId=a.service1Id', array(), Select::JOIN_LEFT)
             ->join(array(
@@ -290,9 +477,8 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
-        ;
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        return $statement->execute();
+        return $select;
+        
     }
 
     /**

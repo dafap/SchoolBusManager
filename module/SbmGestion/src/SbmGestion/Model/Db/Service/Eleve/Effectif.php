@@ -243,6 +243,19 @@ class Effectif implements FactoryInterface
         }
         return $result;
     }
+    
+    public function byTarif()
+    {
+        // SELECT tarifId, count(*) FROM sbm_t_scolarites GROUP BY tarifId
+        $result = array();
+        $rowset = $this->requeteCl('tarifId', array(), array(
+            'tarifId'
+        ));
+        foreach ($rowset as $row) {
+            $result[$row['tarifId']] = $row['effectif'];
+        }
+        return $result;
+    }
 
     public function transporteurByService($transporteurId)
     {

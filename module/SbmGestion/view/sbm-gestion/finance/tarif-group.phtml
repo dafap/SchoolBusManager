@@ -8,36 +8,82 @@
  * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2014
- * @version 2014-1
+ * @date 10 août 2015
+ * @version 2015-1
  */
-$retour = $this->url('sbmgestion/finance', array(
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmgestion/finance', array(
     'action' => 'tarif-liste',
+    'page' => $this->pageRetour
+));
+$url_pdf = $this->url('sbmgestion/finance', array(
+    'action' => 'tarif-group-pdf',
     'page' => $this->page
 ));
+$hiddens = array(
+    'tarifId' => $this->tarifId
+);
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ),
+    'rapports' => array(
+        'class' => 'fam-printer',
+        'formaction' => $url_pdf,
+        'title' => 'Rapports à imprimer'
+    )
+);
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
 ?>
 <h1>Groupe des élèves inscrits au tarif</h1>
-<div class="groupe-wrapper">
-	<div class="header-wrapper">
+<div class="liste-wrapper">
+	<div class="liste-title">
 		<ul>
-			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
-			<li><?php echo $fmt->formatCurrency($this->data->montant, 'EUR'); ?></li>
+			<li>Tarif : <?php echo $this->escapeHtml($this->tarif->nom); ?></li>
+			<li>Montant : <?php echo $fmt->formatCurrency($this->tarif->montant, 'EUR'); ?></li>
 		</ul>
 	</div>
-	<div class="liste-wrapper">
-		<div class="zone-actions">
-			<a href="<?php echo $retour; ?>" class="bouton"
-				title="retour à la liste des tarifs"><i class="fam-door-out"></i>
-				Retour</a>
-		</div>
-		<table class="liste-inner">
+	<div class="liste-header">
+	    <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<p>
+			<em>Il y a <?php echo $this->paginator->getAdapter()->count(); ?> élèves.</em>
+		</p>
+	</div>
+	<div id="liste-inner">
+		<table class="eleves">
 			<tbody>
+				<tr>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Adresse</th>
+					<th>Adresse</th>
+					<th>Code postal</th>
+					<th>Commune</th>
+					<th>Etablissement</th>
+					<th>Classe</th>
+				</tr>
+			<?php
+foreach ($data as $row) {
+    echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
+    foreach ($row as $item) {
+        echo '<td>' . $item . '</td>';
+    }
+    echo '</tr>';
+}
+?>
 			</tbody>
 		</table>
-
-		<p>
-			<em>A faire</em>
-		</p>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
 	</div>
 </div>

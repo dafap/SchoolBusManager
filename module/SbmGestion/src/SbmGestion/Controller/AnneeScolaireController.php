@@ -1,7 +1,7 @@
 <?php
 /**
  * Controller principal du module SbmGestion
- *
+ * Méthodes utilisées pour la gestion de l'année scolaire
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller

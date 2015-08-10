@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Controller permettant de créer les cartes etablissements et stations
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmCartographie/Controller
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

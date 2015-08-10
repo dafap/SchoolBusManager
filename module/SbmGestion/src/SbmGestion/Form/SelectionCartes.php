@@ -2,8 +2,6 @@
 /**
  * Page de sélection du lot de cartes à créer
  *
- * Description longue du fichier s'il y en a une
- * 
  * @project sbm
  * @package SbmGestion/Form
  * @filesource SelectionCartes.php

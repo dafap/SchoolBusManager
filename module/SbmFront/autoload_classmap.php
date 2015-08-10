@@ -14,7 +14,6 @@ return array(
     'SbmFront\Form\ModifCompte'                     => __DIR__ . '/src/SbmFront/Form/ModifCompte.php',
     'SbmFront\Model\Exception'                      => __DIR__ . '/src/SbmFront/Model/Exception.php',
     'SbmFront\Model\Mdp'                            => __DIR__ . '/src/SbmFront/Model/Mdp.php',
-    'SbmFront\Model\SendEmail'                      => __DIR__ . '/src/SbmFront/Model/SendEmail.php',
     'SbmFront\Model\Validator\Mdp'                  => __DIR__ . '/src/SbmFront/Model/Validator/Mdp.php',
     'SbmFront\View\Helper\Bienvenue'                => __DIR__ . '/src/SbmFront/View/Helper/Bienvenue.php',
 );

@@ -9,7 +9,6 @@ return array(
     'SbmCartographie\ConvertSystemGeodetic\Ellipsoide\InternationalHayford1909' => __DIR__ . '/src/SbmCartographie/ConvertSystemGeodetic/Ellipsoide/InternationalHayford1909.php',
     'SbmCartographie\ConvertSystemGeodetic\Ellipsoide\Wgs84'                    => __DIR__ . '/src/SbmCartographie/ConvertSystemGeodetic/Ellipsoide/Wgs84.php',
     'SbmCartographie\ConvertSystemGeodetic\Exception'                           => __DIR__ . '/src/SbmCartographie/ConvertSystemGeodetic/Exception.php',
-    'ConvertGeodetic\Model\LambertZone'                                         => __DIR__ . '/src/SbmCartographie/ConvertSystemGeodetic/LambertZone.php',
     'SbmCartographie\ConvertSystemGeodetic\Projection\AbstractProjection'       => __DIR__ . '/src/SbmCartographie/ConvertSystemGeodetic/Projection/AbstractProjection.php',
     'SbmCartographie\ConvertSystemGeodetic\Projection\Lambert06CC9zones'        => __DIR__ . '/src/SbmCartographie/ConvertSystemGeodetic/Projection/Lambert06CC9zones.php',
     'SbmCartographie\ConvertSystemGeodetic\Projection\Lambert93'                => __DIR__ . '/src/SbmCartographie/ConvertSystemGeodetic/Projection/Lambert93.php',
@@ -20,4 +19,5 @@ return array(
     'SbmCartographie\GoogleMaps\Geocoder'                                       => __DIR__ . '/src/SbmCartographie/GoogleMaps/Geocoder.php',
     'SbmCartographie\Model\Exception'                                           => __DIR__ . '/src/SbmCartographie/Model/Exception.php',
     'SbmCartographie\Model\Point'                                               => __DIR__ . '/src/SbmCartographie/Model/Point.php',
+    'SbmCartographie\Model\Projection'                                               => __DIR__ . '/src/SbmCartographie/Model/Projection.php',
 );

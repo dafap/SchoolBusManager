@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * Exception
  *
  *
  * @project sbm

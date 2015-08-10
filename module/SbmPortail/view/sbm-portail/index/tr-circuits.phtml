@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Détail d'un circuit pour les transporteurs : points d'arrêt, horaires, inscrits
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/index
  * @filesource tr-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -38,7 +36,7 @@ $actions = array(
 <h1>Détail du circuit <?php echo $this->escapeHtml($this->service->serviceId); ?> - <?php echo $this->escapeHtml($this->service->nom); ?></h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');

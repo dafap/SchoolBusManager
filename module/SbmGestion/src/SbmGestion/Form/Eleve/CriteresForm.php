@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Formulaire des critères pour filtrer la liste des élèves
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmGestion/Form/Eleve
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

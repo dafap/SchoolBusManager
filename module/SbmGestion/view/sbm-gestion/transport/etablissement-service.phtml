@@ -14,17 +14,25 @@
 use SbmCommun\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$ajouter = $this->url('sbmgestion/transport', array(
+$url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service-ajout',
     'page' => $this->page
 ));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_pdf = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service-pdf',
     'page' => $this->page
 ));
-$retour = $this->url('sbmgestion/transport', array(
+$url_retour = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service',
     'page' => $this->page
+));
+$url_delete = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service-suppr',
+    'page' => $this->page
+));
+$url_group = $this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service-group',
+    'id' => $this->page
 ));
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
@@ -37,21 +45,25 @@ $hiddens = array(
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
-        'formaction' => $pdf,
+        'class' => 'fam-printer',
+        'formaction' => $url_pdf,
         'title' => 'Rapports à imprimer'
     ),
     'ajouter' => array(
         'class' => 'fam-add',
-        'formaction' => $ajouter,
+        'formaction' => $url_ajouter,
         'title' => 'Nouveau service'
     )
 );
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
 ?>
 <h1>Liste des services
 <?php echo substr($this->etablissement->nom, 0, 5) == 'ECOLE' ? ' de l\'' : ' du '?>
@@ -60,7 +72,7 @@ $actions = array(
 </h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -82,12 +94,14 @@ echo $this->flashMessenger()->render('default');
 					<th>Inscrits</th>
 					<th></th>
 				</tr>
-            <?php foreach($this->data as $test => $service): ?>
+            <?php foreach($data as $test => $service): ?>
             <?php $fmt?>
             <?php $nbInscrits = StdLib::getParamR(array($service->serviceId, 'total'), $this->t_nb_inscrits, 0); ?>
             <?php $exces = $service->serv_nbPlaces < $nbInscrits; ?>
                 <tr
-					class="<?php echo $this->cycle(array(
+					class="<?php
+                
+                echo $this->cycle(array(
                     "even",
                     "odd"
                 ))->next();
@@ -103,14 +117,6 @@ echo $this->flashMessenger()->render('default');
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="boutons">
             <?php
-                $url_delete = $this->url('sbmgestion/transport', array(
-                    'action' => 'etablissement-service-suppr',
-                    'page' => $this->page
-                ));
-                $url_group = $this->url('sbmgestion/transport', array(
-                    'action' => 'etablissement-service-group',
-                    'page' => $this->page
-                ));
                 $hiddens = array(
                     'etablissementId' => $etablissement->etablissementId,
                     'serviceId' => $service->serviceId,
@@ -136,5 +142,7 @@ echo $this->flashMessenger()->render('default');
             </tbody>
 		</table>
 	</div>
-	<div id="liste-footer"></div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+	</div>
 </div>

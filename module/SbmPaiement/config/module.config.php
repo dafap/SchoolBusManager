@@ -41,14 +41,14 @@ return array(
                     'liste' => array(
                         'allow' => array(
                             'roles' => array(
-                                'consultation'
+                                'secretariat'
                             )
                         )
                     ),
                     'voir' => array(
                         'allow' => array(
                             'roles' => array(
-                                'consultation'
+                                'secretariat'
                             )
                         )
                     )

@@ -11,15 +11,15 @@
  * @version 2015-1
  */
 use SbmCommun\Model\StdLib;
- 
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_pdf = $this->url('sbmgestion/transport', array(
     'action' => 'transporteur-service-pdf',
     'page' => $this->page
 ));
-$retour = $this->url('sbmgestion/transport', array(
+$url_retour = $this->url('sbmgestion/transport', array(
     'action' => 'transporteur-liste',
-    'page' => $this->page
+    'page' => $this->pageRetour
 ));
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
@@ -30,16 +30,20 @@ $hiddens = array(
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
-        'formaction' => $pdf,
+        'class' => 'fam-printer',
+        'formaction' => $url_pdf,
         'title' => 'Rapports à imprimer'
     )
 );
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
 ?>
 <h1>Liste des services d'un transporteur</h1>
 <div id="liste-wrapper">
@@ -49,9 +53,9 @@ $actions = array(
 		</ul>
 	</div>
 	<div id="liste-header" class="clearfix">
-		<div><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> services.</em>
+			<em>Il y a <?php echo $this->paginator->getAdapter()->count(); ?> services.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -65,12 +69,14 @@ $actions = array(
 					<th>Capacité</th>
 					<th>Inscrits</th>
 				</tr>
-            <?php foreach($this->data as $test => $service): ?>
+            <?php foreach($data as $test => $service): ?>
             <?php $fmt?>
             <?php $nbInscrits = StdLib::getParamR(array($service->serviceId, 'total'), $this->t_nb_inscrits, 0); ?>
             <?php $exces = $service->nbPlaces < $nbInscrits; ?>
                 <tr
-					class="<?php echo $this->cycle(array(
+					class="<?php
+                
+echo $this->cycle(array(
                     "even",
                     "odd"
                 ))->next();
@@ -89,8 +95,6 @@ $actions = array(
 		</table>
 	</div>
 	<div id="liste-footer">
-		<p>
-			<em>Il y a <?php echo count($this->data); ?> services.</em>
-		</p>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
 	</div>
 </div>

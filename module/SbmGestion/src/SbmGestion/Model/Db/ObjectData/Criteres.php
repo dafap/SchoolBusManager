@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Extension de la classe SbmCommun\Model\Db\ObjectData pour surcharger le méthode getWhere()
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmGestion/Model/Db/ObjectData
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

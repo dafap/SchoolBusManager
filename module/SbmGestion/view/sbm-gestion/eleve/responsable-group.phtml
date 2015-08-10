@@ -46,7 +46,7 @@ $actions = array(
         'onclick' => $js_retour
     ),
     'rapports' => array(
-        'class' => 'fam-application-view-list',
+        'class' => 'fam-printer',
         'formaction' => $url_origine,//$url_pdf,
         'title' => 'Rapports à imprimer'
     ),
@@ -74,7 +74,7 @@ echo $this->flashMessenger()->render('default');
 		</ul>
 	</div>
 	<div id="liste-header">
-		<div><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 	</div>
 	<div id="liste-inner">
 	<?php foreach ($this->data as $key => $liste) : ?>
