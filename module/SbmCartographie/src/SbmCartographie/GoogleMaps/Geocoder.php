@@ -1,11 +1,9 @@
 <?php
 /**
- * Description courte du fichier
+ * Classe d'utilisation de l'API geocoder de google
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmCartographie/GoogleMaps
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

@@ -1,7 +1,7 @@
 <?php
 /**
  * Controller principal du module SbmGestion
- *
+ * Méthodes utilisées pour la gestion financière
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller
@@ -112,9 +112,13 @@ class FinanceController extends AbstractActionController
         if ($responsableId == - 1) {
             // pas de $responsableId - gestion de tous les paiements
             $criteres_form = new CriteresForm('paiements');
-            $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Libelles')->caisse();
+            $value_options = $this->getServiceLocator()
+                ->get('Sbm\Db\Select\Libelles')
+                ->caisse();
             $criteres_form->setValueOptions('codeCaisse', $value_options);
-            $value_options = $this->getServiceLocator()->get('Sbm\Db\Select\Libelles')->modeDePaiement();
+            $value_options = $this->getServiceLocator()
+                ->get('Sbm\Db\Select\Libelles')
+                ->modeDePaiement();
             $criteres_form->setValueOptions('codeModeDePaiement', $value_options);
             $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
             // récupère les données du post pour les mettre en session si ce n'est pas un retour de niveau 2
@@ -149,7 +153,9 @@ class FinanceController extends AbstractActionController
             $where = new Where();
             $where->expression('responsableId = ?', $responsableId);
             if (array_key_exists('nbPreinscrits', $args)) {
-                $nomPrenom = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables')->getNomPrenom($responsableId, true);
+                $nomPrenom = $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Responsables')
+                    ->getNomPrenom($responsableId, true);
                 $nbInscrits = $args['nbInscrits'];
                 $nbPreinscrits = $args['nbPreinscrits'];
             } else {
@@ -239,9 +245,11 @@ class FinanceController extends AbstractActionController
             'page' => $this->params('page', 1)
         )))
             ->setValueOptions('codeCaisse', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Libelles')->caisse())
+            ->get('Sbm\Db\Select\Libelles')
+            ->caisse())
             ->setValueOptions('codeModeDePaiement', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Libelles')->modeDePaiement())
+            ->get('Sbm\Db\Select\Libelles')
+            ->modeDePaiement())
             ->setMaxLength($db->getMaxLengthArray('paiements', 'table'));
         if (! $hidden_responsableId) {
             $form->setValueOptions('responsableId', $this->getServiceLocator()
@@ -309,9 +317,11 @@ class FinanceController extends AbstractActionController
             'page' => $currentPage
         )))
             ->setValueOptions('codeCaisse', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Libelles')->caisse())
+            ->get('Sbm\Db\Select\Libelles')
+            ->caisse())
             ->setValueOptions('codeModeDePaiement', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Libelles')->modeDePaiement());
+            ->get('Sbm\Db\Select\Libelles')
+            ->modeDePaiement());
         if (! $hidden_responsableId) {
             $form->setValueOptions('responsableId', $this->getServiceLocator()
                 ->get('Sbm\Db\Select\Responsables'));
@@ -641,13 +651,43 @@ class FinanceController extends AbstractActionController
      */
     public function tarifGroupAction()
     {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+        } else {
+            $args = $prg;            
+            $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
         $currentPage = $this->params('page', 1);
-        $tarifId = $this->params('id', - 1); // GET
-        $tableTarifs = $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs');
+        $pageRetour = $this->params('id', -1);
+        if ($pageRetour == -1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $tarifId = StdLib::getParam('tarifId', $args, - 1);
+        if ($tarifId == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/finance', array(
+                'action' => 'tarif-liste',
+                'page' => $pageRetour
+            ));
+        }
         return new ViewModel(array(
-            'data' => $tableTarifs->getRecord($tarifId),
-            // 'paginator' => $table_eleves->paginator(),
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Eleve\Liste')
+                ->paginatorByTarif($this->getFromSession('millesime'), $tarifId, array(
+                'nom',
+                'prenom'
+            )),
+            'nb_pagination' => $this->getNbPagination('nb_eleves', 15),
+            'tarif' => $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Tarifs')
+                ->getRecord($tarifId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'tarifId' => $tarifId
         ));
     }
@@ -671,8 +711,8 @@ class FinanceController extends AbstractActionController
         $call_pdf->setParam('documentId', 'Liste des tarifs');
         if (! empty($criteres)) {
             $call_pdf->setParam('where', $criteres_obj->getWhere())
-            ->setParam('criteres', $criteres)
-            ->setParam('strict', array(
+                ->setParam('criteres', $criteres)
+                ->setParam('strict', array(
                 'empty' => array(),
                 'not empty' => array(
                     'rythme',
@@ -685,5 +725,10 @@ class FinanceController extends AbstractActionController
         $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+    }
+    
+    public function tarifGroupPdfAction()
+    {
+        // va chercher le tarifId puis appelle une liste pdf pour les élèves avec ce filtre
     }
 }

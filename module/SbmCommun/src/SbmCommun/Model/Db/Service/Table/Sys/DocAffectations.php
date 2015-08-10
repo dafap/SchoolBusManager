@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * Gestion de la table `docaffectations`
  *
  *
  * @project sbm

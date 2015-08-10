@@ -64,7 +64,7 @@ echo $this->flashMessenger()->render('default');
 			<span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($this->nbPreinscrits * $this->tarif, 'EUR');?></span>
 		</p>
 <?php endif; ?>	
-		<div class="float-left">
+		<div class="menu float-left">
 <?php
 $url_retour = empty($this->url2_retour) ? $this->url1_retour : $this->url2_retour;
 $url_ajouter = $this->url('sbmgestion/finance', array(
@@ -72,7 +72,7 @@ $url_ajouter = $this->url('sbmgestion/finance', array(
     'page' => $this->page
 ));
 $url_imprimer = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-imprimer',
+    'action' => 'paiement-pdf',
     'page' => $this->page
 ));
 $url_edit = $this->url('sbmgestion/finance', array(
@@ -110,10 +110,10 @@ $actions = array(
         'onclick' => $js_retour,
         'title' => 'Retour'
     ),
-    'rapport' => array(
-        'class' => 'fam-report',
-        'formaction' => $url_imprimer,
-        'title' => 'Rapports à imprimer'
+    'rapports' => array(
+        'label' => true,
+        'class' => 'fam-printer',
+        'menu' => array()
     ),
     'ajouter' => array(
         'class' => 'fam-add',

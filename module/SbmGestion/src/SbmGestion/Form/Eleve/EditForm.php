@@ -2,8 +2,6 @@
 /**
  * Formulaire de modification d'un élève
  *
- * Description longue du fichier s'il y en a une
- * 
  * @project sbm
  * @package SbmGestion/Form/Eleve
  * @filesource EditForm.php

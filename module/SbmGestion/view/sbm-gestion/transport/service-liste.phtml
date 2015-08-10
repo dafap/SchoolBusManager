@@ -29,30 +29,47 @@ $jsTrigger = '';
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $services = $this->paginator->getCurrentItems();
-$ajouter = $this->url('sbmgestion/transport', array(
+$url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'service-ajout',
     'page' => $this->page
 ));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_pdf = $this->url('sbmgestion/transport', array(
     'action' => 'service-pdf',
     'page' => $this->page
 ));
-$retour = $this->url('sbmgestion/transport');
+$url_retour = $this->url('sbmgestion/transport');
+
+$url_edit = $this->url('sbmgestion/transport', array(
+    'action' => 'service-edit',
+    'page' => $this->page
+));
+$url_delete = $this->url('sbmgestion/transport', array(
+    'action' => 'service-suppr',
+    'page' => $this->page
+));
+$url_relation = $this->url('sbmgestion/transport', array(
+    'action' => 'service-etablissement',
+    'id' => $this->page
+));
+$url_group = $this->url('sbmgestion/transport', array(
+    'action' => 'service-group',
+    'id' => $this->page
+));
 $hiddens = array();
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_retour,
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-report',
-        'formaction' => $pdf,
+        'class' => 'fam-printer',
+        'formaction' => $url_pdf,
         'title' => 'Rapports à imprimer'
     ),
     'ajouter' => array(
         'class' => 'fam-add',
-        'formaction' => $ajouter,
+        'formaction' => $url_ajouter,
         'title' => 'Nouveau service'
     )
 );
@@ -60,7 +77,7 @@ $actions = array(
 <h1>Liste des services</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -125,24 +142,9 @@ EOT;
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $service->serviceId, $service->selection)?></td>
 					<td class="boutons">
             <?php
-                $url_edit = $this->url('sbmgestion/transport', array(
-                    'action' => 'service-edit',
-                    'page' => $this->page
-                ));
-                $url_delete = $this->url('sbmgestion/transport', array(
-                    'action' => 'service-suppr',
-                    'page' => $this->page
-                ));
-                $url_relation = $this->url('sbmgestion/transport', array(
-                    'action' => 'service-etablissement',
-                    'page' => $this->page
-                ));
-                $url_group = $this->url('sbmgestion/transport', array(
-                    'action' => 'service-group',
-                    'page' => $this->page
-                ));
                 $hiddens = array(
-                    'serviceId' => $service->serviceId
+                    'serviceId' => $service->serviceId,
+                    'origine' => 'service-liste'
                 );
                 $buttons = array(
                     'modifier' => array(

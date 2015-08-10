@@ -131,9 +131,9 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-report',
-        'formaction' => $url_rapports,
-        'title' => 'Rapports à imprimer'
+        'label' => true,
+        'class' => 'fam-printer',
+        'menu' => array()
     ),
     'cartes' => array(
         'class' => 'fam-vcard',
@@ -155,7 +155,7 @@ $actions = array(
 <h1>Liste des élèves</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');

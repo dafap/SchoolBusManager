@@ -34,7 +34,7 @@ $actions = array(
 	<p>Vous avez demandé de créer un compte pour <?php echo $this->info;?>.</p>
 <?php if (is_null($this->form)) : ?>
 <p><?php echo $this->msg; ?></p>
-	<div><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 <?php else : ?>
 <p>Confirmez-vous ?</p>
 <?php

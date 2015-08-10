@@ -32,9 +32,9 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'class' => 'fam-report',
-        'formaction' => $pdf,
-        'title' => 'Rapports à imprimer'
+        'label' => true,
+        'class' => 'fam-printer',
+        'menu' => array()
     ),
     'ajouter' => array(
         'class' => 'fam-add',
@@ -46,7 +46,7 @@ $actions = array(
 <h1>Liste des libellés de l'application</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-	    <div class="float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	    <div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 	    <div class="flashMessenger float-right"><?php 
 		    echo $this->flashMessenger()->render('success');
 		    echo $this->flashMessenger()->render('warning');

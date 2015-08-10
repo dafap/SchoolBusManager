@@ -98,10 +98,11 @@ return array(
                     'eleve' => array( // gestion des élèves
                         'type' => 'segment',
                         'options' => array(
-                            'route' => '/eleve[/:action[/:page][/:id]]',
+                            'route' => '/eleve[/:action[/page/:page][/id/:id]]',
                             'constraints' => array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'page' => '[0-9]+'
+                                'page' => '[0-9]+',
+                                'id' => '[0-9]+'
                             ),
                             'defaults' => array(
                                 'module' => 'SbmGestion',
@@ -116,7 +117,8 @@ return array(
                             'route' => '/gestioneleve[/:action[/:page][/:id]]',
                             'constraints' => array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'page' => '[0-9]+'
+                                'page' => '[0-9]+',
+                                'id' => '[0-9]+'
                             ),
                             'defaults' => array(
                                 'module' => 'SbmGestion',
@@ -128,10 +130,11 @@ return array(
                     'finance' => array( // gestion financière
                         'type' => 'segment',
                         'options' => array(
-                            'route' => '/finance[/:action[/:page][/:id]]',
+                            'route' => '/finance[/:action[/page/:page][/id/:id]]',
                             'constraints' => array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'page' => '[0-9]+'
+                                'page' => '[0-9]+',
+                                'id' => '[0-9]+'
                             ),
                             'defaults' => array(
                                 'module' => 'SbmGestion',
@@ -143,10 +146,11 @@ return array(
                     'transport' => array( // gestion des données du réseau de transport
                         'type' => 'segment',
                         'options' => array(
-                            'route' => '/transport[/:action[/:page][/:id]]',
+                            'route' => '/transport[/:action[/page/:page][/id/:id]]',
                             'constraints' => array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'page' => '[0-9]+'
+                                'page' => '[0-9]+',
+                                'id' => '[0-9]+'
                             ),
                             'defaults' => array(
                                 'module' => 'SbmGestion',
@@ -187,9 +191,7 @@ return array(
                         'options' => array(
                             'route' => '/config[/:action]',
                             'constraints' => array(
-                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'millesime' => '[0-9]{4}',
-                                'id' => '[0-9]+'
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
                             ),
                             'defaults' => array(
                                 'module' => 'SbmGestion',

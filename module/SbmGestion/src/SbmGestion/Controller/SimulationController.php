@@ -1,7 +1,7 @@
 <?php
 /**
  * Controller principal du module SbmGestion
- *
+ * Méthodes utilisées pour réaliser une simulation
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller

@@ -1,16 +1,14 @@
 <?php
 /**
- * Description courte du fichier
+ * Aide de vue pour afficher le menu du haut (année scolaire, bienvenue, logout)
  *
- * Description longue du fichier s'il y en a une
- * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmFront/View/Helper
  * @filesource Bienvenue.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 févr. 2015
- * @version 2015-1
+ * @date 09 août 2015
+ * @version 2015-2
  */
 namespace SbmFront\View\Helper;
 
@@ -48,10 +46,10 @@ class Bienvenue extends AbstractHelper
             $url_email = $view->url($route, array('action' => 'email-change'));
             $url_msg = $view->url($route, array('action' => 'message'));
             return <<<EOT
-<div id="bienvenue" class="bienvenue">
-   <ul id="menu">
+<div id="menu-haut" class="menu float-right">
+   <ul class="menubar">
        <li class="annee-scolaire">Année scolaire $annee_scolaire</li>
-       <li class="bienvenue">Bienvenue $bienvenue
+       <li class="onglet">Bienvenue $bienvenue
        <ul>
            <li><a href="$url_home">Retour à mon espace</a></li> 
            <li><a href="$url_compte">Mon compte</a></li>

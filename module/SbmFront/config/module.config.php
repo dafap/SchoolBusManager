@@ -113,7 +113,9 @@ return array(
     ),
     'service_manager' => array(
         'invokables' => array(),
-        'factories' => array()
+        'factories' => array(
+            'Navigation' => 'SbmFront\Model\Navigation\Navigation'
+        )
     ),
     'router' => array(
         'routes' => array(

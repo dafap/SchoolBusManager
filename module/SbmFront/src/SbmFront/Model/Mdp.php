@@ -2,8 +2,6 @@
 /**
  * Les méthodes sur les mots de passe
  *
- * Description longue du fichier s'il y en a une
- * 
  * @project sbm
  * @package SbmFront\Model
  * @filesource Mdp.php

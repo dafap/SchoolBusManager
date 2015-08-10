@@ -27,10 +27,12 @@ var_dump($this->args);
 echo 'X = ' . $this->x;
 echo '</div>';
 ?>
-<form method="post">
-<div class="centre">
-<a href="<?php echo $this->url('home', array('action'=> 'test', 'param' => 'signup'));?>">
-<input type="submit" name="signup" value="Créer un compte" id="sbm-signup" class="default sbm-signup">
-</a>
-</div>
-</form>
+<h1>Page des tests</h1>
+<h3>Menu :</h3>
+<div class="menu clearfix">
+<ul class="menubar">
+<li class="onglet">Impressions
+<?php echo $this->navigation($this->monMenu)->menu()?>
+</li>
+</ul></div>
+<p>Suite du contenu de la page ...</p>

@@ -79,7 +79,8 @@ $buttons = array(
 				<li>Numéro du tableau: <?php echo $this->document['ordinal_table'];?></li>
 				<li>Source du document: <?php echo $this->document['recordSource'];?></li>
 			</ul>
-            <?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+            <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+        </div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');

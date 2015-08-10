@@ -175,6 +175,7 @@ echo $this->headScript();
 			<?php echo $this->bienvenue(); ?>
 			<!-- corps de page -->
 			<div class="content">
+			<?php  //echo $this->navigation('navigation')->menu()->setPartial('menu')->render(); //test menu dynamique ?> 
 			<?php echo $this->layout()->content; ?>
 			</div>
 

@@ -1,11 +1,11 @@
 <?php
 /**
- * Description courte du fichier
+ * Objet de description de la carte de transport
  *
- * Description longue du fichier s'il y en a une
+ * Utilisé dans Tcpdf pour le templateDocBodyMethod3
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmPdf/Model
  * @filesource Carte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
