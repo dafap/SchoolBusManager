@@ -130,6 +130,8 @@ echo $this->flashMessenger()->render('default');
 				</tr>
         <?php foreach($eleves as $test => $eleve): ?>
         <?php
+            // echo '<pre>';
+            // die(print_r($eleve));
             // responsable
             $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable']), ENT_QUOTES, 'utf-8', false);
             $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', array(
@@ -216,3 +218,4 @@ if (! is_null($this->criteres_form)) {
 ?>
 	    </div>
 	</div>
+</div>
