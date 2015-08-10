@@ -332,19 +332,12 @@ class IndexController extends AbstractActionController
                 $categorie = 3;
                 break;
             case 200:
+            default:
+                $categorie = 200;
                 $where = $criteres_obj->getWhere();
                 $paginator = $this->getServiceLocator()
                     ->get('Sbm\Db\Query\AffectationsServicesStations')
                     ->paginatorScolaritesR($where, array(
-                    'nom',
-                    'prenom'
-                ));
-                break;
-            default:
-                $categorie = 200;
-                $paginator = $this->getServiceLocator()
-                    ->get('Sbm\Db\Query\ElevesResponsables')
-                    ->paginatorScolaritesR2($criteres_obj->getWhere(), array(
                     'nom',
                     'prenom'
                 ));
