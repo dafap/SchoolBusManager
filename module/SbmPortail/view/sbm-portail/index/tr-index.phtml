@@ -74,7 +74,7 @@ echo $this->flashMessenger()->render('default');
 				<tr>
 					<td><?php echo $service->serviceId;?></td>
 					<td><?php echo $service->nom;?></td>
-					<td class="effectif"><?php echo $this->statServices[$service->serviceId]['total'];?></td>
+					<td class="effectif"><?php echo empty($this->statServices[$service->serviceId]['total']) ? 0 : $this->statServices[$service->serviceId]['total'];?></td>
 					<td><?php echo $this->listeLigneActions($service->serviceId, $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>				

@@ -19,5 +19,5 @@ return array(
     'SbmCartographie\GoogleMaps\Geocoder'                                       => __DIR__ . '/src/SbmCartographie/GoogleMaps/Geocoder.php',
     'SbmCartographie\Model\Exception'                                           => __DIR__ . '/src/SbmCartographie/Model/Exception.php',
     'SbmCartographie\Model\Point'                                               => __DIR__ . '/src/SbmCartographie/Model/Point.php',
-    'SbmCartographie\Model\Projection'                                               => __DIR__ . '/src/SbmCartographie/Model/Projection.php',
+    'SbmCartographie\Model\Projection'                                          => __DIR__ . '/src/SbmCartographie/Model/Projection.php',
 );
