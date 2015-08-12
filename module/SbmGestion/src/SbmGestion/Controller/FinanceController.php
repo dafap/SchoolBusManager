@@ -29,6 +29,7 @@ use Zend\View\View;
 use SbmGestion\Form\FinancePaiementSuppr;
 use SbmCommun\Form\SbmCommun\Form;
 use SbmCommun\Model\StdLib;
+use SbmCommun\Model\DateLib;
 use DafapSession\Model\Session;
 
 class FinanceController extends AbstractActionController
@@ -47,7 +48,50 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        return new ViewModel();
+        $millesime = Session::get('millesime');
+        $tPaiements = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements');
+        $tLibelles = $this->getServiceLocator()->get('Sbm\Db\System\Libelles');
+        $codeCheques = $tLibelles->getCode('ModeDePaiement', 'chèque');
+        $codeEspeces = $tLibelles->getCode('ModeDePaiement', 'espèces');
+        $codeCB = $tLibelles->getCode('ModeDePaiement', 'CB');
+        $codeTitres = $tLibelles->getCode('ModeDePaiement', 'Titre individuel');
+        $codeRegisseur = $tLibelles->getCode('Caisse', 'régisseur');
+        $codeComptable = $tLibelles->getCode('Caisse', 'comptable');
+        $codeDft =$tLibelles->getCode('Caisse', 'dft');
+        return new ViewModel(array(
+            'millesime' => $millesime,
+            'dateBordereauCheques' => $tPaiements->dateDernierBordereau($codeCheques),
+            'datePaiementCheques' => date('Y-m-d'),
+            'dateBordereauEspeces' => $tPaiements->dateDernierBordereau($codeEspeces),
+            'datePaiementEspeces' => date('Y-m-d'),
+            'dateBordereauCB' => $tPaiements->dateDernierBordereau($codeCB),
+            'datePaiementCB' => date('Y-m-d'),
+            'encoursCheques' => $tPaiements->sommeBordereau($codeCheques),
+            'encoursEspeces' => $tPaiements->sommeBordereau($codeEspeces),
+            'encoursCB' => $tPaiements->sommeBordereau($codeCB),
+            'encoursTotal' => $tPaiements->sommeBordereau(null),
+            'asCheques' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur, $codeCheques),
+            'asEspeces' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur, $codeEspeces),
+            'asRegie' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur),
+            'asDft' => $tPaiements->totalAnneeScolaire($millesime, $codeDft),
+            'asComptable' => $tPaiements->totalAnneeScolaire($millesime, $codeComptable),
+            'asTotal' => $tPaiements->totalAnneeScolaire($millesime),
+            'montantCheques1' => $tPaiements->totalExercice($millesime, $codeRegisseur, $codeCheques),
+            'montantEspeces1' => $tPaiements->totalExercice($millesime, $codeRegisseur, $codeEspeces),
+            'totaRegie1' => $tPaiements->totalExercice($millesime, $codeRegisseur),
+            'totalDft1' => $tPaiements->totalExercice($millesime, $codeDft),
+            'totalComptable1' => $tPaiements->totalExercice($millesime, $codeComptable),
+            'total1' => $tPaiements->totalExercice($millesime),
+            'montantCheques2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur, $codeCheques),
+            'montantEspeces2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur, $codeEspeces),
+            'totaRegie2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur),
+            'totalDft2' => $tPaiements->totalExercice($millesime + 1, $codeDft),
+            'totalComptable2' => $tPaiements->totalExercice($millesime + 1, $codeComptable),
+            'total2' => $tPaiements->totalExercice($millesime + 1),
+            'titresAs' => $tPaiements->totalAnneeScolaire($millesime + 1, null, $codeTitres),
+            'titresExercice1' => $tPaiements->totalExercice($millesime, null, $codeTitres),
+            'titresExercice2' => $tPaiements->totalExercice($millesime + 1, null, $codeTitres)
+        ));
     }
 
     public function paiementListeAction()
@@ -449,9 +493,184 @@ class FinanceController extends AbstractActionController
         ));
     }
 
+    public function paiementDepotAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } else {
+            $args = (array) $prg;
+            if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage('Action abandonnée.');
+                return $this->redirect()->toRoute('sbmgestion/finance');
+            }
+        }
+        $tPaiements = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements');
+        $sBordereaux = $this->getServiceLocator()->get('Sbm\Db\Select\Bordereaux');
+        $bordereauxClotures = $sBordereaux->clotures();
+        $bordereauxEnCours = $sBordereaux->encours();
+        $nouveauxPossibles = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Libelles')
+            ->modeDePaiement();
+        foreach ($bordereauxEnCours as $key => $libelle) {
+            $aKey = $sBordereaux->decode($key);
+            unset($nouveauxPossibles[$aKey['codeModeDePaiement']]);
+        }
+        
+        $form1 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        $form1->setValueOptions('bordereau', $bordereauxEnCours);
+        $editerSubmit = $form1->get('editer');
+        $editerSubmit->setAttribute('formaction', $this->url()
+            ->fromRoute('sbmgestion/finance', array(
+            'action' => 'paiement-pdf',
+            'page' => 1
+        )));
+        
+        $form2 = new \SbmGestion\Form\Finances\BordereauRemiseValeurCreer();
+        $form2->setValueOptions('codeModeDePaiement', $nouveauxPossibles)->setValueOptions('codeCaisse', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Libelles')
+            ->caisse());
+        
+        $form3 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        $form3->setValueOptions('bordereau', $bordereauxClotures);
+        $editerSubmit = $form3->get('editer');
+        $editerSubmit->setAttribute('formaction', $this->url()
+            ->fromRoute('sbmgestion/finance', array(
+            'action' => 'paiement-pdf',
+            'page' => 3
+        )));
+        
+        if (array_key_exists('preparer', $args)) {
+            $form2->setData($args);
+            if ($form2->isValid()) {
+                $args = $form2->getData();
+                if (empty($args['anneeScolaire'])) {
+                    $args['anneeScolaire'] = null;
+                }
+                if (empty($args['exercice'])) {
+                    $args['exercice'] = null;
+                }
+                $now = DateLib::nowToMysql();
+                $n = $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Paiements')
+                    ->marqueBordereau($now, $args['codeModeDePaiement'], $args['codeCaisse'], $args['exercice'], $args['anneeScolaire']);
+                $message = sprintf('Un bordereau daté du %s a été créé. Il contient %d enregistrements.', DateLib::formatDateTimeFromMysql($now), $n);
+                $this->flashMessenger()->addSuccessMessage($message);
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
+                    'action' => 'paiement-depot'
+                ));
+            }
+        } elseif (array_key_exists('supprimer', $args)) {
+            $form1->setData($args);
+            if ($form1->isValid()) {
+                $args = $form1->getData();
+                $aKey = $sBordereaux->decode($args['bordereau']);
+                $n = $tPaiements->annuleBordereau($aKey['dateBordereau'], $aKey['codeModeDePaiement']);
+                $format = "Le bordereau de %s a été supprimé. Il contient %d paiements qui sont à nouveau disponibles pour le prochain bordereau.";
+                $message = sprintf($format, $bordereauxEnCours[$args['bordereau']], $n);
+                $this->flashMessenger()->addSuccessMessage($message);
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
+                    'action' => 'paiement-depot'
+                ));
+            }
+        } elseif (array_key_exists('cloturer', $args)) {
+            $form1->setData($args);
+            if ($form1->isValid()) {
+                $args = $form1->getData();
+                $aKey = $sBordereaux->decode($args['bordereau']);
+                $n = $tPaiements->clotureDepot($aKey['dateBordereau'], $aKey['codeModeDePaiement'], $this->getServiceLocator()
+                    ->get('Sbm\Db\System\Libelles')
+                    ->getCode('Caisse', 'comptable'));
+                $format = "Le bordereau de %s a été clôturé. Les %d paiements qu'il contient sont maintenant dans la caisse du comptable.";
+                $message = sprintf($format, $bordereauxEnCours[$args['bordereau']], $n);
+                $this->flashMessenger()->addSuccessMessage($message);
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
+                    'action' => 'paiement-depot'
+                ));
+            }
+        } else {
+            $form2->setData(array(
+                'codeCaisse' => $this->getServiceLocator()
+                    ->get('Sbm\Db\System\Libelles')
+                    ->getCode('Caisse', 'régisseur')
+            ));
+        }
+        if ($this->params('id', '') == 'error') {
+            if ($this->params('page', 1) == 3) {
+                $form3->setData(array())->isValid();
+            } else {
+                $form1->setData(array())->isValid();
+            }
+        }
+        return new ViewModel(array(
+            'form1' => $form1, // bordereaux en cours
+            'voirForm1' => ! empty($bordereauxEnCours),
+            'form2' => $form2, // nouveau bordereau
+            'voirForm2' => ! empty($nouveauxPossibles),
+            'form3' => $form3, // bordereaux clôturés
+            'voirForm3' => ! empty($bordereauxClotures)
+        ));
+    }
+
     public function paiementPdfAction()
     {
-        // ici, on présentera un écran avec la liste des états qui peuvent être tirés.
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        if (! array_key_exists('editer', $args)) {
+            $this->flashMessenger()->addWarningMessage('Action abandonnée.');
+            return $this->redirect()->toRoute('sbmgestion/finance', array(
+                'action' => 'paiement-depot'
+            ));
+        }
+        $page = $this->params('page', 1);
+        $sBordereaux = $this->getServiceLocator()->get('Sbm\Db\Select\Bordereaux');
+        $bordereauxClotures = $sBordereaux->clotures();
+        $bordereauxEnCours = $sBordereaux->encours();
+        $nouveauxPossibles = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Libelles')
+            ->modeDePaiement();
+        foreach ($bordereauxEnCours as $key => $libelle) {
+            $aKey = $sBordereaux->decode($key);
+            unset($nouveauxPossibles[$aKey['codeModeDePaiement']]);
+        }
+        
+        $form = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        if ($page == 1) {
+            $form->setValueOptions('bordereau', $bordereauxEnCours);
+        } else {
+            $form->setValueOptions('bordereau', $bordereauxClotures);
+        }
+        $form->setData($args);
+        if ($form->isValid()) {
+            $args = $form->getData();
+            $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+            $call_pdf->setParam('documentId', 'Bordereau de remise de valeurs');
+            $aKey = $sBordereaux->decode($args['bordereau']); // tableau de la forme array('dateBordereau' => date, 'codeModeDePaiement' => code)
+            $where = new Where();
+            $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo('codeModeDePaiement', $aKey['codeModeDePaiement']);
+            $call_pdf->setParam('where', $where)
+                ->setParam('criteres', $aKey)
+                ->setParam('strict', array(
+                'empty' => array(),
+                'not empty' => array(
+                    'dateBordereau',
+                    'codeModeDePaiement'
+                )
+            ));
+            $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+            $view = false;
+            $call_pdf->renderPdf();
+            die();
+        }
+        // le formulaire ne valide pas. Il s'agit du select qui est vide.
+        return $this->redirect()->toRoute('sbmgestion/finance', array(
+            'action' => 'paiement-depot',
+            'page' => $page,
+            'id' => 'error'
+        ));
     }
 
     /**
@@ -657,12 +876,12 @@ class FinanceController extends AbstractActionController
         } elseif ($prg === false) {
             $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
         } else {
-            $args = $prg;            
+            $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
         $currentPage = $this->params('page', 1);
-        $pageRetour = $this->params('id', -1);
-        if ($pageRetour == -1) {
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
             $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
         } else {
             $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
@@ -726,7 +945,7 @@ class FinanceController extends AbstractActionController
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
-    
+
     public function tarifGroupPdfAction()
     {
         // va chercher le tarifId puis appelle une liste pdf pour les élèves avec ce filtre

@@ -1009,23 +1009,32 @@ label.sbm-form-auto:before {
 	white-space: pre;
 	line-height: 2;
 }
-/*---------------- Espace parents ---------------------------*/
+/*---------------- Tableau de bord ---------------------------*/
 div#tableau-de-bord table.float-left {
 	margin-left: 5px;
 	margin-right: 5px;
 }
-div#tableau-de-bord table.bleu {
+div#tableau-de-bord table.bleu, fieldset.bleu, fieldset.bleu legend {
 	background-color: #f3fafc;
-	border: solid 1px #31708f
+	border: solid 1px #31708f;
+	border-radius: 4px 4px 4px 4px;
 }
-div#tableau-de-bord table.rose {
+div#tableau-de-bord table.rose, fieldset.rose , fieldset.rose legend {
 	background-color: #fef3ed;
 	border: solid 1px #f78042;
+	border-radius: 4px 4px 4px 4px;
 }
-div#tableau-de-bord table.jaune {
+div#tableau-de-bord table.jaune, fieldset.jaune , fieldset.jaune legend {
 	background-color: #fff8dd;
 	border: solid 1px #fecc22;
+	border-radius: 4px 4px 4px 4px;
 }
+fieldset.bleu, fieldset.rose, fieldset.jaune {
+	min-width: 310px;
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
 div#tableau-de-bord td {
 	border: 0px;
 }
@@ -1048,7 +1057,29 @@ div#tableau-de-bord td.euro{
 	padding-right: 6px;
 	width: 11em;
 }
-
+dl.statistiques {
+	margin: 0;
+	margin-top: 0.5em;
+}
+dl.statistiques dt {
+	padding-top: 0.2em;
+}
+dl.statistiques dd {
+	padding-bottom: 0.3em;
+}
+.bleu dl.separateur {
+	border-top: solid 1px  #31708f;
+	margin-top: 0;
+}
+.rose dl.separateur {
+	border-top: solid 1px  #f78042;
+	margin-top: 0;
+}
+.jaune dl.separateur {
+	border-top: solid 1px  #fecc22;
+	margin-top: 0;
+}
+/*---------------- Espace parents ---------------------------*/
 div#parent-wrapper {
 	min-height: 400px;
 }
