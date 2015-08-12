@@ -72,7 +72,7 @@ $url_ajouter = $this->url('sbmgestion/finance', array(
     'page' => $this->page
 ));
 $url_imprimer = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-pdf',
+    'action' => 'paiement-depot',
     'page' => $this->page
 ));
 $url_edit = $this->url('sbmgestion/finance', array(
@@ -111,9 +111,9 @@ $actions = array(
         'title' => 'Retour'
     ),
     'rapports' => array(
-        'label' => true,
         'class' => 'fam-printer',
-        'menu' => array()
+        'formaction' => $url_imprimer,
+        'title' => 'Bordereaux de remise de valeurs'
     ),
     'ajouter' => array(
         'class' => 'fam-add',

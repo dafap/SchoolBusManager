@@ -13,9 +13,9 @@
 return array(
     'name' => 'users-etablissements',
     'type' => 'table',
-    'drop' => true,
-    'edit_entity' => true,
-    'add_data' => true,
+    'drop' => false,
+    'edit_entity' => false,
+    'add_data' => false,
     'structure' => array(
         'fields' => array(
             'userId' => 'int(11) NOT NULL',
