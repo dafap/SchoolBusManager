@@ -108,7 +108,7 @@ class DateLib
     }
     
     /**
-     * Renvoie la date-heure actuelle au format (jour/mois/an heure:min:s)
+     * Renvoie la date-heure actuelle au format (an-mois-jour heure:min:s)
      */
     public static function nowToMysql()
     {

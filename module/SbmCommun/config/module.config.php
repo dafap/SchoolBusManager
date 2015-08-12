@@ -134,9 +134,10 @@ return array(
             'Sbm\Db\VueGateway\Stations' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayStations',
             'Sbm\Db\VueGateway\Transporteurs' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayTransporteurs',
             
-            'Sbm\Db\Select\DatesCartes' => 'SbmCommun\Model\Db\Service\Select\DatesCartes',
+            'Sbm\Db\Select\Bordereaux' => 'SbmCommun\Model\Db\Service\Select\BordereauxForSelect',
             'Sbm\Db\Select\Classes' => 'SbmCommun\Model\Db\Service\Select\Classes',
             'Sbm\Db\Select\Communes' => 'SbmCommun\Model\Db\Service\Select\CommunesForSelect',
+            'Sbm\Db\Select\DatesCartes' => 'SbmCommun\Model\Db\Service\Select\DatesCartes',
             'Sbm\Db\Select\EtablissementsDesservis' => 'SbmCommun\Model\Db\Service\Select\EtablissementsDesservis',
             'Sbm\Db\Select\EtablissementsVisibles' => 'SbmCommun\Model\Db\Service\Select\EtablissementsVisibles',
             'Sbm\Db\Select\Responsables' => 'SbmCommun\Model\Db\Service\Select\Responsables',

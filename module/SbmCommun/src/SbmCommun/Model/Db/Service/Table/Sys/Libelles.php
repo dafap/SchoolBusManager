@@ -130,4 +130,23 @@ class Libelles extends AbstractSbmTable
             return $rowset->current()->code;
         }
     }
+    
+    /**
+     * Renvoie le libellé d'un code pour une nature donnée.
+     *
+     * @param string $nature
+     * @param int $code
+     *
+     * @return string
+     */
+    public function getLibelle($nature, $code)
+    {
+        $where = new Where();
+        $rowset = $this->fetchAll($where->equalTo('nature', $nature)->equalTo('code', $code));
+        if (!$rowset) {
+            throw new Exception('Ce code n\'existe pas.');
+        } else {
+            return $rowset->current()->libelle;
+        }
+    }
 }

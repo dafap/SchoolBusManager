@@ -22,9 +22,16 @@ $url_dumpdoc = $this->url('sbminstall', array(
 $url_tablealias = $this->url('sbminstall', array(
     'action' => 'table-alias'
 ));
-$url_version = $this->url('sbminstall', array('action' => 'version'));
-$url_fichierslog = $this->url('sbminstall', array('action' => 'fichierslog'));
+$url_version = $this->url('sbminstall', array(
+    'action' => 'version'
+));
+$url_fichierslog = $this->url('sbminstall', array(
+    'action' => 'fichierslog'
+));
 $url_admin = $this->url('sbmadmin');
+$url_gestion = $this->url('sbmgestion');
+$url_portail = $this->url('sbmportail');
+$url_parent = $this->url('sbmparent');
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
 <div id="menugeneral">
@@ -37,16 +44,42 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
     </div>
-	<div  id="menugeneral-inner">
-		<ul>
-		    <li><a href="<?php echo $url_version;?>"><i class="fam-bullet-go"></i>Versions des logiciels</a></li>
-		    <li><a href="<?php echo $url_fichierslog;?>"><i class="fam-bullet-go"></i>Fichiers de log</a></li>
-			<li><a href="<?php echo $url_create; ?>"><i class="fam-bullet-go"></i>Création des tables</a></li>
-			<li><a href="<?php echo $url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie des tables</a></li>
-			<li><a href="<?php echo $url_tablealias;?>"><i class="fam-bullet-go"></i>Liste des alias des
-					tables</a>
-		    <li><a href="<?php echo $url_admin;?>"><i class="fam-bullet-go"></i>Espace de l'administrateur</a></li>
-		</ul>
+	<div id="menugeneral-inner">
+		<div class="float-left left-15px">
+			<fieldset class="sbm-page1">
+				<legend>Accès aux autres espaces</legend>
+				<ul>
+					<li><a href="<?php echo $url_portail;?>"><i class="fam-bullet-go"></i>Portail
+							de consultation</a></li>
+					<li><a href="<?php echo $url_admin;?>"><i class="fam-bullet-go"></i>Espace
+							de l'administrateur</a></li>
+					<li><a href="<?php echo $url_gestion;?>"><i class="fam-bullet-go"></i>Espace
+							du gestionnaire</a></li>
+					<li><a href="<?php echo $url_parent; ?>"><i class="fam-bullet-go"></i>Espace
+							parent</a></li>
+					<li>&nbsp;</li>
+				</ul>
+			</fieldset>
+		</div>
+		<div class="float-left left-15px">
+			<fieldset class="sbm-page1">
+				<legend>Actions réservées</legend>
+				<ul>
+					<li><a href="<?php echo $url_version;?>"><i class="fam-bullet-go"></i>Versions
+							des logiciels</a></li>
+					<li><a href="<?php echo $url_fichierslog;?>"><i
+							class="fam-bullet-go"></i>Fichiers de log</a></li>
+					<li><a href="<?php echo $url_create; ?>"><i class="fam-bullet-go"></i>Création
+							des tables</a></li>
+					<li><a href="<?php echo $url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie
+							des tables</a></li>
+					<li><a href="<?php echo $url_tablealias;?>"><i
+							class="fam-bullet-go"></i>Liste des alias des tables</a>
+				
+				</ul>
+			</fieldset>
+		</div>
+
 	</div>
 </div>
 

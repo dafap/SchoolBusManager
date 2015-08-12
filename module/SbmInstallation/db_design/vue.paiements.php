@@ -26,6 +26,9 @@ return array(
                 'field' => 'selection'
             ),
             array(
+                'field' => 'dateBordereau'
+            ),
+            array(
                 'field' => 'dateDepot'
             ),
             array(
