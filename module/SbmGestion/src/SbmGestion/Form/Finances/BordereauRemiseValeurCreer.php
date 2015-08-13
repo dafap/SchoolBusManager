@@ -39,7 +39,9 @@ class BordereauRemiseValeurCreer extends AbstractSbmForm implements InputFilterP
             ),
             'options' => array(
                 'label' => 'Exercice budgétaire',
-                'label_attributes' => array(),
+                'label_attributes' => array(
+                    'class' => 'sbm-label-140dem'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -53,7 +55,9 @@ class BordereauRemiseValeurCreer extends AbstractSbmForm implements InputFilterP
             ),
             'options' => array(
                 'label' => 'Année scolaire',
-                'label_attributes' => array(),
+                'label_attributes' => array(
+                    'class' => 'sbm-label-140dem'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
@@ -67,7 +71,9 @@ class BordereauRemiseValeurCreer extends AbstractSbmForm implements InputFilterP
             ),
             'options' => array(
                 'label' => 'Quel mode de paiement ?',
-                'label_attributes' => array(),
+                'label_attributes' => array(
+                    'class' => 'sbm-label-140dem'
+                ),
                 'empty_option' => 'Choisissez dans la liste',
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -82,7 +88,9 @@ class BordereauRemiseValeurCreer extends AbstractSbmForm implements InputFilterP
             ),
             'options' => array(
                 'label' => 'Dans quelle caisse ?',
-                'label_attributes' => array(),
+                'label_attributes' => array(
+                    'class' => 'sbm-label-140dem'
+                ),
                 'empty_option' => 'Choisissez dans la liste',
                 'error_attributes' => array(
                     'class' => 'sbm-error'

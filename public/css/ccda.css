@@ -748,6 +748,15 @@ table.eleve-affectations td.last {
 #fiche-inner #etablissement .rows-2 {
 	min-height: 5.5em;
 }
+/*-------------- Finances / Dépôt -------------------*/
+div.depot #fiche-inner label {
+	display: inline-block;
+	padding-left: 5px;
+}
+div.depot #fiche-inner input.submit {
+	margin-top: 6px;
+	margin-left: 20px;	
+}
 /*-------------- Fiche libelles ---------------------*/
 #fiche-inner #libelle label {
 	display: inline-block;
