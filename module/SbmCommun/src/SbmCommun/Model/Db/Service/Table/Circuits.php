@@ -31,7 +31,7 @@ class Circuits extends AbstractSbmTable
 
     /**
      * (non-PHPdoc)
-     * 
+     *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
      */
     protected function setStrategies()
@@ -60,6 +60,11 @@ class Circuits extends AbstractSbmTable
             'selection' => $selection
         ));
         parent::saveRecord($oData);
+    }
+
+    public function getCircuit($millesime, $serviceId, $stationId)
+    {
+        return $this->getRecord(array('millesime' => $millesime, 'serviceId' => $serviceId, 'stationId' => $stationId));
     }
 }
 

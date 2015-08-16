@@ -180,7 +180,7 @@ class IndexController extends AbstractActionController
                 } else {
                     $this->flashMessenger()->addSuccessMessage('L\'enfant est enregistré.');
                     $this->flashMessenger()->addWarningMessage('Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
-                }              
+                }
                 return $this->redirect()->toRoute('sbmparent');
             }
         }
@@ -375,10 +375,10 @@ class IndexController extends AbstractActionController
             Session::set('responsable2', $responsable2, $this->getSessionNamespace());
         }
         try {
-        $formga->setValueOptions('r2communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Communes')
-            ->visibles());
-        } catch ( \Zend\Form\Exception\InvalidElementException $e){}
+            $formga->setValueOptions('r2communeId', $this->getServiceLocator()
+                ->get('Sbm\Db\Select\Communes')
+                ->visibles());
+        } catch (\Zend\Form\Exception\InvalidElementException $e) {}
         return new ViewModel(array(
             'form' => $form->prepare(),
             'formga' => $formga->prepare(),
@@ -546,5 +546,70 @@ class IndexController extends AbstractActionController
         $this->getEventManager()->trigger('appelPaiement', $this->getServiceLocator(), $params);
         // return $this->redirect()->toRoute('sbmparent');
         return $this->redirect()->toUrl('https://paiement.systempay.fr/vads-payment/');
+    }
+
+    public function horairesAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            if ($args === false) {
+                return $this->redirect()->toRoute('sbmparent');
+            }
+        } else {
+            $args = $prg;
+            if (! array_key_exists('circuit1Id', $args)) {
+                return $this->redirect()->toRoute('sbmparent');
+            }
+            $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
+        $tCircuits = $this->getServiceLocator()->get('Sbm\Db\Vue\Circuits');
+        $rEffectifs = $this->getServiceLocator()
+            ->get('Sbm\Db\Eleve\Effectif')
+            ->byCircuit();
+        $rListe = $this->getServiceLocator()->get('Sbm\Db\Eleve\Liste');
+        $nbInscrits = array();
+        $circuits = array();
+        $eleves = array();
+        for ($i = 1; array_key_exists('circuit' . $i . 'Id', $args); $i ++) {
+            $circuitId = $args['circuit' . $i . 'Id'];
+            $circuits[$i] = $tCircuits->getRecord($circuitId);
+            $nbInscrits[$i] = $rEffectifs[$circuitId]['total'];
+            $result = $rListe->byCircuit(Session::get('millesime'), array(
+                array(
+                    'service1Id' => $circuits[$i]->serviceId,
+                    'station1Id' => $circuits[$i]->stationId
+                ),
+                'or',
+                array(
+                    'service2Id' => $circuits[$i]->serviceId,
+                    'station2Id' => $circuits[$i]->stationId
+                )
+            ), array('nom', 'prenom'));
+            foreach ($result as $row) {
+                $classe = $row['classe'];
+                if (is_numeric($classe)) {
+                    $classe .= '°';
+                }
+                $eleves[$i][] = sprintf('%s %s - %s', $row['prenom'], $row['nom'], $classe);
+            }
+            $serviceId = $circuits[$i]->serviceId; // on gardera le dernier trouvé
+        }
+        // ajout de l'arrêt à l'établissement
+        $stationId = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\EtablissementsServices')
+            ->getRecord(array(
+            'etablissementId' => $args['etablissementId'],
+            'serviceId' => $serviceId
+        ))->stationId;
+        $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'), $serviceId, $stationId);
+        return new ViewModel(array(
+            'enfant' => $args['enfant'],
+            'circuits' => $circuits,
+            'eleves' => $eleves,
+            't_nb_inscrits' => $nbInscrits
+        ));
     }
 } 

@@ -82,7 +82,7 @@ echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
 	<div id="liste-inner">
-		<table class="liste-inner services">
+		<table class="liste-inner etablissements-services">
 			<tbody>
 				<tr>
 					<th>Code</th>
@@ -92,6 +92,10 @@ echo $this->flashMessenger()->render('default');
 					<th>Téléphone</th>
 					<th>Email</th>
 					<th>Inscrits</th>
+					<th>Station</th>
+					<th>Matin</th>
+					<th>Midi</th>
+					<th>Soir</th>
 				</tr>
             <?php foreach($this->data as $test => $etablissement): ?>
             <?php $fmt?>
@@ -114,6 +118,10 @@ echo $this->flashMessenger()->render('default');
 					<td class="telephone"><?php echo $this->escapeHtml($etablissement->etab_telephone); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($etablissement->etab_email); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="station"><?php echo $this->escapeHtml($etablissement->sta_nom);?></td>
+					<td class="matin"><?php echo $etablissement->cir_m1; ?></td>
+					<td class="midi"><?php echo $etablissement->cir_s2; ?></td>
+					<td class="soir"><?php echo $etablissement->cir_s1; ?></td>
 					<td class="boutons">
             <?php
                 $hiddens = array(

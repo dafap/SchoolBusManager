@@ -104,10 +104,10 @@ class StationsForSelect implements FactoryInterface
         return $array;
     }
 
-    public function surcircuit($serviceId)
+    public function surcircuit($serviceId, $millesime)
     {
         $where = new Where();
-        $where->equalTo('serviceId', $serviceId);
+        $where->equalTo('serviceId', $serviceId)->equalTo('millesime', $millesime);
         $select = $this->sql->select();
         $select->from(array('sta' => $this->table_name))
             ->columns($this->columns)

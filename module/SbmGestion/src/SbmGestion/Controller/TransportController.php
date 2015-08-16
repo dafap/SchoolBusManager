@@ -1389,7 +1389,7 @@ class TransportController extends AbstractActionController
         }
         $table = $this->getServiceLocator()->get('Sbm\Db\Vue\EtablissementsServices');
         $where = new Where();
-        $where->equalTo('etablissementId', $etablissementId);
+        $where->equalTo('etablissementId', $etablissementId)->equalTo('cir_millesime', Session::get('millesime'));
         return new ViewModel(array(
             'etablissement' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Etablissements')
@@ -1450,7 +1450,7 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Vue\Services')
                 ->getRecord($serviceId),
             'data' => $table->fetchAll(array(
-                'serviceId' => $serviceId
+                'serviceId' => $serviceId, 'cir_millesime' => Session::get('millesime')
             )),
             't_nb_inscrits' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
@@ -1494,8 +1494,8 @@ class TransportController extends AbstractActionController
         $etablissementId = StdLib::getParam('etablissementId', $args, null);
         $serviceId = StdLib::getParam('serviceId', $args, null);
         $isPost = ! is_null(StdLib::getParam('submit', $args));
-        $form = new FormEtablissementService(empty($serviceId) ? 'service' : 'etablissement');
-        if (empty($serviceId)) {
+        $form = new FormEtablissementService($origine == 'etablissement-service' ? 'service' : 'etablissement');
+        if ($origine == 'etablissement-service') {
             $service = null;
             $etablissement = $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Etablissements')
@@ -1508,7 +1508,7 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Vue\Services')
                 ->getRecord($serviceId);
             $form->setValueOptions('etablissementId', $this->getServiceLocator()
-                ->get('Sbm\Db\Select\EtablissementsVisibles'));
+                ->get('Sbm\Db\Select\EtablissementsDesservis'));
         }
         $table = $this->getServiceLocator()->get('Sbm\Db\Table\EtablissementsServices');
         $form->bind($table->getObjData());
@@ -1529,7 +1529,11 @@ class TransportController extends AbstractActionController
                 'origine' => $origine
             ));
         }
-        
+        if (! empty($serviceId)) {
+            $form->setValueOptions('stationId', $this->getServiceLocator()
+                ->get('Sbm\Db\Select\Stations')
+                ->surcircuit($serviceId, Session::get('millesime')));
+        }
         return new ViewModel(array(
             'origine' => $origine,
             'form' => $form->prepare(),

@@ -537,6 +537,9 @@ div#liste-inner .nbinscrits {
 div#liste-inner .codepostal {
 	text-align: center;
 }
+div#liste-inner table.etablissements-services td.boutons {
+	min-width: 44px;
+}
 /*-------------- Fiches -----------------------------*/
 div#fiche-header {
 	margin-bottom: 10px;
@@ -1092,13 +1095,14 @@ dl.statistiques dd {
 div#parent-wrapper {
 	min-height: 400px;
 }
-table.parent {
-	/*margin-left: auto;
-	margin-right: auto;
-	width: 75%;
-	/*border: 1px solid #9d3c06;*/
-	/*border-radius: 20px 20px 0 0;*/
-	/*box-shadow: 1px 1px 5px #9d3c06;*/
+.parent h3, .parent p {
+	margin: 0;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+.parent.horaires td:nth-child(4) {
+	text-align: right;
+	padding-right: 6px;
 }
 #parent-wrapper div.bouton-inscrire {
 	margin-top: 3px;
@@ -1114,6 +1118,9 @@ table.parent {
 	border-bottom-width: 0;
 	border-left-width: 0;
 	border-right-width: 0;
+	border: 1px solid #31708f;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px 1px 5px #31708f;
 	margin-right: 10px;
 }
 #parent-wrapper input.accueil {

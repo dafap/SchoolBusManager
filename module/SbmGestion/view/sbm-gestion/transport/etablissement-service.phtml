@@ -12,6 +12,7 @@
  * @version 2015-1
  */
 use SbmCommun\Model\StdLib;
+use SbmCommun\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport', array(
@@ -82,7 +83,7 @@ echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
 	<div id="liste-inner">
-		<table class="liste-inner services">
+		<table class="liste-inner etablissements-services">
 			<tbody>
 				<tr>
 					<th>Code</th>
@@ -92,6 +93,10 @@ echo $this->flashMessenger()->render('default');
 					<th>Opérateur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
+					<th>Station</th>
+					<th>Matin</th>
+					<th>Midi</th>
+					<th>Soir</th>
 					<th></th>
 				</tr>
             <?php foreach($data as $test => $service): ?>
@@ -115,6 +120,10 @@ echo $this->flashMessenger()->render('default');
 					<td class="operateur"><?php echo $this->escapeHtml($service->serv_operateur); ?></td>
 					<td class="nbplaces"><?php echo $this->escapeHtml($service->serv_nbPlaces); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="station"><?php echo $this->escapeHtml($service->sta_nom);?></td>
+					<td class="matin"><?php echo $service->cir_m1; ?></td>
+					<td class="midi"><?php echo $service->cir_s2; ?></td>
+					<td class="soir"><?php echo $service->cir_s1; ?></td>
 					<td class="boutons">
             <?php
                 $hiddens = array(
