@@ -754,7 +754,39 @@ class EleveController extends AbstractActionController
 
     public function elevePdfAction()
     {
-        return $this->redirect()->toRoute('sbmgestion/eleve');
+        // return $this->redirect()->toRoute('sbmgestion/eleve');
+        // $currentPage = $this->params('page', 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } else {
+            $args = (array) $prg;
+            if (! array_key_exists('documentId', $args)) {
+                $this->flashMessenger()->addErrorMessage('Le document à imprimer n\'a pas été indiqué.');
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+        }
+        $criteres_form = new \SbmGestion\Form\Eleve\CriteresForm();
+        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\Criteres($criteres_form->getElementNames());
+        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
+        }
+        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+        $call_pdf->setParam('documentId', $args['documentId'])->setParam('where', $criteres_obj->getWhere());
+        if (! empty($criteres)) {
+            $filtre = $criteres_obj->getCriteres();
+            $call_pdf->setParam('where', $criteres_obj->getWhere())
+                ->setParam('expression', $filtre['expression'])
+                ->setParam('criteres', $filtre['criteres'])
+                ->setParam('strict', $filtre['strict']);
+        }
+        $call_pdf->renderPdf();
+        
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 
     public function eleveSupprAction()
