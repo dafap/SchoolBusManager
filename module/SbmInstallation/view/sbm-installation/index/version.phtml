@@ -36,6 +36,19 @@ $actions = array(
         'title' => 'Retour'
     )
 );
+$gdInfo = gd_info();
+$gd_infos = 'Version ' . $gdInfo['GD Version'];
+$sep = ' avec ';
+if ($gdInfo['JPEG Support']) {
+    $gd_infos .= $sep . 'support JPEG';
+    $sep = ' et ';
+}
+if ($gdInfo['PNG Support']) {
+    $gd_infos .= $sep . 'support PNG';
+}
+if ($gdInfo['GIF Read Support']) {
+    $gd_infos .= $sep . 'lecture de GIF';
+}
 ?>
 <h1>Versions installées</h1>
 <div id="version-wrapper" class="left-10px">
@@ -48,6 +61,8 @@ $actions = array(
 			<dd><?php echo SBM_VERSION; ?></dd>
 			<dt>Version de PHP</dt>
 			<dd><?php echo phpversion();?></dd>
+			<dt>Version bibliothèque GD</dt>
+			<dd><?php echo $gd_infos;?></dd>
 			<dt>Version de ZF2</dt>
 			<dd>Version installée: <?php echo Version::VERSION;?><br>
 	    <?php if (Version::isLatest()):?>

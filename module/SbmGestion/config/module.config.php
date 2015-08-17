@@ -53,7 +53,7 @@ return array(
             'nb_circuits' => 15,
             'nb_classes' => 15,
             'nb_communes' => 15,
-            'nb_eleves' => 15,
+            'nb_eleves' => 10,
             'nb_etablissements' => 15,
             'nb_paiements' => 10,
             'nb_responsables' => 15,
@@ -202,6 +202,12 @@ return array(
                     )
                 )
             )
+        )
+    ),
+    'view_helpers' => array(
+        'invokables' => array(
+            'printServices' => 'SbmGestion\Model\View\Helper\Services',
+            'printStations' => 'SbmGestion\Model\View\Helper\Stations'
         )
     ),
     'view_manager' => array(
