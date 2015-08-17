@@ -626,7 +626,8 @@ class Tcpdf extends \TCPDF
             } elseif ($imgtype == 'svg') {
                 $this->ImageSVG($k_path_logo, '', '', $headerdata['logo_width']);
             } else {
-                $this->Image(SBM_BASE_PATH . $k_path_logo, '', '', $headerdata['logo_width']);
+                $file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
+                $this->Image($file, '', '', $headerdata['logo_width']);
             }
             $imgy = $this->getImageRBY();
         } else {
