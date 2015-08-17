@@ -139,7 +139,7 @@ class AddElevePhase2 extends AbstractSbmForm  implements InputFilterProviderInte
             'name' => 'classeId',
             'attributes' => array(
                 'id' => 'eleve-classeId',
-                'class' => 'sbm-width-10c'
+                'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'Classe',
