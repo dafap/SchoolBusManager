@@ -404,11 +404,21 @@ class AffectationsServicesStations implements FactoryInterface
             ->join(array(
             'ser1' => $this->db->getCanonicName('services', 'table')
         ), 'ser1.serviceId=aff.service1Id', array(
+            'service1' => 'nom'
+        ))
+            ->join(array(
+            'tra1' => $this->db->getCanonicName('transporteurs', 'table')
+        ), 'ser1.transporteurId=tra1.transporteurId', array(
             'transporteur1' => 'nom'
         ))
             ->join(array(
             'ser2' => $this->db->getCanonicName('services', 'table')
         ), 'ser2.serviceId=aff.service2Id', array(
+            'service2' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'tra2' => $this->db->getCanonicName('transporteurs', 'table')
+        ), 'ser2.transporteurId=tra2.transporteurId', array(
             'transporteur2' => 'nom'
         ), $select::JOIN_LEFT);
         if (! empty($order)) {
