@@ -1,0 +1,116 @@
+<?php
+/**
+ * Vue de la liste des affecations d'un document pdf dans des menus
+ *
+ * Les menus sont caractérisés par la route de la page dans laquelle ils seront affichés
+ * 
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource affectation-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 août 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_retour = $this->url('sbmpdf', array(
+    'action' => 'pdf-liste',
+    'page' => $this->page
+));
+$url_ajout = $this->url('sbmpdf', array(
+    'action' => 'affectation-ajout',
+    'page' => $this->page
+));
+$url_edit = $this->url('sbmpdf', array(
+    'action' => 'affectation-edit',
+    'page' => $this->page
+));
+$url_suppr = $this->url('sbmpdf', array(
+    'action' => 'affectation-suppr',
+    'page' => $this->page
+));
+
+$hiddens = array(
+    'documentId' => $this->document['documentId'],
+    'name' => $this->document['name'],
+    'recordSource' => $this->document['recordSource'],
+);
+
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Liste des documents'
+    ),
+    'ajouter' => array(
+        'class' => 'fam-add',
+        'formaction' => $url_ajout,
+        'title' => 'Nouvelle affectation dans un menu'
+    )
+);
+
+$buttons = array(
+    'modifier' => array(
+        'class' => 'fam-pencil',
+        'formaction' => $url_edit,
+        'title' => 'modifier l\'affectation ou le libellé du menu'
+    ),
+    'supprimer' => array(
+        'class' => 'fam-delete',
+        'formaction' => $url_suppr,
+        'title' => 'supprimer cette affectation'
+    )
+);
+if (strlen($this->document['recordSource']) > 450) {
+    $sourceDocument = substr($this->document['recordSource'], 0, 450) . '...';
+} else {
+    $sourceDocument = $this->document['recordSource'];
+}
+?>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="float-left">
+			<h1>Liste des affectations de ce document dans un menu</h1>
+			<ul>
+				<li>Document: <?php echo $this->document['name'];?></li>
+				<li>Source du document: <?php echo $sourceDocument;?></li>
+			</ul>
+			<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="pdf">
+			<tbody>
+				<tr>
+					<th>Page</th>
+					<th>Libellé dans le menu</th>
+					<th>Position</th>
+					<th></th>
+				</tr>
+            <?php foreach($data as $row): ?>
+                <tr
+					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td class="route"><?php echo $this->escapeHtml($row['route']); ?></td>
+					<td class="libelle"><?php echo $this->escapeHtml($row['libelle']); ?></td>
+					<td class="libelle align-right"><?php echo $row['ordinal_position']; ?></td>
+					<td class="boutons">
+            <?php
+                $hiddens['docaffectationId'] = $row['docaffectationId'];
+                echo $this->listeLigneActions($row['docaffectationId'], $hiddens, $buttons);
+                ?>
+				    </td>
+				</tr>
+        <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer"></div>
+</div>
