@@ -206,6 +206,7 @@ return array(
     ),
     'view_helpers' => array(
         'invokables' => array(
+            'menuRapports' => 'SbmGestion\Model\View\Helper\MenuRapports',
             'printServices' => 'SbmGestion\Model\View\Helper\Services',
             'printStations' => 'SbmGestion\Model\View\Helper\Stations'
         )
