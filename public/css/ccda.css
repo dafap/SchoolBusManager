@@ -540,6 +540,12 @@ div#liste-inner .codepostal {
 div#liste-inner table.etablissements-services td.boutons {
 	min-width: 44px;
 }
+div#liste-inner table.eleves td.boutons {
+	min-width: 66px;
+}
+div#liste-inner table.pdf td.boutons {
+	min-width: 130px;
+}
 /*-------------- Fiches -----------------------------*/
 div#fiche-header {
 	margin-bottom: 10px;

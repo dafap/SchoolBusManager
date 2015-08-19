@@ -5,7 +5,7 @@
  *
  * @project sbm
  * @package module/SbmGestion/src/SbmGestion/Controller
- * @filesource IndexController.php
+ * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 12 févr. 2014

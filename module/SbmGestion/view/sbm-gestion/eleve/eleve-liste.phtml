@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Liste des élèves
  *
@@ -122,41 +121,20 @@ $url_cartes = $this->url('sbmgestion/gestioneleve', array(
 $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
 $url_retour = $this->url('sbmgestion');
 
-// le formulaire des actions du haut de page - aide de vue listeZoneActions()
-$hiddens = array();
+// définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
+$hiddens = array(); // il est préférable de le définir avant l'appel à l'aide de vue menuRapport()
+$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
+
 $actions = array(
     'cancel' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_ici,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'label' => true,
-        'class' => 'fam-printer',
-        'menu' => array(
-            'documentId[0]' => array(
-                'value' => 'Liste des élèves transportés',
-                'formaction' => $url_rapports
-            ),
-            'documentId[1]' => array(
-                'value' => 'Liste des élèves sans transport',
-                'formaction' => $url_rapports
-            ),
-            'documentId[2]' => array(
-                'value' => 'Liste des élèves préinscits',
-                'formaction' => $url_rapports
-            ),
-            'documentId[3]' => array(
-                'value' => 'Liste des élèves rayés',
-                'formaction' => $url_rapports
-            ),
-            'documentId[4]' => array(
-                'value' => 'Liste des élèves non inscrits',
-                'title' => 'inscrits l\'année précédente',
-                'formaction' => $url_rapports
-            )
-        )
-    ),
+    'rapports' => $menuImpression['content'],
     'cartes' => array(
         'class' => 'fam-vcard',
         'formaction' => $url_cartes,
