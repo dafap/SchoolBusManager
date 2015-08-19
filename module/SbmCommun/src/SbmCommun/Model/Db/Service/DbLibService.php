@@ -34,7 +34,7 @@ class DbLibService implements FactoryInterface
     /**
      * Adapter permettant d'accéder à la base de données
      *
-     * @var Adapter
+     * @var \Zend\Db\Adapter\Adapter
      */
     private $dbadapter;
 

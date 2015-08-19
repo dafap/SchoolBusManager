@@ -14,9 +14,11 @@
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
+use SbmCommun\Model\Db\Service\Table\Exception;
 
 class DocAffectations extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la classe
      */
@@ -26,5 +28,19 @@ class DocAffectations extends AbstractSbmTable
         $this->table_type = 'system';
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocAffectations';
         $this->id_name = 'docaffectationId';
+    }
+
+    public function getConfig($documentId)
+    {
+        $where = "documentId = $documentId";
+        $resultset = $this->fetchAll($where, 'libelle');
+        if (! $resultset->count()) {
+            throw new Exception(sprintf(_("Could not find rows '%s' in table %s"), $where, $this->table_name));
+        }
+        $result = array();
+        foreach ($resultset as $row) {
+            $result[] = $row->getArrayCopy();
+        }
+        return $result;
     }
 }

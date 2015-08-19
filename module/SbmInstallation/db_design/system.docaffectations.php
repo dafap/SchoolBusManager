@@ -14,14 +14,16 @@
 return array(
     'name' => 'docaffectations',
     'type' => 'system',
-    'drop' => false,
-    'edit_entity' => false,
+    'drop' => true,
+    'edit_entity' => true,
     'add_data' => false,
     'structure' => array(
         'fields' => array(
             'docaffectationId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL',
-            'methodeAction' => 'varchar(255) NOT NULL'
+            'route' => 'varchar(255) NOT NULL',
+            'libelle' => 'varchar(255) NOT NULL',
+            'ordinal_position' => 'int(11) NOT NULL'
         ),
         'primary_key' => array(
             'docaffectationId'
