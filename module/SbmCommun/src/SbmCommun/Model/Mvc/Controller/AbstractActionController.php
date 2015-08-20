@@ -72,7 +72,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *
      * @param string|array $criteresObject
      *            nom complet de la classe de l'ObjectData\Criteres
-     *            si c'est un tableau, la première valeur est le nom de la classe, les autres sont les paramètres de la méthode getWherePdf
+     *            si c'est un tableau : <ul>
+     *            <li>la première valeur est le nom de la classe,</li>
+     *            <li>la deuxième est le paramètre de la méthode getWherePdf</li>
+     *            <li>la troisième est une fonction appelée pour modifier éventuellement le where</li></ul>
      * @param string|array $criteresFormName
      *            nom complet de la classe du formulaire de recherche
      *            si c'est un tableau, la première valeur est le nom de la classe, les autres sont les paramètres du constructeur
@@ -112,7 +115,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $form = new $criteresForm[0]($criteresForm[1]);
             // on s'assure que le nom de la classe de l'object criteres commence par \
             $criteresObject = (array) $criteresObject;
-            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du descripteur sera trouvée            
+            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du descripteur sera trouvée
             if (! isset($criteresObject[1])) {
                 $criteresObject[1] = null;
             }
@@ -122,6 +125,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
             if (! empty($criteres)) {
                 $criteres_obj->exchangeArray($criteres);
+            }
+            $where = $criteres_obj->getWherePdf($criteresObject[1]);
+            if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
+                $criteresObject[2]($where);
             }
             // TEST
             // $where = $criteres_obj->getWhere($strictWhere, $aliasWhere);
@@ -134,8 +141,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
                 $call_pdf->setParam('docaffectationId', $docaffectationId);
             }
-            $call_pdf->setParam('documentId', $documentId)
-                ->setParam('where', $criteres_obj->getWherePdf($criteresObject[1]));
+            $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
+            // ->setParam('where', $criteres_obj->getWherePdf($criteresObject[1]));
             /*
              * if (! empty($criteres)) {
              * $filtre = $criteres_obj->getCriteres();
