@@ -129,9 +129,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $where = $criteres_obj->getWherePdf($criteresObject[1]);
             // adaptation éventuelle du where si une fonction callback (ou closure) est passée en 3e paramètre 
             // dans le tableau $criteresObject. (Utile par exemple pour modifier le format date avant le 
-            // déclanchement de l'évènement.
+            // déclanchement de l'évènement ou pour prendre en compte un autre where pour les groupes).
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
-                $criteresObject[2]($where);
+                //var_dump($where);
+                $where = $criteresObject[2]($where, $args);
+                //die(var_dump($where));
             }
             $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
             

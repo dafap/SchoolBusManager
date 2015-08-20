@@ -746,7 +746,8 @@ class EleveController extends AbstractActionController
                 ->paginatorScolaritesR2($where),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
-            'criteres_form' => null
+            'criteres_form' => null,
+            'groupe' => $args['op']
         ));
         $viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
         return $viewmodel;
@@ -771,6 +772,28 @@ class EleveController extends AbstractActionController
         $retour = array(
             'route' => 'sbmgestion/eleve',
             'action' => 'eleve-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+    public function eleveGroupePdfAction()
+    {
+        $criteresObject = array('\SbmGestion\Model\Db\ObjectData\CriteresEleves', null, function($where, $args){
+            $where = new Where();
+            $or = false;
+            $tResponsableIds = explode('|', $args['op']);
+            foreach ($tResponsableIds as $responsableId) {
+                if ($or)
+                    $where->OR;
+                $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId);
+                $or = true;
+            }
+            return $where;
+        });
+        $criteresForm = '\SbmGestion\Form\Eleve\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/eleve',
+            'action' => 'eleve-groupe'
         );
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }

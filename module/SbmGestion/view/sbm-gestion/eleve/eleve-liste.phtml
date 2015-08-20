@@ -107,7 +107,7 @@ $url_ajouter = $this->url('sbmgestion/eleve', array(
     'page' => $this->page
 ));
 $url_rapports = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-pdf',
+    'action' => empty($this->groupe) ? 'eleve-pdf' : 'eleve-groupe-pdf',
     'page' => $this->page
 ));
 $url_map = $this->url('sbmgestion/eleve', array(
@@ -122,7 +122,11 @@ $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
 $url_retour = $this->url('sbmgestion');
 
 // définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
-$hiddens = array(); // il est préférable de le définir avant l'appel à l'aide de vue menuRapport()
+if (! empty($this->groupe)) {
+    $hiddens = array('op' => $this->groupe); // pour passer les éléments à prendre en compte pour eleve-groupe
+} else {
+    $hiddens = array();
+}
 $menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
     'action' => 'eleve-liste'
 )), $url_rapports, 'fam-printer', null, $hiddens);

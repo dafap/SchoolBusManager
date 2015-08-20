@@ -32,8 +32,8 @@ $jsTrigger = '';
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
 $this->paginator->setCurrentPageNumber($this->page);
 $datas = $this->paginator->getCurrentItems();
-$pdf = $this->url('sbmpaiement', array(
-    'action' => 'paiement-pdf',
+$url_rapports = $this->url('sbmpaiement', array(
+    'action' => 'pdf',
     'page' => $this->page
 ));
 
@@ -41,17 +41,15 @@ $config = include __DIR__ . '/../config/systempay.config.php';
 $url_marchand = $config['url_marchand'];
 $retour = $this->url('sbmgestion/finance');
 $hiddens = array();
+$menuImpression = $this->menuRapports('/paiement/liste', $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'systempay' => array(
         'class' => 'fam-house-link',
         'formaction' => $url_marchand,

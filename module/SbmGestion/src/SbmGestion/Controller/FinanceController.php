@@ -57,7 +57,7 @@ class FinanceController extends AbstractActionController
         $codeTitres = $tLibelles->getCode('ModeDePaiement', 'Titre individuel');
         $codeRegisseur = $tLibelles->getCode('Caisse', 'régisseur');
         $codeComptable = $tLibelles->getCode('Caisse', 'comptable');
-        $codeDft =$tLibelles->getCode('Caisse', 'dft');
+        $codeDft = $tLibelles->getCode('Caisse', 'dft');
         return new ViewModel(array(
             'millesime' => $millesime,
             'dateBordereauCheques' => $tPaiements->dateDernierBordereau($codeCheques),
@@ -500,9 +500,13 @@ class FinanceController extends AbstractActionController
             return $prg;
         } else {
             $args = (array) $prg;
+            $page = $this->params('page', 1);
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Action abandonnée.');
-                return $this->redirect()->toRoute('sbmgestion/finance');
+                return $this->redirect()->toRoute('sbmgestion/finance', array(
+                    'action' => 'paiement-liste',
+                    'page' => $page
+                ));
             }
         }
         $tPaiements = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements');
@@ -523,7 +527,8 @@ class FinanceController extends AbstractActionController
         $editerSubmit->setAttribute('formaction', $this->url()
             ->fromRoute('sbmgestion/finance', array(
             'action' => 'paiement-pdf',
-            'page' => 1
+            'page' => $page,
+                'id' => 1
         )));
         
         $form2 = new \SbmGestion\Form\Finances\BordereauRemiseValeurCreer();
@@ -537,7 +542,8 @@ class FinanceController extends AbstractActionController
         $editerSubmit->setAttribute('formaction', $this->url()
             ->fromRoute('sbmgestion/finance', array(
             'action' => 'paiement-pdf',
-            'page' => 3
+            'page' => $page,
+                'id' => 3
         )));
         
         if (array_key_exists('preparer', $args)) {
@@ -595,8 +601,8 @@ class FinanceController extends AbstractActionController
                     ->getCode('Caisse', 'régisseur')
             ));
         }
-        if ($this->params('id', '') == 'error') {
-            if ($this->params('page', 1) == 3) {
+        if (substr($this->params('id', ''), -5) == 'error') {
+            if ($this->params('id', '1error') == '3error') {
                 $form3->setData(array())->isValid();
             } else {
                 $form1->setData(array())->isValid();
@@ -612,20 +618,30 @@ class FinanceController extends AbstractActionController
         ));
     }
 
+    /**
+     * On arrive ici depuis la page de choix des impressions à réaliser (méthode paiementDepotAction).
+     * Ici, le paramètre page correspond au numéro du formulaire et sert à mettre en place les bons valueOptions.
+     * Le formulaire de choix n'est pas un ObjectData, aussi on n'utilise pas la méthode documentPdf du parent AbstactActionController.
+     * Le where est construit dans la méthode.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|Ambigous <\Zend\Http\PhpEnvironment\Response, \Zend\Http\Response>
+     */
     public function paiementPdfAction()
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
         }
+        $page = $this->params('page', 1);
+        $id = $this->params('id', 1);
         $args = (array) $prg;
         if (! array_key_exists('editer', $args)) {
             $this->flashMessenger()->addWarningMessage('Action abandonnée.');
             return $this->redirect()->toRoute('sbmgestion/finance', array(
-                'action' => 'paiement-depot'
+                'action' => 'paiement-depot',
+                'page' => $page
             ));
         }
-        $page = $this->params('page', 1);
         $sBordereaux = $this->getServiceLocator()->get('Sbm\Db\Select\Bordereaux');
         $bordereauxClotures = $sBordereaux->clotures();
         $bordereauxEnCours = $sBordereaux->encours();
@@ -638,7 +654,7 @@ class FinanceController extends AbstractActionController
         }
         
         $form = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
-        if ($page == 1) {
+        if ($id == 1) {
             $form->setValueOptions('bordereau', $bordereauxEnCours);
         } else {
             $form->setValueOptions('bordereau', $bordereauxClotures);
@@ -651,15 +667,7 @@ class FinanceController extends AbstractActionController
             $aKey = $sBordereaux->decode($args['bordereau']); // tableau de la forme array('dateBordereau' => date, 'codeModeDePaiement' => code)
             $where = new Where();
             $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo('codeModeDePaiement', $aKey['codeModeDePaiement']);
-            $call_pdf->setParam('where', $where)
-                ->setParam('criteres', $aKey)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'dateBordereau',
-                    'codeModeDePaiement'
-                )
-            ));
+            $call_pdf->setParam('where', $where);
             $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
             $view = false;
             $call_pdf->renderPdf();
@@ -669,8 +677,27 @@ class FinanceController extends AbstractActionController
         return $this->redirect()->toRoute('sbmgestion/finance', array(
             'action' => 'paiement-depot',
             'page' => $page,
-            'id' => 'error'
+            'id' => $id . 'error'
         ));
+        
+        $criteresObject = array(
+            '\SbmCommun\Model\Db\ObjectData\Criteres',
+            array(
+                'expressions' => array(
+                    'active' => 'Literal:active = 0'
+                )
+            )
+        );
+        $criteresForm = array(
+            '\SbmCommun\Form\CriteresForm',
+            'users'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmadmin',
+            'action' => 'user-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -918,32 +945,22 @@ class FinanceController extends AbstractActionController
      */
     public function tarifPdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('tarifs');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des tarifs');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere())
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'rythme',
-                    'grille',
-                    'mode',
-                    'selection'
-                )
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $criteresObject = array(
+            '\SbmCommun\Model\Db\ObjectData\Criteres',
+            array(
+                'strict' => array()
+            )
+        );
+        $criteresForm = array(
+            '\SbmCommun\Form\CriteresForm',
+            'tarifs'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/finance',
+            'action' => 'tarif-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function tarifGroupPdfAction()
