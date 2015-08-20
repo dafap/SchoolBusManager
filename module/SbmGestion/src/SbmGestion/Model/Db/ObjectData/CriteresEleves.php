@@ -167,7 +167,7 @@ class CriteresEleves extends SbmCommunCriteres
         return $where;
     }
 
-    public function getWherePdf($descripteur)
+    public function getWherePdf($descripteur = null)
     {
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'));

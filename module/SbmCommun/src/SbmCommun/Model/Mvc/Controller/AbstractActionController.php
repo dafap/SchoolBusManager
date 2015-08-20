@@ -127,14 +127,12 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $criteres_obj->exchangeArray($criteres);
             }
             $where = $criteres_obj->getWherePdf($criteresObject[1]);
+            // adaptation éventuelle du where si une fonction callback (ou closure) est passée en 3e paramètre 
+            // dans le tableau $criteresObject. (Utile par exemple pour modifier le format date avant le 
+            // déclanchement de l'évènement.
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
                 $criteresObject[2]($where);
             }
-            // TEST
-            // $where = $criteres_obj->getWhere($strictWhere, $aliasWhere);
-            // die(var_dump($where, $where->getPredicates()[1], $where->getExpressionData()));
-            
-            // FIN TEST
             $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
             
             if ($docaffectationId = $this->params('id', false)) {
@@ -142,15 +140,6 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $call_pdf->setParam('docaffectationId', $docaffectationId);
             }
             $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
-            // ->setParam('where', $criteres_obj->getWherePdf($criteresObject[1]));
-            /*
-             * if (! empty($criteres)) {
-             * $filtre = $criteres_obj->getCriteres();
-             * $call_pdf->setParam('expression', $filtre['expression'])
-             * ->setParam('criteres', $filtre['criteres'])
-             * ->setParam('strict', $filtre['strict']);
-             * }
-             */
             
             $call_pdf->renderPdf();
             
