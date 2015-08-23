@@ -8,38 +8,35 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2014
- * @version 2014-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmgestion/transport', array(
-    'action' => 'circuit-liste',
+$url_retour = $this->url('sbmgestion/transport', array(
+    'action' => $this->origine ? : 'circuit-liste',
     'page' => $this->page
 ));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'circuit-group-pdf',
     'page' => $this->page
 ));
 $hiddens = array(
-    'circuitId' => $this->circuitId,
-    //'serviceId' => $this->serviceId,
-    //'stationId' => $this->stationId,
-    //'station' => $this->circuit->station . ' - ' . $this->circuit->communeStation
+    'circuitId' => $this->circuitId
 );
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'circuit-group'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $pdf,
-        'title' => 'Rapports à imprimer'
-    )
+    'rapports' => $menuImpression['content']
 );
 ?>
 <h1>Groupe des élèves inscrits sur un point d'arrêt d'un circuit</h1>

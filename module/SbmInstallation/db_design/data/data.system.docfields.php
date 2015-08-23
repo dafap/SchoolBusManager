@@ -9,7 +9,7 @@
  * @filesource data.system.docfields.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 Jul 2015
+ * @date 23 Aug 2015
  * @version 2014-1
  */
 return array(

@@ -451,9 +451,6 @@ class Tcpdf extends \TCPDF
         return $where;
     }
 
-    protected function getCriteres()
-    {}
-
     /**
      * Renvoie une chaine ou un tableau
      *
@@ -823,7 +820,7 @@ class Tcpdf extends \TCPDF
         }
         // Print string
         $txt = $this->getConfig('document', 'pagefooter_string', '');
-        if (! empty($txt)) {
+        if (! empty($txt) && ! empty($this->data[1])) {
             // remplacer les variables de la chaine
             $oCalculs = new Calculs($this->data[1]);
             $oCalculs->range($this->data['index'][1]['previous'], $this->data['index'][1]['current'] - 1);
@@ -1437,7 +1434,12 @@ class Tcpdf extends \TCPDF
                     } else {
                         $msg = "Impossible d'exécuter la requête.";
                     }
-                    throw new Exception($msg, $e->getCode(), $e->getPrevious());
+                    $errcode = $e->getCode();
+                    if (! empty($errcode) && ! is_numeric($errcode)) {
+                        $msg = sprintf('Erreur %s : %s', $errcode, $msg);
+                        $errcode = null;
+                    }
+                    throw new Exception($msg, $errcode, $e->getPrevious());
                 }
             }
         }

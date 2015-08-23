@@ -281,11 +281,11 @@ class Liste implements FactoryInterface
         $where->equalTo('s.millesime', $millesime)
             ->equalTo('s.etablissementId', $etablissementId)
             ->nest()
-            ->equalTo('aff.service1Id', $serviceId)->or->equalTo('aff.service2Id', $serviceId)->unnest();
+            ->equalTo('a.service1Id', $serviceId)->or->equalTo('a.service2Id', $serviceId)->unnest();
         $select = clone $this->select;
         $select->join(array(
-            'aff' => $this->db->getCanonicName('affectations', 'table')
-        ), 's.eleveId = aff.eleveId And s.millesime = aff.millesime', array())
+            'sta' => $this->db->getCanonicName('stations', 'table')
+        ), 'sta.stationId = a.station1Id', array('station' => 'nom'))
             ->where($where)
             ->order($order)
             ->quantifier(Select::QUANTIFIER_DISTINCT)

@@ -67,6 +67,7 @@ class MenuRapports extends AbstractHelper implements ServiceLocatorAwareInterfac
                 'formaction' => $formaction . '/id/' . $affectation->docaffectationId
             );
         }
+        //die(var_dump($content));
         if (count($content) == 1) {
             $hiddens['documentId'] = $affectation->libelle;
             return array(
@@ -81,10 +82,11 @@ class MenuRapports extends AbstractHelper implements ServiceLocatorAwareInterfac
         } else {
             return array(
                 'hiddens' => $hiddens,
-                array(
+                'content' => array(
                     'label' => true,
                     'class' => $class,
-                    'menu' => $content
+                    'menu' => $content,
+                    'title' => empty($content) ? 'Pas de document disponible' : ''
                 )
             );
         }

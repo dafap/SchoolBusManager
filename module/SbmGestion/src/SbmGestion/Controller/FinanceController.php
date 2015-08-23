@@ -965,6 +965,23 @@ class FinanceController extends AbstractActionController
 
     public function tarifGroupPdfAction()
     {
-        // va chercher le tarifId puis appelle une liste pdf pour les élèves avec ce filtre
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $tarifId = StdLib::getParam('tarifId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('tarifId', $tarifId);
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'tarif-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 }

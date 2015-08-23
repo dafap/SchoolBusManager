@@ -37,6 +37,7 @@ use SbmCommun\Model\Strategy\Semaine;
 use SbmGestion\Form\EtablissementServiceSuppr as FormEtablissementServiceSuppr;
 use SbmGestion\Form\SbmGestion\Form;
 use SbmCartographie\Model\Point;
+use Zend\Db\Sql\Zend\Db\Sql;
 
 class TransportController extends AbstractActionController
 {
@@ -355,36 +356,53 @@ class TransportController extends AbstractActionController
      */
     public function circuitPdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('circuits');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des circuits');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere())
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'serviceId',
-                    'stationId',
-                    'selection'
-                )
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm',
+            'circuits'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'circuit-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le circuitId reçu en post
+     */
     public function circuitGroupPdfAction()
     {
-        // lance la création d'une liste d'élève avec comme filtre le circuitId reçu en post
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $circuitId = StdLib::getParam('circuitId', $args, - 1);
+                $ocircuit = $sm->get('Sbm\Db\Table\Circuits')->getRecord($circuitId);
+                $serviceId = $ocircuit->serviceId;
+                $stationId = $ocircuit->stationId;
+                $where = new Where();
+                $where->nest()
+                    ->nest()
+                    ->equalTo('station1Id', $stationId)
+                    ->equalTo('service1Id', $serviceId)
+                    ->unnest()->OR->nest()
+                    ->equalTo('station2Id', $stationId)
+                    ->equalTo('service2Id', $serviceId)
+                    ->unnest()
+                    ->unnest();
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'circuit-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -627,29 +645,42 @@ class TransportController extends AbstractActionController
      */
     public function classePdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('classes');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des classes');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere())
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'selection'
-                )
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm',
+            'classes'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'classe-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le classeId reçu en post
+     */
+    public function classeGroupPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $classeId = StdLib::getParam('classeId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('classeId', $classeId);
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'classe-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -891,32 +922,42 @@ class TransportController extends AbstractActionController
      */
     public function communePdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('communes');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des communes');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere())
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'membre',
-                    'desservice',
-                    'visible',
-                    'selection'
-                )
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm',
+            'communes'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'commune-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le communeId reçu en post
+     */
+    public function communeGroupPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $communeId = StdLib::getParam('communeId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('communeId', $communeId);
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'commune-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -1190,36 +1231,103 @@ class TransportController extends AbstractActionController
      */
     public function etablissementPdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('etablissements');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des établissements');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere(array(), array(
-                'localisation' => 'Literal:' . $this->critereLocalisation()
-            )))
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'desservice',
-                    'visible',
-                    'selection'
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            array(
+                'expressions' => array(
+                    'localisation' => 'Literal:' . $this->critereLocalisation()
                 )
-            ))
-                ->setParam('expression', array(
-                sprintf('localisation %s', $this->critereLocalisation())
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+            ),
+            function ($where, $args) {
+                return $where->equalTo('millesime', Session::get('millesime'));
+            }
+        );
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm',
+            'etablissements'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le etablissementId reçu en post
+     */
+    public function etablissementGroupPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('etablissementId', $etablissementId);
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste se services desservant l'établissementId reçu en post
+     */
+    public function etablissementServicePdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $where->equalTo('etablissementId', StdLib::getParam('etablissementId', $args, - 1));
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-service'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le couple (etablissementId, serviceId) reçu en post
+     */
+    public function etablissementServiceGroupPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
+                $serviceId = StdLib::getParam('serviceId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('millesime', Session::get('millesime'))
+                    ->equalTo('etablissementId', $etablissementId)
+                    ->equalTo('serviceId', $serviceId);
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-service-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -1450,7 +1558,8 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Vue\Services')
                 ->getRecord($serviceId),
             'data' => $table->fetchAll(array(
-                'serviceId' => $serviceId, 'cir_millesime' => Session::get('millesime')
+                'serviceId' => $serviceId,
+                'cir_millesime' => Session::get('millesime')
             )),
             't_nb_inscrits' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
@@ -1872,6 +1981,12 @@ class TransportController extends AbstractActionController
 
     /**
      * renvoie la liste des élèves inscrits pour un service donné
+     * Reçoit en get :
+     * - id   : pageRetour
+     * - page : page du paginateur interne
+     * Reçoit en post :
+     * - serviceId
+     * - origine
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1928,30 +2043,71 @@ class TransportController extends AbstractActionController
      */
     public function servicePdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('services');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des services');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere())
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'transporteurId',
-                    'selection'
-                )
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            array(),
+            function ($where, $args) {
+                return $where->equalTo('millesime', Session::get('millesime'));
+            }
+        );
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm',
+            'services'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'service-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'établissements desservis le serviceId reçu en post
+     */
+    public function serviceEtablissementPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $where->equalTo('serviceId', StdLib::getParam('serviceId', $args, - 1));
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'service-etablissement'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le serviceId reçu en post
+     */
+    public function serviceGroupPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $serviceId = StdLib::getParam('serviceId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('millesime', Session::get('millesime'))->equalTo('serviceId', $serviceId);
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'service-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -2014,6 +2170,25 @@ class TransportController extends AbstractActionController
                 ->byStation(),
             'page' => $currentPage
         ));
+    }
+
+    /**
+     * Demande l'envoi d'un document contenant les stations non desservies
+     */
+    public function stationsNonDesserviesPdfAction()
+    {
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres'
+        );
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'stations-non-desservies'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -2262,6 +2437,15 @@ class TransportController extends AbstractActionController
         }
         $stationId = StdLib::getParam('stationId', $args, - 1);
         if ($stationId == - 1) {
+            $circuitId = StdLib::getParam('circuitId', $args, - 1);
+            $circuit = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Circuits')
+                ->getRecord($circuitId);
+            if (! empty($circuit)) {
+                $stationId = $circuit->stationId;
+            }
+        }
+        if ($stationId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'station-liste',
@@ -2285,6 +2469,61 @@ class TransportController extends AbstractActionController
         ));
     }
 
+    public function stationServiceGroupAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
+        $stationId = StdLib::getParam('stationId', $args, - 1);
+        $serviceId = StdLib::getParam('serviceId', $args, false);
+        $millesime = $this->getFromSession('millesime');
+        if ($stationId == - 1 || ! $serviceId) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => StdLib::getParam('origine', $args, 'station-service'),
+                'page' => $currentPage
+            ));
+        }
+        $circuit = $this->getServiceLocator()
+            ->get('Sbm\Db\Vue\Circuits')
+            ->getRecord(array(
+            'stationId' => $stationId,
+            'serviceId' => $serviceId,
+            'millesime' => $millesime
+        ));
+        $view = new ViewModel(array(
+            'data' => $this->getServiceLocator()
+                ->get('Sbm\Db\Eleve\Liste')
+                ->byCircuit($millesime, array(
+                array(
+                    'service1Id' => $circuit->serviceId,
+                    'station1Id' => $circuit->stationId
+                ),
+                'or',
+                array(
+                    'service2Id' => $circuit->serviceId,
+                    'station2Id' => $circuit->stationId
+                )
+            ), array(
+                'nom',
+                'prenom'
+            )),
+            'circuit' => $circuit,
+            'page' => $currentPage,
+            'circuitId' => $circuit->circuitId,
+            'origine' => StdLib::getParam('origine', $args, 'station-service')
+        ));
+        $view->setTemplate('sbm-gestion/transport/circuit-group.phtml');
+        return $view;
+    }
+
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
      * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
@@ -2292,38 +2531,77 @@ class TransportController extends AbstractActionController
      */
     public function stationPdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('stations');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des stations');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere(array(
-                'communeId'
-            ), array(
-                'localisation' => 'Literal:' . $this->critereLocalisation()
-            )))
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'ouverte',
-                    'visible',
-                    'selection'
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            array(
+                'strict' => array(
+                    'communeId'
+                ),
+                'expressions' => array(
+                    'localisation' => 'Literal:' . $this->critereLocalisation()
                 )
-            ))
-                ->setParam('expression', array(
-                sprintf('localisation %s', $this->critereLocalisation())
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+            )
+        );
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm',
+            'stations'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'station-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * Demande le document contenant lea services passant par une station
+     *
+     * @return Ambigous <\Zend\Http\PhpEnvironment\Response, \Zend\Http\Response>
+     */
+    public function stationServicePdfAction()
+    {
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            array(),
+            function ($where, $args) {
+                $stationId = StdLib::getParam('stationId', $args);
+                $where = new Where();
+                return $where->equalTo('stationId', $stationId);
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'station-service'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le circuitId reçu en post
+     */
+    public function stationGroupPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $stationId = StdLib::getParam('stationId', $args, - 1);
+                $where = new Where();
+                $where->nest()->equalTo('station1Id', $stationId)->OR->equalTo('station2Id', $stationId)->unnest();
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'station-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -2765,4 +3043,51 @@ class TransportController extends AbstractActionController
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
+    
+    public function transporteurGroupPdfAction()
+    {
+        $sm = $this->getServiceLocator();
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) use($sm) {
+                $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('transporteurId', $transporteurId);
+                return $where;
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'transporteur-group'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+    
+    /**
+     * Demande le document contenant les services d'un transporteur
+     *
+     * @return Ambigous <\Zend\Http\PhpEnvironment\Response, \Zend\Http\Response>
+     */
+    public function transporteurServicePdfAction()
+    {
+        $criteresObject = array(
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            array(),
+            function ($where, $args) {
+                $transporteurId = StdLib::getParam('transporteurId', $args);
+                $where = new Where();
+                return $where->equalTo('transporteurId', $transporteurId);
+            }
+        );
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'transporteur-service'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }    
 }

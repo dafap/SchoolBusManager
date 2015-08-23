@@ -8,17 +8,21 @@
  * @filesource view/sbm-gestion/transport/station-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2014
- * @version 2014-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$pdf = $this->url('sbmgestion/transport', array(
+$url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'station-group-pdf',
     'page' => $this->page
 ));
 $hiddens = array(
     'stationId' => $this->stationId
 );
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'station-group'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
@@ -28,11 +32,7 @@ $actions = array(
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $pdf,
-        'title' => 'Rapports à imprimer'
-    )
+    'rapports' => $menuImpression['content']
 );
 ?>
 <h1>Groupe des élèves inscrits sur une station</h1>
@@ -64,7 +64,10 @@ $actions = array(
 				</tr>
 			<?php
 foreach ($this->data as $row) {
-    echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
+    echo '<tr class="' . $this->cycle(array(
+        "even",
+        "odd"
+    ))->next() . '">';
     foreach ($row as $item) {
         echo '<td>' . $item . '</td>';
     }

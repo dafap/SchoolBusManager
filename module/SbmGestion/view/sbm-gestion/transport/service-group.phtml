@@ -8,41 +8,66 @@
  * @filesource view/sbm-gestion/transport/service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mars 2015
- * @version 2015-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+if ($this->origine == 'service-liste') {
+    $url_rapports = $this->url('sbmgestion/transport', array(
+        'action' => 'service-group-pdf',
+        'page' => $this->page
+    ));
+    $hiddens = array(
+        'serviceId' => $this->serviceId
+    );
+    $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+        'action' => 'service-group'
+    )), $url_rapports, 'fam-printer', null, $hiddens);
+    $hiddens = $menuImpression['hiddens'];
+} elseif ($this->origine == 'transporteur-service') {
+    $url_rapports = $this->url('sbmgestion/transport', array(
+        'action' => 'service-group-pdf',
+        'page' => $this->page
+    ));
+    $hiddens = array(
+        'serviceId' => $this->serviceId,
+        'transporteurId' => $this->service->transporteurId
+    );
+    $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+        'action' => 'service-group'
+    )), $url_rapports, 'fam-printer', null, $hiddens);
+    $hiddens = $menuImpression['hiddens'];
+} else {
+    $url_rapports = $this->url('sbmgestion/transport', array(
+        'action' => 'etablissement-service-group-pdf',
+        'page' => $this->page
+    ));
+    $hiddens = array(
+        'etablissementId' => $this->etablissementId,
+        'serviceId' => $this->serviceId,
+    );
+    $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+        'action' => 'etablissement-service-group'
+    )), $url_rapports, 'fam-printer', null, $hiddens);
+    $hiddens = $menuImpression['hiddens'];
+}
+
 $url_retour = $this->url('sbmgestion/transport', array(
     'action' => $this->origine,
     'page' => $this->pageRetour
 ));
-$url_pdf = $this->url('sbmgestion/transport', array(
-    'action' => 'service-group-pdf',
-    'page' => $this->page
-));
-if ($this->origine == 'service-liste') {
-    $hiddens = array();
-} else {
-    $hiddens = array(
-        'etablissementId' => $this->etablissementId,
-        'serviceId' => $this->serviceId
-    );
-}
+
 // ne pas utiliser de guillement dans la chaine $js
 // $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
+        // 'onclick' => $js_retour
         'title' => 'Retour'
-    )
-    // 'onclick' => $js_retour
-    ,
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    )
+    ),
+    'rapports' => $menuImpression['content'],
 );
 
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
@@ -84,6 +109,7 @@ $oService = $this->service;
 					<th>Commune</th>
 					<th>Etablissement</th>
 					<th>Classe</th>
+					<th>Station</th>
 				</tr>
 			<?php
 foreach ($data as $row) {

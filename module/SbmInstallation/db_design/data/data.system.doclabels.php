@@ -9,7 +9,7 @@
  * @filesource data.system.doclabels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 Jul 2015
+ * @date 23 Aug 2015
  * @version 2014-1
  */
 return array(
@@ -19,7 +19,7 @@ return array(
         'margin_left' => 5, 
         'margin_top' => 13.5, 
         'x_space' => 2, 
-        'y_space' => 2, 
+        'y_space' => 0, 
         'label_width' => 99.1, 
         'label_height' => 33.9, 
         'cols_number' => 2, 
@@ -36,7 +36,7 @@ return array(
     array(
         'doclabelId' => 2, 
         'documentId' => 15, 
-        'margin_left' => 17.2, 
+        'margin_left' => 15, 
         'margin_top' => 13.5, 
         'x_space' => 10, 
         'y_space' => 0, 

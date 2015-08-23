@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mai 2014
- * @version 2014-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 use SbmCommun\Model\StdLib;
 
@@ -33,7 +33,7 @@ $url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'service-ajout',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmgestion/transport', array(
+$url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'service-pdf',
     'page' => $this->page
 ));
@@ -56,17 +56,17 @@ $url_group = $this->url('sbmgestion/transport', array(
     'id' => $this->page
 ));
 $hiddens = array();
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'service-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
@@ -125,7 +125,9 @@ EOT;
                 $jsCallback .= sprintf("$modele\n", $service->serviceId, $service->serviceId);
                 ?>
                 <tr
-					class="<?php echo $this->cycle(array(
+					class="<?php
+                
+echo $this->cycle(array(
                     "even",
                     "odd"
                 ))->next();

@@ -33,7 +33,7 @@ class DocAffectations extends AbstractSbmTable
     public function getConfig($documentId)
     {
         $where = "documentId = $documentId";
-        $resultset = $this->fetchAll($where, 'libelle');
+        $resultset = $this->fetchAll($where, 'route');
         if (! $resultset->count()) {
             throw new Exception(sprintf(_("Could not find rows '%s' in table %s"), $where, $this->table_name));
         }

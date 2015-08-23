@@ -188,6 +188,7 @@ class Calculs
         $search = $this->expressions[$key]['search'];
         $replace = array();
         for ($j = 0; $j < count($search); $j ++) {
+            if (! method_exists($this, $this->expressions[$key]['functions'][$j])) continue;
             $replace[] = $this->{$this->expressions[$key]['functions'][$j]}($this->expressions[$key]['args'][$j]);
         }
         return $this->resultats[$key] = str_replace($search, $replace, $s);
