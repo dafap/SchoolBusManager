@@ -14,8 +14,8 @@
 return array(
     'name' => 'docaffectations',
     'type' => 'system',
-    'drop' => true,
-    'edit_entity' => true,
+    'drop' => false,
+    'edit_entity' => false,
     'add_data' => false,
     'structure' => array(
         'fields' => array(
@@ -46,5 +46,6 @@ return array(
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    )
+    ),
+    'data' => __DIR__ . '/data/data.system.docaffectations.php'
 );
