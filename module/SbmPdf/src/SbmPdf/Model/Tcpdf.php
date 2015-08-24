@@ -1519,6 +1519,9 @@ class Tcpdf extends \TCPDF
                 
                 try {
                     $orderBy = $this->getOrderBy();
+                    if (is_array($orderBy)) {
+                        $orderBy = implode(', ', $orderBy);
+                    }
                     $criteres = $this->getParam('criteres', array());
                     $strict = $this->getParam('strict', array(
                         'empty' => array(),
@@ -1891,6 +1894,9 @@ class Tcpdf extends \TCPDF
                             $where[] = $expression;
                         }
                         $orderBy = $this->getOrderBy();
+                        if (is_array($orderBy)) {
+                            $orderBy = implode(', ', $orderBy);
+                        }
                         if (! empty($where)) {
                             if (empty($orderBy)) {
                                 $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
@@ -2024,5 +2030,27 @@ class Tcpdf extends \TCPDF
             'all' => $border_style
         )); //
     }
+    
+    // =======================================================================================================
+    // Modèle particulier pour les horaires avec élèves (2 tableaux)
+    //
+    /**
+     * Modèle pour imprimer les horaires de circuits avec liste des élèves par point d'arrêt.
+     * Le document est composé de deux tableaux, l'un pour l'aller, l'autre pour le retour.
+     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
+     *
+     * @param string $param
+     *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
+     *            
+     * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
+     */
+    public function templateDocBodyMethod4($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Horaires circuit avec élèves';
+        }
+    }
 }
-
