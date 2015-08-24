@@ -425,23 +425,25 @@ class EleveGestionController extends AbstractActionController
                     default: // tous
                         break;
                 }
+                $where = new Where();
                 switch ($args['selection']) {
                     case 'nouvelle':
                         $lastDateCarte = $this->getServiceLocator()
                             ->get('Sbm\Db\Table\Scolarites')
                             ->getLastDateCarte();
                         $expression[] = "dateCarte = '$lastDateCarte'";
+                        $where->equalTo('dateCarte', $lastDateCarte);
                         break;
                     case 'reprise':
                         $dateReprise = $args['dateReprise'];
                         $expression[] = "dateCarte = '$dateReprise'";
+                        $where->equalTo('dateCarte', $dateReprise);
                         break;
                     case 'selection':
                         $expression = array(
                             "millesime = $millesime",
                             'selection = 1'
                         );
-                        $where = new Where();
                         $where->equalTo('millesime', $millesime)->literal('selection = 1');
                         break;
                 }
