@@ -32,7 +32,9 @@ class BordereauRemiseValeurChoix extends AbstractSbmForm
             ),
             'options' => array(
                 'label' => 'Quel bordereau ?',
-                'label_attributes' => array(),
+                'label_attributes' => array(
+                    'class' => 'sbm-label-105dem'
+                ),
                 'empty_option' => 'Choisissez dans la liste',
                 'error_attributes' => array(
                     'class' => 'sbm-error'

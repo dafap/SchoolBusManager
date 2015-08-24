@@ -21,6 +21,8 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
+$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+
 $url_cancel = $this->url('sbmpdf', array(
     'action' => 'pdf-liste',
     'page' => $this->page
@@ -48,7 +50,8 @@ $actions = array(
     'homepdf' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_cancel,
-        'title' => 'Liste des documents'
+        'title' => 'Liste des documents',
+        'onclick' => sprintf($js, "'retour'")
     ),
     'retour' => array(
         'class' => 'fam-book-previous',

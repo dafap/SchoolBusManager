@@ -261,15 +261,17 @@ abstract class AbstractSbmTable implements FactoryInterface
             return $this->table_gateway->selectWith($select);
         } catch (\Exception $e) {
             $msg = __METHOD__ . ' - ' . $this->table_name . "\n";
-            if (getenv('APPLICATION_ENV') == 'development') {
-                $msg .= $e->getMessage();
-                if (is_string($where)) {
-                    $msg .= "\n WHERE = (" . $where . ')';
-                } else {
-                    $msg .= "\n" . $select->getSqlString();
-                }
+            $msg .= $e->getMessage();
+            if (is_string($where)) {
+                $msg .= "\n WHERE = (" . $where . ')';
+            } else {
+                $msg .= "\n" . $select->getSqlString($this->db->getDbAdapter()->platform);
             }
-            die("<!DOCTYPE Html><html><head></head><body><pre>$msg</pre></body></html>");
+            if (getenv('APPLICATION_ENV') != 'development') {
+                $msg = "Impossible d'exécuter la requête.";
+            }
+            throw new Exception($msg, $e->getCode(), $e->getPrevious());
+            // die("<!DOCTYPE Html><html><head></head><body><pre>$msg</pre></body></html>");
         }
     }
 

@@ -17,6 +17,7 @@ namespace SbmAjax\Controller;
  
 use Zend\View\Model\ViewModel;
 use Zend\Json\Json;
+use DafapSession\Model\Session;
 
 class TransportController extends AbstractActionController
 {
@@ -396,6 +397,16 @@ class TransportController extends AbstractActionController
                 'success' => 0
             )));
         }
+    }
+    public function getcircuitstationsAction()
+    {
+        $millesime = Session::get('millesime');
+        $queryStations = $this->getServiceLocator()->get('Sbm\Db\Select\Stations');
+        $stations = $queryStations->surcircuit($this->params('serviceId'), $millesime);
+        return $this->getResponse()->setContent(Json::encode(array(
+            'data' => array_flip($stations), // échange key/value pour conserver le tri
+            'success' => 1
+        )));
     }
     
     /**

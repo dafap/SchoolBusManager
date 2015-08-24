@@ -32,7 +32,7 @@ $url_ajouter = $this->url('sbmgestion/finance', array(
     'action' => 'tarif-ajout',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmgestion/finance', array(
+$url_rapports = $this->url('sbmgestion/finance', array(
     'action' => 'tarif-pdf',
     'page' => $this->page
 ));
@@ -50,17 +50,17 @@ $url_group = $this->url('sbmgestion/finance', array(
     'id' => $this->page
 ));
 $hiddens = array();
+$menuImpression = $this->menuRapports($this->url('sbmgestion/finance', array(
+    'action' => 'tarif-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,

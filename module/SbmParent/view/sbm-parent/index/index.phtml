@@ -53,6 +53,16 @@ $url_ajoutEleve = $this->url('sbmparent', array(
 $url_payer = $this->url('sbmpaiement', array(
     'action' => 'formulaire'
 ));
+$url_horaires = $this->url('sbmparent', array(
+    'action' => 'horaires'
+));
+$boutons_horaires = array(
+    'horaires' => array(
+        'class' => 'button ligne',
+        'formaction' => $url_horaires,
+        'value' => 'Horaires'
+    )
+);
 ?>
 <div id="winpopup">
 	<div id="winpopup-content"
@@ -126,31 +136,98 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
 						<th>Commune</th>
 						<th>Circuit</th>
 						<th>Arrêt</th>
+						<th></th>
 					</tr>
-            <?php
+        <?php
         foreach ($this->inscrits as $row) {
-            echo '<tr class="' . $this->cycle(array(
-                "odd",
-                "even"
-            ))->next() . '"><td>' . $row['nom'] . '</td><td>' . $row['prenom'] . '</td><td>' . $row['etablissement'] . '</td><td>' . $row['communeEtablissement'] . '</td>';
             $reseau = $this->affectations->getCorrespondances($row['eleveId']);
-            $station = $circuit = array();
-            if ($reseau->count()) {
+            $nbAffectations = $reseau->count();
+            $circuit = $station = $service = array();
+            if ($nbAffectations) {
                 foreach ($reseau as $transport) {
-                    $circuit[] = $transport['service1Id'] . ' - ' . $transport['transporteur1'];
+                    $service[] = $transport['service1Id'] . ' - ' . $transport['transporteur1'];
                     $station[] = $transport['station1'] . ' - ' . $transport['commune1'];
-                    if (! empty($transport['service2Id'])) {
-                        $circuit[] = $transport['service2Id'] . ' - ' . $transport['transporteur2'];
-                    }
-                    if (! empty($transport['station2Id'])) {
-                        $circuit[] = $transport['station2'] . ' - ' . $transport['commune2'];
+                    $circuit[] = $transport['circuit1Id'];
+                    $correspondance = ! empty($transport['service2Id']) || ! empty($transport['station2Id']);
+                    if ($correspondance) {
+                        if (! empty($transport['service2Id'])) {
+                            $service[] = $transport['service2Id'] . ' - ' . $transport['transporteur2'];
+                        } else {
+                            $service[] = '';
+                        }
+                        if (! empty($transport['station2Id'])) {
+                            $station[] = $transport['station2'] . ' - ' . $transport['commune2'];
+                        } else {
+                            $station[] = '';
+                        }
+                        if (! empty($transport['circuit2Id'])) {
+                            $circuit[] = $transport['circuit2Id'];
+                        } else {
+                            $circuit[] = 0;
+                        }
                     }
                 }
             }
-            echo '<td>' . implode('<br />', $circuit) . '</td><td>' . implode('<br />', $station) . '</td>';
-            // echo '<td></td><td></td>';
-            
-            echo '</tr>';
+            $css = $this->cycle(array(
+                "odd",
+                "even"
+            ))->next();
+            $colonne1_4 = '<td %s>' . $row['nom'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '">' . $row['prenom'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '">' . $row['etablissement'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '">' . $row['communeEtablissement'] . '</td>';
+            $nbCircuits = count($circuit);
+            // on prépare le code HTML avant pour ajuster les "rowspan" et les hiddens si nécessaire
+            switch ($nbCircuits) {
+                case 0:
+                    $colonne1_4 = str_replace(' %s', '', $colonne1_4);
+                    $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité, scolarité
+                    $ligneHtml .= '<td></td><td></td>'; // affectation
+                    $ligneHtml .= "<td></td></tr>\n"; // pas de bouton
+                    break;
+                case 1:
+                    $colonne1_4 = str_replace(' %s', '', $colonne1_4);
+                    if (empty($circuit[0])) {
+                        $code_boutons = '';
+                    } else {
+                        $hiddens_horaires = array(
+                            'circuit1Id' => $circuit[0],
+                            'etablissementId' => $row['etablissementId']
+                        );
+                        $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
+                    }
+                    $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité, scolarité
+                    $ligneHtml .= '<td>' . $service[0] . '</td><td>' . $station[0] . '</td>';
+                    $ligneHtml .= '<td>' . $code_boutons . "</td></tr>\n";
+                    break;
+                default:
+                    $colonne1_4 = str_replace('%s', 'rowspan="' . $nbCircuits . '"', $colonne1_4);
+                    $lignesTableau = array('');
+                    $hiddens_horaires = array('enfant' => $row['prenom'] . ' ' . $row['nom']);
+                    for ($i = 0; $i < $nbCircuits; $i ++) {
+                        if (! empty($circuit[$i])) {
+                            $hiddens_horaires['circuit'. ($i + 1) . 'Id'] = $circuit[$i];                            
+                        }
+                        $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_4;
+                        $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' . $station[$i] . '</td>';
+                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les hiddens
+                        if ($i > 0) {
+                            $lignesTableau[$i] .= "</tr>\n";
+                        }                        
+                        $colonne1_4 = '';
+                    }
+                    // pour terminer la ligne 0
+                    if (empty($hiddens_horaires)) {
+                        $lignesTableau[0] .= "<td></td></tr>\n"; // pas de bouton
+                    } else {
+                        $hiddens_horaires['etablissementId'] = $row['etablissementId']; // ajout de l'etablissementId
+                        $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
+                        $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' . $code_boutons . "</td></tr>\n";
+                    }
+                    $ligneHtml = implode('', $lignesTableau);                    
+                    break;
+            }
+            echo $ligneHtml;
         }
         ?>
             </tbody>
@@ -275,7 +352,6 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
         ?>
             </div>
 		</div>
-    <?php endif;?>
     <?php
     switch ($etat) {
         case 0:
@@ -312,6 +388,7 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
 				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
 		    </div>
 		</div>
+    <?php endif;?>
 	</div>
 	<div id="parent-paiements">
     <?php if ($nbPaiements) : ?>

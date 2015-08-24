@@ -54,6 +54,108 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
+     * On reçoit au choix :
+     * - en paramètre le $documentId
+     * - par post un paramètre 'documentId'
+     *
+     * Dans les deux cas, ce paramètre peut être numérique (le documentId de la table documents), une chaine de caractères ou un tableau.
+     *
+     * Si le caractère est numérique, c'est le documentId de la table système documents.
+     * Dans les autre cas, cela dépend de la présence ou non du paramètre get 'id'.
+     * - s'il est absent, 'documentId' contient le name du document
+     * - s'il est présent, 'documentId' contient le libelle du menu et 'id' contient 'docaffectationId' de la table système 'docaffectations'.
+     * On retrouvera alors le 'documentId' dans la méthode Tcpdf::getDocumentId().
+     *
+     * On lit les critères définis dans le formulaire de critères de la liste (en session avec le sessionNameSpace de xxxListeAction).
+     * On transmet le where pour les documents basés sur une table ou vue sql et les tableaux 'expression', 'criteres' et 'strict' pour
+     * ceux basés sur une requête SQL. Voir pour cela les objets ObjectData qui doivent définir les méthodes getWhere() et getCriteres().
+     *
+     * @param string|array $criteresObject
+     *            nom complet de la classe de l'ObjectData\Criteres
+     *            si c'est un tableau : <ul>
+     *            <li>la première valeur est le nom de la classe,</li>
+     *            <li>la deuxième est le paramètre de la méthode getWherePdf</li>
+     *            <li>la troisième est une fonction appelée pour modifier éventuellement le where</li></ul>
+     * @param string|array $criteresFormName
+     *            nom complet de la classe du formulaire de recherche
+     *            si c'est un tableau, la première valeur est le nom de la classe, les autres sont les paramètres du constructeur
+     * @param int|string|null $documentId
+     *            identifiant du document à créer
+     * @param array $retour
+     *            tableau ('route' => ..., 'action' => ...) pour le retour en cas d'échec
+     *            
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
+    public function documentPdf($criteresObject, $criteresForm, $documentId = null, $retour = null)
+    {
+        if (is_null($documentId)) {
+            $prg = $this->prg();
+            if ($prg instanceof Response) {
+                return $prg;
+            } else {
+                $args = (array) $prg;
+                if (! array_key_exists('documentId', $args)) {
+                    $this->flashMessenger()->addErrorMessage('Le document à imprimer n\'a pas été indiqué.');
+                    return $this->redirect()->toRoute($retour['route'], array(
+                        'action' => $retour['action'],
+                        'page' => $this->params('page', 1)
+                    ));
+                }
+                $documentId = $args['documentId'];
+            }
+        }
+        try {
+            // nom de la classe du formulaire : on s'assure qu'il commence par \
+            $criteresForm = (array) $criteresForm;
+            $criteresForm[0] = '\\' . ltrim($criteresForm[0], '\\');
+            // paramètre d'appel du constructeur : on s'assure que la clé existe
+            if (! isset($criteresForm[1])) {
+                $criteresForm[1] = null;
+            }
+            $form = new $criteresForm[0]($criteresForm[1]);
+            // on s'assure que le nom de la classe de l'object criteres commence par \
+            $criteresObject = (array) $criteresObject;
+            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du descripteur sera trouvée
+            if (! isset($criteresObject[1])) {
+                $criteresObject[1] = null;
+            }
+            $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
+            // on crée la structure de l'objet criteres à partir des champs du formulaire et on la charge
+            $criteres_obj = new $criteresObject[0]($form->getElementNames());
+            $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+            if (! empty($criteres)) {
+                $criteres_obj->exchangeArray($criteres);
+            }
+            $where = $criteres_obj->getWherePdf($criteresObject[1]);
+            // adaptation éventuelle du where si une fonction callback (ou closure) est passée en 3e paramètre 
+            // dans le tableau $criteresObject. (Utile par exemple pour modifier le format date avant le 
+            // déclanchement de l'évènement ou pour prendre en compte un autre where pour les groupes).
+            if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
+                //var_dump($where);
+                $where = $criteresObject[2]($where, $args);
+                //die(var_dump($where));
+            }
+            $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+            
+            if ($docaffectationId = $this->params('id', false)) {
+                // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
+                $call_pdf->setParam('docaffectationId', $docaffectationId);
+            }
+            $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
+            
+            $call_pdf->renderPdf();
+            
+            $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        } catch (\Exception $e) {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            return $this->redirect()->toRoute($retour['route'], array(
+                'action' => $retour['action'],
+                'page' => $this->params('page', 1)
+            ));
+        }
+    }
+
+    /**
      * initListe est une méthode de contrôle d'entrée dans les xxxListeAction()
      * - si c'est un post, renvoie une redirection 303
      * - si c'est un get ou un retour d'action, renvoie array(paginator, form, retour) à partir des paramètres en session
@@ -429,8 +531,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
     {
         Session::set($param, $value, $sessionNamespace);
     }
-    
-    protected function removeInSession($param, $sessionNamespace = Session::SBM_DG_SESSION) 
+
+    protected function removeInSession($param, $sessionNamespace = Session::SBM_DG_SESSION)
     {
         Session::remove($param, $sessionNamespace);
     }

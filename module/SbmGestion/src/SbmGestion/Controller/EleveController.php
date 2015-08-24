@@ -90,7 +90,7 @@ class EleveController extends AbstractActionController
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'));
         // créer un objectData qui contient la méthode getWhere() adhoc
-        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\Criteres($criteres_form->getElementNames());
+        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves($criteres_form->getElementNames());
         
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
@@ -746,15 +746,56 @@ class EleveController extends AbstractActionController
                 ->paginatorScolaritesR2($where),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
-            'criteres_form' => null
+            'criteres_form' => null,
+            'groupe' => $args['op']
         ));
         $viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
         return $viewmodel;
     }
 
+    /**
+     * On reçoit par post un paramètre 'documentId' qui peut être numérique (le documentId de la table documents) ou
+     * une chaine de caractères.
+     * Dans ce cas, cela peut être le name du document ou le libelle de docaffectations et
+     * alors le paramètre id passé par post contient docaffectationId.
+     * On lit les critères définis dans le formulaire de critères de eleve-liste (en session avec le sessionNameSpace de eleveListeAction).
+     * On transmet le where pour les documents basés sur une table ou vue sql et les tableaux expression, criteres et strict pour
+     * ceux basés sur une requête SQL.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
     public function elevePdfAction()
     {
-        return $this->redirect()->toRoute('sbmgestion/eleve');
+        $criteresObject = '\SbmGestion\Model\Db\ObjectData\CriteresEleves';
+        $criteresForm = '\SbmGestion\Form\Eleve\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/eleve',
+            'action' => 'eleve-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+    public function eleveGroupePdfAction()
+    {
+        $criteresObject = array('\SbmGestion\Model\Db\ObjectData\CriteresEleves', null, function($where, $args){
+            $where = new Where();
+            $or = false;
+            $tResponsableIds = explode('|', $args['op']);
+            foreach ($tResponsableIds as $responsableId) {
+                if ($or)
+                    $where->OR;
+                $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId);
+                $or = true;
+            }
+            return $where;
+        });
+        $criteresForm = '\SbmGestion\Form\Eleve\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/eleve',
+            'action' => 'eleve-groupe'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function eleveSupprAction()
@@ -1420,22 +1461,37 @@ class EleveController extends AbstractActionController
 
     public function responsablePdfAction()
     {
-        $currentPage = $this->params('page', 1);
+        $projection = $this->getServiceLocator()->get('SbmCarto\Projection');
+        $rangeX = $projection->getRangeX();
+        $rangeY = $projection->getRangeY();
+        $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
         
-        $criteres_form = new CriteresForm('responsables');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres_obj->exchangeArray(Session::get('criteres', array(), str_replace('pdf', 'liste', $this->getSessionNamespace())));
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 8)
-            ->setParam('recordSource', 'Sbm\Db\Vue\Responsables')
-            ->setParam('where', $criteres_obj->getWhere())
-            ->setParam('orderBy', array(
-            'nomSA',
-            'prenomSA'
-        ))
-            ->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $criteresObject = array(
+            '\SbmCommun\Model\Db\ObjectData\Criteres',
+            array(
+                'strict' => array(
+                    'nbInscrits',
+                    'nbPreinscrits',
+                    'selection'
+                ),
+                'expressions' => array(
+                    'nbEnfants' => 'Expression:nbEleves = ?',
+                    'inscrits' => 'Literal:0',
+                    'preinscrit' => 'Literal:0',
+                    'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
+                )
+            )
+        );
+        $criteresForm = array(
+            '\SbmCommun\Form\CriteresForm',
+            'responsables'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/eleve',
+            'action' => 'responsable-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**

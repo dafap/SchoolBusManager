@@ -18,7 +18,10 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_cancel = $this->url('sbmpdf');
+$url_cancel = $this->url('sbmpdf', array(
+    'action' => 'pdf-liste',
+    'page' => $this->page
+));
 $url_ajout = $this->url('sbmpdf', array(
     'action' => 'colonne-ajout',
     'page' => $this->page
@@ -93,8 +96,8 @@ $buttons = array(
 				<li>Numéro du tableau: <?php echo $this->document['ordinal_table'];?></li>
 				<li>Source du document: <?php echo $this->document['recordSource'];?></li>
 			</ul>
-            <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-            </div>
+			<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -111,7 +114,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Nom</th>
 					<th>Champ</th>
 					<th>Ligne du bas</th>
-					<th>Largeur</th>					
+					<th>Largeur</th>
 					<th></th>
 				</tr>
             <?php foreach($data as $row): ?>

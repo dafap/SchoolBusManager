@@ -32,7 +32,7 @@ class Criteres implements ArraySerializableInterface
      *
      * @var string
      */
-    private $table;
+    protected $table;
 
     /**
      * Constructeur
@@ -47,11 +47,21 @@ class Criteres implements ArraySerializableInterface
         $this->createDataStructure($form_fields);
     }
 
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \Zend\Stdlib\ArraySerializableInterface::exchangeArray()
+     */
     public function exchangeArray(array $array)
     {
         $this->data = array_merge($this->data, array_intersect_key($array, $this->data));
     }
 
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \Zend\Stdlib\ArraySerializableInterface::getArrayCopy()
+     */
     public function getArrayCopy()
     {
         return $this->data;
@@ -72,11 +82,11 @@ class Criteres implements ArraySerializableInterface
 
     /**
      * Renvoie la clause Where à appliquer au paginator.
-     * 
+     *
      * Si on recherche dans une requête où le nom d'un champ se trouve dans plusieurs tables, il faut
      * préfixer le nom du champ. On utilise alors le tableau alias de la façon suivante:
      * Exemple: 'nomSA' => 'res.nomSA'
-     * 
+     *
      * Si on recherche une expression, on on utilisera le tableau $alias en faisant précéder l'expression par 'Expression:'
      * Exemple: 'nbEnfants' => 'Expression:count(ele.eleveId) = ?'
      *
@@ -91,6 +101,8 @@ class Criteres implements ArraySerializableInterface
     public function getWhere($strict = array(), $alias = array())
     {
         $where = new Where();
+        $strict =  (array) $strict;
+        $alias =  (array) $alias;
         foreach ($this->data as $field => $value) {
             if (! empty($value) || (in_array($field, $strict) && $value == '0')) {
                 $isExpression = false;
@@ -104,23 +116,105 @@ class Criteres implements ArraySerializableInterface
                             case 'literal':
                                 $isLiteral = true;
                                 break;
-                            case 'expresssion':
+                            case 'expression':
                                 $isExpression = true;
                                 break;
                         }
                     }
                 }
                 if ($isLiteral) {
-                    $where->literal($expression);
+                    $where->literal($expression); 
                 } elseif ($isExpression) {
-                    $where->expression($expression, $value);
+                    $where->expression($expression, $value); 
                 } elseif (in_array($field, $strict)) {
-                    $where->equalTo($field, $value);
+                    $where->equalTo($field, $value); 
                 } else {
-                    $where->like($field, $value . '%');
+                    $where->like($field, $value . '%'); 
                 }
             }
         }
         return $where;
+    }
+
+    /**
+     * Prépare et renvoie un Where à partir des données de l'objet.
+     * Le tableau $descripteur est structuré de la façon suivante :
+     * 'strict' => array(liste de champs ...)
+     * 'expressions' => array(liste de champs)
+     *
+     * En fait, cette méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé dans le tableau 'expressions'.
+     *
+     * @param array $descripteur            
+     *
+     * @return \Zend\Db\Sql\Where
+     */
+    public function getWherePdf($descripteur = null)
+    {
+        $descripteur = (array) $descripteur;
+        if (! array_key_exists('strict', $descripteur)) {
+            $descripteur['strict'] = array();
+        } else {
+            $descripteur['strict'] = (array) $descripteur['strict'];
+        }
+        if (! array_key_exists('expressions', $descripteur)) {
+            $descripteur['expressions'] = array();
+        } else {
+            $descripteur['expressions'] = (array) $descripteur['expressions'];
+            if (getenv('APPLICATION_ENV') == 'development') {
+                foreach ($descripteur['expressions'] as $key => $value) {
+                    if (strpos($value, '.') !== false) {
+                        $msg = __METHOD__ . sprintf(' - Ne pas utiliser de champ préfixé. Problème sur %s => %s', $key, $value);
+                        throw new \Exception($msg);
+                    }
+                }
+            }
+        }
+        return $this->getWhere($descripteur['strict'], $descripteur['expressions']);
+    }
+
+    /**
+     * Transforme l'objet en tableau de critéres en modifiant certaines propriétés
+     *
+     * @param array $criteres            
+     */
+    public function getCriteres($strict = array(), $alias = array())
+    {
+        if (empty($strict)) {
+            $strict = array(
+                'empty' => array(),
+                'not empty' => array()
+            );
+        }
+        
+        $filtre = array(
+            'expression' => array(),
+            'criteres' => (array) $this->data,
+            'strict' => $strict
+        );
+        foreach ($this->data as $field => $value) {
+            if (! empty($value) || (in_array($field, $strict['empty']) && $value == '0')) {
+                $isExpression = false;
+                $isLiteral = false;
+                if (array_key_exists($field, $alias)) {
+                    $field = $alias[$field];
+                    $texpression = explode(':', $field);
+                    if (count($texpression) == 2) {
+                        $expression = $texpression[1];
+                        switch (strtolower($texpression[0])) {
+                            case 'literal':
+                                $filtre['expression'][] = $expression;
+                                break;
+                            case 'expression':
+                                if (! is_numeric($value)) {
+                                    $value = "'" . addslashes($value) . "'";
+                                }
+                                $filtre['expression'][] = str_replace('?', $value, $expression);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        return $filtre;
     }
 }

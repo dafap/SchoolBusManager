@@ -53,23 +53,23 @@ $url_ajouter = $this->url('sbmadmin', array(
     'action' => 'user-ajout',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmadmin', array(
+$url_rapports = $this->url('sbmadmin', array(
     'action' => 'user-pdf',
     'page' => $this->page
 ));
 $url_retour = $this->url('sbmadmin');
 $hiddens = array();
+$menuImpression = $this->menuRapports($this->url('sbmadmin', array(
+    'action' => 'user-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'label' => true,
-        'class' => 'fam-printer',
-        'menu' => array()
-    ),
+    'rapports' => $menuImpression['content'],
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,

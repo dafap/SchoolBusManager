@@ -34,7 +34,7 @@ class DbLibService implements FactoryInterface
     /**
      * Adapter permettant d'accéder à la base de données
      *
-     * @var Adapter
+     * @var \Zend\Db\Adapter\Adapter
      */
     private $dbadapter;
 
@@ -294,23 +294,26 @@ class DbLibService implements FactoryInterface
         );
         $config = $this->sm->get('config');
         foreach (array_keys($config['service_manager']['factories']) as $alias) {
-            foreach ($filters as $f) {
-                if (strpos($alias, $f) !== false) {
-                    $parts = explode('\\', $alias);
-                    $parts[0] = $parts[3];
-                    if ($parts[2] == 'System') {
-                        $parts[1] = '(Table système)';
-                    } elseif ($parts[2] == 'Vue') {
-                        $parts[1] = '(Données complètes)';
-                    } else {
-                        $parts[1] = '(Table)';
+            if ($alias == 'SbmPaiement\Plugin\Table') {
+                $result[$alias] = 'Notifications de paiement';
+            } else
+                foreach ($filters as $f) {
+                    if (strpos($alias, $f) !== false) {
+                        $parts = explode('\\', $alias);
+                        $parts[0] = $parts[3];
+                        if ($parts[2] == 'System') {
+                            $parts[1] = '(Table système)';
+                        } elseif ($parts[2] == 'Vue') {
+                            $parts[1] = '(Données complètes)';
+                        } else {
+                            $parts[1] = '(Table)';
+                        }
+                        unset($parts[2]);
+                        unset($parts[3]);
+                        $result[$alias] = implode(' ', $parts);
+                        break;
                     }
-                    unset($parts[2]);
-                    unset($parts[3]);
-                    $result[$alias] = implode(' ', $parts);
-                    break;
                 }
-            }
         }
         asort($result);
         return $result;

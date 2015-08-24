@@ -50,7 +50,7 @@ class IndexController extends AbstractActionController
         // ceux qui sont sélectionnés (selectionScolarite : selection dans table scolarites) sont mis en attente. Pas de paiement pour le moment.
         // de même pour ceux qui sont à moins de 1 km et pour cex qu sont hors district
         foreach ($preinscrits as $row) {
-            if (! $row['selectionScolarite'] && ($row['distanceR1'] >=1 || $row['distanceR2'] >=1) && $row['district']) {
+            if (! $row['selectionScolarite'] && ($row['distanceR1'] >= 1 || $row['distanceR2'] >= 1) && $row['district']) {
                 $elevesIds[] = $row['eleveId'];
             }
         }
@@ -73,7 +73,11 @@ class IndexController extends AbstractActionController
         $tAppels = $this->getServiceLocator()->get('Sbm\Db\Table\Appels');
         $odata = $tAppels->getObjData();
         foreach ($elevesIds as $eleveId) {
-            $odata->exchangeArray(array('referenceId' => $id, 'responsableId' => $responsable->responsableId, 'eleveId' => $eleveId));
+            $odata->exchangeArray(array(
+                'referenceId' => $id,
+                'responsableId' => $responsable->responsableId,
+                'eleveId' => $eleveId
+            ));
             $tAppels->saveRecord($odata);
         }
         
@@ -110,6 +114,29 @@ class IndexController extends AbstractActionController
             'nb_pagination' => $this->getNbPagination('nb_paiements', 15),
             'criteres_form' => $args['form']
         ));
+    }
+
+    public function pdfAction()
+    {
+        $table = $this->getServiceLocator()->get('SbmPaiement\Plugin\Table');
+        $criteresObject = array(
+            '\SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function($where) use($table){
+                $table->adapteWhere($where);
+                return $where;
+            }
+        );
+        $criteresForm = array(
+            '\SbmCommun\Form\CriteresForm',
+            $table->criteres()
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmpaiement',
+            'action' => 'liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function voirAction()

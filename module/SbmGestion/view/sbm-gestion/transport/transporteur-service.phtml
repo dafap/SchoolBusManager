@@ -7,13 +7,13 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mars 2015
- * @version 2015-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 use SbmCommun\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_pdf = $this->url('sbmgestion/transport', array(
+$url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'transporteur-service-pdf',
     'page' => $this->page
 ));
@@ -21,12 +21,20 @@ $url_retour = $this->url('sbmgestion/transport', array(
     'action' => 'transporteur-liste',
     'page' => $this->pageRetour
 ));
+$url_group = $this->url('sbmgestion/transport', array(
+    'action' => 'service-group',
+    'id' => $this->page
+));
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 
 $hiddens = array(
     'transporteurId' => $this->transporteurId
 );
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'transporteur-service'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -34,11 +42,7 @@ $actions = array(
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    )
+    'rapports' => $menuImpression['content']
 );
 
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
@@ -68,6 +72,7 @@ $data = $this->paginator->getCurrentItems();
 					<th>Opérateur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
+					<th></th>
 				</tr>
             <?php foreach($data as $test => $service): ?>
             <?php $fmt?>
@@ -76,7 +81,7 @@ $data = $this->paginator->getCurrentItems();
                 <tr
 					class="<?php
                 
-echo $this->cycle(array(
+                echo $this->cycle(array(
                     "even",
                     "odd"
                 ))->next();
@@ -89,6 +94,23 @@ echo $this->cycle(array(
 					<td class="operateur"><?php echo $this->escapeHtml($service->operateur); ?></td>
 					<td class="nbplaces"><?php echo $this->escapeHtml($service->nbPlaces); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="boutons">
+					<?php
+                $hiddens = array(
+                    'transporteurId' => $this->transporteurId,
+                    'serviceId' => $service->serviceId,
+                    'origine' => 'transporteur-service'
+                );
+                $buttons = array(
+                    'eleves' => array(
+                        'class' => 'fam-group',
+                        'formaction' => $url_group,
+                        'title' => 'élèves inscrits sur ce service'
+                    )
+                );
+                echo $this->listeLigneActions($this->serviceId, $hiddens, $buttons);
+                ?>
+					</td>
 				</tr>         
             <?php endforeach;?>
             </tbody>

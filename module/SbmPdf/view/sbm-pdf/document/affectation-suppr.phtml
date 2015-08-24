@@ -1,0 +1,24 @@
+<?php
+/**
+ * Page de suppression d'un document dans le menu d'impression d'une page
+ *
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource affectation-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 août 2015
+ * @version 2015-1
+ */
+?>
+<h1>Suppression de l'affectation d'un document dans un menu</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du document <?php echo $this->data->libelle; ?> dans le menu de la page <?php echo $this->data->route;?>.</p>
+	<div class="header-wrapper"></div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

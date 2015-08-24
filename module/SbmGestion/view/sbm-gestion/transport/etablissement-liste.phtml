@@ -8,8 +8,8 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mai 2014
- * @version 2014-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 use SbmCommun\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -35,7 +35,7 @@ $url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-ajout',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmgestion/transport', array(
+$url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-pdf',
     'page' => $this->page
 ));
@@ -69,17 +69,17 @@ $hiddens = array(
         'page' => $this->page
     ))
 );
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'carte' => array(
         'class' => 'fam-map-magnify',
         'formaction' => $url_carte,

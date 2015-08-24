@@ -226,34 +226,32 @@ class IndexController extends AbstractActionController
 
     public function libellePdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('libelles');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des libellés');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere())
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'ouvert'
+        $criteresObject = array(
+            '\SbmCommun\Model\Db\ObjectData\Criteres',
+            array(
+                'strict' => array(
+                    'nature',
+                    'code'
                 )
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+            )
+        );
+        $criteresForm = array(
+            '\SbmCommun\Form\CriteresForm',
+            'libelles'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmadmin',
+            'action' => 'libelle-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function userListeAction()
     {
-        $args = $this->initListe('users');
+        $args = $this->initListe('users', null, null, array(
+            'active' => 'Literal:active=0'
+        ));
         if ($args instanceof Response)
             return $args;
         
@@ -269,6 +267,26 @@ class IndexController extends AbstractActionController
             'nb_pagination' => $this->getNbPagination('nb_users', 20),
             'criteres_form' => $args['form']
         ));
+    }
+
+    public function userPdfAction()
+    {
+        $criteresObject = array(
+            '\SbmCommun\Model\Db\ObjectData\Criteres',
+            array(
+               'expressions' =>  array('active' => 'Literal:active = 0')
+            )
+        );
+        $criteresForm = array(
+            '\SbmCommun\Form\CriteresForm',
+            'users'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmadmin',
+            'action' => 'user-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function userAjoutAction()
@@ -561,7 +579,10 @@ class IndexController extends AbstractActionController
             ));
         }
         $tUsersTransporteurs = $this->getServiceLocator()->get('Sbm\Db\Table\UsersTransporteurs');
-        $tUsersTransporteurs->deleteRecord(array('userId' => $args['userId'], 'transporteurId' => $args['transporteurId']));
+        $tUsersTransporteurs->deleteRecord(array(
+            'userId' => $args['userId'],
+            'transporteurId' => $args['transporteurId']
+        ));
         $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
         return $this->redirect()->toRoute('sbmadmin', array(
             'action' => 'user-liste',

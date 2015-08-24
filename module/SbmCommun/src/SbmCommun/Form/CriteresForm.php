@@ -2220,7 +2220,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             );
             $element = $this->get($elementName);
             if ($element->getAttribute('type') == 'text') {
-                $array[$elementName]['filters'] = array(
+                $array[$elementName]['filters'][] = array(
                     'name' => 'StringTrim'
                 );
             }

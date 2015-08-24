@@ -1,0 +1,119 @@
+<?php
+/**
+ * Affichage des horaires d'un circuit pour un élève qui y est affecté
+ *
+ * (Modèle fourni par l'organisateur)
+ * 
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/index
+ * @filesource horaires.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 13 août 2015
+ * @version 2015-1
+ */
+$url_retour = $this->url('sbmparent');
+$h3contentG = array();
+$h3contentD = array();
+$aller = array();
+$retour = array();
+$nbCircuits = count($this->circuits);
+for ($i = 1; $i <= $nbCircuits; $i ++) {
+    if ($i < $nbCircuits) { // les 2 derniers services sont identiques car on a rajouté l'arrivée à l'établissement à la fin
+        $h3contentG[] = 'Circuit n° ' . $this->circuits[$i]->serviceId . ' - car ' . $this->circuits[$i]->transporteur;
+        $h3contentD[] = 'Tél. ' . $this->circuits[$i]->transporteur . ' : ' . $this->telephone($this->circuits[$i]->telephoneTransporteur);
+    }
+    $aller[$i] = array(
+        $this->circuits[$i]->m1,
+        $this->circuits[$i]->station,
+        $this->circuits[$i]->typeArret,
+        empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
+        empty($this->t_nb_inscrits[$i]) ? '' : '(voir tableau ci-dessous)',
+        $this->circuits[$i]->commentaire1
+    );
+}
+for ($j = 1, $i = count($this->circuits); $i >= 1; $i --, $j ++) {
+    $retour[$j] = array(
+        $this->circuits[$i]->s2 . '<br>' . $this->circuits[$i]->s1,
+        $this->circuits[$i]->station,
+        $this->circuits[$i]->typeArret,
+        empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
+        empty($this->eleves[$i]) ? '' : implode('<br>', $this->eleves[$i]),
+        $this->circuits[$i]->commentaire2
+    );
+}
+?>
+<div id="fiche-wrapper" class="parent horaires">
+	<h1>Transport de <?php echo $this->enfant;?></h1>
+	<div id="fiche-header">
+		<div class="clearfix">
+			<div class="float-left">
+				<h3>Horaires théoriques donnés à titre indicatif</h3>
+			</div>
+			<div class="float-right">
+				<p class="sbm-description">Les horaires peuvent être légèrement
+					revus dès la 1ère semaine de la rentrée.</p>
+				<p class="important">Merci d'être présent 5 minutes avant le passage
+					du car.</p>
+			</div>
+		</div>
+		<div class="clearfix">
+			<h3 class="float-left"><?php echo implode('<br>', $h3contentG); ?></h3>
+			<h3 class="float-right"><?php echo implode('<br>', $h3contentD); ?></h3>
+		</div>
+	</div>
+	<div id=fiche-inner>
+		<fieldset class="sbm-page1">
+			<legend>Matin</legend>
+			<table>
+				<tbody>
+					<tr>
+						<th>Horaire</th>
+						<th>Nom de l'arrêt</th>
+						<th>Emplacement</th>
+						<th>Nbre<br>élèves
+						</th>
+						<th>Nom des élèves</th>
+						<th>Remarques</th>
+					</tr>
+	                <?php for ($i = 1; $i <= count($this->circuits); $i ++):?>
+	                <?php $css = $this->cycle(array('odd', 'even'))->next();?>
+	                <tr class="<?php echo $css;?>">
+						<td><?php echo implode('</td><td>', $aller[$i]);?></td>
+					</tr>
+	                <?php endfor;?>
+				</tbody>
+			</table>
+		</fieldset>
+		<p></p>
+		<fieldset class="sbm-page1">
+			<legend>Mercredi midi & soir</legend>
+			<table>
+				<tbody>
+					<tr>
+						<th>Horaire</th>
+						<th>Nom de l'arrêt</th>
+						<th>Emplacement</th>
+						<th>Nbre<br>élèves
+						</th>
+						<th>Nom des élèves</th>
+						<th>Remarques</th>
+					</tr>
+	                <?php for ($i = 1; $i <= count($this->circuits); $i ++):?>
+	                <?php $css = $this->cycle(array('odd', 'even'))->next();?>
+	                <tr class="<?php echo $css;?>">
+						<td><?php echo implode('</td><td>', $retour[$i]);?></td>
+					</tr>
+	                <?php endfor;?>
+				</tbody>
+			</table>
+		</fieldset>
+		<div class="left-95px top-6px">
+			<form method="post" action="<?php echo $url_retour;?>">
+				<input type="submit" class="default" name="cancel" value="Retour">
+			</form>
+		</div>
+	</div>
+	<div id="fiche-footer"></div>
+
+</div>

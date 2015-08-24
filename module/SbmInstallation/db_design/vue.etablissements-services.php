@@ -22,6 +22,9 @@ return array(
             ),
             array(
                 'field' => 'serviceId'
+            ),
+            array(
+                'field' => 'stationId'
             )
         ),
         'from' => array(
@@ -195,6 +198,10 @@ return array(
                     array(
                         'field' => 'kmEnCharge',
                         'alias' => 'serv_kmEnCharge'
+                    ),
+                    array(
+                        'field' => 'selection',
+                        'alias' => 'serv_selection'
                     )
                 )
             ),
@@ -219,6 +226,122 @@ return array(
                     array(
                         'field' => 'nom',
                         'alias' => 'serv_communeTransporteur'
+                    )
+                )
+            ),
+            array(
+                'table' => 'stations',
+                'type' => 'table',
+                'alias' => 'sta',
+                'relation' => 'rel.stationId = sta.stationId',
+                'fields' => array(
+                    array(
+                        'field' => 'nom',
+                        'alias' => 'sta_nom'
+                    ),
+                    array(
+                        'field' => 'ouverte',
+                        'alias' => 'sta_ouverte'
+                    ),
+                    array(
+                        'field' => 'visible',
+                        'alias' => 'sta_visible'
+                    ),
+                    array(
+                        'field' => 'selection',
+                        'alias' => 'sta_selection'
+                    ),
+                    array(
+                        'field' => 'x',
+                        'alias' => 'sta_x'
+                    ),
+                    array(
+                        'field' => 'y',
+                        'alias' => 'sta_y'
+                    )
+                )
+            ),
+            array(
+                'table' => 'communes',
+                'type' => 'table',
+                'alias' => 'comsta',
+                'relation' => 'comsta.communeId = sta.communeId',
+                'fields' => array(
+                    array(
+                        'field' => 'nom',
+                        'alias' => 'sta_commune'
+                    )
+                )
+            ),
+            array(
+                'table' => 'circuits',
+                'type' => 'table',
+                'alias' => 'cir',
+                'relation' => 'cir.serviceId = rel.serviceId AND cir.stationId = rel.stationId',
+                'fields' => array(
+
+                    array(
+                        'field' => 'circuitId'
+                    ),
+                    array(
+                        'field' => 'selection',
+                        'alias' => 'cir_selection'
+                    ),
+                    array(
+                        'field' => 'millesime',
+                        'alias' => 'cir_millesime'
+                    ),
+                    array(
+                        'field' => 'semaine',
+                        'alias' => 'cir_semaine'
+                    ),
+                    array(
+                        'field' => 'm1',
+                        'alias' => 'cir_m1'
+                    ),
+                    array(
+                        'field' => 's1',
+                        'alias' => 'cir_s1'
+                    ),
+                    array(
+                        'field' => 'm2',
+                        'alias' => 'cir_m2'
+                    ),
+                    array(
+                        'field' => 's2',
+                        'alias' => 'cir_s2'
+                    ),
+                    array(
+                        'field' => 'm3',
+                        'alias' => 'cir_m3'
+                    ),
+                    array(
+                        'field' => 's3',
+                        'alias' => 'cir_s3'
+                    ),
+                    array(
+                        'field' => 'distance',
+                        'alias' => 'cir_distance'
+                    ),
+                    array(
+                        'field' => 'montee',
+                        'alias' => 'cir_montee'
+                    ),
+                    array(
+                        'field' => 'descente',
+                        'alias' => 'cir_descente'
+                    ),
+                    array(
+                        'field' => 'typeArret',
+                        'alias' => 'cir_typeArret'
+                    ),
+                    array(
+                        'field' => 'commentaire1',
+                        'alias' => 'cir_commentaire1'
+                    ),
+                    array(
+                        'field' => 'commentaire2',
+                        'alias' => 'cir_commentaire2'
                     )
                 )
             )

@@ -51,6 +51,9 @@ class Liste implements FactoryInterface
         $this->select->from(array(
             'c' => $this->db->getCanonicName('circuits', 'table')
         ))
+            ->where(array(
+            'millesime' => Session::get('millesime')
+        ))
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(array())
             ->join(array(

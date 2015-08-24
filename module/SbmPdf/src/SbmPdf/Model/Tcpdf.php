@@ -17,10 +17,12 @@
 namespace SbmPdf\Model;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmCommun\Model\StdLib;
-use DafapSession\Model\Session;
-use Zend\Db\Sql\Where;
 use Zend\Stdlib\ArrayObject;
+use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
+use SbmPdf\Model\Db\Sql\Select;
+use DafapSession\Model\Session;
+use SbmCommun\Model\StdLib;
 use SbmCommun\Model\DateLib;
 
 class Tcpdf extends \TCPDF
@@ -249,8 +251,11 @@ class Tcpdf extends \TCPDF
                 $config .= '[' . $k . ']';
             }
         }
-        
-        throw new Exception($message);
+        if (getenv('APPLICATION_ENV') == 'development') {
+            throw new Exception($message);
+        } else {
+            throw new Exception('Mauvaise configuration.');
+        }
     }
 
     /**
@@ -404,20 +409,38 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie le documentId, que l'on ait passé le documentId ou le name dans l'appel de l'évènement.
+     * Renvoie le documentId, que l'on ait passé le documentId, le name ou le libellé du menu dans l'appel de l'évènement.
+     * Le paramètre 'documentId' est un scalaire ou un tableau à un élément. On le transforme en scalaire.
      *
      * @return int
      */
     protected function getDocumentId()
     {
-        $documentId = $this->getParam('documentId', 1);
+        // On s'assure que documentId est un scalaire
+        $documentId = current((array) $this->getParam('documentId', 1));
+        $docaffectationId = $this->getParam('docaffectationId', false);
+        if ($docaffectationId) {
+            $oDocaffectation = $this->sm->get('Sbm\Db\System\DocAffectations')->getRecord($docaffectationId);
+            // ici, $documentId doit contenir le libelle du menu
+            if ($oDocaffectation->libelle != $documentId) {
+                throw new Exception('La demande est incorrecte.');
+            }
+            return $oDocaffectation->documentId;
+        }
         if (! is_numeric($documentId)) {
+            // ici, $documentId doit contenir le name du document
             $table_documents = $this->getServiceLocator()->get('Sbm\Db\System\Documents');
-            $documentId = $table_documents->getDocumentId($documentId);
+            return $table_documents->getDocumentId($documentId);
         }
         return $documentId;
     }
 
+    /**
+     * Va chercher le where dans les paramètres de l'évènement (Where vide si ce paramètre n'y est pas).
+     * Rajoute le filtre indiqué dans le document comme un Literal
+     *
+     * @return \Zend\Db\Sql\Where
+     */
     protected function getWhere()
     {
         $where = $this->getParam('where', new Where());
@@ -428,13 +451,25 @@ class Tcpdf extends \TCPDF
         return $where;
     }
 
+    /**
+     * Renvoie une chaine ou un tableau
+     *
+     * @return string|array
+     */
     protected function getOrderBy()
     {
         $orderBy = $this->getConfig('document', 'orderBy', null);
         $orderBy = empty($orderBy) ? $this->getParam('orderBy', null) : $orderBy;
-        if (! empty($orderBy)) {
+        if (! empty($orderBy) && is_string($orderBy)) {
             // formater correctectement la chaine avec un espace après les virgules
-            $orderBy = str_replace('  ', ' ', str_replace(',', ', ', $orderBy));
+            // $orderBy = str_replace(' ', ' ', str_replace(',', ', ', $orderBy));
+            $parts = explode(',', $orderBy);
+            if (count($parts) > 1) {
+                $orderBy = array();
+                foreach ($parts as $item) {
+                    $orderBy[] = trim($item);
+                }
+            }
         }
         return $orderBy;
     }
@@ -466,19 +501,33 @@ class Tcpdf extends \TCPDF
         } elseif ($this->getServiceLocator()->has($this->getParam('recordSource', ''))) {
             return $this->getServiceLocator()->get($this->getParam('recordSource', ''));
         } else {
-            $config_source = $this->getConfig('document', 'recordSource', 'absente');
-            $param_source = $this->getParam('recordSource', 'absente');
-            throw new Exception(sprintf("La clé `recordSource` est invalide ou n'est pas précisée pour ce document.\nClé dans la configuration du document : %s\nClé dans les paramètres d'appel: %s", $config_source, $param_source));
+            if (getenv('APPLICATION_ENV') == 'development') {
+                $config_source = $this->getConfig('document', 'recordSource', 'absente');
+                $param_source = $this->getParam('recordSource', 'absente');
+                $msg = __METHOD__;
+                $msg .= sprintf(" - La clé `recordSource` est invalide ou n'est pas précisée pour ce document.\nClé dans la configuration du document : %s\nClé dans les paramètres d'appel: %s", $config_source, $param_source);
+            } else {
+                $msg = 'Mauvaise définition de la source du document.';
+            }
+            throw new Exception($msg);
         }
     }
 
+    /**
+     * Lecture de la table système documents pour charger la fiche descriptive du document demandé
+     */
     protected function initConfigDocument()
     {
         $table_documents = $this->getServiceLocator()->get('Sbm\Db\System\Documents');
         try {
-            $this->config['document'] = $table_documents->getConfig($this->getDocumentId());
+            $this->config['document'] = $table_documents->getConfig($documentId = $this->getDocumentId());
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-            $this->config['document'] = require (__DIR__ . '/default/documents.inc.php');
+            if (getenv('APPLICATION_ENV') == 'development') {
+                $msg = __METHOD__ . ' - ' . $e->getMessage();
+            } else {
+                $msg = "Impossible de définir le document.";
+            }
+            throw new Exception($msg, $e->getCode(), $e->getPrevious());
         }
     }
 
@@ -626,7 +675,8 @@ class Tcpdf extends \TCPDF
             } elseif ($imgtype == 'svg') {
                 $this->ImageSVG($k_path_logo, '', '', $headerdata['logo_width']);
             } else {
-                $this->Image(SBM_BASE_PATH . $k_path_logo, '', '', $headerdata['logo_width']);
+                $file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
+                $this->Image($file, '', '', $headerdata['logo_width']);
             }
             $imgy = $this->getImageRBY();
         } else {
@@ -770,7 +820,7 @@ class Tcpdf extends \TCPDF
         }
         // Print string
         $txt = $this->getConfig('document', 'pagefooter_string', '');
-        if (! empty($txt)) {
+        if (! empty($txt) && ! empty($this->data[1])) {
             // remplacer les variables de la chaine
             $oCalculs = new Calculs($this->data[1]);
             $oCalculs->range($this->data['index'][1]['previous'], $this->data['index'][1]['current'] - 1);
@@ -1273,6 +1323,7 @@ class Tcpdf extends \TCPDF
             $this->data[$ordinal_table] = array();
             // lecture de la description des colonnes
             $table_columns = $this->getConfig('doctable', 'columns', array());
+            
             if ($this->getRecordSourceType() == 'T') {
                 // La source doit être enregistrée dans le ServiceManager (table ou vue MySql) sinon exception
                 $table = $this->getRecordSourceTable();
@@ -1293,8 +1344,136 @@ class Tcpdf extends \TCPDF
                         '/^\s+/',
                         '/\s+$/'
                     ), '', $column['filter']);
-                    if (! empty($column['filter'])) {
-                        $column['filter'] = StdLib::getArrayFromString($column['filter']);
+                    if (! empty($column['filter']) && is_string($column['filter'])) {
+                        $column['filter'] = StdLib::getArrayFromString(stripslashes($column['filter']));
+                    } else {
+                        $column['filter'] = array();
+                    }
+                    unset($column);
+                }
+                // lecture des données et calcul des largeurs de colonnes
+                foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
+                    $ligne = array();
+                    foreach ($table_columns as &$column) {
+                        $ligne[] = $value = StdLib::translateData($row->{$column['tbody']}, $column['filter']);
+                        // adapte la largeur de la colonne si nécessaire
+                        $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                        $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
+                        if ($value_width > $column['width']) {
+                            $column['width'] = $value_width;
+                        }
+                        unset($column);
+                    }
+                    $this->data[$ordinal_table][] = $ligne;
+                }
+                $this->config['doctable']['columns'] = $table_columns;
+            } else {
+                $columns = array();
+                foreach ($table_columns as $column) {
+                    $columns[] = $column['tbody'];
+                }
+                if (empty($columns)) {
+                    $columns[] = Select::SQL_STAR;
+                }
+                $recordSource = $this->getConfig('document', 'recordSource', '');
+                $recordSource = str_replace(array(
+                    '%date%',
+                    '%heure%',
+                    '%millesime%',
+                    '%userId%'
+                ), array(
+                    date('Y-m-d'),
+                    date('H:i:s'),
+                    Session::get('millesime'),
+                    $this->sm->get('Dafap\Authenticate')
+                        ->by()
+                        ->getUserId()
+                ), $recordSource);
+                $dbAdapter = $this->getServiceLocator()
+                    ->get('Sbm\Db\DbLib')
+                    ->getDbAdapter();
+                try {
+                    $sql = new Sql($dbAdapter);
+                    $select = new Select($recordSource);
+                    $select->columns($columns)
+                        ->where($this->getWhere())
+                        ->order($this->getOrderBy());
+                    $sqlString = $select->getSqlString($dbAdapter->getPlatform());
+                    $rowset = $dbAdapter->query($sqlString, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                    if ($rowset->count()) {
+                        // si la description des colonnes est vide, on configure toutes les colonnes de la source
+                        if (empty($table_columns)) {
+                            $ordinal_position = 1;
+                            foreach (array_keys($rowset->current()->getArrayCopy()) as $column_name) {
+                                $column = require (__DIR__ . '/default/doccolumns.inc.php');
+                                $column['thead'] = $column['tbody'] = $column_name;
+                                $column['ordinal_position'] = $ordinal_position ++;
+                                $table_columns[] = $column;
+                            }
+                            $this->config['doctable']['columns'] = $table_columns;
+                        }
+                        foreach ($rowset as $row) {
+                            // $row est un ArrayObject
+                            $ligne = array();
+                            for ($key = 0; $key < count($table_columns); $key ++) {
+                                $ligne[] = $value = $row[$table_columns[$key]['tbody']];
+                                // adapte la largeur de la colonne si nécessaire
+                                $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                                $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
+                                if ($value_width > $table_columns[$key]['width']) {
+                                    $table_columns[$key]['width'] = $value_width;
+                                }
+                            }
+                            $this->data[$ordinal_table][] = $ligne;
+                            $this->config['doctable']['columns'] = $table_columns;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    if (getenv('APPLICATION_ENV') == 'development') {
+                        $msg = __METHOD__ . ' - ' . $e->getMessage() . "\n" . $recordSource;
+                    } else {
+                        $msg = "Impossible d'exécuter la requête.";
+                    }
+                    $errcode = $e->getCode();
+                    if (! empty($errcode) && ! is_numeric($errcode)) {
+                        $msg = sprintf('Erreur %s : %s', $errcode, $msg);
+                        $errcode = null;
+                    }
+                    throw new Exception($msg, $errcode, $e->getPrevious());
+                }
+            }
+        }
+        return $this->data[$ordinal_table];
+    }
+
+    protected function getDataForTable_($ordinal_table = 1, $force = false)
+    {
+        if ($force || empty($this->data[$ordinal_table])) {
+            $this->data[$ordinal_table] = array();
+            // lecture de la description des colonnes
+            $table_columns = $this->getConfig('doctable', 'columns', array());
+            if ($this->getRecordSourceType() == 'T') {
+                // La source doit être enregistrée dans le ServiceManager (table ou vue MySql) sinon exception
+                $table = $this->getRecordSourceTable();
+                // si la description des colonnes est vide, on configure toutes les colonnes de la source
+                if (empty($table_columns)) {
+                    $ordinal_position = 1;
+                    foreach ($table->getColumnsNames() as $column_name) {
+                        $column = require (__DIR__ . '/default/doccolumns.inc.php');
+                        $column['thead'] = $column['tbody'] = $column_name;
+                        $column['ordinal_position'] = $ordinal_position ++;
+                        $table_columns[] = $column;
+                    }
+                    $this->config['doctable']['columns'] = $table_columns;
+                }
+                // prépare les filtres pour le décodage des données (notamment booléennes)
+                foreach ($table_columns as &$column) {
+                    $column['filter'] = preg_replace(array(
+                        '/^\s+/',
+                        '/\s+$/'
+                    ), '', $column['filter']);
+                    if (! empty($column['filter']) && is_string($column['filter'])) {
+                        $column['filter'] = StdLib::getArrayFromString(stripslashes($column['filter']));
                     } else {
                         $column['filter'] = array();
                     }
@@ -1433,9 +1612,12 @@ class Tcpdf extends \TCPDF
                         }
                     }
                 } catch (\Exception $e) {
-                    die(nl2br(__METHOD__ . "\n$sql"));
-                    $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s\nCode erreur: %s", $sql, $e->getCode());
-                    throw new Exception($message, 0, $e->getPrevious());
+                    if (getenv('APPLICATION_ENV') == 'development') {
+                        $msg = __METHOD__ . ' - ' . $e->getMessage() . "\n" . $sql;
+                    } else {
+                        $msg = "Impossible d'exécuter la requête.";
+                    }
+                    throw new Exception($msg, $e->getCode(), $e->getPrevious());
                 }
             }
         }

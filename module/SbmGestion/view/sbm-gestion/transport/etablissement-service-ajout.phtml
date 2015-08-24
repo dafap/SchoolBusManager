@@ -22,6 +22,36 @@
  * @version 2015-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()
+    ->appendFile($this->basePath() . '/js/jquery.min.js')
+    ->captureStart();
+?>
+$(document).ready(function($) {
+  // adapte le select aux stations de ce circuit
+  $("#serviceIdElement").change(function() {
+    var valeur = $(this).val();
+    if (valeur != '') {
+        $.ajax({
+				url : '/sbmajaxtransport/getcircuitstations/serviceId:' + valeur,
+				dataType: 'json',
+				success : function(dataJson) {
+					$('#stationId').empty();
+					if (dataJson.success==1) {
+					    $.each(dataJson.data, function(k, d) {
+	                        $('#stationIdElement').append('<option value="' + d + '">' + k + '</option>');
+	                    });
+	                }
+				},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+	}
+  });
+});
+<?php
+$this->headScript()->captureEnd();
+
 $retour = $this->url('sbmgestion/transport', array(
     'action' => $this->origine,
     'page' => $this->page
@@ -38,10 +68,12 @@ $actions = array(
         'title' => 'Retour'
     )
 );
-if (empty($this->etablissementId)) {
+if ($this->origine == 'service-etablissement') {
     $h1 = sprintf("Ajout d'un établissement desservi par le circuit %s (%s)\nTransporteur : %s", $this->serviceId, $this->service->nom, $this->service->transporteur);
+    $description1 = "l'établissement";
 } else {
     $h1 = sprintf("Ajout d'un service desservant l'établissement\n%s %s - %s", $this->etablissementId, $this->etablissement->nom, $this->etablissement->commune);
+    $description1 = 'le service';
 }
 ?>
 <h1><?php echo nl2br($h1); ?></h1>
@@ -57,7 +89,7 @@ echo $this->form()->openTag($this->form);
 <?php
 echo $this->formHidden($this->form->get('origine'));
 echo $this->formHidden($this->form->get('csrf'));
-if (empty($this->etablissementId)) {
+if ($this->origine == 'service-etablissement') {
     echo $this->formHidden($this->form->get('serviceId'));
     echo '<div id="etablissement-service-ajout-etablissementId" class="row-inner ajout">' . $this->formRow($this->form->get('etablissementId')) . '</div>';
 } else {
@@ -65,7 +97,15 @@ if (empty($this->etablissementId)) {
     echo '<div id="etablissement-service-ajout-serviceId" class="row-inner ajout">' . $this->formRow($this->form->get('serviceId')) . '</div>';
 }
 ?>
-    <div id="classe-ajout-buttons" class="row-inner ajout">
+    <div id="etablissement-service-ajout-stationId"
+				class="row-inner ajout">
+        <?php echo $this->formRow($this->form->get('stationId'));?>
+        <p class="sbm-description">Commencez par choisir <?php echo $description1;?><br>Si
+					la station n'est pas dans la liste, allez d'abord la rajouter dans
+					le circuit que vous avez choisi.
+				</p>
+			</div>
+			<div id="classe-ajout-buttons" class="row-inner ajout">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
     </div>
 		</fieldset>

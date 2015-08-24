@@ -8,21 +8,25 @@
  * @filesource view/sbm-gestion/transport/transporteur-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mars 2015
- * @version 2015-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', array(
     'action' => 'transporteur-liste',
     'page' => $this->pageRetour
 ));
-$url_pdf = $this->url('sbmgestion/transport', array(
+$url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'transporteur-group-pdf',
     'page' => $this->page
 ));
 $hiddens = array(
     'transporteurId' => $this->transporteurId
 );
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'transporteur-group'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
@@ -32,11 +36,7 @@ $actions = array(
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    )
+    'rapports' => $menuImpression['content']
 );
 
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);

@@ -22,6 +22,7 @@ use SbmPdf\Form\DocTable as FormDocTable;
 use SbmPdf\Form\DocColumn as FormDocColumn;
 use SbmPdf\Form\DocField as FormDocField;
 use SbmPdf\Form\DocLabel as FormDocLabel;
+use SbmPdf\Form\DocAffectation as FormDocAffectation;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmPdf\Form\SbmPdf\Form;
@@ -121,10 +122,10 @@ class DocumentController extends AbstractActionController
                     case 'Etiquette':
                         $tDoclabels = $this->getServiceLocator()->get('Sbm\Db\System\DocLabels');
                         $oDoclabel = $tDoclabels->getObjData();
-                        $defaults = include (__DIR__ . '/../Model/default/doclabels.inc.php');                      
+                        $defaults = include (__DIR__ . '/../Model/default/doclabels.inc.php');
                         $defaults['documentId'] = $documentId;
                         $oDoclabel->exchangeArray($defaults);
-                        $tDoclabels->saveRecord($oDoclabel);                       
+                        $tDoclabels->saveRecord($oDoclabel);
                         break;
                     default: // Texte
                         break;
@@ -392,7 +393,14 @@ class DocumentController extends AbstractActionController
 
     public function pdfPdfAction()
     {
-        ;
+        $criteresObject = '\SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = '\SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmpdf',
+            'action' => 'pdf-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function pdfTexteAction()
@@ -566,7 +574,7 @@ class DocumentController extends AbstractActionController
         $r = $this->editData($params, function ($post) {
             return $post;
         }, function ($post) use($sm, $form) {
-            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $columns = new \SbmPdf\Model\Columns($sm, $post['documentId']);
             $form->setValueOptions('tbody', $columns->getListeForSelect());
             $form->setData(array(
                 'name' => $post['name'],
@@ -613,7 +621,7 @@ class DocumentController extends AbstractActionController
         $r = $this->addData($params, function ($post) {
             return $post;
         }, function ($post) use($sm, $form) {
-            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $columns = new \SbmPdf\Model\Columns($sm, $post['documentId']);
             $form->setValueOptions('tbody', $columns->getListeForSelect());
         });
         switch ($r) {
@@ -663,7 +671,7 @@ class DocumentController extends AbstractActionController
         $r = $this->addData($params, function ($post) {
             return $post;
         }, function ($post) use($sm, $form) {
-            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $columns = new \SbmPdf\Model\Columns($sm, $post['documentId']);
             $form->setValueOptions('tbody', $columns->getListeForSelect());
             $form->setData(array(
                 'name' => $post['name'],
@@ -879,7 +887,7 @@ class DocumentController extends AbstractActionController
         $r = $this->editData($params, function ($post) {
             return $post;
         }, function ($post) use($sm, $form) {
-            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $columns = new \SbmPdf\Model\Columns($sm, $post['documentId']);
             $form->setValueOptions('fieldname', $columns->getListeForSelect());
             $form->setData(array(
                 'name' => $post['name'],
@@ -926,7 +934,7 @@ class DocumentController extends AbstractActionController
         $r = $this->addData($params, function ($post) {
             return $post;
         }, function ($post) use($sm, $form) {
-            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $columns = new \SbmPdf\Model\Columns($sm, $post['documentId']);
             $form->setValueOptions('fieldname', $columns->getListeForSelect());
         });
         switch ($r) {
@@ -976,7 +984,7 @@ class DocumentController extends AbstractActionController
         $r = $this->addData($params, function ($post) {
             return $post;
         }, function ($post) use($sm, $form) {
-            $columns = new \SbmPdf\Model\Columns($sm, $post['recordSource']);
+            $columns = new \SbmPdf\Model\Columns($sm, $post['documentId']);
             $form->setValueOptions('fieldname', $columns->getListeForSelect());
             $form->setData(array(
                 'name' => $post['name'],
@@ -1070,6 +1078,191 @@ class DocumentController extends AbstractActionController
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'docfieldId' => StdLib::getParam('id', $r->getResult())
+                    ));
+                    break;
+            }
+        }
+    }
+
+    public function affectationListeAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false || array_key_exists('retour', $prg)) {
+            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            if ($args === false) {
+                return $this->redirect()->toRoute('sbmpdf');
+            }
+        } else {
+            $args = $prg;
+            if (array_key_exists('affecter', $args)) {
+                unset($args['affecter']);
+                $this->setToSession('post', $args, $this->getSessionNamespace());
+            }
+        }
+        try {
+            $data = $this->getServiceLocator()
+                ->get('Sbm\Db\System\DocAffectations')
+                ->getConfig($args['documentId']);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $data = array();
+        }
+        return new ViewModel(array(
+            'data' => $data,
+            'page' => $this->params('page', 1),
+            'document' => $args
+        ));
+    }
+
+    public function affectationAjoutAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $sm = $this->getServiceLocator();
+        $form = new FormDocAffectation($sm);
+        $params = array(
+            'data' => array(
+                'table' => 'docaffectations',
+                'type' => 'system',
+                'alias' => 'Sbm\Db\System\DocAffectations'
+            ),
+            // 'id' => 'docaffectationId'
+            'form' => $form
+        );
+        $r = $this->addData($params, function ($post) {
+            return $post;
+        }, function ($post) use($sm, $form) {
+            $form->setValueOptions('route', $sm->get('ListeRoutes'));
+        });
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmpdf', array(
+                    'action' => 'affectation-liste',
+                    'page' => $currentPage
+                ));
+                break;
+            default:
+                $form->setData(array(
+                    'documentId' => $r['documentId'],
+                    'name' => $r['name'],
+                    'recordSource' => $r['recordSource']
+                )
+                // 'ordinal_position' => $r['new_position']
+                );
+                $view = new ViewModel(array(
+                    'form' => $form->prepare(),
+                    'page' => $currentPage,
+                    'document' => $r
+                ));
+                $view->setTemplate('sbm-pdf/document/affectation-edit.phtml');
+                return $view;
+                break;
+        }
+    }
+
+    public function affectationEditAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $sm = $this->getServiceLocator();
+        $form = new FormDocAffectation($sm);
+        $params = array(
+            'data' => array(
+                'table' => 'docaffectations',
+                'type' => 'system',
+                'alias' => 'Sbm\Db\System\DocAffectations',
+                'id' => 'docaffectationId'
+            ),
+            'form' => $form
+        );
+        
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        }, function ($post) use($sm, $form) {
+            $form->setValueOptions('route', $sm->get('ListeRoutes'));
+        });
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmpdf', array(
+                        'action' => 'affectation-liste',
+                        'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                        'form' => $form->prepare(),
+                        'page' => $currentPage,
+                        'tarifId' => $r->getResult()
+                    ));
+                    break;
+            }
+        }
+    }
+    
+    public function affectationSupprAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new ButtonForm(array(
+            'id' => null
+        ), array(
+            'supproui' => array(
+                'class' => 'confirm',
+                'value' => 'Confirmer'
+            ),
+            'supprnon' => array(
+                'class' => 'confirm',
+                'value' => 'Abandonner'
+            )
+        ));
+        $params = array(
+            'data' => array(
+                'alias' => 'Sbm\Db\System\DocAffectations',
+                'id' => 'docaffectationId'
+            ),
+            'form' => $form
+        );
+        try {
+            $r = $this->supprData($params, function ($id, $tDocAffectations) {
+                return array(
+                    'id' => $id,
+                    'data' => $tDocAffectations->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette colonne.');
+            return $this->redirect()->toRoute('sbmpdf', array(
+                'action' => 'affectation-liste',
+                'page' => $currentPage
+            ));
+        }
+        
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmpdf', array(
+                    'action' => 'affectation-liste',
+                    'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                    'form' => $form->prepare(),
+                    'page' => $currentPage,
+                    'data' => StdLib::getParam('data', $r->getResult()),
+                    'docaffectationId' => StdLib::getParam('id', $r->getResult())
                     ));
                     break;
             }
