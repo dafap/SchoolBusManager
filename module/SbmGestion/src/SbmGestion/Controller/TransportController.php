@@ -2043,13 +2043,7 @@ class TransportController extends AbstractActionController
      */
     public function servicePdfAction()
     {
-        $criteresObject = array(
-            'SbmCommun\Model\Db\ObjectData\Criteres',
-            array(),
-            function ($where, $args) {
-                return $where->equalTo('millesime', Session::get('millesime'));
-            }
-        );
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = array(
             'SbmCommun\Form\CriteresForm',
             'services'
@@ -3019,29 +3013,17 @@ class TransportController extends AbstractActionController
      */
     public function transporteurPdfAction()
     {
-        $currentPage = $this->params('page', 1);
-        
-        $criteres_form = new CriteresForm('transporteurs');
-        $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
-        if (! empty($criteres)) {
-            $criteres_obj->exchangeArray($criteres);
-        }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', 'Liste des transporteurs');
-        if (! empty($criteres)) {
-            $call_pdf->setParam('where', $criteres_obj->getWhere())
-                ->setParam('criteres', $criteres)
-                ->setParam('strict', array(
-                'empty' => array(),
-                'not empty' => array(
-                    'selection'
-                )
-            ));
-        }
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = array(
+            'SbmCommun\Form\CriteresForm',
+            'transporteurs'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmgestion/transport',
+            'action' => 'transporteur-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
     
     public function transporteurGroupPdfAction()

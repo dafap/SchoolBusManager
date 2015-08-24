@@ -13,6 +13,18 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+
+$url_retour = $this->url('sbmgestion/transport', array(
+    'action' => $this->origine,
+    'page' => $this->pageRetour
+));
+$retour = array(
+    'class' => 'fam-door-out',
+    'formaction' => $url_retour,
+    'title' => 'Retour'
+);
 if ($this->origine == 'service-liste') {
     $url_rapports = $this->url('sbmgestion/transport', array(
         'action' => 'service-group-pdf',
@@ -25,6 +37,7 @@ if ($this->origine == 'service-liste') {
         'action' => 'service-group'
     )), $url_rapports, 'fam-printer', null, $hiddens);
     $hiddens = $menuImpression['hiddens'];
+    $retour['onclick'] = $js_retour;
 } elseif ($this->origine == 'transporteur-service') {
     $url_rapports = $this->url('sbmgestion/transport', array(
         'action' => 'service-group-pdf',
@@ -45,7 +58,7 @@ if ($this->origine == 'service-liste') {
     ));
     $hiddens = array(
         'etablissementId' => $this->etablissementId,
-        'serviceId' => $this->serviceId,
+        'serviceId' => $this->serviceId
     );
     $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
         'action' => 'etablissement-service-group'
@@ -53,21 +66,9 @@ if ($this->origine == 'service-liste') {
     $hiddens = $menuImpression['hiddens'];
 }
 
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine,
-    'page' => $this->pageRetour
-));
-
-// ne pas utiliser de guillement dans la chaine $js
-// $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
-    'retour' => array(
-        'class' => 'fam-door-out',
-        'formaction' => $url_retour,
-        // 'onclick' => $js_retour
-        'title' => 'Retour'
-    ),
-    'rapports' => $menuImpression['content'],
+    'retour' => $retour,
+    'rapports' => $menuImpression['content']
 );
 
 $this->paginator->setDefaultItemCountPerPage($this->nb_pagination);

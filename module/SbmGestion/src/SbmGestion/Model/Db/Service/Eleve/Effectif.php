@@ -16,6 +16,7 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Expression;
 use Zend\Db\ResultSet\ResultSet;
 use DafapSession\Model\Session;
@@ -136,8 +137,8 @@ class Effectif implements FactoryInterface
             $result[$row['etablissementId']]['r1'] = $row['effectif'];
         }
         
-        $rowset = $this->requeteWith('service2Id', array(
-            'service2Id' => $serviceId
+        $rowset = $this->requeteWith2('service', array(
+            'a.service2Id' => $serviceId
         ), 'etablissementId');
         foreach ($rowset as $row) {
             $result[$row['etablissementId']]['r2'] = $row['effectif'];
@@ -162,7 +163,7 @@ class Effectif implements FactoryInterface
             $result[$row['service1Id']]['r1'] = $row['effectif'];
         }
         
-        $rowset = $this->requeteWith('service2Id', array(
+        $rowset = $this->requeteWith2('service', array(
             'etablissementId' => $etablissementId
         ), 'service2Id');
         foreach ($rowset as $row) {
@@ -190,8 +191,8 @@ class Effectif implements FactoryInterface
             $result[$row['service1Id']]['r1'] = $row['effectif'];
         }
         
-        $rowset = $this->requeteWith('service2Id', array(
-            'station2Id' => $stationId
+        $rowset = $this->requeteWith2('service', array(
+            'a.station2Id' => $stationId
         ), 'service2Id');
         foreach ($rowset as $row) {
             if ($row['service2Id'] == '')
@@ -214,7 +215,7 @@ class Effectif implements FactoryInterface
         foreach ($rowset as $row) {
             $result[$row['column']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteSrv('service2Id', array(), 'service2Id');
+        $rowset = $this->requeteSrv2('service', array(), 'service2Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r2'] = $row['effectif'];
         }
@@ -233,7 +234,7 @@ class Effectif implements FactoryInterface
         foreach ($rowset as $row) {
             $result[$row['column']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteSrv('station2Id', array(), 'station2Id');
+        $rowset = $this->requeteSrv2('station', array(), 'station2Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r2'] = $row['effectif'];
         }
@@ -243,7 +244,7 @@ class Effectif implements FactoryInterface
         }
         return $result;
     }
-    
+
     public function byTarif()
     {
         // SELECT tarifId, count(*) FROM sbm_t_scolarites GROUP BY tarifId
@@ -261,13 +262,13 @@ class Effectif implements FactoryInterface
     {
         // SELECT service1Id serviceId, count(*) FROM `sbm_t_affectations` a JOIN `sbm_t_services` s ON a.service1Id=s.serviceId WHERE millesime=2014 AND transporteurId=1 GROUP BY service1Id
         $result = array();
-        $rowset = $this->requeteTr(1, 'serviceId', array(
+        $rowset = $this->requeteTr1('serviceId', array(
             'transporteurId' => $transporteurId
         ), 'service1Id');
         foreach ($rowset as $row) {
             $result[$row['serviceId']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteTr(2, 'serviceId', array(
+        $rowset = $this->requeteTr2('serviceId', array(
             'transporteurId' => $transporteurId
         ), 'service2Id');
         foreach ($rowset as $row) {
@@ -284,11 +285,11 @@ class Effectif implements FactoryInterface
     {
         // SELECT transporteurId, count(*) FROM `sbm_t_affectations` a JOIN sbm_t_services s on a.service1Id=s.serviceId WHERE millesime=2014 GROUP BY transporteurId
         $result = array();
-        $rowset = $this->requeteTr(1, 'transporteurId', array(), 'transporteurId');
+        $rowset = $this->requeteTr1('transporteurId', array(), 'transporteurId');
         foreach ($rowset as $row) {
             $result[$row['transporteurId']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteTr(2, 'transporteurId', array(), 'transporteurId');
+        $rowset = $this->requeteTr2('transporteurId', array(), 'transporteurId');
         foreach ($rowset as $row) {
             $result[$row['transporteurId']]['r2'] = $row['effectif'];
         }
@@ -327,6 +328,49 @@ class Effectif implements FactoryInterface
         return $statement->execute();
     }
 
+    private function requeteWith2($by, $conditions, $group)
+    {
+        $select1 = new Select();
+        $select1->from(array(
+            'a1' => $this->tableName['affectations']
+        ))->where(array(
+            'millesime' => $this->millesime,
+            'correspondance' => 2
+        ));
+        $column = $by . '2Id';
+        $foreign = $by . '1Id';
+        $jointure = "a.millesime=correspondances.millesime AND a.eleveId=correspondances.eleveId AND a.trajet=correspondances.trajet AND a.jours=correspondances.jours AND a.sens=correspondances.sens AND a.$column=correspondances.$foreign";
+        $where = new Where();
+        $where->equalTo('s.millesime', $this->millesime)->isNull('correspondances.millesime');
+        foreach ($conditions as $key => $value) {
+            $where->equalTo($key, $value);
+        }
+        $select = $this->sql->select();
+        $select->from(array(
+            's' => $this->tableName['scolarites']
+        ))
+            ->join(array(
+            'a' => $this->tableName['affectations']
+        ), 'a.millesime=s.millesime AND a.eleveId=s.eleveId', array(
+            $column,
+            'effectif' => new Expression('count(*)')
+        ))
+            ->join(array(
+            'correspondances' => $select1
+        ), $jointure, array(), Select::JOIN_LEFT)
+            ->where($where)
+            ->group($group);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    /**
+     *
+     * @param string $column            
+     * @param array $where            
+     * @param string $group            
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
     private function requeteSrv($column, $where, $group)
     {
         $where['a.millesime'] = $this->millesime;
@@ -344,7 +388,39 @@ class Effectif implements FactoryInterface
         return $statement->execute();
     }
 
-    private function requeteTr($rang, $column, $where, $group)
+    private function requeteSrv2($by, $conditions, $group)
+    {
+        $select1 = new Select();
+        $select1->from($this->tableName['affectations'])->where(array(
+            'millesime' => $this->millesime,
+            'correspondance' => 2
+        ));
+        $column = $by . '2Id';
+        $foreign = $by . '1Id';
+        $jointure = "a.millesime=correspondances.millesime AND a.eleveId=correspondances.eleveId AND a.trajet=correspondances.trajet AND a.jours=correspondances.jours AND a.sens=correspondances.sens AND a.$column=correspondances.$foreign";
+        $where = new Where();
+        $where->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
+        foreach ($conditions as $key => $value) {
+            $where->equalTo($key, $value);
+        }
+        $select = $this->sql->select();
+        $select->from(array(
+            'a' => $this->tableName['affectations']
+        ))
+            ->join(array(
+            'correspondances' => $select1
+        ), $jointure, array(), Select::JOIN_LEFT)
+            ->columns(array(
+            'column' => $column,
+            'effectif' => new Expression('count(*)')
+        ))
+            ->where($where)
+            ->group("a.$group");
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    private function requeteTr1($column, $where, $group)
     {
         $where['millesime'] = $this->millesime;
         $select = $this->sql->select();
@@ -353,10 +429,44 @@ class Effectif implements FactoryInterface
         ))
             ->join(array(
             's' => $this->tableName['services']
-        ), sprintf('a.service%sId=s.serviceId', $rang), array(
+        ), 'a.service1Id=s.serviceId', array(
             $column,
             'effectif' => new Expression('count(*)')
         ))
+            ->where($where)
+            ->group($group);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    private function requeteTr2($column, $conditions, $group)
+    {
+        $select1 = new Select();
+        $select1->from(array(
+            'a1' => $this->tableName['affectations']
+        ))->where(array(
+            'millesime' => $this->millesime,
+            'correspondance' => 2
+        ));
+        $jointure = "a.millesime=correspondances.millesime AND a.eleveId=correspondances.eleveId AND a.trajet=correspondances.trajet AND a.jours=correspondances.jours AND a.sens=correspondances.sens AND a.service2Id=correspondances.service1Id";
+        $where = new Where();
+        $where->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
+        foreach ($conditions as $key => $value) {
+            $where->equalTo($key, $value);
+        }
+        $select = $this->sql->select();
+        $select->from(array(
+            'a' => $this->tableName['affectations']
+        ))
+            ->join(array(
+            's' => $this->tableName['services']
+        ), 'a.service2Id=s.serviceId', array(
+            $column,
+            'effectif' => new Expression('count(*)')
+        ))
+            ->join(array(
+            'correspondances' => $select1
+        ), $jointure, array(), Select::JOIN_LEFT)
             ->where($where)
             ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
