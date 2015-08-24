@@ -42,6 +42,13 @@ class Paiements extends AbstractSbmTable
         parent::saveRecord($obj_data);
     }
 
+    /**
+     * Enregistre l'état du champ selection
+     *
+     * @param int $paiementId            
+     * @param int $selection
+     *            0 ou 1
+     */
     public function setSelection($paiementId, $selection)
     {
         $oData = $this->getObjData();
@@ -208,6 +215,25 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
+     * Donne la date du denier paiement
+     * 
+     * @param int $codeModeDePaiement
+     * 
+     * @return string format dateMysql
+     */
+    public function dateDernierPaiement($codeModeDePaiement)
+    {
+        $where = new Where();
+        $where->equalTo('codeModeDePaiement', $codeModeDePaiement);
+        $select = $this->table_gateway->getSql()->select();
+        $select->columns(array(
+            'date' => new Expression('max(datePaiement)')
+        ))->where($where);
+        $result = $this->table_gateway->selectWith($select)->current();
+        return $result->date;
+    }
+    
+    /**
      * Renvoie le montant total d'un bordereau.
      * Par défaut, n'examine que les bordereaux en cours.
      * Si le codeModeDePaiement est null, renvoie le total des bordereaux en cours.
@@ -257,7 +283,7 @@ class Paiements extends AbstractSbmTable
         $result = $this->table_gateway->selectWith($select)->current();
         return $result->somme;
     }
-    
+
     public function totalExercice($exercice, $codeCaisse = null, $codeModeDePaiement = null)
     {
         $where = new Where();
