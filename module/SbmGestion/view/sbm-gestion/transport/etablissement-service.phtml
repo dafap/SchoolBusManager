@@ -8,17 +8,18 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2015
- * @version 2015-1
+ * @date 23 août 2015
+ * @version 2015-2
  */
 use SbmCommun\Model\StdLib;
+use SbmCommun\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service-ajout',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmgestion/transport', array(
+$url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'etablissement-service-pdf',
     'page' => $this->page
 ));
@@ -42,6 +43,10 @@ $hiddens = array(
     'etablissementId' => $this->etablissement->etablissementId,
     'origine' => 'etablissement-service'
 );
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'etablissement-service'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -49,11 +54,7 @@ $actions = array(
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
@@ -82,7 +83,7 @@ echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
 	<div id="liste-inner">
-		<table class="liste-inner services">
+		<table class="liste-inner etablissements-services">
 			<tbody>
 				<tr>
 					<th>Code</th>
@@ -92,6 +93,10 @@ echo $this->flashMessenger()->render('default');
 					<th>Opérateur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
+					<th>Descente</th>
+					<th>Matin</th>
+					<th>Midi</th>
+					<th>Soir</th>
 					<th></th>
 				</tr>
             <?php foreach($data as $test => $service): ?>
@@ -115,6 +120,10 @@ echo $this->flashMessenger()->render('default');
 					<td class="operateur"><?php echo $this->escapeHtml($service->serv_operateur); ?></td>
 					<td class="nbplaces"><?php echo $this->escapeHtml($service->serv_nbPlaces); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="station"><?php echo $this->escapeHtml($service->sta_nom);?></td>
+					<td class="matin"><?php echo $service->cir_m1; ?></td>
+					<td class="midi"><?php echo $service->cir_s2; ?></td>
+					<td class="soir"><?php echo $service->cir_s1; ?></td>
 					<td class="boutons">
             <?php
                 $hiddens = array(

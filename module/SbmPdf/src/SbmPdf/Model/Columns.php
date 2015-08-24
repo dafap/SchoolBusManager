@@ -45,9 +45,10 @@ class Columns
      */
     private $recordSourceType;
 
-    public function __construct(ServiceLocatorInterface $sm, $recordSource)
+    public function __construct(ServiceLocatorInterface $sm, $documentId)
     {
         $this->sm = $sm;
+        $recordSource = $sm->get('Sbm\Db\System\Documents')->getRecord($documentId)->recordSource;
         $this->recordSource = $recordSource;
         $this->db = $this->sm->get('Sbm\Db\DbLib');
         if (array_key_exists($recordSource, $this->db->getTableAliasList())) {

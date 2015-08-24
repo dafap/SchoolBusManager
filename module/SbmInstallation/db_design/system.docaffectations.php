@@ -21,7 +21,9 @@ return array(
         'fields' => array(
             'docaffectationId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL',
-            'methodeAction' => 'varchar(255) NOT NULL'
+            'route' => 'varchar(255) NOT NULL',
+            'libelle' => 'varchar(255) NOT NULL',
+            'ordinal_position' => 'int(11) NOT NULL'
         ),
         'primary_key' => array(
             'docaffectationId'
@@ -44,5 +46,6 @@ return array(
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    )
+    ),
+    'data' => __DIR__ . '/data/data.system.docaffectations.php'
 );

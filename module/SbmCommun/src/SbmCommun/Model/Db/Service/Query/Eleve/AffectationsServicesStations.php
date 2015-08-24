@@ -180,6 +180,11 @@ class AffectationsServicesStations implements FactoryInterface
             'commune1' => 'nom'
         ))
             ->join(array(
+            'cir1' => $this->db->getCanonicName('circuits', 'table')
+        ), 'ser1.serviceId = cir1.serviceId AND cir1.stationId = sta1.stationId', array(
+            'circuit1Id' => 'circuitId'
+        ), $select::JOIN_LEFT)
+            ->join(array(
             'ser2' => $this->db->getCanonicName('services', 'table')
         ), 'aff.service2Id = ser2.serviceId', array(
             'service2' => 'nom',
@@ -199,9 +204,16 @@ class AffectationsServicesStations implements FactoryInterface
             'com2' => $this->db->getCanonicName('communes', 'table')
         ), 'sta2.communeId = com2.communeId', array(
             'commune2' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'cir2' => $this->db->getCanonicName('circuits', 'table')
+        ), 'ser2.serviceId = cir2.serviceId AND cir2.stationId = sta2.stationId', array(
+            'circuit2Id' => 'circuitId'
         ), $select::JOIN_LEFT);
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->and->equalTo('eleveId', $eleveId);
+        $where->equalTo('cir1.millesime', $this->millesime)->equalTo('aff.millesime', $this->millesime)->and->equalTo('eleveId', $eleveId)
+            ->nest()
+            ->isNull('cir2.millesime')->or->equalTo('cir2.millesime', $this->millesime)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
@@ -392,14 +404,24 @@ class AffectationsServicesStations implements FactoryInterface
             ->join(array(
             'ser1' => $this->db->getCanonicName('services', 'table')
         ), 'ser1.serviceId=aff.service1Id', array(
+            'service1' => 'nom'
+        ))
+            ->join(array(
+            'tra1' => $this->db->getCanonicName('transporteurs', 'table')
+        ), 'ser1.transporteurId=tra1.transporteurId', array(
             'transporteur1' => 'nom'
         ))
             ->join(array(
             'ser2' => $this->db->getCanonicName('services', 'table')
         ), 'ser2.serviceId=aff.service2Id', array(
+            'service2' => 'nom'
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'tra2' => $this->db->getCanonicName('transporteurs', 'table')
+        ), 'ser2.transporteurId=tra2.transporteurId', array(
             'transporteur2' => 'nom'
         ), $select::JOIN_LEFT);
-        if (!empty($order)) {
+        if (! empty($order)) {
             $select->order($order);
         }
         return $select->where($where);

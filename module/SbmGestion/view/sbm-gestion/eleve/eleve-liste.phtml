@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Liste des élèves
  *
@@ -108,7 +107,7 @@ $url_ajouter = $this->url('sbmgestion/eleve', array(
     'page' => $this->page
 ));
 $url_rapports = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-pdf',
+    'action' => empty($this->groupe) ? 'eleve-pdf' : 'eleve-groupe-pdf',
     'page' => $this->page
 ));
 $url_map = $this->url('sbmgestion/eleve', array(
@@ -122,19 +121,24 @@ $url_cartes = $this->url('sbmgestion/gestioneleve', array(
 $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
 $url_retour = $this->url('sbmgestion');
 
-// le formulaire des actions du haut de page - aide de vue listeZoneActions()
-$hiddens = array();
+// définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
+if (! empty($this->groupe)) {
+    $hiddens = array('op' => $this->groupe); // pour passer les éléments à prendre en compte pour eleve-groupe
+} else {
+    $hiddens = array();
+}
+$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
+
 $actions = array(
     'cancel' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_ici,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'label' => true,
-        'class' => 'fam-printer',
-        'menu' => array()
-    ),
+    'rapports' => $menuImpression['content'],
     'cartes' => array(
         'class' => 'fam-vcard',
         'formaction' => $url_cartes,
@@ -177,6 +181,8 @@ echo $this->flashMessenger()->render('default');
 					<th title="garde alternée">G.A.</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
+					<th>Services</th>
+					<th>Arrêts</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
@@ -230,9 +236,11 @@ echo $this->flashMessenger()->render('default');
                 ));
                 $itemR2 .= $r;
                 $ga = true;
+                $rowspan = ' rowspan="2"';
             } else {
                 $itemR2 = '';
                 $ga = false;
+                $rowspan = '';
             }
             // selection
             $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve['eleveId']);
@@ -256,24 +264,23 @@ echo $this->flashMessenger()->render('default');
             }
             ?>
          <tr class="<?php echo $tr_css;?>">
-					<td>
+					<td <?php echo $rowspan;?>>
                     <?php echo $eleve['paiement'] ? '' : '<i class="fam-tag-orange" title="Préinscrit"></i>';?>
                     <?php echo $eleve['affecte'] ? '' : '<i class="fam-chart-line-error" title="Sans affectation"></i>';?>
                     </td>
-					<td class="numero"><?php echo $eleve['numero']; ?></td>
-					<td class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
-					<td class="prenom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
-					<td class="dateN"><?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
-					<td class="responsables"><?php echo $itemR1; ?>
-					<?php if ($ga):?>
-					    <br /><?php echo $itemR2; ?>
-					<?php endif;?>
-					</td>
-					<td <?php echo $ga ? ' title="garde alternée"' : '';?>><?php echo empty($itemR2)? '' : 'G.A.';?></td>
-					<td class="etablissement"><?php echo $this->escapeHtml($eleve['etablissement'] . ' - ' . $eleve['communeEtablissement']);?></td>
-					<td class="classe"><?php echo $this->escapeHtml($eleve['classe']);?></td>
-					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?></td>
-					<td class="boutons">
+					<td <?php echo $rowspan;?> class="numero"><?php echo $eleve['numero']; ?></td>
+					<td <?php echo $rowspan;?> class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
+					<td <?php echo $rowspan;?> class="prenom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
+					<td <?php echo $rowspan;?> class="dateN"><?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
+					<td class="responsables"><?php echo $itemR1; ?></td>
+					<td <?php echo $rowspan;?>
+						<?php echo $ga ? ' title="garde alternée"' : '';?>><?php echo empty($itemR2)? '' : 'G.A.';?></td>
+					<td <?php echo $rowspan;?> class="etablissement"><?php echo $this->escapeHtml($eleve['etablissement'] . ' - ' . $eleve['communeEtablissement']);?></td>
+					<td <?php echo $rowspan;?> class="classe"><?php echo $this->escapeHtml($eleve['classe']);?></td>
+					<td class="service"><?php echo $this->printServices($eleve['eleveId'], 1);?></td>
+					<td class="station"><?php echo $this->printStations($eleve['eleveId'], 1);?></td>
+					<td <?php echo $rowspan;?> class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?></td>
+					<td <?php echo $rowspan;?> class="boutons">
             <?php
             $hiddens = array(
                 'eleveId' => $eleve['eleveId'],
@@ -303,7 +310,14 @@ echo $this->flashMessenger()->render('default');
             echo $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);
             ?>
 				</td>
-				</tr>         
+				</tr> 
+				<?php if ($ga):?>
+					    <tr class="<?php echo $tr_css;?>">
+					<td class="responsables"><?php echo $itemR2; ?></td>
+					<td class="service"><?php echo $this->printServices($eleve['eleveId'], 2);?></td>
+					<td class="station"><?php echo $this->printStations($eleve['eleveId'], 2);?></td>
+				</tr>
+					<?php endif;?>        
         <?php endforeach;?>
     </tbody>
 		</table>

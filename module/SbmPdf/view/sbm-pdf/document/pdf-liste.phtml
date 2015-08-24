@@ -37,7 +37,7 @@ $url_ajouter = $this->url('sbmpdf', array(
     'action' => 'pdf-ajout',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmpdf', array(
+$url_rapports = $this->url('sbmpdf', array(
     'action' => 'pdf-pdf',
     'page' => $this->page
 ));
@@ -45,21 +45,25 @@ $url_tableau = $this->url('sbmpdf', array(
     'action' => 'table-liste',
     'page' => $this->page
 ));
+$url_affectation = $this->url('sbmpdf', array(
+    'action' => 'affectation-liste',
+    'page' => $this->page
+));
+
 $url_etiquette = $this->url('sbmpdf', array('action' => 'etiquette-format', 'page' => $this->page));
 $url_texte = $this->url('sbmpdf', array('action' => 'texte-format', 'page' => $this->page));
 $url_retour = $this->url('sbmadmin');
 $hiddens = array();
+$menuImpression = $this->menuRapports('/pdf/pdf-liste', $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+//die(var_dump($menuImpression));
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
@@ -82,6 +86,11 @@ $buttons = array(
         'class' => 'fam-delete',
         'formaction' => $url_delete,
         'title' => 'supprimer'
+    ),
+    'affecter' => array(
+        'class' => 'fam-page-link',
+        'formaction' => $url_affectation,
+        'title' => 'affecter'
     ),
     'apercu' => array(
         'class' => 'fam-page-white-magnify',

@@ -19,7 +19,7 @@ class EtablissementService extends AbstractSbmForm
     /**
      * Désigne la colonne qui sera dans un Select.
      * L'autre sera dans un hidden.
-     * 
+     *
      * @var string
      */
     private $select;
@@ -45,13 +45,16 @@ class EtablissementService extends AbstractSbmForm
         if ($select == 'service') {
             $this->add(array(
                 'name' => 'etablissementId',
-                'type' => 'hidden'
+                'type' => 'hidden',
+                'attributes' => array(
+                    'id' => 'etablissementIdElement'
+                )    
             ));
             $this->add(array(
                 'name' => 'serviceId',
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => array(
-                    'id' => 'etablissement-serviceId',
+                    'id' => 'serviceIdElement',
                     'autofocus' => 'autofocus',
                     'class' => 'sbm-width-45c'
                 ),
@@ -69,13 +72,16 @@ class EtablissementService extends AbstractSbmForm
         } else {
             $this->add(array(
                 'name' => 'serviceId',
-                'type' => 'hidden'
+                'type' => 'hidden',
+                'attributes' => array(
+                    'id' => 'serviceIdElement'
+                )
             ));
             $this->add(array(
                 'name' => 'etablissementId',
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => array(
-                    'id' => 'etablissementId-service',
+                    'id' => 'etablissementIdElement',
                     'autofocus' => 'autofocus',
                     'class' => 'sbm-width-45c'
                 ),
@@ -91,6 +97,25 @@ class EtablissementService extends AbstractSbmForm
                 )
             ));
         }
+        $this->add(array(
+            'name' => 'stationId',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'stationIdElement',
+                'class' => 'sbm-width-45c'
+            ),
+            'options' => array(
+                'label' => 'Station desservant l\'établissement',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'empty_option' => 'Choisissez une station',
+                'disable_inarray_validator' => true,
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(

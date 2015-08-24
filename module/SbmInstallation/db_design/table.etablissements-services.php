@@ -22,6 +22,7 @@ return array(
         'fields' => array(
             'etablissementId' => 'char(8) NOT NULL',
             'serviceId' => 'varchar(11) NOT NULL',
+            'stationId' => 'int(11) NOT NULL'
         ),
         'primary_key' => array(
             'etablissementId',
@@ -47,6 +48,19 @@ return array(
                     'table' => 'services',
                     'fields' => array(
                         'serviceId'
+                    ),
+                    'on' => array(
+                        'update' => 'CASCADE',
+                        'delete' => 'RESTRICT'
+                    )
+                )
+            ),
+            array(
+                'key' => 'stationId',
+                'references' => array(
+                    'table' => 'stations',
+                    'fields' => array(
+                        'stationId'
                     ),
                     'on' => array(
                         'update' => 'CASCADE',

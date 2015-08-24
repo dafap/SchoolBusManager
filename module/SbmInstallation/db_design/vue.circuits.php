@@ -114,6 +114,10 @@ return array(
                     array(
                         'field' => 'nom',
                         'alias' => 'transporteur'
+                    ),
+                    array(
+                        'field' => 'telephone',
+                        'alias' => 'telephoneTransporteur'
                     )
                 )
             ),

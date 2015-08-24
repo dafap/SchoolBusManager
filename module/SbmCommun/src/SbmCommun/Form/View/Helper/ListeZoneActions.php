@@ -144,6 +144,9 @@ class ListeZoneActions extends AbstractHelper
     private function getMenuOnglet($attributes)
     {
         $result = '<li';
+        if (array_key_exists('menu', $attributes) && empty($attributes['menu'] && array_key_exists('title', $attributes))) {
+            $result .= ' title="' . $attributes['title'] . '"';
+        }
         if (array_key_exists('class', $attributes)) {
             $class = $attributes['class'];
             if (strpos($class, 'onglet') === false && array_key_exists('menu', $attributes)) {

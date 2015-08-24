@@ -97,6 +97,7 @@ class Liste implements FactoryInterface
         }
         $this->select->where($where)
             ->order($order)
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(array(
             'nom',
             'prenom',
@@ -277,15 +278,106 @@ class Liste implements FactoryInterface
 
     private function selectByEtablissementService($millesime, $etablissementId, $serviceId, $order)
     {
+        $tableAffectations = $this->db->getCanonicName('affectations', 'table');
+        $select1 = new Select();
+        $select1->from(array(
+            'a1' => $tableAffectations
+        ))
+            ->columns(array(
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'sens',
+            'responsableId',
+            'stationId' => 'station1Id',
+            'serviceId' => 'service1Id'
+        ))
+            ->where(array(
+            'a1.millesime' => $millesime
+        ));
+        
+        $select1cor2 = new Select();
+        $select1cor2->from(array(
+            'a1c2' => $tableAffectations
+        ))
+            ->columns(array(
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'sens',
+            'responsableId',
+            'stationId' => 'station1Id',
+            'serviceId' => 'service1Id'
+        ))
+            ->where(array(
+            'a1c2.millesime' => $millesime,
+            'correspondance' => 2
+        ));
+        
+        $jointure = "a2.millesime=correspondances.millesime AND a2.eleveId=correspondances.eleveId AND a2.trajet=correspondances.trajet AND a2.jours=correspondances.jours AND a2.sens=correspondances.sens AND a2.station2Id=correspondances.stationId";
+        $where2 = new Where();
+        $where2->equalTo('a2.millesime', $millesime)
+            ->isNotNull('service2Id')
+            ->isNull('correspondances.millesime');
+        $select2 = new Select();
+        $select2->from(array(
+            'a2' => $tableAffectations
+        ))
+            ->columns(array(
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'sens',
+            'responsableId',
+            'stationId' => 'station2Id',
+            'serviceId' => 'service2Id'
+        ))
+            ->join(array(
+            'correspondances' => $select1cor2
+        ), $jointure, array(), Select::JOIN_LEFT)
+            ->where($where2);
+        
         $where = new Where();
         $where->equalTo('s.millesime', $millesime)
             ->equalTo('s.etablissementId', $etablissementId)
-            ->nest()
-            ->equalTo('aff.service1Id', $serviceId)->or->equalTo('aff.service2Id', $serviceId)->unnest();
-        $select = clone $this->select;
-        $select->join(array(
-            'aff' => $this->db->getCanonicName('affectations', 'table')
-        ), 's.eleveId = aff.eleveId And s.millesime = aff.millesime', array())
+            ->equalTo('a.serviceId', $serviceId);
+        $select = $this->sql->select();
+        $select->from(array(
+            'e' => $this->db->getCanonicName('eleves', 'table')
+        ))
+            ->join(array(
+            's' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'e.eleveId=s.eleveId', array())
+            ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 's.etablissementId = eta.etablissementId', array(
+            'etablissement' => 'nom'
+        ))
+            ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 's.classeId = cla.classeId', array(
+            'classe' => 'nom'
+        ))
+            ->join(array(
+            'a' => $select1->combine($select2)
+        ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
+            ->join(array(
+            'r' => $this->db->getCanonicName('responsables', 'table')
+        ), 'r.responsableId=a.responsableId', array())
+            ->join(array(
+            'c' => $this->db->getCanonicName('communes', 'table')
+        ), 'r.communeId=c.communeId', array())
+            ->join(array(
+            'd' => $this->db->getCanonicName('communes', 'table')
+        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
+            ->join(array(
+            'sta' => $this->db->getCanonicName('stations', 'table')
+        ), 'sta.stationId = a.stationId', array(
+            'station' => 'nom'
+        ))
             ->where($where)
             ->order($order)
             ->quantifier(Select::QUANTIFIER_DISTINCT)
@@ -297,7 +389,7 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
-        //die($select->getSqlString());
+        // die($select->getSqlString());
         return $select;
     }
 
@@ -330,6 +422,7 @@ class Liste implements FactoryInterface
         $select = clone $this->select;
         $select->where($where)
             ->order($order)
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(array(
             'nom',
             'prenom',
@@ -356,6 +449,7 @@ class Liste implements FactoryInterface
         $where->equalTo('s.millesime', $millesime)->NEST->equalTo('station1Id', $stationId)->OR->equalTo('station2Id', $stationId)->UNNEST;
         $this->select->where($where)
             ->order($order)
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(array(
             'nom',
             'prenom',
@@ -449,27 +543,116 @@ class Liste implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
-    
+
     public function paginatorByTransporteur($millesime, $transporteurId, $order = array('commune', 'nom', 'prenom'))
     {
         $select = $this->selectByTransporteur($millesime, $transporteurId, $order);
         return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
     }
-    
+
     private function selectByTransporteur($millesime, $transporteurId, $order)
     {
+        $tableAffectations = $this->db->getCanonicName('affectations', 'table');
+        $select1 = new Select();
+        $select1->from(array(
+            'a1' => $tableAffectations
+        ))
+        ->columns(array(
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'sens',
+            'responsableId',
+            'stationId' => 'station1Id',
+            'serviceId' => 'service1Id'
+        ))
+        ->where(array(
+            'a1.millesime' => $millesime
+        ));
+        
+        $select1cor2 = new Select();
+        $select1cor2->from(array(
+            'a1c2' => $tableAffectations
+        ))
+        ->columns(array(
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'sens',
+            'responsableId',
+            'stationId' => 'station1Id',
+            'serviceId' => 'service1Id'
+        ))
+        ->where(array(
+            'a1c2.millesime' => $millesime,
+            'correspondance' => 2
+        ));
+        
+        $jointure = "a2.millesime=correspondances.millesime AND a2.eleveId=correspondances.eleveId AND a2.trajet=correspondances.trajet AND a2.jours=correspondances.jours AND a2.sens=correspondances.sens AND a2.station2Id=correspondances.stationId";
+        $where2 = new Where();
+        $where2->equalTo('a2.millesime', $millesime)
+        ->isNotNull('service2Id')
+        ->isNull('correspondances.millesime');
+        $select2 = new Select();
+        $select2->from(array(
+            'a2' => $tableAffectations
+        ))
+        ->columns(array(
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'sens',
+            'responsableId',
+            'stationId' => 'station2Id',
+            'serviceId' => 'service2Id'
+        ))
+        ->join(array(
+            'correspondances' => $select1cor2
+        ), $jointure, array(), Select::JOIN_LEFT)
+        ->where($where2);
+        
         $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->NEST->equalTo('s1.transporteurId', $transporteurId)->OR->equalTo('s2.transporteurId', $transporteurId)->UNNEST;
-        $select = clone $this->select;
-        $select->join(array(
-            's1' => $this->db->getCanonicName('services', 'table')
-        ), 's1.serviceId=a.service1Id', array(), Select::JOIN_LEFT)
-            ->join(array(
-            's2' => $this->db->getCanonicName('services', 'table')
-        ), 's2.serviceId=a.service2Id', array(), Select::JOIN_LEFT)
-            ->where($where)
-            ->order($order)
-            ->columns(array(
+        $where->equalTo('s.millesime', $millesime)
+        ->equalTo('ser.transporteurId', $transporteurId);
+        $select = $this->sql->select();
+        $select->from(array(
+            'e' => $this->db->getCanonicName('eleves', 'table')
+        ))
+        ->join(array(
+            's' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'e.eleveId=s.eleveId', array())
+        ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 's.etablissementId = eta.etablissementId', array(
+            'etablissement' => 'nom'
+        ))
+        ->join(array(
+            'cla' => $this->db->getCanonicName('classes', 'table')
+        ), 's.classeId = cla.classeId', array(
+            'classe' => 'nom'
+        ))
+        ->join(array(
+            'a' => $select1->combine($select2)
+        ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
+        ->join(array(
+            'r' => $this->db->getCanonicName('responsables', 'table')
+        ), 'r.responsableId=a.responsableId', array())
+        ->join(array(
+            'c' => $this->db->getCanonicName('communes', 'table')
+        ), 'r.communeId=c.communeId', array())
+        ->join(array(
+            'd' => $this->db->getCanonicName('communes', 'table')
+        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
+        ->join(array(
+            'ser' => $this->db->getCanonicName('services', 'table')
+        ), 'ser.serviceId = a.serviceId', array())
+        ->where($where)
+        ->order($order)
+        ->quantifier(Select::QUANTIFIER_DISTINCT)
+        ->columns(array(
             'nom',
             'prenom',
             'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
@@ -477,8 +660,8 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
+        // die($select->getSqlString());
         return $select;
-        
     }
 
     /**

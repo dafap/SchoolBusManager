@@ -76,7 +76,7 @@ return array(
             'sbmpaiement' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/paiement[/:action[/:page[/:id]]]',
+                    'route' => '/paiement[/:action[/page/:page[/id/:id]]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',

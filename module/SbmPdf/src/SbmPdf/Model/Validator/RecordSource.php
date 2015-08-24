@@ -34,9 +34,14 @@ class RecordSource extends AbstractValidator
      * @var array Message templates
      */
     protected $messageTemplates = array(
-        self::ERROR_BAD_QUERY => "Ce n'est ni l'identifiant d'une table ou d'une vue, ni une requête Sql"
+        self::ERROR_BAD_QUERY => "Ce n'est ni l'identifiant d'une table ou d'une vue, ni une requête Sql\n%msg%"
+    );
+    
+    protected $messageVariables = array(
+        'msg' => 'msg'
     );
 
+    protected  $msg;
     /**
      *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
@@ -89,6 +94,7 @@ class RecordSource extends AbstractValidator
             $result = $this->db->getDbAdapter()->query($value, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
             return true;
         } catch (\PDOException $e) {
+            $this->msg = $e->getMessage();
             $this->error(self::ERROR_BAD_QUERY);
             return false;
         }

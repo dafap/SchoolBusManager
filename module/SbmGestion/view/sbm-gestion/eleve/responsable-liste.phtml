@@ -58,12 +58,16 @@ $url_ajouter = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-ajout',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmgestion/eleve', array(
+$url_rapports = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-pdf',
     'page' => $this->page
 ));
 $url_retour = $this->url('sbmgestion');
 $hiddens = array();
+$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
@@ -73,11 +77,7 @@ $actions = array(
         'onclick' => $js_retour,
         'title' => 'Retour'
     ),
-    'rapport' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
