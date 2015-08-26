@@ -1,17 +1,17 @@
-<?php
-/**
- * Données de la table système `docaffectations`
- *
- * Fichier permettant de recharger la table à partir du module SbmInstallation, action create
- * 
- * @project sbm
- * @package SbmInstallation
- * @filesource data.system.docaffectations.php
- * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 Aug 2015
- * @version 2014-1
- */
+<?php
+/**
+ * Données de la table système `docaffectations`
+ *
+ * Fichier permettant de recharger la table à partir du module SbmInstallation, action create
+ * 
+ * @project sbm
+ * @package SbmInstallation
+ * @filesource data.system.docaffectations.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 Aug 2015
+ * @version 2014-1
+ */
 return array(
     array(
         'docaffectationId' => 2, 
@@ -193,6 +193,20 @@ return array(
         'documentId' => 29, 
         'route' => '/gestion/transport/station-group', 
         'libelle' => 'Liste des élèves par station et par service', 
+        'ordinal_position' => 1, 
+    ),
+    array(
+        'docaffectationId' => 32, 
+        'documentId' => 30, 
+        'route' => '/gestion/transport/transporteur-group', 
+        'libelle' => 'Liste des élèves d\'un transporteur', 
+        'ordinal_position' => 1, 
+    ),
+    array(
+        'docaffectationId' => 33, 
+        'documentId' => 31, 
+        'route' => '/gestion/transport/transporteur-service', 
+        'libelle' => 'Liste des service d\'un transporteur', 
         'ordinal_position' => 1, 
     ),
 );
