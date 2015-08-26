@@ -390,7 +390,7 @@ class FinanceController extends AbstractActionController
             return array(
                 'paiementId' => $post['paiementId'],
                 'responsable' => $responsable,
-                'h2' => $post['h2']
+                'h2' => isset($post['h2']) ? $post['h2'] : null
             );
         });
         if ($r instanceof Response) {
