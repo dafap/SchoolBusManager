@@ -28,6 +28,13 @@ use SbmPdf\Model\Tcpdf;
 class DocumentController extends AbstractActionController
 {
 
+    /**
+     * Catégorie de l'utilisateur
+     * 
+     * @var int
+     */
+    private $categorie;
+
     public function indexAction()
     {}
 
@@ -57,8 +64,9 @@ class DocumentController extends AbstractActionController
             ));
         }
         $userId = $auth->getUserId();
+        $this->categorie = $auth->getCategorieId();
         // qui est-ce ?
-        switch ($auth->getCategorieId()) {
+        switch ($this->categorie) {
             case 1: // parent
                 try {
                     $responsable = new Responsable($this->getServiceLocator());
@@ -217,24 +225,45 @@ class DocumentController extends AbstractActionController
         }
         $pdf->Output($pdf->getConfig('document', 'out_name', 'doc.pdf'), $pdf->getConfig('document', 'out_mode', 'I'));
     }
-    
+
     private function detailHoraireArret($arret, $qListe, $millesime)
     {
-        $liste = $qListe->byCircuit($millesime, array(
-            array(
-                'inscrit' => 1,
-                'paiement' => 1
-            ),
-            array(
-                'service1Id' => $arret['serviceId'],
-                'station1Id' => $arret['stationId']
-            ),
-            'or',
-            array(
-                'service2Id' => $arret['serviceId'],
-                'station2Id' => $arret['stationId']
-            )
-        ), array(
+        if ($this->categorie == 1) {
+            // pour les parents, on ne montre que les inscrits
+            $filtre = array(
+                array(
+                    'inscrit' => 1,
+                    'paiement' => 1
+                ),
+                array(
+                    'service1Id' => $arret['serviceId'],
+                    'station1Id' => $arret['stationId']
+                ),
+                'or',
+                array(
+                    'service2Id' => $arret['serviceId'],
+                    'station2Id' => $arret['stationId']
+                )
+            );
+        } else {
+            // pour les autres, on montre tout le monde (inscrits et préinscrits)
+            $filtre = array(
+                array(
+                    'inscrit' => 1
+                ),
+                array(
+                    'service1Id' => $arret['serviceId'],
+                    'station1Id' => $arret['stationId']
+                ),
+                'or',
+                array(
+                    'service2Id' => $arret['serviceId'],
+                    'station2Id' => $arret['stationId']
+                )
+            );
+        }
+        
+        $liste = $qListe->byCircuit($millesime, $filtre, array(
             'nom',
             'prenom'
         ));

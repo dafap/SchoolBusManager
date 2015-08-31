@@ -487,6 +487,9 @@ class IndexController extends AbstractActionController
                 ->get('Sbm\Db\Eleve\Liste')
                 ->byCircuit($this->getFromSession('millesime'), array(
                 array(
+                    'inscrit' => 1
+                ),
+                array(
                     'service1Id' => $circuit->serviceId,
                     'station1Id' => $circuit->stationId
                 ),

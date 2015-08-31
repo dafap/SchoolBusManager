@@ -568,7 +568,7 @@ class IndexController extends AbstractActionController
         $tCircuits = $this->getServiceLocator()->get('Sbm\Db\Vue\Circuits');
         $rEffectifs = $this->getServiceLocator()
             ->get('Sbm\Db\Eleve\Effectif')
-            ->byCircuit();
+            ->byCircuit(true);
         $rListe = $this->getServiceLocator()->get('Sbm\Db\Eleve\Liste');
         $nbInscrits = array();
         $circuits = array();
@@ -578,6 +578,10 @@ class IndexController extends AbstractActionController
             $circuits[$i] = $tCircuits->getRecord($circuitId);
             $nbInscrits[$i] = $rEffectifs[$circuitId]['total'];
             $result = $rListe->byCircuit(Session::get('millesime'), array(
+                array(
+                    'inscrit' => 1,
+                    'paiement' => 1
+                ),
                 array(
                     'service1Id' => $circuits[$i]->serviceId,
                     'station1Id' => $circuits[$i]->stationId
