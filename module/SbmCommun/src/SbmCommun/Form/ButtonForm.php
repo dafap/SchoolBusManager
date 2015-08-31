@@ -38,11 +38,22 @@ class ButtonForm extends Form
      *            où validTagAttribute est dans validGlobalAttributes (@see Zend\Form\View\Helper\AbstractHelper)
      *            ou dans validTagAttributes (@see Zend\View\Helper\FormButton)
      */
-    public function __construct($hiddens, array $submits, $nomform = 'Form')
+    public function __construct($hiddens, array $submits, $nomform = 'Form', $avecCsrf = false)
     {
         parent::__construct($nomform);
         $this->setAttribute('method', 'post');
-        
+        // le Csrf
+        if ($avecCsrf) {
+            $this->add(array(
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => array(
+                    'csrf_options' => array(
+                        'timeout' => 180
+                    )
+                )
+            ));
+        }
         // les hiddens
         foreach ($hiddens as $name => $value) {
             $description = array(
