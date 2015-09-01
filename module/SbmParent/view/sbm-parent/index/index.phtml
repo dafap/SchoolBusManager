@@ -172,21 +172,21 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
                 "odd",
                 "even"
             ))->next();
-            $colonne1_4 = '<td %s>' . $row['nom'] . '</td>';
-            $colonne1_4 .= '<td %s' . $nbAffectations . '">' . $row['prenom'] . '</td>';
-            $colonne1_4 .= '<td %s' . $nbAffectations . '">' . $row['etablissement'] . '</td>';
-            $colonne1_4 .= '<td %s' . $nbAffectations . '">' . $row['communeEtablissement'] . '</td>';
+            $colonne1_4 = '<td %s' . $nbAffectations . '>' . $row['nom'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['communeEtablissement'] . '</td>';
             $nbCircuits = count($circuit);
             // on prépare le code HTML avant pour ajuster les "rowspan" et les hiddens si nécessaire
             switch ($nbCircuits) {
                 case 0:
-                    $colonne1_4 = str_replace(' %s', '', $colonne1_4);
+                    $colonne1_4 = str_replace(' %s' . $nbAffectations, '', $colonne1_4);
                     $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité, scolarité
                     $ligneHtml .= '<td></td><td></td>'; // affectation
                     $ligneHtml .= "<td></td></tr>\n"; // pas de bouton
                     break;
                 case 1:
-                    $colonne1_4 = str_replace(' %s', '', $colonne1_4);
+                    $colonne1_4 = str_replace(' %s' . $nbAffectations, '', $colonne1_4);
                     if (empty($circuit[0])) {
                         $code_boutons = '';
                     } else {
