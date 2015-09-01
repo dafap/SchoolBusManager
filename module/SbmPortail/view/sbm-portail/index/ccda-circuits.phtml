@@ -73,7 +73,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="transporteur"><?php echo $this->escapeHtml($service['transporteur']); ?></td>
 					<td class="operateur"><?php echo $this->escapeHtml($service['operateur']); ?></td>
 					<td class="nb-places"><?php echo $service['nbPlaces'];?></td>
-					<td class="effectif"><?php echo $this->statServices[$serviceId]['total'];?></td>
+					<td class="effectif"><?php echo empty($this->statServices[$serviceId]['total']) ? 0 : $this->statServices[$serviceId]['total'];?></td>
 					<td class="etablissements"><?php echo nl2br($this->escapeHtml($etablissements));?></td>
 					<td class="boutons">
             <?php

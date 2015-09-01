@@ -283,6 +283,9 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Eleve\Liste')
                 ->byCircuit($this->getFromSession('millesime'), array(
                 array(
+                    'inscrit' => 1
+                ),
+                array(
                     'service1Id' => $circuit->serviceId,
                     'station1Id' => $circuit->stationId
                 ),
@@ -1982,7 +1985,7 @@ class TransportController extends AbstractActionController
     /**
      * renvoie la liste des élèves inscrits pour un service donné
      * Reçoit en get :
-     * - id   : pageRetour
+     * - id : pageRetour
      * - page : page du paginateur interne
      * Reçoit en post :
      * - serviceId
@@ -2496,6 +2499,9 @@ class TransportController extends AbstractActionController
             'data' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
                 ->byCircuit($millesime, array(
+                array(
+                    'inscrit' => 1
+                ),
                 array(
                     'service1Id' => $circuit->serviceId,
                     'station1Id' => $circuit->stationId
@@ -3025,7 +3031,7 @@ class TransportController extends AbstractActionController
         );
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
-    
+
     public function transporteurGroupPdfAction()
     {
         $sm = $this->getServiceLocator();
@@ -3047,7 +3053,7 @@ class TransportController extends AbstractActionController
         );
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
-    
+
     /**
      * Demande le document contenant les services d'un transporteur
      *
@@ -3071,5 +3077,5 @@ class TransportController extends AbstractActionController
             'action' => 'transporteur-service'
         );
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
-    }    
+    }
 }

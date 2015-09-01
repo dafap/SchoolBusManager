@@ -147,6 +147,7 @@ return array(
             'Sbm\Db\Select\Libelles' => 'SbmCommun\Model\Db\Service\Select\LibelleForSelect',
             'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
             
+            'Sbm\Db\Query\Circuits' => 'SbmCommun\Model\Db\Service\Query\Circuit\Circuits',
             'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\Eleves',
             'Sbm\Db\Query\ElevesResponsables' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
             'Sbm\Db\Query\ElevesScolarites' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesScolarites',

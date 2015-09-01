@@ -1,17 +1,17 @@
-<?php
-/**
- * Données de la table système `doclabels`
- *
- * Fichier permettant de recharger la table à partir du module SbmInstallation, action create
- * 
- * @project sbm
- * @package SbmInstallation
- * @filesource data.system.doclabels.php
- * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 Aug 2015
- * @version 2014-1
- */
+<?php
+/**
+ * Données de la table système `doclabels`
+ *
+ * Fichier permettant de recharger la table à partir du module SbmInstallation, action create
+ * 
+ * @project sbm
+ * @package SbmInstallation
+ * @filesource data.system.doclabels.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 Aug 2015
+ * @version 2014-1
+ */
 return array(
     array(
         'doclabelId' => 1, 
@@ -31,7 +31,7 @@ return array(
         'border' => 0, 
         'border_dash' => 0, 
         'border_width' => '0.3', 
-        'border_color' => '#000000', 
+        'border_color' => '000000', 
     ),
     array(
         'doclabelId' => 2, 
@@ -51,6 +51,6 @@ return array(
         'border' => 0, 
         'border_dash' => '', 
         'border_width' => '0.3', 
-        'border_color' => '#000000', 
+        'border_color' => '000000', 
     ),
 );

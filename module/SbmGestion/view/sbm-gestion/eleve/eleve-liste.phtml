@@ -82,6 +82,10 @@ try {
 $afficheRouge = false;
 
 // les url à utiliser
+$url_deselection = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-selection',
+    'page' => $this->page
+));
 $url_ici = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-liste',
     'page' => $this->page
@@ -123,7 +127,9 @@ $url_retour = $this->url('sbmgestion');
 
 // définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
 if (! empty($this->groupe)) {
-    $hiddens = array('op' => $this->groupe); // pour passer les éléments à prendre en compte pour eleve-groupe
+    $hiddens = array(
+        'op' => $this->groupe
+    ); // pour passer les éléments à prendre en compte pour eleve-groupe
 } else {
     $hiddens = array();
 }
@@ -149,6 +155,11 @@ $actions = array(
         'formaction' => $url_gestioneleve,
         'title' => 'Gestion des inscriptions'
     ),
+    'selection' => array(
+        'class'=>'fam-basket-delete',
+        'formaction' => $url_deselection,
+        'title' => 'Démarquer toutes les sélections'
+),
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,

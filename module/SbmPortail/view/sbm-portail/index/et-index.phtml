@@ -17,6 +17,9 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
+$url_horaires = $this->url('sbmdocument', array(
+    'action' => 'horaires'
+));
 $url_eleves = $this->url('sbmportail', array(
     'action' => 'tr-eleves'
 ));
@@ -76,7 +79,7 @@ echo $this->flashMessenger()->render('default');
 					<td><?php echo $service['nom'];?></td>
 					<td><?php echo $service['operateur'];?></td>
 					<td><?php echo $service['transporteur'];?></td>
-					<td class="effectif"><?php echo $this->statServices[$service['serviceId']]['total'];?></td>
+					<td class="effectif"><?php echo empty($this->statServices[$service['serviceId']]['total']) ? 0 : $this->statServices[$service['serviceId']]['total'];?></td>
 					<td><?php echo $this->listeLigneActions($service['serviceId'], $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>				
@@ -92,6 +95,8 @@ echo $this->flashMessenger()->render('default');
 			<ul>
 				<li><a href="<?php echo $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
 						des élèves</a></li>
+				<li><a href="<?php echo $url_horaires; ?>"><i class="fam-bullet-go"></i>Fiches
+						horaires des circuits</a></li>
 				<li><a href="<?php echo $url_carte_stations; ?>"><i
 						class="fam-bullet-go"></i>Carte des points d'arrêts</a></li>
 				<li><a href="<?php echo $url_carte_etablissements; ?>"><i

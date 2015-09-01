@@ -2,7 +2,9 @@
 /**
  * Ensemble de pages de retour de la plateforme de paiement
  *
- * Description longue du fichier s'il y en a une
+ * Modification le 26 août 2015 dans formulaireAction() pour tenir compte de la dérogation accordée 
+ * dans la liste des élèves préinscrits à prendre en compte dans la table `appels` et ajout d'un
+ * contrôle du montant du (montant reçu en post = montant à payer pour les eleveIds enregistrés dans `appels`)
  * 
  * @project sbm
  * @package SbmPaiement/Controller
@@ -10,7 +12,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 31 mars 2015
- * @version 2015-1
+ * @version 2015-2
  */
 namespace SbmPaiement\Controller;
 
@@ -48,12 +50,23 @@ class IndexController extends AbstractActionController
             ->getElevesPreinscrits($responsable->responsableId);
         $elevesIds = array();
         // ceux qui sont sélectionnés (selectionScolarite : selection dans table scolarites) sont mis en attente. Pas de paiement pour le moment.
-        // de même pour ceux qui sont à moins de 1 km et pour cex qu sont hors district
+        // de même pour ceux qui sont à moins de 1 km et pour ceux qu sont hors district et sans dérogation
         foreach ($preinscrits as $row) {
-            if (! $row['selectionScolarite'] && ($row['distanceR1'] >= 1 || $row['distanceR2'] >= 1) && $row['district']) {
+            if (! $row['selectionScolarite'] && ($row['distanceR1'] >= 1 || $row['distanceR2'] >= 1) && ($row['district'] || $row['derogation'])) {
                 $elevesIds[] = $row['eleveId'];
             }
         }
+        // vérification du montant
+        $montantUnitaire = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Tarifs')
+            ->getMontant('inscription');
+        if ($args['montant'] != $montantUnitaire * count($elevesIds)) {
+            $this->flashMessenger()->addErrorMessage('Problème sur le montant à payer. Contactez l\'organisateur.');
+            return $this->redirect()->toRoute('login', array(
+                'action' => 'home-page'
+            ));
+        }
+        // préparation des paramètres pour la méthode prepareAppel() de la plateforme
         $params = array(
             'montant' => $args['montant'],
             'count' => 1,
@@ -122,7 +135,7 @@ class IndexController extends AbstractActionController
         $criteresObject = array(
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             null,
-            function($where) use($table){
+            function ($where) use($table) {
                 $table->adapteWhere($where);
                 return $where;
             }

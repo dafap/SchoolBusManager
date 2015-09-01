@@ -210,7 +210,7 @@ class Tcpdf extends \TCPDF
      *        
      * @return mixed valeur renvoyée
      */
-    protected function getConfig($sections, $key, $default = null, $exception = false)
+    public function getConfig($sections, $key, $default = null, $exception = false)
     {
         if (is_string($sections)) {
             $sections = array(
@@ -381,8 +381,11 @@ class Tcpdf extends \TCPDF
      */
     protected function setPageHeader($has_pageheader)
     {
+        $oCalculs = new Calculs($this->data);
+        $title = $oCalculs->getResultat($this->getConfig('document', 'pageheader_title', 'Etat'));
+        $subtitle = $oCalculs->getResultat($this->getConfig('document', 'pageheader_string', 'éditée par School Bus Manager'));
         $this->setPrintHeader($has_pageheader);
-        $this->SetHeaderData($this->getConfig('document', 'pageheader_logo', PDF_HEADER_LOGO), $this->getConfig('document', 'pageheader_logo_width', PDF_HEADER_LOGO_WIDTH), $this->getConfig('document', 'pageheader_title', 'Etat'), $this->getConfig('document', 'pageheader_string', 'éditée par School Bus Manager'), $this->convertColor($this->getConfig('document', 'pageheader_text_color', '000000')), $this->convertColor($this->getConfig('document', 'pageheader_line_color', '000000')));
+        $this->SetHeaderData($this->getConfig('document', 'pageheader_logo', PDF_HEADER_LOGO), $this->getConfig('document', 'pageheader_logo_width', PDF_HEADER_LOGO_WIDTH), $title, $subtitle, $this->convertColor($this->getConfig('document', 'pageheader_text_color', '000000')), $this->convertColor($this->getConfig('document', 'pageheader_line_color', '000000')));
         $this->setHeaderFont(Array(
             $this->getConfig('document', 'pageheader_font_family', PDF_FONT_NAME_MAIN),
             trim($this->getConfig('document', 'pageheader_font_style', '')),
@@ -1446,185 +1449,6 @@ class Tcpdf extends \TCPDF
         return $this->data[$ordinal_table];
     }
 
-    protected function getDataForTable_($ordinal_table = 1, $force = false)
-    {
-        if ($force || empty($this->data[$ordinal_table])) {
-            $this->data[$ordinal_table] = array();
-            // lecture de la description des colonnes
-            $table_columns = $this->getConfig('doctable', 'columns', array());
-            if ($this->getRecordSourceType() == 'T') {
-                // La source doit être enregistrée dans le ServiceManager (table ou vue MySql) sinon exception
-                $table = $this->getRecordSourceTable();
-                // si la description des colonnes est vide, on configure toutes les colonnes de la source
-                if (empty($table_columns)) {
-                    $ordinal_position = 1;
-                    foreach ($table->getColumnsNames() as $column_name) {
-                        $column = require (__DIR__ . '/default/doccolumns.inc.php');
-                        $column['thead'] = $column['tbody'] = $column_name;
-                        $column['ordinal_position'] = $ordinal_position ++;
-                        $table_columns[] = $column;
-                    }
-                    $this->config['doctable']['columns'] = $table_columns;
-                }
-                // prépare les filtres pour le décodage des données (notamment booléennes)
-                foreach ($table_columns as &$column) {
-                    $column['filter'] = preg_replace(array(
-                        '/^\s+/',
-                        '/\s+$/'
-                    ), '', $column['filter']);
-                    if (! empty($column['filter']) && is_string($column['filter'])) {
-                        $column['filter'] = StdLib::getArrayFromString(stripslashes($column['filter']));
-                    } else {
-                        $column['filter'] = array();
-                    }
-                    unset($column);
-                }
-                // lecture des données et calcul des largeurs de colonnes
-                foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
-                    $ligne = array();
-                    foreach ($table_columns as &$column) {
-                        $ligne[] = $value = StdLib::translateData($row->{$column['tbody']}, $column['filter']);
-                        // adapte la largeur de la colonne si nécessaire
-                        $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
-                        $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
-                        if ($value_width > $column['width']) {
-                            $column['width'] = $value_width;
-                        }
-                        unset($column);
-                    }
-                    $this->data[$ordinal_table][] = $ligne;
-                }
-                $this->config['doctable']['columns'] = $table_columns;
-            } else {
-                // c'est une requête Sql. S'il n'y a pas de description des colonnes dans la table doccolumns alors on en crée une par défaut.
-                $sql = $this->getConfig('document', 'recordSource', '');
-                // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-                $sql = str_replace(array(
-                    '%date%',
-                    '%heure%',
-                    '%millesime%',
-                    '%userId%'
-                ), array(
-                    date('Y-m-d'),
-                    date('H:i:s'),
-                    Session::get('millesime'),
-                    $this->sm->get('Dafap\Authenticate')
-                        ->by()
-                        ->getUserId()
-                ), $sql);
-                //
-                $dbAdapter = $this->getServiceLocator()
-                    ->get('Sbm\Db\DbLib')
-                    ->getDbAdapter();
-                
-                try {
-                    $orderBy = $this->getOrderBy();
-                    $criteres = $this->getParam('criteres', array());
-                    $strict = $this->getParam('strict', array(
-                        'empty' => array(),
-                        'not empty' => array()
-                    ));
-                    $expressions = $this->getParam('expression', array());
-                    if (! empty($criteres) || ! empty($expressions)) {
-                        $where = array();
-                        $where_or = array();
-                        foreach ($criteres as $key => $value) {
-                            if (in_array($key, $expressions))
-                                continue;
-                            if (is_array($value)) {
-                                // je considère sans tester la validité que $value est un bloc OR composé simple c'est à dire que
-                                // c'est un tableau de ($key_bloc => $value_bloc) où chaque clé et chaque valeur est une chaine
-                                // (en particulier $value_bloc n'est jamais un tableau, sinon il faudrait une récursivité)
-                                // on testera si le champ $key_bloc est dans strict ; il n'y a pas d'expression dans le bloc_OR
-                                $bloc_or = array();
-                                foreach ($value as $key_bloc => $value_bloc) {
-                                    if (in_array($key_bloc, $strict['empty'])) {
-                                        $bloc_or[] = "tmp.$key_bloc = \"$value_bloc\"";
-                                    } elseif (in_array($key_bloc, $strict['not empty'])) {
-                                        if (empty($value_bloc))
-                                            continue;
-                                        $bloc_or[] = "tmp.$key_bloc = \"$value_bloc\"";
-                                    } else {
-                                        if (empty($value_bloc))
-                                            continue;
-                                        $bloc_or[] = "tmp.$key_bloc Like \"$value_bloc%\"";
-                                    }
-                                }
-                                $where_or[] = $bloc_or;
-                            } elseif (in_array($key, $strict['empty'])) {
-                                $where[] = "tmp.$key = \"$value\"";
-                            } elseif (in_array($key, $strict['not empty'])) {
-                                if (empty($value))
-                                    continue;
-                                $where[] = "tmp.$key = \"$value\"";
-                            } else {
-                                if (empty($value))
-                                    continue;
-                                $where[] = "tmp.$key Like \"$value%\"";
-                            }
-                        }
-                        foreach ($expressions as $expression) {
-                            $where[] = $expression;
-                        }
-                        foreach ($where_or as $bloc_or) {
-                            $where_tmp = '(' . implode(' OR ', $bloc_or) . ')';
-                            $where[] = $where_tmp;
-                        }
-                        if (! empty($where)) {
-                            if (empty($orderBy)) {
-                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
-                            } else {
-                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where) . " ORDER BY " . $orderBy;
-                            }
-                        } elseif (! empty($orderBy)) {
-                            $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
-                        }
-                    } elseif (! empty($orderBy)) {
-                        $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
-                    }
-                    $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
-                    if ($rowset->count()) {
-                        // si la description des colonnes est vide, on configure toutes les colonnes de la source
-                        if (empty($table_columns)) {
-                            $ordinal_position = 1;
-                            foreach (array_keys($rowset->current()->getArrayCopy()) as $column_name) {
-                                $column = require (__DIR__ . '/default/doccolumns.inc.php');
-                                $column['thead'] = $column['tbody'] = $column_name;
-                                $column['ordinal_position'] = $ordinal_position ++;
-                                $table_columns[] = $column;
-                            }
-                            $this->config['doctable']['columns'] = $table_columns;
-                        }
-                        foreach ($rowset as $row) {
-                            // $row est un ArrayObject
-                            $ligne = array();
-                            for ($key = 0; $key < count($table_columns); $key ++) {
-                                $ligne[] = $value = $row[$table_columns[$key]['tbody']];
-                                // adapte la largeur de la colonne si nécessaire
-                                $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
-                                $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
-                                if ($value_width > $table_columns[$key]['width']) {
-                                    $table_columns[$key]['width'] = $value_width;
-                                }
-                            }
-                            $this->data[$ordinal_table][] = $ligne;
-                            $this->config['doctable']['columns'] = $table_columns;
-                        }
-                    }
-                } catch (\Exception $e) {
-                    if (getenv('APPLICATION_ENV') == 'development') {
-                        $msg = __METHOD__ . ' - ' . $e->getMessage() . "\n" . $sql;
-                    } else {
-                        $msg = "Impossible d'exécuter la requête.";
-                    }
-                    throw new Exception($msg, $e->getCode(), $e->getPrevious());
-                }
-            }
-        }
-        
-        return $this->data[$ordinal_table];
-    }
-    
     // ============= Les pieds de document ======================
     
     /**
@@ -1891,6 +1715,9 @@ class Tcpdf extends \TCPDF
                             $where[] = $expression;
                         }
                         $orderBy = $this->getOrderBy();
+                        if (is_array($orderBy)) {
+                            $orderBy = implode(', ', $orderBy);
+                        }
                         if (! empty($where)) {
                             if (empty($orderBy)) {
                                 $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
@@ -2024,5 +1851,27 @@ class Tcpdf extends \TCPDF
             'all' => $border_style
         )); //
     }
+    
+    // =======================================================================================================
+    // Modèle particulier pour les horaires avec élèves (2 tableaux)
+    //
+    /**
+     * Modèle pour imprimer les horaires de circuits avec liste des élèves par point d'arrêt.
+     * Le document est composé de deux tableaux, l'un pour l'aller, l'autre pour le retour.
+     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
+     *
+     * @param string $param
+     *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
+     *            
+     * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
+     */
+    public function templateDocBodyMethod4($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Horaires circuit avec élèves';
+        }
+    }
 }
-

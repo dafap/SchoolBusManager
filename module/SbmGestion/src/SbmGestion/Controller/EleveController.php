@@ -117,6 +117,53 @@ class EleveController extends AbstractActionController
     }
 
     /**
+     * Supprime la sélection de toutes les fiches eleves
+     */
+    public function eleveSelectionAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                'action' => 'eleve-liste',
+                'page' => $this->params('page', 1)
+            ));
+        }
+        $form = new ButtonForm(array(), array(
+            'confirmer' => array(
+                'class' => 'confirm',
+                'value' => 'Confirmer',
+                'title' => 'Déseletionner toutes les fiches élèves.'
+            ),
+            'cancel' => array(
+                'class' => 'confirm',
+                'value' => 'Abandonner'
+            )
+        ), 'Confirmation', true);
+        $televes = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
+        if (array_key_exists('confirmer', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $televes->clearSelection();
+                $this->flashMessenger()->addSuccessMessage('Toutes les fiches sont désélectionnées.');
+                return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ));
+            }
+        }
+        $where = new Where();
+        $where->equalTo('selection', 1);
+        return new ViewModel(array(
+            'form' => $form,
+            'nbSelection' => $televes->fetchAll($where)->count()
+        ));
+    }
+
+    /**
      * Si on arrive par post, on passera :
      * - orinine : url d'origine de l'appel pour assurer un retour par redirectToOrigin()->back()
      * à la fin de l'opération (en général dans eleveEditAction()).
@@ -775,20 +822,25 @@ class EleveController extends AbstractActionController
         );
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
+
     public function eleveGroupePdfAction()
     {
-        $criteresObject = array('\SbmGestion\Model\Db\ObjectData\CriteresEleves', null, function($where, $args){
-            $where = new Where();
-            $or = false;
-            $tResponsableIds = explode('|', $args['op']);
-            foreach ($tResponsableIds as $responsableId) {
-                if ($or)
-                    $where->OR;
-                $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId);
-                $or = true;
+        $criteresObject = array(
+            '\SbmGestion\Model\Db\ObjectData\CriteresEleves',
+            null,
+            function ($where, $args) {
+                $where = new Where();
+                $or = false;
+                $tResponsableIds = explode('|', $args['op']);
+                foreach ($tResponsableIds as $responsableId) {
+                    if ($or)
+                        $where->OR;
+                    $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId);
+                    $or = true;
+                }
+                return $where;
             }
-            return $where;
-        });
+        );
         $criteresForm = '\SbmGestion\Form\Eleve\CriteresForm';
         $documentId = null;
         $retour = array(

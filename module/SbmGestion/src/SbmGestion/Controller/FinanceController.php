@@ -61,11 +61,11 @@ class FinanceController extends AbstractActionController
         return new ViewModel(array(
             'millesime' => $millesime,
             'dateBordereauCheques' => $tPaiements->dateDernierBordereau($codeCheques),
-            'datePaiementCheques' => date('Y-m-d'),
+            'datePaiementCheques' =>  $tPaiements->dateDernierPaiement($codeCheques), //date('Y-m-d'),
             'dateBordereauEspeces' => $tPaiements->dateDernierBordereau($codeEspeces),
-            'datePaiementEspeces' => date('Y-m-d'),
+            'datePaiementEspeces' => $tPaiements->dateDernierPaiement($codeEspeces),
             'dateBordereauCB' => $tPaiements->dateDernierBordereau($codeCB),
-            'datePaiementCB' => date('Y-m-d'),
+            'datePaiementCB' => $tPaiements->dateDernierPaiement($codeCB),
             'encoursCheques' => $tPaiements->sommeBordereau($codeCheques),
             'encoursEspeces' => $tPaiements->sommeBordereau($codeEspeces),
             'encoursCB' => $tPaiements->sommeBordereau($codeCB),
@@ -390,7 +390,7 @@ class FinanceController extends AbstractActionController
             return array(
                 'paiementId' => $post['paiementId'],
                 'responsable' => $responsable,
-                'h2' => $post['h2']
+                'h2' => isset($post['h2']) ? $post['h2'] : null
             );
         });
         if ($r instanceof Response) {

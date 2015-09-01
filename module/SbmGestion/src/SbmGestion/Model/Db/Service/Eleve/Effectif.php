@@ -46,11 +46,20 @@ class Effectif implements FactoryInterface
         return $this;
     }
 
-    public function byCircuit()
+    /**
+     * Renvoie les effectifs des circuits, station par station, dans un tableau
+     * @param bool $sanspreinscrits
+     * @return array
+     */
+    public function byCircuit($sanspreinscrits = false)
     {
         // SELECT circuitId, count(*) FROM `sbm_t_circuits` c JOIN `sbm_t_affectations` a ON c.serviceId=a.service1Id AND c.stationId=a.station1Id WHERE millesime=2014 GROUP BY circuitId
         $result = array();
-        $rowset = $this->requeteCir(1, 'circuitId', array(), 'circuitId');
+        $filtre = array('inscrit' => 1);
+        if ($sanspreinscrits) {
+            $filtre['paiement'] = 1;
+        }
+        $rowset = $this->requeteCir(1, 'circuitId', $filtre, 'circuitId');
         foreach ($rowset as $row) {
             $result[$row['column']]['r1'] = $row['effectif'];
         }
@@ -527,6 +536,9 @@ class Effectif implements FactoryInterface
         ), $on, array(
             'effectif' => new Expression('count(*)')
         ))
+            ->join(array(
+            's' => $this->tableName['scolarites']
+        ), 's.millesime = a.millesime AND s.eleveId = a.eleveId', array())
             ->columns(array(
             'column' => $column
         ))

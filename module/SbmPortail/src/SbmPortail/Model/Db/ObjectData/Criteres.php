@@ -41,7 +41,7 @@ class Criteres extends SbmCommunCriteres
     public function getWhere($strict = array(), $alias = array())
     {
         $where = new Where();
-        $where->literal('inscrit = 1');
+        $where->literal('inscrit = 1')->literal('paiement = 1');
         $where->equalTo('sco.millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
@@ -71,6 +71,49 @@ class Criteres extends SbmCommunCriteres
     }
 
     /**
+     * Prépare et renvoie un Where à partir des données de l'objet.
+     * Le tableau $descripteur est structuré de la façon suivante :
+     * 'strict' => array(liste de champs ...)
+     * 'expressions' => array(liste de champs)
+     *
+     * En fait, cette méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé dans le tableau 'expressions'.
+     *
+     * @param array $descripteur
+     *
+     * @return \Zend\Db\Sql\Where
+     */
+    public function getWherePdf($descripteur = null)
+    {
+        $where = new Where();
+        $where->literal('inscrit = 1')->literal('paiement = 1');
+        $where->equalTo('millesime', Session::get('millesime'));
+        if (! empty($this->data['numero'])) {
+            $where->equalTo('numero', $this->data['numero']);
+        }
+        if (! empty($this->data['nomSA'])) {
+            $where->like('nomSA', $this->data['nomSA'] . '%');
+        }
+        if (! empty($this->data['prenomSA'])) {
+            $where->like('prenomSA', $this->data['prenomSA'] . '%');
+        }
+        if (! empty($this->data['responsable'])) {
+            $where->like('responsable', $this->data['responsable'] . '%');
+        }
+        if (! empty($this->data['etablissementId'])) {
+            $where->equalTo('etablissementId', $this->data['etablissementId']);
+        }
+        if (! empty($this->data['classeId'])) {
+            $where->equalTo('classeId', $this->data['classeId']);
+        }
+        if (! empty($this->data['serviceId'])) {
+            $where->nest()->equalTo('service1Id', $this->data['serviceId'])->or->equalTo('service2Id', $this->data['serviceId'])->unnest();
+        }
+        if (! empty($this->data['stationId'])) {
+            $where->nest()->equalTo('station1Id', $this->data['stationId'])->or->equalTo('station2Id', $this->data['stationId'])->unnest();
+        }
+        return $where;
+    }
+    /**
      * Renvoie un tableau pour filtrer les requêtes lorsque le recordSource est une requete Sql (pour Tcpdf)
      * On peut passer certains critères pour filtrer autoritairement le contenu de la requete
      * (par exemple pour limiter les résultats à l'établissement connecté - marche pas pour le transporteur connecté à cause d'un OR)
@@ -86,7 +129,7 @@ class Criteres extends SbmCommunCriteres
      *                    
      * @return array avec les clés 'criteres' et 'strict' à utiliser dans l'appel de la liste à l'écran (paginateur) ou du pdf
      */
-    public function getCriteres(array $filtre = array(), array $strict_empty = array(), array $strict_not_empty = array())
+    /*public function getCriteres(array $filtre = array(), array $strict_empty = array(), array $strict_not_empty = array())
     {
         $result = array(
             'criteres' => $filtre,
@@ -133,5 +176,5 @@ class Criteres extends SbmCommunCriteres
             $result['strict']['not empty'][] = 'station2Id';
         }
         return $result;
-    }
+    }*/
 }

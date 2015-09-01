@@ -29,6 +29,9 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
+$url_horaires = $this->url('sbmdocument', array(
+    'action' => 'horaires'
+));
 $url_eleves = $this->url('sbmportail', array(
     'action' => 'tr-eleves'
 ));
@@ -58,7 +61,7 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
     </div>
-	<h1>Gestion du service</h1>
+	<h1>Portail du service</h1>
 	<div class="float-left">
 		<h2>Quelques chiffres</h2>
 		<table class="bleu float-left">
@@ -161,7 +164,10 @@ echo $this->flashMessenger()->render('default');
 			<ul>
 				<li><a href="<?php echo $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
 						des élèves</a></li>
-				<li><a href="<?php echo $url_circuits;?>"><i class="fam-bullet-go"></i>Circuits et horaires</a></li>
+				<li><a href="<?php echo $url_circuits;?>"><i class="fam-bullet-go"></i>Circuits
+						et horaires</a></li>
+				<li><a href="<?php echo $url_horaires; ?>"><i class="fam-bullet-go"></i>Horaires
+						des circuits à imprimer</a></li>
 				<li><a href="<?php echo $url_carte_stations; ?>"><i
 						class="fam-bullet-go"></i>Carte des points d'arrêts</a></li>
 				<li><a href="<?php echo $url_carte_etablissements; ?>"><i
@@ -169,4 +175,4 @@ echo $this->flashMessenger()->render('default');
 			</ul>
 		</div>
 	</div>
-</div> 
+</div>

@@ -108,6 +108,10 @@ i.fam-help:hover {
 *:hover.sbm-description {
 	font-size: 95%;
 }
+p.important {
+	font-size: 1.2em;
+	color: #db001b;
+}
 .top-6px {
 	margin-top: 6px;
 }
@@ -291,42 +295,58 @@ label.sbm-label-200px {
 label.sbm-label-top {
 	vertical-align: top;
 }
-/*---------- Bienvenue ----------*/
-#bienvenue {
-	float: right;
+.label-80 label {
+	display: inline-block;
+	width: 80px;
+}
+.label-120 label {
+	display: inline-block;
+	width: 120px;
+}
+.label-240 label {
+	display: inline-block;
+	width: 240px;
+}
+.label-360 label {
+	display: inline-block;
+	width: 360px;
+}
+/*---------- Menu dynamique ----------*/
+div.menu {
 	margin: 0;
 	padding: 0;
 	margin-right: 3px;
 	position: relative;
+	z-index:100;
 }
-#bienvenue ul {
+div.menu ul {
 	list-style: none;
 	-webkit-padding-start: 0;
 }
-#bienvenue ul#menu {
+div.menu ul.menubar {
 	margin-top: 0;
 	-webkit-margin-before: 0;
 	-webkit-margin-after: 0;
 }
-#bienvenue ul#menu li {
+div.menu ul.menubar li {
 	float: left;
-	padding-left: 4px;
+	margin-left: 15px;
 }
-#bienvenue ul#menu li.annee-scolaire {
+div.menu ul.menubar li.annee-scolaire {
 	padding-right: 200px;
 	font-weight: bold;
 }
-#bienvenue ul#menu li.bienvenue {
+div.menu ul.menubar li.onglet {
 	position: relative;
 }
-#bienvenue a {
+div.menu a {
 	color: #1c94c4;
 	text-decoration: none;
 }
-#bienvenue a:hover {
+div.menu a:hover {
 	font-weight: bold;
 }
-#bienvenue #menu ul {
+div.menu ul.menubar ul {
 	opacity: 0;
 	visibility: hidden;
 	position: absolute;
@@ -338,13 +358,22 @@ label.sbm-label-top {
 	background-color: white;
 	padding-left: 0;
 }
-#bienvenue ul#menu li.bienvenue:hover ul {
+div.menu ul.menubar li.onglet:hover ul {
 	opacity: 1;
 	visibility: visible;
 }
-#bienvenue #menu ul li {
+div.menu ul.menubar ul li {
 	float: none;
 	min-width: 200px;
+	margin-left: 0;
+	padding-left: 4px;
+}
+div.menu input[type=submit] {
+	cursor: pointer;
+}
+div.menu ul.menubar ul li input {
+	border: none;
+	background: none;
 }
 /*------------ FlashMessenger ----------------*/
 .flashMessenger ul {
@@ -425,6 +454,9 @@ div.pagination a.page:hover {
 }
 #menugeneral-inner a:hover {
 	font-weight: bold;
+}
+#menugeneral {
+	min-width: 300px;
 }
 /*-------- Installation --------*/
 div#data-inner {
@@ -508,6 +540,15 @@ div#liste-inner .nbinscrits {
 div#liste-inner .codepostal {
 	text-align: center;
 }
+div#liste-inner table.etablissements-services td.boutons {
+	min-width: 44px;
+}
+div#liste-inner table.eleves td.boutons {
+	min-width: 66px;
+}
+div#liste-inner table.pdf td.boutons {
+	min-width: 130px;
+}
 /*-------------- Fiches -----------------------------*/
 div#fiche-header {
 	margin-bottom: 10px;
@@ -522,6 +563,10 @@ div#fiche-inner {
 div#fiche-inner div.row-inner fieldset {
 	border: 1px solid #fdddcc;
 	border-radius: 4px 4px 4px 4px;
+	padding: 0;
+	padding-top: 0.35em;
+	padding-bottom: 0.625em;
+	padding-left: 0.5em;
 }
 div#fiche-inner div.row-inner input.cancel {
 	margin-top: 6px;
@@ -695,7 +740,7 @@ table.eleve-affectations td.second {
 	width: 81px;
 }
 table.eleve-affectations td.third {
-	width: 50px;
+	width: 55px;
 }
 table.eleve-affectations td.last {
 	width: 42px;
@@ -721,6 +766,15 @@ table.eleve-affectations td.last {
 }
 #fiche-inner #etablissement .rows-2 {
 	min-height: 5.5em;
+}
+/*-------------- Finances / Dépôt -------------------*/
+div.depot #fiche-inner label {
+	display: inline-block;
+	padding-left: 5px;
+}
+div.depot #fiche-inner input.submit {
+	margin-top: 6px;
+	margin-left: 20px;	
 }
 /*-------------- Fiche libelles ---------------------*/
 #fiche-inner #libelle label {
@@ -983,17 +1037,88 @@ label.sbm-form-auto:before {
 	white-space: pre;
 	line-height: 2;
 }
+/*---------------- Tableau de bord ---------------------------*/
+div#tableau-de-bord table.float-left {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+div#tableau-de-bord table.bleu, fieldset.bleu, fieldset.bleu legend {
+	background-color: #f3fafc;
+	border: solid 1px #31708f;
+	border-radius: 4px 4px 4px 4px;
+}
+div#tableau-de-bord table.rose, fieldset.rose , fieldset.rose legend {
+	background-color: #fef3ed;
+	border: solid 1px #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+div#tableau-de-bord table.jaune, fieldset.jaune , fieldset.jaune legend {
+	background-color: #fff8dd;
+	border: solid 1px #fecc22;
+	border-radius: 4px 4px 4px 4px;
+}
+fieldset.bleu, fieldset.rose, fieldset.jaune {
+	min-width: 310px;
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
+div#tableau-de-bord td {
+	border: 0px;
+}
+div#tableau-de-bord .bleu tr.separateur td {
+	border-bottom: solid 1px #31708f;
+}
+div#tableau-de-bord .rose tr.separateur td {
+	border-bottom: solid 1px #f78042;
+}
+div#tableau-de-bord .jaune tr.separateur td {
+	border-bottom: solid 1px #fecc22;
+}
+div#tableau-de-bord td.effectif{
+	text-align:right;
+	padding-right: 6px;
+	width: 4em;
+}
+div#tableau-de-bord td.euro{
+	text-align:right;
+	padding-right: 6px;
+	width: 11em;
+}
+dl.statistiques {
+	margin: 0;
+	margin-top: 0.5em;
+}
+dl.statistiques dt {
+	padding-top: 0.2em;
+}
+dl.statistiques dd {
+	padding-bottom: 0.3em;
+}
+.bleu dl.separateur {
+	border-top: solid 1px  #31708f;
+	margin-top: 0;
+}
+.rose dl.separateur {
+	border-top: solid 1px  #f78042;
+	margin-top: 0;
+}
+.jaune dl.separateur {
+	border-top: solid 1px  #fecc22;
+	margin-top: 0;
+}
 /*---------------- Espace parents ---------------------------*/
 div#parent-wrapper {
 	min-height: 400px;
 }
-table.parent {
-	/*margin-left: auto;
-	margin-right: auto;
-	width: 75%;
-	/*border: 1px solid #9d3c06;*/
-	/*border-radius: 20px 20px 0 0;*/
-	/*box-shadow: 1px 1px 5px #9d3c06;*/
+.parent h3, .parent p {
+	margin: 0;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+.parent.horaires td:nth-child(4) {
+	text-align: right;
+	padding-right: 6px;
 }
 #parent-wrapper div.bouton-inscrire {
 	margin-top: 3px;
@@ -1009,6 +1134,9 @@ table.parent {
 	border-bottom-width: 0;
 	border-left-width: 0;
 	border-right-width: 0;
+	border: 1px solid #31708f;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px 1px 5px #31708f;
 	margin-right: 10px;
 }
 #parent-wrapper input.accueil {
@@ -1054,4 +1182,17 @@ table.parent {
 	width: 120px;
 	margin-left: 5px;
 }
+/*---------------------- Documents ------------------------*/
 
+#fiche-inner .sbm-document-table label {
+	display: inline-block;
+	width: 450px;
+	padding-left: 5px;
+}
+#fiche-inner .sbm-document-table fieldset {
+	border: 1px solid #fdddcc;
+	border-radius: 4px 4px 4px 4px;
+}
+#fiche-inner .sbm-document-table fieldset label {
+	width: auto;
+}
