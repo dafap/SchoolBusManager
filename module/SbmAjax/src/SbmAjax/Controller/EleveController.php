@@ -384,7 +384,7 @@ class EleveController extends AbstractActionController
     {
         $serviceId = $this->params('serviceId');
         $queryStations = $this->getServiceLocator()->get('Sbm\Db\Select\Stations');
-        $stations = $queryStations->surcircuit($serviceId);
+        $stations = $queryStations->surcircuit($serviceId, Session::get('millesime'));
         return $this->getResponse()->setContent(Json::encode(array(
             'data' => $stations,
             'success' => 1

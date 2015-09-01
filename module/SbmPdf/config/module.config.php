@@ -21,6 +21,26 @@ return array(
                         'sadmin'
                     )
                 )
+            ),
+            'sbmdocument' => array(
+                'allow' => array(
+                    'roles' => array(
+                        'admin',
+                        'sadmin'
+                    )
+                ),
+                'actions' => array(
+                    'horaires' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'parent',
+                                'transporteur',
+                                'etablissement',
+                                'secretariat'
+                            )
+                        )
+                    )
+                )
             )
         )
     ),
@@ -40,6 +60,7 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
+            'SbmPdf\Controller\Pdf' => 'SbmPdf\Controller\PdfController',
             'SbmPdf\Controller\Document' => 'SbmPdf\Controller\DocumentController'
         )
     ),
@@ -56,8 +77,25 @@ return array(
                     ),
                     'defaults' => array(
                         'module' => 'SbmPdf',
-                        'controller' => 'SbmPdf\Controller\Document',
+                        'controller' => 'SbmPdf\Controller\Pdf',
                         'action' => 'pdf-liste'
+                    )
+                ),
+                'may_terminate' => true
+            ),
+            'sbmdocument' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route' => '/document[/:action[/page/:page][/id/:id]]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'page' => '[0-9]+',
+                        'id' => '[0-9]+'
+                    ),
+                    'defaults' => array(
+                        'module' => 'SbmPdf',
+                        'controller' => 'SbmPdf\Controller\Document',
+                        'action' => 'index'
                     )
                 ),
                 'may_terminate' => true

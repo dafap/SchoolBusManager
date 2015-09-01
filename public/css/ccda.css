@@ -557,6 +557,10 @@ div#fiche-inner {
 div#fiche-inner div.row-inner fieldset {
 	border: 1px solid #fdddcc;
 	border-radius: 4px 4px 4px 4px;
+	padding: 0;
+	padding-top: 0.35em;
+	padding-bottom: 0.625em;
+	padding-left: 0.5em;
 }
 div#fiche-inner div.row-inner input.cancel {
 	margin-top: 6px;

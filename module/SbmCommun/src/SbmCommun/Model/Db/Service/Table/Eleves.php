@@ -54,6 +54,10 @@ class Eleves extends AbstractSbmTable
         $this->id_name = 'eleveId';
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
+     */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
         try {
@@ -88,17 +92,46 @@ class Eleves extends AbstractSbmTable
                 $obj_data->addCalculateField('prenomSA');
             }
             $obj_data->addCalculateField('dateModification');
-        }        
+        }
         parent::saveRecord($obj_data);
     }
-    
+
+    /**
+     * Marque la fiche sélectionnée ou non sélectionnée selon la valeur de $selection
+     * 
+     * @param int $eleveId            
+     * @param bool $selection
+     *            0 ou 1
+     */
     public function setSelection($eleveId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array('eleveId' => $eleveId, 'selection' => $selection));
+        $oData->exchangeArray(array(
+            'eleveId' => $eleveId,
+            'selection' => $selection
+        ));
         parent::saveRecord($oData);
     }
-    
+
+    /**
+     * Remie à zéro de la sélection des élèves.
+     * Plus aucun élève ne sera sélectionné.
+     *
+     * @return int
+     */
+    public function clearSelection()
+    {
+        return $this->getTableGateway()->update(array(
+            'selection' => 0
+        ));
+    }
+
+    /**
+     * Vérifie si un numero est occupé. Renvoie vrai s'il est occupé.
+     * 
+     * @param int $n
+     * @return boolean
+     */
     private function numeroOccupe($n)
     {
         $where = new Where();

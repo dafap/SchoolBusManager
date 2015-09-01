@@ -3,6 +3,7 @@
  * Traitement des formules dans les pieds de page et les pieds de document
  *
  * Les fonctions évaluées sont : 
+ *   %anneescolaire%
  *   %date%
  *   %heure%
  *   %millesime%
@@ -204,6 +205,17 @@ class Calculs
      * Définition des différentes fonctions de calcul
      * ***************************************************************************************************************
      */
+    
+    /**
+     * Renvoie l'année scolaire courante
+     *
+     * @return string
+     */
+    public function anneescolaire()
+    {
+        $millesime = Session::get('millesime');
+        return sprintf('%d-%d', $millesime, $millesime + 1);
+    }
     
     /**
      * Renvoie la date du jour.

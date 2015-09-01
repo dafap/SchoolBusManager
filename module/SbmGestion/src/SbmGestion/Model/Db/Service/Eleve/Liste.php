@@ -78,7 +78,7 @@ class Liste implements FactoryInterface
     {
         $where = new Where();
         $where->equalTo('s.millesime', $millesime);
-        if (is_array($keys)) {
+        if (!empty($keys) && is_array($keys)) {
             $predicateSet = $where->nest();
             foreach ($keys as $partie) {
                 if (is_array($partie)) {
@@ -107,7 +107,7 @@ class Liste implements FactoryInterface
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
         $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        // die($statement->getSql());
+        //die($statement->getSql());
         return $statement->execute();
     }
 

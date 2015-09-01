@@ -688,7 +688,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'pageheader_string',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Textarea',
             'attributes' => array(
                 'id' => 'documentpdf-pageheader_string',
                 'class' => 'sbm-width-45c'

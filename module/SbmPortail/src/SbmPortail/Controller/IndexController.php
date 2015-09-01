@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2015
- * @version 2015-1
+ * @date 26 août 2015
+ * @version 2015-2
  */
 namespace SbmPortail\Controller;
 
@@ -391,40 +391,31 @@ class IndexController extends AbstractActionController
                 $right = $this->getServiceLocator()
                     ->get('Sbm\Db\Table\UsersTransporteurs')
                     ->getTransporteurId($userId);
-                $where = $criteres_obj->getWhere()
+                $where = $criteres_obj->getWherePdf()
                     ->nest()
-                    ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
-                $filtre = $criteres_obj->getCriteres();
-                $expressions[] = "(transporteur1Id = $right OR transporteur2Id = $right)";
+                    ->equalTo('transporteur1Id', $right)->or->equalTo('transporteur2Id', $right)->unnest();
                 $documentId = 'List élèves portail transporteur';
                 break;
             case 3:
                 $right = $this->getServiceLocator()
                     ->get('Sbm\Db\Table\UsersEtablissements')
                     ->getEtablissementId($userId);
-                $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
-                $filtre = $criteres_obj->getCriteres();
-                $expressions[] = "(etablissementId = \"$right\")";
+                $where = $criteres_obj->getWherePdf()->equalTo('etablissementId', $right);
                 $documentId = 'List élèves portail etab';
                 break;
             // case 200:
             // break;
             default:
-                $where = $criteres_obj->getWhere();
-                $criteres = array_merge($criteres, array(
-                    'millesime' => $this->getFromSession('millesime')
-                ));
+                $where = $criteres_obj->getWherePdf();
                 $documentId = 'List élèves portail transporteur';
                 break;
         }
         $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
-        $call_pdf->setParam('documentId', $documentId);
-        if (! empty($filtre['criteres'])) {
-            $call_pdf->setParam('where', $where)
-                ->setParam('expression', $expressions)
-                ->setParam('criteres', $filtre['criteres'])
-                ->setParam('strict', $filtre['strict']);
+        if ($docaffectationId = $this->params('id', false)) {
+            // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
+            $call_pdf->setParam('docaffectationId', $docaffectationId);
         }
+        $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
         $call_pdf->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
@@ -495,6 +486,9 @@ class IndexController extends AbstractActionController
             'data' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
                 ->byCircuit($this->getFromSession('millesime'), array(
+                array(
+                    'inscrit' => 1
+                ),
                 array(
                     'service1Id' => $circuit->serviceId,
                     'station1Id' => $circuit->stationId

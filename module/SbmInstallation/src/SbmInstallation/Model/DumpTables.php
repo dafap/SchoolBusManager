@@ -163,6 +163,9 @@ EOT;
                                 break;
                         }
                     } else {
+                        if (substr($key, -5) == 'color' && substr($column, 0, 1) == '#') {
+                            $column = substr($column, 1);
+                        }
                         $val = "'" . addslashes($column) . "'";
                     }
                 

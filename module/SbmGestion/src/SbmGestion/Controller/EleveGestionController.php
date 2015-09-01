@@ -4,8 +4,8 @@
  *
  * Méthodes utilisées pour gérer la localisation des responsables et la création des cartes de transport
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmGestion/Controller
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -16,6 +16,7 @@ namespace SbmGestion\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Db\Sql\Where;
 use SbmCartographie\Model\Point;
 use SbmCommun\Form\LatLng;
 use SbmCommun\Form\ButtonForm;
@@ -424,26 +425,31 @@ class EleveGestionController extends AbstractActionController
                     default: // tous
                         break;
                 }
+                $where = new Where();
                 switch ($args['selection']) {
                     case 'nouvelle':
                         $lastDateCarte = $this->getServiceLocator()
                             ->get('Sbm\Db\Table\Scolarites')
                             ->getLastDateCarte();
                         $expression[] = "dateCarte = '$lastDateCarte'";
+                        $where->equalTo('dateCarte', $lastDateCarte);
                         break;
                     case 'reprise':
                         $dateReprise = $args['dateReprise'];
                         $expression[] = "dateCarte = '$dateReprise'";
+                        $where->equalTo('dateCarte', $dateReprise);
                         break;
                     case 'selection':
                         $expression = array(
                             "millesime = $millesime",
                             'selection = 1'
                         );
+                        $where->equalTo('millesime', $millesime)->literal('selection = 1');
                         break;
                 }
                 $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
                 $call_pdf->setParam('documentId', $args['document'])
+                    ->setParam('where', $where)
                     ->setParam('criteres', $criteres)
                     ->setParam('strict', array(
                     'empty' => array(),
