@@ -47,7 +47,7 @@ $actions = array(
     ),
     'rapports' => array(
         'class' => 'fam-printer',
-        'formaction' => $url_origine,//$url_pdf,
+        'formaction' => $url_origine, // $url_pdf,
         'title' => 'Rapports à imprimer'
     ),
     'ajouter' => array(
@@ -118,7 +118,7 @@ echo $this->flashMessenger()->render('default');
 				</tr>
 			    <?php foreach ($liste as $row) : ?>
 			    <?php
-			$pictogrammes = array();
+            $pictogrammes = array();
             if ($row['millesime'] == Session::get('millesime')) {
                 $url_edit = $this->url('sbmgestion/eleve', array(
                     'action' => 'eleve-edit',
@@ -140,7 +140,11 @@ echo $this->flashMessenger()->render('default');
                         'title' => $row['inscrit'] ? 'Rayer' : 'Activer'
                     )
                 );
-                if ($row['paiement'] == 0) {
+                $inscrit = $row['paiement'] == 1;
+                $inscrit |= $row['fa'] == 1;
+                $inscrit |= ($row['demandeR1'] == 2 && $row['accordR1'] == 0 && $row['subventionR1'] == 1);
+                $inscrit |= ($row['demandeR2'] == 2 && $row['accordR2'] == 0 && $row['subventionR2'] == 1);
+                if (! $inscrit) {
                     $pictogrammes[] = '<i class="fam-tag-orange" title="Préinscrit"></i>';
                 }
                 $tr_css = 'noir';
