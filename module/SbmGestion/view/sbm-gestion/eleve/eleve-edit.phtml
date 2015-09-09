@@ -106,13 +106,15 @@ function montreDemande(r) {
         $("#block-affectations"+r).show();
     }
 }
-function montreMotifSubvention(accord, r) {
+function montreMotifRefus(accord, subvention, r) {
     if (accord) {
-        $("#wrapper-motifRefus"+r).hide();
-        $("#wrapper-subvention"+r).hide();
+        if (subvention) {
+            $("#wrapper-motifRefus"+r).show();
+        } else {
+            $("#wrapper-motifRefus"+r).hide();
+        }
     } else {
         $("#wrapper-motifRefus"+r).show();
-        $("#wrapper-subvention"+r).show();
     }
 }
 function montreBlockAffectation(accord, r) {
@@ -186,10 +188,11 @@ $("#fiche-inner input[name=demandeR2]").click(function(){
 });
 $("#eleve-accordR1").click(function(){
     var action = ($(this).is(':checked'))?'check':'uncheck';
+    var subvention = $("#eleve-subventionR1").is(':checked');
     $.ajax({
         url:'/sbmajaxeleve/'+action+'accordR1/eleveId:<?php echo $this->eleveId;?>',
         success:function(data){
-            montreMotifSubvention(action=='check','r1');
+            montreMotifRefus(action=='check',subvention,'r1');
             montreBlockAffectation(action=='check','r1');
         },
         error:function(xhr,ajaxOptions,thrownError){
@@ -197,18 +200,29 @@ $("#eleve-accordR1").click(function(){
         }
     });
 });
+$("#eleve-subventionR1").click(function(){
+    var accord = $("#eleve-accordR1").is(':checked');
+    var subvention = $(this).is(':checked');
+    montreMotifRefus(accord,subvention,'r1');
+});
 $("#eleve-accordR2").click(function(){
     var action = ($(this).is(':checked'))?'check':'uncheck';
+    var subvention = $("#eleve-subventionR2").is(':checked');
     $.ajax({
         url:'/sbmajaxeleve/'+action+'accordR2/eleveId:<?php echo $this->eleveId;?>',
         success:function(data){
-            montreMotifSubvention(action=='check','r2');
+            montreMotifRefus(action=='check',subvention,'r2');
             montreBlockAffectation(action=='check','r2');
         },
         error:function(xhr,ajaxOptions,thrownError){
             alert(xhr.status+' '+thrownError);
         }
     });
+});
+$("#eleve-subventionR2").click(function(){
+    var accord = $("#eleve-accordR2").is(':checked');
+    var subvention = $(this).is(':checked');
+    montreMotifRefus(accord,subvention,'r2');
 });
 $("input[type='text'][name^='distanceR']").dblclick(function(){
     $(this).css("cursor", "wait");
@@ -287,8 +301,8 @@ montreMotifDerogation($("#eleve-derogation").is(":checked"));
 montreOngletGa($("#eleve-ga").is(":checked"));
 montreDemande('r1');
 montreDemande('r2');
-montreMotifSubvention($("#eleve-accordR1").is(":checked"),'r1');
-montreMotifSubvention($("#eleve-accordR2").is(":checked"),'r2');
+montreMotifRefus($("#eleve-accordR1").is(":checked"),$("#eleve-subventionR1").is(":checked"),'r1');
+montreMotifRefus($("#eleve-accordR2").is(":checked"),$("#eleve-subventionR2").is(":checked"),'r2');
 montreBlockAffectation($("#eleve-accordR1").is(":checked"),'r1');
 montreBlockAffectation($("#eleve-accordR2").is(":checked"),'r2');
 initAccord();
@@ -415,10 +429,13 @@ echo $this->formHidden($this->form->get('csrf'));
 							</div>
 							<div id="block-demander1">
 								<div class="clearfix">
-									<div id="wrapper-accordR1" class="float-left"><?php echo $this->formRow($this->form->get('accordR1'));?></div>
+								    <div class="float-left">
+									    <div id="wrapper-accordR1"><?php echo $this->formRow($this->form->get('accordR1'));?></div>
+									    <div id="wrapper-subventionr1"><?php echo $this->formRow($this->form->get('subventionR1'));?></div>
+									</div>
 									<div id="wrapper-motifRefusr1" class="float-left"><?php echo $this->formRow($this->form->get('motifRefusR1'));?></div>
 								</div>
-								<div id="wrapper-subventionr1" class="row-inner edit"><?php echo $this->formRow($this->form->get('subventionR1'));?></div>
+								
 							</div>
 						</div>
 						<div class="float-left left-10px">
@@ -495,11 +512,13 @@ echo $this->formHidden($this->form->get('csrf'));
 								<div id="wrapper-demandeR2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR2'));?></div>
 							</div>
 							<div id="block-demander2">
-								<div class="clearfix">
-									<div id="wrapper-accordR2" class="float-left"><?php echo $this->formRow($this->form->get('accordR2'));?></div>
+							    <div class="clearfix">
+								    <div class="float-left">
+									    <div id="wrapper-accordR2"><?php echo $this->formRow($this->form->get('accordR2'));?></div>
+									    <div id="wrapper-subventionr2"><?php echo $this->formRow($this->form->get('subventionR2'));?></div>
+									</div>
 									<div id="wrapper-motifRefusr2" class="float-left"><?php echo $this->formRow($this->form->get('motifRefusR2'));?></div>
 								</div>
-								<div id="wrapper-subventionr2" class="row-inner edit"><?php echo $this->formRow($this->form->get('subventionR2'));?></div>
 							</div>
 						</div>
 						<div class="float-left-10px">

@@ -273,10 +273,14 @@ echo $this->flashMessenger()->render('default');
                 $tr_css .= ' alert';
                 $afficheRouge = true;
             }
+            $inscrit = $eleve['paiement'];
+            $inscrit |= $eleve['fa'];
+            $inscrit |=($eleve['demandeR1'] == 2 && $eleve['accordR1'] == 0 && $eleve['subventionR1'] == 1);
+            $inscrit |=($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 && $eleve['subventionR2'] == 1);
             ?>
          <tr class="<?php echo $tr_css;?>">
 					<td <?php echo $rowspan;?>>
-                    <?php echo $eleve['paiement'] || $eleve['fa'] ? '' : '<i class="fam-tag-orange" title="Préinscrit"></i>';?>
+                    <?php echo  $inscrit ? '' : '<i class="fam-tag-orange" title="Préinscrit"></i>';?>
                     <?php echo $eleve['affecte'] ? '' : '<i class="fam-chart-line-error" title="Sans affectation"></i>';?>
                     </td>
 					<td <?php echo $rowspan;?> class="numero"><?php echo $eleve['numero']; ?></td>
