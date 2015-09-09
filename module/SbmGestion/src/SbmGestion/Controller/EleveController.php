@@ -554,7 +554,7 @@ class EleveController extends AbstractActionController
             'eleveId' => $eleveId
         ));
         if ($odata1->inscrit) {
-            $invariants['etat'] = $odata1->paiement ? 'Inscrit' : 'Préinscrit';
+            $invariants['etat'] = $odata1->paiement || $odata1->fa ? 'Inscrit' : 'Préinscrit';
         } else {
             $invariants['etat'] = 'Rayé';
         }
