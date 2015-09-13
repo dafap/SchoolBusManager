@@ -126,7 +126,6 @@ class Scolarites extends AbstractSbmTable
      */
     public function setAccord($millesime, $eleveId, $r, $accord)
     {
-        // die(var_dump($eleveId, $r, $accord));
         $champ = "accord$r";
         $oData = $this->getObjData();
         $oData->exchangeArray(array(
@@ -134,7 +133,6 @@ class Scolarites extends AbstractSbmTable
             'eleveId' => $eleveId,
             $champ => $accord
         ));
-        // die(var_dump($oData));
         parent::saveRecord($oData);
     }
 
@@ -197,5 +195,27 @@ class Scolarites extends AbstractSbmTable
         return $this->getTableGateway()->update(array(
             'dateCarte' => $now
         ), $where);
+    }
+
+    /**
+     * Par défaut, ajoute un duplicata dans le compte des duplicatas de l'élève.
+     * Si $cancel, alors retire un duplicata du compte de l'élève.
+     *
+     * @param int $millesime            
+     * @param int $eleveId            
+     * @param bool $cancel            
+     */
+    public function addDuplicata($millesime, $eleveId, $cancel = false)
+    {
+        $oData = $this->getRecord(array(
+            'millesime' => $millesime,
+            'eleveId' => $eleveId
+        ));
+        if ($cancel && $oData->duplicata > 0) {
+            $oData->duplicata --;
+        } else {
+            $oData->duplicata ++;
+        }
+        parent::saveRecord($oData);
     }
 }

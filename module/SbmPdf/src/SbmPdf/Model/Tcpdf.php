@@ -1784,15 +1784,16 @@ class Tcpdf extends \TCPDF
         }
         
         $label = new Carte($this->getServiceLocator(), $this->getDocumentId());
-        // pour le moment, planche entière
-        // par la suite, pour commencer à l'étiquette colonne $j, rangée $k :
-        // $label->setCurrentColumn($j); // optionnel
-        // $label->setCurrentRow($k); // optionnel
+        // position par défaut : planche entière
+        if ($position = $this->getParam('position', false)) {
+            $label->setCurrentColumn($position['column']);
+            $label->setCurrentRow($position['row']);
+        }
         list ($x, $y) = $label->xyStart();
         $this->SetXY($x, $y);
         // le descripteur est indexé à partir de 0
         $descripteur = $label->descripteurData();
-        
+        $duplicata = $this->getParam('duplicata', false);
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
             // partie graphique
             $origine = array(
@@ -1800,6 +1801,16 @@ class Tcpdf extends \TCPDF
                 $this->y
             );
             $this->templateDocBodyMethod3Picture();
+            // filigrane
+            if ($duplicata) {
+                list ($x, $y) = $origine;
+                $y += $label->labelHeight() * 2 / 3;
+                $this->StartTransform();
+                $this->Rotate(45, $x, $y);
+                $this->SetXY($x + 10, $y);
+                $this->Titre(1, 'DUPLICATA', 'L');
+                $this->StopTransform();
+            }
             list ($x, $y) = $origine;
             $this->SetXY($x, $y);
             // partie texte - etiquetteData est indexé à partir de 0
@@ -1849,7 +1860,7 @@ class Tcpdf extends \TCPDF
         );
         $this->Rect($x + 56, $y + 17, 23, 29, 'D', array(
             'all' => $border_style
-        )); //
+        ));
     }
     
     // =======================================================================================================

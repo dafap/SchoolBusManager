@@ -59,9 +59,10 @@ echo $this->flashMessenger()->render('default');
 		<h1>Liste des paiements</h1>
 <?php if ($this->h2): ?>
         <h2>Paiements effectués par <?php echo $this->responsable; ?></h2>
-		<p class="left-10px">Total du : <?php echo $fmt->formatCurrency(($this->nbInscrits + $this->nbPreinscrits) * $this->tarif, 'EUR');?>
-            <span class="left-95px">Payé : <?php echo $fmt->formatCurrency($this->nbInscrits * $this->tarif, 'EUR');?></span>
-			<span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($this->nbPreinscrits * $this->tarif, 'EUR');?></span>
+        <?php $totalDu = ($this->nbInscrits + $this->nbPreinscrits) * $this->inscription + $this->nbDuplicata * $this->duplicata; ?>
+		<p class="left-10px">Total du : <?php echo $fmt->formatCurrency($totalDu, 'EUR');?>
+            <span class="left-95px">Payé : <?php echo $fmt->formatCurrency($this->totalPaye, 'EUR');?></span>
+			<span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($totalDu - $this->totalPaye, 'EUR');?></span>
 		</p>
 <?php endif; ?>	
 		<div class="menu float-left">

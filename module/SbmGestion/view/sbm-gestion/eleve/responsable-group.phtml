@@ -31,6 +31,10 @@ $url_origine = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-group',
     'page' => $this->page
 ));
+$url_duplicata = $this->url('sbmgestion/gestioneleve', array(
+    'action' => 'duplicata-carte',
+    'page' => $this->page
+));
 $hiddens = array(
     'origine' => $url_origine,
     'responsableId' => $this->responsableId
@@ -138,6 +142,11 @@ echo $this->flashMessenger()->render('default');
                         'class' => $row['inscrit'] ? 'fam-pencil-delete' : 'fam-pencil-add',
                         'formaction' => $url_raye,
                         'title' => $row['inscrit'] ? 'Rayer' : 'Activer'
+                    ),
+                    'duplicata' => array(
+                        'class' => 'fam-vcard-add',
+                        'formaction' => $url_duplicata,
+                        'title' => 'duplicata de la carte de transport'
                     )
                 );
                 $inscrit = $row['paiement'] == 1;

@@ -124,6 +124,11 @@ class Label
         return count($this->config['docfields']);
     }
 
+    public function labelHeight()
+    {
+        return (float) $this->config['doclabel']['label_height'];
+    }
+    
     /**
      * Hauteur de la zone d'écriture dans une étiquette
      *

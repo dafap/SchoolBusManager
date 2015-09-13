@@ -257,12 +257,7 @@ class Paiements extends AbstractSbmTable
         } else {
             $where->equalTo('dateBordereau', $dateBordereau);
         }
-        $select = $this->table_gateway->getSql()->select();
-        $select->columns(array(
-            'somme' => new Expression('sum(montant)')
-        ))->where($where);
-        $result = $this->table_gateway->selectWith($select)->current();
-        return $result->somme;
+        return $this->total($where);
     }
 
     public function totalAnneeScolaire($millesime, $codeCaisse = null, $codeModeDePaiement = null)
@@ -276,12 +271,7 @@ class Paiements extends AbstractSbmTable
         if (! is_null($codeModeDePaiement)) {
             $where->equalTo('codeModeDePaiement', $codeModeDePaiement);
         }
-        $select = $this->table_gateway->getSql()->select();
-        $select->columns(array(
-            'somme' => new Expression('sum(montant)')
-        ))->where($where);
-        $result = $this->table_gateway->selectWith($select)->current();
-        return $result->somme;
+        return $this->total($where);
     }
 
     public function totalExercice($exercice, $codeCaisse = null, $codeModeDePaiement = null)
@@ -294,6 +284,11 @@ class Paiements extends AbstractSbmTable
         if (! is_null($codeModeDePaiement)) {
             $where->equalTo('codeModeDePaiement', $codeModeDePaiement);
         }
+        return $this->total($where);
+    }
+    
+    public function total(Where $where)
+    {
         $select = $this->table_gateway->getSql()->select();
         $select->columns(array(
             'somme' => new Expression('sum(montant)')

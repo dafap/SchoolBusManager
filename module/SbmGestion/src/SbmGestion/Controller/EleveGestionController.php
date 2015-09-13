@@ -481,8 +481,94 @@ class EleveGestionController extends AbstractActionController
         }
     }
 
+    /**
+     * Reçoit nécessairement en post le paramètre eleveId
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
     public function duplicataCarteAction()
     {
-        ;
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $vue = true;
+        $args = (array) $prg;
+        if (array_key_exists('cancel', $args) || ! array_key_exists('eleveId', $args)) {
+            return $this->redirect()->toUrl($args['origine']);
+        }
+        $millesime = Session::get('millesime');
+        $vue = true;
+        $documentId = $this->getServiceLocator()
+            ->get('Sbm\Db\System\Documents')
+            ->getDocumentId('Duplicata carte');
+        $configLabel = $this->getServiceLocator()
+            ->get('Sbm\Db\System\DocLabels')
+            ->getConfig($documentId);
+        $form = new \SbmGestion\Form\PlancheEtiquettesForm('duplicata', array(
+            'nbcols' => $configLabel['cols_number'],
+            'nbrows' => $configLabel['rows_number']
+        ));
+        $form->add(array(
+            'type' => 'hidden',
+            'name' => 'eleveId',
+            'attributes' => array(
+                'value' => $args['eleveId']
+            )
+        ));
+        $form->add(array(
+            'type' => 'hidden',
+            'name' => 'origine',
+            'attributes' => array(
+                'value' => $args['origine']
+            )
+        ));
+        $form->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'gratuit',
+            'attributes' => array(),
+            'options' => array(
+                'label' => 'Gratuité exceptionnelle',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $position = array_combine(array(
+                    'row',
+                    'column'
+                ), explode('-', $args['planche']));
+                $where = new Where();
+                $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
+                $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+                $call_pdf->setParam('documentId', 'Duplicata carte')
+                    ->setParam('where', $where)
+                    ->setParam('criteres', array())
+                    ->setParam('expression', array(
+                    "millesime = $millesime",
+                    'eleveId = ' . $args['eleveId']
+                ))
+                    ->setParam('position', $position)
+                    ->setParam('duplicata', true)
+                    ->renderPdf();
+                if (empty($args['gratuit'])) {
+                    $this->getServiceLocator()
+                        ->get('Sbm\Db\Table\Scolarites')
+                        ->addDuplicata($millesime, $args['eleveId']);
+                }
+                $this->flashMessenger()->addSuccessMessage("Edition d'un duplicata.");
+                $vue = false; // la http response est lancée par renderPdf()
+            }
+        }
+        if ($vue) {
+            return new ViewModel(array(
+                'form' => $form,
+                'eleveid' => $args['eleveId'],
+                'origine' => $args['origine']
+            ));
+        }
     }
 }
