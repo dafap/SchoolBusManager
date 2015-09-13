@@ -194,6 +194,12 @@ class FinanceController extends AbstractActionController
             // gestion des paiements du $responsableId.
             // L'appel peut provenir de la liste des responsables, de la fiche d'un responsable ou de la liste des paiements.
             // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
+            $millesime = Session::get('millesime');
+            $as = sprintf('%d-%d', $millesime, $millesime + 1);
+            $where =  new Where();
+            $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire', $as);
+            $totalPaye = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements')->total($where);
+            
             $where = new Where();
             $where->expression('responsableId = ?', $responsableId);
             if (array_key_exists('nbPreinscrits', $args)) {
@@ -214,17 +220,23 @@ class FinanceController extends AbstractActionController
                 $nbPreinscrits = $responsable['nbPreinscrits'];
             }
             
+            
             return new ViewModel(array(
                 'paginator' => $tablePaiements->paginator($where, $order),
                 'nb_pagination' => $nb_paiements,
                 'criteres_form' => null,
                 'h2' => true,
                 'responsable' => $nomPrenom,
-                'tarif' => $this->getServiceLocator()
+                'totalPaye' => $totalPaye,
+                'inscription' => $this->getServiceLocator()
                     ->get('Sbm\Db\Table\Tarifs')
                     ->getMontant('inscription'),
+                'duplicata' => $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Tarifs')
+                    ->getMontant('duplicata'),
                 'nbInscrits' => $nbInscrits,
                 'nbPreinscrits' => $nbPreinscrits,
+                'nbDuplicata' => $args['nbDuplicata'],
                 'page' => $currentPage,
                 'responsableId' => $responsableId,
                 'url1_retour' => $url1_retour,

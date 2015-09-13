@@ -154,9 +154,9 @@ class Responsables implements FactoryInterface
 
     /**
      * Renvoie le résultat d'une requête avec nombre d'enfants, d'inscrits et de préinscrits
-     * 
-     * @param \Zend\Db\Sql\Where $where
-     * @param array $order
+     *
+     * @param \Zend\Db\Sql\Where $where            
+     * @param array $order            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function withEffectifs($where, $order = null)
@@ -165,7 +165,7 @@ class Responsables implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
-    
+
     /**
      * Renvoie un paginator sur la requête donnant les responsables avec la commune et le nombre d'enfants
      * connus, inscrits et préinscrits
@@ -210,7 +210,17 @@ class Responsables implements FactoryInterface
             'eleveId'
         ))
             ->where($where2);
-        
+        // duplicata
+        $where3 = new Where();
+        $where3->literal('inscrit = 1')
+            ->literal('duplicata > 0')
+            ->equalTo('millesime', $this->millesime);
+        $select3 = new Select();
+        $select3->from($this->db->getCanonicName('scolarites', 'table'))
+            ->columns(array(
+            'eleveId', 'duplicata'
+        ))
+            ->where($where3);
         // requête principale
         $select = clone $this->select;
         $select->join(array(
@@ -227,6 +237,11 @@ class Responsables implements FactoryInterface
             'ins' => $select2
         ), 'ele.eleveId=ins.eleveId', array(
             'nbInscrits' => new Expression('count(ins.eleveId)')
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'dup' => $select3
+        ), 'ele.eleveId=dup.eleveId', array(
+            'nbDuplicata' => new Expression('sum(dup.duplicata)')
         ), $select::JOIN_LEFT)
             ->group('responsableId')
             ->order($order);
