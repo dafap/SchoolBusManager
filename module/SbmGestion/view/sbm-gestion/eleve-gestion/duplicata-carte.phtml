@@ -1,0 +1,76 @@
+<?php
+/**
+ * Page de confirmation et configuration d'un duplicata
+ *
+ * On confirme le souhait d'avoir un duplicata et on indique la position sur la planche d'étiquette.
+ * Le pdf est créé et le champ duplicata de la table scolarites est incrémenté.
+ * Il est possible de faire un duplicata à titre gratuit. Dans ce cas, pas d'incrémentation dans la table.
+ * 
+ * @project sbm
+ * @package SbmGestion/view/eleve-gestion
+ * @filesource duplicata-carte.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 10 sept. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->captureStart();
+?>
+$(document).ready(function($) {
+$("#btcancel").click(function(){
+    var form = $("#duplicata");
+    form.removeAttr("target");
+    form.submit();
+});
+});
+<?php 
+$this->headScript()->captureEnd();
+$hiddens = array(
+    'eleveId' => $this->eleveId,
+    'origine' => $this->origine
+);
+$url_ici = $this->url('sbmgestion/gestioneleve', array(
+    'action' => 'duplicata-carte'
+));
+$actions = array(
+    'cancel' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_ici, // traitement de cancel pour un redirect proprement
+        'title' => 'Retour'
+    )
+);
+?>
+<div id="fiche-wrapper">
+	<h1>Duplicata d'une carte de transport</h1>
+	<div id="fiche-header">
+	    <div class="menu clearfix">
+	    <?php echo $this->listeZoneActions($hiddens, $actions);?>
+	    </div>
+	</div>
+	<div id="fiche-inner">
+	    <?php echo $this->form()->openTag($this->form); ?>
+	    <?php echo $this->formHidden($this->form->get('eleveId'));?>
+	    <?php echo $this->formHidden($this->form->get('origine'));?>
+		<fieldset class="sbm-page1">
+			<div class="row-inner planche">
+			Indiquez la position de l'étiquette dans la planche d'étiquettes
+            <?php echo $this->form->renderPlanche();?>
+            </div>
+			<div class="row-inner"><?php echo $this->formRow($this->form->get('gratuit'));?></div>
+		</fieldset>
+		<div class="row-inner"><?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+		<?php echo $this->form()->closeTag(); ?>
+	</div>
+	<div id="fiche-footer">
+		<p class="sbm-description">
+			Indiquez la position de la carte à tirer dans la planche
+			d'étiquettes.<br> Vous pouvez exceptionnellement éditer un duplicata
+			à titre gratuit en cochant la case <em>gratuité</em>. Sinon, le coût
+			d'un duplicata sera ajouté à la somme due par la famille.
+		</p>
+	</div>
+</div>

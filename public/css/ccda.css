@@ -1190,3 +1190,11 @@ div#parent-wrapper {
 #fiche-inner .sbm-document-table fieldset label {
 	width: auto;
 }
+div.planche table {
+	margin-left: 70px;
+	border: 1px solid #31708f;
+	border-collapse: collapse;
+}
+div.planche table td {
+	border: 1px solid #31708f;
+}
