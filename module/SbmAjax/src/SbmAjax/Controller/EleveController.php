@@ -164,7 +164,9 @@ class EleveController extends AbstractActionController
      */
     private function getFormAffectationDecision($trajet)
     {
-        $values_options1 = $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes();
+        $values_options1 = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Stations')
+            ->ouvertes();
         $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
         $form = new \SbmGestion\Form\AffectationDecision($trajet, 2);
         $form->remove('back');
@@ -299,6 +301,117 @@ class EleveController extends AbstractActionController
         return $response;
     }
 
+    private function getFormPriseEnChargePaiement()
+    {
+        $form = new \SbmGestion\Form\Eleve\PriseEnChargePaiement();
+        
+        $form->setAttribute('action', $this->url()
+            ->fromRoute(self::ROUTE, array(
+            'action' => 'formpaiementvalidate'
+        )));
+        $form->setValueOptions('organismeId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Organismes'));
+        return $form;
+    }
+
+    public function formpaiementAction()
+    {
+        $eleveId = $this->params('eleveId', 0);
+        if ($eleveId) {
+            $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+            $oData = $tScolarites->getRecord(array(
+                'millesime' => Session::get('millesime'),
+                'eleveId' => $eleveId
+            ));
+            $aData = array(
+                'eleveId' => $eleveId,
+                'gratuit' => $oData->gratuit,
+                'organismeId' => $oData->organismeId
+            );
+            return new ViewModel(array(
+                'form' => $this->getFormPriseEnChargePaiement()->setData($aData),
+                'is_xmlhttprequest' => 1
+            ));
+        } else {
+            $response->setContent(Json::encode(array(
+                'cr' => 'Pas de référence élève !',
+                'success' => 0
+            )));
+            return $response;
+        }
+    }
+
+    public function formpaiementvalidateAction()
+    {
+        $request = $this->getRequest();
+        $response = $this->getResponse();
+        
+        if ($request->isPost()) {
+            if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
+                $messages = 'Opération abandonnée.';
+                $this->flashMessenger()->addInfoMessage($messages);
+                $response->setContent(Json::encode(array(
+                    'cr' => $messages,
+                    'success' => 1
+                )));
+            } else {
+                $form = $this->getFormPriseEnChargePaiement()->setData($request->getPost());
+                if (! $form->isValid()) {
+                    $errors = $form->getMessages();
+                    $messages = '';
+                    foreach ($errors as $key => $row) {
+                        if (! empty($row) && $key != 'submit') {
+                            foreach ($row as $keyer => $rower) {
+                                // save error(s) per-element that needed by Javascript
+                                $messages .= $key . ' : ' . _($rower) . "\n";
+                            }
+                        }
+                    }
+                    $response->setContent(Json::encode(array(
+                        'cr' => $messages,
+                        'success' => 0
+                    )));
+                } else {
+                    $data = $form->getData();
+                    $eleveId = $data['eleveId'];
+                    $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+                    try {
+                        $oData = $tScolarites->getRecord(array(
+                            'millesime' => Session::get('millesime'),
+                            'eleveId' => $eleveId
+                        ));
+                        $oData->gratuit = $data['gratuit'];
+                        if ($data['gratuit'] == 2) {
+                            $oData->organismeId = $data['organismeId'];
+                        } else {
+                            $oData->organismeId = 0;
+                        }
+                        $tScolarites->updateRecord($oData);
+                        $messages = 'La prise en charge du paiement a été modifiée.';
+                        $this->flashMessenger()->addSuccessMessage($messages);
+                        $response->setContent(Json::encode(array(
+                            'cr' => "$messages",
+                            'success' => 1
+                        )));
+                    } catch (\Exception $e) {
+                        $this->flashMessenger()->addErrorMessage('Une erreur s\'est produite pendant le traitement de la demande.');
+                        $response->setContent(Json::encode(array(
+                            'cr' => $e->getMessage(),
+                            'success' => 0
+                        )));
+                    }
+                }
+            }
+        } else {
+            $response->setContent(Json::encode(array(
+                'cr' => 'Pas de post !',
+                'success' => 0
+            )));
+        }
+        
+        return $response;
+    }
+
     /**
      * Renvoie la distance d'un domicile à un établissement
      * L'argument passé en GET dans args contient une chaine de la forme responsableId:valeur/etablissementId:valeur
@@ -379,7 +492,7 @@ class EleveController extends AbstractActionController
             'success' => 1
         )));
     }
-    
+
     public function getstationsforselectAction()
     {
         $serviceId = $this->params('serviceId');
@@ -390,7 +503,7 @@ class EleveController extends AbstractActionController
             'success' => 1
         )));
     }
-    
+
     /**
      * ajax - cocher la case accordR1 des élèves
      *
@@ -402,8 +515,8 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Scolarites')
-            ->setAccord(Session::get('millesime'), $eleveId, 'R1', 1);
+                ->get('Sbm\Db\Table\Scolarites')
+                ->setAccord(Session::get('millesime'), $eleveId, 'R1', 1);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -414,7 +527,7 @@ class EleveController extends AbstractActionController
             )));
         }
     }
-    
+
     /**
      * ajax - décocher la case accordR1 des élèves
      *
@@ -426,8 +539,8 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->getServiceLocator()
-            ->get('Sbm\Db\Table\Scolarites')
-            ->setAccord(Session::get('millesime'), $eleveId, 'R1', 0);
+                ->get('Sbm\Db\Table\Scolarites')
+                ->setAccord(Session::get('millesime'), $eleveId, 'R1', 0);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -437,8 +550,8 @@ class EleveController extends AbstractActionController
                 'success' => 0
             )));
         }
-    }    
-    
+    }
+
     /**
      * ajax - cocher la case accordR2 des élèves
      *
@@ -477,6 +590,31 @@ class EleveController extends AbstractActionController
                 ->get('Sbm\Db\Table\Scolarites')
                 ->setAccord(Session::get('millesime'), $eleveId, 'R2', 0);
             return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+
+    public function decrementeduplicataAction()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+            $odata = $tScolarites->getRecord(array(
+                'millesime' => Session::get('millesime'),
+                'eleveId' => $eleveId
+            ));
+            if ($odata->duplicata > 0) {
+                $odata->duplicata --;
+            }
+            $tScolarites->saveRecord($odata);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'duplicata' => $odata->duplicata,
                 'success' => 1
             )));
         } catch (\Exception $e) {

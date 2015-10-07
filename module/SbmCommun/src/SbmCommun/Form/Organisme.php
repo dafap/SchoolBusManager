@@ -1,29 +1,29 @@
 <?php
 /**
- * Formulaire de saisie et modification d'un transporteur
+ * Formulaire de saisie et modification d'un organisme
  *
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Form
- * @filesource Transporteur.php
+ * @filesource Organisme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2014
- * @version 2014-1
+ * @date 6 oct. 2015
+ * @version 2015-1
  */
 namespace SbmCommun\Form;
 
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class Transporteur extends AbstractSbmForm implements InputFilterProviderInterface
+class Organisme extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
-    public function __construct($param = 'transporteur')
+    public function __construct($param = 'organisme')
     {
         parent::__construct($param);
         $this->setAttribute('method', 'post');
         $this->add(array(
-            'name' => 'transporteurId',
+            'name' => 'organismeId',
             'type' => 'hidden'
         ));
         $this->add(array(
@@ -39,12 +39,12 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'nom',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-nom',
+                'id' => 'organisme-nom',
                 'autofocus' => 'autofocus',
                 'class' => 'sbm-width-50c'
             ),
             'options' => array(
-                'label' => 'Nom du transporteur',
+                'label' => 'Nom de l\'organisme',
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
@@ -57,7 +57,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'adresse1',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-adresseL1',
+                'id' => 'organisme-adresseL1',
                 'class' => 'sbm-width-50c'
             ),
             'options' => array(
@@ -74,7 +74,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'adresse2',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-adresseL2',
+                'id' => 'organisme-adresseL2',
                 'class' => 'sbm-width-50c'
             ),
             'options' => array(
@@ -91,7 +91,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'codePostal',
             'type' => 'SbmCommun\Form\Element\CodePostal',
             'attributes' => array(
-                'id' => 'transporteur-codepostal',
+                'id' => 'organisme-codepostal',
                 'class' => 'sbm-width-5c'
             ),
             'options' => array(
@@ -108,7 +108,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'communeId',
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
-                'id' => 'transporteur-communeId',
+                'id' => 'organisme-communeId',
                 'class' => 'sbm-width-45c'
             ),
             'options' => array(
@@ -126,7 +126,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'telephone',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-telephone',
+                'id' => 'organisme-telephone',
                 'class' => 'sbm-width-15c'
             ),
             'options' => array(
@@ -143,7 +143,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'fax',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-fax',
+                'id' => 'organisme-fax',
                 'class' => 'sbm-width-15c'
             ),
             'options' => array(
@@ -160,7 +160,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'email',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-email',
+                'id' => 'organisme-email',
                 'class' => 'sbm-width-50c'
             ),
             'options' => array(
@@ -177,7 +177,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'siret',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-siret',
+                'id' => 'organisme-siret',
                 'class' => 'sbm-width-15c'
             ),
             'options' => array(
@@ -194,7 +194,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'naf',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-naf',
+                'id' => 'organisme-naf',
                 'class' => 'sbm-width-5c'
             ),
             'options' => array(
@@ -211,79 +211,11 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'name' => 'tvaIntraCommunautaire',
             'type' => 'text',
             'attributes' => array(
-                'id' => 'transporteur-tvaIntraCommunautaire',
+                'id' => 'organisme-tvaIntraCommunautaire',
                 'class' => 'sbm-width-15c'
             ),
             'options' => array(
                 'label' => 'TVA intra communautaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_titulaire',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_titulaire',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'RIB - titulaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_domiciliation',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_domiciliation',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'RIB - domiciliation',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_bic',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_bic',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'RIB - BIC',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_iban',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_iban',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'RIB - IBAN',
                 'label_attributes' => array(
                     'class' => 'sbm-label'
                 ),
@@ -298,7 +230,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'submit',
                 'value' => 'Enregistrer',
-                'id' => 'transporteur-submit',
+                'id' => 'organisme-submit',
                 'class' => 'button default submit'
             )
         ));
@@ -307,7 +239,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
             'attributes' => array(
                 'type' => 'submit',
                 'value' => 'Abandonner',
-                'id' => 'transporteur-cancel',
+                'id' => 'organisme-cancel',
                 'class' => 'button default cancel'
             )
         ));

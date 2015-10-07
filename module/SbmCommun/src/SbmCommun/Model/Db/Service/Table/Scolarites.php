@@ -94,8 +94,8 @@ class Scolarites extends AbstractSbmTable
      *
      * @param int $millesime
      *            Millésime sur lequel on travaille
-     * @param array $aEleveId
-     *            Tableau de eleveId à mettre à jour
+     * @param array|int $aEleveId
+     *            Tableau de eleveId à mettre à jour ou index eleveId à mettre à jour
      * @param bool $paiement
      *            Indique s'il faut valider (true par défaut) ou invalider (false) le paiement
      *            
@@ -104,7 +104,11 @@ class Scolarites extends AbstractSbmTable
     public function setPaiement($millesime, $aEleveId, $paiement = true)
     {
         $where = new Where();
-        $where->equalTo('millesime', $millesime)->in('eleveId', $aEleveId);
+        if (is_array($aEleveId)) {
+            $where->equalTo('millesime', $millesime)->in('eleveId', $aEleveId);
+        } else {
+            $where->equalTo('millesime', $millesime)->equalTo('eleveId', $aEleveId);
+        }
         $update = $this->table_gateway->getSql()->update();
         $update->set(array(
             'paiement' => $paiement ? 1 : 0

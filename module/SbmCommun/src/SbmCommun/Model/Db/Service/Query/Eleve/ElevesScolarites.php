@@ -84,6 +84,7 @@ class ElevesScolarites implements FactoryInterface
             'inscrit' => 'inscrit',
             'gratuit' => 'gratuit',
             'paiement' => 'paiement',
+            'duplicata' => 'duplicata',
             'fa' => 'fa',
             'anneeComplete' => 'anneeComplete',
             'subventionR1' => 'subventionR1',
@@ -100,6 +101,7 @@ class ElevesScolarites implements FactoryInterface
             'joursTransport' => 'joursTransport',
             'subventionTaux' => 'subventionTaux',
             'tarifId' => 'tarifId',
+            'organismeId' => 'organismeId',
             'regimeId' => 'regimeId',
             'motifDerogation' => 'motifDerogation',
             'motifRefusR1' => 'motifRefusR1',
@@ -158,7 +160,13 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = clone $this->select;
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->and->nest()->literal('paiement = 1')->or->literal('fa=1')->unnest()->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->literal('inscrit = 1')
+            ->nest()
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
+            ->unnest()
+            ->nest()
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
@@ -168,22 +176,112 @@ class ElevesScolarites implements FactoryInterface
         $select = clone $this->select;
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))
+            ->literal('inscrit = 1')
             ->literal('paiement = 0')
-            ->literal('fa=0')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+            ->literal('fa = 0')
+            ->literal('gratuit = 0')
+            ->nest()
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute();
+    }
+
+    public function getMontantElevesInscrits($responsableId)
+    {
+        $select = $this->sql->select()
+            ->from(array(
+            'ele' => $this->db->getCanonicName('eleves', 'table')
+        ))
+            ->join(array(
+            'sco' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'ele.eleveId = sco.eleveId', array())
+            ->join(array(
+            'tar' => $this->db->getCanonicName('tarifs', 'table')
+        ), 'tar.tarifId = sco.tarifId', array(
+            'montant',
+            'nomTarif' => 'nom'
+        ))
+            ->columns(array(
+            'montantTotal' => new Expression('sum(tar.montant)')
+        ));
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->literal('inscrit = 1')
+            ->nest()
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
+            ->unnest()
+            ->nest()
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute()->current()['montantTotal'];
+    }
+
+    public function getElevesPreinscritsWithMontant($responsableId)
+    {
+        $select = clone $this->select;
+        $select->join(array(
+            'tar' => $this->db->getCanonicName('tarifs', 'table')
+        ), 'tar.tarifId = sco.tarifId', array(
+            'montant',
+            'nomTarif' => 'nom'
+        ));
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->literal('inscrit = 1')
+            ->literal('paiement = 0')
+            ->literal('fa = 0')
+            ->literal('gratuit = 0')
+            ->nest()
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
     
-    public function getElevesPreinscritsWithMontant($responsableId)
+    /**
+     * On renvoie la liste des enfants de l'année inscrits ou préinscrits
+     * à l'exception des `gratuits`, des `famille d'accueil` et des pris en charges par un organisme
+     * 
+     * @param int $responsableId
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getElevesPayantsWithMontant($responsableId)
     {
         $select = clone $this->select;
-        $select->join(array('tar' => $this->db->getCanonicName('tarifs', 'table')), 'tar.tarifId = sco.tarifId', array('montant', 'nomTarif' => 'nom'));
+        $select->join(array(
+            'tar' => $this->db->getCanonicName('tarifs', 'table')
+        ), 'tar.tarifId = sco.tarifId', array(
+            'montant',
+            'nomTarif' => 'nom'
+        ));
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))
-        ->literal('paiement = 0')
-        ->literal('fa=0')->and->nest()->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        ->literal('inscrit = 1')
+        ->literal('fa = 0')
+        ->literal('gratuit = 0')
+        ->nest()
+        ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
+    }
+
+    public function getNbDuplicatas($responsableId)
+    {
+        $select = $this->sql->select()
+            ->from(array(
+            'ele' => $this->db->getCanonicName('eleves', 'table')
+        ))
+            ->join(array(
+            'sco' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'ele.eleveId = sco.eleveId', array())
+            ->columns(array(
+            'nbDuplicatas' => new Expression('sum(sco.duplicata)')
+        ));
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->nest()
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute()->current()['nbDuplicatas'];
     }
 
     public function getInscritsNonAffectes()
@@ -191,10 +289,12 @@ class ElevesScolarites implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($this->sqlInscritsNonAffectes());
         return $statement->execute();
     }
+
     public function paginatorInscritsNonAffectes()
     {
         return new Paginator(new DbSelect($this->sqlInscritsNonAffectes(), $this->db->getDbAdapter()));
     }
+
     private function sqlInscritsNonAffectes()
     {
         $select = clone $this->select;
@@ -218,8 +318,9 @@ class ElevesScolarites implements FactoryInterface
         // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
         $predicate1 = new Predicate();
         $predicate1->equalTo('sco.millesime', Session::get('millesime'))
+            ->literal('inscrit = 1')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa=1')->unnest();
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         // demande non traitée
         $predicate2 = new Predicate();
         $predicate2->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal('sco.demandeR1 = 1')->unnest()->OR->nest()->literal('ele.responsable2Id=r.responsableId')->and->literal('sco.demandeR2 = 1')->unnest();
@@ -239,7 +340,10 @@ class ElevesScolarites implements FactoryInterface
         $where->predicate($predicate1)
             ->nest()
             ->predicate($predicate2)->or->predicate($predicate3)->unnest();
-        return $select->where($where)->order(array('nom', 'prenom'));
+        return $select->where($where)->order(array(
+            'nom',
+            'prenom'
+        ));
     }
 
     public function getPreinscritsNonAffectes()
@@ -247,10 +351,12 @@ class ElevesScolarites implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($this->sqlPreinscritsNonAffectes());
         return $statement->execute();
     }
+
     public function paginatorPreinscritsNonAffectes()
     {
         return new Paginator(new DbSelect($this->sqlPreinscritsNonAffectes(), $this->db->getDbAdapter()));
     }
+
     private function sqlPreinscritsNonAffectes()
     {
         $select = clone $this->select;
@@ -274,8 +380,10 @@ class ElevesScolarites implements FactoryInterface
         // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
         $predicate1 = new Predicate();
         $predicate1->equalTo('sco.millesime', Session::get('millesime'))
+            ->literal('inscrit = 1')
             ->literal('paiement = 0')
-            ->literal('fa=0');
+            ->literal('fa = 0')
+            ->literal('gratuit = 0');
         // demande non traitée
         $predicate2 = new Predicate();
         $predicate2->nest()
@@ -301,7 +409,10 @@ class ElevesScolarites implements FactoryInterface
         $where->predicate($predicate1)
             ->nest()
             ->predicate($predicate2)->or->predicate($predicate3)->unnest();
-        return $select->where($where)->order(array('nom', 'prenom'));
+        return $select->where($where)->order(array(
+            'nom',
+            'prenom'
+        ));
     }
 
     public function getDemandeGaDistanceR2Zero()

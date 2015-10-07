@@ -417,10 +417,12 @@ class EleveGestionController extends AbstractActionController
                 );
                 switch ($args['critere']) {
                     case 'inscrits':
-                        $expression[] = 'paiement = 1';
+                        $expression[] = '(paiement = 1 OR fa = 1 OR gratuit > 0)';
                         break;
                     case 'preinscrits':
                         $expression[] = 'paiement = 0';
+                        $expression[] = 'fa = 0';
+                        $expression[] = 'gratuit = 0';
                         break;
                     default: // tous
                         break;

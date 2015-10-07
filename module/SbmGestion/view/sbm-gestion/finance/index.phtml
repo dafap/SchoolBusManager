@@ -23,6 +23,9 @@ $url_finance_encaissements = $this->url('sbmgestion/finance', array(
 $url_finance_tarifs = $this->url('sbmgestion/finance', array(
     'action' => 'tarif-liste'
 ));
+$url_organisme_liste = $this->url('sbmgestion/finance', array(
+    'action' => 'organisme-liste'
+));
 $url_finance_factures = $this->url('sbmgestion/finance');
 $url_finance_prelevements = $this->url('sbmgestion/finance');
 $url_paiement_liste = $this->url('sbmpaiement');
@@ -126,6 +129,8 @@ echo $this->flashMessenger()->render('default');
 				<li class="gris"><i class="fam-bullet-go"></i>Gestion des factures</li>
 				<li class="gris"><i class="fam-bullet-go"></i>Gestion des
 					prélèvements</li>
+				<li><a href="<?php echo $url_organisme_liste; ?>"><i
+						class="fam-bullet-go"></i>Gestion des organismes payeurs</a></li>
 				<li><a href="<?php echo $url_gestion; ?>"><i class="fam-door-out"></i>Retour
 						au menu général</a></li>
 			</ul>

@@ -59,7 +59,7 @@ echo $this->flashMessenger()->render('default');
 		<h1>Liste des paiements</h1>
 <?php if ($this->h2): ?>
         <h2>Paiements effectués par <?php echo $this->responsable; ?></h2>
-        <?php $totalDu = ($this->nbInscrits + $this->nbPreinscrits) * $this->inscription + $this->nbDuplicata * $this->duplicata; ?>
+        <?php $totalDu = ($this->nbInscrits + $this->nbPreinscrits - $this->nbGratuits - $this->nbFa) * $this->inscription + $this->nbDuplicata * $this->duplicata; ?>
 		<p class="left-10px">Total du : <?php echo $fmt->formatCurrency($totalDu, 'EUR');?>
             <span class="left-95px">Payé : <?php echo $fmt->formatCurrency($this->totalPaye, 'EUR');?></span>
 			<span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($totalDu - $this->totalPaye, 'EUR');?></span>
@@ -89,6 +89,10 @@ if (! $this->h2) {
         'action' => 'paiement-liste'
     ));
 }
+$url_detail = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-detail',
+    'page' => $this->page
+));
 
 $hiddens = array(
     'url1_retour' => $this->url1_retour,
@@ -116,12 +120,20 @@ $actions = array(
         'formaction' => $url_imprimer,
         'title' => 'Bordereaux de remise de valeurs'
     ),
+    'detail' => array(
+        'class' => 'fam-group-gear',
+        'formaction' => $url_detail,
+        'title' => 'Justification des montants encaissés'
+    ),
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau paiement'
     )
 );
+if (! $this->h2) {
+    unset($actions['detail']);
+}
 echo $this->listeZoneActions($hiddens, $actions);
 ?>
         </div>
@@ -159,7 +171,8 @@ EOT;
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $paiement->paiementId);
             $jsCallback .= sprintf("$modele\n", $paiement->paiementId, $paiement->paiementId);
             ?>
-                <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+                <tr
+					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
 					<td class="responsable"><?php echo $r = $this->escapeHtml($paiement->responsable); ?></td>
 					<td class="montant"><?php echo $m = $fmt->formatCurrency($paiement->montant, 'EUR'); ?></td>
 					<td class="caisse"><?php echo $cs = $this->escapeHtml($paiement->caisse); ?></td>
@@ -173,11 +186,11 @@ EOT;
             $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" . 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" . 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" . $title_voir;
             $js_voir = 'javascript:window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' . str_replace("\n", '; ', $texte_voir) . '\');return false;';
             $hiddens['paiementId'] = $paiement->paiementId;
-                /*
-                 * Pour responsableId il y a 2 cas :
-                 *  - si h2 == true alors responsableId correspond au responsableId de la liste et de la ligne (liste des paiements d'un responsable)
-                 *  - si h2 == false alors responsableId correspond au responsableId de la ligne. Dans ce cas, le responsableId de la liste est -1.
-                 */
+            /*
+             * Pour responsableId il y a 2 cas :
+             * - si h2 == true alors responsableId correspond au responsableId de la liste et de la ligne (liste des paiements d'un responsable)
+             * - si h2 == false alors responsableId correspond au responsableId de la ligne. Dans ce cas, le responsableId de la liste est -1.
+             */
             $hiddens['responsableId'] = $paiement->responsableId;
             $hiddens['responsable'] = $this->escapeHtml($paiement->responsable);
             // ne pas utiliser de guillement dans la chaine $js

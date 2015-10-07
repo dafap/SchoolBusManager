@@ -1,30 +1,29 @@
 <?php
 /**
- * Page de consultation des inscrits sur un point d'arrêt d'un circuit
- *
- *
+ * Page de consultation des élèves pris en charge par un organisme payeur
+ * 
  * @project sbm
- * @package SbmGestion
- * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
+ * @package SbmGestion/view/sbm-gestion/finance
+ * @filesource organisme-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2015
- * @version 2015-2
+ * @date 6 oct. 2015
+ * @version 2015-1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine ? : 'circuit-liste',
-    'page' => $this->page
+$url_retour = $this->url('sbmgestion/finance', array(
+    'action' => 'organisme-liste',
+    'page' => $this->pageRetour
 ));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'circuit-group-pdf',
+$url_rapports = $this->url('sbmgestion/finance', array(
+    'action' => 'organisme-group-pdf',
     'page' => $this->page
 ));
 $hiddens = array(
-    'circuitId' => $this->circuitId
+    'organismeId' => $this->organismeId
 );
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'circuit-group'
+$menuImpression = $this->menuRapports($this->url('sbmgestion/finance', array(
+    'action' => 'organisme-group'
 )), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
@@ -38,22 +37,23 @@ $actions = array(
     ),
     'rapports' => $menuImpression['content']
 );
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
 ?>
-<h1>Groupe des élèves inscrits sur un point d'arrêt d'un circuit</h1>
+<h1>Groupe des élèves pris en charge par un organisme payeur</h1>
 <div id="liste-wrapper">
 	<div id="liste-title">
 		<ul>
-			<li>Circuit : <?php echo $this->escapeHtml($this->circuit->serviceId); ?></li>
-			<li>Arrêt : <?php echo $this->escapeHtml($this->circuit->station . ' - ' . $this->circuit->communeStation); ?></li>
-			<li>Type d'arrêt : <?php echo $this->escapeHtml($this->circuit->typeArret); ?></li>
-			<li>Commentaire aller : <?php echo $this->escapeHtml($this->circuit->commentaire1); ?></li>
-			<li>Commentaire retour : <?php echo $this->escapeHtml($this->circuit->commentaire2); ?></li>
+			<li><?php echo $this->escapeHtml($this->organisme->nom); ?></li>
+			<li><?php echo $this->escapeHtml($this->organisme->commune); ?></li>
 		</ul>
 	</div>
 	<div id="liste-header">
 		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?php echo $this->paginator->getAdapter()->count(); ?> prises en charge.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -70,7 +70,7 @@ $actions = array(
 					<th>Classe</th>
 				</tr>
 			<?php
-foreach ($this->data as $row) {
+foreach ($data as $row) {
     echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
     foreach ($row as $key => $item) {
         $css = $key == 'classe' ? ' class="centre"' : '';
@@ -83,8 +83,6 @@ foreach ($this->data as $row) {
 		</table>
 	</div>
 	<div id="liste-footer">
-		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
-		</p>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
 	</div>
-</div>
+</div> 

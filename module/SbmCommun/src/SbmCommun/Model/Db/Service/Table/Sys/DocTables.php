@@ -19,7 +19,6 @@ use SbmCommun\Model\Db\Service\Table\Exception;
 use Zend\Db\ResultSet\ResultSet;
 use SbmCommun\Model\Strategy\Color;
 
-
 class DocTables extends AbstractSbmTable
 {
     /**

@@ -68,8 +68,9 @@ foreach ($this->data as $row) {
         "even",
         "odd"
     ))->next() . '">';
-    foreach ($row as $item) {
-        echo '<td>' . $item . '</td>';
+    foreach ($row as $key => $item) {
+        $css = $key == 'classe' ? ' class="centre"' : '';
+        echo "<td$css>" . $item . '</td>';
     }
     echo '</tr>';
 }

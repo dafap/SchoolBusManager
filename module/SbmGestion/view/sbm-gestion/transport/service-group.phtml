@@ -110,7 +110,6 @@ $oService = $this->service;
 					<th>Commune</th>
 					<th>Etablissement</th>
 					<th>Classe</th>
-					<th>Station</th>
 				</tr>
 			<?php
 foreach ($data as $row) {
@@ -118,8 +117,9 @@ foreach ($data as $row) {
         "even",
         "odd"
     ))->next() . '">';
-    foreach ($row as $item) {
-        echo '<td>' . $item . '</td>';
+    foreach ($row as $key => $item) {
+        $css = $key == 'classe' ? ' class="centre"' : '';
+        echo "<td$css>" . $item . '</td>';
     }
     echo '</tr>';
 }

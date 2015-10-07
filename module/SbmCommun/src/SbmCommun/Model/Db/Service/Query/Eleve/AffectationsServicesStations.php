@@ -467,6 +467,11 @@ class AffectationsServicesStations implements FactoryInterface
             'sco' => $this->db->getCanonicName('scolarites', 'table')
         ), 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', array())
             ->join(array(
+            'eta' => $this->db->getCanonicName('etablissements', 'table')
+        ), 'sco.etablissementId = eta.etablissementId', array(
+            'etablissement' => 'nom'
+        ))
+            ->join(array(
             'res' => $this->db->getCanonicName('responsables', 'table')
         ), 'aff.responsableId = res.responsableId', array(
             'responsable' => new Expression('concat(res.nomSA, " ", res.prenomSA)'),
@@ -476,7 +481,9 @@ class AffectationsServicesStations implements FactoryInterface
         ))
             ->join(array( // utile uniquement pour filtrer sur nomSA, prenomSA ou numero
             'ele' => $this->db->getCanonicName('eleves', 'table')
-        ), 'ele.eleveId = aff.eleveid', array())
+        ), 'ele.eleveId = aff.eleveId', array(
+            'eleve' => new Expression('concat(ele.nomSA, " ", ele.prenomSA)')
+        ))
             ->where($where);
         // dans le champ des téléphones fixes
         $whereF = new Where();
@@ -487,7 +494,11 @@ class AffectationsServicesStations implements FactoryInterface
         ))
             ->columns(array(
             'responsable',
-            'telephone' => 'telephoneF'
+            'telephone' => 'telephoneF',
+            'eleve' => 'eleve',
+            'service1' => 'service1Id',
+            'service2' => 'service2Id',
+            'etablissement' => 'etablissement'
         ))
             ->where($whereF);
         // dans le champ des téléphones portables
@@ -499,7 +510,11 @@ class AffectationsServicesStations implements FactoryInterface
         ))
             ->columns(array(
             'responsable',
-            'telephone' => 'telephoneP'
+            'telephone' => 'telephoneP',
+            'eleve' => 'eleve',
+            'service1' => 'service1Id',
+            'service2' => 'service2Id',
+            'etablissement' => 'etablissement'
         ))
             ->where($whereP);
         // dans le champ des téléphones du travail
@@ -511,7 +526,11 @@ class AffectationsServicesStations implements FactoryInterface
         ))
             ->columns(array(
             'responsable',
-            'telephone' => 'telephoneT'
+            'telephone' => 'telephoneT',
+            'eleve' => 'eleve',
+            'service1' => 'service1Id',
+            'service2' => 'service2Id',
+            'etablissement' => 'etablissement'
         ))
             ->where($whereT);
         

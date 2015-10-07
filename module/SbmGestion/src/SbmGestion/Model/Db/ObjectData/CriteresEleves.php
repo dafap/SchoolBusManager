@@ -67,17 +67,18 @@ class CriteresEleves extends SbmCommunCriteres
                 case 1:
                     $where->literal('inscrit = 1')
                         ->nest()
-                        ->literal('paiement = 1')->OR->literal('fa=1')->unnest();
+                        ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
                     break;
                 case 2:
                     $where->literal('inscrit = 1')
                         ->literal('paiement = 0')
-                        ->literal('fa=0');
+                        ->literal('fa=0')
+                        ->literal('gratuit = 0');
                     break;
                 case 3:
                     $where->literal('inscrit = 0')
                         ->nest()
-                        ->literal('paiement = 1')->OR->literal('fa=1')->unnest();
+                        ->literal('paiement = 1')->OR->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
                     break;
                 case 4:
                     $where->literal('inscrit = 1')->literal('fa=1');
@@ -194,20 +195,21 @@ class CriteresEleves extends SbmCommunCriteres
                 case 1:
                     $where->literal('inscrit = 1')
                     ->nest()
-                    ->literal('paiement = 1')->OR->literal('fa=1')->unnest();
+                    ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
                     break;
                 case 2:
                     $where->literal('inscrit = 1')
                     ->literal('paiement = 0')
-                    ->literal('fa=0');
+                    ->literal('fa=0')
+                    ->literal('gratuit = 0');
                     break;
                 case 3:
                     $where->literal('inscrit = 0')
                     ->nest()
-                    ->literal('paiement = 1')->OR->literal('fa=1')->unnest();
+                    ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
                     break;
                 case 4:
-                    $where->literal('inscrit = 1')->literal('fa=1');
+                    $where->literal('inscrit = 1')->literal('fa = 1');
                     break;
             }
         }
@@ -328,18 +330,19 @@ class CriteresEleves extends SbmCommunCriteres
                 case 1:
                     // inscrits
                     $filtre['criteres']['inscrit'] = 1;
-                    $filtre['expression'][] = '(paiement = 1 OR fa = 1)';
+                    $filtre['expression'][] = '(paiement = 1 OR fa = 1 OR gratuit > 0)';
                     break;
                 case 2:
                     // pré inscrits
                     $filtre['criteres']['inscrit'] = 1;
                     $filtre['criteres']['paiement'] = 0;
                     $filtre['criteres']['fa'] = 0;
+                    $filtre['criteres']['gratuit'] = 0;
                     break;
                 case 3:
                     // rayés
                     $filtre['criteres']['inscrit'] = 0;
-                    $filtre['expression'][] = '(paiement = 1 OR fa = 1)';
+                    $filtre['expression'][] = '(paiement = 1 OR fa = 1 OR gratuit > 0)';
                     break;
                 case 4:
                     // famille d'accueil

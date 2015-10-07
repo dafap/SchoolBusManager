@@ -538,6 +538,7 @@ class EleveController extends AbstractActionController
         $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
         $tEleves = $this->getServiceLocator()->get('Sbm\Db\Table\Eleves');
         $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+        $tTarifs = $this->getServiceLocator()->get('Sbm\Db\Table\Tarifs');
         $qAffectations = $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations');
         // les invariants
         $invariants = array();
@@ -562,8 +563,21 @@ class EleveController extends AbstractActionController
         } else {
             $invariants['etat'] = 'Rayé';
         }
+        switch ($odata1->gratuit) {
+            case 0:
+                $invariants['paiement'] = 'Famille';
+                break;
+            case 1:
+                $invariants['paiement'] = 'Gratuit';
+                break;
+            default:
+                $invariants['paiement'] = 'Organisme';
+                break;
+        }
         $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
+        $historique['scolarite']['inscription'] = $tTarifs->getMontant('inscription');
+        $historique['scolarite']['duplicata'] = $odata1->duplicata;
         
         $respSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
         $etabSelect = $this->getServiceLocator()->get('Sbm\Db\Select\EtablissementsDesservis');
