@@ -92,7 +92,7 @@ class Statistiques implements FactoryInterface
         $where = new Where();
         $where->literal('inscrit = 1')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->unnest();
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -121,7 +121,8 @@ class Statistiques implements FactoryInterface
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('paiement = 0')
-            ->literal('fa = 0');
+            ->literal('fa = 0')
+            ->literal('gratuit = 0');
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -175,7 +176,9 @@ class Statistiques implements FactoryInterface
     public function getNbRayesByMillesime($millesime = null)
     {
         $where = new Where();
-        $where->literal('inscrit = 0');
+        $where->literal('inscrit = 0')
+            ->nest()
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -204,7 +207,7 @@ class Statistiques implements FactoryInterface
         $where = new Where();
         $where->literal('inscrit = 1')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
             ->unnest()
             ->isNotNull('responsable2Id');
         if (isset($millesime)) {
@@ -240,7 +243,7 @@ class Statistiques implements FactoryInterface
         $where = new Where();
         $where->literal('inscrit = 1')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->unnest();
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -283,7 +286,7 @@ class Statistiques implements FactoryInterface
         $where = new Where();
         $where->literal('inscrit = 1')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->unnest();
+            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -350,7 +353,8 @@ class Statistiques implements FactoryInterface
         $where = new Where();
         $where->lessThan('distanceR1', 3)
             ->lessThan('distanceR2', 3)
-            ->nest()->greaterThanOrEqualTo('distanceR1', 1)->or->greaterThanOrEqualTo('distanceR2', 1)->unnest();
+            ->nest()
+            ->greaterThanOrEqualTo('distanceR1', 1)->or->greaterThanOrEqualTo('distanceR2', 1)->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -366,13 +370,13 @@ class Statistiques implements FactoryInterface
         // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
         return iterator_to_array($statement->execute());
     }
-    
+
     /**
      * Renvoie le tableau statistiques des élèves enregistrés à une distance d'au moins 3 km par millesime
      *
      * @param int $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément d'index 0
-     *
+     *            
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNb3kmEtPlusByMillesime($millesime = null)
@@ -384,15 +388,14 @@ class Statistiques implements FactoryInterface
         }
         $select = $this->sql->select();
         $select->from($this->db->getCanonicName('scolarites', 'table'))
-        ->columns(array(
+            ->columns(array(
             'millesime',
             'effectif' => new Expression('count(eleveId)')
         ))
-        ->where($where)
-        ->group('millesime');
+            ->where($where)
+            ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
         return iterator_to_array($statement->execute());
     }
-    
 }

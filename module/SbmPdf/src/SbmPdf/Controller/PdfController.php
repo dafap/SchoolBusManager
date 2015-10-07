@@ -486,6 +486,7 @@ class PdfController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             $section = $args['section'];
             $form->setData($args);
+            //die(var_dump($args));
             if ($form->isValid()) {
                 $tDocTables->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage('Section enregistrée.');

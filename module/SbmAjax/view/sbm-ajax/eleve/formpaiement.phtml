@@ -1,0 +1,104 @@
+<?php
+/**
+ * Formulaire de prise en charge du paiement
+ *
+ * Ce formulaire s'ouvre en popup par le jQuery dialog dans la fiche d'un élève
+ * 
+ * @project sbm
+ * @package SbmAjax/view/sbm-ajax/eleve
+ * @filesource formpaiement.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 6 oct. 2015
+ * @version 2015-1
+ */
+// style css utilisés dans le formulaire
+$this->headStyle()->captureStart();
+?>
+#formpaiement<?php echo $this->trajet;?> label.sbm-form-auto {
+    display: inline-block;
+    width: 150px;
+    margin-right: 5px;
+}
+#formpaiement<?php echo $this->trajet;?> label.sbm-form-auto:before {
+	content: "\A";
+	white-space: pre;
+	line-height: 1.5em;
+}
+#formpaiement<?php echo $this->trajet;?> input.button {
+    position: relative;
+    top: 1.5rem;
+}
+#formpaiement<?php echo $this->trajet;?> input.button.cancel {
+    margin-left: 100px;
+}
+#formpaiement<?php echo $this->trajet;?> input.button.submit {
+	margin-left: 15px;
+}
+<?php
+$this->headStyle()->captureEnd();
+echo $this->headStyle();
+
+// scripts js utilisés dans cette page
+$this->headScript()->captureStart();
+?>
+var is_xmlhttprequest = <?php echo $this->is_xmlhttprequest; ?>;
+var urlform = '<?php echo $this->form->getAttribute('action'); ?>';
+var btnclick;
+$(function() {
+  $("#formpaiement input[name=cancel]").click(function(){btnclick='cancel';});
+  $("#formpaiement input[name=submit]").click(function(){btnclick='submit';});
+  $("form#formpaiement").submit(function() {
+    if (is_xmlhttprequest == 0) return true;
+    // ici c'est de l'ajax
+    var gratuit = $('#formpaiement input[name=gratuit]:checked').val();
+    var organismeId = $('#formpaiement select[name=organismeId] option:selected').val();
+    var data = {
+      'csrf' : $('#formpaiement input[name=csrf]').val(),
+	  'eleveId' : $('#formpaiement input[name=eleveId]').val(),
+	  'gratuit' : gratuit,
+	  'organismeId' : organismeId,
+	  'submit' : btnclick	
+    };
+    $.post(urlform, data, function(itemJson) {		
+			$("#winpopup").dialog('close');
+			majPaiement(gratuit);						
+        }, 'json');
+    return false;
+  });
+  $("#gratuitradio0").on('change',function() {
+    $("#formpaiement-organismeId").hide();
+  });
+  $("#gratuitradio1").on('change',function() {
+    $("#formpaiement-organismeId").hide();    
+  });
+  $("#gratuitradio2").on('change',function() {
+    $("#formpaiement-organismeId").show();
+  });
+});
+<?php
+$this->headScript()->captureEnd();
+echo $this->headScript();
+$this->inlineScript()->captureStart();
+?>
+if ($('#formpaiement input[name=gratuit]:checked').val()==2){
+  $("#formpaiement-organismeId").show();
+}
+<?php
+$this->inlineScript()->captureEnd();
+echo $this->inlineScript();
+?>
+<div id="formpaiement">
+<?php 
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('eleveId'));
+echo $this->formHidden($this->form->get('csrf'));
+?>
+<div id="formpaiement-gratuit" class="row-inner"><?php echo $this->formRow($this->form->get('gratuit'));?></div>
+<div id="formpaiement-organismeId" class="row-inner" style="display: none;"><?php echo $this->formRow($this->form->get('organismeId'));?></div>
+<div id="formpaiement-buttons" class="row-inner edit left-95px">
+<?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+</div>
+<?php echo $this->form()->closeTag();?>
+</div>
+<div id="errors"></div>

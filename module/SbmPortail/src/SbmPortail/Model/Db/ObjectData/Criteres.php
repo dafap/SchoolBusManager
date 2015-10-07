@@ -41,7 +41,7 @@ class Criteres extends SbmCommunCriteres
     public function getWhere($strict = array(), $alias = array())
     {
         $where = new Where();
-        $where->literal('inscrit = 1')->literal('paiement = 1');
+        $where->literal('inscrit = 1')->nest()->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         $where->equalTo('sco.millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
@@ -85,7 +85,7 @@ class Criteres extends SbmCommunCriteres
     public function getWherePdf($descripteur = null)
     {
         $where = new Where();
-        $where->literal('inscrit = 1')->literal('paiement = 1');
+        $where->literal('inscrit = 1')->nest()->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         $where->equalTo('millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);

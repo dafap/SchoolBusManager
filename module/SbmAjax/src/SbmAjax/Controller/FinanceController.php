@@ -16,11 +16,111 @@ namespace SbmAjax\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Json\Json;
+use Zend\Db\Sql\Where;
+use DafapSession\Model\Session;
 
 class FinanceController extends AbstractActionController
 {
 
     const ROUTE = 'sbmajaxfinance';
+
+    /**
+     * ajax - cocher la case paiement de scolarites
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function checkpaiementscolariteAction()
+    {
+        $millesime = Session::get('millesime');
+        try {
+            $eleveId = $this->params('eleveId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Scolarites')
+            ->setPaiement($millesime, $eleveId, 1);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+    
+    /**
+     * ajax - décocher la case  paiement de scolarites
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function uncheckpaiementscolariteAction()
+    {
+        $millesime = Session::get('millesime');
+        try {
+            $eleveId = $this->params('eleveId');
+            $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Scolarites')
+            ->setPaiement($millesime, $eleveId, 0);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+
+    /**
+     * ajax - cocher la case sélection des organismes
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function checkselectionorganismeAction()
+    {
+        try {
+            $organismeId = $this->params('organismeId');
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Organismes')
+                ->setSelection($organismeId, 1);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
+
+    /**
+     * ajax - décocher la case sélection des organismes
+     *
+     * @method GET
+     * @return dataType json
+     */
+    public function uncheckselectionorganismeAction()
+    {
+        try {
+            $organismeId = $this->params('organismeId');
+            $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Organismes')
+                ->setSelection($organismeId, 0);
+            return $this->getResponse()->setContent(Json::encode(array(
+                'success' => 1
+            )));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(Json::encode(array(
+                'cr' => $e->getMessage(),
+                'success' => 0
+            )));
+        }
+    }
 
     /**
      * ajax - cocher la case sélection des paiements
@@ -187,7 +287,29 @@ class FinanceController extends AbstractActionController
                 'nomTarif' => $row['nomTarif']
             );
         }
+        $nbDuplicatas = $tEleves->getNbDuplicatas($responsableId);
+        if ($nbDuplicatas) {
+            $montantUnitaire = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Tarifs')
+                ->getMontant('duplicata');
+            $montantDuplicatas = $nbDuplicatas * $montantUnitaire;
+            // duplicatas déjà encaissés
+            $where = new Where();
+            $millesime = Session::get('millesime');
+            $as = sprintf('%d-%d', $millesime, $millesime + 1);
+            $where->equalTo('anneeScolaire', $as)->equalTo('responsableId', $responsableId);
+            $totalEncaisse = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Paiements')
+                ->total($where);
+            $totalInscriptions = $tEleves->getMontantElevesInscrits($responsableId);
+            $duplicatasPayes = $totalEncaisse - $totalInscriptions;
+            // reste à payer
+            $montantDuplicatas -= $duplicatasPayes;
+        } else {
+            $montantDuplicatas = 0.00;
+        }
         return $this->getResponse()->setContent(Json::encode(array(
+            'duplicatas' => $montantDuplicatas,
             'data' => $data,
             'success' => 1
         )));

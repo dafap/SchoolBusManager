@@ -73,8 +73,9 @@ $data = $this->paginator->getCurrentItems();
 			<?php
 foreach ($data as $row) {
     echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
-    foreach ($row as $item) {
-        echo '<td>' . $item . '</td>';
+    foreach ($row as $key => $item) {
+        $css = $key == 'classe' ? ' class="centre"' : '';
+        echo "<td$css>" . $item . '</td>';
     }
     echo '</tr>';
 }
