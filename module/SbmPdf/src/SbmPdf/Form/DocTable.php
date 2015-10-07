@@ -46,6 +46,8 @@ namespace SbmPdf\Form;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 use SbmCommun\Model\Strategy\Color;
+use SbmPdf\Model\Strategy\CellBorder;
+use SbmPdf\Model\Strategy\FontStyle;
 
 class DocTable extends Form implements InputFilterProviderInterface
 {
@@ -185,7 +187,7 @@ class DocTable extends Form implements InputFilterProviderInterface
                 'label' => 'Bordure des cellules',
                 'label_attributes' => array(),
                 'value_options' => array(
-                    '0' => 'Sans bordure',
+                    '-1' => 'Sans bordure',
                     '1' => 'Bordure autour',
                     'L' => 'Bordure à gauche',
                     'R' => 'Bordure à droite',
@@ -378,6 +380,7 @@ class DocTable extends Form implements InputFilterProviderInterface
                 'label' => 'Style de la police',
                 'label_attributes' => array(),
                 'value_options' => array(
+                    '-1' => 'Aucun',
                     'B' => 'Gras',
                     'I' => 'Italique',
                     'U' => 'Souligné',
@@ -428,7 +431,7 @@ class DocTable extends Form implements InputFilterProviderInterface
             ),
             'description' => array(
                 'name' => 'description',
-                'required' => true,
+                'required' => false,
                 'filters' => array(
                     array(
                         'name' => 'StripTags'
@@ -499,17 +502,43 @@ class DocTable extends Form implements InputFilterProviderInterface
                     )
                 )
             ),
+            'font_style' => array(
+                'name' => 'font_style',
+                'required' => false
+            )
         );
     }
 
     public function setData($data)
     {
         $strategieColor = new Color();
+        $strategieCellBorder = new CellBorder();
+        $strategieFontStyle = new FontStyle();
         foreach ($data as $key => &$value) {
             if (substr($key, - 6) == '_color') {
                 $value = $strategieColor->hydrate($value);
+            } elseif($key == 'cell_border') {
+                $value = $strategieCellBorder->hydrate($value);
+            } elseif (($key == 'font_style')) {
+                $value = $strategieFontStyle->hydrate($value);
             }
         }
         parent::setData($data);
+    }
+    
+    public function getData($flag = 17)
+    {
+        $data = parent::getData($flag);
+        $arrayData = $data->getArrayCopy();
+        $strategieCellBorder = new CellBorder();
+        $strategieFontStyle = new FontStyle();
+        foreach ($arrayData as $key => &$value) {
+            if ($key == 'cell_border') {
+                $value = $strategieCellBorder->extract($value);
+            } elseif (($key == 'font_style')) {
+                $value = $strategieFontStyle->extract($value);
+            }
+        }
+        return $data->exchangeArray($arrayData);
     }
 }

@@ -208,6 +208,38 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'unchecked_value' => '0'
             )
         ));
+        /*$this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'gratuit',
+            'attributes' => array(
+                'id' => 'eleve-gratuit'
+            ),
+            'options' => array(
+                'label' => 'Gratuité',
+                'label_attributes' => array(
+                    'class' => 'sbm-label checkbox'
+                ),
+                'use_hidden_element' => true,
+                'checked_value' => '1',
+                'unchecked_value' => '0'
+            )
+        ));*/
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Button',
+            'name' => 'btnpaiement',
+            'attributes' => array(
+                'id' => 'eleve-btnpaiement'
+            ),
+            'options' => array(
+                'label' => 'Paiement',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm_error'
+                )
+            )
+        ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'ga',

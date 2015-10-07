@@ -20,6 +20,14 @@ $url_rapports = $this->url('sbmgestion/transport', array(
     'action' => 'commune-group-pdf',
     'page' => $this->page
 ));
+$url_origine = $this->url('sbmgestion/transport', array(
+    'action' => 'commune-group',
+    'page' => $this->page
+));
+$url_edit = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-edit',
+    'page' => $this->page
+));
 $hiddens = array(
     'communeId' => $this->communeId
 );
@@ -60,6 +68,7 @@ $data = $this->paginator->getCurrentItems();
 		<table class="eleves">
 			<tbody>
 				<tr>
+					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Adresse</th>
@@ -68,22 +77,48 @@ $data = $this->paginator->getCurrentItems();
 					<th>Commune</th>
 					<th>Etablissement</th>
 					<th>Classe</th>
+					<th></th>
 				</tr>
 			<?php
-foreach ($data as $row) {
-    echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
-    foreach ($row as $item) {
-        echo '<td>' . $item . '</td>';
+foreach ($data as $row) :
+    $pictogrammes = array();
+    $inscrit = $row['paiement'] == 1;
+    $inscrit |= $row['fa'] == 1;
+    $inscrit |= $row['gratuit'] > 0;
+    //$inscrit |= ($row['demandeR1'] == 2 && $row['accordR1'] == 0 && $row['subventionR1'] == 1);
+    //$inscrit |= ($row['demandeR2'] == 2 && $row['accordR2'] == 0 && $row['subventionR2'] == 1);
+    if (! $inscrit) {
+        $pictogrammes[] = '<i class="fam-tag-orange" title="Préinscrit"></i>';
     }
-    echo '</tr>';
-}
-?>
+    ?>
+                <tr
+					class="<?php echo $this->cycle(array("even","odd"))->next();?>">
+					<td><?php echo implode(' ', $pictogrammes);?></td>
+					<td><?php echo $row['nom'];?></td>
+					<td><?php echo $row['prenom'];?></td>
+					<td><?php echo $row['adresseL1'];?></td>
+					<td><?php echo $row['adresseL2'];?></td>
+					<td><?php echo $row['codePostal'];?></td>
+					<td><?php echo $row['commune'];?></td>
+					<td><?php echo $row['etablissement'];?></td>
+					<td class="centre"><?php echo $row['classe'];?></td>
+					<?php 
+					$buttons = array( 'modifier' => array(
+					'class' => 'fam-pencil', 'formaction' => $url_edit, 'title' =>
+					'Modifier' ) ); $hiddens = array( 'origine' => $url_origine, 'info'
+					=> $row['nom'] . ' ' . $row['prenom'], //'responsableId' =>
+					$this->responsableId, 'eleveId' => $row['eleveId'] );?>
+					<td><?php echo $this->listeLigneActions($row['eleveId'], $hiddens,$buttons);?></td>
+				</tr>
+				<?php endforeach;?>
 			</tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<p>
-			<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		
+		
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
 		</p>
 	</div>
 </div>

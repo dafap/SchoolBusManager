@@ -2744,7 +2744,7 @@ class TransportController extends AbstractActionController
                 ->paginator($args['where']),
             't_nb_inscrits' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
-                ->bytransporteur(),
+                ->byTransporteur(),
             'page' => $this->params('page', 1),
             'nb_pagination' => $this->getNbPagination('nb_transporteurs', 15),
             'criteres_form' => $args['form']

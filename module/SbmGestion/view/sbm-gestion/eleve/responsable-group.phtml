@@ -35,6 +35,14 @@ $url_duplicata = $this->url('sbmgestion/gestioneleve', array(
     'action' => 'duplicata-carte',
     'page' => $this->page
 ));
+$url_edit = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-edit',
+    'page' => $this->page
+));
+$url_raye = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-rayer',
+    'page' => $this->page
+));
 $hiddens = array(
     'origine' => $url_origine,
     'responsableId' => $this->responsableId
@@ -124,14 +132,6 @@ echo $this->flashMessenger()->render('default');
 			    <?php
             $pictogrammes = array();
             if ($row['millesime'] == Session::get('millesime')) {
-                $url_edit = $this->url('sbmgestion/eleve', array(
-                    'action' => 'eleve-edit',
-                    'page' => $this->page
-                ));
-                $url_raye = $this->url('sbmgestion/eleve', array(
-                    'action' => 'eleve-rayer',
-                    'page' => $this->page
-                ));
                 $buttons = array(
                     'modifier' => array(
                         'class' => 'fam-pencil',
@@ -151,6 +151,7 @@ echo $this->flashMessenger()->render('default');
                 );
                 $inscrit = $row['paiement'] == 1;
                 $inscrit |= $row['fa'] == 1;
+                $inscrit |= $row['gratuit'] > 0;
                 $inscrit |= ($row['demandeR1'] == 2 && $row['accordR1'] == 0 && $row['subventionR1'] == 1);
                 $inscrit |= ($row['demandeR2'] == 2 && $row['accordR2'] == 0 && $row['subventionR2'] == 1);
                 if (! $inscrit) {
@@ -195,7 +196,7 @@ echo $this->flashMessenger()->render('default');
 					<?php else : ?>
 					<td><?php echo $row['millesime']?></td>
 					<td><?php echo $row['etablissement'] . ' - ' . $row['communeEtablissement'];?></td>
-					<td><?php echo $row['classe'];?></td>
+					<td class="centre"><?php echo $row['classe'];?></td>
 					<td><?php echo implode(' / ', $services);?></td>
 					<?php endif;?>
 					<td><?php  echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>

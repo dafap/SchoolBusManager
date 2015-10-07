@@ -119,7 +119,9 @@ class Responsables implements FactoryInterface
      */
     public function withNbElevesInscrits(Where $where, $order = null)
     {
-        $where->nest()->literal('paiement=1')->OR->literal('fa=1')
+        $where->literal('inscrit = 1')
+            ->nest()
+            ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')
             ->unnest()
             ->equalTo('millesime', $this->millesime);
         $select = clone $this->select;
@@ -199,7 +201,7 @@ class Responsables implements FactoryInterface
             'eleveId'
         ))
             ->where($where1);
-        // inscrits
+        // inscrits payants
         $where2 = new Where();
         $where2->literal('inscrit = 1')
             ->literal('paiement = 1')
@@ -210,17 +212,40 @@ class Responsables implements FactoryInterface
             'eleveId'
         ))
             ->where($where2);
-        // duplicata
+        // inscrits gratuits
         $where3 = new Where();
         $where3->literal('inscrit = 1')
-            ->literal('duplicata > 0')
+            ->literal('gratuit = 1')
             ->equalTo('millesime', $this->millesime);
         $select3 = new Select();
         $select3->from($this->db->getCanonicName('scolarites', 'table'))
             ->columns(array(
-            'eleveId', 'duplicata'
+            'eleveId'
         ))
             ->where($where3);
+        // inscrits en famille d'accueil
+        $where4 = new Where();
+        $where4->literal('inscrit = 1')
+            ->literal('fa = 1')
+            ->equalTo('millesime', $this->millesime);
+        $select4 = new Select();
+        $select4->from($this->db->getCanonicName('scolarites', 'table'))
+            ->columns(array(
+            'eleveId'
+        ))
+            ->where($where4);
+        // duplicata
+        $where5 = new Where();
+        $where5->literal('inscrit = 1')
+            ->literal('duplicata > 0')
+            ->equalTo('millesime', $this->millesime);
+        $select5 = new Select();
+        $select5->from($this->db->getCanonicName('scolarites', 'table'))
+            ->columns(array(
+            'eleveId',
+            'duplicata'
+        ))
+            ->where($where5);
         // requête principale
         $select = clone $this->select;
         $select->join(array(
@@ -239,7 +264,17 @@ class Responsables implements FactoryInterface
             'nbInscrits' => new Expression('count(ins.eleveId)')
         ), $select::JOIN_LEFT)
             ->join(array(
-            'dup' => $select3
+            'gra' => $select3
+        ), 'ele.eleveId=gra.eleveId', array(
+            'nbGratuits' => new Expression('count(gra.eleveId)')
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'fa' => $select4
+        ), 'ele.eleveId=fa.eleveId', array(
+            'nbFa' => new Expression('count(fa.eleveId)')
+        ), $select::JOIN_LEFT)
+            ->join(array(
+            'dup' => $select5
         ), 'ele.eleveId=dup.eleveId', array(
             'nbDuplicata' => new Expression('sum(dup.duplicata)')
         ), $select::JOIN_LEFT)

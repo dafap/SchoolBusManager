@@ -1,0 +1,149 @@
+<?php
+/**
+ * Justificatif du montant encaissé pour un responsable
+ *
+ * Variables de vue :
+ * liste (liste des enfants payant) 
+ * args : array(url1_retour, url2_retour, h2, responsableId, responsable)
+ * 
+ * @project sbm
+ * @package SbmGestion\view\sbm-gestion\finance
+ * @filesource paiement-detail.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 7 oct. 2015
+ * @version 2015-1
+ */
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+    ->setAttribute('id', $id)
+    ->setValue($value);
+    return $view->formCheckbox($element);
+}
+ 
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->headScript()->captureStart();
+?>
+function totalEncaisse() {
+<?php 
+  if ($this->totalEncaisse > 0) {
+      echo 'return ' . $this->totalEncaisse . ';';
+  } else {
+      echo 'return 0.0;';
+  }
+?>
+
+}
+function totalAPayer() {
+    var total = <?php echo $this->montantDuplicatas;?>;
+    $("#tbody-payants > tr:not(:first)").each(function(i) {
+        var element = $("td:nth-child(5) > input[type=checkbox]")[i];
+        if ($(element).is(':checked')) {
+            var cellMontant = $(element).parent().parent().find("td:nth-child(3)")[0];
+            total=total+parseFloat($(cellMontant).text());
+        }
+    });
+    //echoSommeDue(total);
+    return total;
+}
+<?php
+$this->headScript()->captureEnd();
+$jsCallback = '';
+$jsTrigger = '';
+
+$url_retour = $this->url('sbmgestion/finance', array(
+    'action' => 'paiement-liste',
+    'page' => $this->page
+));
+$hiddens = array();
+// 'responsableId' => $this->args['responsableId'],
+// 'responsable' => $this->args['responsable']
+
+//$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        //'onclick' => $js_retour
+    )
+);
+?>
+<div id="liste-wrapper">
+	<div id="liste-title" class="clearfix">
+		<h1>Justification du montant encaissé d'une personne</h1>
+		<ul>
+			<li>Responsable : <?php echo $this->escapehtml($this->args['responsable']); ?></li>
+			<li>Montant encaissé : <?php echo $fmt->formatCurrency($this->totalEncaisse, 'EUR')?></li>
+			<li>Coût des duplicatas : <?php echo $fmt->formatCurrency($this->montantDuplicatas, 'EUR')?></li>
+		</ul>
+	</div>
+	<div id="liste-header">
+		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="libelles">
+			<tbody id="tbody-payants">
+				<tr>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Tarif</th>
+					<th>Nb duplicatas</th>
+					<th>Inscription payée</th>
+				</tr>
+	            <?php foreach ($this->liste as $enfant) : ?>
+	            <?php
+	            $modele = <<<EOT
+$("#chk%d").change(function() {
+    var action;
+    if ($(this).is(':checked')){
+       if (totalAPayer() > totalEncaisse()) {
+         alert('Impossible ! Le coût dépasse le total encaissé');
+         $(this).removeAttr('checked');
+         return false;
+       }
+       action = 'check';
+     } else {
+       action = 'uncheck';
+     }
+    $.ajax({
+				url : '/sbmajaxfinance/'+action+'paiementscolarite/eleveId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+	            
+	            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $enfant['eleveId']);
+	            $jsCallback .= sprintf("$modele\n", $enfant['eleveId'], $enfant['eleveId']);
+	            ?>
+	            <tr>
+					<td><?php echo $this->escapeHtml($enfant['nom']);?></td>
+					<td><?php echo $this->escapeHtml($enfant['prenom']);?></td>
+					<td class="align-right"><?php echo $fmt->formatCurrency($enfant['montant'], 'EUR');?></td>
+					<td class="align-right"><?php echo $enfant['duplicata'];?></td>
+					<td class="centre paiement"><?php echo renderCheckbox($this, 'paiement', 'chk' . $enfant['eleveId'], $enfant['paiement'])?></td>
+				</tr>
+	            <?php endforeach;?>
+	       </tbody>
+		</table>
+	</div>
+	<div id="liste-footer"></div>
+</div>
+<?php
+// mise en place des triggers pour les appels ajax des cases à cocher
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?php echo $jsTrigger;?>}
+<?php echo $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

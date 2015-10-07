@@ -55,6 +55,7 @@ return array(
             'nb_communes' => 15,
             'nb_eleves' => 10,
             'nb_etablissements' => 15,
+            'nb_organismes' => 15,
             'nb_paiements' => 10,
             'nb_responsables' => 15,
             'nb_services' => 15,

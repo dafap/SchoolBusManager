@@ -48,14 +48,17 @@ class Effectif implements FactoryInterface
 
     /**
      * Renvoie les effectifs des circuits, station par station, dans un tableau
-     * @param bool $sanspreinscrits
+     * 
+     * @param bool $sanspreinscrits            
      * @return array
      */
     public function byCircuit($sanspreinscrits = false)
     {
         // SELECT circuitId, count(*) FROM `sbm_t_circuits` c JOIN `sbm_t_affectations` a ON c.serviceId=a.service1Id AND c.stationId=a.station1Id WHERE millesime=2014 GROUP BY circuitId
         $result = array();
-        $filtre = array('inscrit' => 1);
+        $filtre = array(
+            'inscrit' => 1
+        );
         if ($sanspreinscrits) {
             $filtre['paiement'] = 1;
         }
@@ -156,6 +159,17 @@ class Effectif implements FactoryInterface
         // total
         foreach ($result as $key => &$value) {
             $value['total'] = array_sum($value);
+        }
+        return $result;
+    }
+
+    public function byOrganisme()
+    {
+        // SELECT organismeId, count(*) FROM `sbm_t_scolarites` s WHERE millesime=2014 GROUP BY organismeId
+        $result = array();
+        $rowset = $this->requeteOrg('organismeId', array(), 'organismeId');
+        foreach ($rowset as $row) {
+            $result[$row['organismeId']] = $row['effectif'];
         }
         return $result;
     }
@@ -584,6 +598,23 @@ class Effectif implements FactoryInterface
                 ->where($where)
                 ->group($group);
         }
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    private function requeteOrg($column, $where, $group)
+    {
+        $where['millesime'] = $this->millesime;
+        $select = $this->sql->select();
+        $select->from(array(
+            's' => $this->tableName['scolarites']
+        ))
+            ->columns(array(
+            $column,
+            'effectif' => new Expression('count(*)')
+        ))
+            ->where($where)
+            ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }

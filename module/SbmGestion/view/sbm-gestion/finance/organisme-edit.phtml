@@ -1,0 +1,58 @@
+<?php
+/**
+ * Page de modification d'un organisme payeur
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/finance
+ * @filesource organisme-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 7 oct. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$retour = $this->url('sbmgestion/finance', array(
+    'action' => 'organisme-liste',
+    'page' => $this->page
+));
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Modification d'un organisme payeur</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('organismeId'));
+echo $this->formHidden($this->form->get('csrf'));
+?>
+    <fieldset class="sbm-page1">
+			<div id="organisme-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+			<div id="organisme-edit-adresse1" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresse1')); ?></div>
+			<div id="organisme-edit-adresse2" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresse2')); ?></div>
+			<div id="organisme-edit-codePostal" class="row-inner edit"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
+			<div id="organisme-edit-comuneId" class="row-inner edit"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
+			<div id="organisme-edit-telephone" class="row-inner edit"><?php echo $this->formRow($this->form->get('telephone')); ?></div>
+			<div id="organisme-edit-fax" class="row-inner edit"><?php echo $this->formRow($this->form->get('fax')); ?></div>
+			<div id="organisme-edit-email" class="row-inner edit"><?php echo $this->formRow($this->form->get('email')); ?></div>
+			<div id="organisme-edit-siret" class="row-inner edit"><?php echo $this->formRow($this->form->get('siret')); ?></div>
+			<div id="organisme-edit-naf" class="row-inner edit"><?php echo $this->formRow($this->form->get('naf')); ?></div>
+			<div id="organisme-edit-tvaIntraCommunautaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('tvaIntraCommunautaire')); ?></div>
+			<div id="organisme-edit-buttons" class="row-inner edit">
+        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+<?php echo $this->form()->closeTag(); ?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>
