@@ -279,6 +279,7 @@ echo $this->flashMessenger()->render('default');
             }
             $inscrit = $eleve['paiement'];
             $inscrit |= $eleve['fa'];
+            $inscrit |= $eleve['gratuit'] > 0;
             $inscrit |= ($eleve['demandeR1'] == 2 && $eleve['accordR1'] == 0 && $eleve['subventionR1'] == 1);
             $inscrit |= ($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 && $eleve['subventionR2'] == 1);
             ?>
