@@ -66,6 +66,9 @@ i.fam-help:hover {
 .odd {
 	border-bottom: 1px solid #e3eaec;
 }
+.even:hover, .odd:hover {
+	background-color: #feecc9;
+}
 .alert {
 	color: #a94442;
 }
