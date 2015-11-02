@@ -177,6 +177,7 @@ return array(
             'listeLigneActions' => 'SbmCommun\Form\View\Helper\ListeLigneActions',
             'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',
             'telephone' => 'SbmCommun\Form\View\Helper\Telephone',
+            'pictogrammes' => 'SbmCommun\Form\View\Helper\Pictogrammes',
             'formRowDate' => 'SbmCommun\Form\View\Helper\FormRowDate',
             'formRowDateTime' => 'SbmCommun\Form\View\Helper\FormRowDateTime'
         )

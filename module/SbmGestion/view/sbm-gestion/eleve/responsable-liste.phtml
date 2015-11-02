@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Liste des responsables
  *
@@ -9,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2015
- * @version 2015-2
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use SbmCartographie\Model\Point;
 
@@ -62,13 +61,20 @@ $url_rapports = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-pdf',
     'page' => $this->page
 ));
+$url_ici = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-liste',
+    'page' => $this->page
+));
+$url_mail = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-mail'
+));
 $url_retour = $this->url('sbmgestion');
 $hiddens = array();
 $menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
     'action' => 'responsable-liste'
 )), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
-// ne pas utiliser de guillement dans la chaine $js
+                                       // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
     'retour' => array(
@@ -101,7 +107,7 @@ echo $this->flashMessenger()->render('default');
 		<table class="responsables">
 			<tbody>
 				<tr>
-				    <th></th>
+					<th></th>
 					<th>Titre</th>
 					<th>Nom</th>
 					<th>Prénom</th>
@@ -148,7 +154,7 @@ EOT;
 					<td class="prenom"><?php echo $prn = $this->escapeHtml($responsable['prenom']); ?></td>
 					<td class="adresse"><?php echo $this->escapehtml($responsable['adresseL1']); ?>
 					<?php if(!empty($responsable['adresseL2'])):?>
-					   <br/><?php echo $this->escapehtml($responsable['adresseL2']); ?>
+					   <br /><?php echo $this->escapehtml($responsable['adresseL2']); ?>
 					<?php endif;?>
 					</td>
 					<td class="centre codePostal"><?php echo $this->escapeHtml($responsable['codePostal']); ?></td>
@@ -167,10 +173,10 @@ EOT;
                 'nbInscrits' => $responsable['nbInscrits'],
                 'nbPreinscrits' => $responsable['nbPreinscrits'],
                 'nbDuplicata' => $responsable['nbDuplicata'],
-                'url1_retour' => $this->url('sbmgestion/eleve', array(
-                    'action' => 'responsable-liste',
-                    'page' => $this->page
-                ))
+                'url1_retour' => $url_ici,
+                'email' => $responsable['email'],
+                'responsable' => $identite,
+                'group' => $url_ici
             );
             // ne pas utiliser de guillement dans la chaine $js
             $js = 'javascript:window.document.getElementById(\'op' . $responsable['responsableId'] . '\').value=%s;';
@@ -212,6 +218,13 @@ EOT;
                     'onclick' => sprintf($js, "'paiements'")
                 )
             );
+            if (! empty($responsable['email'])) {
+                $buttons['ecrire'] = array(
+                    'class' => 'fam-email',
+                    'formaction' => $url_mail,
+                    'title' => 'Envoyer un email'
+                );
+            }
             echo $this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);
             ?>
 				</td>

@@ -1,0 +1,37 @@
+<?php
+/**
+ * Test menu dynamique
+ *
+ * @see http://stackoverflow.com/questions/12531423/zf2-dynamic-menu-with-zend-navigation-navigation
+ * 
+ * @project sbm
+ * @package SbmFront/view/layout
+ * @filesource menu.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 août 2015
+ * @version 2015-1
+ */
+?>
+<ul id="menu">
+    <?php foreach ($this->container as $page): ?>
+    <li <?= $page->isActive()? 'class="active"' : 'class="drop"' ?>>
+        <?php echo $this->navigation()->menu()->htmlify($page). PHP_EOL?>
+        <div class="dropdown_2columns">
+        <?php  foreach ($page as $catpage) :?>
+            <div class="col_1">
+                <h3 <?= $page->isActive()? 'class="active"' : 'class="drop"' ?>>
+                <?= $this->navigation()->menu()->htmlify($catpage). PHP_EOL?></h3>
+				<ul>
+				<?php  foreach ($catpage as $subpage) :?>
+				    <li <?= $subpage->isActive()? 'class="active"' : 'class="drop"' ?>>
+				    <?= $this->navigation()->menu()->htmlify($subpage). PHP_EOL?></li>
+				<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php endforeach; ?>
+		</div>
+		<!-- End dropdown container -->
+	</li>
+    <?php endforeach; ?>
+ </ul>

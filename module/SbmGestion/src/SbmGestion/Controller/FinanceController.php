@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 févr. 2014
- * @version 2014-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmGestion\Controller;
 
@@ -49,6 +49,7 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
         $millesime = Session::get('millesime');
         $tPaiements = $this->getServiceLocator()->get('Sbm\Db\Table\Paiements');
         $tLibelles = $this->getServiceLocator()->get('Sbm\Db\System\Libelles');
@@ -1000,7 +1001,7 @@ class FinanceController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByTarif($this->getFromSession('millesime'), $tarifId, array(
+                ->paginator($this->getFromSession('millesime'), array('tarifId' => $tarifId), array(
                 'nom',
                 'prenom'
             )),
@@ -1251,7 +1252,8 @@ class FinanceController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByOrganisme($this->getFromSession('millesime'), $organismeId, array(
+                //->paginatorByOrganisme($this->getFromSession('millesime'), $organismeId, array(
+                ->paginator($this->getFromSession('millesime'), array('organismeId' => $organismeId), array(
                 'nom',
                 'prenom'
             )),

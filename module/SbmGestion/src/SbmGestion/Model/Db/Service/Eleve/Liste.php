@@ -1,15 +1,16 @@
 <?php
 /**
- * Listes d'élèves pour un ou plusieurs critères donnés
- *
+ * Listes d'élèves affectés pour un ou plusieurs critères donnés
+ * 
+ * La jointure sur la table affectations nécessite que l'affectation soit faite (voir méthode select()).
  * 
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Eleve
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mars 2015
- * @version 2015-1
+ * @date 15 octobre 2015
+ * @version 2015-1.6.5
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -22,7 +23,7 @@ use Zend\Db\Sql\Where;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 
-class Liste implements FactoryInterface
+class Liste extends AbstractQuery implements FactoryInterface
 {
 
     /**
@@ -31,265 +32,176 @@ class Liste implements FactoryInterface
      */
     private $db;
 
+    /**
+     *
+     * @var \Zend\Db\Adapter\Adapter
+     */
     private $dbAdapter;
 
-    private $select;
-
+    /**
+     *
+     * @var \Zend\Db\Sql\Sql
+     */
     private $sql;
 
+    /**
+     * La nouvelle version n'initialise plus la propriété $select
+     *
+     * (non-PHPdoc)
+     *
+     * @see \Zend\ServiceManager\FactoryInterface::createService()
+     */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
         $this->dbAdapter = $this->db->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
-        $this->select = $this->sql->select();
-        $this->select->from(array(
-            'e' => $this->db->getCanonicName('eleves', 'table')
-        ))
-            ->join(array(
-            's' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'e.eleveId=s.eleveId', array())
-            ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
-        ), 's.etablissementId = eta.etablissementId', array(
-            'etablissement' => 'nom'
-        ))
-            ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
-        ), 's.classeId = cla.classeId', array(
-            'classe' => 'nom'
-        ))
-            ->join(array(
-            'a' => $this->db->getCanonicName('affectations', 'table')
-        ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
-            ->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
-        ), 'r.responsableId=a.responsableId', array())
-            ->join(array(
-            'c' => $this->db->getCanonicName('communes', 'table')
-        ), 'r.communeId=c.communeId', array())
-            ->join(array(
-            'd' => $this->db->getCanonicName('communes', 'table')
-        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT);
         return $this;
     }
 
-    public function byCircuit($millesime, $keys, $order = array('commune', 'nom', 'prenom'))
-    {
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime);
-        if (! empty($keys) && is_array($keys)) {
-            $predicateSet = $where->nest();
-            foreach ($keys as $partie) {
-                if (is_array($partie)) {
-                    $predicatePart = $predicateSet->nest();
-                    foreach ($partie as $key => $value) {
-                        $predicatePart->equalTo($key, $value);
-                    }
-                    $predicatePart->unnest();
-                } elseif ($partie == 'or') {
-                    $predicateSet->OR;
-                } elseif ($partie == 'and') {
-                    $predicateSet->AND;
-                }
-            }
-            $predicateSet->unnest();
-        }
-        $this->select->where($where)
-            ->order($order)
-            ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns(array(
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ));
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        // die($statement->getSql());
-        return $statement->execute();
-    }
-
     /**
-     * Renvoie la liste des élèves pour un millesime et une classe donnés
+     * Construit un select standard et précise les colonnes des tables.
+     * Les colonnes sont présentées dans un tableau associatif où la clé est
+     * l'alias de la table concernée. Les expressions portant sur des champs
+     * de plusieurs tables doivent être associées à l'alias `ele`
      *
-     * @param int $millesime            
-     * @param int $classeId            
-     * @param string|array $order            
+     * @param array $columns
+     *            tableau associatif pécisant les colonnes à obtenir
+     *            Les clés sont :<ul>
+     *            <li>`ele` pour la table eleves et les expressions portant des champs préfixés</li>
+     *            <li>`sco` pour la table scolarites</li>
+     *            <li>`eta` pour la table etablissements</li>
+     *            <li>`cla` pour la table classes</li>
+     *            <li>`aff` pour la table affectations</li>
+     *            <li>`res` pour la table responsables</li>
+     *            <li>`comres` pour la table communes du responsable</li>
+     *            <li>`comsco` pour la table communes de l'adresse perso d'un élève</li></ul>
+     *            A chaque clé est associé le tableau des colonnes à obtenir dans cette table.
+     * @param array $order
+     *            tableau de colonnes
+     * @param bool $distinct            
      *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     * @return \Zend\Db\Sql\Select
      */
-    public function byClasse($millesime, $classeId, $order = array('commune', 'nom', 'prenom'))
-    {
-        $select = $this->selectByClasse($millesime, $classeId, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
-    }
-
-    public function paginatorByClasse($millesime, $classeId, $order = array('commune', 'nom', 'prenom'))
-    {
-        $select = $this->selectByClasse($millesime, $classeId, $order);
-        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
-    }
-
-    private function selectByClasse($millesime, $classeId, $order)
+    private function select($columns = array(), $order = null, $distinct = true)
     {
         $select = $this->sql->select();
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->equalTo('classeId', $classeId)->NEST->literal('accordR1 = 1')->or->literal('accordR2=1')->unnest();
         $select->from(array(
-            'e' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db->getCanonicName('eleves', 'table')
         ))
             ->join(array(
-            's' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'e.eleveId=s.eleveId', array())
-            ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
-        ), 's.etablissementId = eta.etablissementId', array(
-            'etablissement' => 'nom'
-        ))
-            ->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
-        ), 'r.responsableId=e.responsable1Id OR r.responsableId=e.responsable2Id', array())
-            ->join(array(
-            'c' => $this->db->getCanonicName('communes', 'table')
-        ), 'r.communeId=c.communeId', array())
-            ->join(array(
-            'd' => $this->db->getCanonicName('communes', 'table')
-        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
-            ->where($where)
-            ->order($order)
-            ->columns(array(
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ))
-            ->quantifier(Select::QUANTIFIER_DISTINCT);
-        return $select;
-    }
-
-    /**
-     * Renvoie la liste des élèves pour un millesime et une commune donnés
-     *
-     * @param int $millesime            
-     * @param string $communeId            
-     * @param string|array $order            
-     *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
-     */
-    public function byCommune($millesime, $communeId, $order = array('nom', 'prenom'))
-    {
-        $select = $this->selectByCommune($millesime, $communeId, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        return $statement->execute();
-    }
-
-    public function paginatorByCommune($millesime, $communeId, $order = array('nom', 'prenom'))
-    {
-        $select = $this->selectByCommune($millesime, $communeId, $order);
-        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
-    }
-
-    private function selectByCommune($millesime, $communeId, $order)
-    {
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime)
-            ->nest()
-            ->equalTo('s.communeId', $communeId)->OR->equalTo('r.communeId', $communeId)->unnest();
-        $select = $this->sql->select();
-        $select->from(array(
-            'e' => $this->db->getCanonicName('eleves', 'table')
-        ))
-            ->join(array(
-            's' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'e.eleveId=s.eleveId', array(
+            'sco' => $this->db->getCanonicName('scolarites', 'table')
+        ), 'ele.eleveId=sco.eleveId', empty($columns['sco']) ? array(
             'inscrit',
             'paiement',
             'fa',
             'gratuit'
-        ))
+        ) : $columns['sco'])
             ->join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')
-        ), 's.etablissementId = eta.etablissementId', array(
+        ), 'sco.etablissementId = eta.etablissementId', empty($columns['eta']) ? array(
             'etablissement' => 'nom'
-        ))
+        ) : $columns['eta'])
             ->join(array(
             'cla' => $this->db->getCanonicName('classes', 'table')
-        ), 's.classeId = cla.classeId', array(
+        ), 'sco.classeId = cla.classeId', empty($columns['cla']) ? array(
             'classe' => 'nom'
-        ))
+        ) : $columns['cla'])
             ->join(array(
-            'a' => $this->db->getCanonicName('affectations', 'table')
-        ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
+            'aff' => $this->db->getCanonicName('affectations', 'table')
+        ), 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId', empty($columns['aff']) ? array() : $columns['aff'])
             ->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
-        ), 'r.responsableId=a.responsableId', array())
+            'res' => $this->db->getCanonicName('responsables', 'table')
+        ), 'res.responsableId=aff.responsableId', empty($columns['res']) ? array() : $columns['res'])
             ->join(array(
-            'c' => $this->db->getCanonicName('communes', 'table')
-        ), 'r.communeId=c.communeId', array())
+            'comres' => $this->db->getCanonicName('communes', 'table')
+        ), 'res.communeId=comres.communeId', empty($columns['comres']) ? array() : $columns['comres'])
             ->join(array(
-            'd' => $this->db->getCanonicName('communes', 'table')
-        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT);
-        $select->where($where)
-            ->order($order)
-            ->columns(array(
-            'eleveId',
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ));
+            'comsco' => $this->db->getCanonicName('communes', 'table')
+        ), 'comsco.communeId=sco.communeId', empty($columns['comsco']) ? array() : $columns['comsco'], Select::JOIN_LEFT);
+        if (! empty($columns['ele'])) {
+            $select->columns($columns['ele']);
+        }
+        if (! empty($order)) {
+            $select->order($order);
+        }
+        if ($distinct) {
+            $select->quantifier(Select::QUANTIFIER_DISTINCT);
+        }
+        // die($this->getSqlString($select));
         return $select;
     }
 
     /**
-     * Renvoie la liste des élèves pour un millesime et un établissement donnés
+     * Renvoi un Select avec les colonnes qui vont bien pour les groupes d'élèves.
+     * Le sélect est filtré par le filtre donné.
+     * Utilisé dans les requêtes (by...) et les paginator...
      *
      * @param int $millesime            
-     * @param int $etablissementId            
-     * @param string|array $order            
+     * @param array $filtre            
+     * @param array $order            
+     *
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectForGroup($millesime, $filtre, $order)
+    {
+        $columns = array(
+            'ele' => array(
+                'eleveId',
+                'nom',
+                'prenom',
+                'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
+                'adresseL2' => new Literal('IFNULL(sco.adresseL2, res.adresseL2)'),
+                'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
+                'commune' => new Literal('IFNULL(comsco.nom, comres.nom)')
+            ),
+            'res' => array(
+                'email',
+                'responsable' => new Literal('CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
+            )
+        );
+        $select = $this->select($columns, $order);
+        $where = new Where();
+        $where->equalTo('sco.millesime', $millesime);
+        $select->where($this->arrayToWhere($where, $filtre));
+        // die($this->getSqlString($select));
+        return $select;
+    }
+
+    /**
+     * Renvoie la liste des élèves pour un millesime et un filtre donnés et dans l'ordre demandé
+     *
+     * @param int $millesime            
+     * @param array $filtre            
+     * @param array $order            
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function byEtablissement($millesime, $etablissementId, $order = array('nom', 'prenom'))
+    public function query($millesime, $filtre, $order = array('commune', 'nom', 'prenom'))
     {
-        $select = $this->selectByEtablissement($millesime, $etablissementId, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
+        $select = $this->selectForGroup($millesime, $filtre, $order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
-    public function paginatorByEtablissement($millesime, $etablissementId, $order = array('nom', 'prenom'))
+    /**
+     * Renvoie la même liste paginée
+     *
+     * @param int $millesime            
+     * @param array $filtre            
+     * @param array $order            
+     *
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginator($millesime, $filtre, $order = array('commune', 'nom', 'prenom'))
     {
-        $select = $this->selectByEtablissement($millesime, $etablissementId, $order);
+        $select = $this->selectForGroup($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
-    }
-
-    private function selectByEtablissement($millesime, $etablissementId, $order)
-    {
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->equalTo('s.etablissementId', $etablissementId);
-        $select = clone $this->select;
-        $select->where($where)
-            ->order($order)
-            ->columns(array(
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ));
-        return $select;
     }
 
     /**
      * Renvoie la liste des élèves pour un millesime, un établissement et un service donnés
+     * Traitement spécial pour
      *
      * @param int $millesime            
      * @param int $etablissementId            
@@ -300,7 +212,7 @@ class Liste implements FactoryInterface
     public function byEtablissementService($millesime, $etablissementId, $serviceId, $order = array('nom', 'prenom'))
     {
         $select = $this->selectByEtablissementService($millesime, $etablissementId, $serviceId, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
@@ -376,6 +288,7 @@ class Liste implements FactoryInterface
         
         $where = new Where();
         $where->equalTo('s.millesime', $millesime)
+            ->literal('inscrit = 1')
             ->equalTo('s.etablissementId', $etablissementId)
             ->equalTo('a.serviceId', $serviceId);
         $select = $this->sql->select();
@@ -384,7 +297,12 @@ class Liste implements FactoryInterface
         ))
             ->join(array(
             's' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'e.eleveId=s.eleveId', array())
+        ), 'e.eleveId=s.eleveId', array(
+            'inscrit',
+            'paiement',
+            'fa',
+            'gratuit'
+        ))
             ->join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')
         ), 's.etablissementId = eta.etablissementId', array(
@@ -400,7 +318,10 @@ class Liste implements FactoryInterface
         ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
             ->join(array(
             'r' => $this->db->getCanonicName('responsables', 'table')
-        ), 'r.responsableId=a.responsableId', array())
+        ), 'r.responsableId=a.responsableId', array(
+            'email',
+            'responsable' => new Literal('CONCAT(r.titre, " ", r.nom, " ", r.prenom)')
+        ))
             ->join(array(
             'c' => $this->db->getCanonicName('communes', 'table')
         ), 'r.communeId=c.communeId', array())
@@ -416,6 +337,7 @@ class Liste implements FactoryInterface
             ->order($order)
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(array(
+            'eleveId',
             'nom',
             'prenom',
             'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
@@ -423,208 +345,7 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
-        // die($select->getSqlString());
-        return $select;
-    }
-
-    /**
-     * Renvoie la liste des élèves pour un millesime et un organisme donnés
-     *
-     * @param int $millesime            
-     * @param int $organismeId            
-     * @param string|array $order            
-     *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
-     */
-    public function byOrganisme($millesime, $organismeId, $order = array('commune', 'nom', 'prenom'))
-    {
-        $select = $this->selectByOrganisme($millesime, $organismeId, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
-    }
-
-    public function paginatorByOrganisme($millesime, $organismeId, $order = array('commune', 'nom', 'prenom'))
-    {
-        $select = $this->selectByOrganisme($millesime, $organismeId, $order);
-        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
-    }
-
-    private function selectByOrganisme($millesime, $organismeId, $order)
-    {
-        $select = $this->sql->select();
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->equalTo('organismeId', $organismeId)->NEST->literal('accordR1 = 1')->or->literal('accordR2=1')->unnest();
-        $select->from(array(
-            'e' => $this->db->getCanonicName('eleves', 'table')
-        ))
-            ->join(array(
-            's' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'e.eleveId=s.eleveId', array())
-            ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
-        ), 's.etablissementId = eta.etablissementId', array(
-            'etablissement' => 'nom'
-        ))
-            ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
-        ), 's.classeId = cla.classeId', array(
-            'classe' => 'nom'
-        ))
-            ->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
-        ), 'r.responsableId=e.responsable1Id OR r.responsableId=e.responsable2Id', array())
-            ->join(array(
-            'c' => $this->db->getCanonicName('communes', 'table')
-        ), 'r.communeId=c.communeId', array())
-            ->join(array(
-            'd' => $this->db->getCanonicName('communes', 'table')
-        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
-            ->where($where)
-            ->order($order)
-            ->columns(array(
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ))
-            ->quantifier(Select::QUANTIFIER_DISTINCT);
-        return $select;
-    }
-
-    /**
-     * Renvoie la liste des élèves pour un millesime et un service donnés
-     *
-     * @param int $millesime            
-     * @param string $serviceId            
-     * @param string|array $order            
-     *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
-     */
-    public function byService($millesime, $serviceId, $order = array('commune', 'nom', 'prenom'))
-    {
-        $select = $this->selectByService($millesime, $serviceId, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
-    }
-
-    public function paginatorByService($millesime, $serviceId, $order = array('commune', 'nom', 'prenom'))
-    {
-        $select = $this->selectByService($millesime, $serviceId, $order);
-        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
-    }
-
-    private function selectByService($millesime, $serviceId, $order)
-    {
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->NEST->equalTo('service1Id', $serviceId)->OR->equalTo('service2Id', $serviceId)->UNNEST;
-        $select = clone $this->select;
-        $select->where($where)
-            ->order($order)
-            ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns(array(
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ));
-        return $select;
-    }
-
-    /**
-     * Renvoie la liste des élèves pour un millesime et une station donnés
-     *
-     * @param int $millesime            
-     * @param string $stationId            
-     * @param string|array $order            
-     *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
-     */
-    public function byStation($millesime, $stationId, $order = array('commune', 'nom', 'prenom'))
-    {
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->NEST->equalTo('station1Id', $stationId)->OR->equalTo('station2Id', $stationId)->UNNEST;
-        $this->select->where($where)
-            ->order($order)
-            ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns(array(
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ));
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        return $statement->execute();
-    }
-
-    /**
-     * Renvoie la liste des élèves pour un millesime et un tarif donnés
-     *
-     * @param int $millesime            
-     * @param int $tarifId            
-     * @param string|array $order            
-     *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
-     */
-    public function byTarif($millesime, $tarifId, $order = array('nom', 'prenom'))
-    {
-        $select = $this->selectByTarif($millesime, $tarifId, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
-    }
-
-    public function paginatorByTarif($millesime, $tarifId, $order = array('nom', 'prenom'))
-    {
-        $select = $this->selectByTarif($millesime, $tarifId, $order);
-        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
-    }
-
-    private function selectByTarif($millesime, $tarifId, $order)
-    {
-        $select = $this->sql->select();
-        $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->equalTo('tarifId', $tarifId);
-        $select->from(array(
-            'e' => $this->db->getCanonicName('eleves', 'table')
-        ))
-            ->join(array(
-            's' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'e.eleveId=s.eleveId', array())
-            ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
-        ), 's.etablissementId = eta.etablissementId', array(
-            'etablissement' => 'nom'
-        ))
-            ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
-        ), 's.classeId = cla.classeId', array(
-            'classe' => 'nom'
-        ))
-            ->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
-        ), 'r.responsableId=e.responsable1Id OR r.responsableId=e.responsable2Id', array())
-            ->join(array(
-            'c' => $this->db->getCanonicName('communes', 'table')
-        ), 'r.communeId=c.communeId', array())
-            ->join(array(
-            'd' => $this->db->getCanonicName('communes', 'table')
-        ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
-            ->where($where)
-            ->order($order)
-            ->columns(array(
-            'nom',
-            'prenom',
-            'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-            'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-            'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-            'commune' => new Literal('IFNULL(d.nom, c.nom)')
-        ))
-            ->quantifier(Select::QUANTIFIER_DISTINCT);
+        // die($this->getSqlString($select));
         return $select;
     }
 
@@ -637,20 +358,20 @@ class Liste implements FactoryInterface
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function byTransporteur($millesime, $transporteurId, $order = array('commune', 'nom', 'prenom'))
+    public function byTransporteur($millesime, $filtre, $order = array('commune', 'nom', 'prenom'))
     {
-        $select = $this->selectByTransporteur($millesime, $transporteurId, $order);
+        $select = $this->selectByTransporteur($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
-    public function paginatorByTransporteur($millesime, $transporteurId, $order = array('commune', 'nom', 'prenom'))
+    public function paginatorByTransporteur($millesime, $filtre, $order = array('commune', 'nom', 'prenom'))
     {
-        $select = $this->selectByTransporteur($millesime, $transporteurId, $order);
+        $select = $this->selectByTransporteur($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
     }
 
-    private function selectByTransporteur($millesime, $transporteurId, $order)
+    private function selectByTransporteur($millesime, $filtre, $order)
     {
         $tableAffectations = $this->db->getCanonicName('affectations', 'table');
         $select1 = new Select();
@@ -715,14 +436,19 @@ class Liste implements FactoryInterface
             ->where($where2);
         
         $where = new Where();
-        $where->equalTo('s.millesime', $millesime)->equalTo('ser.transporteurId', $transporteurId);
+        $where->equalTo('s.millesime', $millesime);
         $select = $this->sql->select();
         $select->from(array(
             'e' => $this->db->getCanonicName('eleves', 'table')
         ))
             ->join(array(
             's' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'e.eleveId=s.eleveId', array())
+        ), 'e.eleveId=s.eleveId', array(
+            'inscrit',
+            'paiement',
+            'fa',
+            'gratuit'
+        ))
             ->join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')
         ), 's.etablissementId = eta.etablissementId', array(
@@ -738,7 +464,10 @@ class Liste implements FactoryInterface
         ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
             ->join(array(
             'r' => $this->db->getCanonicName('responsables', 'table')
-        ), 'r.responsableId=a.responsableId', array())
+        ), 'r.responsableId=a.responsableId', array(
+            'email',
+            'responsable' => new Literal('CONCAT(r.titre, " ", r.nom, " ", r.prenom)')
+        ))
             ->join(array(
             'c' => $this->db->getCanonicName('communes', 'table')
         ), 'r.communeId=c.communeId', array())
@@ -747,11 +476,14 @@ class Liste implements FactoryInterface
         ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
             ->join(array(
             'ser' => $this->db->getCanonicName('services', 'table')
-        ), 'ser.serviceId = a.serviceId', array())
-            ->where($where)
+        ), 'ser.serviceId = a.serviceId', array(
+            'serviceId'
+        ))
+            ->where($this->arrayToWhere($where, $filtre))
             ->order($order)
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(array(
+            'eleveId',
             'nom',
             'prenom',
             'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
@@ -759,18 +491,19 @@ class Liste implements FactoryInterface
             'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
             'commune' => new Literal('IFNULL(d.nom, c.nom)')
         ));
-        // die($select->getSqlString());
+        // die($this->getSqlString($select));
         return $select;
     }
 
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
+     * @param \Zend\Db\Sql\Select $select            
+     *
      * @return \Zend\Db\Adapter\mixed
      */
-    public function getSql()
+    public function getSqlString($select)
     {
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        return $statement->getSql();
+        return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 }

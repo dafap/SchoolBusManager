@@ -8,8 +8,8 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2015
- * @version 2015-2
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use SbmCommun\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -115,7 +115,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Code postal</th>
 					<th>Téléphone</th>
 					<th>Email</th>
-					<th>Inscrits</th>
+					<th title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
 					<th>Desservis</th>
 					<th>Visible</th>
 					<th>Sélect.</th>
@@ -125,7 +125,9 @@ echo $this->flashMessenger()->render('default');
         <?php
             $pt = new Point($etablissement->x, $etablissement->y);
             $ptOk = $this->projection->isValid($pt, 'etablissements');
-            $nbInscrits = StdLib::getParam($etablissement->etablissementId, $this->t_nb_inscrits, 0);
+            $nbInscrits = StdLib::getParamR(array($etablissement->etablissementId, 'transportes'), $this->t_nb_inscrits, 0);
+            $nbInscrits .= ' / ';
+            $nbInscrits .= StdLib::getParamR(array($etablissement->etablissementId, 'demandes'), $this->t_nb_inscrits, 0);
             // selection
             $modele = <<<EOT
 $("#chk%s").change(function() {

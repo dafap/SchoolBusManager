@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 août 2015
- * @version 2015-2
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmPortail\Controller;
 
@@ -19,6 +19,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use DafapSession\Model\Session;
 use SbmCommun\Model\StdLib;
+use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use Zend\Db\Sql\Where;
 
 class IndexController extends AbstractActionController
@@ -147,9 +148,9 @@ class IndexController extends AbstractActionController
             
             $stats = $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
-                ->byEtablissement(true);
+                ->byEtablissement();
             
-            $elevesTransportes = $stats[$etablissementId];
+            $elevesTransportes = $stats[$etablissementId]['transportes'];
             
             $services = $this->getServiceLocator()
                 ->get('Sbm\Db\Query\Services')
@@ -485,20 +486,7 @@ class IndexController extends AbstractActionController
         return new ViewModel(array(
             'data' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byCircuit($this->getFromSession('millesime'), array(
-                array(
-                    'inscrit' => 1
-                ),
-                array(
-                    'service1Id' => $circuit->serviceId,
-                    'station1Id' => $circuit->stationId
-                ),
-                'or',
-                array(
-                    'service2Id' => $circuit->serviceId,
-                    'station2Id' => $circuit->stationId
-                )
-            ), array(
+                ->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId), array(
                 'nom',
                 'prenom'
             )),

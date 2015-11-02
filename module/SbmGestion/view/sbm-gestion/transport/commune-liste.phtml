@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/commune-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2015
- * @version 2015-2
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use SbmCommun\Model\StdLib;
  
@@ -56,6 +56,7 @@ $actions = array(
         'title' => 'Nouvelle commune'
     )
 );
+//die(var_dump($this->t_nb_inscrits));
 ?>
 <h1>Liste des communes</h1>
 <div id="liste-wrapper">
@@ -81,13 +82,15 @@ $actions = array(
 				<th>Membre</th>
 				<th>Desservie</th>
 				<th>Visible</th>
-				<th>Inscrits</th>
+				<th title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
 				<th>Sélect.</th>
 				<th></th>
 			</tr>
             <?php foreach($communes as $test => $commune): ?>
             <?php 
-            $nbInscrits = StdLib::getParamR(array($commune->communeId, 'total'), $this->t_nb_inscrits, 0); 
+            $demandes = StdLib::getParamR(array($commune->communeId, 'total', 'demandes'), $this->t_nb_inscrits, 0); 
+            $transportes = StdLib::getParamR(array($commune->communeId, 'total', 'transportes'), $this->t_nb_inscrits, 0);
+            $nbInscrits = "$transportes / $demandes";
             // selection
             $modele = <<<EOT
 $("#chk%s").change(function() {
