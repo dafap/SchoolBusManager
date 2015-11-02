@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juillet 2014
- * @version 2014-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use DafapSession\Model\Session;
 
@@ -19,7 +19,7 @@ $url_retour = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-liste',
     'page' => $this->page
 ));
-$url_pdf = $this->url('sbmgestion/eleve', array(
+$url_rapports = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-group-pdf',
     'page' => $this->page
 ));
@@ -43,11 +43,25 @@ $url_raye = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-rayer',
     'page' => $this->page
 ));
+$url_mail = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-mail'
+));
 $hiddens = array(
     'origine' => $url_origine,
     'responsableId' => $this->responsableId
 );
-
+$email = $this->responsable->email;
+if (! empty($email)) {
+    $hiddens = array_merge($hiddens, array(
+        'group' => $url_origine,
+        'responsable' => sprintf('%s %s %s', $this->responsable->titre, $this->responsable->nom, $this->responsable->prenom),
+        'email' => $this->responsable->email
+    ));
+}
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+    'action' => 'classe-group'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
@@ -57,18 +71,21 @@ $actions = array(
         'title' => 'Retour',
         'onclick' => $js_retour
     ),
-    'rapports' => array(
-        'class' => 'fam-printer',
-        'formaction' => $url_origine, // $url_pdf,
-        'title' => 'Rapports à imprimer'
-    ),
+    'rapports' => $menuImpression['content'],
     'ajouter' => array(
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Ajouter'
     )
 );
-
+//die(var_dump($this->responsable));
+if (! empty($email)) {
+    $actions['ecrire'] = array(
+        'class' => 'fam-email',
+        'formaction' => $url_mail,
+        'title' => 'Envoyer un email'
+    );
+}
 ?>
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
@@ -154,9 +171,7 @@ echo $this->flashMessenger()->render('default');
                 $inscrit |= $row['gratuit'] > 0;
                 $inscrit |= ($row['demandeR1'] == 2 && $row['accordR1'] == 0 && $row['subventionR1'] == 1);
                 $inscrit |= ($row['demandeR2'] == 2 && $row['accordR2'] == 0 && $row['subventionR2'] == 1);
-                if (! $inscrit) {
-                    $pictogrammes[] = '<i class="fam-tag-orange" title="Préinscrit"></i>';
-                }
+                $this->pictogrammes('init')->addPreinscrit($row['inscrit'] == 1 && ! $inscrit);
                 $tr_css = 'noir';
             } else {
                 $url_edit = $this->url('sbmgestion/eleve', array(
@@ -172,6 +187,7 @@ echo $this->flashMessenger()->render('default');
                 );
                 $tr_css = 'gris';
             }
+            
             if (! $row['inscrit']) {
                 $tr_css .= ' barre';
             }
@@ -188,7 +204,7 @@ echo $this->flashMessenger()->render('default');
             ?>
 			    <tr
 					class="<?php echo $tr_css . ' ' . $this->cycle(array("even", "odd"))->next();?>">
-					<td><?php echo implode(' ', $pictogrammes);?></td>
+					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $row['nom']; ?></td>
 					<td><?php echo $row['prenom']; ?></td>
 					<?php if (is_null($row['millesime'])) : ?>

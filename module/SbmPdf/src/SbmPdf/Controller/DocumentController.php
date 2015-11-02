@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 août 2015
- * @version 2015-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmPdf\Controller;
 
@@ -22,6 +22,7 @@ use Zend\Db\Sql\Sql;
 use DafapSession\Model\Session;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
+use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmParent\Model\Responsable;
 use SbmPdf\Model\Tcpdf;
 
@@ -228,42 +229,8 @@ class DocumentController extends AbstractActionController
 
     private function detailHoraireArret($arret, $qListe, $millesime)
     {
-        if ($this->categorie == 1) {
-            // pour les parents, on ne montre que les inscrits
-            $filtre = array(
-                array(
-                    'inscrit' => 1,
-                    'paiement' => 1
-                ),
-                array(
-                    'service1Id' => $arret['serviceId'],
-                    'station1Id' => $arret['stationId']
-                ),
-                'or',
-                array(
-                    'service2Id' => $arret['serviceId'],
-                    'station2Id' => $arret['stationId']
-                )
-            );
-        } else {
-            // pour les autres, on montre tout le monde (inscrits et préinscrits)
-            $filtre = array(
-                array(
-                    'inscrit' => 1
-                ),
-                array(
-                    'service1Id' => $arret['serviceId'],
-                    'station1Id' => $arret['stationId']
-                ),
-                'or',
-                array(
-                    'service2Id' => $arret['serviceId'],
-                    'station2Id' => $arret['stationId']
-                )
-            );
-        }
-        
-        $liste = $qListe->byCircuit($millesime, $filtre, array(
+        // pour les parents, on ne montre que les inscrits       
+        $liste = $qListe->query($millesime, FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'], $this->categorie == 1), array(
             'nom',
             'prenom'
         ));

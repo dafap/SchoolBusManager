@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juil. 2014
- * @version 2014-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use SbmCommun\Model\DateLib;
 
@@ -93,6 +93,9 @@ $url_ici = $this->url('sbmgestion/eleve', array(
 $url_responsable = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-edit',
     'page' => $this->page
+));
+$url_mail = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-mail'
 ));
 $url_edit = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-edit',
@@ -205,11 +208,12 @@ echo $this->flashMessenger()->render('default');
         <?php
             // responsable 1
             $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES, 'utf-8', false);
-            $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', array(
+            $hiddensR1 = array(
                 'responsableId' => $eleve['responsable1Id'],
                 'info' => $r,
                 'origine' => $url_ici
-            ), array(
+            );
+            $buttonsR1 = array(
                 'r1' => array(
                     'class' => 'fam-magnifier',
                     'formaction' => $url_responsable,
@@ -222,18 +226,32 @@ echo $this->flashMessenger()->render('default');
                     'title' => 'Localiser cette adresse sur la carte',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'localiser r1')
                 )
-            ), array(
+            );
+            if (! empty($eleve['emailR1'])) {
+                $hiddensR1 = array_merge($hiddensR1, array(
+                    'email' => $eleve['emailR1'],
+                    'responsable' => sprintf('%s %s', $eleve['titreR1'], $eleve['responsable1NomPrenom']),
+                    'group' => $url_ici
+                ));
+                $buttonsR1['ecrire'] = array(
+                    'class' => 'fam-email',
+                    'formaction' => $url_mail,
+                    'title' => 'Envoyer un email'
+                );
+            }
+            $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', $hiddensR1, $buttonsR1, array(
                 'style' => 'display: inline;'
             ));
             $itemR1 .= $r;
             // responsable 2
             if ($eleve['responsable2Id']) {
                 $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), ENT_QUOTES, 'utf-8', false);
-                $itemR2 = $this->listeLigneActions($eleve['eleveId'] . 'r2', array(
+                $hiddensR2 = array(
                     'responsableId' => $eleve['responsable2Id'],
                     'info' => $r,
                     'origine' => $url_ici
-                ), array(
+                );
+                $buttonsR2 = array(
                     'r2' => array(
                         'class' => 'fam-magnifier',
                         'formaction' => $url_responsable,
@@ -246,7 +264,20 @@ echo $this->flashMessenger()->render('default');
                         'title' => 'Localiser cette adresse sur la carte',
                         'onclick' => sprintf($js_op, $eleve['eleveId'], 'r2', 'localiser r2')
                     )
-                ), array(
+                );
+                if (! empty($eleve['emailR2'])) {
+                    $hiddensR2 = array_merge($hiddensR2, array(
+                        'email' => $eleve['emailR2'],
+                        'responsable' => sprintf('%s %s', $eleve['titreR2'], $eleve['responsable2NomPrenom']),
+                        'group' => $url_ici
+                    ));
+                    $buttonsR2['ecrire'] = array(
+                        'class' => 'fam-email',
+                        'formaction' => $url_mail,
+                        'title' => 'Envoyer un email'
+                    );
+                }
+                $itemR2 = $this->listeLigneActions($eleve['eleveId'] . 'r2', $hiddensR2, $buttonsR2, array(
                     'style' => 'display: inline;'
                 ));
                 $itemR2 .= $r;
@@ -279,13 +310,18 @@ echo $this->flashMessenger()->render('default');
             }
             $inscrit = $eleve['paiement'];
             $inscrit |= $eleve['fa'];
+            $inscrit |= $eleve['gratuit'] > 0;
             $inscrit |= ($eleve['demandeR1'] == 2 && $eleve['accordR1'] == 0 && $eleve['subventionR1'] == 1);
             $inscrit |= ($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 && $eleve['subventionR2'] == 1);
+            $this->pictogrammes('init')
+                ->addPreinscrit(! $inscrit)
+                ->addSansAffectation($eleve['affecte']);
             ?>
          <tr class="<?php echo $tr_css;?>">
 					<td <?php echo $rowspan;?>>
-                    <?php echo  $inscrit ? '' : '<i class="fam-tag-orange" title="Préinscrit"></i>';?>
-                    <?php echo $eleve['affecte'] ? '' : '<i class="fam-chart-line-error" title="Sans affectation"></i>';?>
+					<?php echo $this->pictogrammes();?>
+                    <?php //echo  $inscrit ? '' : '<i class="fam-tag-orange" title="Préinscrit"></i>';?>
+                    <?php //echo $eleve['affecte'] ? '' : '<i class="fam-chart-line-error" title="Sans affectation"></i>';?>
                     </td>
 					<td <?php echo $rowspan;?> class="numero"><?php echo $eleve['numero']; ?></td>
 					<td <?php echo $rowspan;?> class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>

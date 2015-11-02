@@ -12,8 +12,8 @@
  * @filesource RedirectBack.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 févr. 2015
- * @version 2015-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
@@ -29,6 +29,18 @@ class RedirectBack extends Redirect
 
     protected $session;
 
+    /**
+     * Vide la pile
+     */
+    public function reset()
+    {
+        $container = $this->getContainer();
+        while (! empty($container->back)) {
+            $index = count($container->back) - 1;
+            unset($container->back[$index]);
+        }
+    }
+    
     /**
      * Prend l'url en haut de la pile, dépile et redirige sur cette url
      */

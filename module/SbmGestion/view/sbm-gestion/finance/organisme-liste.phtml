@@ -7,11 +7,10 @@
  * @filesource organisme-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2015
- * @version 2015-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use SbmCommun\Model\StdLib;
-
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -91,12 +90,14 @@ echo $this->flashMessenger()->render('default');
 					<th>Téléphone</th>
 					<th>Fax</th>
 					<th>Email</th>
-					<th>Inscrits</th>
+					<th title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
             <?php foreach($organismes as $test => $organisme): ?>
             <?php
+            $nbInscrits = StdLib::getParamR(array($organisme->organismeId, 'transportes'), $this->t_nb_inscrits, 0) . ' / ';
+            $nbInscrits.= StdLib::getParamR(array($organisme->organismeId, 'demandes'), $this->t_nb_inscrits, 0);
                 // selection
                 $modele = <<<EOT
 $("#chk%d").change(function() {
@@ -122,7 +123,7 @@ EOT;
 					<td class="telephone"><?php echo $this->escapeHtml($organisme->telephone); ?></td>
 					<td class="fax"><?php echo $this->escapeHtml($organisme->fax); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($organisme->email); ?></td>
-					<td class="nbinscrits"><?php echo StdLib::getParamR(array($organisme->organismeId, 'total'), $this->t_nb_inscrits, 0); ?></td>
+					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $organisme->organismeId, $organisme->selection)?></td>
 					<td class="boutons">
             <?php

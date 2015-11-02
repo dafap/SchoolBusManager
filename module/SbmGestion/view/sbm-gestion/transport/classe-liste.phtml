@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/classe-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2015
- * @version 2015-2
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use SbmCommun\Model\StdLib;
 
@@ -60,23 +60,32 @@ $actions = array(
 <h1>Liste des classes</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-	    <div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-	    <div class="flashMessenger float-right"><?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
 	<div id="liste-inner">
-	<table class="classes">
-		<tbody>
-		<tr><th>Nom</th><th>Alias</th><th>Inscrits</th><th>Sélect.</th><th></th></tr>
+		<table class="classes">
+			<tbody>
+				<tr>
+					<th>Nom</th>
+					<th class="invisible">Alias</th>
+					<th title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
         <?php foreach($classes as $test => $classe): ?>
-        <?php $nbInscrits = StdLib::getParam($classe->classeId, $this->t_nb_inscrits, 0); 
-        // selection
-        $modele = <<<EOT
+        <?php
+            
+$nbInscrits = StdLib::getParamR(array($classe->classeId, 'transportes'), $this->t_nb_inscrits, 0) . ' / ';
+$nbInscrits.= StdLib::getParamR(array($classe->classeId, 'demandes'), $this->t_nb_inscrits, 0);
+            // selection
+            $modele = <<<EOT
 $("#chk%d").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
@@ -88,30 +97,33 @@ $("#chk%d").change(function() {
 			});
   });
 EOT;
-        
-        $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $classe->classeId);
-        $jsCallback .= sprintf("$modele\n", $classe->classeId, $classe->classeId);
-        ?>
-            <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-				<td class="nom"><?php echo $this->escapeHtml($classe->nom); ?></td>
-				<td class="aliascg"><?php echo $this->escapeHtml($classe->aliasCG); ?></td>
-				<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
-				<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $classe->classeId, $classe->selection)?></td>
-				<td class="boutons">
+            
+            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $classe->classeId);
+            $jsCallback .= sprintf("$modele\n", $classe->classeId, $classe->classeId);
+            ?>
+            <tr
+					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td class="nom"><?php echo $this->escapeHtml($classe->nom); ?></td>
+					<td class="aliascg invisible"><?php echo $this->escapeHtml($classe->aliasCG); ?></td>
+					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $classe->classeId, $classe->selection)?></td>
+					<td class="boutons">
             <?php
             $url_edit = $this->url('sbmgestion/transport', array(
                 'action' => 'classe-edit',
-                'page' => $this->page,
+                'page' => $this->page
             ));
             $url_delete = $this->url('sbmgestion/transport', array(
                 'action' => 'classe-suppr',
-                'page' => $this->page,
+                'page' => $this->page
             ));
             $url_group = $this->url('sbmgestion/transport', array(
                 'action' => 'classe-group',
-                'id' => $this->page,
+                'id' => $this->page
             ));
-            $hiddens = array('classeId' => $classe->classeId);
+            $hiddens = array(
+                'classeId' => $classe->classeId
+            );
             $buttons = array(
                 'modifier' => array(
                     'class' => 'fam-pencil',
@@ -132,19 +144,19 @@ EOT;
             echo $this->listeLigneActions($classe->classeId, $hiddens, $buttons);
             ?>
 				</td>
-			</tr>         
+				</tr>         
         <?php endforeach;?>
         </tbody>
-	</table>
+		</table>
 	</div>
 	<div id="liste-footer">
-	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
-	    <div class="criteres-wrapper">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="criteres-wrapper">
         <?php echo $this->form()->openTag($this->criteres_form);?>
         <?php echo $this->formCollection($this->criteres_form, true);?>
         <?php echo $this->form()->closeTag();?>
         </div>
-    </div>
+	</div>
 </div>
 <?php
 $this->headScript()->captureStart();

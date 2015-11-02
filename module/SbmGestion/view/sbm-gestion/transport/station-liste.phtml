@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2015
- * @version 2015-2
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 use SbmCommun\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -63,7 +63,7 @@ $url_delete = $this->url('sbmgestion/transport', array(
 ));
 $url_relation = $this->url('sbmgestion/transport', array(
     'action' => 'station-service',
-    'page' => $this->page
+    'id' => $this->page
 ));
 $url_group = $this->url('sbmgestion/transport', array(
     'action' => 'station-group',
