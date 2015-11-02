@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mars 2015
- * @version 2015-1
+ * @date 17 octobre 2015
+ * @version 2015-2
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -22,19 +22,38 @@ use Zend\Db\ResultSet\ResultSet;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Having;
 
-class Effectif implements FactoryInterface
+class Effectif extends AbstractQuery implements FactoryInterface
 {
 
+    /**
+     *
+     * @var integer
+     */
     private $millesime;
 
+    /**
+     *
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    private $dbAdapter;
+
+    /**
+     *
+     * @var \Zend\Db\Sql\Sql
+     */
     private $sql;
 
+    /**
+     *
+     * @var array
+     */
     private $tableName = array();
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->millesime = Session::get('millesime');
         $db = $serviceLocator->get('Sbm\Db\DbLib');
+        $this->dbAdapter = $db->getDbAdapter();
         $this->tableName['affectations'] = $db->getCanonicName('affectations', 'table');
         $this->tableName['circuits'] = $db->getCanonicName('circuits', 'table');
         $this->tableName['communes'] = $db->getCanonicName('communes', 'table');
@@ -48,7 +67,7 @@ class Effectif implements FactoryInterface
 
     /**
      * Renvoie les effectifs des circuits, station par station, dans un tableau
-     * 
+     *
      * @param bool $sanspreinscrits            
      * @return array
      */
@@ -56,11 +75,24 @@ class Effectif implements FactoryInterface
     {
         // SELECT circuitId, count(*) FROM `sbm_t_circuits` c JOIN `sbm_t_affectations` a ON c.serviceId=a.service1Id AND c.stationId=a.station1Id WHERE millesime=2014 GROUP BY circuitId
         $result = array();
-        $filtre = array(
-            'inscrit' => 1
-        );
         if ($sanspreinscrits) {
-            $filtre['paiement'] = 1;
+            $filtre = array(
+                'inscrit' => 1,
+                array(
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => array(
+                        'gratuit',
+                        0
+                    )
+                )
+            );
+        } else {
+            $filtre = array(
+                'inscrit' => 1
+            );
         }
         $rowset = $this->requeteCir(1, 'circuitId', $filtre, 'circuitId');
         foreach ($rowset as $row) {
@@ -79,62 +111,191 @@ class Effectif implements FactoryInterface
 
     /**
      * Compte les élèves dans les communes des responsables (1, 2) et de résidence (3)
+     * Le résultat est un tableau associatif où les clés sont des communeId et les valeurs
+     * sont des structures de la forme
+     * array(
+     * 'demandes' => array('r1' => effectif1, 'r2' => effectif2, 'ele' => effectif3),
+     * 'transportes' => array('r1' => effectif4, 'r2' => effectif5, 'ele' => effectif6),
+     * 'total' => array('demandes' => effectif_des_demandes, 'transportes' => effectif_des_transportes)
+     * ) où r1 correspond à la commune du responsable1 lorsque l'élève n'a pas d'adresse perso,
+     * r2 à la commune du responsable2
+     * ele à la commune de l'élève s'il a une adresse perso
+     * Les effectifs sont dans total en distinguant les demandes et les transportés (affectation)
      *
      * @return array
      */
     public function byCommune()
     {
-        // SELECT r.communeId AS `column`, count(*) AS `effectif` FROM `sbm_t_eleves` e JOIN sbm_t_scolarites s ON e.eleveId=s.eleveId JOIN sbm_t_responsables r ON e.responsable1Id=r.responsableId WHERE millesime=2014 GROUP BY r.communeId
         $result = array();
-        $rowset = $this->requeteCom(1, 'communeId', array(), 'r.communeId');
+        // calcul du nombre d'élèves inscrits ou préinscrits ( = sauf rayés)
+        // - pour la commune du R1 : inscrit = 1 AND sco.communeId IS NULL AND demandeR1 > 0
+        $filtre = array(
+            'inscrit' => 1,
+            '>' => array(
+                'demandeR1',
+                0
+            ),
+            'is null' => array(
+                's.communeId'
+            )
+        );
+        $rowset = $this->requeteCom(1, 'communeId', $filtre, 'r.communeId');
         foreach ($rowset as $row) {
-            $result[$row['column']]['r1'] = $row['effectif'];
+            $result[$row['column']]['demandes']['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteCom(2, 'communeId', array(), 'r.communeId');
-        foreach ($rowset as $row) {
-            $result[$row['column']]['r2'] = $row['effectif'];
-        }
-        // SELECT communeId AS `column`, count(*) AS `effectif` FROM sbm_t_scolarites WHERE millesime=2014 GROUP BY communeId HAVING communeId IS NOT NULL
-        $rowset = $this->requeteCom(3, 'communeId', array(), 'communeId');
-        foreach ($rowset as $row) {
-            $result[$row['column']]['r2'] = $row['effectif'];
-        }
-        // total
-        foreach ($result as $key => &$value) {
-            $value['total'] = array_sum($value);
-        }
-        return $result;
-    }
-
-    public function byClasse()
-    {
-        // SELECT classeId, count(*) FROM sbm_t_scolarites GROUP BY classeId
-        $result = array();
-        $rowset = $this->requeteCl('classeId', array(), array(
-            'classeId'
+        $filtre = array_merge($filtre, array(
+            'a.trajet' => 1,
+            'a.correspondance' => 1
         ));
+        $rowset = $this->requeteCom(4, 'communeId', $filtre, 'r.communeId');
         foreach ($rowset as $row) {
-            $result[$row['classeId']] = $row['effectif'];
+            $result[$row['column']]['transportes']['r1'] = $row['effectif'];
+        }
+        
+        // - pour la commune du R2 : inscrit = 1 AND demandeR2 > 0
+        $filtre = array(
+            'inscrit' => 1,
+            '>' => array(
+                'demandeR2',
+                0
+            )
+        );
+        $rowset = $this->requeteCom(2, 'communeId', $filtre, 'r.communeId');
+        foreach ($rowset as $row) {
+            $result[$row['column']]['demandes']['r2'] = $row['effectif'];
+        }
+        $filtre = array_merge($filtre, array(
+            'a.trajet' => 2,
+            'a.correspondance' => 1
+        ));
+        $rowset = $this->requeteCom(5, 'communeId', $filtre, 'r.communeId');
+        foreach ($rowset as $row) {
+            $result[$row['column']]['transportes']['r2'] = $row['effectif'];
+        }
+        
+        // - pour la commune de l'élève lorsqu'il a une adresse personnelle :
+        // inscrit = 1 AND sco.communeId IS NOT NULL AND demandeR1 > 0
+        $filtre = array(
+            'inscrit' => 1,
+            '>' => array(
+                'demandeR1',
+                0
+            ),
+            'is not null' => array(
+                's.communeId'
+            )
+        );
+        $rowset = $this->requeteCom(3, 'communeId', $filtre, 'communeId');
+        foreach ($rowset as $row) {
+            $result[$row['column']]['demandes']['ele'] = $row['effectif'];
+        }
+        $filtre = array_merge($filtre, array(
+            'a.trajet' => 1,
+            'a.correspondance' => 1
+        ));
+        $rowset = $this->requeteCom(6, 'communeId', $filtre, 'communeId');
+        foreach ($rowset as $row) {
+            $result[$row['column']]['transportes']['ele'] = $row['effectif'];
+        }
+        
+        // calcul du nombre d'élèves
+        foreach ($result as $key => &$value) {
+            $value['total']['demandes'] = array_sum($value['demandes']);
+            $value['total']['transportes'] = array_sum($value['transportes']);
         }
         return $result;
     }
 
     /**
-     * Tableau d'effectifs des établissements
+     * Renvoie un tableau d'effectifs des demandes et des élèves transportés par classe
      *
-     * @param bool $transportes
-     *            si true alors ne compte que les élèves ayant au moins un transport
      * @return array
      */
-    public function byEtablissement($transportes = false)
+    public function byClasse()
+    {
+        // SELECT classeId, count(*) FROM sbm_t_scolarites WHERE inscrit = 1 GROUP BY classeId
+        $result = array();
+        $filtre = array(
+            'inscrit' => 1
+        );
+        $group = array(
+            'classeId'
+        );
+        $rowset = $this->requeteCl('classeId', $filtre, $group, false);
+        foreach ($rowset as $row) {
+            $result[$row['classeId']]['demandes'] = $row['effectif'];
+        }
+        $filtre = array(
+            'inscrit' => 1,
+            'correspondance' => 1,
+            array(
+                array(
+                    '>' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 1
+                ),
+                'or',
+                array(
+                    '=' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 2
+                )
+            )
+        );
+        $rowset = $this->requeteCl('classeId', $filtre, $group, true);
+        foreach ($rowset as $row) {
+            $result[$row['classeId']]['transportes'] = $row['effectif'];
+        }
+        return $result;
+    }
+
+    /**
+     * Tableau d'effectifs par établissement des demandes et des élèves transportés
+     *
+     * @return array
+     */
+    public function byEtablissement()
     {
         // SELECT etablissementId, count(*) FROM sbm_scolarites GROUP BY etablissementId
         $result = array();
-        $rowset = $this->requeteCl('etablissementId', array(), array(
+        $group = array(
             'etablissementId'
-        ), $transportes);
+        );
+        $filtre = array(
+            'inscrit' => 1
+        );
+        $rowset = $this->requeteCl('etablissementId', $filtre, $group, false);
         foreach ($rowset as $row) {
-            $result[$row['etablissementId']] = $row['effectif'];
+            $result[$row['etablissementId']]['demandes'] = $row['effectif'];
+        }
+        $filtre = array(
+            'inscrit' => 1,
+            'correspondance' => 1,
+            array(
+                array(
+                    '>' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 1
+                ),
+                'or',
+                array(
+                    '=' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 2
+                )
+            )
+        );
+        $rowset = $this->requeteCl('etablissementId', $filtre, $group, true);
+        foreach ($rowset as $row) {
+            $result[$row['etablissementId']]['transportes'] = $row['effectif'];
         }
         return $result;
     }
@@ -143,6 +304,7 @@ class Effectif implements FactoryInterface
     {
         $result = array();
         $rowset = $this->requeteWith('service1Id', array(
+            's.inscrit' => 1,
             'service1Id' => $serviceId
         ), 'etablissementId');
         foreach ($rowset as $row) {
@@ -150,6 +312,7 @@ class Effectif implements FactoryInterface
         }
         
         $rowset = $this->requeteWith2('service', array(
+            's.inscrit' => 1,
             'a.service2Id' => $serviceId
         ), 'etablissementId');
         foreach ($rowset as $row) {
@@ -167,9 +330,36 @@ class Effectif implements FactoryInterface
     {
         // SELECT organismeId, count(*) FROM `sbm_t_scolarites` s WHERE millesime=2014 GROUP BY organismeId
         $result = array();
-        $rowset = $this->requeteOrg('organismeId', array(), 'organismeId');
+        $group = array('organismeId');
+        $filtre = array('s.inscrit' => 1);
+        $rowset = $this->requeteCl('organismeId', $filtre, $group, false);
         foreach ($rowset as $row) {
-            $result[$row['organismeId']] = $row['effectif'];
+            $result[$row['organismeId']]['demandes'] = $row['effectif'];
+        }
+        $filtre = array(
+            'inscrit' => 1,
+            'correspondance' => 1,
+            array(
+                array(
+                    '>' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 1
+                ),
+                'or',
+                array(
+                    '=' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 2
+                )
+            )
+        );
+        $rowset = $this->requeteCl('organismeId', $filtre, $group, true);
+        foreach ($rowset as $row) {
+            $result[$row['organismeId']]['transportes'] = $row['effectif'];
         }
         return $result;
     }
@@ -178,6 +368,7 @@ class Effectif implements FactoryInterface
     {
         $result = array();
         $rowset = $this->requeteWith('service1Id', array(
+            's.inscrit' => 1,
             'etablissementId' => $etablissementId
         ), 'service1Id');
         foreach ($rowset as $row) {
@@ -187,6 +378,7 @@ class Effectif implements FactoryInterface
         }
         
         $rowset = $this->requeteWith2('service', array(
+            's.inscrit' => 1,
             'etablissementId' => $etablissementId
         ), 'service2Id');
         foreach ($rowset as $row) {
@@ -206,6 +398,7 @@ class Effectif implements FactoryInterface
     {
         $result = array();
         $rowset = $this->requeteWith('service1Id', array(
+            's.inscrit' => 1,
             'station1Id' => $stationId
         ), 'service1Id');
         foreach ($rowset as $row) {
@@ -215,6 +408,7 @@ class Effectif implements FactoryInterface
         }
         
         $rowset = $this->requeteWith2('service', array(
+            's.inscrit' => 1,
             'a.station2Id' => $stationId
         ), 'service2Id');
         foreach ($rowset as $row) {
@@ -234,11 +428,15 @@ class Effectif implements FactoryInterface
     {
         // SELECT service1Id serviceId, count(*) FROM `sbm_t_affectations` WHERE millesime=2014 GROUP BY service1Id
         $result = array();
-        $rowset = $this->requeteSrv('service1Id', array(), 'service1Id');
+        $rowset = $this->requeteSrv('service1Id', array(
+            'inscrit' => 1
+        ), 'service1Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteSrv2('service', array(), 'service2Id');
+        $rowset = $this->requeteSrv2('service', array(
+            'inscrit' => 1
+        ), 'service2Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r2'] = $row['effectif'];
         }
@@ -253,11 +451,15 @@ class Effectif implements FactoryInterface
     {
         // SELECT station1Id stationId, count(*) FROM `sbm_t_affectations` WHERE millesime=2014 GROUP BY station1Id
         $result = array();
-        $rowset = $this->requeteSrv('station1Id', array(), 'station1Id');
+        $rowset = $this->requeteSrv('station1Id', array(
+            'inscrit' => 1
+        ), 'station1Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteSrv2('station', array(), 'station2Id');
+        $rowset = $this->requeteSrv2('station', array(
+            'inscrit' => 1
+        ), 'station2Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r2'] = $row['effectif'];
         }
@@ -272,11 +474,36 @@ class Effectif implements FactoryInterface
     {
         // SELECT tarifId, count(*) FROM sbm_t_scolarites GROUP BY tarifId
         $result = array();
-        $rowset = $this->requeteCl('tarifId', array(), array(
-            'tarifId'
-        ));
+        $group = array('tarifId');
+        $filtre = array('s.inscrit' => 1);
+        $rowset = $this->requeteCl('tarifId', $filtre, $group, false);
         foreach ($rowset as $row) {
-            $result[$row['tarifId']] = $row['effectif'];
+            $result[$row['tarifId']]['demandes'] = $row['effectif'];
+        }
+        $filtre = array(
+            'inscrit' => 1,
+            'correspondance' => 1,
+            array(
+                array(
+                    '>' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 1
+                ),
+                'or',
+                array(
+                    '=' => array(
+                        'demandeR1',
+                        0
+                    ),
+                    'trajet' => 2
+                )
+            )
+        );
+        $rowset = $this->requeteCl('tarifId', $filtre, $group, true);
+        foreach ($rowset as $row) {
+            $result[$row['tarifId']]['transportes'] = $row['effectif'];
         }
         return $result;
     }
@@ -286,14 +513,16 @@ class Effectif implements FactoryInterface
         // SELECT service1Id serviceId, count(*) FROM `sbm_t_affectations` a JOIN `sbm_t_services` s ON a.service1Id=s.serviceId WHERE millesime=2014 AND transporteurId=1 GROUP BY service1Id
         $result = array();
         $rowset = $this->requeteTr1('serviceId', array(
+            's.inscrit' => 1,
             'transporteurId' => $transporteurId
         ), 'service1Id');
         foreach ($rowset as $row) {
             $result[$row['serviceId']]['r1'] = $row['effectif'];
         }
         $rowset = $this->requeteTr2('serviceId', array(
+            's.inscrit' => 1,
             'transporteurId' => $transporteurId
-        ), 'service2Id');
+        ), 'a.service2Id');
         foreach ($rowset as $row) {
             $result[$row['serviceId']]['r2'] = $row['effectif'];
         }
@@ -308,11 +537,15 @@ class Effectif implements FactoryInterface
     {
         // SELECT transporteurId, count(*) FROM `sbm_t_affectations` a JOIN sbm_t_services s on a.service1Id=s.serviceId WHERE millesime=2014 GROUP BY transporteurId
         $result = array();
-        $rowset = $this->requeteTr1('transporteurId', array(), 'transporteurId');
+        $rowset = $this->requeteTr1('transporteurId', array(
+            's.inscrit' => 1
+        ), 'transporteurId');
         foreach ($rowset as $row) {
             $result[$row['transporteurId']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteTr2('transporteurId', array(), 'transporteurId');
+        $rowset = $this->requeteTr2('transporteurId', array(
+            's.inscrit' => 1
+        ), 'transporteurId');
         foreach ($rowset as $row) {
             $result[$row['transporteurId']]['r2'] = $row['effectif'];
         }
@@ -320,6 +553,7 @@ class Effectif implements FactoryInterface
         foreach ($result as $key => &$value) {
             $value['total'] = array_sum($value);
         }
+        // die(var_dump($result));
         return $result;
     }
 
@@ -401,6 +635,9 @@ class Effectif implements FactoryInterface
         $select->from(array(
             'a' => $this->tableName['affectations']
         ))
+            ->join(array(
+            's' => $this->tableName['scolarites']
+        ), 's.millesime=a.millesime AND s.eleveId=a.eleveId', array())
             ->columns(array(
             'column' => $column,
             'effectif' => new Expression('count(*)')
@@ -433,6 +670,9 @@ class Effectif implements FactoryInterface
             ->join(array(
             'correspondances' => $select1
         ), $jointure, array(), Select::JOIN_LEFT)
+            ->join(array(
+            's' => $this->tableName['scolarites']
+        ), 's.millesime=a.millesime AND s.eleveId=a.eleveId', array())
             ->columns(array(
             'column' => $column,
             'effectif' => new Expression('count(*)')
@@ -445,20 +685,25 @@ class Effectif implements FactoryInterface
 
     private function requeteTr1($column, $where, $group)
     {
-        $where['millesime'] = $this->millesime;
+        $where['a.millesime'] = $this->millesime;
         $select = $this->sql->select();
         $select->from(array(
             'a' => $this->tableName['affectations']
         ))
+            ->columns(array())
             ->join(array(
-            's' => $this->tableName['services']
-        ), 'a.service1Id=s.serviceId', array(
+            's' => $this->tableName['scolarites']
+        ), 's.millesime=a.millesime AND s.eleveId=a.eleveId', array())
+            ->join(array(
+            'ser' => $this->tableName['services']
+        ), 'a.service1Id=ser.serviceId', array(
             $column,
             'effectif' => new Expression('count(*)')
         ))
             ->where($where)
             ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
+        //die($this->getSqlString($select));
         return $statement->execute();
     }
 
@@ -468,7 +713,7 @@ class Effectif implements FactoryInterface
         $select1->from(array(
             'a1' => $this->tableName['affectations']
         ))->where(array(
-            'millesime' => $this->millesime,
+            'a1.millesime' => $this->millesime,
             'correspondance' => 2
         ));
         $jointure = "a.millesime=correspondances.millesime AND a.eleveId=correspondances.eleveId AND a.trajet=correspondances.trajet AND a.jours=correspondances.jours AND a.sens=correspondances.sens AND a.service2Id=correspondances.service1Id";
@@ -481,9 +726,13 @@ class Effectif implements FactoryInterface
         $select->from(array(
             'a' => $this->tableName['affectations']
         ))
+            ->columns(array())
             ->join(array(
-            's' => $this->tableName['services']
-        ), 'a.service2Id=s.serviceId', array(
+            's' => $this->tableName['scolarites']
+        ), 's.millesime=a.millesime AND s.eleveId=a.eleveId', array())
+            ->join(array(
+            'ser' => $this->tableName['services']
+        ), 'a.service2Id=ser.serviceId', array(
             $column,
             'effectif' => new Expression('count(*)')
         ))
@@ -515,9 +764,10 @@ class Effectif implements FactoryInterface
         return $statement->execute();
     }
 
-    private function requeteCl($column, $where, $group, $transportes = false)
+    private function requeteCl($column, $filtre, $group, $transportes = false)
     {
-        $where['s.millesime'] = $this->millesime;
+        $where = new Where();
+        $where->equalTo('s.millesime', $this->millesime);
         $select = $this->sql->select();
         $select->from(array(
             's' => $this->tableName['scolarites']
@@ -526,7 +776,7 @@ class Effectif implements FactoryInterface
             $column,
             'effectif' => new Expression('count(*)')
         ))
-            ->where($where)
+            ->where($this->arrayToWhere($where, $filtre))
             ->group($group);
         if ($transportes) {
             $select->join(array(
@@ -537,9 +787,10 @@ class Effectif implements FactoryInterface
         return $statement->execute();
     }
 
-    private function requeteCir($rang, $column, $where, $group)
+    private function requeteCir($rang, $column, $filtre, $group)
     {
-        $where['c.millesime'] = $this->millesime;
+        $where = new Where();
+        $where->equalTo('c.millesime', $this->millesime);
         $on = sprintf('c.millesime=a.millesime AND c.serviceId=a.service%sId AND c.stationId=a.station%sId', $rang, $rang);
         $select = $this->sql->select();
         $select->from(array(
@@ -556,66 +807,102 @@ class Effectif implements FactoryInterface
             ->columns(array(
             'column' => $column
         ))
-            ->where($where)
+            ->where($this->arrayToWhere($where, $filtre))
             ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
-    private function requeteCom($rang, $column, $where, $group)
+    private function requeteCom($rang, $column, $filtre, $group)
     {
-        $where['millesime'] = $this->millesime;
+        $where = new Where();
+        $where->equalTo('s.millesime', $this->millesime);
         $select = $this->sql->select();
-        if ($rang == 3) {
-            $select->from(array(
-                's' => $this->tableName['scolarites']
-            ))
-                ->columns(array(
-                'column' => $column,
-                'effectif' => new Expression('count(*)')
-            ))
-                ->where($where)
-                ->group($group)
-                ->having(function (Having $where) {
-                $where->isNotNull('communeId');
-            });
-        } else {
-            $on = sprintf('e.responsable%sId=r.responsableId', $rang);
-            $select->from(array(
-                'e' => $this->tableName['eleves']
-            ))
-                ->join(array(
-                's' => $this->tableName['scolarites']
-            ), 'e.eleveId=s.eleveId', array())
-                ->join(array(
-                'r' => $this->tableName['responsables']
-            ), $on, array(
-                'column' => $column
-            ))
-                ->columns(array(
-                'effectif' => new Expression('count(*)')
-            ))
-                ->where($where)
-                ->group($group);
+        switch ($rang) {
+            case 1:
+            case 2:
+                $on = sprintf('e.responsable%sId=r.responsableId', $rang);
+                $select->from(array(
+                    'e' => $this->tableName['eleves']
+                ))
+                    ->join(array(
+                    's' => $this->tableName['scolarites']
+                ), 'e.eleveId=s.eleveId', array())
+                    ->join(array(
+                    'r' => $this->tableName['responsables']
+                ), $on, array(
+                    'column' => $column
+                ))
+                    ->columns(array(
+                    'effectif' => new Expression('count(*)')
+                ))
+                    ->where($this->arrayToWhere($where, $filtre))
+                    ->group($group);
+                break;
+            case 3:
+                $select->from(array(
+                    's' => $this->tableName['scolarites']
+                ))
+                    ->columns(array(
+                    'column' => $column,
+                    'effectif' => new Expression('count(*)')
+                ))
+                    ->where($this->arrayToWhere($where, $filtre))
+                    ->group($group)
+                    ->having(function (Having $where) {
+                    $where->isNotNull('communeId');
+                });
+                break;
+            case 4:
+            case 5:
+                $select->from(array(
+                    's' => $this->tableName['scolarites']
+                ))
+                    ->join(array(
+                    'a' => $this->tableName['affectations']
+                ), 'a.millesime = s.millesime AND a.eleveId=s.eleveId', array())
+                    ->join(array(
+                    'r' => $this->tableName['responsables']
+                ), 'r.responsableId = a.responsableId', array(
+                    'column' => $column
+                ))
+                    ->columns(array(
+                    'effectif' => new Expression('count(*)')
+                ))
+                    ->where($this->arrayToWhere($where, $filtre))
+                    ->group($group);
+                break;
+            case 6:
+                $select->from(array(
+                    's' => $this->tableName['scolarites']
+                ))
+                    ->join(array(
+                    'a' => $this->tableName['affectations']
+                ), 'a.millesime = s.millesime AND a.eleveId=s.eleveId', array())
+                    ->columns(array(
+                    'column' => $column,
+                    'effectif' => new Expression('count(*)')
+                ))
+                    ->where($this->arrayToWhere($where, $filtre))
+                    ->group($group);
+                break;
+            default:
+                throw new \SbmGestion\Model\Db\Service\Exception(__METHOD__ . ' - Mauvais argument `rang`.');
+                break;
         }
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
-    private function requeteOrg($column, $where, $group)
+    /**
+     * Renvoie la chaine de requête (après l'appel de la requête)
+     *
+     * @param \Zend\Db\Sql\Select $select            
+     *
+     * @return \Zend\Db\Adapter\mixed
+     */
+    public function getSqlString($select)
     {
-        $where['millesime'] = $this->millesime;
-        $select = $this->sql->select();
-        $select->from(array(
-            's' => $this->tableName['scolarites']
-        ))
-            ->columns(array(
-            $column,
-            'effectif' => new Expression('count(*)')
-        ))
-            ->where($where)
-            ->group($group);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 }

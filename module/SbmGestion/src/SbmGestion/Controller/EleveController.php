@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 févr. 2014
- * @version 2014-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmGestion\Controller;
 
@@ -32,6 +32,7 @@ use SbmGestion\Form\Eleve\EditForm as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
 use DafapMail\Model\Template as MailTemplate;
+use DafapMail\Form\Mail as MailForm;
 
 class EleveController extends AbstractActionController
 {
@@ -42,6 +43,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
         return new ViewModel();
     }
 
@@ -470,7 +472,7 @@ class EleveController extends AbstractActionController
      * Cette méthode est généralement appelée par post et reçoit
      * - eleveId
      * - info
-     * - origine (optionnel)
+     * - origine (optionnel) ou group (optionnel)
      * - op = 'modifier' ou 'ajouter'
      * Elle peut être appelée en passant un paramètre $args qui sera un tableau contenant ces 4 clés.
      * Mais si on arrive par eleveAjoutAction() on ne passera pas origine car le redirectToOrigin()
@@ -511,14 +513,22 @@ class EleveController extends AbstractActionController
                         ));
                     }
                 }
-                if (array_key_exists('origine', $args)) {
+                
+                if (array_key_exists('group', $args)) {
+                    $this->redirectToOrigin()->setBack($args['group']);
+                    unset($args['group']);
+                    $this->setToSession('post', $args);
+                } elseif (array_key_exists('origine', $args)) {
                     $this->redirectToOrigin()->setBack($args['origine']);
                     unset($args['origine']);
                     $this->setToSession('post', $args);
                 }
             }
         } else {
-            if (isset($args['origine'])) {
+            if (isset($args['group'])) {
+                $this->redirectToOrigin()->setBack($args['group']);
+                unset($args['group']);
+            } elseif (isset($args['origine'])) {
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
             }
@@ -1563,6 +1573,105 @@ class EleveController extends AbstractActionController
             'action' => 'responsable-liste'
         );
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * Envoie un mail à un responsable.
+     * Reçoit en post les paramètres 'responsable', 'email', 'group' où group est l'url de retour
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function responsableMailAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $destinataire = $this->getFromSession('destinataire', array(), $this->getSessionNamespace());
+            $args = array();
+        } else {
+            $args = $prg;
+            if (array_key_exists('group', $args)) {
+                $this->redirectToOrigin()->setBack($args['group']);
+                unset($args['group']);
+            }
+            if (array_key_exists('email', $args)) {
+                $destinataire = array(
+                    'email' => $args['email'],
+                    'responsable' => StdLib::getParam('responsable', $args)
+                );
+                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                unset($args['email'], $args['responsable']);
+            } else {
+                $destinataire = $this->getFromSession('destinataire', array(), $this->getSessionNamespace());
+            }
+        }
+        if (empty($destinataire) || array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addWarningMessage('Aucun message envoyé.');
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'home-page'
+                ));
+            }
+        }
+        $form = new MailForm();
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $data = $form->getData();
+                // préparation du corps
+                if ($data['body'] == strip_tags($data['body'])) {
+                    // c'est du txt
+                    $body = nl2br($data['body']);
+                } else {
+                    // c'est du html
+                    $body = $data['body'];
+                }
+                // préparation des paramètres d'envoi
+                $auth = $this->getServiceLocator()
+                    ->get('Dafap\Authenticate')
+                    ->by();
+                $user = $auth->getIdentity();
+                $params = array(
+                    'to' => array(
+                        array(
+                            'email' => $destinataire['email'],
+                            'name' => $destinataire['responsable'] ?  : $destinataire['email']
+                        )
+                    ),
+                    'bcc' => array(
+                        array(
+                            'email' => $user['email'],
+                            'name' => 'School bus manager'
+                        )
+                    ),
+                    'subject' => $data['subject'],
+                    'body' => array(
+                        'html' => $body
+                    )
+                );
+                // envoi du mail
+                $this->getEventManager()->addIdentifiers('SbmMail\Send');
+                $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+                $this->flashMessenger()->addInfoMessage('Le message a été envoyé et une copie vous est adressée dans votre messagerie.');
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    return $this->redirect()->toRoute('login', array(
+                        'action' => 'home-page'
+                    ));
+                }
+            }
+        }
+        
+        $view = new ViewModel(array(
+            'form' => $form->prepare(),
+            'destinataires' => array($destinataire)
+        ));
+        $view->setTemplate('dafap-mail/index/send.phtml');
+        return $view;
     }
 
     /**

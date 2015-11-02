@@ -25,9 +25,9 @@
     "time": "2014-09-01",
     "require": {
         "atukai/at-php-settings": "dev-master",
-        "php": ">=5.3.3",
-        "zendframework/zendframework": "2.*",
-        "tecnick.com/tcpdf": "*",
+        "php": ">=5.5",
+        "zendframework/zendframework": "~2.5",
+        "tecnickcom/tcpdf": "*",
         "zf-commons/zfc-base": "*"
     },
     "require-dev": {
@@ -35,20 +35,12 @@
         "zendframework/zend-developer-tools": "dev-master"
     },
     "minimum-stability": "stable",
-    "repositories": {
-        "0": {
-            "type": "package",
-            "package": {
-                "name": "tecnick.com/tcpdf",
-                "version": "master",
-                "source": {
-                    "url": "http://git.code.sf.net/p/tcpdf/code",
-                    "type": "git",
-                    "reference": "master"
-                }
-            }
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.zendframework.com/"
         }
-    },
+    ],
     "prefer-stable": true,
     "config": {
         "process-timeout": 5000,
@@ -62,7 +54,7 @@
     },
     "autoload": {
         "classmap": [
-            "vendor/tecnick.com/tcpdf"
+            "vendor/tecnickcom/tcpdf"
         ]
     }
 }

@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 févr. 2015
- * @version 2015-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmParent\Controller;
 
@@ -24,6 +24,7 @@ use SbmParent\Form\Enfant;
 use SbmParent\Form\Responsable2 as FormResponsable2;
 use SbmParent\Model\Responsable;
 use SbmParent\Model\Exception as CreateResponsableException;
+use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 
 class IndexController extends AbstractActionController
 {
@@ -577,21 +578,10 @@ class IndexController extends AbstractActionController
             $circuitId = $args['circuit' . $i . 'Id'];
             $circuits[$i] = $tCircuits->getRecord($circuitId);
             $nbInscrits[$i] = $rEffectifs[$circuitId]['total'];
-            $result = $rListe->byCircuit(Session::get('millesime'), array(
-                array(
-                    'inscrit' => 1,
-                    'paiement' => 1
-                ),
-                array(
-                    'service1Id' => $circuits[$i]->serviceId,
-                    'station1Id' => $circuits[$i]->stationId
-                ),
-                'or',
-                array(
-                    'service2Id' => $circuits[$i]->serviceId,
-                    'station2Id' => $circuits[$i]->stationId
-                )
-            ), array('nom', 'prenom'));
+            $result = $rListe->query(Session::get('millesime'), FiltreEleve::byCircuit($circuits[$i]->serviceId, $circuits[$i]->stationId, true), array(
+                'nom',
+                'prenom'
+            ));
             foreach ($result as $row) {
                 $classe = $row['classe'];
                 if (is_numeric($classe)) {

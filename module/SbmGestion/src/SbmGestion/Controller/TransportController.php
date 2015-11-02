@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 févr. 2014
- * @version 2014-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmGestion\Controller;
 
@@ -36,6 +36,7 @@ use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmGestion\Form\EtablissementServiceSuppr as FormEtablissementServiceSuppr;
 use SbmGestion\Form\SbmGestion\Form;
+use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmCartographie\Model\Point;
 use Zend\Db\Sql\Zend\Db\Sql;
 
@@ -48,6 +49,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
         return new ViewModel();
     }
 
@@ -251,7 +253,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * renvoie la liste des élèves inscrits pour un circuit donné
+     * Reçoit la paramètre circuitId en post
+     * Renvoie la liste des élèves inscrits pour un circuit donné
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -281,20 +284,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(array(
             'data' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byCircuit($this->getFromSession('millesime'), array(
-                array(
-                    'inscrit' => 1
-                ),
-                array(
-                    'service1Id' => $circuit->serviceId,
-                    'station1Id' => $circuit->stationId
-                ),
-                'or',
-                array(
-                    'service2Id' => $circuit->serviceId,
-                    'station2Id' => $circuit->stationId
-                )
-            ), array(
+                ->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false), array(
                 'nom',
                 'prenom'
             )),
@@ -627,7 +617,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByClasse($this->getFromSession('millesime'), $classeId, array(
+                ->paginator($this->getFromSession('millesime'), FiltreEleve::byClasse($classeId), array(
                 'nom',
                 'prenom'
             )),
@@ -904,7 +894,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByCommune($this->getFromSession('millesime'), $communeId, array(
+                ->paginator($this->getFromSession('millesime'), FiltreEleve::byCommune($communeId), array(
                 'nom',
                 'prenom'
             )),
@@ -1213,7 +1203,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByEtablissement($this->getFromSession('millesime'), $etablissementId, array(
+                ->paginator($this->getFromSession('millesime'), FiltreEleve::byEtablissement($etablissementId), array(
                 'nom',
                 'prenom'
             )),
@@ -2024,7 +2014,7 @@ class TransportController extends AbstractActionController
             'h1' => 'Groupe des élèves inscrits sur un service',
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByService($this->getFromSession('millesime'), $serviceId, array(
+                ->paginator($this->getFromSession('millesime'), FiltreEleve::byService($serviceId), array(
                 'nom',
                 'prenom'
             )),
@@ -2401,7 +2391,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(array(
             'data' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byStation($this->getFromSession('millesime'), $stationId, array(
+                ->query($this->getFromSession('millesime'), FiltreEleve::byStation($stationId), array(
                 'nom',
                 'prenom'
             )),
@@ -2423,6 +2413,7 @@ class TransportController extends AbstractActionController
     public function stationServiceAction()
     {
         $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -2431,6 +2422,11 @@ class TransportController extends AbstractActionController
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
+        }
+        if ($pageRetour == - 1) {
+            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $stationId = StdLib::getParam('stationId', $args, - 1);
         if ($stationId == - 1) {
@@ -2446,7 +2442,7 @@ class TransportController extends AbstractActionController
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'station-liste',
-                'page' => $currentPage
+                'page' => $pageRetour
             ));
         }
         
@@ -2462,6 +2458,7 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Vue\Stations')
                 ->getRecord($stationId),
             'page' => $currentPage,
+            'pageRetour' => $pageRetour,
             'stationId' => $stationId
         ));
     }
@@ -2498,20 +2495,7 @@ class TransportController extends AbstractActionController
         $view = new ViewModel(array(
             'data' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->byCircuit($millesime, array(
-                array(
-                    'inscrit' => 1
-                ),
-                array(
-                    'service1Id' => $circuit->serviceId,
-                    'station1Id' => $circuit->stationId
-                ),
-                'or',
-                array(
-                    'service2Id' => $circuit->serviceId,
-                    'station2Id' => $circuit->stationId
-                )
-            ), array(
+                ->query($millesime, FiltreEleve::byCircuit($serviceId, $stationId, false), array(
                 'nom',
                 'prenom'
             )),
@@ -2946,7 +2930,8 @@ class TransportController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorBytransporteur($this->getFromSession('millesime'), $transporteurId, array(
+                ->paginatorByTransporteur($this->getFromSession('millesime'), FiltreEleve::byTransporteur($transporteurId), array(
+                'serviceId',
                 'nom',
                 'prenom'
             )),

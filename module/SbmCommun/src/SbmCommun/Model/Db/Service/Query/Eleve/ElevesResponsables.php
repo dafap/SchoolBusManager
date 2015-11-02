@@ -8,8 +8,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2015
- * @version 2015-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -256,10 +256,12 @@ class ElevesResponsables implements FactoryInterface
             ->join(array(
             'r2' => $this->db->getCanonicName('responsables', 'table')
         ), 'ele.responsable2Id=r2.responsableId', array(
+            'titreR2' => 'titre',
             'responsable2NomPrenom' => new Expression('CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
             'adresseL1R2' => 'adresseL1',
             'adresseL2R2' => 'adresseL2',
             'codePostalR2' => 'codePostal',
+            'emailR2' => 'email',
             'x2' => 'x',
             'y2' => 'y'
         ), $select::JOIN_LEFT)

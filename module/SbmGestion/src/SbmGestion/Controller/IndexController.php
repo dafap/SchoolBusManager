@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 févr. 2014
- * @version 2014-1
+ * @date 2 nov. 2015
+ * @version 2015-1.6.5
  */
 namespace SbmGestion\Controller;
 
@@ -35,6 +35,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
         $statEleve = $this->getServiceLocator()->get('Sbm\Statistiques\Eleve');
         $statResponsable = $this->getServiceLocator()->get('Sbm\Statistiques\Responsable');
         $statPaiement = $this->getServiceLocator()->get('Sbm\Statistiques\Paiement');

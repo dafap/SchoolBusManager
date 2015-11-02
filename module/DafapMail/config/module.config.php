@@ -17,7 +17,7 @@ return array(
         'resources' => array(
             'dafapmail' => array(
                 'allow' => array(
-                    'roles' => array('parent', 'transporteur', 'etablissement', 'consultation')
+                    'roles' => array('parent', 'transporteur', 'etablissement', 'secretariat')
                 )
             )
         ),
