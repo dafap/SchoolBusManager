@@ -167,9 +167,14 @@ class EleveController extends AbstractActionController
 
     /**
      * Si on arrive par post, on passera :
+     * - ajouter : uniquement la présence de la clé. En général c'est le nom du bouton submit.
      * - orinine : url d'origine de l'appel pour assurer un retour par redirectToOrigin()->back()
      * à la fin de l'opération (en général dans eleveEditAction()).
      * Si on arrive par get, on s'assurera que redirectToOrigin()->setBack() a bien été fait avant.
+     * 
+     * Lorsqu'on arrive par post, on enregistre en session le paramètre responsableId s'il existe ou 0 sinon.
+     * Lorsqu'on arrive par get, on récupère le responsableId en session. Il va permettre d'initialiser
+     * le responsable1Id du formulaire.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -184,6 +189,17 @@ class EleveController extends AbstractActionController
             $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 1));
         }
         $args = (array) $prg;
+        if (array_key_exists('ajouter', $args)) {
+            if (array_key_exists('responsableId', $args)) {
+                $responsableId = $args['responsableId'];
+            } else {
+                $responsableId = 0;
+            }
+            $this->setToSession('responsableId', $responsableId, $this->getSessionNamespace('ajout', 1));
+        } else {
+            $responsableId = $this->getFromSession('responsableId', 0, $this->getSessionNamespace('ajout', 1));
+        }
+        var_dump($responsableId);
         if (array_key_exists('origine', $args)) {
             $this->redirectToOrigin()->setBack($args['origine']);
             // par la suite, on ne s'occupe plus de 'origine' mais on ressort par un redirectToOrigin()->back()
@@ -244,6 +260,9 @@ class EleveController extends AbstractActionController
                 }
                 $form = null;
             }
+        } 
+        if ($form instanceof \SbmGestion\Form\Eleve\AddElevePhase1) {
+            $form->setData(array('responsable1Id' => $responsableId));
         }
         return new ViewModel(array(
             'page' => $page,
