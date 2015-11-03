@@ -104,6 +104,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div id="responsable-edit-ancienCommuneId" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienCommuneId')); ?></div>
 			</div>
 			<div id="responsable-edit-selection" class="row-inner edit"><?php echo $this->formRow($this->form->get('selection')); ?></div>
+			<div id="wrapper-commentaire" class="row-inner edit top-6px"><?php echo $this->formRow($this->form->get('note'));?></div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

@@ -433,6 +433,22 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             )
         ));
         $this->add(array(
+            'type' => 'Zend\Form\Element\Textarea',
+            'name' => 'note',
+            'attributes' => array(
+                'id' => 'responsable-note'
+            ),
+            'options' => array(
+                'label' => 'Notes',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm_error'
+                )
+            )
+        ));
+        $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type' => 'submit',
