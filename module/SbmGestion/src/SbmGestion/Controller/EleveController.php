@@ -1262,8 +1262,8 @@ class EleveController extends AbstractActionController
             } elseif (array_key_exists('origine', $args)) {
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
-                $this->setToSession('post', $args);
             }
+                $this->setToSession('post', $args);
         }
         // on ouvre la table des données
         $responsableId = $args['responsableId'];
