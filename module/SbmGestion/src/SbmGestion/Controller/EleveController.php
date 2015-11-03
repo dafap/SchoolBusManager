@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 3 nov. 2015
+ * @version 2015-1.6.6
  */
 namespace SbmGestion\Controller;
 
@@ -1263,7 +1263,7 @@ class EleveController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
             }
-                $this->setToSession('post', $args);
+            $this->setToSession('post', $args);
         }
         // on ouvre la table des données
         $responsableId = $args['responsableId'];
@@ -1595,13 +1595,27 @@ class EleveController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($args['group']);
                 unset($args['group']);
             }
-            if (array_key_exists('email', $args)) {
+            if (array_key_exists('ecrire', $args) && array_key_exists('email', $args)) {
                 $destinataire = array(
                     'email' => $args['email'],
                     'responsable' => StdLib::getParam('responsable', $args)
                 );
                 $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['email'], $args['responsable']);
+            } elseif (array_key_exists('ecrirer1', $args) && array_key_exists('emailr1', $args)) {
+                $destinataire = array(
+                    'email' => $args['emailr1'],
+                    'responsable' => StdLib::getParam('responsabler1', $args)
+                );
+                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                unset($args['emailr1'], $args['responsabler1']);
+            } elseif (array_key_exists('ecrirer2', $args) && array_key_exists('emailr2', $args)) {
+                $destinataire = array(
+                    'email' => $args['emailr2'],
+                    'responsable' => StdLib::getParam('responsabler2', $args)
+                );
+                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                unset($args['emailr2'], $args['responsabler2']);
             } else {
                 $destinataire = $this->getFromSession('destinataire', array(), $this->getSessionNamespace());
             }
@@ -1668,7 +1682,9 @@ class EleveController extends AbstractActionController
         
         $view = new ViewModel(array(
             'form' => $form->prepare(),
-            'destinataires' => array($destinataire)
+            'destinataires' => array(
+                $destinataire
+            )
         ));
         $view->setTemplate('dafap-mail/index/send.phtml');
         return $view;
