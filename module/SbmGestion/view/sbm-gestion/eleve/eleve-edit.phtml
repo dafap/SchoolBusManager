@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juillet 2014
- * @version 2014-1
+ * @date 3 nov. 2015
+ * @version 2015-1.6.6
  */
 use SbmCommun\Model\DateLib;
 
@@ -31,6 +31,7 @@ function formatDate($date, $withTime = true)
         }
     }
 }
+
 $structAffectations = array();
 if (count($this->affectations)) {
     foreach ($this->affectations as $affectation) {
@@ -47,6 +48,15 @@ if (count($this->affectations)) {
 unset($affectation);
 $disableAccordR1 = isset($structAffectations[1]);
 $disableAccordR2 = isset($structAffectations[2]);
+// urls utilisées
+$url_ici = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-edit',
+    'page' => $this->page
+));
+$url_map = $this->url('sbmgestion/eleve', array(
+    'action' => 'eleve-localisation',
+    'page' => $this->page
+));
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
@@ -129,7 +139,19 @@ function montreResponsable(r,data) {
     $("#"+r+"-ligne1").html(oresponsable.titre+' '+oresponsable.nom+ ' '+oresponsable.prenom);
     $("#"+r+"-ligne2").html(oresponsable.adresseL1+' '+oresponsable.adresseL2);
     $("#"+r+"-ligne3").html(oresponsable.codePostal+' '+oresponsable.commune);
-    $("#"+r+"-ligne4").html('email: '+oresponsable.email);
+    if (!!oresponsable.email) {
+      var responsable;
+      responsable = oresponsable.titre + ' ' + oresponsable.nom + ' ' + oresponsable.prenom;
+      var html;
+      html = 'email: '+oresponsable.email;
+      html += ' <div id="email'+r+'" style="display:inline;">';
+      html += '<input type="hidden" name="email'+r+'" value="'+oresponsable.email+'">';
+      html += '<input type="hidden" name="responsable'+r+'" value="' + responsable + '">';
+      html += '<input type="hidden" name="group" value="<?php echo $url_ici;?>">';
+      html += '<input type="submit" name="ecrire'+r+'" class="fam-email" title="Envoyer un email" value="" formaction="/gestion/eleve/responsable-mail">';
+      html += '</div>';
+      $("#"+r+"-ligne4").html(html);    
+    }
     $("#"+r+"-ligne5").html('Tél. '+oresponsable.telephoneF+' '+oresponsable.telephoneP+ ' '+oresponsable.telephoneT);
 }
 function majPaiement(gratuit) {
@@ -374,15 +396,6 @@ $this->inlineScript()->captureEnd();
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
 // ============= fin du Javascript et JQuery =================================
 
-// urls utilisées
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_map = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-localisation',
-    'page' => $this->page
-));
 $hiddens = array(
     'eleveId' => $this->eleveId,
     'eleve' => $this->identite,
@@ -659,7 +672,9 @@ echo $this->formHidden($this->form->get('csrf'));
 				    </div>
 				    <div class="clearfix">
 				        <div id="tabs-3-col1" class="float-left">
-							<h3>Scolarité de l'élève</h3>
+							<h3>Inscription cette année scolaire</h3>
+							<div id="#scolarite-modeInscription">
+							    <div class="eleve-tabs-3-col-1-label">Mode d'inscription</div><?php echo $this->historique['scolarite']['internet'] ? 'par internet' : 'par formulaire papier';?></div>
 							<div id="#scolarite-dateInscription">
 								<div class="eleve-tabs-3-col-1-label">Date d'inscription</div><?php echo formatDate($this->historique['scolarite']['dateInscription']);?></div>
 							<div id="#scolarite-dateModification">
