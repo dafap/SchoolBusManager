@@ -672,7 +672,9 @@ echo $this->formHidden($this->form->get('csrf'));
 				    </div>
 				    <div class="clearfix">
 				        <div id="tabs-3-col1" class="float-left">
-							<h3>Scolarité de l'élève</h3>
+							<h3>Inscription cette année scolaire</h3>
+							<div id="#scolarite-modeInscription">
+							    <div class="eleve-tabs-3-col-1-label">Mode d'inscription</div><?php echo $this->historique['scolarite']['internet'] ? 'par internet' : 'par formulaire papier';?></div>
 							<div id="#scolarite-dateInscription">
 								<div class="eleve-tabs-3-col-1-label">Date d'inscription</div><?php echo formatDate($this->historique['scolarite']['dateInscription']);?></div>
 							<div id="#scolarite-dateModification">
