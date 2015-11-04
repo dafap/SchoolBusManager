@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 nov. 2015
+ * @date 4 nov. 2015
  * @version 2015-1.6.6
  */
 namespace SbmGestion\Controller;

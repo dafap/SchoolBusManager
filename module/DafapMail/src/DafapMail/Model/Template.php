@@ -14,8 +14,8 @@
  * @filesource Template.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2015
- * @version 2015-1
+ * @date 04 nov. 2015
+ * @version 2015-1.6.6
  */
 namespace DafapMail\Model;
 
