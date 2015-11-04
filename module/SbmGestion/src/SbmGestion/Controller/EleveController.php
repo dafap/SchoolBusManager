@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 4 nov. 2015
+ * @version 2015-1.6.6
  */
 namespace SbmGestion\Controller;
 
@@ -167,9 +167,14 @@ class EleveController extends AbstractActionController
 
     /**
      * Si on arrive par post, on passera :
+     * - ajouter : uniquement la présence de la clé. En général c'est le nom du bouton submit.
      * - orinine : url d'origine de l'appel pour assurer un retour par redirectToOrigin()->back()
      * à la fin de l'opération (en général dans eleveEditAction()).
      * Si on arrive par get, on s'assurera que redirectToOrigin()->setBack() a bien été fait avant.
+     * 
+     * Lorsqu'on arrive par post, on enregistre en session le paramètre responsableId s'il existe ou 0 sinon.
+     * Lorsqu'on arrive par get, on récupère le responsableId en session. Il va permettre d'initialiser
+     * le responsable1Id du formulaire.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -184,6 +189,17 @@ class EleveController extends AbstractActionController
             $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 1));
         }
         $args = (array) $prg;
+        if (array_key_exists('ajouter', $args)) {
+            if (array_key_exists('responsableId', $args)) {
+                $responsableId = $args['responsableId'];
+            } else {
+                $responsableId = 0;
+            }
+            $this->setToSession('responsableId', $responsableId, $this->getSessionNamespace('ajout', 1));
+        } else {
+            $responsableId = $this->getFromSession('responsableId', 0, $this->getSessionNamespace('ajout', 1));
+        }
+        var_dump($responsableId);
         if (array_key_exists('origine', $args)) {
             $this->redirectToOrigin()->setBack($args['origine']);
             // par la suite, on ne s'occupe plus de 'origine' mais on ressort par un redirectToOrigin()->back()
@@ -244,6 +260,9 @@ class EleveController extends AbstractActionController
                 }
                 $form = null;
             }
+        } 
+        if ($form instanceof \SbmGestion\Form\Eleve\AddElevePhase1) {
+            $form->setData(array('responsable1Id' => $responsableId));
         }
         return new ViewModel(array(
             'page' => $page,
@@ -431,6 +450,7 @@ class EleveController extends AbstractActionController
             if ($form->isValid()) {
                 $odata = $form->getData();
                 $odata->millesime = Session::get('millesime');
+                $odata->internet = 0;
                 $odata->tarifId = $this->getServiceLocator()
                     ->get('Sbm\Db\Table\Tarifs')
                     ->getTarifId('inscription');
@@ -589,6 +609,7 @@ class EleveController extends AbstractActionController
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
         $historique['scolarite']['inscription'] = $tTarifs->getMontant('inscription');
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
+        $historique['scolarite']['internet'] = $odata1->internet;
         
         $respSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
         $etabSelect = $this->getServiceLocator()->get('Sbm\Db\Select\EtablissementsDesservis');
@@ -1262,8 +1283,8 @@ class EleveController extends AbstractActionController
             } elseif (array_key_exists('origine', $args)) {
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
-                $this->setToSession('post', $args);
             }
+            $this->setToSession('post', $args);
         }
         // on ouvre la table des données
         $responsableId = $args['responsableId'];
@@ -1595,13 +1616,27 @@ class EleveController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($args['group']);
                 unset($args['group']);
             }
-            if (array_key_exists('email', $args)) {
+            if (array_key_exists('ecrire', $args) && array_key_exists('email', $args)) {
                 $destinataire = array(
                     'email' => $args['email'],
                     'responsable' => StdLib::getParam('responsable', $args)
                 );
                 $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['email'], $args['responsable']);
+            } elseif (array_key_exists('ecrirer1', $args) && array_key_exists('emailr1', $args)) {
+                $destinataire = array(
+                    'email' => $args['emailr1'],
+                    'responsable' => StdLib::getParam('responsabler1', $args)
+                );
+                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                unset($args['emailr1'], $args['responsabler1']);
+            } elseif (array_key_exists('ecrirer2', $args) && array_key_exists('emailr2', $args)) {
+                $destinataire = array(
+                    'email' => $args['emailr2'],
+                    'responsable' => StdLib::getParam('responsabler2', $args)
+                );
+                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                unset($args['emailr2'], $args['responsabler2']);
             } else {
                 $destinataire = $this->getFromSession('destinataire', array(), $this->getSessionNamespace());
             }
@@ -1634,6 +1669,7 @@ class EleveController extends AbstractActionController
                     ->get('Dafap\Authenticate')
                     ->by();
                 $user = $auth->getIdentity();
+                $mailTemplate = new MailTemplate(null, 'layout-gestion');
                 $params = array(
                     'to' => array(
                         array(
@@ -1649,7 +1685,7 @@ class EleveController extends AbstractActionController
                     ),
                     'subject' => $data['subject'],
                     'body' => array(
-                        'html' => $body
+                        'html' => $mailTemplate->render(array('body' => $body))
                     )
                 );
                 // envoi du mail
@@ -1668,7 +1704,9 @@ class EleveController extends AbstractActionController
         
         $view = new ViewModel(array(
             'form' => $form->prepare(),
-            'destinataires' => array($destinataire)
+            'destinataires' => array(
+                $destinataire
+            )
         ));
         $view->setTemplate('dafap-mail/index/send.phtml');
         return $view;

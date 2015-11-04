@@ -8,15 +8,15 @@
  * @filesource responsable-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 juillet 2014
- * @version 2014-1
+ * @date 3 nov. 2015
+ * @version 2015-1.6.6
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
-$retour = $this->url('sbmgestion/eleve', array(
+$url_ici = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-edit',
     'page' => $this->page
 ));
@@ -24,18 +24,19 @@ $url_map = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-localisation',
     'page' => $this->page
 ));
+$url_email = $this->url('sbmgestion/eleve', array(
+    'action' => 'responsable-mail'
+));
+$email = $this->form->get('email')->getValue();
 $hiddens = array(
     'responsableId' => $this->responsableId,
     'info' => $this->identite,
-    'origine' => $this->url('sbmgestion/eleve', array(
-        'action' => 'responsable-edit',
-        'page' => $this->page
-    ))
+    'origine' => $url_ici
 );
 $actions = array(
     'cancel' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
+        'formaction' => $url_ici,
         'title' => 'Retour'
     ),
     'localiser' => array(
@@ -45,6 +46,16 @@ $actions = array(
         'onclick' => sprintf($js, "'localiser'")
     )
 );
+if (! empty($email)) {
+    $hiddens['email'] = $email;
+    $hiddens['responsable'] = $this->identite;
+    $hiddens['group'] = $url_ici;
+    $actions['ecrire'] = array(
+        'class' => 'fam-email',
+        'formaction' => $url_email,
+        'title' => 'Envoyer un email'
+    );
+}
 ?>
 <div id="winpopup">
 	<div id="winpopup-content"
@@ -93,6 +104,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div id="responsable-edit-ancienCommuneId" class="row-inner edit"><?php echo $this->formRow($this->form->get('ancienCommuneId')); ?></div>
 			</div>
 			<div id="responsable-edit-selection" class="row-inner edit"><?php echo $this->formRow($this->form->get('selection')); ?></div>
+			<div id="wrapper-commentaire" class="row-inner edit top-6px"><?php echo $this->formRow($this->form->get('note'));?></div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
@@ -101,12 +113,15 @@ echo $this->formHidden($this->form->get('csrf'));
 	<div id="fiche-footer"></div>
 </div>
 <div id="help-r2-content" class="invisible">
-			<p>Il s'agit de personnes vivant en couple à la même adresse, responsables des enfants qui vont être inscrits.</p>
-			<p>Si les deux personnes ont le même nom, indiquez seulement le prénom de la deuxième.</p>
-			<p></p>
-			<h3>Attention !</h3>
-			<p>Il ne s'agit pas de responsables d'enfants en garde alternée. Pour ces cas particuliers, l'information sera demandée
-			au moment de l'inscription des enfants.</p>
-		</div>
+	<p>Il s'agit de personnes vivant en couple à la même adresse,
+		responsables des enfants qui vont être inscrits.</p>
+	<p>Si les deux personnes ont le même nom, indiquez seulement le prénom
+		de la deuxième.</p>
+	<p></p>
+	<h3>Attention !</h3>
+	<p>Il ne s'agit pas de responsables d'enfants en garde alternée. Pour
+		ces cas particuliers, l'information sera demandée au moment de
+		l'inscription des enfants.</p>
+</div>
 <?php
 $this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');
