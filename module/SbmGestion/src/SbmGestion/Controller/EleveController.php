@@ -450,6 +450,7 @@ class EleveController extends AbstractActionController
             if ($form->isValid()) {
                 $odata = $form->getData();
                 $odata->millesime = Session::get('millesime');
+                $odata->internet = 0;
                 $odata->tarifId = $this->getServiceLocator()
                     ->get('Sbm\Db\Table\Tarifs')
                     ->getTarifId('inscription');
@@ -608,6 +609,7 @@ class EleveController extends AbstractActionController
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
         $historique['scolarite']['inscription'] = $tTarifs->getMontant('inscription');
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
+        $historique['scolarite']['internet'] = $odata1->internet;
         
         $respSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
         $etabSelect = $this->getServiceLocator()->get('Sbm\Db\Select\EtablissementsDesservis');
