@@ -1669,6 +1669,7 @@ class EleveController extends AbstractActionController
                     ->get('Dafap\Authenticate')
                     ->by();
                 $user = $auth->getIdentity();
+                $mailTemplate = new MailTemplate(null, 'layout-gestion');
                 $params = array(
                     'to' => array(
                         array(
@@ -1684,7 +1685,7 @@ class EleveController extends AbstractActionController
                     ),
                     'subject' => $data['subject'],
                     'body' => array(
-                        'html' => $body
+                        'html' => $mailTemplate->render(array('body' => $body))
                     )
                 );
                 // envoi du mail
