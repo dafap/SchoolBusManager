@@ -9,37 +9,45 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 août 2015
- * @version 2015-1
+ * @date 7 nov. 2015
+ * @version 2015-1.6.6
  */
 $url_retour = $this->url('sbmparent');
+$url_horaires = $this->url('sbmdocument', array(
+    'action' => 'horaires'
+));
 $h3contentG = array();
 $h3contentD = array();
 $aller = array();
 $retour = array();
-$nbCircuits = count($this->circuits);
-for ($i = 1; $i <= $nbCircuits; $i ++) {
-    if ($i < $nbCircuits) { // les 2 derniers services sont identiques car on a rajouté l'arrivée à l'établissement à la fin
-        $h3contentG[] = 'Circuit n° ' . $this->circuits[$i]->serviceId . ' - car ' . $this->circuits[$i]->transporteur;
-        $h3contentD[] = 'Tél. ' . $this->circuits[$i]->transporteur . ' : ' . $this->telephone($this->circuits[$i]->telephoneTransporteur);
+$data = array();
+foreach ($this->circuits as $obj) {
+    $data[$obj->circuitId] = $obj;
+}
+$data = array_values($data);
+$nbCircuits = count($data);
+for ($i = 0; $i < $nbCircuits; $i ++) {
+    if ($i < $nbCircuits) { // sans doublons
+        $h3contentG[$data[$i]->serviceId] = 'Circuit n° ' . $data[$i]->serviceId . ' - car ' . $data[$i]->transporteur;
+        $h3contentD[$data[$i]->transporteurId] = 'Tél. ' . $data[$i]->transporteur . ' : ' . $this->telephone($data[$i]->telephoneTransporteur);
     }
     $aller[$i] = array(
-        $this->circuits[$i]->m1,
-        $this->circuits[$i]->station,
-        $this->circuits[$i]->typeArret,
+        $data[$i]->m1,
+        $data[$i]->station,
+        $data[$i]->typeArret,
         empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
         empty($this->t_nb_inscrits[$i]) ? '' : '(voir tableau ci-dessous)',
-        $this->circuits[$i]->commentaire1
+        $data[$i]->commentaire1
     );
 }
-for ($j = 1, $i = count($this->circuits); $i >= 1; $i --, $j ++) {
+for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
     $retour[$j] = array(
-        $this->circuits[$i]->s2 . '<br>' . $this->circuits[$i]->s1,
-        $this->circuits[$i]->station,
-        $this->circuits[$i]->typeArret,
+        $data[$i]->s2 . '<br>' . $data[$i]->s1,
+        $data[$i]->station,
+        $data[$i]->typeArret,
         empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
         empty($this->eleves[$i]) ? '' : implode('<br>', $this->eleves[$i]),
-        $this->circuits[$i]->commentaire2
+        $data[$i]->commentaire2
     );
 }
 ?>
@@ -76,7 +84,7 @@ for ($j = 1, $i = count($this->circuits); $i >= 1; $i --, $j ++) {
 						<th>Nom des élèves</th>
 						<th>Remarques</th>
 					</tr>
-	                <?php for ($i = 1; $i <= count($this->circuits); $i ++):?>
+	                <?php for ($i = 0; $i < count($data); $i ++):?>
 	                <?php $css = $this->cycle(array('odd', 'even'))->next();?>
 	                <tr class="<?php echo $css;?>">
 						<td><?php echo implode('</td><td>', $aller[$i]);?></td>
@@ -99,7 +107,7 @@ for ($j = 1, $i = count($this->circuits); $i >= 1; $i --, $j ++) {
 						<th>Nom des élèves</th>
 						<th>Remarques</th>
 					</tr>
-	                <?php for ($i = 1; $i <= count($this->circuits); $i ++):?>
+	                <?php for ($i = 0; $i < count($data); $i ++):?>
 	                <?php $css = $this->cycle(array('odd', 'even'))->next();?>
 	                <tr class="<?php echo $css;?>">
 						<td><?php echo implode('</td><td>', $retour[$i]);?></td>
@@ -110,6 +118,7 @@ for ($j = 1, $i = count($this->circuits); $i >= 1; $i --, $j ++) {
 		</fieldset>
 		<div class="left-95px top-6px">
 			<form method="post" action="<?php echo $url_retour;?>">
+			    <input type="submit" class="default" name="horaires" value="Imprimer" formaction="<?php echo $url_horaires;?>">
 				<input type="submit" class="default" name="cancel" value="Retour">
 			</form>
 		</div>

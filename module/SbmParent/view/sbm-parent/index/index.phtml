@@ -7,8 +7,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 févr. 2015
- * @version 2015-1
+ * @date 7 nov. 2015
+ * @version 2015-1.6.6
  */
 use SbmCommun\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -144,29 +144,41 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
             $nbAffectations = $reseau->count();
             $circuit = $station = $service = array();
             if ($nbAffectations) {
+                // construction des tableaux $service, $station et $circuit sans doublons
                 foreach ($reseau as $transport) {
-                    $service[] = $transport['service1Id'] . ' - ' . $transport['transporteur1'];
-                    $station[] = $transport['station1'] . ' - ' . $transport['commune1'];
-                    $circuit[] = $transport['circuit1Id'];
+                    $service_transporteur = $transport['service1Id'] . ' - ' . $transport['transporteur1'];
+                    $station_commune = $transport['station1'] . ' - ' . $transport['commune1'];
+                    $circuitId = $transport['circuit1Id'];
+                    $key = md5(sprintf('%s;%s;%d', $service_transporteur, $station_commune, $circuitId));
+                    $service[$key] = $service_transporteur;
+                    $station[$key] = $station_commune;
+                    $circuit[$key] = $circuitId;
                     $correspondance = ! empty($transport['service2Id']) || ! empty($transport['station2Id']);
                     if ($correspondance) {
                         if (! empty($transport['service2Id'])) {
-                            $service[] = $transport['service2Id'] . ' - ' . $transport['transporteur2'];
+                            $service_transporteur = $transport['service2Id'] . ' - ' . $transport['transporteur2'];
                         } else {
-                            $service[] = '';
+                            $service_transporteur = '';
                         }
                         if (! empty($transport['station2Id'])) {
-                            $station[] = $transport['station2'] . ' - ' . $transport['commune2'];
+                            $station_commune = $transport['station2'] . ' - ' . $transport['commune2'];
                         } else {
-                            $station[] = '';
+                            $station_commune = '';
                         }
                         if (! empty($transport['circuit2Id'])) {
-                            $circuit[] = $transport['circuit2Id'];
+                            $circuitId = $transport['circuit2Id'];
                         } else {
-                            $circuit[] = 0;
+                            $circuitId = 0;
                         }
+                        $key = md5(sprintf('%s;%s;%d', $service_transporteur, $station_commune, $circuitId));
+                        $service[$key] = $service_transporteur;
+                        $station[$key] = $station_commune;
+                        $circuit[$key] = $circuitId;
                     }
                 }
+                $service = array_values($service);
+                $station = array_values($station);
+                $circuit = array_values($circuit);
             }
             $css = $this->cycle(array(
                 "odd",

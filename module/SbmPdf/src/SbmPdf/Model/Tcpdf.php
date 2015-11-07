@@ -11,8 +11,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 7 nov. 2015
+ * @version 2015-1.6.6
  */
 namespace SbmPdf\Model;
 
@@ -20,6 +20,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Stdlib\ArrayObject;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
+use Zend\View\Model\ViewModel;
 use SbmPdf\Model\Db\Sql\Select;
 use DafapSession\Model\Session;
 use SbmCommun\Model\StdLib;
@@ -167,6 +168,26 @@ class Tcpdf extends \TCPDF
         $this->SetFont($this->getConfig('document', 'main_font_family', PDF_FONT_NAME_DATA), trim($this->getConfig('document', 'main_font_style', '')), $this->getConfig('document', 'main_font_size', PDF_FONT_SIZE_DATA));
     }
 
+    /**
+     * Configure la propriété $data
+     *
+     * @param array $data
+     */
+    public function setData(array $data)
+    {
+        $this->data = $data;
+    }
+    
+    /**
+     * Renvoie le tableau des données
+     * 
+     * @return \SbmPdf\Model\array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+    
     /**
      * Renvoie le ServiceManager
      *
@@ -533,7 +554,7 @@ class Tcpdf extends \TCPDF
             throw new Exception($msg, $e->getCode(), $e->getPrevious());
         }
     }
-
+    
     /**
      *
      * @param string $nameStyle
@@ -1883,6 +1904,129 @@ class Tcpdf extends \TCPDF
          */
         if (is_string($param) && $param == '?') {
             return 'Horaires circuit avec élèves';
+        }
+        
+        $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec son chemin)
+        if (empty($fichier_phtml)) {
+            throw new Exception("Le modèle de ce document n'a pas été défini.");
+        }
+        $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+        $layout = new ViewModel();
+        $layout->setTemplate($fichier_phtml);
+        $saut_de_page = false;
+        foreach ($this->getData() as $serviceId => $allerRetour) {
+            $oservice = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Services')
+                ->getRecord($serviceId);
+            $otransporteur = $this->getServiceLocator()
+                ->get('Sbm\Db\Table\Transporteurs')
+                ->getRecord($oservice->transporteurId);
+            $transporteur = $otransporteur->nom;
+            $nbPlaces = $oservice->nbPlaces;
+            $telephone = $otransporteur->telephone;
+            $part_gauche = "Circuit n° $serviceId - car $transporteur - $nbPlaces places";
+            $part_droite = "Tél $transporteur : $telephone";
+            if ($saut_de_page) {
+                $this->AddPage();
+            }
+            $this->Write(0, $part_gauche, '', false, 'L');
+            $this->Write(0, $part_droite, '', false, 'R', true);
+            // die(var_dump($allerRetour));
+            $layout->setVariables(array(
+                'allerRetour' => $allerRetour
+            ));
+            $codeHtml = $viewRender->render($layout);
+            //echo($codeHtml);
+            $this->writeHTML($codeHtml, true, false, false, false, '');
+            $saut_de_page = true;;
+        }
+        
+    }
+    public function templateFooterMethod4($param = null)
+    {
+        if (is_string($param) && $param == '?')
+            return 'Pied de page pour les horaires';
+    
+        $cur_y = $this->y;
+        $this->SetTextColorArray($this->footer_text_color);
+        // set style for cell border
+        $line_width = (0.85 / $this->k);
+        $this->SetLineStyle(array(
+            'width' => $line_width,
+            'cap' => 'butt',
+            'join' => 'miter',
+            'dash' => 0,
+            'color' => $this->footer_line_color
+        ));
+        // print document barcode
+        $barcode = $this->getBarcode();
+        if (! empty($barcode)) {
+            $this->Ln($line_width);
+            $barcode_width = round(($this->w - $this->original_lMargin - $this->original_rMargin) / 3);
+            $style = array(
+                'position' => $this->rtl ? 'R' : 'L',
+                'align' => $this->rtl ? 'R' : 'L',
+                'stretch' => false,
+                'fitwidth' => true,
+                'cellfitalign' => '',
+                'border' => false,
+                'padding' => 0,
+                'fgcolor' => array(
+                    0,
+                    0,
+                    0
+                ),
+                'bgcolor' => false,
+                'text' => false
+            );
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+        }
+        $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
+        if (empty($this->pagegroups)) {
+            $pagenumtxt = $w_page . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages();
+        } else {
+            $pagenumtxt = $w_page . $this->getPageNumGroupAlias() . ' / ' . $this->getPageGroupAlias();
+        }
+        $this->SetY($cur_y);
+        // Print page number
+        if ($this->getRTL()) {
+            $this->SetX($this->original_rMargin);
+            $this->Cell(0, 0, $pagenumtxt, 'T', 0, 'L');
+        } else {
+            $this->SetX($this->original_lMargin);
+            $this->Cell(0, 0, $this->getAliasRightShift() . $pagenumtxt, 'T', 0, 'R');
+        }
+        // Print string
+        $txt = $this->getConfig('document', 'pagefooter_string', '');
+        if (! empty($txt) && ! empty($this->data)) {
+            // remplacer les variables de la chaine
+            $oCalculs = new Calculs($this->data);
+            //$oCalculs->range($this->data['index']['previous'], $this->data['index']['current'] - 1);
+            $txt = $oCalculs->getResultat($txt);
+    
+            // découpe en 2 parties
+            preg_match("/@gauche{([^}]*)}/", $txt, $matches);
+            $part_gauche = isset($matches[1]) ? $matches[1] : '';
+            preg_match("/@centre{([^}]*)}/", $txt, $matches);
+            $part_centre = isset($matches[1]) ? $matches[1] : '';
+    
+            // écrire le résultat
+            $this->SetY($cur_y);
+            if (! empty($part_gauche)) {
+                if ($part_gauche == strip_tags($part_gauche)) {
+                    $this->Write(0, $part_gauche, '', false, 'L');
+                } else {
+                    $this->writeHTML($part_gauche, true, false, true, false, 'L');
+                }
+            }
+            if (! empty($part_centre)) {
+                $this->SetX(0);
+                if ($part_centre == strip_tags($part_centre)) {
+                    $this->Write(0, $part_centre, '', false, 'C');
+                } else {
+                    $this->writeHTML($part_centre, true, false, true, false, 'C');
+                }
+            }
         }
     }
 }
