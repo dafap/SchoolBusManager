@@ -193,6 +193,16 @@ class DocumentController extends AbstractActionController
                 })
             );
         }
+        $params = array(
+            'documentId' => 'Horaires détaillés',
+            'layout' => 'sbm-pdf/document/horaires.phtml'
+        );
+        $pdf = new Tcpdf($this->getServiceLocator(), $params);
+        $pdf->setData($ahoraires);
+        $pdf->run();
+    }
+    private function horairesAction_ancienneFin()
+    {
         // il faudra essayer de passer des params basés sur un document de la table système
         $params = array(
             'documentId' => 'Horaires détaillés'
