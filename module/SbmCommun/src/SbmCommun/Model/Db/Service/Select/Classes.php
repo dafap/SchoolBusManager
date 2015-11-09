@@ -1,6 +1,6 @@
 <?php
 /**
- * Service fournissant une liste des communes desservies sous la forme d'un tableau
+ * Service fournissant une liste des classes sous la forme d'un tableau
  *   'classeId' => 'nom'
  * 
  * 

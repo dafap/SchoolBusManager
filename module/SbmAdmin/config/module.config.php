@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 return array(
     'acl' => array(
@@ -23,6 +23,7 @@ return array(
     'liste' => array(
         'paginator' => array(
             'nb_libelles' => 15,
+            'nb_secteurs-scolaires' => 20,
             'nb_users' => 20
         )
     ),

@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 namespace SbmParent\Controller;
 
@@ -104,7 +104,8 @@ class IndexController extends AbstractActionController
             'action' => 'inscription-eleve'
         )));
         $form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsVisibles'))
+            ->get('Sbm\Db\Select\Etablissements')
+            ->visibles())
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours())
@@ -255,7 +256,8 @@ class IndexController extends AbstractActionController
             'action' => 'edit-eleve'
         )));
         $form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsVisibles'))
+            ->get('Sbm\Db\Select\Etablissements')
+            ->visibles())
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours());

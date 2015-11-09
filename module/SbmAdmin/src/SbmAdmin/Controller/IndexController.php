@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2014
- * @version 2014-1
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 namespace SbmAdmin\Controller;
 
@@ -22,6 +22,7 @@ use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Form\CriteresForm;
 use SbmCommun\Model\StdLib;
 use SbmAdmin\Form\Libelle as FormLibelle;
+use SbmCommun\Form\SecteurScolaire as FormSecteurScolaire;
 use SbmCommun\Form\ButtonForm;
 use SbmAdmin\Form\User;
 use SbmAdmin\Form\Export as ExportForm;
@@ -247,6 +248,156 @@ class IndexController extends AbstractActionController
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
+    /**
+     * Gestion des secteurs scolaires des collèges publics
+     */
+    public function secteurScolaireListeAction()
+    {
+        $args = $this->initListe('secteursScolairesClgPu', function ($sm, $form) {
+            $form->setValueOptions('etablissementId', $sm->get('Sbm\Db\Select\Etablissements')
+                ->clgPu())
+                ->setValueOptions('communeId', $sm->get('Sbm\Db\Select\Communes')
+                ->membres());
+        });
+        if ($args instanceof Response)
+            return $args;
+        
+        return new ViewModel(array(
+            'paginator' => $this->getServiceLocator()
+                ->get('Sbm\Db\Query\SecteursScolairesClgPu')
+                ->paginator($args['where'], array(
+                'communeetab',
+                'etablissement',
+                'commune'
+            )),
+            'page' => $this->params('page', 1),
+            'nb_pagination' => $this->getNbPagination('nb_secteurs-scolaires', 20),
+            'criteres_form' => $args['form']
+        ));
+    }
+
+    public function secteurScolaireAjoutAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new FormSecteurScolaire();
+        $form->setValueOptions('etablissementId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Etablissements')
+            ->desservis())
+            ->setValueOptions('communeId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Communes')
+            ->desservies());
+        $params = array(
+            'data' => array(
+                'table' => 'secteurs-scolaires-clg-pu',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\SecteursScolairesClgPu'
+            ),
+            'form' => $form
+        );
+        $r = $this->addData($params);
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmadmin', array(
+                    'action' => 'secteur-scolaire-liste',
+                    'page' => $currentPage
+                ));
+                break;
+            default:
+                return new ViewModel(array(
+                    'form' => $form->prepare(),
+                    'page' => $currentPage
+                ));
+                break;
+        }
+    }
+
+    public function secteurScolaireSupprAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new ButtonForm(array(
+            'id' => null
+        ), array(
+            'supproui' => array(
+                'class' => 'confirm default',
+                'value' => 'Confirmer'
+            ),
+            'supprnon' => array(
+                'class' => 'confirm default',
+                'value' => 'Abandonner'
+            )
+        ));
+        $params = array(
+            'data' => array(
+                'alias' => 'Sbm\Db\Table\SecteursScolairesClgPu',
+                'id' => array('etablissementId', 'communeId')
+            ),
+            'form' => $form
+        );
+        $oRequete = $this->getServiceLocator()->get('Sbm\Db\Query\SecteursScolairesClgPu');
+        try {
+            $r = $this->supprData($params, function ($id, $tableClasses) use($oRequete) {
+                return array(
+                    'id' => $id,
+                    'data' => $oRequete->getRecord($id)
+                );
+            });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette classe parce que certains élèves y sont inscrits.');
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'classe-liste',
+                'page' => $currentPage
+            ));
+        }
+        
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmadmin', array(
+                    'action' => 'secteur-scolaire-liste',
+                    'page' => $currentPage
+                    ));
+                    break;
+                default:
+                    return new ViewModel(array(
+                    'form' => $form->prepare(),
+                    'page' => $currentPage,
+                    'data' => StdLib::getParam('data', $r->getResult()),
+                    'classeId' => StdLib::getParam('id', $r->getResult())
+                    ));
+                    break;
+            }
+        }
+    }
+
+    public function secteurScolairePdfAction()
+    {
+        $criteresObject = array(
+            '\SbmCommun\Model\Db\ObjectData\Criteres'
+        );
+        $criteresForm = array(
+            '\SbmCommun\Form\CriteresForm',
+            'secteursScolairesClgPu'
+        );
+        $documentId = null;
+        $retour = array(
+            'route' => 'sbmadmin',
+            'action' => 'secteur-scolaire-liste'
+        );
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /*
+     * Gestion des users
+     */
     public function userListeAction()
     {
         $args = $this->initListe('users', null, null, array(
@@ -274,7 +425,9 @@ class IndexController extends AbstractActionController
         $criteresObject = array(
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             array(
-               'expressions' =>  array('active' => 'Literal:active = 0')
+                'expressions' => array(
+                    'active' => 'Literal:active = 0'
+                )
             )
         );
         $criteresForm = array(
@@ -527,7 +680,8 @@ class IndexController extends AbstractActionController
                 } else {
                     $form = new UserRelation('etablissement');
                     $form->setValueOptions('etablissementId', $this->getServiceLocator()
-                        ->get('Sbm\Db\Select\EtablissementsDesservis'))
+                        ->get('Sbm\Db\Select\Etablissements')
+                        ->desservis())
                         ->bind($tUsersEtablissements->getObjData());
                     if (array_key_exists('submit', $args)) {
                         $form->setData($args);

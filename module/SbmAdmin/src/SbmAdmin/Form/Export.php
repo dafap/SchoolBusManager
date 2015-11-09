@@ -138,7 +138,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                 'empty_option' => 'Tous',
                 'allow_empty' => true,
                 'disable_inarray_validator' => false,
-                'value_options' => $this->sm->get('Sbm\Db\Select\EtablissementsDesservis')
+                'value_options' => $this->sm->get('Sbm\Db\Select\Etablissements')
+                    ->desservis()
             )
         ));
         $this->add(array(
@@ -440,18 +441,23 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'etablissementId',
-            'attributes' => array('id' => 'etablissementId'),
+            'attributes' => array(
+                'id' => 'etablissementId'
+            ),
             'options' => array(
                 'label' => 'Etablissement',
                 'empty_option' => 'Tous',
                 'allow_empty' => true,
-                'value_options' => $this->sm->get('Sbm\Db\Select\EtablissementsDesservis')
+                'value_options' => $this->sm->get('Sbm\Db\Select\Etablissements')
+                    ->desservis()
             )
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array('id' => 'communeId'),
+            'attributes' => array(
+                'id' => 'communeId'
+            ),
             'options' => array(
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
@@ -590,7 +596,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'nomSA',
-            'attributes' => array('id' => 'nomSA'),
+            'attributes' => array(
+                'id' => 'nomSA'
+            ),
             'options' => array(
                 'label' => 'Nom',
                 'label_attributes' => array(
@@ -604,7 +612,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array('id' => 'communeId'),
+            'attributes' => array(
+                'id' => 'communeId'
+            ),
             'options' => array(
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
@@ -660,7 +670,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'text',
             'name' => 'nbEleves',
-            'attributes' => array('id' => 'nbEleves'),
+            'attributes' => array(
+                'id' => 'nbEleves'
+            ),
             'options' => array(
                 'label' => 'Nb d\'élèves',
                 'error_attributes' => array(
@@ -748,7 +760,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'stationId',
-            'attributes' => array('id' => 'stationId'),
+            'attributes' => array(
+                'id' => 'stationId'
+            ),
             'options' => array(
                 'label' => 'Station',
                 'empty_option' => 'Toutes',
@@ -760,7 +774,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array('id' => 'communeId'),
+            'attributes' => array(
+                'id' => 'communeId'
+            ),
             'options' => array(
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
