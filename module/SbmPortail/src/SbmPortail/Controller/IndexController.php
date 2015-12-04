@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 namespace SbmPortail\Controller;
 
@@ -266,7 +266,8 @@ class IndexController extends AbstractActionController
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         // initialiser le form pour les select ...
         $criteres_form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsDesservis'))
+            ->get('Sbm\Db\Select\Etablissements')
+            ->desservis())
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('serviceId', $this->getServiceLocator()

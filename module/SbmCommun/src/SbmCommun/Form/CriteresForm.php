@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2014
- * @version 2014-1
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 namespace SbmCommun\Form;
 
@@ -1566,6 +1566,54 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ),
             'selection' => array(
                 'name' => 'selection',
+                'required' => false
+            )
+        );
+    }
+    
+    private function formSecteursscolairesclgpu()
+    {
+        $this->add(array(
+            'name' => 'etablissementId',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'critere-etablissementId',
+                'class' => 'sbm-width-45c'
+            ),
+            'options' => array(
+                'label' => 'Etablissement',
+                'empty_option' => 'Tous',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'communeId',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'critere-communeId',
+                'class' => 'sbm-width-45c'
+            ),
+            'options' => array(
+                'label' => 'Commune',
+                'empty_option' => 'Toutes',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+    }
+    
+    private function formSecteursscolairesclgpuSpecification()
+    {
+        return array(
+            'etablissementId' => array(
+                'name' => 'etablissementId',
+                'required' => false
+            ),
+            'communeId' => array(
+                'name' => 'communeId',
                 'required' => false
             )
         );

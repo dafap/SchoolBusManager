@@ -1,0 +1,134 @@
+<?php
+/**
+ * Statistiques par classe et par établissement
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-destion/statistiques
+ * @filesource par-classe-etablissement.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 déc. 2015
+ * @version 2015-1
+ */
+//die(var_dump($this->statistiques));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmgestion/statistiques');
+$n = $this->millesime;
+$as0 = sprintf('%d-%d', $n, $n + 1);
+$as1 = sprintf('%d-%d', $n - 1, $n);
+$totaux = array(
+    'annee_courante' => array(
+        'inscrits' => 0,
+        'internet' => 0,
+        'papier' => 0,
+        'transportes' => 0
+    ),
+    'annee_precedente' => array(
+        'inscrits' => 0,
+        'internet' => 0,
+        'papier' => 0,
+        'transportes' => 0
+    )
+);
+?>
+<h1>Effectifs par classe et par établissement</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left">
+		<?php
+echo $this->listeZoneActions(array(), array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+));
+?>
+        </div>
+	</div>
+	<div id="liste-inner">
+		<table class="statistiques">
+			<thead>
+				<tr>
+					<th rowspan="2">Classe</th>
+					<th rowspan="2">Etablissement</th>
+					<th rowspan="2">Commune</th>
+					<th colspan="4" class="border-bold centre">Année <?php echo $as1;?></th>
+					<th colspan="4" class="border-bold centre">Année <?php echo $as0;?></th>
+				</tr>
+				<tr>
+					<th class="border-bold">Transportés</th>
+					<th class="centre">Inscrits par<br>internet
+					</th>
+					<th class="centre">Inscrits par<br>fiche papier
+					</th>
+					<th class="centre">Tous les<br>inscrits
+					</th>
+					<th class="border-bold">Transportés</th>
+					<th class="centre">Inscrits par<br>internet
+					</th>
+					<th class="centre">Inscrits par<br>fiche papier
+					</th>
+					<th class="centre">Tous les<br>inscrits
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php for ($i = 0; $i < count($this->statistiques['annee_courante']); $i++):?>
+				<?php
+        // année précédente
+        $inscrits_a_p = $this->statistiques['annee_precedente'][$i]['inscrits'] ?  : 0;
+        $totaux['annee_precedente']['inscrits'] += $inscrits_a_p;
+        $internet_a_p = $this->statistiques['annee_precedente'][$i]['internet'] ?  : 0;
+        $totaux['annee_precedente']['internet'] += $internet_a_p;
+        $papier_a_p = $this->statistiques['annee_precedente'][$i]['papier'] ?  : 0;
+        $totaux['annee_precedente']['papier'] += $papier_a_p;
+        $transportes_a_p = $this->statistiques['annee_precedente'][$i]['transportes'] ?  : 0;
+        $totaux['annee_precedente']['transportes'] += $transportes_a_p;
+        // année courante
+        $inscrits_a_c = $this->statistiques['annee_courante'][$i]['inscrits'] ?  : 0;
+        $totaux['annee_courante']['inscrits'] += $inscrits_a_c;
+        $internet_a_c = $this->statistiques['annee_courante'][$i]['internet'] ?  : 0;
+        $totaux['annee_courante']['internet'] += $internet_a_c;
+        $papier_a_c = $this->statistiques['annee_courante'][$i]['papier'] ?  : 0;
+        $totaux['annee_courante']['papier'] += $papier_a_c;
+        $transportes_a_c = $this->statistiques['annee_courante'][$i]['transportes'] ?  : 0;
+        $totaux['annee_courante']['transportes'] += $transportes_a_c;
+        ?>
+				<tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					<td><?php echo $this->statistiques['annee_courante'][$i]['classe'];?></td>
+					<td><?php echo $this->statistiques['annee_courante'][$i]['etablissement'];?></td>
+					<td><?php echo $this->statistiques['annee_courante'][$i]['commune'];?></td>
+					<td class="border-bold align-right"><?php echo $transportes_a_p;?></td>
+					<td class=" align-right"><?php echo $internet_a_p;?></td>
+					<td class=" align-right"><?php echo $papier_a_p;?></td>
+					<td class=" align-right"><?php echo $inscrits_a_p;?></td>
+					<td class="border-bold align-right"><?php echo $transportes_a_c;?></td>
+					<td class=" align-right"><?php echo $internet_a_c;?></td>
+					<td class=" align-right"><?php echo $papier_a_c;?></td>
+					<td class=" align-right"><?php echo $inscrits_a_c;?></td>
+				</tr>
+				<?php endfor;?>
+			</tbody>
+			<tr>
+				<th colspan="3">Total</th>
+				<th class="invisible"></th>
+				<th class="border-bold align-right"><?php echo $totaux['annee_precedente']['transportes'];?></th>
+				<th class=" align-right"><?php echo $totaux['annee_precedente']['internet'];?></th>
+				<th class=" align-right"><?php echo $totaux['annee_precedente']['papier'];?></th>
+				<th class=" align-right"><?php echo $totaux['annee_precedente']['inscrits'];?></th>
+				<th class="border-bold align-right"><?php echo $totaux['annee_courante']['transportes'];?></th>
+				<th class=" align-right"><?php echo $totaux['annee_courante']['internet'];?></th>
+				<th class=" align-right"><?php echo $totaux['annee_courante']['papier'];?></th>
+				<th class=" align-right"><?php echo $totaux['annee_courante']['inscrits'];?></th>
+			</tr>
+			<tfoot>
+			</tfoot>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<p class="sbm-description">Dans ce tableau, chaque élève n'est compté
+			qu'une fois, même s'il est en garde alternée ou s'il a une
+			correspondance.</p>
+	</div>
+</div>

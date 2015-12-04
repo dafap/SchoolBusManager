@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 nov. 2015
- * @version 2015-1.6.6
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 namespace SbmGestion\Controller;
 
@@ -88,7 +88,8 @@ class EleveController extends AbstractActionController
         $criteres_form = new \SbmGestion\Form\Eleve\CriteresForm();
         // initialiser le form pour les select ...
         $criteres_form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsDesservis'))
+            ->get('Sbm\Db\Select\Etablissements')
+            ->desservis())
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'));
         // créer un objectData qui contient la méthode getWhere() adhoc
@@ -167,11 +168,12 @@ class EleveController extends AbstractActionController
 
     /**
      * Si on arrive par post, on passera :
-     * - ajouter : uniquement la présence de la clé. En général c'est le nom du bouton submit.
+     * - ajouter : uniquement la présence de la clé.
+     * En général c'est le nom du bouton submit.
      * - orinine : url d'origine de l'appel pour assurer un retour par redirectToOrigin()->back()
      * à la fin de l'opération (en général dans eleveEditAction()).
      * Si on arrive par get, on s'assurera que redirectToOrigin()->setBack() a bien été fait avant.
-     * 
+     *
      * Lorsqu'on arrive par post, on enregistre en session le paramètre responsableId s'il existe ou 0 sinon.
      * Lorsqu'on arrive par get, on récupère le responsableId en session. Il va permettre d'initialiser
      * le responsable1Id du formulaire.
@@ -260,9 +262,11 @@ class EleveController extends AbstractActionController
                 }
                 $form = null;
             }
-        } 
+        }
         if ($form instanceof \SbmGestion\Form\Eleve\AddElevePhase1) {
-            $form->setData(array('responsable1Id' => $responsableId));
+            $form->setData(array(
+                'responsable1Id' => $responsableId
+            ));
         }
         return new ViewModel(array(
             'page' => $page,
@@ -440,7 +444,8 @@ class EleveController extends AbstractActionController
             'page' => $page
         )))
             ->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsDesservis'))
+            ->get('Sbm\Db\Select\Etablissements')
+            ->desservis())
             ->setValueOptions('classeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours())
@@ -612,7 +617,9 @@ class EleveController extends AbstractActionController
         $historique['scolarite']['internet'] = $odata1->internet;
         
         $respSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Responsables');
-        $etabSelect = $this->getServiceLocator()->get('Sbm\Db\Select\EtablissementsDesservis');
+        $etabSelect = $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Etablissements')
+            ->desservis();
         $clasSelect = $this->getServiceLocator()->get('Sbm\Db\Select\Classes');
         $form = new FormEleve();
         $form->setAttribute('action', $this->url()
@@ -1646,6 +1653,7 @@ class EleveController extends AbstractActionController
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                $this->redirectToOrigin()->reset();
                 return $this->redirect()->toRoute('login', array(
                     'action' => 'home-page'
                 ));
@@ -1685,7 +1693,9 @@ class EleveController extends AbstractActionController
                     ),
                     'subject' => $data['subject'],
                     'body' => array(
-                        'html' => $mailTemplate->render(array('body' => $body))
+                        'html' => $mailTemplate->render(array(
+                            'body' => $body
+                        ))
                     )
                 );
                 // envoi du mail
@@ -1695,6 +1705,7 @@ class EleveController extends AbstractActionController
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    $this->redirectToOrigin()->reset();
                     return $this->redirect()->toRoute('login', array(
                         'action' => 'home-page'
                     ));
