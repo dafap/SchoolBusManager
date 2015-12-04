@@ -1223,3 +1223,15 @@ div.planche table {
 div.planche table td {
 	border: 1px solid #31708f;
 }
+
+/*-------------------- Statistiques ----------------------*/
+table.statistiques th, table.statistiques td {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+table.statistiques th.border-left, table.statistiques td.border-left {
+	border-left: 1px solid #e3eaec;
+}
+table.statistiques th.border-bold, table.statistiques td.border-bold {
+	border-left: 1px solid #9ab3ba;
+}

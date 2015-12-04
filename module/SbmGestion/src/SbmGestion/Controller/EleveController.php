@@ -1653,6 +1653,7 @@ class EleveController extends AbstractActionController
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                $this->redirectToOrigin()->reset();
                 return $this->redirect()->toRoute('login', array(
                     'action' => 'home-page'
                 ));
@@ -1704,6 +1705,7 @@ class EleveController extends AbstractActionController
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    $this->redirectToOrigin()->reset();
                     return $this->redirect()->toRoute('login', array(
                         'action' => 'home-page'
                     ));

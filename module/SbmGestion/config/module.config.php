@@ -80,6 +80,7 @@ return array(
             'SbmGestion\Controller\Transport' => 'SbmGestion\Controller\TransportController',
             'SbmGestion\Controller\AnneeScolaire' => 'SbmGestion\Controller\AnneeScolaireController',
             'SbmGestion\Controller\Simulation' => 'SbmGestion\Controller\SimulationController',
+            'SbmGestion\Controller\Statistiques' => 'SbmGestion\Controller\StatistiquesController',
             'SbmGestion\Controller\Config' => 'SbmGestion\Controller\ConfigController'
         )
     ),
@@ -183,6 +184,21 @@ return array(
                             'defaults' => array(
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Simulation',
+                                'action' => 'index'
+                            )
+                        )
+                    ),
+
+                    'statistiques' => array( 
+                        'type' => 'segment',
+                        'options' => array(
+                            'route' => '/statistiques[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+                            ),
+                            'defaults' => array(
+                                'module' => 'SbmGestion',
+                                'controller' => 'SbmGestion\Controller\Statistiques',
                                 'action' => 'index'
                             )
                         )

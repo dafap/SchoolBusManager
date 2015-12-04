@@ -26,18 +26,42 @@ use Zend\Db\Sql\Predicate\Predicate;
 
 class Eleves implements FactoryInterface
 {
-
+    /**
+     *
+     * @var \SbmCommun\Model\Db\Service\DbLibService
+     */
     protected $db;
 
+    /**
+     *
+     * @var \Zend\Db\Sql\Sql
+     */
     protected $sql;
-
-    protected $select;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
         $this->sql = new Sql($this->db->getDbAdapter());
-        $this->select = $this->sql->select()
+        return $this;
+    }
+
+    private function dernierMillesime($lequel, $responsableId)
+    {
+        $predicate = new Where();
+        $predicate->literal('sc2.eleveId=sco.eleveId');
+        $select2 = new Select();
+        $select2->from(array(
+            'sc2' => $this->db->getCanonicName('scolarites', 'table')
+        ))
+            ->columns(array(
+            'dernierMillesime' => new Literal('max(millesime)')
+        ))
+            ->where($predicate);
+        $where = new Where();
+        $where->equalTo('res.responsableId', $responsableId)
+            ->nest()
+            ->isNull('millesime')->or->equalTo('millesime', $select2)->unnest();
+        $select = $this->sql->select()
             ->from(array(
             'ele' => $this->db->getCanonicName('eleves', 'table')
         ))
@@ -60,34 +84,24 @@ class Eleves implements FactoryInterface
             'responsableFId' => 'responsableFId',
             'selectionEleve' => 'selection',
             'noteEleve' => 'note'
-        ));
-        return $this;
-    }
-
-    private function dernierMillesime($lequel, $responsableId)
-    {
-        $predicate = new Where();
-        $predicate->literal('sc2.eleveId=sco.eleveId');
-        $select2 = new Select();
-        $select2->from(array(
-            'sc2' => $this->db->getCanonicName('scolarites', 'table')
         ))
-            ->columns(array(
-            'dernierMillesime' => new Literal('max(millesime)')
-        ))
-            ->where($predicate);
-        $where = new Where();
-        $where->equalTo('res.responsableId', $responsableId)
-            ->nest()
-            ->isNull('millesime')->or->equalTo('millesime', $select2)->unnest();
-        $select = clone $this->select;
-        $select->join(array(
+            ->join(array(
             'res' => $this->db->getCanonicName('responsables', 'table')
         ), 'res.responsableId = ele.' . $lequel, array())
             ->join(array(
             'sco' => $this->db->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId = sco.eleveId', array(
-            'millesime', 'paiement', 'inscrit', 'fa', 'gratuit', 'demandeR1', 'demandeR2', 'accordR1', 'accordR2', 'subventionR1', 'subventionR2'
+            'millesime',
+            'paiement',
+            'inscrit',
+            'fa',
+            'gratuit',
+            'demandeR1',
+            'demandeR2',
+            'accordR1',
+            'accordR2',
+            'subventionR1',
+            'subventionR2'
         ), $select::JOIN_LEFT)
             ->join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')

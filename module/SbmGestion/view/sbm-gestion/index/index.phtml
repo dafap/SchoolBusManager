@@ -26,6 +26,7 @@ $url_portail = $this->url('sbmportail');
 $url_gest_finance = $this->url('sbmgestion/finance');
 $url_gest_transport = $this->url('sbmgestion/transport');
 $url_gest_change_as = $this->url('sbmgestion/anneescolaire');
+$url_gest_statistiques = $this->url('sbmgestion/statistiques');
 $url_gest_simulation = $this->url('sbmgestion/simul');
 $url_gest_parametre = $this->url('sbmgestion/config');
 $url_parent = $this->url('sbmparent');
@@ -157,6 +158,8 @@ echo $this->flashMessenger()->render('default');
 						class="fam-bullet-go"></i>Gestion du réseau de transport</a></li>
 				<li><a href="<?php echo $url_gest_change_as; ?>"><i
 						class="fam-bullet-go"></i>Choix de l'année scolaire</a></li>
+				<li><a href="<?php echo $url_gest_statistiques; ?>"><i
+					class="fam-bullet-go"></i>Statistiques</a></li>
 				<!-- li><a href="<?php echo $url_gest_simulation; ?>"><i
 					class="fam-bullet-go"></i>Simulation d'organisation</a></li>
 			<li><a href="<?php echo $url_gest_parametre; ?>"><i
