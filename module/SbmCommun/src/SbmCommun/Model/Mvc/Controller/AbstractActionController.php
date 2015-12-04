@@ -11,8 +11,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2014
- * @version 2014-1
+ * @date 9 nov 2015
+ * @version 2015-1.6.7
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -122,18 +122,18 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
             // on crée la structure de l'objet criteres à partir des champs du formulaire et on la charge
             $criteres_obj = new $criteresObject[0]($form->getElementNames());
-            $criteres = Session::get('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+            $criteres = $this->getFromSession('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
             if (! empty($criteres)) {
                 $criteres_obj->exchangeArray($criteres);
             }
             $where = $criteres_obj->getWherePdf($criteresObject[1]);
-            // adaptation éventuelle du where si une fonction callback (ou closure) est passée en 3e paramètre 
-            // dans le tableau $criteresObject. (Utile par exemple pour modifier le format date avant le 
+            // adaptation éventuelle du where si une fonction callback (ou closure) est passée en 3e paramètre
+            // dans le tableau $criteresObject. (Utile par exemple pour modifier le format date avant le
             // déclanchement de l'évènement ou pour prendre en compte un autre where pour les groupes).
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
-                //var_dump($where);
+                // var_dump($where);
                 $where = $criteresObject[2]($where, $args);
-                //die(var_dump($where));
+                // die(var_dump($where));
             }
             $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
             
@@ -186,7 +186,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
         } elseif ($prg === false) {
             // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (cas du paginator)
             $this->sbm_isPost = false;
-            $args = Session::get('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
         } else {
             // c'est le tableau qui correspond au post après redirection 303; on le met en session
             $args = $prg;
@@ -194,7 +194,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             if ($retour) {
                 // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit. Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
-                $args = Session::get('post', array(), $this->getSessionNamespace());
+                $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
             } else {
                 if (array_key_exists('cancel', $args)) {
                     try {
@@ -208,7 +208,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 }
                 $this->sbm_isPost = true;
                 unset($args['submit']);
-                Session::set('post', $args, $this->getSessionNamespace());
+                $this->setToSession('post', $args, $this->getSessionNamespace());
             }
         }
         // formulaire des critères de recherche
@@ -330,8 +330,18 @@ abstract class AbstractActionController extends ZendAbstractActionController
             unset($args['cancel']);
             $this->setToSession('post', $args, 'sbm_edit_' . $params['data']['table']);
         }
-        $id = StdLib::getParam($params['data']['id'], $args, - 1);
-        if ($id == - 1) {
+        if (is_array($params['data']['id'])) {
+            $id = array();
+            $interdit = false;
+            foreach ($params['data']['id'] as $item) {
+                $id[$item] = StdLib::getParam($item, $args, - 1);
+                $interdit |= $id[$item] == - 1;
+            }
+        } else {
+            $id = StdLib::getParam($params['data']['id'], $args, - 1);
+            $interdit = $id == - 1;
+        }
+        if ($interdit) {
             $this->flashMessenger()->addErrorMessage("Action interdite.");
             return new EditResponse('error', $args);
         } elseif ($cancel) {
@@ -391,14 +401,30 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $args = $prg;
             $confirme = StdLib::getParam('supproui', $args, false);
             $cancel = StdLib::getParam('supprnon', $args, false);
-            if ($id = StdLib::getParam($params['data']['id'], $args, false)) {
-                $this->setToSession($params['data']['id'], $id, 'sbm_suppr');
-            } else {
-                // ici, je controle si l'id en session est bien celui reçu par post (via prg). On ne sait jamais !!!
-                $id = $this->getFromSession($params['data']['id'], - 1, 'sbm_suppr');
-                $ctrl = StdLib::getParam('id', $args, - 1);
-                if ($id != $ctrl)
+            if (is_array($params['data']['id'])) {
+                $id = array();
+                $interdit = false;
+                foreach ($params['data']['id'] as $item) {
+                    if ($id[$item] = StdLib::getParam($item, $args, false)) {
+                        $this->setToSession($item, $id[$item], 'sbm_suppr');
+                    } else {
+                        $id[$item]=  $this->getFromSession($item, -1, 'sbm_suppr');
+                    }
+                    $interdit |= $id[$item] == -1;
+                }
+                if ($interdit) {
                     $id = null;
+                }
+            } else {
+                if ($id = StdLib::getParam($params['data']['id'], $args, false)) {
+                    $this->setToSession($params['data']['id'], $id, 'sbm_suppr');
+                } else {
+                    // ici, je controle si l'id en session est bien celui reçu par post (via prg). On ne sait jamais !!!
+                    $id = $this->getFromSession($params['data']['id'], - 1, 'sbm_suppr');
+                    $ctrl = StdLib::getParam('id', $args, - 1);
+                    if ($id != $ctrl)
+                        $id = null;
+                }
             }
         }
         $table = $this->getServiceLocator()->get($params['data']['alias']);
@@ -509,12 +535,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            à renvoyer si le paramètre n'est pas défini
      * @param string|null $sessionNamespace
      *            namespace de la session (par défaut valeur fixée par le constante de cette classe SBM_DG_SESSION)
+     *            On filtre les caractères afin de ne pas garder de caractères interdits
      *            
      * @return int|boolean
      */
     protected function getFromSession($param, $default = null, $sessionNamespace = Session::SBM_DG_SESSION)
     {
-        return Session::get($param, $default, $sessionNamespace);
+        return Session::get($param, $default, preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace));
     }
 
     /**
@@ -526,14 +553,15 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            valeur à mettre en session
      * @param string|null $sessionNamespace
      *            namespace de la session (par défaut valeur fixée par le constante de cette classe SBM_DG_SESSION)
+     *            On filtre les caractères afin de ne pas garder de caractères interdits
      */
     protected function setToSession($param, $value, $sessionNamespace = Session::SBM_DG_SESSION)
     {
-        Session::set($param, $value, $sessionNamespace);
+        Session::set($param, $value, preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace));
     }
 
     protected function removeInSession($param, $sessionNamespace = Session::SBM_DG_SESSION)
     {
-        Session::remove($param, $sessionNamespace);
+        Session::remove($param, preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace));
     }
 }

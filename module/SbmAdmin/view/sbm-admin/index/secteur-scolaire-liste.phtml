@@ -1,0 +1,124 @@
+<?php
+/**
+ * Liste des secteurs scolaires des collèges publics
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource secteur-scolaire-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 nov. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+
+$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+
+$url_ajouter = $this->url('sbmadmin', array(
+    'action' => 'secteur-scolaire-ajout',
+    'page' => $this->page
+));
+$url_delete = $this->url('sbmadmin', array(
+    'action' => 'secteur-scolaire-suppr',
+    'page' => $this->page
+));
+$url_rapports = $this->url('sbmadmin', array(
+    'action' => 'secteur-scolaire-pdf',
+    'page' => $this->page
+));
+$url_retour = $this->url('sbmadmin');
+$hiddens = array();
+$menuImpression = $this->menuRapports($this->url('sbmadmin', array(
+    'action' => 'secteur-scolaire-liste'
+)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ),
+    'rapports' => $menuImpression['content'],
+    'ajouter' => array(
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouvelle entrée'
+    )
+);
+?>
+<h1>Liste des secteurs scolaires des collèges publics</h1>
+<div id="liste-wrapper">
+<?php if ($this->etablissementId):?>
+	<div id="liste-title">
+		<ul>
+		    <li><?php echo $this->escapeHtml($this->etablissement->commune); ?></li>
+			<li><?php echo $this->escapeHtml($this->etablissement->nom); ?></li>
+		</ul>
+	</div>
+<?php endif;?>
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+	    </div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner secteurs-scolaires">
+			<tbody>
+				<tr>
+					<th>Commune de l'établissement</th>
+					<th>Etablissement</th>
+					<th>Communes du secteur scolaire</th>
+					<th></th>
+				</tr>
+            <?php foreach($data as $test => $row): ?>
+                <tr
+					class="<?php
+                
+                echo $this->cycle(array(
+                    "even",
+                    "odd"
+                ))->next();
+                ?>">
+					<td class="communeetab"><?php echo $this->escapeHtml($row->communeetab); ?></td>
+					<td class="etablissement"><?php echo $this->escapeHtml($row->etablissement); ?></td>
+					<td class="commune"><?php echo $this->escapeHtml($row->commune); ?></td>
+					<td class="boutons">
+					<?php
+                $hiddens = array(
+                    'etablissementId' => $row->etablissementId,
+                    'communeId' => $row->communeId,
+                    'origine' => 'secteur-scolaire-liste'
+                );
+                $buttons = array(
+                    'supprimer' => array(
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'Supprimer'
+                    )
+                );
+                echo $this->listeLigneActions($this->serviceId, $hiddens, $buttons);
+                ?>
+					</td>
+				</tr>         
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="criteres-wrapper">
+        <?php echo $this->form()->openTag($this->criteres_form);?>
+        <?php echo $this->formCollection($this->criteres_form, true);?>
+        <?php echo $this->form()->closeTag();?>
+        </div>
+	</div>
+</div>

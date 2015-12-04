@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 namespace SbmGestion\Controller;
 
@@ -1014,7 +1014,8 @@ class TransportController extends AbstractActionController
             ->setValueOptions('jOuverture', Semaine::getJours())
             ->setValueOptions('niveau', Niveau::getNiveaux())
             ->setValueOptions('rattacheA', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsVisibles'))
+            ->get('Sbm\Db\Select\Etablissements')
+            ->visibles())
             ->setValueOptions('communeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Communes')
             ->desservies());
@@ -1134,7 +1135,8 @@ class TransportController extends AbstractActionController
         $form->setValueOptions('jOuverture', Semaine::getJours())
             ->setValueOptions('niveau', Niveau::getNiveaux())
             ->setValueOptions('rattacheA', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\EtablissementsVisibles'))
+            ->get('Sbm\Db\Select\Etablissements')
+            ->visibles())
             ->setValueOptions('communeId', $this->getServiceLocator()
             ->get('Sbm\Db\Select\Communes')
             ->desservies());
@@ -1610,7 +1612,8 @@ class TransportController extends AbstractActionController
                 ->get('Sbm\Db\Vue\Services')
                 ->getRecord($serviceId);
             $form->setValueOptions('etablissementId', $this->getServiceLocator()
-                ->get('Sbm\Db\Select\EtablissementsDesservis'));
+                ->get('Sbm\Db\Select\Etablissements')
+                ->desservis());
         }
         $table = $this->getServiceLocator()->get('Sbm\Db\Table\EtablissementsServices');
         $form->bind($table->getObjData());

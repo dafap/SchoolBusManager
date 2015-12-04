@@ -1,0 +1,43 @@
+<?php
+/**
+ * Page de suppression d'une entrée dans un secteur scolaire
+ *
+ * Réservé à l'administrateur
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource secteur-scolaire-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 nov. 2015
+ * @version 2015-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_retour = $this->url('sbmadmin', array(
+    'action' => 'secteur-scolaire-liste',
+    'page' => $this->page
+));
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Suppression dans un secteur scolaire de collège public</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de la commune <b><?php echo $this->data['commune'];?></b> du secteur scolaire du collège :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->data['etablissement'] . ' - ' . $this->data['communeetab']); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

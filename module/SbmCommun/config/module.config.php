@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2015
- * @version 2015-1.0.6
+ * @date 9 nov. 2015
+ * @version 2015-1.6.7
  */
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
@@ -38,7 +38,7 @@ return array(
             'Sbm\Db\ObjectData\Paiement' => 'SbmCommun\Model\Db\ObjectData\Paiement',
             'Sbm\Db\ObjectData\Responsable' => 'SbmCommun\Model\Db\ObjectData\Responsable',
             'Sbm\Db\ObjectData\Scolarite' => 'SbmCommun\Model\Db\ObjectData\Scolarite',
-            'Sbm\Db\ObjectData\SecteurScolaireClgPu'=>'SbmCommun\Model\Db\ObjectData\SecteurScolaireClgPu',
+            'Sbm\Db\ObjectData\SecteurScolaireClgPu' => 'SbmCommun\Model\Db\ObjectData\SecteurScolaireClgPu',
             'Sbm\Db\ObjectData\Service' => 'SbmCommun\Model\Db\ObjectData\Service',
             'Sbm\Db\ObjectData\Station' => 'SbmCommun\Model\Db\ObjectData\Station',
             'Sbm\Db\ObjectData\Tarif' => 'SbmCommun\Model\Db\ObjectData\Tarif',
@@ -142,8 +142,7 @@ return array(
             'Sbm\Db\Select\Classes' => 'SbmCommun\Model\Db\Service\Select\Classes',
             'Sbm\Db\Select\Communes' => 'SbmCommun\Model\Db\Service\Select\CommunesForSelect',
             'Sbm\Db\Select\DatesCartes' => 'SbmCommun\Model\Db\Service\Select\DatesCartes',
-            'Sbm\Db\Select\EtablissementsDesservis' => 'SbmCommun\Model\Db\Service\Select\EtablissementsDesservis',
-            'Sbm\Db\Select\EtablissementsVisibles' => 'SbmCommun\Model\Db\Service\Select\EtablissementsVisibles',
+            'Sbm\Db\Select\Etablissements' => 'SbmCommun\Model\Db\Service\Select\EtablissementsForSelect',
             'Sbm\Db\Select\Organismes' => 'SbmCommun\Model\Db\Service\Select\Organismes',
             'Sbm\Db\Select\Responsables' => 'SbmCommun\Model\Db\Service\Select\Responsables',
             'Sbm\Db\Select\Services' => 'SbmCommun\Model\Db\Service\Select\Services',
@@ -159,6 +158,7 @@ return array(
             'Sbm\Db\Query\AffectationsServicesStations' => 'SbmCommun\Model\Db\Service\Query\Eleve\AffectationsServicesStations',
             'Sbm\Db\Query\Responsables' => 'SbmCommun\Model\Db\Service\Query\Responsable\Responsables',
             'Sbm\Db\Query\Etablissements' => 'SbmCommun\Model\Db\Service\Query\Etablissement\Etablissements',
+            'Sbm\Db\Query\SecteursScolairesClgPu' => 'SbmCommun\Model\Db\Service\Query\Etablissement\SecteursScolairesClgPu',
             'Sbm\Db\Query\Services' => 'SbmCommun\Model\Db\Service\Query\Service\Services',
             'Sbm\Db\Query\Stations' => 'SbmCommun\Model\Db\Service\Query\Station\Stations',
             'Sbm\Statistiques\Eleve' => 'SbmCommun\Model\Db\Service\Query\Eleve\Statistiques',
