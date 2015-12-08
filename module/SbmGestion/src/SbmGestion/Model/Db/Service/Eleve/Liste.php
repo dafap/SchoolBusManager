@@ -109,7 +109,7 @@ class Liste extends AbstractQuery implements FactoryInterface
         ) : $columns['cla'])
             ->join(array(
             'aff' => $this->db->getCanonicName('affectations', 'table')
-        ), 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId', empty($columns['aff']) ? array() : $columns['aff'])
+        ), 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId', empty($columns['aff']) ? array('service1Id', 'service2Id') : $columns['aff'])
             ->join(array(
             'res' => $this->db->getCanonicName('responsables', 'table')
         ), 'res.responsableId=aff.responsableId', empty($columns['res']) ? array() : $columns['res'])

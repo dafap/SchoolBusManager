@@ -106,7 +106,7 @@ echo $this->flashMessenger()->render('default');
 		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 	</div>
 	<div id="liste-inner">
-	<?php foreach ($this->data as $key => $liste) : ?>
+	<?php foreach ($this->data['eleves'] as $key => $liste) : ?>
 		<?php if ($liste->count()) : ?>
 			<?php
         
@@ -143,11 +143,13 @@ echo $this->flashMessenger()->render('default');
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
 					<th>Services</th>
+					<th>Garde alternée</th>
 					<th></th>
 				</tr>
 			    <?php foreach ($liste as $row) : ?>
 			    <?php
             $pictogrammes = array();
+            $ga = is_null($row['responsable2Id']);
             if ($row['millesime'] == Session::get('millesime')) {
                 $buttons = array(
                     'modifier' => array(
@@ -198,8 +200,11 @@ echo $this->flashMessenger()->render('default');
                 'eleveId' => $row['eleveId']
             );
             $services = array();
-            foreach ($this->query->getServices($row['eleveId'], $this->responsableId) as $affectation) {
-                $services[] = $affectation['service1Id'];
+            foreach ($this->data['fnc_affectations']($row['eleveId']) as $affectation) {
+                $services[$affectation['service1Id']] = $affectation['service1Id'];
+                if (!empty($affectation['service2Id'])) {
+                    $services[$affectation['service2Id']] = $affectation['service2Id'];
+                }
             }
             ?>
 			    <tr
@@ -214,6 +219,7 @@ echo $this->flashMessenger()->render('default');
 					<td><?php echo $row['etablissement'] . ' - ' . $row['communeEtablissement'];?></td>
 					<td class="centre"><?php echo $row['classe'];?></td>
 					<td><?php echo implode(' / ', $services);?></td>
+					<td><?php echo $this->data['fnc_ga']($key == 'resp1' ? $row['responsable2Id'] : $row['responsable1Id']);?></td>
 					<?php endif;?>
 					<td><?php  echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
