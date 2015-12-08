@@ -102,22 +102,22 @@ class Eleves implements FactoryInterface
             'accordR2',
             'subventionR1',
             'subventionR2'
-        ), $select::JOIN_LEFT)
+        ), Select::JOIN_LEFT)
             ->join(array(
             'eta' => $this->db->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId = eta.etablissementId', array(
             'etablissement' => 'nom'
-        ), $select::JOIN_LEFT)
+        ), Select::JOIN_LEFT)
             ->join(array(
             'cometa' => $this->db->getCanonicName('communes', 'table')
         ), 'eta.communeId = cometa.communeId', array(
             'communeEtablissement' => 'nom'
-        ), $select::JOIN_LEFT)
+        ), Select::JOIN_LEFT)
             ->join(array(
             'cla' => $this->db->getCanonicName('classes', 'table')
         ), 'cla.classeId = sco.classeId', array(
             'classe' => 'nom'
-        ), $select::JOIN_LEFT)
+        ), Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();

@@ -1367,18 +1367,33 @@ class EleveController extends AbstractActionController
             ));
         }
         $tableEleves = $this->getServiceLocator()->get('Sbm\Db\Query\Eleves');
+        $controller = $this;
         $data = array();
-        $data['resp1'] = $tableEleves->duResponsable1($responsableId);
-        $data['resp2'] = $tableEleves->duResponsable2($responsableId);
-        $data['fact'] = $tableEleves->duResponsableFinancier($responsableId);
+        $data['eleves']['resp1'] = $tableEleves->duResponsable1($responsableId);
+        $data['eleves']['resp2'] = $tableEleves->duResponsable2($responsableId);
+        $data['eleves']['fact'] = $tableEleves->duResponsableFinancier($responsableId);
+        $data['fnc_affectations'] = function ($eleveId) use($controller, $responsableId) {
+            return $controller->getServiceLocator()
+                ->get('Sbm\Db\Query\AffectationsServicesStations')
+                ->getServices($eleveId, $responsableId);
+        };
+        $data['fnc_ga'] = function ($responsableId) use($controller) {
+            if (is_null($responsableId)) {
+                return '';
+            } else {
+                $oresponsable = $controller->getServiceLocator()
+                    ->get('Sbm\Db\Table\Responsables')
+                    ->getRecord($responsableId);
+                return sprintf('%s %s', $oresponsable->nomSA, $oresponsable->prenomSA);
+            }
+        };
         return new ViewModel(array(
             'data' => $data,
             'responsable' => $this->getServiceLocator()
                 ->get('Sbm\Db\Vue\Responsables')
                 ->getRecord($responsableId),
             'page' => $currentPage,
-            'responsableId' => $responsableId,
-            'query' => $this->getServiceLocator()->get('Sbm\Db\Query\AffectationsServicesStations')
+            'responsableId' => $responsableId
         ));
     }
 
