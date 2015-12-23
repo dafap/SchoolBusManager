@@ -104,11 +104,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormCircuit();
-        $form->setValueOptions('serviceId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Services'))
-            ->setValueOptions('stationId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Stations')
-            ->ouvertes())
+        $form->setValueOptions('serviceId', $this->getServiceLocator()->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId', $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
             'data' => array(
