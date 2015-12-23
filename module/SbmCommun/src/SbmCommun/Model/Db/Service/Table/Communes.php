@@ -26,6 +26,23 @@ class Communes extends AbstractSbmTable
         $this->id_name = 'communeId';
     }
     
+    /**
+     * Renvoie l'identifiant d'une commune desservie dont on donne le nom
+     * 
+     * @param string $nom
+     * 
+     * @return string Code INSEE de la commune
+     */
+    public function getCommuneId($nom)
+    {
+        $result = $this->fetchAll(array('nom' => $nom, 'desservie' => 1));
+        if (! is_null($result)) {
+            return $result->current()->communeId;
+        } else {
+            return null;
+        }
+    }
+    
     public function getCodePostal($communeId)
     {
         if (!empty($communeId)) {
