@@ -8,8 +8,8 @@
  * @filesource Communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 23 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
