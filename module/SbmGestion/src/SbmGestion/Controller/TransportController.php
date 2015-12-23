@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1.6.7
+ * @date 23 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmGestion\Controller;
 
@@ -2323,46 +2323,192 @@ class TransportController extends AbstractActionController
 
     /**
      * Ajout d'une nouvelle fiche de station
+     * 
+     * ANCIENNE VERSION
      * (la validation porte sur un champ csrf)
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Zend\View\Model\ViewModel 
+     * public function stationAjoutAction()
+     *         {
+     *         $currentPage = $this->params('page', 1);
+     *         $form = new FormStation();
+     *         $form->setValueOptions('communeId', $this->getServiceLocator()
+     *         ->get('Sbm\Db\Select\Communes')
+     *         ->desservies());
+     *         $params = array(
+     *         'data' => array(
+     *         'table' => 'stations',
+     *         'type' => 'table',
+     *         'alias' => 'Sbm\Db\Table\Stations'
+     *         ),
+     *         'form' => $form
+     *         );
+     *         $r = $this->addData($params);
+     *         switch ($r) {
+     *         case $r instanceof Response:
+     *         return $r;
+     *         break;
+     *         case 'error':
+     *         case 'warning':
+     *         case 'success':
+     *         return $this->redirect()->toRoute('sbmgestion/transport', array(
+     *         'action' => 'station-liste',
+     *         'page' => $currentPage
+     *         ));
+     *         break;
+     *         default:
+     *         return new ViewModel(array(
+     *         'form' => $form->prepare(),
+     *         'page' => $currentPage,
+     *         'stationId' => null
+     *         ));
+     *         break;
+     *         }
+     *         }
      */
+    
+     /**
+      * Montre la carte des stations.
+      * Un clic dans la carte permet de placer la nouvelle station. 
+      * On enregistre la position.
+      * Le formulaire prérempli est présenté avec la commune, l'adresse (N° + rue) 
+      * et les coordonnées X et Y
+      * On peut alors changer le nom de la station avant d'enregistrer la fiche.
+      * 
+      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+      */
     public function stationAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormStation();
-        $form->setValueOptions('communeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Communes')
-            ->desservies());
-        $params = array(
-            'data' => array(
-                'table' => 'stations',
-                'type' => 'table',
-                'alias' => 'Sbm\Db\Table\Stations'
-            ),
-            'form' => $form
-        );
-        $r = $this->addData($params);
-        switch ($r) {
-            case $r instanceof Response:
-                return $r;
-                break;
-            case 'error':
-            case 'warning':
-            case 'success':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
-                    'action' => 'station-liste',
-                    'page' => $currentPage
-                ));
-                break;
-            default:
-                return new ViewModel(array(
-                    'form' => $form->prepare(),
-                    'page' => $currentPage,
-                    'stationId' => null
-                ));
-                break;
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $cancel = true;
+            $args = array();
+        } else {
+            $args = (array) $prg;
+            $isPost1 = array_key_exists('phase', $args);
+            $isPost2 = array_key_exists('csrf', $args);
+            $cancel = StdLib::getParam('cancel', $args, false);
+            // unset($args['submit']);
+            // unset($args['cancel']);
         }
+        if ($cancel) {
+            $this->flashMessenger()->addWarningMessage("Abandon de la création d'une nouvelle station.");
+            return $this->redirect()->toRoute('sbmgestion/transport', array(
+                'action' => 'station-liste',
+                'page' => $currentPage
+            ));
+        }
+        $table = $this->getServiceLocator()->get('Sbm\Db\Table\Stations');
+        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
+        // même configuration de carte que pour les etablissements
+        $configCarte = StdLib::getParamR(array(
+            'sbm',
+            'cartes',
+            'etablissements'
+        ), $this->getServiceLocator()->get('config'));
+        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
+        $formCarte = new LatLng(array(
+            'phase' => 1,
+            'lat' => array(
+                'id' => 'lat'
+            ),
+            'lng' => array(
+                'id' => 'lng'
+            )
+        ), array(
+            'submit' => array(
+                'class' => 'button default submit left-95px',
+                'value' => 'Enregistrer la localisation'
+            ),
+            'cancel' => array(
+                'class' => 'button default cancel left-10px',
+                'value' => 'Abandonner'
+            )
+        ), $configCarte['valide']);
+        if ($isPost1 || $isPost2) {
+            $form = new FormStation();
+            $form->setValueOptions('communeId', $this->getServiceLocator()
+                ->get('Sbm\Db\Select\Communes')
+                ->desservies())
+                ->setMaxLength($db->getMaxLengthArray('stations', 'table'));
+            
+            $form->bind($table->getObjData());
+            if ($isPost1) {
+                $formCarte->setData($args);
+                if (! $formCarte->isValid()) {
+                    $this->flashMessenger()->addWarningMessage("La nouvelle station n'est pas dans la zone autorisée.");
+                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                        'action' => 'station-liste',
+                        'page' => $currentPage
+                    ));
+                }
+                // transforme les coordonnées
+                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                // initialise le formulaire de la station
+                $geocode = $this->getServiceLocator()->get('SbmCarto\Geocoder');
+                $lieu = $geocode->reverseGeocoding($args['lat'], $args['lng']);
+                $form->setData(array(
+                    'communeId' => $this->getServiceLocator()
+                        ->get('Sbm\Db\Table\Communes')
+                        ->getCommuneId($lieu['commune']),
+                    'nom' => implode(' ', array(
+                        $lieu['numero'],
+                        $lieu['rue'],
+                        $lieu['lieu-dit']
+                    )),
+                    'x' => $point->getX(),
+                    'y' => $point->getY()
+                ));
+            } elseif ($isPost2) {
+                $form->setData($args);
+                if ($form->isValid()) {
+                    $table->saveRecord($form->getData());
+                    $this->flashMessenger()->addSuccessMessage("Un nouvel enregistrement a été ajouté.");
+                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                        'action' => 'station-liste',
+                        'page' => $currentPage
+                    ));
+                }
+            } else {
+                $defauts = $db->getColumnDefaults('stations', 'table');
+                unset($defauts['x'], $defauts['y']);
+                $form->setData($defauts);
+            }
+            $view = new ViewModel(array(
+                'form' => $form->prepare(),
+                'page' => $currentPage,
+                'stationId' => null
+            ));
+            $view->setTemplate('sbm-gestion/transport/station-ajout.phtml');
+        } else {
+            $formCarte->setAttribute('action', $this->url()
+                ->fromRoute('sbmgestion/transport', array(
+                'action' => 'station-ajout1',
+                'page' => $this->params('page', $currentPage)
+            )));
+            $tStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
+            $ptStations = array();
+            foreach ($tStations->fetchAll() as $station) {
+                $pt = new Point($station->x, $station->y);
+                $pt->setAttribute('station', $station);
+                $ptStations[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
+            }
+            $view = new ViewModel(array(
+                'form' => $formCarte->prepare(),
+                'description' => '<b>Nouvelle station</b>',
+                'station' => array(
+                    'Création d\'une nouvelle station'
+                ),
+                'ptStations' => $ptStations,
+                'config' => $configCarte
+            ));
+            $view->setTemplate('sbm-gestion/transport/station-localisation.phtml');
+        }
+        return $view;
     }
 
     /**
@@ -2593,6 +2739,8 @@ class TransportController extends AbstractActionController
 
     /**
      * Localisation d'une station sur la carte et enregistrement de ses coordonnées
+     * Toutes les stations sont affichées. 
+     * La station à localiser est repérée par un bulet rouge.
      */
     public function stationLocalisationAction()
     {
@@ -2697,6 +2845,15 @@ class TransportController extends AbstractActionController
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
         ));
+        $tStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
+        $ptStations = array();
+        foreach ($tStations->fetchAll() as $autreStation) {
+            if ($autreStation->stationId != $stationId) {
+                $pt = new Point($autreStation->x, $autreStation->y);
+                $pt->setAttribute('station', $autreStation);
+                $ptStations[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
+            }
+        }
         return new ViewModel(array(
             // 'pt' => $pt,
             'form' => $form->prepare(),
@@ -2705,6 +2862,7 @@ class TransportController extends AbstractActionController
                 $station->nom,
                 $commune->codePostal . ' ' . $commune->nom
             ),
+            'ptStations' => $ptStations,
             'config' => $configCarte
         ));
     }
