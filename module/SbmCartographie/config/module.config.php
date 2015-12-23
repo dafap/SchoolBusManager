@@ -8,8 +8,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2015
- * @version 2015-1
+ * @date 23 déc. 2015
+ * @version 2015-1.6.9
  */
 return array(
     'acl' => array(
@@ -44,7 +44,8 @@ return array(
     'google_api' => array(
         'directions' => 'http://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&alternatives=true&sensor=false',
         'distancematrix' => 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=car&language=fr-FR&sensor=false',
-        'geocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?address=%s'
+        'geocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?address=%s',
+        'reversegeocoder' => 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=true'
     ),
     'service_manager' => array(
         'invokables' => array(
