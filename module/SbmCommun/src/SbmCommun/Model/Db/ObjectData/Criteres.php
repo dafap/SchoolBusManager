@@ -8,8 +8,8 @@
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2014
- * @version 2014-1
+ * @date 28 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -33,6 +33,13 @@ class Criteres implements ArraySerializableInterface
      * @var string
      */
     protected $table;
+    
+    /**
+     * Tableau contenant éventuellement les clés 'pageheader_title' et 'pageheader_string' et leurs valeurs.
+     * 
+     * @var array
+     */
+    protected $pageheader_params;
 
     /**
      * Constructeur
@@ -45,6 +52,12 @@ class Criteres implements ArraySerializableInterface
     public function __construct($form_fields)
     {
         $this->createDataStructure($form_fields);
+        $this->pageheader_params = array();
+    }
+    
+    public function getPageheaderParams()
+    {
+        return $this->pageheader_params;
     }
 
     /**

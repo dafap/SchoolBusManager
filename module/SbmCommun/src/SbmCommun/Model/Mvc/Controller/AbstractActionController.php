@@ -11,8 +11,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov 2015
- * @version 2015-1.6.7
+ * @date 28 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -142,6 +142,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $call_pdf->setParam('docaffectationId', $docaffectationId);
             }
             $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
+            $pageheader_params = $criteres_obj->getPageheaderParams();
+            if (array_key_exists('pageheader_title', $pageheader_params)) {
+                $call_pdf->setParam('pageheader_title', $pageheader_params['pageheader_title']);
+            }
+            if (array_key_exists('pageheader_string', $pageheader_params)) {
+                $call_pdf->setParam('pageheader_string', $pageheader_params['pageheader_string']);
+            }
             
             $call_pdf->renderPdf();
             
