@@ -7,8 +7,8 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2015
- * @version 2015-1
+ * @date 28 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -91,9 +91,9 @@ class CriteresEleves extends SbmCommunCriteres
                 case 1:
                     // non traitée:
                     $where->nest()
-                        ->nest()->literal('demandeR1 = 0')->AND->literal('demandeR2 = 1')->unnest()
-                        ->OR
-                        ->nest()->literal('demandeR1 = 1')->AND->literal('demandeR2 < 2')->unnest()
+                        ->nest()
+                        ->literal('demandeR1 = 0')->AND->literal('demandeR2 = 1')->unnest()->OR->nest()->literal('demandeR1 = 1')->AND->literal('demandeR2 < 2')
+                        ->unnest()
                         ->unnest();
                     break;
                 case 2:
@@ -104,9 +104,9 @@ class CriteresEleves extends SbmCommunCriteres
                 case 3:
                     // traiée : on a répondu à la demandeR1 et la demandeR2 n'est pas en attente
                     $where->nest()
-                        ->nest()->literal('demandeR1 = 0')->AND->literal('demandeR2 <> 1')->unnest()
-                        ->OR
-                        ->nest()->literal('demandeR1 = 2')->AND->literal('demandeR2 <> 1')->unnest()
+                        ->nest()
+                        ->literal('demandeR1 = 0')->AND->literal('demandeR2 <> 1')->unnest()->OR->nest()->literal('demandeR1 = 2')->AND->literal('demandeR2 <> 1')
+                        ->unnest()
                         ->unnest();
                     break;
             }
@@ -118,11 +118,9 @@ class CriteresEleves extends SbmCommunCriteres
                     // accord total
                     // 3 cas : ((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1) OR (demandeR1 = 2 AND accordR1 = 1 AND demandeR2 = 0) OR (demandeR1 = 2 AND accordR1 = 1 AND demandeR2 = 2 AND accordR2 = 1)
                     $where->nest()
-                        ->nest()->literal('demandeR1 = 0')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')->unnest()
-                        ->OR
-                        ->nest()->literal('demandeR1 = 2')->AND->literal('demandeR1 = 2')->AND->literal('demandeR2 = 0')->unnest()
-                    ->OR
-                        ->nest()->literal('demandeR1 = 2')->AND->literal('accordR1 = 1')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')->unnest()
+                        ->nest()
+                        ->literal('demandeR1 = 0')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')->unnest()->OR->nest()->literal('demandeR1 = 2')->AND->literal('demandeR1 = 2')->AND->literal('demandeR2 = 0')->unnest()->OR->nest()->literal('demandeR1 = 2')->AND->literal('accordR1 = 1')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')
+                        ->unnest()
                         ->unnest();
                     break;
                 case 2:
@@ -147,11 +145,24 @@ class CriteresEleves extends SbmCommunCriteres
                 case 4:
                     // refus total
                     $where->nest()
-                        ->nest()->literal('demandeR1 = 0')->literal('demandeR2 = 2')->literal('accordR2 = 0')->literal('subventionR2 = 0')->unnest()
-                        ->OR
-                        ->nest()->literal('demandeR1 = 2')->literal('demandeR2 = 0')->literal('accordR1 = 0')->literal('subventionR1 = 0')->unnest()
-                        ->OR
-                        ->nest()->literal('demandeR1 = 2')->literal('accordR1 = 0')->literal('subventionR1 = 0')->literal('demandeR2 = 2')->literal('accordR2 = 0')->literal('subventionR2 = 0')->unnest()
+                        ->nest()
+                        ->literal('demandeR1 = 0')
+                        ->literal('demandeR2 = 2')
+                        ->literal('accordR2 = 0')
+                        ->literal('subventionR2 = 0')
+                        ->unnest()->OR->nest()
+                        ->literal('demandeR1 = 2')
+                        ->literal('demandeR2 = 0')
+                        ->literal('accordR1 = 0')
+                        ->literal('subventionR1 = 0')
+                        ->unnest()->OR->nest()
+                        ->literal('demandeR1 = 2')
+                        ->literal('accordR1 = 0')
+                        ->literal('subventionR1 = 0')
+                        ->literal('demandeR2 = 2')
+                        ->literal('accordR2 = 0')
+                        ->literal('subventionR2 = 0')
+                        ->unnest()
                         ->unnest();
                     break;
             }
@@ -170,46 +181,57 @@ class CriteresEleves extends SbmCommunCriteres
 
     public function getWherePdf($descripteur = null)
     {
+        $pageheader_string = array();
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
+            $pageheader_string[] = sprintf('élève dont la carte porte le numéro %d', $this->data['numero']);
         }
         if (! empty($this->data['nomSA'])) {
             $where->like('nomSA', $this->data['nomSA'] . '%');
+            $pageheader_string[] = sprintf('élèves dont le nom commence par %s', $this->data['nomSA']);
         }
         if (! empty($this->data['prenomSA'])) {
             $where->like('prenomSA', $this->data['prenomSA'] . '%');
+            $pageheader_string[] = sprintf('élèves dont le prénom commence par %s', $this->data['prenomSA']);
         }
         if (! empty($this->data['responsable'])) {
             $where->like('responsable', $this->data['responsable'] . '%');
+            $pageheader_string[] = sprintf('élèves dont le nom du responsable commence par %s', $this->data['responsable']);
         }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('etablissementId', $this->data['etablissementId']);
+            $pageheader_string[] = sprintf('élèves de l\'établissement %s', $this->data['etablissementId']);
         }
         if (! empty($this->data['classeId'])) {
             $where->equalTo('classeId', $this->data['classeId']);
+            $pageheader_string[] = sprintf('élèves de la classe %s', $this->data['classeId']);
         }
         if (! empty($this->data['etat'])) {
             switch ($this->data['etat']) {
                 case 1:
                     $where->literal('inscrit = 1')
-                    ->nest()
-                    ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
+                        ->nest()
+                        ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
+                    $pageheader_string[] = 'élèves inscrits';
                     break;
                 case 2:
                     $where->literal('inscrit = 1')
-                    ->literal('paiement = 0')
-                    ->literal('fa=0')
-                    ->literal('gratuit = 0');
+                        ->literal('paiement = 0')
+                        ->literal('fa=0')
+                        ->literal('gratuit = 0');
+                    $pageheader_string[] = 'élèves préinscrits';
                     break;
                 case 3:
                     $where->literal('inscrit = 0')
-                    ->nest()
-                    ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
+                        ->nest()
+                        ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
+                    $pageheader_string[] = 'élèves rayés';
                     break;
                 case 4:
                     $where->literal('inscrit = 1')->literal('fa = 1');
+                    $pageheader_string[] = 'élèves en famille d\'accueil';
                     break;
             }
         }
@@ -219,23 +241,26 @@ class CriteresEleves extends SbmCommunCriteres
                 case 1:
                     // non traitée:
                     $where->nest()
-                    ->nest()->literal('demandeR1 = 0')->AND->literal('demandeR2 = 1')->unnest()
-                    ->OR
-                    ->nest()->literal('demandeR1 = 1')->AND->literal('demandeR2 < 2')->unnest()
-                    ->unnest();
+                        ->nest()
+                        ->literal('demandeR1 = 0')->AND->literal('demandeR2 = 1')->unnest()->OR->nest()->literal('demandeR1 = 1')->AND->literal('demandeR2 < 2')
+                        ->unnest()
+                        ->unnest();
+                    $pageheader_string[] = 'élèves dont la demande n\'est pas traitée';
                     break;
                 case 2:
                     // partiellement traitée : l'une des demandes vaut 1 et l'autre vaut 2
                     $where->nest()->literal('demandeR1 = 1')->OR->literal('demandeR2 = 1')->unnest();
                     $where->nest()->literal('demandeR1 = 2')->OR->literal('demandeR2 = 2')->unnest();
+                    $pageheader_string[] = 'élèves dont les demandes sont partiellement traitées';
                     break;
                 case 3:
                     // traiée : on a répondu à la demandeR1 et la demandeR2 n'est pas en attente
                     $where->nest()
-                    ->nest()->literal('demandeR1 = 0')->AND->literal('demandeR2 <> 1')->unnest()
-                    ->OR
-                    ->nest()->literal('demandeR1 = 2')->AND->literal('demandeR2 <> 1')->unnest()
-                    ->unnest();
+                        ->nest()
+                        ->literal('demandeR1 = 0')->AND->literal('demandeR2 <> 1')->unnest()->OR->nest()->literal('demandeR1 = 2')->AND->literal('demandeR2 <> 1')
+                        ->unnest()
+                        ->unnest();
+                    $pageheader_string[] = 'élèves dont les demandes sont traitées';
                     break;
             }
         }
@@ -246,59 +271,81 @@ class CriteresEleves extends SbmCommunCriteres
                     // accord total
                     // 3 cas : ((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1) OR (demandeR1 = 2 AND accordR1 = 1 AND demandeR2 = 0) OR (demandeR1 = 2 AND accordR1 = 1 AND demandeR2 = 2 AND accordR2 = 1)
                     $where->nest()
-                    ->nest()->literal('demandeR1 = 0')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')->unnest()
-                    ->OR
-                    ->nest()->literal('demandeR1 = 2')->AND->literal('demandeR1 = 2')->AND->literal('demandeR2 = 0')->unnest()
-                    ->OR
-                    ->nest()->literal('demandeR1 = 2')->AND->literal('accordR1 = 1')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')->unnest()
-                    ->unnest();
+                        ->nest()
+                        ->literal('demandeR1 = 0')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')->unnest()->OR->nest()->literal('demandeR1 = 2')->AND->literal('demandeR1 = 2')->AND->literal('demandeR2 = 0')->unnest()->OR->nest()->literal('demandeR1 = 2')->AND->literal('accordR1 = 1')->AND->literal('demandeR2 = 2')->AND->literal('accordR2 = 1')
+                        ->unnest()
+                        ->unnest();
+                    $pageheader_string[] = 'accord total';
                     break;
                 case 2:
                     // accord partiel
                     $where->literal('demandeR1 = 2')->literal('demandeR2 = 2');
                     $where->nest()->literal('accordR1 = 0')->OR->literal('accordR2 = 0')->unnest();
+                    $pageheader_string[] = 'accord partiel';
                     break;
                 case 3:
                     // subvention
                     $where->nest()
-                    ->nest()
-                    ->literal('demandeR1 = 2')
-                    ->literal('accordR1 = 0')
-                    ->literal('subventionR1 = 1')
-                    ->unnest()->OR->nest()
-                    ->literal('demandeR2 = 2')
-                    ->literal('accordR2 = 0')
-                    ->literal('subventionR2 = 1')
-                    ->unnest()
-                    ->unnest();
+                        ->nest()
+                        ->literal('demandeR1 = 2')
+                        ->literal('accordR1 = 0')
+                        ->literal('subventionR1 = 1')
+                        ->unnest()->OR->nest()
+                        ->literal('demandeR2 = 2')
+                        ->literal('accordR2 = 0')
+                        ->literal('subventionR2 = 1')
+                        ->unnest()
+                        ->unnest();
+                    $pageheader_string[] = 'élèves pour lesquels une subvention est accordée';
                     break;
                 case 4:
                     // refus total
                     $where->nest()
-                    ->nest()->literal('demandeR1 = 0')->literal('demandeR2 = 2')->literal('accordR2 = 0')->literal('subventionR2 = 0')->unnest()
-                    ->OR
-                    ->nest()->literal('demandeR1 = 2')->literal('demandeR2 = 0')->literal('accordR1 = 0')->literal('subventionR1 = 0')->unnest()
-                    ->OR
-                    ->nest()->literal('demandeR1 = 2')->literal('accordR1 = 0')->literal('subventionR1 = 0')->literal('demandeR2 = 2')->literal('accordR2 = 0')->literal('subventionR2 = 0')->unnest()
-                    ->unnest();
+                        ->nest()
+                        ->literal('demandeR1 = 0')
+                        ->literal('demandeR2 = 2')
+                        ->literal('accordR2 = 0')
+                        ->literal('subventionR2 = 0')
+                        ->unnest()->OR->nest()
+                        ->literal('demandeR1 = 2')
+                        ->literal('demandeR2 = 0')
+                        ->literal('accordR1 = 0')
+                        ->literal('subventionR1 = 0')
+                        ->unnest()->OR->nest()
+                        ->literal('demandeR1 = 2')
+                        ->literal('accordR1 = 0')
+                        ->literal('subventionR1 = 0')
+                        ->literal('demandeR2 = 2')
+                        ->literal('accordR2 = 0')
+                        ->literal('subventionR2 = 0')
+                        ->unnest()
+                        ->unnest();
+                    $pageheader_string[] = 'élèves refusés';
                     break;
             }
         }
         if (! empty($this->data['derogation'])) {
             $where->literal('derogation = 1');
+            $pageheader_string[] = 'élèves ayant une dérogation';
         }
         if (! empty($this->data['selection'])) {
             $where->literal('selection = 1');
+            $pageheader_string[] = 'élèves sélectionnés';
         }
         if (! empty($this->data['nonaffecte'])) {
             $where->isNull('eleveIdAffectation');
+            $pageheader_string[] = 'élèves sans affectation';
         }
+        if (! empty($pageheader_string)) {
+            $this->pageheader_params['pageheader_string'] = implode(' ; ', $pageheader_string);
+        }
+        
         return $where;
     }
-    
+
     /**
      * Transforme l'objet en tableau de critéres en modifiant certaines propriétés
-     * 
+     *
      * $strict et $alias sont inutiles et ne sont gardés que pour la compatibilité stricte des appels
      *
      * @param array $criteres            
@@ -312,7 +359,7 @@ class CriteresEleves extends SbmCommunCriteres
                 'empty' => array(
                     'inscrit',
                     'fa',
-                    'paiement',
+                    'paiement'
                 ),
                 'not empty' => array(
                     'numero',
@@ -355,7 +402,7 @@ class CriteresEleves extends SbmCommunCriteres
             $filtre['criteres']['inscrit'] = 1;
             switch ($this->data['demande']) {
                 case 1:
-                    // non traitée: 
+                    // non traitée:
                     $filtre['expression'][] = '((demandeR1 = 0 AND demandeR2 = 1) OR (demandeR1 = 1 AND demandeR2 < 2))';
                     break;
                 case 2:
@@ -392,7 +439,7 @@ class CriteresEleves extends SbmCommunCriteres
             }
         }
         if (! empty($this->data['nonaffecte'])) {
-            $filtre['expression'][] = 'eleveIdAffectation IS NULL';            
+            $filtre['expression'][] = 'eleveIdAffectation IS NULL';
         }
         unset($filtre['criteres']['etat']);
         unset($filtre['criteres']['demande']);

@@ -8,8 +8,8 @@
  * @filesource Communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 23 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -24,6 +24,23 @@ class Communes extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Communes';
         $this->id_name = 'communeId';
+    }
+    
+    /**
+     * Renvoie l'identifiant d'une commune desservie dont on donne le nom
+     * 
+     * @param string $nom
+     * 
+     * @return string Code INSEE de la commune
+     */
+    public function getCommuneId($nom)
+    {
+        $result = $this->fetchAll(array('nom' => $nom, 'desservie' => 1));
+        if (! is_null($result)) {
+            return $result->current()->communeId;
+        } else {
+            return null;
+        }
     }
     
     public function getCodePostal($communeId)

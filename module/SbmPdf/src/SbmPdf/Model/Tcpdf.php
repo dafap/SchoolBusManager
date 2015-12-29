@@ -11,8 +11,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 nov. 2015
- * @version 2015-1.6.6
+ * @date 28 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmPdf\Model;
 
@@ -171,23 +171,23 @@ class Tcpdf extends \TCPDF
     /**
      * Configure la propriété $data
      *
-     * @param array $data
+     * @param array $data            
      */
     public function setData(array $data)
     {
         $this->data = $data;
     }
-    
+
     /**
      * Renvoie le tableau des données
-     * 
+     *
      * @return \SbmPdf\Model\array
      */
     public function getData()
     {
         return $this->data;
     }
-    
+
     /**
      * Renvoie le ServiceManager
      *
@@ -403,8 +403,10 @@ class Tcpdf extends \TCPDF
     protected function setPageHeader($has_pageheader)
     {
         $oCalculs = new Calculs($this->data);
-        $title = $oCalculs->getResultat($this->getConfig('document', 'pageheader_title', 'Etat'));
-        $subtitle = $oCalculs->getResultat($this->getConfig('document', 'pageheader_string', 'éditée par School Bus Manager'));
+        $pageheader_title = $this->getParam('pageheader_title', $this->getConfig('document', 'pageheader_title', 'Etat'));
+        $title = $oCalculs->getResultat($pageheader_title);
+        $pageheader_string = $this->getParam('pageheader_string', $this->getConfig('document', 'pageheader_string', 'éditée par School Bus Manager'));
+        $subtitle = $oCalculs->getResultat($pageheader_string);
         $this->setPrintHeader($has_pageheader);
         $this->SetHeaderData($this->getConfig('document', 'pageheader_logo', PDF_HEADER_LOGO), $this->getConfig('document', 'pageheader_logo_width', PDF_HEADER_LOGO_WIDTH), $title, $subtitle, $this->convertColor($this->getConfig('document', 'pageheader_text_color', '000000')), $this->convertColor($this->getConfig('document', 'pageheader_line_color', '000000')));
         $this->setHeaderFont(Array(
@@ -554,7 +556,7 @@ class Tcpdf extends \TCPDF
             throw new Exception($msg, $e->getCode(), $e->getPrevious());
         }
     }
-    
+
     /**
      *
      * @param string $nameStyle
@@ -1469,7 +1471,7 @@ class Tcpdf extends \TCPDF
         }
         return $this->data[$ordinal_table];
     }
-
+    
     // ============= Les pieds de document ======================
     
     /**
@@ -1936,17 +1938,18 @@ class Tcpdf extends \TCPDF
                 'allerRetour' => $allerRetour
             ));
             $codeHtml = $viewRender->render($layout);
-            //echo($codeHtml);
+            // echo($codeHtml);
             $this->writeHTML($codeHtml, true, false, false, false, '');
-            $saut_de_page = true;;
+            $saut_de_page = true;
+            ;
         }
-        
     }
+
     public function templateFooterMethod4($param = null)
     {
         if (is_string($param) && $param == '?')
             return 'Pied de page pour les horaires';
-    
+        
         $cur_y = $this->y;
         $this->SetTextColorArray($this->footer_text_color);
         // set style for cell border
@@ -2001,15 +2004,15 @@ class Tcpdf extends \TCPDF
         if (! empty($txt) && ! empty($this->data)) {
             // remplacer les variables de la chaine
             $oCalculs = new Calculs($this->data);
-            //$oCalculs->range($this->data['index']['previous'], $this->data['index']['current'] - 1);
+            // $oCalculs->range($this->data['index']['previous'], $this->data['index']['current'] - 1);
             $txt = $oCalculs->getResultat($txt);
-    
+            
             // découpe en 2 parties
             preg_match("/@gauche{([^}]*)}/", $txt, $matches);
             $part_gauche = isset($matches[1]) ? $matches[1] : '';
             preg_match("/@centre{([^}]*)}/", $txt, $matches);
             $part_centre = isset($matches[1]) ? $matches[1] : '';
-    
+            
             // écrire le résultat
             $this->SetY($cur_y);
             if (! empty($part_gauche)) {

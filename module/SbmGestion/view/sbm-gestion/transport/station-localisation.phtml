@@ -14,8 +14,11 @@
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
-$this->headScript()->captureStart();?>
+$this->headScript()->appendFile('/js/StyledMarker.js');
+$this->headScript()->captureStart();
+?>
 var marker;
+var tMarkers = new Array();
 function initialiser() {
     var latlng = new google.maps.LatLng(<?php echo $this->config['centre']['lat'];?>, <?php echo $this->config['centre']['lng'];?>);
     // initialisation des paramètres de la carte
@@ -37,9 +40,9 @@ function initialiser() {
         },
         streetViewControl: true
     };
-    var carte = new google.maps.Map(document.getElementById('carte-inner'), options);
+    var oCarte = new google.maps.Map(document.getElementById('carte-inner'), options);
     // define OSM map type pointing at the OpenStreetMap tile server
-    carte.mapTypes.set("OSM", new google.maps.ImageMapType({
+    oCarte.mapTypes.set("OSM", new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
             return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
         },
@@ -49,9 +52,27 @@ function initialiser() {
         opacity: 1,
         alt: "Carte OpenStreetMap"
     }));
+    // info bulle
+    var oInfo = new google.maps.InfoWindow();
+    // placement des markers
+    for (var i = 0; i < tMarkers.length; i++) {
+        var optionsMarker = {
+            'styleIcon': new StyledIcon(StyledIconTypes.BUBBLE,{color:tMarkers[i].color,text:tMarkers[i].text}),
+            'map': oCarte,
+            'position': new google.maps.LatLng( tMarkers[i].lat, tMarkers[i].lng),
+            'numero': i,
+            'title': tMarkers[i].title
+        }
+        var oMarker = new StyledMarker(optionsMarker);        
+        // listeners
+        google.maps.event.addListener(oMarker, 'click', function(data) {
+            oInfo.setContent(tMarkers[this.numero].info);
+            oInfo.open(this.getMap(), this);
+        });
+    }
     // initialisation du marker
     var optionsMarqueur = {
-        map: carte,
+        map: oCarte,
         position: new google.maps.LatLng(document.getElementById('lat').value, document.getElementById('lng').value),
         title: 'point d\'arrêt'
     }
@@ -64,10 +85,10 @@ function initialiser() {
         position : latlng
     });
     google.maps.event.addListener(marker, 'click', function() {
-        infoWindow.open(carte,marker);
+        infoWindow.open(oCarte,marker);
     });
     
-    google.maps.event.addListener(carte, 'click', function(event) {
+    google.maps.event.addListener(oCarte, 'click', function(event) {
         var latlng = event.latLng;
     	document.getElementById('lat').value = latlng.lat();
     	document.getElementById('lng').value = latlng.lng();
@@ -75,7 +96,7 @@ function initialiser() {
     	   marker.setPosition(latlng);
     	} else {
     	   var optionsMarker = {
-    	       map: carte,
+    	       map: oCarte,
     	       position: new google.maps.LatLng(latlng.lat(), latlng.lng()),
     	       title: 'point d\'arrêt'
     	   }
@@ -87,7 +108,31 @@ function initialiser() {
 <?php 
 $this->headScript()->captureEnd();
 // lancement du script (sera affiché dans le layout à la fin de la page
-$this->inlineScript()->captureStart(); ?>
+$i = 0;
+$tMarkers = "[\n";
+foreach ($this->ptStations as $pt) {
+    $e = $pt->getAttribute('station');
+    if ($e->ouverte) {
+        $color = "#00ff00";
+        $nature = "ouverte";
+    } else {
+        $color = "#ff0000";
+        $nature = "fermée";
+    }
+    $d = array(
+        '<b>' . $this->escapeHtml($e->nom) . '</b>',
+        implode(' ', array(
+            $e->codePostal,
+            $e->commune
+        ))
+    );
+
+    $tMarkers .= '{"lat":' . $pt->getLatitude() . ',"lng":' . $pt->getLongitude() . ',"color":"' . $color . '","text":"S","title":"' . $e->nom . '","info":"' . implode('<br>', $d) . "\"},\n";
+}
+$tMarkers .= ']';
+$this->inlineScript()->captureStart(); 
+?>
+tMarkers = <?php echo $tMarkers;?>;
 initialiser();
 <?php $this->inlineScript()->captureEnd(); ?>
 <h1>Position d'une station sur la carte</h1>

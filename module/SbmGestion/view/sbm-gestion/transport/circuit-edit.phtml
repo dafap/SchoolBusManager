@@ -8,11 +8,47 @@
  * @filesource view/sbm-gestion/transport/circuit-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2014
- * @version 2014-1
+ * @date 23 déc. 2015
+ * @version 2015-1.6.9
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->captureStart();
+?>
+function montreMer(visible) {
+    if (visible) {
+        $("#circuit-edit-m2").show();
+        $("#circuit-edit-s2").show();
+    } else {
+        $("#circuit-edit-m2").hide();
+        $("#circuit-edit-s2").hide();
+    }
+}
+function montreSam(visible) {
+    if (visible) {
+        $("#circuit-edit-m3").show();
+        $("#circuit-edit-s3").show();
+    } else {
+        $("#circuit-edit-m3").hide();
+        $("#circuit-edit-s3").hide();
+    }
+}
+$(document).ready(function($) {
+$("#semaine-mer").click(function(){
+    montreMer($(this).is(":checked"));
+});
+$("#semaine-sam").click(function(){
+    montreSam($(this).is(":checked"));
+});
+});
+<?php 
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+montreMer($("#semaine-mer").is(":checked"));
+montreSam($("#semaine-sam").is(":checked"));
+<?php 
+$this->inlineScript()->captureEnd();
 $retour = $this->url('sbmgestion/transport', array('action'=> 'circuit-liste', 'page' => $this->page));
 $hiddens = array();
 $actions = array(
