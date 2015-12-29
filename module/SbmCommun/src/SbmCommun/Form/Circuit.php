@@ -8,8 +8,8 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2015
- * @version 2015-1
+ * @date 23 déc. 2015
+ * @version 2015-1.6.9
  */
 namespace SbmCommun\Form;
 
@@ -450,5 +450,23 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         }
         // appelle la méthode de ZF2
         parent::setData($data);
+    }
+
+    public function setValueOptions($element, array $values_options)
+    {
+        if ($element == 'semaine') {
+            $values_options_semaine = array();
+            foreach ($values_options as $key => $value) {
+                $values_options_semaine[] = array(
+                    'value' => $key,
+                    'label' => $value,
+                    'attributes' => array(
+                        'id' => 'semaine-' . $value
+                    )
+                );
+            }
+            $values_options = $values_options_semaine;
+        }
+        return parent::setValueOptions($element, $values_options);
     }
 }

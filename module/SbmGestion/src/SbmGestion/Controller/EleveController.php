@@ -201,7 +201,7 @@ class EleveController extends AbstractActionController
         } else {
             $responsableId = $this->getFromSession('responsableId', 0, $this->getSessionNamespace('ajout', 1));
         }
-        var_dump($responsableId);
+        //var_dump($responsableId);
         if (array_key_exists('origine', $args)) {
             $this->redirectToOrigin()->setBack($args['origine']);
             // par la suite, on ne s'occupe plus de 'origine' mais on ressort par un redirectToOrigin()->back()

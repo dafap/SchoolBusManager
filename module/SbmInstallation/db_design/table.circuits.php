@@ -8,8 +8,8 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 févr. 2015
- * @version 2015-1
+ * @date 23 déc. 2015
+ * @version 2015-1.6.9
  */
 
 
@@ -27,12 +27,12 @@ return array(
             'serviceId' => 'varchar(11) NOT NULL',
             'stationId' => 'int(11) NOT NULL',
             'semaine' => 'tinyint(4) UNSIGNED NOT NULL DEFAULT "31"',
-            'm1' => 'time DEFAULT NULL COMMENT "Aller (4 jours)"',
-            's1' => 'time DEFAULT NULL COMMENT "Retour (4 jours)"',
-            'm2' => 'time DEFAULT NULL COMMENT "Aller (Me)"',
-            's2' => 'time DEFAULT NULL COMMENT "Retour (Me)"',
-            'm3' => 'time DEFAULT NULL COMMENT "Aller (Sa)"',
-            's3' => 'time DEFAULT NULL COMMENT "Retour (Sa)"',
+            'm1' => 'time NOT NULL DEFAULT "00:00:00" COMMENT "Aller (4 jours)"',
+            's1' => 'time NOT NULL DEFAULT "23:59:59" COMMENT "Retour (4 jours)"',
+            'm2' => 'time NOT NULL DEFAULT "00:00:00" COMMENT "Aller (Me)"',
+            's2' => 'time NOT NULL DEFAULT "23:59:59" COMMENT "Retour (Me)"',
+            'm3' => 'time NOT NULL DEFAULT "00:00:00" COMMENT "Aller (Sa)"',
+            's3' => 'time NOT NULL DEFAULT "23:59:59" COMMENT "Retour (Sa)"',
             'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'montee' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"',
             'descente' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
