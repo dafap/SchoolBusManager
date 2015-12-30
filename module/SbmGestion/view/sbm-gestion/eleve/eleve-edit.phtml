@@ -143,13 +143,13 @@ function montreResponsable(r,data) {
       var responsable;
       responsable = oresponsable.titre + ' ' + oresponsable.nom + ' ' + oresponsable.prenom;
       var html;
-      html = 'email: '+oresponsable.email;
-      html += ' <div id="email'+r+'" style="display:inline;">';
-      html += '<input type="hidden" name="email'+r+'" value="'+oresponsable.email+'">';
-      html += '<input type="hidden" name="responsable'+r+'" value="' + responsable + '">';
-      html += '<input type="hidden" name="group" value="<?php echo $url_ici;?>">';
-      html += '<input type="submit" name="ecrire'+r+'" class="fam-email" title="Envoyer un email" value="" formaction="/gestion/eleve/responsable-mail">';
-      html += '</div>';
+      html = 'email: '+ oresponsable.email;
+      html += '<div id="email'+r+'" style="display: inline; margin-left: 5px;">'; 
+      html += '<input type="hidden" name="email' + r + '" value="' + oresponsable.email + '">'; 
+	  html += '<input type="hidden" name="responsable' + r + '" value="' + responsable + '">'; 
+	  html += '<input type="hidden" name="group" value="<?php echo $url_ici;?>">'; 
+	  html += '<input type="submit" name="ecrire' + r + '" class="fam-email" title="Envoyer un email" value="" formaction="/gestion/eleve/responsable-mail">'; 
+	  html += '</div>';
       $("#"+r+"-ligne4").html(html);    
     }
     $("#"+r+"-ligne5").html('Tél. '+oresponsable.telephoneF+' '+oresponsable.telephoneP+ ' '+oresponsable.telephoneT);
@@ -368,8 +368,6 @@ $("#tabs").tabs();
 montreDebutFin($("#eleve-anneeComplete").is(":checked"));
 montreMotifDerogation($("#eleve-derogation").is(":checked"));
 montreOngletGa($("#eleve-ga").is(":checked"));
-montreDemande('r1');
-montreDemande('r2');
 montreMotifRefus($("#eleve-accordR1").is(":checked"),$("#eleve-subventionR1").is(":checked"),'r1');
 montreMotifRefus($("#eleve-accordR2").is(":checked"),$("#eleve-subventionR2").is(":checked"),'r2');
 montreBlockAffectation($("#eleve-accordR1").is(":checked"),'r1');
@@ -390,6 +388,8 @@ $.ajax({
 			alert(xhr.status + " " + thrownError);
 		}
 });
+montreDemande('r1');
+montreDemande('r2');
 }
 <?php
 $this->inlineScript()->captureEnd();
@@ -510,52 +510,11 @@ echo $this->formHidden($this->form->get('csrf'));
 										data-button="btnaffectation" data-trajet="1"
 										data-href="/op:add"></i>
 								</h3>
-				    <?php
-        if (isset($structAffectations[1])) {
-            $id = 1;
-            echo '<table class="eleve-affectations">';
-            foreach ($structAffectations[1] as $j => $affectationsParJours) {
-                // il faut décoder $j
-                $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
-                foreach ($affectationsParJours as $s => $affectationsSens) {
-                    $sens = array(
-                        1 => 'Aller',
-                        2 => 'Retour',
-                        3 => 'Aller-retour'
-                    )[$s];
-                    foreach ($affectationsSens as $rang => $affectation) {
-                        $idDiv = 'tabs-1-affectationsR1-' . $id;
-                        $args = '/jours:' . $j;
-                        $args .= '/sens:' . $s;
-                        $args .= '/correspondance:' . $rang;
-                        $args .= '/station1Id:' . $affectation['station1Id'];
-                        $args .= '/station2Id:' . ($affectation['station2Id'] ?  : 'null');
-                        $args .= '/service1Id:' . $affectation['service1Id'];
-                        $args .= '/service2Id:' . ($affectation['service2Id'] ?  : 'null');
-                        ?>
-								<tr>
-									<td class="first"><?php echo $jours;?></td>
-									<td class="next second"><?php echo $sens;?></td>
-									<td class="next third"><?php echo $affectation['service1Id']?></td>
-									<td class="next"><?php echo $affectation['station1']?></td>
-									<td class="next"><?php echo $affectation['station2']?></td>
-									<td class="next last"><i class="fam-car"
-										title="Modifier une affectation" data-button="btnaffectation"
-										data-trajet="1" data-href="<?php echo '/op:edit' . $args;?>"></i>
-										<i class="fam-car-delete" title="Supprimer une affectation"
-										data-button="btnaffectation" data-trajet="1"
-										data-href="<?php echo '/op:delete' . $args;?>"></i></td>
-								</tr>
-                        <?php
-                    }
-                    unset($affectation);
-                }
-                unset($affectationsSens);
-            }
-            unset($affectationsParJours);
-            echo '</table>';
-        }
-        ?>
+								<?php
+								if (isset($structAffectations[1])) {
+								    echo $this->affectations(1, $structAffectations[1]);
+								}
+								?>
                             </div>
 						</div>
 					</div>
@@ -593,50 +552,11 @@ echo $this->formHidden($this->form->get('csrf'));
 										data-button="btnaffectation" data-trajet="2"
 										data-href="/op:add"></i>
 								</h3>
-				    <?php
-        if (isset($structAffectations[2])) {
-            $id = 1;
-            echo '<table class="eleve-affectations">';
-            foreach ($structAffectations[2] as $j => $affectationsParJours) {
-                // il faut décoder $j
-                $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
-                foreach ($affectationsParJours as $s => $affectationsSens) {
-                    $sens = array(
-                        1 => 'Aller',
-                        2 => 'Retour',
-                        3 => 'Aller-retour'
-                    )[$s];
-                    foreach ($affectationsSens as $rang => $affectation) {
-                        $idDiv = 'tabs-2-affectationsR2-' . $id;
-                        $args = '/jours:' . $j;
-                        $args .= '/sens:' . $s;
-                        $args .= '/correspondance:' . $rang;
-                        $args .= '/station1Id:' . $affectation['station1Id'];
-                        $args .= '/station2Id:' . ($affectation['station2Id'] ?  : 'null');
-                        $args .= '/service1Id:' . $affectation['service1Id'];
-                        $args .= '/service2Id:' . ($affectation['service2Id'] ?  : 'null');
-                        ?>
-								<tr>
-									<td class="first"><?php echo $jours;?></td>
-									<td class="next second"><?php echo $sens;?></td>
-									<td class="next third"><?php echo $affectation['service1Id']?></td>
-									<td class="next"><?php echo $affectation['station1']?></td>
-									<td class="next"><?php echo $affectation['station2']?></td>
-									<td class="next"><?php echo $affectation['service2Id']?></td>
-									<td class="next last"><i class="fam-car"
-										title="Modifier une affectation" data-button="btnaffectation"
-										data-trajet="2" data-href="<?php echo '/op:edit' . $args;?>"></i>
-										<i class="fam-car-delete" title="Supprimer une affectation"
-										data-button="btnaffectation" data-trajet="2"
-										data-href="<?php echo '/op:delete' . $args;?>"></i></td>
-								</tr>
-                        <?php
-                    }
-                }
-                echo '</table>';
-            }
-        }
-        ?>
+								<?php
+								if (isset($structAffectations[2])) {
+								    echo $this->affectations(2, $structAffectations[2]);
+								}
+								?>
                             </div>
 						</div>
 					</div>
@@ -671,11 +591,11 @@ echo $this->formHidden($this->form->get('csrf'));
 						</div>
 				        <?php endif;?>
 				    </div>
-				    <div class="clearfix">
-				        <div id="tabs-3-col1" class="float-left">
+					<div class="clearfix">
+						<div id="tabs-3-col1" class="float-left">
 							<h3>Inscription cette année scolaire</h3>
 							<div id="#scolarite-modeInscription">
-							    <div class="eleve-tabs-3-col-1-label">Mode d'inscription</div><?php echo $this->historique['scolarite']['internet'] ? 'par internet' : 'par formulaire papier';?></div>
+								<div class="eleve-tabs-3-col-1-label">Mode d'inscription</div><?php echo $this->historique['scolarite']['internet'] ? 'par internet' : 'par formulaire papier';?></div>
 							<div id="#scolarite-dateInscription">
 								<div class="eleve-tabs-3-col-1-label">Date d'inscription</div><?php echo formatDate($this->historique['scolarite']['dateInscription']);?></div>
 							<div id="#scolarite-dateModification">
@@ -688,10 +608,11 @@ echo $this->formHidden($this->form->get('csrf'));
 							<div id="#scolarite-duplicata">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
 								<span id="nbduplicata" class="right-10px"><?php echo $this->historique['scolarite']['duplicata'];?></span>
-								<input name="duplicata-moins" type="button" value="-" id="duplicatamoins">
-								</div>
+								<input name="duplicata-moins" type="button" value="-"
+									id="duplicatamoins">
+							</div>
 						</div>
-				    </div>
+					</div>
 				</div>
 
 			</div>

@@ -21,47 +21,8 @@
 		title="Ajouter une affectation pour <?php echo $this->identite;?>"
 		data-button="btnaffectation" data-trajet="<?php echo $this->trajet?>" data-href="/op:add"></i>
 </h3>
-<?php if (isset($this->structure)) : ?>
-<table class="eleve-affectations">
-<?php
-    foreach ($this->structure as $j => $affectationsParJours) {
-        // il faut décoder $j
-        $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
-        foreach ($affectationsParJours as $s => $affectationsSens) {
-            $sens = array(
-                1 => 'Aller',
-                2 => 'Retour',
-                3 => 'Aller-retour'
-            )[$s];
-            foreach ($affectationsSens as $rang => $affectation) {
-                $args = '/jours:' . $j;
-                $args .= '/sens:' . $s;
-                $args .= '/correspondance:' . $rang;
-                $args .= '/station1Id:' . $affectation['station1Id'];
-                $args .= '/station2Id:' . ($affectation['station2Id'] ?  : 'null');
-                $args .= '/service1Id:' . $affectation['service1Id'];
-                $args .= '/service2Id:' . ($affectation['service2Id'] ?  : 'null');
-                ?>
-<tr>
-		<td class="first"><?php echo $jours;?></td>
-		<td class="next second"><?php echo $sens;?></td>
-		<td class="next third"><?php echo $affectation['service1Id']?></td>
-		<td class="next"><?php echo $affectation['station1']?></td>
-		<td class="next"><?php echo $affectation['station2']?></td>
-		<td class="next last"><i class="fam-car" title="Modifier une affectation"
-			data-button="btnaffectation" data-trajet="<?php echo $this->trajet?>"
-			data-href="<?php echo '/op:edit' . $args;?>"></i> <i
-			class="fam-car-delete" title="Supprimer une affectation"
-			data-button="btnaffectation" data-trajet="<?php echo $this->trajet?>"
-			data-href="<?php echo '/op:delete' . $args;?>"></i></td>
-	</tr>
-<?php
-            }
-            unset($affectation);
-        }
-        unset($affectationsSens);
-    }
-    unset($affectationsParJours);
-    ?>
-</table>
-<?php endif;?> 
+<?php 
+if (isset($this->structure)) {
+    echo $this->affectations($this->trajet, $this->structure);
+}
+?> 
