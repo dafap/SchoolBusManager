@@ -176,6 +176,17 @@ class CriteresEleves extends SbmCommunCriteres
         if (! empty($this->data['nonaffecte'])) {
             $where->isNull('aff.eleveId');
         }
+        if (! empty($this->data['distancezero'])) {
+            $where->nest()
+                ->nest()
+                ->literal('demandeR1 > 0')
+                ->literal('distanceR1 = 0')
+                ->unnest()->or->nest()
+                ->literal('demandeR2 > 0')
+                ->literal('distanceR2 = 0')
+                ->unnest()
+                ->unnest();
+        }
         return $where;
     }
 

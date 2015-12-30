@@ -81,4 +81,12 @@ class Pictogrammes extends AbstractHelper
         }
         return $this;
     }
+    
+    public function addDistanceZero($demande1, $distance1, $demande2, $distance2)
+    {
+        if (($demande1 > 0 && $distance1 == 0.0) || ($demande2 > 0 && $distance2 == 0.0)) {
+            $this->pictogrammes[] = '<i class="fam-cog-error" title="Vérifier les distances"></i>';
+        }
+        return $this;
+    }
 }
