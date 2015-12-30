@@ -84,7 +84,7 @@ abstract class Filtre
             'sco.classeId' => $classeId
         );
     }
-    
+
     public static function byCommune($communeId)
     {
         return array(
@@ -96,7 +96,7 @@ abstract class Filtre
             )
         );
     }
-    
+
     public static function byEtablissement($etablissementId)
     {
         return array(
@@ -104,7 +104,7 @@ abstract class Filtre
             'sco.etablissementId' => $etablissementId
         );
     }
-    
+
     public static function byService($serviceId)
     {
         return array(
@@ -116,7 +116,7 @@ abstract class Filtre
             )
         );
     }
-    
+
     public static function byStation($stationId)
     {
         return array(
@@ -124,11 +124,14 @@ abstract class Filtre
             array(
                 'station1Id' => $stationId,
                 'or',
-                'station2Id' => $stationId
+                array(
+                    'station2Id' => $stationId,
+                    'isNotNull' => array('service2Id')
+                )
             )
         );
     }
-    
+
     public static function byTransporteur($transporteurId)
     {
         return array(
@@ -136,7 +139,7 @@ abstract class Filtre
             'transporteurId' => $transporteurId
         );
     }
-    
+
     public static function byOrganisme($organismeId)
     {
         return array(
@@ -144,7 +147,7 @@ abstract class Filtre
             'organismeId' => $organismeId
         );
     }
-    
+
     public static function byTarif($tarifId)
     {
         return array(

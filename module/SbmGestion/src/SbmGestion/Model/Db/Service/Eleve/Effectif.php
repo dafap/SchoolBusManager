@@ -463,9 +463,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
         foreach ($rowset as $row) {
             $result[$row['column']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteSrv2('station', array(
-            'inscrit' => 1
-        ), 'station2Id');
+        $rowset = $this->requeteSrv2('station', $this->arrayToWhere(null, array(
+            'inscrit' => 1,
+            'isNotNull' => array('a.service2Id')
+        )), 'station2Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r2'] = $row['effectif'];
         }
@@ -658,6 +659,13 @@ class Effectif extends AbstractQuery implements FactoryInterface
         return $statement->execute();
     }
 
+    /**
+     *
+     * @param string $by            
+     * @param Zend\Db\Sql\Where|array $conditions            
+     * @param string $group            
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
     private function requeteSrv2($by, $conditions, $group)
     {
         $select1 = new Select();
@@ -668,10 +676,14 @@ class Effectif extends AbstractQuery implements FactoryInterface
         $column = $by . '2Id';
         $foreign = $by . '1Id';
         $jointure = "a.millesime=correspondances.millesime AND a.eleveId=correspondances.eleveId AND a.trajet=correspondances.trajet AND a.jours=correspondances.jours AND a.sens=correspondances.sens AND a.$column=correspondances.$foreign";
-        $where = new Where();
-        $where->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
-        foreach ($conditions as $key => $value) {
-            $where->equalTo($key, $value);
+        if (is_array($conditions)) {
+            $where = new Where();
+            $where->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
+            foreach ($conditions as $key => $value) {
+                $where->equalTo($key, $value);
+            }
+        } else {
+            $where = $conditions->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
         }
         $select = $this->sql->select();
         $select->from(array(
