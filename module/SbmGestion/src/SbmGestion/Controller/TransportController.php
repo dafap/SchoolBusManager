@@ -685,10 +685,12 @@ class TransportController extends AbstractActionController
      */
     public function communeListeAction()
     {
+        //die(var_dump($this->getFromSession('post', 'vide', $this->getSessionNamespace())));
         $args = $this->initListe('communes');
+        
         if ($args instanceof Response)
             return $args;
-        
+        //die(var_dump($args['form']));
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Communes')
