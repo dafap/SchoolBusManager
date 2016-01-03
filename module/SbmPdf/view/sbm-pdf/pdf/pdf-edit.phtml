@@ -13,8 +13,8 @@
  * @filesource pdf-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 30 déc. 2015
+ * @version 2015-1.6.9
  */
 use Zend\Form\View\Helper\FormRow;
 
@@ -150,7 +150,7 @@ $texte = $this->form->get('texte');
 $texte->setAttribute('formaction', $this->url('sbmpdf', array('action' => 'texte-format', 'page' => $this->page)));
 $etiquette = $this->form->get('etiquette');
 $etiquette->setAttribute('formaction', $this->url('sbmpdf', array('action' => 'etiquette-format', 'page' => $this->page)));
-
+$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmpdf', array(
     'action' => 'pdf-liste',
     'page' => $this->page
@@ -160,7 +160,8 @@ $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
-        'title' => 'Retour'
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
     )
 );
 ?>

@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 déc. 2015
- * @version 2015-1.6.9
+ * @date 3 jan. 2016
+ * @version 2016-1.7.0
  */
 namespace SbmGestion\Controller;
 
@@ -39,6 +39,7 @@ use SbmGestion\Form\SbmGestion\Form;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmCartographie\Model\Point;
 use Zend\Db\Sql\Zend\Db\Sql;
+use SbmCommun\Model\Mvc\Controller\EditResponse;
 
 class TransportController extends AbstractActionController
 {
@@ -104,8 +105,11 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormCircuit();
-        $form->setValueOptions('serviceId', $this->getServiceLocator()->get('Sbm\Db\Select\Services'))
-            ->setValueOptions('stationId', $this->getServiceLocator()->get('Sbm\Db\Select\Stations')->ouvertes())
+        $form->setValueOptions('serviceId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Stations')
+            ->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
             'data' => array(
@@ -117,7 +121,16 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         
-        $r = $this->editData($params);
+        try {
+            $r = $this->editData($params);
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
+                $this->flashMessenger()->addWarningMessage('Impossible ! Cet arrêt est déjà sur ce circuit.');
+                $r = new EditResponse('warning', array());;
+            } else {
+                throw new \Zend\Db\Adapter\Exception\InvalidQueryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+            }
+        }
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -226,7 +239,16 @@ class TransportController extends AbstractActionController
             ),
             'form' => $form
         );
-        $r = $this->addData($params);
+        try {
+            $r = $this->addData($params);
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
+                $this->flashMessenger()->addWarningMessage('Impossible ! Cet arrêt est déjà sur ce circuit.');
+                $r = 'warning';
+            } else {
+                throw new \Zend\Db\Adapter\Exception\InvalidQueryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+            }
+        }
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -685,10 +707,12 @@ class TransportController extends AbstractActionController
      */
     public function communeListeAction()
     {
+        // die(var_dump($this->getFromSession('post', 'vide', $this->getSessionNamespace())));
         $args = $this->initListe('communes');
+        
         if ($args instanceof Response)
             return $args;
-        
+            // die(var_dump($args['form']));
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
                 ->get('Sbm\Db\Table\Communes')
@@ -2320,12 +2344,11 @@ class TransportController extends AbstractActionController
 
     /**
      * Ajout d'une nouvelle fiche de station
-     * 
+     *
      * ANCIENNE VERSION
      * (la validation porte sur un champ csrf)
      *
-     * @return \Zend\View\Model\ViewModel 
-     * public function stationAjoutAction()
+     * @return \Zend\View\Model\ViewModel public function stationAjoutAction()
      *         {
      *         $currentPage = $this->params('page', 1);
      *         $form = new FormStation();
@@ -2364,16 +2387,16 @@ class TransportController extends AbstractActionController
      *         }
      */
     
-     /**
-      * Montre la carte des stations.
-      * Un clic dans la carte permet de placer la nouvelle station. 
-      * On enregistre la position.
-      * Le formulaire prérempli est présenté avec la commune, l'adresse (N° + rue) 
-      * et les coordonnées X et Y
-      * On peut alors changer le nom de la station avant d'enregistrer la fiche.
-      * 
-      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
-      */
+    /**
+     * Montre la carte des stations.
+     * Un clic dans la carte permet de placer la nouvelle station.
+     * On enregistre la position.
+     * Le formulaire prérempli est présenté avec la commune, l'adresse (N° + rue)
+     * et les coordonnées X et Y
+     * On peut alors changer le nom de la station avant d'enregistrer la fiche.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function stationAjoutAction()
     {
         $currentPage = $this->params('page', 1);
@@ -2484,7 +2507,7 @@ class TransportController extends AbstractActionController
         } else {
             $formCarte->setAttribute('action', $this->url()
                 ->fromRoute('sbmgestion/transport', array(
-                'action' => 'station-ajout1',
+                'action' => 'station-ajout',
                 'page' => $this->params('page', $currentPage)
             )));
             $tStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
@@ -2736,7 +2759,8 @@ class TransportController extends AbstractActionController
 
     /**
      * Localisation d'une station sur la carte et enregistrement de ses coordonnées
-     * Toutes les stations sont affichées. 
+     * Toutes les stations sont affichées.
+     *
      * La station à localiser est repérée par un bulet rouge.
      */
     public function stationLocalisationAction()

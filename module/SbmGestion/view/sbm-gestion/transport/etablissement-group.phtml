@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/etablissement-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 30 déc. 2015
+ * @version 2015-1.6.9
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', array(
@@ -90,6 +90,8 @@ echo $this->flashMessenger()->render('default');
 					<th>Commune</th>
 					<th>Etablissement</th>
 					<th>Classe</th>
+					<th>Circuits</th>
+					<th>Stations</th>
 					<th></th>
 				</tr>
 			<?php
@@ -127,6 +129,8 @@ foreach ($data as $row) :
 					<td><?php echo $this->escapeHtml($row['commune']);?></td>
 					<td><?php echo $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?php echo $this->escapeHtml($row['classe']);?></td>
+					<td><?php echo implode('<br>', array($row['service1Id'], $row['service2Id']));?></td>
+					<td><?php echo implode('<br>', array($row['station1'], $row['station2']));?></td>
 					<td><?php echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
                 <?php endforeach;?>

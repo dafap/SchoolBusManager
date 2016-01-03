@@ -132,9 +132,11 @@ abstract class AbstractQuery
                                 throw new \InvalidArgumentException('Nombre incorrect de paramètres dans notEqualTo.');
                         }
                         break;
+                    case 'isNull':
                     case 'is null':
                         $where->isNull($value[0]);
                         break;
+                    case 'isNotNull':
                     case 'is not null':
                         $where->isNotNull($value[0]);
                         break;

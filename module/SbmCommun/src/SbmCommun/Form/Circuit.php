@@ -8,8 +8,8 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 déc. 2015
- * @version 2015-1.6.9
+ * @date 3 jan. 2016
+ * @version 2016-1.7.0
  */
 namespace SbmCommun\Form;
 
@@ -71,6 +71,29 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Quel point d\'arrêt ?',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'name' => 'passage',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'circuit-passage',
+                'class' => 'sbm-width-5c'
+            ),
+            'options' => array(
+                'label' => 'Passage',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'value_options' => array(
+                    '1' => '1',
+                    '2' => '2',
+                    '3' => '3',
+                    '4' => '4'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
