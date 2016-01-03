@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 octobre 2015
- * @version 2015-2
+ * @date 3 jan. 2016
+ * @version 2016-1.7.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 

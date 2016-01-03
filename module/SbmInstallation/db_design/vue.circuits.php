@@ -7,8 +7,8 @@
  * @filesource vue.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 févr. 2015
- * @version 2015-1
+ * @date 3 jan. 2016
+ * @version 2016-1.7.0
  */
 return array(
     'name' => 'circuits',

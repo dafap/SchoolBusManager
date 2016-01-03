@@ -8,18 +8,16 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 déc. 2015
- * @version 2015-1.6.9
+ * @date 3 jan. 2016
+ * @version 2016-1.7.0
  */
-
-
 return array(
     'name' => 'circuits',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure'=> array(
+    'structure' => array(
         'fields' => array(
             'circuitId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -42,7 +40,20 @@ return array(
             'commentaire2' => 'text', // retour
             'geopt' => 'GEOMETRY'
         ),
-        'primary_key' => array('circuitId'),
+        'primary_key' => array(
+            'circuitId'
+        ),
+        'keys' => array(
+            'milserstapas' => array(
+                'unique' => true,
+                'fields' => array(
+                    'millesime',
+                    'serviceId',
+                    'stationId',
+                    'passage'
+                )
+            )
+        ),
         'foreign key' => array(
             array(
                 'key' => 'serviceId',
@@ -73,7 +84,7 @@ return array(
         ),
         'engine' => 'InnoDb',
         'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci',
+        'collate' => 'utf8_unicode_ci'
     ),
     'data' => __DIR__ . '/data/data.circuits.php'
 );
