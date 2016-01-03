@@ -2486,7 +2486,7 @@ class TransportController extends AbstractActionController
         } else {
             $formCarte->setAttribute('action', $this->url()
                 ->fromRoute('sbmgestion/transport', array(
-                'action' => 'station-ajout1',
+                'action' => 'station-ajout',
                 'page' => $this->params('page', $currentPage)
             )));
             $tStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
