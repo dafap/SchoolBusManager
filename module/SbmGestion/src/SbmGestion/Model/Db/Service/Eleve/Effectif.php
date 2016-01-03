@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 octobre 2015
- * @version 2015-2
+ * @date 3 jan. 2016
+ * @version 2016-1.7.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -273,6 +273,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
         $rowset = $this->requeteCl('etablissementId', $filtre, $group, false);
         foreach ($rowset as $row) {
             $result[$row['etablissementId']]['demandes'] = $row['effectif'];
+            $result[$row['etablissementId']]['transportes'] = 0;
         }
         $filtre = array(
             'inscrit' => 1,
@@ -463,9 +464,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
         foreach ($rowset as $row) {
             $result[$row['column']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteSrv2('station', array(
-            'inscrit' => 1
-        ), 'station2Id');
+        $rowset = $this->requeteSrv2('station', $this->arrayToWhere(null, array(
+            'inscrit' => 1,
+            'isNotNull' => array('a.service2Id')
+        )), 'station2Id');
         foreach ($rowset as $row) {
             $result[$row['column']]['r2'] = $row['effectif'];
         }
@@ -658,6 +660,13 @@ class Effectif extends AbstractQuery implements FactoryInterface
         return $statement->execute();
     }
 
+    /**
+     *
+     * @param string $by            
+     * @param Zend\Db\Sql\Where|array $conditions            
+     * @param string $group            
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
     private function requeteSrv2($by, $conditions, $group)
     {
         $select1 = new Select();
@@ -668,10 +677,14 @@ class Effectif extends AbstractQuery implements FactoryInterface
         $column = $by . '2Id';
         $foreign = $by . '1Id';
         $jointure = "a.millesime=correspondances.millesime AND a.eleveId=correspondances.eleveId AND a.trajet=correspondances.trajet AND a.jours=correspondances.jours AND a.sens=correspondances.sens AND a.$column=correspondances.$foreign";
-        $where = new Where();
-        $where->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
-        foreach ($conditions as $key => $value) {
-            $where->equalTo($key, $value);
+        if (is_array($conditions)) {
+            $where = new Where();
+            $where->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
+            foreach ($conditions as $key => $value) {
+                $where->equalTo($key, $value);
+            }
+        } else {
+            $where = $conditions->equalTo('a.millesime', $this->millesime)->isNull('correspondances.millesime');
         }
         $select = $this->sql->select();
         $select->from(array(

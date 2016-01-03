@@ -315,7 +315,8 @@ echo $this->flashMessenger()->render('default');
             $inscrit |= ($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 && $eleve['subventionR2'] == 1);
             $this->pictogrammes('init')
                 ->addPreinscrit(! $inscrit)
-                ->addSansAffectation($eleve['affecte']);
+                ->addSansAffectation($eleve['affecte'])
+                ->addDistanceZero($eleve['demandeR1'], $eleve['distanceR1'], $eleve['demandeR2'], $eleve['distanceR2']);
             ?>
          <tr class="<?php echo $tr_css;?>">
 					<td <?php echo $rowspan;?>>

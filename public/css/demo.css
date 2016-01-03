@@ -698,14 +698,16 @@ div#fiche-inner div.row-inner input.cancel {
 	margin-left: 10px;
 }
 #fiche-inner #eleve #wrapper-joursTransport label {
-	width: 4em;
+	width: 5em;
 	padding-left: 0;
 }
-#fiche-inner #eleve #wrapper-commentaire textarea {
+#fiche-inner #eleve #wrapper-commentaire textarea,
+#fiche-inner #responsable #wrapper-commentaire textarea {	
 	width : 99.5%;
 	border-radius: 4px 4px 4px 4px;
 }
-#fiche-inner #eleve #wrapper-commentaire label {
+#fiche-inner #eleve #wrapper-commentaire label,
+#fiche-inner #responsable #wrapper-commentaire label {
 	display: block;
 	float: left;
 	left: 20px;
@@ -788,6 +790,16 @@ div.depot #fiche-inner input.submit {
 #fiche-inner #libelle input.submit {
 	margin-top: 6px;
 	margin-left: 75px;	
+}
+/*-------------- Fiche organismes ----------------*/
+#fiche-inner #organisme label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 180px;
+}
+#fiche-inner #organisme input.submit {
+	margin-top: 6px;
+	margin-left: 185px;	
 }
 /*-------------- Fiche paiements --------------------*/
 #fiche-inner #paiement label {
@@ -877,6 +889,16 @@ div.depot #fiche-inner input.submit {
 #fiche-inner #responsable select#responsable-titre2 {
 	vertical-align: top;
 } 
+/*-------------- Fiche secteurs scolaires ------------- */
+#fiche-inner #secteur-scolaire label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+#fiche-inner #secteur-scolaire input.submit {
+	margin-top: 6px;
+	margin-left: 175px;	
+}
 /*-------------- Fiche services ---------------------*/
 #fiche-inner #service label {
 	display: inline-block;
@@ -1198,4 +1220,24 @@ div#parent-wrapper {
 }
 #fiche-inner .sbm-document-table fieldset label {
 	width: auto;
+}
+div.planche table {
+	margin-left: 70px;
+	border: 1px solid #31708f;
+	border-collapse: collapse;
+}
+div.planche table td {
+	border: 1px solid #31708f;
+}
+
+/*-------------------- Statistiques ----------------------*/
+table.statistiques th, table.statistiques td {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+table.statistiques th.border-left, table.statistiques td.border-left {
+	border-left: 1px solid #e3eaec;
+}
+table.statistiques th.border-bold, table.statistiques td.border-bold {
+	border-left: 1px solid #9ab3ba;
 }

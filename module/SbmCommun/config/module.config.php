@@ -174,6 +174,7 @@ return array(
     ),
     'view_helpers' => array(
         'invokables' => array(
+            'affectations' => 'SbmCommun\Form\View\Helper\Affectations',
             'listeLigneActions' => 'SbmCommun\Form\View\Helper\ListeLigneActions',
             'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',
             'telephone' => 'SbmCommun\Form\View\Helper\Telephone',

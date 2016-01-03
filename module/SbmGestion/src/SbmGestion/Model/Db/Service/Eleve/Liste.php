@@ -118,7 +118,9 @@ class Liste extends AbstractQuery implements FactoryInterface
         ), 'res.communeId=comres.communeId', empty($columns['comres']) ? array() : $columns['comres'])
             ->join(array(
             'comsco' => $this->db->getCanonicName('communes', 'table')
-        ), 'comsco.communeId=sco.communeId', empty($columns['comsco']) ? array() : $columns['comsco'], Select::JOIN_LEFT);
+        ), 'comsco.communeId=sco.communeId', empty($columns['comsco']) ? array() : $columns['comsco'], Select::JOIN_LEFT)
+            ->join(array('sta1' => $this->db->getCanonicName('stations', 'table')), 'sta1.stationId=aff.station1Id', empty($columns['sta1']) ? array() : $columns['sta1'], Select::JOIN_LEFT)
+            ->join(array('sta2' => $this->db->getCanonicName('stations', 'table')), 'sta2.stationId=aff.station2Id', empty($columns['sta2']) ? array() : $columns['sta2'], Select::JOIN_LEFT);
         if (! empty($columns['ele'])) {
             $select->columns($columns['ele']);
         }
@@ -158,7 +160,9 @@ class Liste extends AbstractQuery implements FactoryInterface
             'res' => array(
                 'email',
                 'responsable' => new Literal('CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
-            )
+            ),
+            'sta1' => array('station1' => 'nom'),
+            'sta2' => array('station2' => 'nom')
         );
         $select = $this->select($columns, $order);
         $where = new Where();

@@ -18,8 +18,8 @@
  * @filesource etablissement-service-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2015
- * @version 2015-1
+ * @date 30 déc. 2015
+ * @version 2015-1.6.9
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()
@@ -51,8 +51,8 @@ $(document).ready(function($) {
 });
 <?php
 $this->headScript()->captureEnd();
-
-$retour = $this->url('sbmgestion/transport', array(
+$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmgestion/transport', array(
     'action' => $this->origine,
     'page' => $this->page
 ));
@@ -64,8 +64,9 @@ $hiddens = array(
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
-        'title' => 'Retour'
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
     )
 );
 if ($this->origine == 'service-etablissement') {

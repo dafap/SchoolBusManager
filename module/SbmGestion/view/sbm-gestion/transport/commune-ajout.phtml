@@ -8,11 +8,12 @@
  * @filesource view/sbm-gestion/transport/commune-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2014
- * @version 2014-1
+ * @date 30 déc. 2015
+ * @version 2015-1.6.9
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmgestion/transport', array(
+$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmgestion/transport', array(
     'action' => 'commune-liste',
     'page' => $this->page
 ));
@@ -20,8 +21,9 @@ $hiddens = array();
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
-        'formaction' => $retour,
-        'title' => 'Retour'
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
     )
 );
 ?>
