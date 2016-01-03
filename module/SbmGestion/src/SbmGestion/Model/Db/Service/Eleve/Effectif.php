@@ -273,6 +273,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
         $rowset = $this->requeteCl('etablissementId', $filtre, $group, false);
         foreach ($rowset as $row) {
             $result[$row['etablissementId']]['demandes'] = $row['effectif'];
+            $result[$row['etablissementId']]['transportes'] = 0;
         }
         $filtre = array(
             'inscrit' => 1,
