@@ -77,6 +77,29 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
             )
         ));
         $this->add(array(
+            'name' => 'passage',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'circuit-passage',
+                'class' => 'sbm-width-5c'
+            ),
+            'options' => array(
+                'label' => 'Passage',
+                'label_attributes' => array(
+                    'class' => 'sbm-label'
+                ),
+                'value_options' => array(
+                    '1' => '1',
+                    '2' => '2',
+                    '3' => '3',
+                    '4' => '4'
+                ),
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
             'name' => 'semaine',
             'type' => 'Zend\Form\Element\MultiCheckbox',
             'attributes' => array(

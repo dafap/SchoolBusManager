@@ -26,6 +26,7 @@ return array(
             'millesime' => 'int(11) NOT NULL',
             'serviceId' => 'varchar(11) NOT NULL',
             'stationId' => 'int(11) NOT NULL',
+            'passage' => 'int(11) NOT NULL DEFAULT "1"',
             'semaine' => 'tinyint(4) UNSIGNED NOT NULL DEFAULT "31"',
             'm1' => 'time NOT NULL DEFAULT "00:00:00" COMMENT "Aller (4 jours)"',
             's1' => 'time NOT NULL DEFAULT "23:59:59" COMMENT "Retour (4 jours)"',

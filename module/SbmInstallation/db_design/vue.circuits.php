@@ -33,6 +33,9 @@ return array(
                 'field' => 'stationId'
             ),
             array(
+                'field' => 'passage'
+            ),
+            array(
                 'field' => 'semaine'
             ),
             array(

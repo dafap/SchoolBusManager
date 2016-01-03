@@ -39,6 +39,7 @@ use SbmGestion\Form\SbmGestion\Form;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmCartographie\Model\Point;
 use Zend\Db\Sql\Zend\Db\Sql;
+use SbmCommun\Model\Mvc\Controller\EditResponse;
 
 class TransportController extends AbstractActionController
 {
@@ -120,7 +121,16 @@ class TransportController extends AbstractActionController
             'form' => $form
         );
         
-        $r = $this->editData($params);
+        try {
+            $r = $this->editData($params);
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
+                $this->flashMessenger()->addWarningMessage('Impossible ! Cet arrêt est déjà sur ce circuit.');
+                $r = new EditResponse('warning', array());;
+            } else {
+                throw new \Zend\Db\Adapter\Exception\InvalidQueryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+            }
+        }
         if ($r instanceof Response) {
             return $r;
         } else {
