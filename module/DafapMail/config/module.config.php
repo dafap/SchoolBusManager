@@ -9,18 +9,32 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 mai 2015
- * @version 2015-1
+ * @date 4 janv. 2016
+ * @version 2016-1.7.1
  */
 return array(
     'acl' => array(
         'resources' => array(
             'dafapmail' => array(
                 'allow' => array(
-                    'roles' => array('parent', 'transporteur', 'etablissement', 'secretariat')
+                    'roles' => array(
+                        'parent',
+                        'transporteur',
+                        'etablissement',
+                        'secretariat'
+                    )
+                ),
+                'actions' => array(
+                    'last-day-changes' => array(
+                        'allow' => array(
+                            'roles' => array(
+                                'guest'
+                            )
+                        )
+                    )
                 )
             )
-        ),
+        )
     ),
     'sbm' => array(
         'mail' => array(
@@ -39,9 +53,10 @@ return array(
                 'transportSsl' => array(
                     'use_ssl' => false,
                     'connection_type' => 'tls'
-                ) // ssl | tls
+                )
+            ) // ssl | tls
 
-            ),
+            ,
             'message' => array(
                 'type' => 'text/html',
                 'html_encoding' => \Zend\Mime\Mime::ENCODING_8BIT,
