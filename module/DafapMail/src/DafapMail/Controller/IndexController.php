@@ -170,8 +170,16 @@ class IndexController extends AbstractActionController
                 $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
             }
         }
-        return new ViewModel(array(
-            'destinataires' => $controle
-        ));
+        if (empty($controle)) {
+            $message = 'Durant les dernières 24 heures, il n\'y a pas eu de modification d\'inscription. Par conséquent, aucun mail n\'a été envoyé.';
+        } else {
+            $message = 'Suite aux modifications d\'inscription qui ont eu lieu durant les dernières 24 heures les transporteurs suivants ont reçu un email d\'information.';
+            foreach ($controle as $value) {
+                $message .= "\n - $value";
+            }
+        }
+        return $this->getResponse()
+        ->setContent($message)
+        ->setStatusCode(200);
     }
 }
