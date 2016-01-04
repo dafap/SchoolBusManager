@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1.6.7
+ * @date 4 jan. 2016
+ * @version 2016-1.7.1
  */
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));

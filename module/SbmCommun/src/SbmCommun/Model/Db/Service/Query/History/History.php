@@ -10,7 +10,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 4 janv. 2016
- * @version 2016-1
+ * @version 2016-1.7.1
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 

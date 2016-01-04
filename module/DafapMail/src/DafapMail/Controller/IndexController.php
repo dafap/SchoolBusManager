@@ -6,13 +6,13 @@
  * (voir $mail, clé 'destinataires')
  * Les adresses 'from' et 'replyTo' se trouvent aussi dans ce fichier de configuration (clé 'message')
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package DafapMail/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2015
- * @version 2015-1
+ * @date 4 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace DafapMail\Controller;
 
@@ -109,6 +109,14 @@ class IndexController extends AbstractActionController
         ));
     }
 
+    /**
+     * Envoie des mails aux transporteurs lorsque des changements ont lieu dans les
+     * inscriptions des enfants qu'ils transportent (nouvelle affectation, changement 
+     * d'affectation, suppression d'une affectation ou élève rayé)
+     * Cette tâche doit être planifiée dans un cron.
+     * 
+     * @return \Zend\View\Model\ViewModel
+     */
     public function lastDayChangesAction()
     {
         $history = $this->getServiceLocator()->get('Sbm\Db\Query\History');
