@@ -161,6 +161,7 @@ return array(
             'Sbm\Db\Query\SecteursScolairesClgPu' => 'SbmCommun\Model\Db\Service\Query\Etablissement\SecteursScolairesClgPu',
             'Sbm\Db\Query\Services' => 'SbmCommun\Model\Db\Service\Query\Service\Services',
             'Sbm\Db\Query\Stations' => 'SbmCommun\Model\Db\Service\Query\Station\Stations',
+            'Sbm\Db\Query\History' => 'SbmCommun\Model\Db\Service\Query\History\History',
             'Sbm\Statistiques\Eleve' => 'SbmCommun\Model\Db\Service\Query\Eleve\Statistiques',
             'Sbm\Statistiques\Paiement' => 'SbmCommun\Model\Db\Service\Query\Paiement\Statistiques',
             'Sbm\Statistiques\Responsable' => 'SbmCommun\Model\Db\Service\Query\Responsable\Statistiques'

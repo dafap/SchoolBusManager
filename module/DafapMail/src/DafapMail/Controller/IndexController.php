@@ -19,23 +19,25 @@ namespace DafapMail\Controller;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DafapMail\Form\Mail as MailForm;
-use DafapMail\Model\Template;
+use DafapMail\Model\Template as MailTemplate;
 use SbmCommun\Model\StdLib;
 
 class IndexController extends AbstractActionController
 {
+
     /**
      * Par défaut, page d'envoi d'un message au service de transport.
      * (à configurer dans config/autolaod/sbm.local.php)
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
      */
     public function indexAction()
     {
         $auth = $this->getServiceLocator()
-        ->get('Dafap\Authenticate')
-        ->by();
+            ->get('Dafap\Authenticate')
+            ->by();
         
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -47,7 +49,9 @@ class IndexController extends AbstractActionController
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('login', array('action' => 'home-page'));
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'home-page'
+                ));
             }
         }
         $user = $auth->getIdentity();
@@ -68,7 +72,11 @@ class IndexController extends AbstractActionController
                 }
                 // envoie l'email
                 $params = array(
-                    'bcc' => StdLib::getParamR(array('sbm', 'mail', 'destinataires'),$this->getServiceLocator()->get('config')),
+                    'bcc' => StdLib::getParamR(array(
+                        'sbm',
+                        'mail',
+                        'destinataires'
+                    ), $this->getServiceLocator()->get('config')),
                     'cc' => array(
                         array(
                             'email' => $user['email'],
@@ -86,14 +94,76 @@ class IndexController extends AbstractActionController
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('login', array('action' => 'home-page'));
+                    return $this->redirect()->toRoute('login', array(
+                        'action' => 'home-page'
+                    ));
                 }
             }
         }
-        $form->setData(array('userId' => $user['userId']));
+        $form->setData(array(
+            'userId' => $user['userId']
+        ));
         return new ViewModel(array(
             'form' => $form->prepare(),
             'user' => $user
+        ));
+    }
+
+    public function lastDayChangesAction()
+    {
+        $history = $this->getServiceLocator()->get('Sbm\Db\Query\History');
+        $services = $this->getServiceLocator()->get('Sbm\Db\Table\Services');
+        $transporteurs = $this->getServiceLocator()->get('Sbm\Db\Table\Transporteurs');
+        $destinataires = array();
+        $changes = $history->getLastDayChanges('affectations');
+        if ($changes instanceof \Traversable) {
+            foreach ($changes as $affectation) {
+                $log = explode('|', $affectation['log']);
+                if (count($log) >= 4) {
+                    $oservice = $services->getRecord($log[3]);
+                    // enregistrement sans doublon
+                    $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
+                }
+                if (count($log) == 6) {
+                    $oservice = $services->getRecord($log[5]);
+                    // enregistrement sans doublon
+                    $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
+                }
+            }
+            $mailTemplate = new MailTemplate('avertissement-transporteur');
+            $controle = array();
+            foreach ($destinataires as $transporteurId => $circuits) {
+                $odata = $transporteurs->getRecord($transporteurId);
+                $email = $odata->email;
+                $controle[] = $odata->nom;
+                if (empty($email))
+                    continue;
+                $params = array(
+                    'to' => array(
+                        array(
+                            'email' => $email,
+                            'name' => $odata->nom
+                        )
+                    ),
+                    'subject' => 'Modification des inscriptions',
+                    'body' => array(
+                        'html' => $mailTemplate->render(array(
+                            'services' => $circuits,
+                            'url_portail' => $this->url()
+                                ->fromRoute('sbmportail', array(
+                                'action' => 'tr-index'
+                            ), array(
+                                'force_canonical' => true
+                            ))
+                        ))
+                    )
+                );
+                $this->getEventManager()->addIdentifiers('SbmMail\Send');
+                $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+            }
+        }
+        return new ViewModel(array(
+            'destinataires' => $controle
         ));
     }
 }
