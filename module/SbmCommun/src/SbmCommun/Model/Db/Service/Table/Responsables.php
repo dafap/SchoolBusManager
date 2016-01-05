@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juil. 2014
- * @version 2014-1
+ * @date 05 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -35,16 +35,17 @@ class Responsables extends AbstractSbmTable
     }
 
     /**
-     * Reçoit un objectData à enregistrer. 
-     * Si c'est un nouveau, regarde si l'email est déjà connu dans la table. Si c'est le cas, 
-     * identifie l'objectData à cet enregistrement et sort sans enregistrer en metttant à jour 
+     * Reçoit un objectData à enregistrer.
+     *
+     * Si c'est un nouveau, regarde si l'email est déjà connu dans la table. Si c'est le cas,
+     * identifie l'objectData à cet enregistrement et sort sans enregistrer en metttant à jour
      * la propriété lastResponsableId.
-     * 
+     *
      * Renvoie true si la commune a changée ou si c'est un nouveau.
      * Mets à jour le propriété lastResponsableId quelque soit le cas : insert, update ou inchangé
      *
      * (non-PHPdoc)
-     * 
+     *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
      */
     public function saveRecord(ObjectDataInterface $obj_data)
@@ -54,15 +55,31 @@ class Responsables extends AbstractSbmTable
             $is_new = false;
         } catch (Exception $e) {
             try {
+                $nom = $obj_data->nom;
+                $prenom = $obj_data->prenom;
+                $adresseL1 = $obj_data->adresseL1;
+                $adresseL2 = $obj_data->adresseL2;
+                $communeId = $obj_data->communeId;
+                $telephone = $obj_data->telephoneF;
                 $email = $obj_data->email;
                 $old_data = $this->getRecordByEmail($email);
-                // $old_data est false si pas trouvé
+                // $old_data est false si pas trouvé                
+                if (! $old_data) {
+                    $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL1, $communeId);                    
+                    if (! $old_data) {
+                        $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL2, $communeId);                        
+                        if (! $old_data) {
+                            $old_data = $this->getRecordByNomPrenomTelephone($nom, $prenom, $telephone);
+                        }
+                    }
+                }
                 $is_new = ! $old_data;
                 if (! $is_new) {
                     // dans ce cas, c'est le responsable. On ne le change pas.
                     $obj_data = $old_data;
-                }   
-            } catch(ExceptionObjectData $e) {
+                }
+            } catch (ExceptionObjectData $e) {
+                //die($e->getMessage());
                 $is_new = true;
             }
         }
@@ -121,20 +138,23 @@ class Responsables extends AbstractSbmTable
     public function setSelection($responsableId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array('responsableId' => $responsableId, 'selection' => $selection));
+        $oData->exchangeArray(array(
+            'responsableId' => $responsableId,
+            'selection' => $selection
+        ));
         parent::saveRecord($oData);
     }
-    
+
     /**
      * Renvoie le dernier responsableId enregistré par saveRecord()
-     * 
+     *
      * @return number
      */
     public function getLastResponsableId()
     {
         return $this->lastResponsableId;
     }
-    
+
     /**
      * Change les emails.
      * Attention, cette méthode ne met pas à jour la propriété lastResponsableId.
@@ -149,8 +169,8 @@ class Responsables extends AbstractSbmTable
         ), array(
             'email' => $email_old
         ));
-    }    
-    
+    }
+
     /**
      * Renvoie le `nom prénom` du responsable, éventuellement précédé du `titre`
      *
@@ -170,8 +190,9 @@ class Responsables extends AbstractSbmTable
     /**
      * Renvoie un SbmCommun\Model\Db\ObjectDataInterface ou false s'il n'est pas trouvé.
      * Renvoi false si email est vide.
-     * 
-     * @param string $email
+     *
+     * @param string $email            
+     *
      * @return boolean|\Zend\Db\ResultSet\object
      */
     public function getRecordByEmail($email)
@@ -182,6 +203,78 @@ class Responsables extends AbstractSbmTable
         $resultset = $this->fetchAll(array(
             'email' => $email
         ));
+        return $resultset->current();
+    }
+
+    /**
+     * Renvoie un SbmCommun\Model\Db\ObjectDataInterface ou false s'il n'est pas trouvé.
+     * Renvoie false si l'un des paramètres est vide.
+     *
+     * @param string $nom            
+     * @param string $prenom            
+     * @param string $telephone
+     *            On cherche s'il y a une correspondance avec telephoneF ou telephoneP ou telephoneT
+     *            
+     * @return boolean|\Zend\Db\ResultSet\object
+     */
+    private function getRecordByNomPrenomTelephone($nom, $prenom, $telephone)
+    {
+        if (empty($nom) || empty($prenom) || empty($telephone)) {
+            return false;
+        }
+        $resultset = $this->fetchAll(array(
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'telephoneF' => $telephone
+        ));
+        if (empty($resultset)) {
+            $resultset = $this->fetchAll(array(
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'telephoneP' => $telephone
+            ));
+        }
+        if (empty($resultset)) {
+            $resultset = $this->fetchAll(array(
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'telephoneT' => $telephone
+            ));
+        }
+        return $resultset->current();
+    }
+
+    /**
+     * Renvoie un SbmCommun\Model\Db\ObjectDataInterface ou false s'il n'est pas trouvé.
+     * Renvoie false si l'un des paramètres est vide.
+     *
+     * @param string $nom            
+     * @param string $prenom            
+     * @param string $adresse
+     *            On cherche s'il y a une correspondance avec adresseL1 ou avec adresseL2
+     * @param string $communeId            
+     *
+     * @return boolean|\Zend\Db\ResultSet\object
+     */
+    private function getRecordByNomPrenomAdresse($nom, $prenom, $adresse, $communeId)
+    {
+        if (empty($nom) || empty($prenom) || empty($adresse) || empty($communeId)) {
+            return false;
+        }
+        $resultset = $this->fetchAll(array(
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'adresseL1' => $adresse,
+            'communeId' => $communeId
+        ));
+        if (empty($resultset)) {
+            $resultset = $this->fetchAll(array(
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'adresseL2' => $adresse,
+                'communeId' => $communeId
+            ));
+        }
         return $resultset->current();
     }
 }
