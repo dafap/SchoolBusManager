@@ -8,8 +8,8 @@
  * @filesource table.classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 
 
@@ -46,6 +46,7 @@ return array(
             'nom' => 'varchar(30) NOT NULL',
             'aliasCG' => 'varchar(30) NULL DEFAULT NULL',
             'niveau' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "255"',
+            'suivantId' => 'int(11) NULL DEFAULT NULL',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
         ),
         'primary_key' => array('classeId',),
@@ -53,7 +54,5 @@ return array(
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci',
     ),
-    //'data' => include __DIR__ . '/data/data.classes.php',
-    //'data' => array('after' => array(), 'include' => __DIR__ . '/data/data.classes.php')
     'data' => __DIR__ . '/data/data.classes.php'
 );

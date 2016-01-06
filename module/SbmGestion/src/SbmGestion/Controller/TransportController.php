@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2016
- * @version 2016-1.7.0
+ * @date 6 jan. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmGestion\Controller;
 
@@ -126,7 +126,8 @@ class TransportController extends AbstractActionController
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
                 $this->flashMessenger()->addWarningMessage('Impossible ! Cet arrêt est déjà sur ce circuit.');
-                $r = new EditResponse('warning', array());;
+                $r = new EditResponse('warning', array());
+                ;
             } else {
                 throw new \Zend\Db\Adapter\Exception\InvalidQueryException($e->getMessage(), $e->getCode(), $e->getPrevious());
             }
@@ -435,7 +436,7 @@ class TransportController extends AbstractActionController
         
         return new ViewModel(array(
             'paginator' => $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Classes')
+                ->get('Sbm\Db\Vue\Classes')
                 ->paginator($args['where']),
             't_nb_inscrits' => $this->getServiceLocator()
                 ->get('Sbm\Db\Eleve\Effectif')
@@ -456,7 +457,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux());
+        $form->setValueOptions('niveau', Niveau::getNiveaux())
+             ->setValueOptions('suivantId', $this->getServiceLocator()->get('Sbm\Db\Select\Classes'));
         $params = array(
             'data' => array(
                 'table' => 'classes',
@@ -570,7 +572,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux());
+        $form->setValueOptions('niveau', Niveau::getNiveaux())
+             ->setValueOptions('suivantId', $this->getServiceLocator()->get('Sbm\Db\Select\Classes'));
         $params = array(
             'data' => array(
                 'table' => 'classes',
