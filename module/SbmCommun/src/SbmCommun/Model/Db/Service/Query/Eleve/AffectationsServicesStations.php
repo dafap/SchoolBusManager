@@ -233,7 +233,9 @@ class AffectationsServicesStations implements FactoryInterface
         ;
         $select->columns(array(
             'millesime' => 'millesime',
-            'trajet' => 'trajet'
+            'trajet' => 'trajet',
+            'X' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.x, sco.x)'),
+            'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.y, sco.y)')
         ))
             ->join(array(
             'ele' => $this->db->getCanonicName('eleves', 'table')

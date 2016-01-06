@@ -100,8 +100,8 @@ class ElevesResponsables implements FactoryInterface
 
     /**
      * Renvoie un tableau contenant les données de l'élève et de son responsable 1
-     * 
-     * @param int $eleveId
+     *
+     * @param int $eleveId            
      * @return array
      */
     public function getEleveResponsable1($eleveId)
@@ -113,7 +113,7 @@ class ElevesResponsables implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute()->current();
     }
-    
+
     /**
      * Renvoie le résultat de la requête
      *
@@ -310,7 +310,9 @@ class ElevesResponsables implements FactoryInterface
             'numero',
             'nom_eleve' => 'nomSA',
             'prenom_eleve' => 'prenomSA',
-            'dateN'
+            'dateN',
+            'X' => new Expression('IF(sco.x = 0 AND sco.y = 0, r1.x, sco.x)'),
+            'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, r1.y, sco.y)')
         ))
             ->join(array(
             'sco' => $this->db->getCanonicName('scolarites', 'table')
