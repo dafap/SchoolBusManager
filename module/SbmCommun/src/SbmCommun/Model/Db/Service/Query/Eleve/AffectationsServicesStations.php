@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2015
- * @version 2015-1
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
