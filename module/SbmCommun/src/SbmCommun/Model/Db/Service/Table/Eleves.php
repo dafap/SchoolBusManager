@@ -16,7 +16,7 @@ namespace SbmCommun\Model\Db\Service\Table;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\PredicateSet;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
-use Zend\Db\Sql\Zend\Db\Sql;
+use SbmCommun\Model\Db\ObjectData\Exception as ExceptionObjectData;
 
 class Eleves extends AbstractSbmTable
 {
@@ -64,7 +64,26 @@ class Eleves extends AbstractSbmTable
             $old_data = $this->getRecord($obj_data->getId());
             $is_new = false;
         } catch (Exception $e) {
-            $is_new = true;
+            try {
+                $nom = $obj_data->nom;
+                $prenom = $obj_data->prenom;
+                $responsable1Id = $obj_data->responsable1Id;
+                $responsable2Id = $obj_data->responsable2Id;
+                $old_data = $this->getByIdentite($nom, $prenom, $dateN, $responsable1Id);
+                if (! $old_data) {
+                    $old_data = $this->getByIdentite($nom, $prenom, $dateN, $responsable2Id);
+                }
+                $is_new = ! $old_data;
+                if (! $is_new) {
+                    $obj_data = $old_data;
+                    // remettre les responsables dans l'ordre demandé cette année
+                    $obj_data->responsable1Id = $responsable1Id;
+                    $obj_data->responsable2Id = $responsable2Id;
+                }
+            } catch (ExceptionObjectData $e) {
+                //die($e->getMessage());
+                $is_new = true;
+            }           
         }
         if ($is_new) {
             $obj_data->setCalculateFields(array(
@@ -201,5 +220,49 @@ class Eleves extends AbstractSbmTable
             'nom',
             'prenom'
         ));
+    }
+    
+    /**
+     * On cherche un élève connaissant :
+     *  1/ son nom, son prenom et sa date de naissance
+     *  2/ son nom, son prenom et son responsable1Id
+     *  3/ son nom, son prenom et son responsable2Id
+     * La recherche s'effectue dans cet ordre s'arrête dès qu'on a trouvé.
+     * 
+     * Renvoie un SbmCommun\Model\Db\ObjectDataInterface ou false s'il n'est pas trouvé.
+     * Renvoie false si l'un des paramètres est vide.
+     * 
+     * @param string $nom
+     * @param string $prenom
+     * @param string $dateN
+     * @param int $responsableId
+     * 
+     * @return boolean|\Zend\Db\ResultSet\object
+     */
+    private function getByIdentite($nom, $prenom, $dateN, $responsableId)
+    {
+        if (empty($nom) || empty($prenom) || (empty($dateN) && empty($responsableId))) {
+            return false;
+        }
+        $resultset = $this->fetchAll(array(
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'dateN' => $dateN
+        ));
+        if (empty($resultset)) {
+            $resultset = $this->fetchAll(array(
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'responsable1Id' => $responsableId
+            ));
+        }
+        if (empty($resultset)) {
+            $resultset = $this->fetchAll(array(
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'responsable2Id' => $responsableId
+            ));
+        }
+        return $resultset->current();
     }
 }
