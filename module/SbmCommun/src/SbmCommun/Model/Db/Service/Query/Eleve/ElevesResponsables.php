@@ -31,6 +31,12 @@ class ElevesResponsables implements FactoryInterface
      * @var \SbmCommun\Model\Db\Service\DbLibService
      */
     protected $db;
+    
+    /**
+     *
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    private $dbAdapter;
 
     /**
      *
@@ -50,11 +56,24 @@ class ElevesResponsables implements FactoryInterface
      */
     protected $select;
 
+    /**
+     * Renvoie la chaine de requête (après l'appel de la requête)
+     *
+     * @param \Zend\Db\Sql\Select $select
+     *
+     * @return \Zend\Db\Adapter\mixed
+     */
+    public function getSqlString($select)
+    {
+        return $select->getSqlString($this->dbAdapter->getPlatform());
+    }
+    
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->millesime = Session::get('millesime');
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->sql = new Sql($this->db->getDbAdapter());
+        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from(array(
             'ele' => $this->db->getCanonicName('eleves', 'table')
@@ -279,6 +298,7 @@ class ElevesResponsables implements FactoryInterface
         if (! is_null($order)) {
             $select->order($order);
         }
+        //die($this->getSqlString($select->where($where)));
         return $select->where($where);
     }
 
