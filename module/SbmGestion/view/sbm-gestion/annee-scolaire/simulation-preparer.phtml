@@ -1,0 +1,66 @@
+<?php
+/**
+ * Page de paramétrage de la préparation
+ *
+ * Formulaire de paramétrage indiquant les classes reprises ou non
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/annee-scolaire
+ * @filesource simulation-preparer.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 6 janv. 2016
+ * @version 2016-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmgestion/anneescolaire');
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Préparation d'une simulation</h1>
+<div id="liste-wrapper">
+	<div class="clearfix">
+		<div class="zone-actions">
+			<div class="menu"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
+	</div>
+	<div class="left-10px">
+		<p class="sbm-description">Pour modifier ces listes, allez dans la
+			gestion des classes.</p>
+		<div style="display: table;">
+
+			<div style="display: table-cell;">
+				<p>
+					Vous souhaitez préparer une simulation en reprenant les circuits de
+					l'année indiquée <br />et les élèves des classes suivantes :
+				</p>
+				<ul>
+			<?php foreach ($this->repris as $row) : ?>
+			<li>les <?php echo $row->nom;?> vont en <?php echo $row->suivant;?></li>
+			<?php endforeach;?>
+			</ul>
+			</div>
+			<div style="display: table-cell; padding-left: 40px;">
+				<p>Les élèves des classes suivantes ne seront pas repris :</p>
+				<ul>
+			<?php foreach ($this->non_repris as $row) : ?>
+			<li><?php echo $row->nom;?></li>
+			<?php endforeach;?>
+			</ul>
+			</div>
+		</div>
+		<div class="row-inner">
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>    
+	    </div>
+	</div>
+</div>

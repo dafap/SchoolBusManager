@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2014
- * @version 2014-1
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 use SbmCommun\Model\DateLib;
 
@@ -18,6 +18,12 @@ $col_date_width = 100;
 $url_retour = $this->url('sbmgestion');
 $url_nouvelle = $this->url('sbmgestion/anneescolaire', array(
     'action' => 'new'
+));
+$url_simulation_vider = $this->url('sbmgestion/anneescolaire', array(
+    'action' => 'simulation-vider'
+));
+$url_simulation_preparer = $this->url('sbmgestion/anneescolaire', array(
+    'action' => 'simulation-preparer'
 ));
 $hiddens = array();
 $actions = array(
@@ -89,8 +95,16 @@ $actions = array(
 						class="fam-date"></i></a>
     <?php endif;?>
 <?php endif;?>
+<?php if ($as['millesime'] != $this->simulation_millesime) :?>
         <a href="<?php echo $url_voir;?>" class="bouton" title="<?php echo $as['valid'] ? 'Calendrier' : 'Définir les dates';?>"><i
 						class="fam-date-magnify"></i></a>
+<?php elseif ($this->simulation_vide) :?>
+        <a href="<?php echo $url_simulation_preparer;?>" class="bouton" title="<?php echo 'Préparer une simulation';?>"><i
+						class="fam-ruby-gear"></i></a>
+<?php else : ?>
+        <a href="<?php echo $url_simulation_vider;?>" class="bouton" title="<?php echo 'Effacer la simulation';?>"><i
+						class="fam-ruby-delete"></i></a>
+<?php endif;?>
 				    </td>
                 </tr>
 <?php endforeach;?>

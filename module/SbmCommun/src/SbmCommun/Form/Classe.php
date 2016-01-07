@@ -8,8 +8,8 @@
  * @filesource Classe.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2014
- * @version 2014-1
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmCommun\Form;
 
@@ -87,6 +87,23 @@ class Classe extends AbstractSbmForm implements InputFilterProviderInterface
             )
         ));
         $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'suivantId',
+            'attributes' => array(
+                'id' => 'classe-suivantId'
+            ),
+            'options' => array(
+                'label' => 'Indiquez la classe suivante',
+                'label_attributes' => array(
+                    'class' => 'sbm-label130'
+                ),
+                'empty_option' => 'Aucune',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type' => 'submit',
@@ -133,6 +150,10 @@ class Classe extends AbstractSbmForm implements InputFilterProviderInterface
                         'name' => 'StringTrim'
                     )
                 )
+            ),
+            'suivantId' => array(
+                'name' => 'suivantId',
+                'required' => false
             )
         );
     }

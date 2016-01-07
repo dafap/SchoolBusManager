@@ -13,14 +13,19 @@
  */
 namespace SbmGestion\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Zend\Http\PhpEnvironment\Response;
+use Zend\Db\Sql\Where;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Form\Calendar as FormCalendar;
-use Zend\Http\PhpEnvironment\Response;
+use SbmCommun\Form\ButtonForm;
+use SbmGestion\Form\Simulation;
 
 class AnneeScolaireController extends AbstractActionController
 {
+
+    const SIMULATION = 2000;
 
     public function indexAction()
     {
@@ -28,17 +33,26 @@ class AnneeScolaireController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
+        $simulation_vide = $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Scolarites')
+            ->isEmptyMillesime(self::SIMULATION) && $this->getServiceLocator()
+            ->get('Sbm\Db\Table\Circuits')
+            ->isEmptyMillesime(self::SIMULATION);
+        
         return new ViewModel(array(
-            'anneesScolaires' => $table_calendar->getAnneesScolaires(),
-            'millesimeActif' => $this->getFromSession('millesime', false)
+            'anneesScolaires' => $this->getServiceLocator()
+                ->get('Sbm\Db\System\Calendar')
+                ->getAnneesScolaires(),
+            'millesimeActif' => $this->getFromSession('millesime', false),
+            'simulation_millesime' => self::SIMULATION,
+            'simulation_vide' => $simulation_vide
         ));
     }
 
     public function activeAction()
     {
         $millesime = $this->params('millesime', 0);
-        if (!empty($millesime)) {
+        if (! empty($millesime)) {
             $this->setToSession('millesime', $millesime);
         }
         $this->flashMessenger()->addSuccessMessage('L\'année active a changé.');
@@ -104,8 +118,8 @@ class AnneeScolaireController extends AbstractActionController
         $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
         $table_calendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
         $auth = $this->getServiceLocator()
-        ->get('Dafap\Authenticate')
-        ->by('email');
+            ->get('Dafap\Authenticate')
+            ->by('email');
         return new ViewModel(array(
             'as_libelle' => $as_libelle,
             'millesime' => $millesime,
@@ -120,7 +134,7 @@ class AnneeScolaireController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        if (!array_key_exists('millesime', $prg) || !array_key_exists('ouvert', $prg)) {
+        if (! array_key_exists('millesime', $prg) || ! array_key_exists('ouvert', $prg)) {
             return $this->redirect()->toRoute('sbmgestion/anneescolaire');
         }
         $tCalendar = $this->getServiceLocator()->get('Sbm\Db\System\Calendar');
@@ -129,9 +143,12 @@ class AnneeScolaireController extends AbstractActionController
         } else {
             $this->flashMessenger()->addErrorMessage('Impossible de modifier l\'état de cette année scolaire.');
         }
-        return $this->redirect()->toRoute('sbmgestion/anneescolaire', array('action' => 'voir', 'millesime' => $prg['millesime']));
+        return $this->redirect()->toRoute('sbmgestion/anneescolaire', array(
+            'action' => 'voir',
+            'millesime' => $prg['millesime']
+        ));
     }
-    
+
     public function newAction()
     {
         $prg = $this->prg();
@@ -187,5 +204,89 @@ class AnneeScolaireController extends AbstractActionController
         ));
         $viewmodel->setTemplate('sbm-gestion/annee-scolaire/voir.phtml');
         return $viewmodel;
+    }
+
+    public function simulationPreparerAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $form = new Simulation();
+        if ($prg !== false) {
+            if (array_key_exists('cancel', $prg)) {
+                $this->flashMessenger()->addInfoMessage('Aucun changement');
+                return $this->redirect()->toRoute('sbmgestion/anneescolaire');
+            }
+            if (array_key_exists('submit', $prg) && array_key_exists('millesime', $prg)) {
+                $form->setData($prg);
+                if ($form->isValid()) {
+                    $millesime = $prg['millesime'];
+                    $this->getServiceLocator()
+                        ->get('Sbm\Db\Simulation\Prepare')
+                        ->duplicateCircuits($millesime, self::SIMULATION)
+                        ->duplicateEleves($millesime, self::SIMULATION);
+                    $this->flashMessenger()->addSuccessMessage("La simulation a été préparée à partir de l'année $millesime.");
+                    return $this->redirect()->toRoute('sbmgestion/anneescolaire');
+                }
+            }
+        }
+        $where1 = new Where();
+        $where1->isNotNull('suivantId');
+        $where2 = new Where();
+        $where2->isNull('suivantId');
+        return new ViewModel(array(
+            'repris' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Classes')
+                ->fetchAll($where1, array(
+                'niveau',
+                'nom'
+            )),
+            'non_repris' => $this->getServiceLocator()
+                ->get('Sbm\Db\Vue\Classes')
+                ->fetchAll($where2, array(
+                'niveau',
+                'nom'
+            )),
+            'form' => $form->prepare()
+        ));
+    }
+
+    public function simulationViderAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $form = new ButtonForm(array(
+            'id' => null
+        ), array(
+            'supproui' => array(
+                'class' => 'confirm default',
+                'value' => 'Confirmer'
+            ),
+            'supprnon' => array(
+                'class' => 'confirm default',
+                'value' => 'Abandonner'
+            )
+        ));
+        if ($prg !== false) {
+            if (array_key_exists('supproui', $prg)) {
+                $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Affectations')
+                    ->viderMillesime(self::SIMULATION);
+                $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Scolarites')
+                    ->viderMillesime(self::SIMULATION);
+                $this->getServiceLocator()
+                    ->get('Sbm\Db\Table\Circuits')
+                    ->viderMillesime(self::SIMULATION);
+                $this->flashMessenger()->addSuccessMessage('La simulation a été effacée.');
+            }
+            return $this->redirect()->toRoute('sbmgestion/anneescolaire');
+        }
+        return new ViewModel(array(
+            'form' => $form
+        ));
     }
 }

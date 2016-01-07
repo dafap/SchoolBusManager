@@ -28,6 +28,12 @@ class SecteursScolairesClgPu implements FactoryInterface
      * @var \SbmCommun\Model\Db\Service\DbLibService
      */
     private $db;
+    
+    /**
+     *
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    private $dbAdapter;
 
     /**
      *
@@ -35,10 +41,23 @@ class SecteursScolairesClgPu implements FactoryInterface
      */
     private $sql;
 
+    /**
+     * Renvoie la chaine de requête (après l'appel de la requête)
+     *
+     * @param \Zend\Db\Sql\Select $select
+     *
+     * @return \Zend\Db\Adapter\mixed
+     */
+    public function getSqlString($select)
+    {
+        return $select->getSqlString($this->dbAdapter->getPlatform());
+    }
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->sql = new Sql($this->db->getDbAdapter());
+        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
     

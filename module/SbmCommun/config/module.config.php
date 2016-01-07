@@ -119,6 +119,7 @@ return array(
             'Sbm\Db\SysTableGateway\Libelles' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayLibelles',
             
             'Sbm\Db\Vue\Circuits' => 'SbmCommun\Model\Db\Service\Table\Vue\Circuits',
+            'Sbm\Db\Vue\Classes' => 'SbmCommun\Model\Db\Service\Table\Vue\Classes',
             'Sbm\Db\Vue\Etablissements' => 'SbmCommun\Model\Db\Service\Table\Vue\Etablissements',
             'Sbm\Db\Vue\EtablissementsServices' => 'SbmCommun\Model\Db\Service\Table\Vue\EtablissementsServices',
             'Sbm\Db\Vue\Organismes' => 'SbmCommun\Model\Db\Service\Table\Vue\Organismes',
@@ -129,6 +130,7 @@ return array(
             'Sbm\Db\Vue\Transporteurs' => 'SbmCommun\Model\Db\Service\Table\Vue\Transporteurs',
             
             'Sbm\Db\VueGateway\Circuits' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayCircuits',
+            'Sbm\Db\VueGateway\Classes' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayClasses',
             'Sbm\Db\VueGateway\Etablissements' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEtablissements',
             'Sbm\Db\VueGateway\EtablissementsServices' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEtablissementsServices',
             'Sbm\Db\VueGateway\Organismes' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayOrganismes',

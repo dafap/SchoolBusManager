@@ -7,8 +7,8 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 oct. 2014
- * @version 2014-1
+ * @date 7 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmInstallation\Model;
 
@@ -134,6 +134,7 @@ EOT;
                                 break;
                             case 'semaine':
                             case 'jOuverture':
+                            case 'joursTransport':
                                 $strategie = new Semaine();
                                 $val = $strategie->extract($column);
                                 break;
@@ -141,7 +142,7 @@ EOT;
                                 ob_start();
                                 var_dump($column);
                                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
-                                throw new Exception(__METHOD__ . "Codage inconnu pour $key\n$dump");
+                                throw new Exception(__METHOD__ . " - Codage inconnu pour $key\n$dump");
                             break;
                         }
                     } elseif ($table->getTableName() == 'tarifs' && $table->getTableType() == 'table') {

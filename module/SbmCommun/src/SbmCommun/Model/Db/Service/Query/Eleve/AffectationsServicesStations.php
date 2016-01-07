@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2015
- * @version 2015-1
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -31,6 +31,12 @@ class AffectationsServicesStations implements FactoryInterface
      * @var \SbmCommun\Model\Db\Service\DbLibService
      */
     protected $db;
+    
+    /**
+     *
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    private $dbAdapter;
 
     /**
      *
@@ -50,11 +56,24 @@ class AffectationsServicesStations implements FactoryInterface
      */
     protected $select;
 
+    /**
+     * Renvoie la chaine de requête (après l'appel de la requête)
+     *
+     * @param \Zend\Db\Sql\Select $select
+     *
+     * @return \Zend\Db\Adapter\mixed
+     */
+    public function getSqlString($select)
+    {
+        return $select->getSqlString($this->dbAdapter->getPlatform());
+    }
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->millesime = Session::get('millesime');
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->sql = new Sql($this->db->getDbAdapter());
+        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from(array(
             'aff' => $this->db->getCanonicName('affectations', 'table')
@@ -233,7 +252,9 @@ class AffectationsServicesStations implements FactoryInterface
         ;
         $select->columns(array(
             'millesime' => 'millesime',
-            'trajet' => 'trajet'
+            'trajet' => 'trajet',
+            'X' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.x, sco.x)'),
+            'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.y, sco.y)')
         ))
             ->join(array(
             'ele' => $this->db->getCanonicName('eleves', 'table')

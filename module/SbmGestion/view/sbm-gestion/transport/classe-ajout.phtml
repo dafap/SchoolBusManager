@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/classe-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
@@ -41,6 +41,7 @@ echo $this->formHidden($this->form->get('csrf'));
         <div id="classe-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
         <div id="classe-ajout-aliasCG" class="row-inner ajout"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
         <div id="classe-ajout-niveau" class="row-inner ajout"><?php echo $this->formRow($this->form->get('niveau')); ?></div>
+        <div id="classe-ajout-suivantId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('suivantId')); ?></div>
         <div id="classe-ajout-buttons" class="row-inner ajout">
         <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
     </fieldset>

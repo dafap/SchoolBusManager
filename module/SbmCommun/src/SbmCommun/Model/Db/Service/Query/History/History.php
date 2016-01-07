@@ -50,6 +50,18 @@ class History implements FactoryInterface
      */
     private $sql;
 
+    /**
+     * Renvoie la chaine de requête (après l'appel de la requête)
+     *
+     * @param \Zend\Db\Sql\Select $select
+     *
+     * @return \Zend\Db\Adapter\mixed
+     */
+    public function getSqlString($select)
+    {
+        return $select->getSqlString($this->dbAdapter->getPlatform());
+    }
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
