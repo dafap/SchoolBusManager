@@ -15,7 +15,9 @@ return array(
         'resources' => array(
             'sbmgestion' => array(
                 'allow' => array(
-                    'roles' => array('gestion')
+                    'roles' => array(
+                        'gestion'
+                    )
                 ),
                 'actions' => array(
                     'ouvrir' => array(
@@ -46,7 +48,7 @@ return array(
                     )
                 )
             )
-        ),
+        )
     ),
     'liste' => array(
         'paginator' => array(
@@ -65,6 +67,9 @@ return array(
         )
     ),
     'service_manager' => array(
+        'invokables' => array(
+            'Sbm\Db\Simulation\Prepare' => 'SbmGestion\Model\Db\Factory\Simulation\Prepare'
+        ),
         'factories' => array(
             'Sbm\Db\Circuit\Liste' => 'SbmGestion\Model\Db\Service\Circuit\Liste',
             'Sbm\Db\Eleve\Liste' => 'SbmGestion\Model\Db\Service\Eleve\Liste',
@@ -188,8 +193,8 @@ return array(
                             )
                         )
                     ),
-
-                    'statistiques' => array( 
+                    
+                    'statistiques' => array(
                         'type' => 'segment',
                         'options' => array(
                             'route' => '/statistiques[/:action]',
@@ -234,7 +239,7 @@ return array(
             __DIR__ . '/../view'
         ),
         'strategies' => array(
-            'ViewJsonStrategy',
-        ),
+            'ViewJsonStrategy'
+        )
     )
 );

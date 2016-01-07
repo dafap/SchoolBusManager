@@ -8,8 +8,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2014
- * @version 2014-1
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -221,5 +221,30 @@ class Scolarites extends AbstractSbmTable
             $oData->duplicata ++;
         }
         parent::saveRecord($oData);
+    }
+    
+    /**
+     * Renvoie vrai si la table ne contient pas de données pour ce millésime.
+     * 
+     * @param int $millesime
+     * 
+     * @return boolean
+     */
+    public function isEmptyMillesime($millesime)
+    {
+        $resultset = $this->fetchAll(array('millesime' => $millesime));
+        return $resultset->count()==0;
+    }
+    
+    /**
+     * Supprime tous les enregistrements concernant le millesime indiqué.
+     * 
+     * @param unknown $millesime
+     * 
+     * @return \Zend\Db\TableGateway\int
+     */
+    public function viderMillesime($millesime)
+    {
+        return $this->table_gateway->delete(array('millesime' => $millesime));
     }
 }

@@ -116,4 +116,29 @@ class Affectations extends AbstractSbmTable
             'responsableId' => $ancienResponsableId
         ));
     }
+    
+    /**
+     * Renvoie vrai si la table ne contient pas de données pour ce millésime.
+     *
+     * @param int $millesime
+     *
+     * @return boolean
+     */
+    public function isEmptyMillesime($millesime)
+    {
+        $resultset = $this->fetchAll(array('millesime' => $millesime));
+        return $resultset->count()==0;
+    }
+    
+    /**
+     * Supprime tous les enregistrements concernant le millesime indiqué.
+     *
+     * @param unknown $millesime
+     *
+     * @return \Zend\Db\TableGateway\int
+     */
+    public function viderMillesime($millesime)
+    {
+        return $this->table_gateway->delete(array('millesime' => $millesime));
+    }
 }

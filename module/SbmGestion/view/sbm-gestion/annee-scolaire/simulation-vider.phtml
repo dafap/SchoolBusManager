@@ -1,0 +1,44 @@
+<?php
+/**
+ * Page de confirmation avant de vider une simulation
+ *
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/annee-scolaire
+ * @filesource simulation-vider.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 6 janv. 2016
+ * @version 2016-1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmgestion/anneescolaire');
+$hiddens = array();
+$actions = array(
+    'retour' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    )
+);
+?>
+<h1>Effacer la simulation</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="zone-actions">
+			<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
+	</div>
+	<div id="suppr-wrapper">
+		<p>Vous souhaitez effacer la simulation :</p>
+		<p>Cette action va détruire de façon irréversible tout ce qui a été
+			préparé dans la composition des circuits et dans l'inscription des
+			élèves.</p>
+		<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+    </div>
+</div>

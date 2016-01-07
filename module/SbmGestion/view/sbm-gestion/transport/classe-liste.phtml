@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/classe-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 6 janv. 2016
+ * @version 2016-1.7.1
  */
 use SbmCommun\Model\StdLib;
 
@@ -76,6 +76,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Nom</th>
 					<th class="invisible">Alias</th>
 					<th title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
+					<th title="pour préparer une simulation">Classe suivante</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
@@ -106,6 +107,7 @@ EOT;
 					<td class="nom"><?php echo $this->escapeHtml($classe->nom); ?></td>
 					<td class="aliascg invisible"><?php echo $this->escapeHtml($classe->aliasCG); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
+					<td class="centre"><?php echo $this->escapeHtml($classe->suivant); ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $classe->classeId, $classe->selection)?></td>
 					<td class="boutons">
             <?php

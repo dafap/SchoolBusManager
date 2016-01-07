@@ -8,12 +8,15 @@
  * @filesource view/sbm-gestion/transport/classe-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 6 janv. 2016
+ * @version 2015-1.7.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/transport', array('action'=> 'classe-liste', 'page' => $this->page));
+$url_retour = $this->url('sbmgestion/transport', array(
+    'action' => 'classe-liste',
+    'page' => $this->page
+));
 $hiddens = array();
 $actions = array(
     'retour' => array(
@@ -32,18 +35,19 @@ $actions = array(
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('classeId'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>
     <fieldset class="sbm-page1">
-        <div id="classe-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
-        <div id="classe-edit-aliasCG" class="row-inner edit"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
-        <div id="classe-edit-niveau" class="row-inner edit"><?php echo $this->formRow($this->form->get('niveau')); ?></div>
-        <div id="classe-edit-buttons" class="row-inner edit">
+			<div id="classe-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+			<div id="classe-edit-aliasCG" class="row-inner edit"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
+			<div id="classe-edit-niveau" class="row-inner edit"><?php echo $this->formRow($this->form->get('niveau')); ?></div>
+			<div id="classe-ajout-suivantId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('suivantId')); ?></div>
+			<div id="classe-edit-buttons" class="row-inner edit">
         <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-    </fieldset>
+		</fieldset>
 <?php echo $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>
