@@ -7,8 +7,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mars 2015
- * @version 2015-1
+ * @date 7 janv. 2016
+ * @version 2016-1.7.1
  */
 namespace SbmAdmin\Model\Db\Service\Libelle;
 
@@ -21,13 +21,22 @@ use Zend\Db\Sql\Where;
 
 class Liste implements FactoryInterface
 {
-
+    /**
+     *
+     * @var \SbmCommun\Model\Db\Service\DbLibService
+     */
     private $db;
 
+    /**
+     *
+     * @var \Zend\Db\Adapter\Adapter
+     */
     private $dbAdapter;
 
-    private $select;
-
+    /**
+     *
+     * @var \Zend\Db\Sql\Sql
+     */
     private $sql;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
@@ -35,13 +44,13 @@ class Liste implements FactoryInterface
         $this->db = $serviceLocator->get('Sbm\Db\DbLib');
         $this->dbAdapter = $this->db->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
-        $this->select = $this->sql->select();
         return $this;
     }
 
     public function forNature($nature)
     {
-        $this->select->from(array(
+        $select = $this->sql->select();
+        $select->from(array(
             'l' => $this->db->getCanonicName('libelles', 'system')
         ))
             ->where(array(
@@ -50,7 +59,7 @@ class Liste implements FactoryInterface
             ->order(array(
             'code'
         ));
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 }
