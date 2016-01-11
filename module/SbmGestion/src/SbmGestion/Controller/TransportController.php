@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 jan. 2016
- * @version 2016-1.7.1
+ * @date 11 jan. 2016
+ * @version 2016-1.7.2
  */
 namespace SbmGestion\Controller;
 
@@ -457,8 +457,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux())
-             ->setValueOptions('suivantId', $this->getServiceLocator()->get('Sbm\Db\Select\Classes'));
+        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Classes'));
         $params = array(
             'data' => array(
                 'table' => 'classes',
@@ -572,8 +572,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux())
-             ->setValueOptions('suivantId', $this->getServiceLocator()->get('Sbm\Db\Select\Classes'));
+        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->getServiceLocator()
+            ->get('Sbm\Db\Select\Classes'));
         $params = array(
             'data' => array(
                 'table' => 'classes',
@@ -1179,11 +1179,15 @@ class TransportController extends AbstractActionController
                 break;
             case 'error':
             case 'warning':
-            case 'success':
                 return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
                 ));
+                break;
+            case 'success':
+                $viewmodel = $this->etablissementLocalisationAction($form->getData()->etablissementId, $currentPage);
+                $viewmodel->setTemplate('sbm-gestion/transport/etablissement-localisation.phtml');
+                return $viewmodel;
                 break;
             default:
                 return new ViewModel(array(
@@ -1352,35 +1356,40 @@ class TransportController extends AbstractActionController
     /**
      * Localisation d'un établissement sur la carte et enregistrement de ses coordonnées
      */
-    public function etablissementLocalisationAction()
+    public function etablissementLocalisationAction($etablissementId = null, $currentPage = 1)
     {
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            return $prg;
-        } elseif ($prg === false) {
-            $this->flashMessenger()->addWarningMessage('Recommencez.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
-                'action' => 'etablissement-liste',
-                'page' => $this->params('page', 1)
-            ));
-        } else {
-            $args = $prg;
-            if (array_key_exists('cancel', $args)) {
-                $this->flashMessenger()->addWarningMessage('Localisation abandonnée.');
+        if (is_null($etablissementId)) {
+            $currentPage = $this->params('page', 1);
+            $prg = $this->prg();
+            if ($prg instanceof Response) {
+                return $prg;
+            } elseif ($prg === false) {
+                $this->flashMessenger()->addWarningMessage('Recommencez.');
                 return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
-                    'page' => $this->params('page', 1)
+                    'page' => $currentPage
                 ));
+            } else {
+                $args = $prg;
+                if (array_key_exists('cancel', $args)) {
+                    $this->flashMessenger()->addWarningMessage('Localisation abandonnée.');
+                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                        'action' => 'etablissement-liste',
+                        'page' => $currentPage
+                    ));
+                }
+                if (! array_key_exists('etablissementId', $args)) {
+                    $this->flashMessenger()->addErrorMessage('Action  interdite');
+                    return $this->redirect()->toRoute('login', array(
+                        'action' => 'logout'
+                    ));
+                }
             }
-            if (! array_key_exists('etablissementId', $args)) {
-                $this->flashMessenger()->addErrorMessage('Action  interdite');
-                return $this->redirect()->toRoute('login', array(
-                    'action' => 'logout'
-                ));
-            }
+            $etablissementId = $args['etablissementId'];
+        } else {
+            $args = [];
         }
         $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
-        $etablissementId = $args['etablissementId'];
         $tEtablissements = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
         $configCarte = StdLib::getParamR(array(
             'sbm',
@@ -1404,7 +1413,7 @@ class TransportController extends AbstractActionController
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/transport', array(
             'action' => 'etablissement-localisation',
-            'page' => $this->params('page', 1)
+            'page' => $currentPage
         )));
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -1424,12 +1433,12 @@ class TransportController extends AbstractActionController
                 $this->flashMessenger()->addWarningMessage('Attention ! Les distances des domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
                 return $this->redirect()->toRoute('sbmgestion/transport', array(
                     'action' => 'etablissement-liste',
-                    'page' => $this->params('page', 1)
+                    'page' => $currentPage
                 ));
             }
         }
         $etablissement = $tEtablissements->getRecord($etablissementId);
-        $description = '<b>' . $etablissement->nom . '</b></br>';
+        $description = '<b>' . $etablissement->nom . "</b>\n";
         $commune = $this->getServiceLocator()
             ->get('Sbm\Db\table\Communes')
             ->getRecord($etablissement->communeId);
@@ -1437,18 +1446,19 @@ class TransportController extends AbstractActionController
             // essayer de localiser par l'adresse avant de présenter la carte
             $array = $this->getServiceLocator()
                 ->get('SbmCarto\Geocoder')
-                ->geocode($etablissement->adresse2 ?  : $etablissement->adresse1, $etablissement->codePostal, $commune->nom);
+                ->geocode($etablissement->adresse1, $etablissement->codePostal, $commune->nom);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
             $description .= $array['adresse'];
         } else {
             $point = new Point($etablissement->x, $etablissement->y);
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-            $description .= nl2br(trim(implode("\n", array(
+            $description .= trim(implode("\n", array(
                 $etablissement->adresse1,
                 $etablissement->adresse2
-            ))));
-            $description .= '<br>' . $etablissement->codePostal . ' ' . $commune->nom;
+            )), "\n");
+            $description .= "\n" . $etablissement->codePostal . ' ' . $commune->nom;
         }
+        $description = str_replace("\n", "", nl2br($description));
         $form->setData(array(
             'etablissementId' => $etablissementId,
             'lat' => $pt->getLatitude(),
