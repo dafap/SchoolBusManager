@@ -7,8 +7,8 @@
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 déc. 2015
- * @version 2015-1.6.9
+ * @date 11 janv. 2016
+ * @version 2016-1.7.2
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -112,19 +112,20 @@ class Geocoder implements ServiceLocatorAwareInterface
         $ligneAdresse = sprintf('%s,%05s %s', $adresse, $codePostal, $commune);
         $url = sprintf($this->google_geocoder_url, urlencode($ligneAdresse));
         $reponse = json_decode(file_get_contents($url));
-        
         $lat = 0;
         $lng = 0;
         $formatted_address = "pas trouvé";
+        $commune = strtoupper($commune);
         if ($reponse->status == 'OK') {
             foreach ($reponse->results as $result) {
                 foreach ($result->address_components as $element) {
                     if (in_array('locality', $element->types)) {
-                        $locality = $element->long_name;
+                        $locality = strtoupper($element->long_name);
                         if ($locality == $commune) {
                             $lat = $result->geometry->location->lat;
                             $lng = $result->geometry->location->lng;
                             $formatted_address = $result->formatted_address;
+                            
                         }
                     }
                 }
