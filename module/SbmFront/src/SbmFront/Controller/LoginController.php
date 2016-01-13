@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 févr. 2015
- * @version 2015-1
+ * @date 13 janv. 2016
+ * @version 2016-1.7.2
  */
 namespace SbmFront\Controller;
 
@@ -20,6 +20,7 @@ use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
 use DafapSession\Model\Session;
 use SbmCommun\Model\DateLib;
+use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmFront\Form\InputFilter\CreerCompte as CreerCompteInputFilter;
@@ -34,6 +35,8 @@ use SbmParent\Model\Responsable;
 use SbmParent\Model\Exception as CreateResponsableException;
 use DafapMail\Model\Template as MailTemplate;
 use DafapMail\Model\DafapMail\Model;
+use SbmCommun\Form\LatLng as LatLngForm;
+use SbmCartographie\Model\Point;
 
 class LoginController extends AbstractActionController
 {
@@ -177,8 +180,21 @@ class LoginController extends AbstractActionController
             switch ($auth->getCategorieId()) {
                 case 1:
                     try {
+                        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
                         $test = new Responsable($this->getServiceLocator());
-                        if ($test->x == 0.0 || $test->y == 0.0) {
+                        $point = new Point($test->x, $test->y);
+                        $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+                        $configCarte = StdLib::getParamR(array(
+                            'sbm',
+                            'cartes',
+                            'parent'
+                        ), $this->getServiceLocator()->get('config'));
+                        $form = new LatLngForm([], [], $configCarte['valide']);
+                        $form->setData([
+                            'lat' => $pt->getLatitude(),
+                            'lng' => $pt->getLongitude()
+                        ]);
+                        if (! $form->isValid()) {
                             return $this->redirect()->toRoute('sbmparentconfig', array(
                                 'action' => 'localisation'
                             ));
@@ -201,7 +217,9 @@ class LoginController extends AbstractActionController
                 case 3:
                 case 200:
                     Session::set('home', 'sbmportail', 'layout');
-                    return $this->redirect()->toRoute('sbmportail', array('action' => 'index'));
+                    return $this->redirect()->toRoute('sbmportail', array(
+                        'action' => 'index'
+                    ));
                     break;
                 case 253:
                     Session::set('home', 'sbmgestion/config', 'layout');

@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1.6.7
+ * @date 13 janv. 2016
+ * @version 2016-1.7.2
  */
 namespace SbmGestion\Controller;
 
@@ -201,7 +201,7 @@ class EleveController extends AbstractActionController
         } else {
             $responsableId = $this->getFromSession('responsableId', 0, $this->getSessionNamespace('ajout', 1));
         }
-        //var_dump($responsableId);
+        // var_dump($responsableId);
         if (array_key_exists('origine', $args)) {
             $this->redirectToOrigin()->setBack($args['origine']);
             // par la suite, on ne s'occupe plus de 'origine' mais on ressort par un redirectToOrigin()->back()
@@ -1197,7 +1197,7 @@ class EleveController extends AbstractActionController
 
     public function responsableAjoutAction()
     {
-        // utilisation de PostRedirectGet par mesure de sécurité
+        $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
             // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
@@ -1206,7 +1206,7 @@ class EleveController extends AbstractActionController
             // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
             return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'responsable-liste',
-                'page' => $this->params('page', 1)
+                'page' => $currentPage
             ));
         }
         // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
@@ -1216,7 +1216,7 @@ class EleveController extends AbstractActionController
             $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été enregistré.");
             return $this->redirect()->toRoute('sbmgestion/eleve', array(
                 'action' => 'responsable-liste',
-                'page' => $this->params('page', 1)
+                'page' => $currentPage
             ));
         }
         // on ouvre la table des responsables
@@ -1246,15 +1246,20 @@ class EleveController extends AbstractActionController
                         ->setVisible($oData->communeId);
                 }
                 $this->flashMessenger()->addSuccessMessage("La fiche a été enregistrée.");
-                return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                    'action' => 'responsable-liste',
-                    'page' => $this->params('page', 1)
-                ));
+                /*
+                 * return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                 * 'action' => 'responsable-liste',
+                 * 'page' => $currentPage
+                 * ));
+                 */
+                $viewmodel = $this->responsableLocalisationAction($tableResponsables->getLastResponsableId(), $currentPage);
+                $viewmodel->setTemplate('sbm-gestion/eleve/responsable-localisation.phtml');
+                return $viewmodel;
             }
         }
         return new ViewModel(array(
             'form' => $form->prepare(),
-            'page' => $this->params('page', 1),
+            'page' => $currentPage,
             'responsableId' => $responsableId,
             'demenagement' => false
         ));
@@ -1461,45 +1466,49 @@ class EleveController extends AbstractActionController
         }
     }
 
-    public function responsableLocalisationAction()
+    public function responsableLocalisationAction($responsableId = null, $currentPage = 1)
     {
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            return $prg;
-        } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false);
-            if ($args === false) {
-                $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('login', array(
-                    'action' => 'logout'
-                ));
-            }
-        } else {
-            $args = $prg;
-            // selon l'origine, l'url de retour porte le nom url1_retour (liste des responsables) ou origine (liste des élèves, fiche d'un responsable)
-            if (array_key_exists('url1_retour', $args)) {
-                $this->redirectToOrigin()->setBack($args['url1_retour']);
-                unset($args['url1_retour']);
-                $this->setToSession('post', $args);
-            } elseif (array_key_exists('origine', $args)) {
-                $this->redirectToOrigin()->setBack($args['origine']);
-                unset($args['origine']);
-                $this->setToSession('post', $args);
-            } elseif (array_key_exists('url1_retour', $args)) {
-                $this->redirectToOrigin()->setBack($args['url1_retour']);
-                unset($args['url1_retour']);
-                $this->setToSession('post', $args);
-            }
-            if (array_key_exists('cancel', $args)) {
-                $this->flashMessenger()->addWarningMessage('La localisation de cette adresse n\'a pas été enregistrée.');
-                try {
-                    return $this->redirectToOrigin()->back();
-                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                        'action' => 'responsable-liste'
+        if (is_null($responsableId)) {
+            $prg = $this->prg();
+            if ($prg instanceof Response) {
+                return $prg;
+            } elseif ($prg === false) {
+                $args = $this->getFromSession('post', false);
+                if ($args === false) {
+                    $this->flashMessenger()->addErrorMessage('Action interdite');
+                    return $this->redirect()->toRoute('login', array(
+                        'action' => 'logout'
                     ));
                 }
+            } else {
+                $args = $prg;
+                // selon l'origine, l'url de retour porte le nom url1_retour (liste des responsables) ou origine (liste des élèves, fiche d'un responsable)
+                if (array_key_exists('url1_retour', $args)) {
+                    $this->redirectToOrigin()->setBack($args['url1_retour']);
+                    unset($args['url1_retour']);
+                    $this->setToSession('post', $args);
+                } elseif (array_key_exists('origine', $args)) {
+                    $this->redirectToOrigin()->setBack($args['origine']);
+                    unset($args['origine']);
+                    $this->setToSession('post', $args);
+                } elseif (array_key_exists('url1_retour', $args)) {
+                    $this->redirectToOrigin()->setBack($args['url1_retour']);
+                    unset($args['url1_retour']);
+                    $this->setToSession('post', $args);
+                }
+                if (array_key_exists('cancel', $args)) {
+                    $this->flashMessenger()->addWarningMessage('La localisation de cette adresse n\'a pas été enregistrée.');
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                        return $this->redirect()->toRoute('sbmgestion/eleve', array(
+                            'action' => 'responsable-liste', 'page' => $currentPage
+                        ));
+                    }
+                }
             }
+        } else {
+            $args = ['responsableId' => $responsableId];
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
         // nécessaire pour valider lat et lng
@@ -1556,7 +1565,7 @@ class EleveController extends AbstractActionController
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                     return $this->redirect()->toRoute('sbmgestion/eleve', array(
-                        'action' => 'responsable-liste'
+                        'action' => 'responsable-liste', 'page' => $currentPage
                     ));
                 }
             }
@@ -1574,6 +1583,18 @@ class EleveController extends AbstractActionController
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
         ));
+        if (! $form->isValid()) {
+            // essaie de positionner la marker à partir de l'adresse
+            $array = $this->getServiceLocator()
+                ->get('SbmCarto\Geocoder')
+                ->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
+            $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            $form->setData(array(
+                'responsableId' => $args['responsableId'],
+                'lat' => $pt->getLatitude(),
+                'lng' => $pt->getLongitude()
+            ));
+        }
         return new ViewModel(array(
             'point' => $pt,
             'form' => $form->prepare(),
