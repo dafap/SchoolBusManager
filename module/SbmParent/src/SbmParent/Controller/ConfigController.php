@@ -225,7 +225,17 @@ class ConfigController extends AbstractActionController
             }
         } else {
             $args = $prg;
-            $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+            if (array_key_exists('cancel', $args)) {
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'home-page'
+                ));
+            } elseif (array_key_exists('lng', $args) && array_key_exists('lat', $args)) {
+                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+            } else {
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'logout'
+                ));
+            }
         }
         // ici, le pt est initialisé en lat, lng, degré
         $form = new LatLngForm(array(
@@ -260,12 +270,7 @@ class ConfigController extends AbstractActionController
             }
             // On vérifie qu'on a cliqué dans un rectangle autorisé
             $form->setData($args);
-            if ($form->isValid()) {
-                if (array_key_exists('cancel', $args)) {
-                    return $this->redirect()->toRoute('login', array(
-                        'action' => 'home-page'
-                    ));
-                }
+            if ($form->isValid()) {                
                 $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
                 $tableResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
                 $oData = $tableResponsables->getObjData();
