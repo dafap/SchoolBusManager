@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2015
- * @version 2015-1
+ * @date 13 janv. 2016
+ * @version 2016-1.7.2
  */
 namespace SbmParent\Controller;
 
@@ -22,6 +22,7 @@ use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\LatLng as LatLngForm;
 use SbmParent\Model\Responsable;
 use Zend\Mvc\Controller\Plugin\Redirect;
+use SbmCommun\Form\SbmCommun\Form;
 
 class ConfigController extends AbstractActionController
 {
@@ -195,6 +196,12 @@ class ConfigController extends AbstractActionController
                 'action' => 'logout'
             ));
         }
+        // nécessaire pour valider lat et lng
+        $configCarte = StdLib::getParamR(array(
+            'sbm',
+            'cartes',
+            'parent'
+        ), $this->getServiceLocator()->get('config'));
         $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -204,17 +211,23 @@ class ConfigController extends AbstractActionController
             $args = $responsable->getArrayCopy();
             $point = new Point($args['x'], $args['y']);
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+            $form = new LatLngForm([], [], $configCarte['valide']);
+            $form->setData([
+                'lat' => $pt->getLatitude(),
+                'lng' => $pt->getLongitude()
+            ]);
+            if (! $form->isValid()) {
+                // essayer de localiser par l'adresse avant de présenter la carte
+                $array = $this->getServiceLocator()
+                    ->get('SbmCarto\Geocoder')
+                    ->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
+                $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            }
         } else {
             $args = $prg;
             $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
         }
         // ici, le pt est initialisé en lat, lng, degré
-        // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParamR(array(
-            'sbm',
-            'cartes',
-            'parent'
-        ), $this->getServiceLocator()->get('config'));
         $form = new LatLngForm(array(
             'responsableId' => array(
                 'id' => 'responsableId'

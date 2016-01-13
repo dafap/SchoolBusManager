@@ -9,40 +9,52 @@
  * @filesource localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2015
- * @version 2015-1
+ * @date 13 janv. 2016
+ * @version 2016-1.7.2
  */
-// calcul du contenu de l'infobulle
+// calcul du contenu de l'infobulle et du libellé du domicile
 $description = array();
-$description[] = '<b>' . implode(' ', array($this->responsable->titre, $this->responsable->nom, $this->responsable->prenom)) . '</b>';
+$description[] = '<b>' . implode(' ', array(
+    $this->responsable->titre,
+    $this->responsable->nom,
+    $this->responsable->prenom
+)) . '</b>';
 $description[] = $this->responsable->adresseL1;
+$domicile = $this->responsable->adresseL1;
 $tmp = $this->responsable->adresseL2;
-if (!empty($tmp)) {
+if (! empty($tmp)) {
     $description[] = $this->responsable->adresseL2;
+    $domicile .= ' ' . $this->responsable->adresseL2;
 }
-$description[] = implode(' ', array($this->responsable->codePostal, $this->responsable->commune));
+$cp_commune = implode(' ', array(
+    $this->responsable->codePostal,
+    $this->responsable->commune
+));
+$description[] = $cp_commune;
+$domicile .= ' ' . $cp_commune;
 $telephone = array();
 $tmp = $this->responsable->telephoneF;
-if (!empty($tmp)) {
+if (! empty($tmp)) {
     $telephone[] = $this->responsable->telephoneF;
 }
 $tmp = $this->responsable->telephoneP;
-if (!empty($tmp)) {
+if (! empty($tmp)) {
     $telephone[] = $this->responsable->telephoneP;
 }
 $tmp = $this->responsable->telephoneT;
-if (!empty($tmp)) {
+if (! empty($tmp)) {
     $telephone[] = $this->responsable->telephoneT;
 }
 $tel = implode(' ', $telephone);
-if (!empty($tel)) {
+if (! empty($tel)) {
     $description[] = 'Tel.' . $tel;
 }
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
-//$this->headScript()->appendFile('http://www.dafap.dev/ccda/google/js/functions.js');
-$this->headScript()->captureStart();?>
+// $this->headScript()->appendFile('http://www.dafap.dev/ccda/google/js/functions.js');
+$this->headScript()->captureStart();
+?>
 var marker;
 function initialiser() {
     var latlng = new google.maps.LatLng(<?php echo $this->config['centre']['lat'];?>, <?php echo $this->config['centre']['lng'];?>);
@@ -111,18 +123,20 @@ function initialiser() {
     });
 }
 
-<?php 
+<?php
 $this->headScript()->captureEnd();
 // lancement du script (sera affiché dans le layout à la fin de la page
-$this->inlineScript()->captureStart(); ?>
+$this->inlineScript()->captureStart();
+?>
 initialiser();
 <?php $this->inlineScript()->captureEnd(); ?>
 <h1>Position de votre domicile sur la carte</h1>
 <div id="carte-wrapper">
 	<div id="carte-header">
 		<p>
-			Cliquez sur la carte à l'emplacement de votre domicile puis cliquez
-			sur le bouton <b>'Enregistrer la localisation'</b>. Utilisez le zoom pour plus de précision.
+			Cliquez sur la carte à l'emplacement de votre domicile <b><?php echo $domicile;?></b>
+			puis cliquez sur le bouton <b>Enregistrer la localisation</b>.
+			Utilisez le zoom pour plus de précision.
 		</p>
 <?php
 echo $this->form($this->form);
