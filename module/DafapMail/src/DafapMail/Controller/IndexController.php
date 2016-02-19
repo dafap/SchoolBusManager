@@ -11,8 +11,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 janv. 2016
- * @version 2016-1.7.1
+ * @date 19 févr. 2016
+ * @version 2016-1.7.3
  */
 namespace DafapMail\Controller;
 
@@ -111,10 +111,10 @@ class IndexController extends AbstractActionController
 
     /**
      * Envoie des mails aux transporteurs lorsque des changements ont lieu dans les
-     * inscriptions des enfants qu'ils transportent (nouvelle affectation, changement 
+     * inscriptions des enfants qu'ils transportent (nouvelle affectation, changement
      * d'affectation, suppression d'une affectation ou élève rayé)
      * Cette tâche doit être planifiée dans un cron.
-     * 
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function lastDayChangesAction()
@@ -139,20 +139,32 @@ class IndexController extends AbstractActionController
                 }
             }
             $mailTemplate = new MailTemplate('avertissement-transporteur');
+            $qtransporteurs = $this->getServiceLocator()->get('Sbm\Db\Query\Transporteurs');
             $controle = array();
             foreach ($destinataires as $transporteurId => $circuits) {
                 $odata = $transporteurs->getRecord($transporteurId);
                 $email = $odata->email;
                 $controle[] = $odata->nom;
-                if (empty($email))
+                $to = [];
+                if (! empty($email)) {
+                    $to[$email] = [
+                        'email' => $email,
+                        'name' => $odata->nom
+                    ];
+                }
+                $users = $qtransporteurs->getUserEmails($transporteurId);
+                foreach ($users as $user) {
+                    $to[$user['email']] = [
+                        'email' => $user['email'],
+                        'name' => $user['nomprenom']
+                    ];
+                }
+                
+                if (empty($to))
                     continue;
+                
                 $params = array(
-                    'to' => array(
-                        array(
-                            'email' => $email,
-                            'name' => $odata->nom
-                        )
-                    ),
+                    'to' => array_values($to),
                     'subject' => 'Modification des inscriptions',
                     'body' => array(
                         'html' => $mailTemplate->render(array(
@@ -179,7 +191,7 @@ class IndexController extends AbstractActionController
             }
         }
         return $this->getResponse()
-        ->setContent($message)
-        ->setStatusCode(200);
+            ->setContent($message)
+            ->setStatusCode(200);
     }
 }
