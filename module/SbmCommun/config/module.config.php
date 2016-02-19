@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 jan. 2016
- * @version 2016-1.7.1
+ * @date 19 févr. 2016
+ * @version 2016-1.7.3
  */
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
@@ -163,6 +163,7 @@ return array(
             'Sbm\Db\Query\SecteursScolairesClgPu' => 'SbmCommun\Model\Db\Service\Query\Etablissement\SecteursScolairesClgPu',
             'Sbm\Db\Query\Services' => 'SbmCommun\Model\Db\Service\Query\Service\Services',
             'Sbm\Db\Query\Stations' => 'SbmCommun\Model\Db\Service\Query\Station\Stations',
+            'Sbm\Db\Query\Transporteurs' => 'SbmCommun\Model\Db\Service\Query\Transporteur\Transporteurs',
             'Sbm\Db\Query\History' => 'SbmCommun\Model\Db\Service\Query\History\History',
             'Sbm\Statistiques\Eleve' => 'SbmCommun\Model\Db\Service\Query\Eleve\Statistiques',
             'Sbm\Statistiques\Paiement' => 'SbmCommun\Model\Db\Service\Query\Paiement\Statistiques',
