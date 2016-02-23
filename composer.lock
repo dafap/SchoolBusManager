@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "21bc5ac00ba480a9eb329e54800e4ed6",
-    "content-hash": "40575bcc61e2c6bb980ebb7caf03ef8b",
+    "hash": "11d35a6e0246948033462d613c8f6f0d",
+    "content-hash": "208f514ff42b249f8c887bd160fbe4d5",
     "packages": [
         {
             "name": "atukai/at-php-settings",
@@ -132,6 +132,48 @@
                 "instantiate"
             ],
             "time": "2015-06-14 21:17:01"
+        },
+        {
+            "name": "drewm/mailchimp-api",
+            "version": "v2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/drewm/mailchimp-api.git",
+                "reference": "a9bf617afb5a9bcb2601f5cc23b01a7b581d5659"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/drewm/mailchimp-api/zipball/a9bf617afb5a9bcb2601f5cc23b01a7b581d5659",
+                "reference": "a9bf617afb5a9bcb2601f5cc23b01a7b581d5659",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.0.*",
+                "vlucas/phpdotenv": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DrewM\\MailChimp\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Drew McLellan",
+                    "email": "drew.mclellan@gmail.com",
+                    "homepage": "http://allinthehead.com/"
+                }
+            ],
+            "description": "Super-simple, minimum abstraction MailChimp API v3 wrapper",
+            "homepage": "https://github.com/drewm/mailchimp-api",
+            "time": "2016-01-30 16:12:54"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -4019,17 +4061,17 @@
         },
         {
             "name": "zendframework/zend-view",
-            "version": "2.6.2",
+            "version": "2.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-view.git",
-                "reference": "4d55d941389fb15e816bcee2523f90a45afbc08a"
+                "reference": "3885ed33f1d4d0614233f1ff6cdf873d1bda9796"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-view-2.6.2-aebb5d.zip",
-                "reference": "4d55d941389fb15e816bcee2523f90a45afbc08a",
-                "shasum": "373ae3069d2ae23ab8ef1013a622e27d0fb076f0"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-view-2.6.3-70f5b4.zip",
+                "reference": "3885ed33f1d4d0614233f1ff6cdf873d1bda9796",
+                "shasum": "3ae45af57b0c8d9bf92ef4fe505a5f5204c394c5"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -4051,6 +4093,7 @@
                 "zendframework/zend-i18n": "^2.6",
                 "zendframework/zend-json": "^2.6.1",
                 "zendframework/zend-log": "^2.7",
+                "zendframework/zend-modulemanager": "^2.5",
                 "zendframework/zend-mvc": "^2.6.1",
                 "zendframework/zend-navigation": "^2.5",
                 "zendframework/zend-paginator": "^2.5",
@@ -4101,7 +4144,7 @@
                 "view",
                 "zf2"
             ],
-            "time": "2016-02-18 16:44:16"
+            "time": "2016-02-22 18:24:35"
         },
         {
             "name": "zendframework/zend-xmlrpc",
