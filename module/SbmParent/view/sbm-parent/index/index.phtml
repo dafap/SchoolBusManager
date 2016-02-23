@@ -85,15 +85,14 @@ echo $this->flashMessenger()->render('default');
 	<p>Vous pourrez inscire vos enfants entre le <?php echo $this->etatSite['dateDebut']->format('d/m/Y');?> et le <?php echo $this->etatSite['dateFin']->format('d/m/Y');?>.</p>
 	<?php elseif ($etat == 1) :?>
 	<p>Vous n'avez pas encore d'enfant inscrit.</p>
-	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez le paiement en ligne ou adressez votre paiment au service transport de la Communauté de 
-communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de recevoir votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
+	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez le paiement en ligne ou adressez votre paiment au service transport de School Bus Manager avant le <?php echo $dateLimite; ?> afin de recevoir votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
 	<ul>
     <?php foreach ($this->permanences as $row) :?>
         <li><?php echo "Pour les habitants de $row";?></li>
     <?php endforeach;?>
     </ul>
 	<p>
-		<b>Les inscriptions ne seront prises en compte qu'une fois le paiement
+		<b>Quelque soit votre moyen de paiement, les inscriptions ne seront prises en compte qu'une fois le paiement
 			enregistré.</b>
 	</p>
 	<p>

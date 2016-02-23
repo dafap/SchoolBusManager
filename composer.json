@@ -28,7 +28,8 @@
         "php": ">=5.5",
         "zendframework/zendframework": "~2.5",
         "tecnickcom/tcpdf": "*",
-        "zf-commons/zfc-base": "*"
+        "zf-commons/zfc-base": "*",
+        "drewm/mailchimp-api": "^2.1"
     },
     "require-dev": {
         "zendframework/zftool": "dev-master",
