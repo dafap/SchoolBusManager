@@ -810,16 +810,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "1.3.3",
+            "version": "1.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "6e7133793a8e5a5714a551a8324337374be209df"
+                "reference": "dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/6e7133793a8e5a5714a551a8324337374be209df",
-                "reference": "6e7133793a8e5a5714a551a8324337374be209df",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf",
+                "reference": "dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf",
                 "shasum": ""
             },
             "require": {
@@ -856,7 +856,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2015-12-02 08:37:27"
+            "time": "2016-02-26 18:40:46"
         },
         {
             "name": "sebastian/exporter",
@@ -3528,36 +3528,36 @@
         },
         {
             "name": "zendframework/zend-session",
-            "version": "2.5.2",
+            "version": "2.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-session.git",
-                "reference": "b05bbd00c7ddd904d5276924add84b6e2ea722d5"
+                "reference": "9c19ebdda0e25cb6c3b2c68171fb24d6fca186a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-session-2.5.2-f1df96.zip",
-                "reference": "b05bbd00c7ddd904d5276924add84b6e2ea722d5",
-                "shasum": "1e5cbe0d5df12aad70185a7e36fcb2ba5bcca4fb"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-session-2.6.2-715e9a.zip",
+                "reference": "9c19ebdda0e25cb6c3b2c68171fb24d6fca186a2",
+                "shasum": "046b2e079b29674c797858b219c491538b92cc30"
             },
             "require": {
-                "php": ">=5.5",
-                "zendframework/zend-eventmanager": "~2.5",
-                "zendframework/zend-stdlib": "~2.5"
+                "php": "^5.5 || ^7.0",
+                "zendframework/zend-eventmanager": "^2.6.2 || ^3.0",
+                "zendframework/zend-stdlib": "^2.7 || ^3.0"
             },
             "require-dev": {
+                "container-interop/container-interop": "^1.1",
                 "fabpot/php-cs-fixer": "1.7.*",
                 "phpunit/phpunit": "~4.0",
-                "zendframework/zend-cache": "~2.5",
-                "zendframework/zend-db": "~2.5",
-                "zendframework/zend-http": "~2.5",
-                "zendframework/zend-servicemanager": "~2.5",
-                "zendframework/zend-validator": "~2.5"
+                "zendframework/zend-cache": "^2.6.1",
+                "zendframework/zend-db": "^2.7",
+                "zendframework/zend-http": "^2.5.4",
+                "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3",
+                "zendframework/zend-validator": "^2.6"
             },
             "suggest": {
                 "zendframework/zend-cache": "Zend\\Cache component",
                 "zendframework/zend-db": "Zend\\Db component",
-                "zendframework/zend-eventmanager": "Zend\\EventManager component",
                 "zendframework/zend-http": "Zend\\Http component",
                 "zendframework/zend-servicemanager": "Zend\\ServiceManager component",
                 "zendframework/zend-validator": "Zend\\Validator component"
@@ -3565,8 +3565,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev",
-                    "dev-develop": "2.6-dev"
+                    "dev-master": "2.6-dev",
+                    "dev-develop": "2.7-dev"
                 }
             },
             "autoload": {
@@ -3588,7 +3588,7 @@
                 "session",
                 "zf2"
             ],
-            "time": "2015-07-29 19:44:43"
+            "time": "2016-02-25 19:32:38"
         },
         {
             "name": "zendframework/zend-soap",
