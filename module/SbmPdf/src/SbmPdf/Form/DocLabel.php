@@ -8,8 +8,8 @@
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2015
- * @version 2015-1
+ * @date 13 avr. 2016
+ * @version 2016-1
  */
 namespace SbmPdf\Form;
 
@@ -24,549 +24,549 @@ class DocLabel extends Form implements InputFilterProviderInterface
     {
         parent::__construct($param);
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'type' => 'hidden',
             'name' => 'doclabelId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'documentId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'name'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'recordSource'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'name' => 'csrf',
             'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
+            'options' => [
+                'csrf_options' => [
                     'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'margin_left',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-margin_left',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Marge de gauche',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'margin_top',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-margin_top',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Marge du haut',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'x_space',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-x_space',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Espacement horizontal entre 2 colonnes d\'étiquettes',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'y_space',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-y_space',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Espacement vertical entre 2 rangées d\'étiquettes',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'label_width',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-label_width',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Largeur d\'une étiquette',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'label_height',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-label_height',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Hauteur d\'une étiquette',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'cols_number',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-cols_number',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Nombre de colonnes',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'rows_number',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-rows_number',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Nombre de rangées d\'étiquettes',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'padding_top',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-padding_top',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Marge intérieure en haut',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'padding_right',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-padding_right',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Marge intérieure à droite',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'padding_bottom',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-padding_bottom',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Marge intérieure en bas',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'padding_left',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-padding_left',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Marge intérieure à gauche',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'border',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-border',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Bordure',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'border_dash',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-border_dash',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Trait (plein, tirets ou pointillé)',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'border_width',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-border_width',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Epaisseur du trait de bordure',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Color',
             'name' => 'border_color',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'label-border_color',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Couleur de la bordure',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'documentpdf-submit',
                 'class' => 'button default submit left-95px'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'documentpdf-cancel',
                 'autofocus' => 'autofocus',
                 'class' => 'button default cancel'
-            )
-        ));
+            ]
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'margin_left' => array(
+        return [
+            'margin_left' => [
                 'name' => 'margin_left',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'margin_top' => array(
+                    ]
+                ]
+            ],
+            'margin_top' => [
                 'name' => 'margin_top',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'x_space' => array(
+                    ]
+                ]
+            ],
+            'x_space' => [
                 'name' => 'x_space',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'y_space' => array(
+                    ]
+                ]
+            ],
+            'y_space' => [
                 'name' => 'y_space',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'label_width' => array(
+                    ]
+                ]
+            ],
+            'label_width' => [
                 'name' => 'label_width',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'label_height' => array(
+                    ]
+                ]
+            ],
+            'label_height' => [
                 'name' => 'label_height',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'cols_number' => array(
+                    ]
+                ]
+            ],
+            'cols_number' => [
                 'name' => 'border_width',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\Digits'
-                    )
-                )
-            ),
-            'rows_number' => array(
+                    ]
+                ]
+            ],
+            'rows_number' => [
                 'name' => 'border_width',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\Digits'
-                    )
-                )
-            ),
-            'padding_top' => array(
+                    ]
+                ]
+            ],
+            'padding_top' => [
                 'name' => 'padding_top',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'padding_right' => array(
+                    ]
+                ]
+            ],
+            'padding_right' => [
                 'name' => 'padding_right',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'padding_bottom' => array(
+                    ]
+                ]
+            ],
+            'padding_bottom' => [
                 'name' => 'padding_bottom',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'padding_left' => array(
+                    ]
+                ]
+            ],
+            'padding_left' => [
                 'name' => 'padding_left',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'border' => array(
+                    ]
+                ]
+            ],
+            'border' => [
                 'name' => 'border',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Alnum'
-                    )
-                ),
-                'validators' => array(
-                    /*array(
+                    ]
+                ],
+                'validators' => [
+                    /*[
                         'name' => 'Zend\Validator\Regex',
-                        'options' => array(
-                            'pattern' => '(?:0|1|[LTRB]{0,4})'
-                        )
-                    )*/
-                )
-            ),
-            'border_dash' => array(
+                        'options' => [
+                            'pattern' => '(?:0|1|[LTRB]{0,4}]'
+                        ]
+                    ]*/
+                ]
+            ],
+            'border_dash' => [
                 'name' => 'border_dash',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    /*array(
+                    ]
+                ],
+                'validators' => [
+                    /*[
                         'name' => 'Zend\Validator\Regex',
-                        'options' => array(
-                            'pattern' => '(?:0|[1-9],?[1-9])'
-                        )
-                    )*/
-                )
-            ),
-            'border_width' => array(
+                        'options' => [
+                            'pattern' => '(?:0|[1-9],?[1-9]]'
+                        ]
+                    ]*/
+                ]
+            ],
+            'border_width' => [
                 'name' => 'border_width',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     public function setData($data)

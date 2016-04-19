@@ -7,8 +7,8 @@
  * @filesource MajDistances.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2015
- * @version 2015-1
+ * @date 15 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Service;
 
@@ -17,6 +17,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Where;
 use DafapSession\Model\Session;
 use SbmCartographie\Model\Point;
+use SbmCartographie\Model\Service\CartographieManager;
+use SbmCartographie\Model\Exception;
 
 class MajDistances implements FactoryInterface
 {
@@ -26,7 +28,7 @@ class MajDistances implements FactoryInterface
      *
      * @var ServiceLocatorInterface
      */
-    private $sm;
+    private $db_manager;
 
     /**
      * millesime sur lequel on travaille
@@ -57,15 +59,18 @@ class MajDistances implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->sm = $serviceLocator;
+        if (! $serviceLocator->has('SbmCarto\DistanceEtablissements')) {
+            throw new Exception(sprintf('CartographieManager attendu.'));
+        }
+        $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->millesime = Session::get('millesime');
-        $this->famille = array(
-            'enfants' => array(
-                1 => array(),
-                2 => array()
-            ),
-            'etablissements' => array()
-        );
+        $this->famille = [
+            'enfants' => [
+                1 => [],
+                2 => []
+            ],
+            'etablissements' => []
+        ];
         $this->oDomicileEtablissements = $serviceLocator->get('SbmCarto\DistanceEtablissements');
         return $this;
     }
@@ -80,21 +85,21 @@ class MajDistances implements FactoryInterface
     public function pour($responsableId)
     {
         // domicile
-        $responsable = $this->sm->get('Sbm\Db\Table\Responsables')->getRecord($responsableId);
+        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($responsableId);
         $this->domicile = new Point($responsable->x, $responsable->y);
         
         // liste des élèves et des établissements à prendre en compte
-        $destinations = array();
+        $destinations = [];
         for ($i = 1; $i <= 2; $i ++) {
-            $rowset = $this->sm->get('Sbm\Db\Query\ElevesScolarites')->getEnfants($responsableId, $i);
+            $rowset = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEnfants($responsableId, $i);
             foreach ($rowset as $row) {
                 $this->famille['enfants'][$i][$row['eleveId']] = $row['etablissementId'];
                 if (array_key_exists($row['etablissementId'], $this->famille['etablissements']))
                     continue;
-                $this->famille['etablissements'][$row['etablissementId']] = array(
+                $this->famille['etablissements'][$row['etablissementId']] = [
                     'pt' => new Point($row['xeta'], $row['yeta']),
                     'distance' => 0.0
-                );
+                ];
                 $destinations[] = $this->famille['etablissements'][$row['etablissementId']]['pt'];
             }
         }
@@ -109,15 +114,15 @@ class MajDistances implements FactoryInterface
             }
             
             // maj table scolarites (conversion des distances en km)
-            $tScolarites = $this->sm->get('Sbm\Db\Table\Scolarites');
+            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
             $oData = $tScolarites->getObjData();
             for ($i = 1; $i <= 2; $i ++) {
                 foreach ($this->famille['enfants'][$i] as $eleveId => $etablissementId) {
-                    $oData->exchangeArray(array(
+                    $oData->exchangeArray([
                         'millesime' => $this->millesime,
                         'eleveId' => $eleveId,
                         'distanceR' . $i => round($this->famille['etablissements'][$etablissementId]['distance'] / 1000, 1)
-                    ));
+                    ]);
                     $tScolarites->saveRecord($oData);
                 }
             }

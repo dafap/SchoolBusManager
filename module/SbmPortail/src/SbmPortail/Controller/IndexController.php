@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1.6.7
+ * @date 19 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPortail\Controller;
 
@@ -27,39 +27,37 @@ class IndexController extends AbstractActionController
 
     public function indexAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
-            ));
+            ]);
         }
         // pour le moment, j'utilise la même entrée pour tous les rôles.
         // Le filtre programmé va limiter la vue aux données concernant l'utilisateur
         switch ($auth->getCategorieId()) {
             case 2:
-                return $this->redirect()->toRoute('sbmportail', array(
+                return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
-                ));
+                ]);
                 break;
             case 3:
-                return $this->redirect()->toRoute('sbmportail', array(
+                return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'et-index'
-                ));
+                ]);
                 break;
             case 200:
             case 253:
             case 254:
             case 255:
-                return $this->redirect()->toRoute('sbmportail', array(
+                return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'ccda-index'
-                ));
+                ]);
                 break;
             default:
-                return $this->redirect()->toRoute('login', array(
+                return $this->redirect()->toRoute('login', [
                     'action' => 'home-page'
-                ));
+                ]);
                 break;
         }
     }
@@ -80,11 +78,11 @@ class IndexController extends AbstractActionController
      */
     public function ccdaIndexAction()
     {
-        $statEleve = $this->getServiceLocator()->get('Sbm\Statistiques\Eleve');
-        $statResponsable = $this->getServiceLocator()->get('Sbm\Statistiques\Responsable');
-        $statPaiement = $this->getServiceLocator()->get('Sbm\Statistiques\Paiement');
+        $statEleve = $this->config['db_manager']->get('Sbm\Statistiques\Eleve');
+        $statResponsable = $this->config['db_manager']->get('Sbm\Statistiques\Responsable');
+        $statPaiement = $this->config['db_manager']->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
-        return new ViewModel(array(
+        return new ViewModel([
             'elevesEnregistres' => current($statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
             'elevesInscrits' => current($statEleve->getNbInscritsByMillesime($millesime))['effectif'],
             'elevesPreinscrits' => current($statEleve->getNbPreinscritsByMillesime($millesime))['effectif'],
@@ -100,29 +98,25 @@ class IndexController extends AbstractActionController
             'responsablesHorsZone' => current($statResponsable->getNbCommuneNonMembre())['effectif'],
             'responsablesDemenagement' => current($statResponsable->getNbDemenagement())['effectif'],
             'paiements' => $statPaiement->getSumByAsMode($millesime)
-        ));
+        ]);
     }
 
     public function ccdaCircuitsAction()
     {
         try {
-            $services = $this->getServiceLocator()
-                ->get('Sbm\Db\Query\Services')
-                ->paginatorServicesWithEtablissements();
-            $stats = $this->getServiceLocator()
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byService();
+            $services = $this->config['db_manager']->get('Sbm\Db\Query\Services')->paginatorServicesWithEtablissements();
+            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byService();
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-            $services = array();
-            $stats = array();
+            $services = [];
+            $stats = [];
         }
         
         // die(var_dump($stats));
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $services,
             'statServices' => $stats,
             'page' => $this->params('page', 1)
-        ));
+        ]);
     }
 
     /**
@@ -132,43 +126,33 @@ class IndexController extends AbstractActionController
      */
     public function etIndexAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
-            ));
+            ]);
         }
         $userId = $auth->getUserId();
         try {
-            $etablissementId = $this->getServiceLocator()
-                ->get('Sbm\Db\Table\UsersEtablissements')
-                ->getEtablissementId($userId);
+            $etablissementId = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
             
-            $stats = $this->getServiceLocator()
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byEtablissement();
+            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byEtablissement();
             
-            $elevesTransportes = $stats[$etablissementId]['transportes'];
+            $elevesTransportes = StdLib::getParamR([$etablissementId, 'transportes'], $stats,0);
             
-            $services = $this->getServiceLocator()
-                ->get('Sbm\Db\Query\Services')
-                ->getServicesGivenEtablissement($etablissementId);
-            $stats = $this->getServiceLocator()
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byServiceGivenEtablissement($etablissementId);
+            $services = $this->config['db_manager']->get('Sbm\Db\Query\Services')->getServicesGivenEtablissement($etablissementId);
+            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement($etablissementId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $elevesTransportes = '';
-            $services = array();
-            $stats = array();
+            $services = [];
+            $stats = [];
         }
         
-        return new ViewModel(array(
+        return new ViewModel([
             'elevesTransportes' => $elevesTransportes,
             'services' => $services,
             'statServices' => $stats
-        ));
+        ]);
     }
 
     /**
@@ -178,55 +162,43 @@ class IndexController extends AbstractActionController
      */
     public function trIndexAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
-            ));
+            ]);
         }
         $userId = $auth->getUserId();
         try {
-            $transporteurId = $this->getServiceLocator()
-                ->get('Sbm\Db\Table\UsersTransporteurs')
-                ->getTransporteurId($userId);
-            $stats = $this->getServiceLocator()
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byTransporteur();
-            $elevesATransporter = $stats[$transporteurId]['total'];
-            $services = $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Services')
-                ->fetchAll(array(
+            $transporteurId = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byTransporteur();
+            $elevesATransporter = StdLib::getParamR([$transporteurId, 'total'], $stats,0);
+            $services = $this->config['db_manager']->get('Sbm\Db\Table\Services')->fetchAll([
                 'transporteurId' => $transporteurId
-            ));
-            $stats = $this->getServiceLocator()
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->transporteurByService($transporteurId);
+            ]);
+            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->transporteurByService($transporteurId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $transporteurId = null;
             $elevesATransporter = '';
-            $services = array();
-            $stats = array();
+            $services = [];
+            $stats = [];
         }
         
         // die(var_dump($stats));
-        return new ViewModel(array(
+        return new ViewModel([
             'elevesATransporter' => $elevesATransporter,
             'services' => $services,
             'statServices' => $stats
-        ));
+        ]);
     }
 
     public function trElevesAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
-            ));
+            ]);
         }
         $userId = $auth->getUserId();
         
@@ -236,7 +208,7 @@ class IndexController extends AbstractActionController
         } elseif ($prg === false) {
             // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (login ou cas du paginator ou de F5 )
             $this->sbm_isPost = false;
-            $args = Session::get('post', array(), $this->getSessionNamespace('tr-eleves'));
+            $args = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         } else {
             // c'était un post ; on le met en session si ce n'est pas un retour ou un cancel
             $args = $prg;
@@ -244,15 +216,15 @@ class IndexController extends AbstractActionController
             if ($retour) {
                 // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit. Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
-                $args = Session::get('post', array(), $this->getSessionNamespace('tr-eleves'));
+                $args = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
             } else {
                 if (array_key_exists('cancel', $args)) {
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('sbmportail', array(
+                        return $this->redirect()->toRoute('sbmportail', [
                             'action' => 'index'
-                        ));
+                        ]);
                     }
                 } elseif (array_key_exists('origine', $args)) {
                     $this->redirectToOrigin()->setBack($args['origine']);
@@ -265,15 +237,11 @@ class IndexController extends AbstractActionController
         // formulaire des critères de recherche
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         // initialiser le form pour les select ...
-        $criteres_form->setValueOptions('etablissementId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Etablissements')
+        $criteres_form->setValueOptions('etablissementId', $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')
             ->desservis())
-            ->setValueOptions('classeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Classes'))
-            ->setValueOptions('serviceId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Services'))
-            ->setValueOptions('stationId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Stations')
+            ->setValueOptions('classeId', $this->config['db_manager']->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('serviceId', $this->config['db_manager']->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId', $this->config['db_manager']->get('Sbm\Db\Select\Stations')
             ->toutes());
         
         // créer un objectData qui contient la méthode getWhere() adhoc
@@ -295,64 +263,54 @@ class IndexController extends AbstractActionController
             case 2:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
                 try {
-                    $right = $this->getServiceLocator()
-                        ->get('Sbm\Db\Table\UsersTransporteurs')
-                        ->getTransporteurId($userId);
+                    $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
                     $where = $criteres_obj->getWhere()
                         ->nest()
                         ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
-                    $paginator = $this->getServiceLocator()
-                        ->get('Sbm\Db\Query\AffectationsServicesStations')
-                        ->paginatorScolaritesR($where, array(
+                    $paginator = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
                         'nom',
                         'prenom'
-                    ));
+                    ]);
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addErrorMessage('Votre compte n\'est pas associé à un transporteur. Contactez le service des transports scolaires');
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('sbmportail', array(
+                        return $this->redirect()->toRoute('sbmportail', [
                             'action' => 'tr-index'
-                        ));
+                        ]);
                     }
                 }
                 $categorie = 2;
                 break;
             case 3:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
-                $right = $this->getServiceLocator()
-                    ->get('Sbm\Db\Table\UsersEtablissements')
-                    ->getEtablissementId($userId);
+                $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
                 $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
-                $paginator = $this->getServiceLocator()
-                    ->get('Sbm\Db\Query\AffectationsServicesStations')
-                    ->paginatorScolaritesR($where, array(
+                $paginator = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
                     'nom',
                     'prenom'
-                ));
+                ]);
                 $categorie = 3;
                 break;
             case 200:
             default:
                 $categorie = 200;
                 $where = $criteres_obj->getWhere();
-                $paginator = $this->getServiceLocator()
-                    ->get('Sbm\Db\Query\AffectationsServicesStations')
-                    ->paginatorScolaritesR($where, array(
+                $paginator = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
                     'nom',
                     'prenom'
-                ));
+                ]);
                 break;
         }
         
-        return new ViewModel(array(
+        return new ViewModel([
             'categorie' => $categorie,
             'paginator' => $paginator,
             'page' => $this->params('page', 1),
-            'nb_pagination' => $this->getNbPagination('nb_eleves', 10),
+            'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
             'criteres_form' => $criteres_form
-        ));
+        ]);
     }
 
     /**
@@ -362,13 +320,11 @@ class IndexController extends AbstractActionController
      */
     public function trPdfAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
-            ));
+            ]);
         }
         $identity = $auth->getIdentity();
         $userId = $auth->getUserId();
@@ -376,32 +332,28 @@ class IndexController extends AbstractActionController
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), $this->getSessionNamespace('tr-eleves'));
+        $criteres = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-        $filtre = array(
-            'criteres' => array(),
-            'strict' => array(
-                'empty' => array(),
-                'not empty' => array()
-            )
-        );
-        $expressions = array();
+        $filtre = [
+            'criteres' => [],
+            'strict' => [
+                'empty' => [],
+                'not empty' => []
+            ]
+        ];
+        $expressions = [];
         switch ($auth->getCategorieId()) {
             case 2:
-                $right = $this->getServiceLocator()
-                    ->get('Sbm\Db\Table\UsersTransporteurs')
-                    ->getTransporteurId($userId);
+                $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
                 $where = $criteres_obj->getWherePdf()
                     ->nest()
                     ->equalTo('transporteur1Id', $right)->or->equalTo('transporteur2Id', $right)->unnest();
                 $documentId = 'List élèves portail transporteur';
                 break;
             case 3:
-                $right = $this->getServiceLocator()
-                    ->get('Sbm\Db\Table\UsersEtablissements')
-                    ->getEtablissementId($userId);
+                $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
                 $where = $criteres_obj->getWherePdf()->equalTo('etablissementId', $right);
                 $documentId = 'List élèves portail etab';
                 break;
@@ -412,7 +364,7 @@ class IndexController extends AbstractActionController
                 $documentId = 'List élèves portail transporteur';
                 break;
         }
-        $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+        $call_pdf = $this->config['RenderPdfService'];
         if ($docaffectationId = $this->params('id', false)) {
             // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
             $call_pdf->setParam('docaffectationId', $docaffectationId);
@@ -431,9 +383,9 @@ class IndexController extends AbstractActionController
         } elseif ($prg === false) {
             $args = $this->getFromSession('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('serviceId', $args)) {
-                return $this->redirect()->toRoute('sbmportail', array(
+                return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
-                ));
+                ]);
             }
         } else {
             $args = $prg;
@@ -444,22 +396,16 @@ class IndexController extends AbstractActionController
         $serviceId = $args['serviceId'];
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))->equalTo('serviceId', $serviceId);
-        return new ViewModel(array(
-            'service' => $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Services')
-                ->getRecord($serviceId),
-            't_nb_inscrits' => $this->getServiceLocator()
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byCircuit(),
-            'paginator' => $this->getServiceLocator()
-                ->get('Sbm\Db\Vue\Circuits')
-                ->paginator($where, array(
+        return new ViewModel([
+            'service' => $this->config['db_manager']->get('Sbm\Db\Table\Services')->getRecord($serviceId),
+            't_nb_inscrits' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byCircuit(),
+            'paginator' => $this->config['db_manager']->get('Sbm\Db\Vue\Circuits')->paginator($where, [
                 'm1'
-            )),
-            'nb_pagination' => $this->getNbPagination('nb_circuits', 10),
+            ]),
+            'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
             'page' => $this->params('page', 1),
             'origine' => StdLib::getParam('origine', $args)
-        ));
+        ]);
     }
 
     public function trCircuitGroupAction()
@@ -470,9 +416,9 @@ class IndexController extends AbstractActionController
         } elseif ($prg === false) {
             $args = $this->getFromSession('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('serviceId', $args) || ! array_key_exists('circuitId', $args)) {
-                return $this->redirect()->toRoute('sbmportail', array(
+                return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
-                ));
+                ]);
             }
         } else {
             $args = $prg;
@@ -481,57 +427,49 @@ class IndexController extends AbstractActionController
             }
         }
         $circuitId = $args['circuitId'];
-        $circuit = $this->getServiceLocator()
-            ->get('Sbm\Db\Vue\Circuits')
-            ->getRecord($circuitId);
-        return new ViewModel(array(
-            'data' => $this->getServiceLocator()
-                ->get('Sbm\Db\Eleve\Liste')
-                ->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId), array(
+        $circuit = $this->config['db_manager']->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
+        return new ViewModel([
+            'data' => $this->config['db_manager']->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'circuit' => $circuit,
             'serviceId' => $args['serviceId'],
             'page' => $this->params('page', 1)
-        ));
+        ]);
     }
 
     public function trCarteEtablissementsAction()
     {
         $this->redirectToOrigin()->setBack('/portail/index');
-        return $this->redirect()->toRoute('sbmcarte', array(
+        return $this->redirect()->toRoute('sbmcarte', [
             'action' => 'etablissements'
-        ));
+        ]);
     }
 
     public function trCarteStationsAction()
     {
         $this->redirectToOrigin()->setBack('/portail/index');
-        return $this->redirect()->toRoute('sbmcarte', array(
+        return $this->redirect()->toRoute('sbmcarte', [
             'action' => 'stations'
-        ));
+        ]);
     }
 
     public function trExtractionTelephonesAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
-            ));
+            ]);
         }
         $userId = $auth->getUserId();
-        $right = $this->getServiceLocator()
-            ->get('Sbm\Db\Table\UsersTransporteurs')
-            ->getTransporteurId($userId);
+        $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
         $currentPage = $this->params('page', 1);
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres($criteres_form->getElementNames());
-        $criteres = Session::get('post', array(), $this->getSessionNamespace('tr-eleves'));
+        $criteres = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
@@ -539,9 +477,7 @@ class IndexController extends AbstractActionController
             ->nest()
             ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
         
-        $resultset = $this->getServiceLocator()
-            ->get('Sbm\Db\Query\AffectationsServicesStations')
-            ->getTelephonesPortables($where);
+        $resultset = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->getTelephonesPortables($where);
         $data = iterator_to_array($resultset);
         if (! empty($data)) {
             $fields = array_keys(current($data));
@@ -550,10 +486,10 @@ class IndexController extends AbstractActionController
             return $this->csvExport('telephones.csv', $fields, $data);
         } else {
             $this->flashMessenger()->addInfoMessage('Il n\'y a pas de données correspondant aux critères indiqués.');
-            return $this->redirect()->toRoute('sbmportail', array(
+            return $this->redirect()->toRoute('sbmportail', [
                 'action' => 'tr-eleves',
                 'page' => $this->params('page', 1)
-            ));
+            ]);
         }
     }
     
@@ -565,9 +501,9 @@ class IndexController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmportail');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('login', array(
+            ->toRoute('login', [
             'action' => 'modif-compte'
-        ));
+        ]);
     }
 
     public function localisationAction()
@@ -581,9 +517,9 @@ class IndexController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmportail');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('login', array(
+            ->toRoute('login', [
             'action' => 'mdp-change'
-        ));
+        ]);
     }
 
     public function emailChangeAction()
@@ -591,9 +527,9 @@ class IndexController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmportail');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('login', array(
+            ->toRoute('login', [
             'action' => 'email-change'
-        ));
+        ]);
     }
 
     public function messageAction()

@@ -6,52 +6,58 @@
  * @package module/SbmGestion/config
  * @filesource module.config.php
  * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
-return array(
-    'acl' => array(
-        'resources' => array(
-            'sbmgestion' => array(
-                'allow' => array(
-                    'roles' => array(
+use SbmGestion\Controller;
+use SbmGestion\Controller\Service;
+use SbmGestion\Model\View\Helper as ViewHelper;
+use SbmGestion\Model\Db\Service\Simulation\Prepare;
+use SbmGestion\Form;
+
+return [
+    'acl' => [
+        'resources' => [
+            'sbmgestion' => [
+                'allow' => [
+                    'roles' => [
                         'gestion'
-                    )
-                ),
-                'actions' => array(
-                    'ouvrir' => array(
-                        'deny' => array(
-                            'roles' => array(
+                    ]
+                ],
+                'actions' => [
+                    'ouvrir' => [
+                        'deny' => [
+                            'roles' => [
                                 'parent'
-                            )
-                        ),
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ],
+                        'allow' => [
+                            'roles' => [
                                 'admin'
-                            )
-                        ),
+                            ]
+                        ],
                         'redirect_to' => 'sbmgestion/anneescolaire'
-                    ),
-                    'circuit-dupliquer' => array(
-                        'deny' => array(
-                            'roles' => array(
+                    ],
+                    'circuit-dupliquer' => [
+                        'deny' => [
+                            'roles' => [
                                 'parent'
-                            )
-                        ),
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ],
+                        'allow' => [
+                            'roles' => [
                                 'admin'
-                            )
-                        ),
+                            ]
+                        ],
                         'redirect_to' => 'sbmgestion/transport'
-                    )
-                )
-            )
-        )
-    ),
-    'liste' => array(
-        'paginator' => array(
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'paginator' => [
+        'count_per_page' => [
             'nb_circuits' => 15,
             'nb_classes' => 15,
             'nb_communes' => 15,
@@ -64,182 +70,187 @@ return array(
             'nb_stations' => 15,
             'nb_tarifs' => 15,
             'nb_transporteurs' => 15
-        )
-    ),
-    'service_manager' => array(
-        'invokables' => array(
-            'Sbm\Db\Simulation\Prepare' => 'SbmGestion\Model\Db\Factory\Simulation\Prepare'
-        ),
-        'factories' => array(
+        ]
+    ],
+    'db_manager' => [
+        'factories' => [
+            'Sbm\Db\Simulation\Prepare' => Prepare::class,
             'Sbm\Db\Circuit\Liste' => 'SbmGestion\Model\Db\Service\Circuit\Liste',
             'Sbm\Db\Eleve\Liste' => 'SbmGestion\Model\Db\Service\Eleve\Liste',
             'Sbm\Db\Eleve\Effectif' => 'SbmGestion\Model\Db\Service\Eleve\Effectif'
-        )
-    ),
-    'controllers' => array(
-        'invokables' => array(
-            'SbmGestion\Controller\Index' => 'SbmGestion\Controller\IndexController',
-            'SbmGestion\Controller\Eleve' => 'SbmGestion\Controller\EleveController',
-            'SbmGestion\Controller\EleveGestion' => 'SbmGestion\Controller\EleveGestionController',
-            'SbmGestion\Controller\Finance' => 'SbmGestion\Controller\FinanceController',
-            'SbmGestion\Controller\Transport' => 'SbmGestion\Controller\TransportController',
-            'SbmGestion\Controller\AnneeScolaire' => 'SbmGestion\Controller\AnneeScolaireController',
-            'SbmGestion\Controller\Simulation' => 'SbmGestion\Controller\SimulationController',
-            'SbmGestion\Controller\Statistiques' => 'SbmGestion\Controller\StatistiquesController',
-            'SbmGestion\Controller\Config' => 'SbmGestion\Controller\ConfigController'
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'sbmgestion' => array(
+        ]
+    ],
+    'form_manager' => [
+        'invokables' => [
+            Form\Simulation::class => Form\Simulation::class
+        ]
+    ],
+    'controllers' => [
+        'invokables' => [
+            'SbmGestion\Controller\Config' => Controller\ConfigController::class
+        ],
+        'factories' => [
+            'SbmGestion\Controller\AnneeScolaire' => Service\AnneeScolaireControllerFactory::class,
+            'SbmGestion\Controller\Eleve' => Service\EleveControllerFactory::class,
+            'SbmGestion\Controller\EleveGestion' => Service\EleveGestionControllerFactory::class,
+            'SbmGestion\Controller\Finance' => Service\FinanceControllerFactory::class,
+            'SbmGestion\Controller\Index' => Service\IndexControllerFactory::class,
+            'SbmGestion\Controller\Simulation' => Service\SimulationControllerFactory::class,
+            'SbmGestion\Controller\Statistiques' => Service\StatistiquesControllerFactory::class,
+            'SbmGestion\Controller\Transport' => Service\TransportControllerFactory::class
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'sbmgestion' => [
                 'type' => 'literal',
-                'options' => array(
+                'options' => [
                     'route' => '/gestion',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'SbmGestion\Controller\Index',
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true,
-                'child_routes' => array(
-                    'eleve' => array( // gestion des élèves
+                'child_routes' => [
+                    'eleve' => [ // gestion des élèves
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/eleve[/:action[/page/:page][/id/:id]]',
-                            'constraints' => array(
+                            'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
                                 'id' => '[0-9]+'
-                            ),
-                            'defaults' => array(
+                            ],
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Eleve',
                                 'action' => 'index'
-                            )
-                        )
-                    ),
-                    'gestioneleve' => array(
+                            ]
+                        ]
+                    ],
+                    'gestioneleve' => [
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/gestioneleve[/:action[/:page][/:id]]',
-                            'constraints' => array(
+                            'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
                                 'id' => '[0-9]+'
-                            ),
-                            'defaults' => array(
+                            ],
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\EleveGestion',
                                 'action' => 'index'
-                            )
-                        )
-                    ),
-                    'finance' => array( // gestion financière
+                            ]
+                        ]
+                    ],
+                    'finance' => [ // gestion financière
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/finance[/:action[/page/:page][/id/:id]]',
-                            'constraints' => array(
+                            'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
                                 'id' => '[a-zA-Z0-9]+'
-                            ),
-                            'defaults' => array(
+                            ],
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Finance',
                                 'action' => 'index'
-                            )
-                        )
-                    ),
-                    'transport' => array( // gestion des données du réseau de transport
+                            ]
+                        ]
+                    ],
+                    'transport' => [ // gestion des données du réseau de transport
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/transport[/:action[/page/:page][/id/:id]]',
-                            'constraints' => array(
+                            'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
                                 'id' => '[0-9]+'
-                            ),
-                            'defaults' => array(
+                            ],
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Transport',
                                 'action' => 'index'
-                            )
-                        )
-                    ),
-                    'anneescolaire' => array( // gestion de l'année scolaire
+                            ]
+                        ]
+                    ],
+                    'anneescolaire' => [ // gestion de l'année scolaire
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/anneescolaire[/:action][/:millesime][/:id]',
-                            'constraints' => array(
+                            'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'millesime' => '[0-9]{4}',
                                 'id' => '[0-9]+'
-                            ),
-                            'defaults' => array(
+                            ],
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\AnneeScolaire',
                                 'action' => 'index'
-                            )
-                        )
-                    ),
-                    'simul' => array( // simulation d'une nouvelle organisation
+                            ]
+                        ]
+                    ],
+                    'simul' => [ // simulation d'une nouvelle organisation
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/simul',
-                            'defaults' => array(
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Simulation',
                                 'action' => 'index'
-                            )
-                        )
-                    ),
+                            ]
+                        ]
+                    ],
                     
-                    'statistiques' => array(
+                    'statistiques' => [
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/statistiques[/:action]',
-                            'constraints' => array(
+                            'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
-                            ),
-                            'defaults' => array(
+                            ],
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Statistiques',
                                 'action' => 'index'
-                            )
-                        )
-                    ),
-                    'config' => array( // gestion de la configuration et des paramètres
+                            ]
+                        ]
+                    ],
+                    'config' => [ // gestion de la configuration et des paramètres
                         'type' => 'segment',
-                        'options' => array(
+                        'options' => [
                             'route' => '/config[/:action]',
-                            'constraints' => array(
+                            'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
-                            ),
-                            'defaults' => array(
+                            ],
+                            'defaults' => [
                                 'module' => 'SbmGestion',
                                 'controller' => 'SbmGestion\Controller\Config',
                                 'action' => 'index'
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    ),
-    'view_helpers' => array(
-        'invokables' => array(
-            'menuRapports' => 'SbmGestion\Model\View\Helper\MenuRapports',
-            'printServices' => 'SbmGestion\Model\View\Helper\Services',
-            'printStations' => 'SbmGestion\Model\View\Helper\Stations'
-        )
-    ),
-    'view_manager' => array(
-        'template_map' => array(),
-        'template_path_stack' => array(
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'view_helpers' => [
+        'factories' => [
+            'menuRapports' => ViewHelper\MenuRapports::class,
+            'printServices' => ViewHelper\Services::class,
+            'printStations' => ViewHelper\Stations::class
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [],
+        'template_path_stack' => [
             __DIR__ . '/../view'
-        ),
-        'strategies' => array(
+        ],
+        'strategies' => [
             'ViewJsonStrategy'
-        )
-    )
-);
+        ]
+    ]
+];

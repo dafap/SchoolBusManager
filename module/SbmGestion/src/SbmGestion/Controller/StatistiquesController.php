@@ -36,7 +36,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
                 ->get('Sbm\Db\Eleve\Effectif')
                 ->statistiquesParClasse()
         ));
@@ -46,7 +46,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
                 ->get('Sbm\Db\Eleve\Effectif')
                 ->statistiquesParCommune()
         ));
@@ -56,7 +56,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
                 ->get('Sbm\Db\Eleve\Effectif')
                 ->statistiquesParCircuit()
         ));
@@ -66,7 +66,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
                 ->get('Sbm\Db\Eleve\Effectif')
                 ->statistiquesParEtablissement()
         ));
@@ -76,7 +76,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
             ->get('Sbm\Db\Eleve\Effectif')
             ->statistiquesParCircuitCommune()
         ));
@@ -86,7 +86,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
             ->get('Sbm\Db\Eleve\Effectif')
             ->statistiquesParCommuneCircuit()
         ));
@@ -96,7 +96,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
             ->get('Sbm\Db\Eleve\Effectif')
             ->statistiquesParClasseEtablissement()
         ));
@@ -106,7 +106,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->getServiceLocator()
+            'statistiques' => $this->config['db_manager']
             ->get('Sbm\Db\Eleve\Effectif')
             ->statistiquesParEtablissementClasse()
         ));

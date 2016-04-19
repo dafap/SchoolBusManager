@@ -9,8 +9,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmAjax\Controller;
 
@@ -23,7 +23,14 @@ class AbstractActionController extends ZendAbstractActionController
      * @var array
      */
     private $args = null;
+    
+    protected $config;
 
+    public function __construct($config = [])
+    {
+        $this->config = $config;
+    }
+    
     /**
      * Cette méthode décompose le paramètre 'args' passé dans la route en un tableau.
      * - si $param == 'args' alors la méthode renvoie la tableau obtenu

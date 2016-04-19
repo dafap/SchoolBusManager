@@ -1,16 +1,16 @@
 <?php
 /**
- * Description courte du fichier
+ * Base commune aux listeners PaiementOK et ScolariteOK
  *
- * Description longue du fichier s'il y en a une
+ * Compatibilité ZF3
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmPaiement/Listener
  * @filesource AbstractListener.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2015
- * @version 2015-1
+ * @date 15 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPaiement\Listener;
 
@@ -19,6 +19,7 @@ use Zend\Log\Writer\Stream;
 use Zend\Log\Filter\Priority;
 use Zend\Log\Logger;
 use SbmCommun\Model\StdLib;
+use SbmCommun\Model\Db\Service\DbManager;
 
 abstract class AbstractListener
 {
@@ -32,58 +33,37 @@ abstract class AbstractListener
     protected $logger;
 
     /**
-     * Service manager
+     * Db manager
      *
      * @var Zend\ServiceManager\ServiceLocatorInterface
      */
-    protected $sm;
+    protected $db_manager;
+    
+    /**
+     * Nom de la plateforme
+     * 
+     * @var string
+     */
+    protected $plateforme;
 
     /**
-     * Configuration du module
+     * Configuration de la plateforme
      *
      * @var array
      */
-    protected $config;
+    protected $config_plateforme;
+        
 
-    /**
-     * Installe le service manager
-     *
-     * @param ServiceLocatorInterface $sm            
-     */
-    protected function setServiceLocator(ServiceLocatorInterface $sm)
+    public function __construct(ServiceLocatorInterface $db_manager, $plateforme, $config_plateforme)
     {
-        $this->sm = $sm;
-    }
-
-    /**
-     * Renvoie le service manager
-     *
-     * @return Zend\ServiceManager\ServiceLocatorInterface
-     */
-    protected function getServiceLocator()
-    {
-        return $this->sm;
-    }
-
-    /**
-     * Lecture de la configuration
-     */
-    private function initConfig()
-    {
-        if (empty($this->config)) {
-            $config = $this->getServiceLocator()->get('Config');
-            $plateforme = strtolower(StdLib::getParamR(array(
-                'sbm',
-                'paiement',
-                'plateforme'
-            ), $config));
-            $this->config = StdLib::getParamR(array(
-                'sbm',
-                'paiement',
-                $plateforme
-            ), $config);
-            $this->log_file = realpath(__DIR__ . '/../../../../../data/logs') . DIRECTORY_SEPARATOR . $plateforme . '_error.log';
+        if (! ($db_manager) instanceof DbManager) {
+            $message = __CLASS__ . ' - DbManager attendu. On a reçu %s.';
+            throw new Exception(sprintf($message, gettype($db_manager)));
         }
+        $this->db_manager = $db_manager;
+        $this->plateforme = $plateforme;
+        $this->config_plateforme = $config_plateforme;
+        $this->log_file = realpath(__DIR__ . '/../../../../../data/logs') . DIRECTORY_SEPARATOR . $plateforme . '_error.log';
     }
     
     /**
@@ -92,8 +72,7 @@ abstract class AbstractListener
     private function initLogger()
     {
         if (empty($this->logger)) {
-            $this->initConfig();
-            $filter = new Priority(StdLib::getParam('error_reporting', $this->config, Logger::WARN));
+            $filter = new Priority(StdLib::getParam('error_reporting', $this->config_plateforme, Logger::WARN));
             $writer = new Stream($this->log_file);
             $writer->addFilter($filter);
             $this->logger = new Logger();

@@ -18,9 +18,9 @@ class TcpdfFonts
 
     private $tcpdf_font_path;
 
-    private $fonts = array();
+    private $fonts = [];
 
-    private $mono = array();
+    private $mono = [];
 
     public function __construct()
     {
@@ -101,13 +101,13 @@ class TcpdfFonts
         
         $result = new \stdClass();
         if (isset($file)) {
-            $result->font = array(
+            $result->font = [
                 basename($file, '.z') => isset($name) ? $name : basename($php_file, '.php')
-            );
+            ];
         } else {
-            $result->font = array(
+            $result->font = [
                 basename($php_file, '.php') => isset($name) ? $name : basename($php_file, '.php')
-            );
+            ];
         }
         $result->mono = max($cw) == min($cw);
         $result->cidfont0 = $type == 'cidfont0'; // polices asiatiques à oublier

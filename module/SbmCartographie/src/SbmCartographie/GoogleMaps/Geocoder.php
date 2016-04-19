@@ -7,37 +7,15 @@
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 janv. 2016
- * @version 2016-1.7.2
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCartographie\GoogleMaps;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmCommun\Model\StdLib;
 
-class Geocoder implements ServiceLocatorAwareInterface
+class Geocoder 
 {
-
-    /**
-     * Nécessaire pour savoir s'il faut initialiser la classe
-     *
-     * @var bool
-     */
-    private $_init;
-
-    /**
-     *
-     * @var ServiceLocatorInterface
-     */
-    private $sm;
-
-    /**
-     * Système cartographique permettant de déterminer la projection
-     *
-     * @var string
-     */
-    private $system;
 
     /**
      *
@@ -54,45 +32,11 @@ class Geocoder implements ServiceLocatorAwareInterface
 
     private $google_reversegeocoder_url;
 
-    public function __construct()
+    public function __construct($projection, $google_api)
     {
-        $this->_init = false;
-    }
-
-    private function init()
-    {
-        if (! $this->_init) {
-            $ns = '\\' . explode('\\', __NAMESPACE__)[0] . '\\ConvertSystemGeodetic\\Projection\\';
-            $config = $this->getServiceLocator()->get('Config');
-            $this->system = $ns . StdLib::getParamR(array(
-                'cartographie',
-                'system'
-            ), $config);
-            $nzone = StdLib::getParamR(array(
-                'cartographie',
-                'nzone'
-            ), $config, 0);
-            $this->projection = new $this->system($nzone);
-            $this->google_geocoder_url = StdLib::getParamR(array(
-                'google_api',
-                'geocoder'
-            ), $config);
-            $this->google_reversegeocoder_url = StdLib::getParamR(array(
-                'google_api',
-                'reversegeocoder'
-            ), $config);
-            $this->_init = true;
-        }
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->sm = $serviceLocator;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->sm;
+        $this->projection = $projection;
+        $this->google_geocoder_url = StdLib::getParam('geocoder', $google_api);
+        $this->google_reversegeocoder_url = StdLib::getParam('reversegeocoder', $google_api);
     }
 
     /**
@@ -108,7 +52,6 @@ class Geocoder implements ServiceLocatorAwareInterface
      */
     public function geocode($adresse, $codePostal, $commune)
     {
-        $this->init();
         $ligneAdresse = sprintf('%s,%05s %s', $adresse, $codePostal, $commune);
         $url = sprintf($this->google_geocoder_url, urlencode($ligneAdresse));
         $reponse = json_decode(file_get_contents($url));
@@ -150,10 +93,8 @@ class Geocoder implements ServiceLocatorAwareInterface
      */
     public function reverseGeocoding($lat, $lng)
     {
-        $this->init();
         $url = sprintf($this->google_reversegeocoder_url, $lat, $lng);
         $reponse = json_decode(file_get_contents($url), true);
-        //die(var_dump($reponse['results']['0']['address_components']));
         if (is_array($reponse) && $reponse['status'] == "OK") {
             $location = array(
                 'numero' => '',

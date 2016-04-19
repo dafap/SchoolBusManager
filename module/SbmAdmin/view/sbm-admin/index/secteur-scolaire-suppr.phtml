@@ -9,22 +9,22 @@
  * @filesource secteur-scolaire-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_retour = $this->url('sbmadmin', array(
+$url_retour = $this->url('sbmadmin', [
     'action' => 'secteur-scolaire-liste',
     'page' => $this->page
-));
-$actions = array(
-    'retour' => array(
+]);
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Suppression dans un secteur scolaire de collège public</h1>
 <div id="suppr-wrapper">

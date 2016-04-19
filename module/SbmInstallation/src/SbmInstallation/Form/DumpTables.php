@@ -18,54 +18,54 @@ use Zend\Form\Element\MultiCheckbox;
 use Zend\Form\Element\Submit;
 class DumpTables extends Form
 {
-    public function __construct($name = 'dump-tables', $options = array())
+    public function __construct($name = 'dump-tables', $options = [])
     {
         parent::__construct($name, $options);
         $this->setAttribute('method', 'post');
         
         $element = new MultiCheckbox('tables');
-        $element->setLabel('Tables')->setValueOptions(array());
+        $element->setLabel('Tables')->setValueOptions([]);
         $this->add($element);
         
         $element = new MultiCheckbox('systems');
-        $element->setLabel('Tables système')->setValueOptions(array());
+        $element->setLabel('Tables système')->setValueOptions([]);
         $this->add($element);        
         
-        $this->add(array(
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'onscreen',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'dumptables-onscreen',
                 'class' => ''
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Voulez-vous une copie du résultat à l\'écran ?',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     '0' => 'Non',
                     '1' => 'Oui'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'copy',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Lancer la copie',
                 'id' => 'dump-tables-submit',
                 'autofocus' => 'autofocus',
                 'class' => 'button default submit top-6px'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'dump-tables-cancel',
                 'class' => 'button default cancel top-6px'
-            )
-        ));
+            ]
+        ]);
     }
     
     /**
@@ -74,7 +74,7 @@ class DumpTables extends Form
      * @param string $name
      * @param array $values
      */
-    public function setValueOptions($name, $values = array())
+    public function setValueOptions($name, $values = [])
     {
         $element = $this->get($name);
         $element->setValueOptions($this->arrayConstruct($values));
@@ -82,7 +82,7 @@ class DumpTables extends Form
     
     private function arrayConstruct($array)
     {
-        $result = array();
+        $result = [];
         foreach ($array as $item) {
             $parts = explode('\\', $item);
             $result[$item] = array_pop($parts);

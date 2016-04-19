@@ -6,62 +6,81 @@
  * @package module/SbmAdmin/config
  * @filesource module.config.php
  * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1.6.7
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
-return array(
-    'acl' => array(
-        'resources' => array(
-            'sbmadmin' => array(
-                'allow' => array(
-                    'roles' => array('admin', 'sadmin')
-                )
-            )
-        ),
-    ),
-    'liste' => array(
-        'paginator' => array(
+use SbmAdmin\Form;
+use SbmAdmin\Controller\Service;
+use SbmAdmin\Model\Db\Service\Responsable\Responsables;
+use SbmAdmin\Model\Db\Service\User\Users;
+use SbmAdmin\Model\Db\Service\Libelle\Liste;
+use SbmCommun\Form\Responsable;
+
+return [
+    'acl' => [
+        'resources' => [
+            'sbmadmin' => [
+                'allow' => [
+                    'roles' => ['admin', 'sadmin']
+                ]
+            ]
+        ],
+    ],
+    'paginator' => [
+        'count_per_page' => [
             'nb_libelles' => 15,
             'nb_secteurs-scolaires' => 20,
             'nb_users' => 20
-        )
-    ),
-    'service_manager' => array(
-        'factories' => array(
-            'Sbm\Db\Libelle\Liste' => 'SbmAdmin\Model\Db\Service\Libelle\Liste'
-        )
-    ),
-    'controllers' => array(
-        'invokables' => array(
-            'SbmAdmin\Controller\Index' => 'SbmAdmin\Controller\IndexController',
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'sbmadmin' => array(
+        ]
+    ],
+    'db_manager' => [
+        'factories' => [
+            Liste::class => Liste::class,
+            Responsables::class => Responsables::class,
+            Users::class => Users::class
+        ]
+    ],
+    'form_manager' => [
+        'invokables' => [
+            Form\Libelle::class => Form\Libelle::class,
+        ],
+        'factories' => [
+            Form\Export::class => Form\Service\ExportFactory::class,
+            Form\User::class => Form\Service\UserFactory::class,
+            Form\UserRelation::class => Form\Service\UserRelationFactory::class
+        ]
+    ],
+    'controllers' => [
+        'factories' => [
+            'SbmAdmin\Controller\Index' => Service\IndexControllerFactory::class,
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'sbmadmin' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/admin[/:action[/page/:page][/id/:id]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',
                         'id' => '[0-9]+'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmAdmin',
                         'controller' => 'SbmAdmin\Controller\Index',
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            )
-        )
-    ),
-    'view_manager' => array(
-        'template_map' => array(),
-        'template_path_stack' => array(
+            ]
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [],
+        'template_path_stack' => [
             __DIR__ . '/../view'
-        )
-    )
-);
+        ]
+    ]
+];

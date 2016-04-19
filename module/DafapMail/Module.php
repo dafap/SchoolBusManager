@@ -7,8 +7,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 mai 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace DafapMail;
 
@@ -29,7 +29,8 @@ class Module extends AbstractModule
     
     public function onBootstrap(EventInterface $e)
     {
+        $mailListener = $e->getApplication()->getServiceManager()->get(Model\EnvoiMail::class);
         $eventManager = $e->getTarget()->getEventManager();
-        $eventManager->attach(new Model\EnvoiMail());
+        $eventManager->attach($mailListener);
     }
 } 

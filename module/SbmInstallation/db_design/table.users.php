@@ -2,8 +2,6 @@
 /**
  * Structure de la table des `users`
  *
- * Description longue du fichier s'il y en a une
- * 
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource users.php

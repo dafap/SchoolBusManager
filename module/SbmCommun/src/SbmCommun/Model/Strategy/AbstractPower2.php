@@ -8,12 +8,15 @@
  * @filesource AbstractPower2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Strategy;
 
-use Zend\Stdlib\Hydrator\Strategy\StrategyInterface;
+/*
+ * @deprecated use Zend\Stdlib\Hydrator\Strategy\StrategyInterface;
+ */
+use Zend\Hydrator\Strategy\StrategyInterface;
 use SbmCommun\Model\Strategy\Exception;
 
 abstract class AbstractPower2 implements StrategyInterface

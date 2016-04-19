@@ -9,8 +9,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmAjax\Controller;
 
@@ -35,7 +35,7 @@ class FinanceController extends AbstractActionController
         $millesime = Session::get('millesime');
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
             ->get('Sbm\Db\Table\Scolarites')
             ->setPaiement($millesime, $eleveId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -60,7 +60,7 @@ class FinanceController extends AbstractActionController
         $millesime = Session::get('millesime');
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
             ->get('Sbm\Db\Table\Scolarites')
             ->setPaiement($millesime, $eleveId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -84,7 +84,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $organismeId = $this->params('organismeId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('Sbm\Db\Table\Organismes')
                 ->setSelection($organismeId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -108,7 +108,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $organismeId = $this->params('organismeId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('Sbm\Db\Table\Organismes')
                 ->setSelection($organismeId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -132,7 +132,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $paiementId = $this->params('paiementId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('Sbm\Db\Table\Paiements')
                 ->setSelection($paiementId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -156,7 +156,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $paiementId = $this->params('paiementId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('Sbm\Db\Table\Paiements')
                 ->setSelection($paiementId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -180,7 +180,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $tarifId = $this->params('tarifId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('Sbm\Db\Table\Tarifs')
                 ->setSelection($tarifId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -204,7 +204,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $tarifId = $this->params('tarifId');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('Sbm\Db\Table\Tarifs')
                 ->setSelection($tarifId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -228,7 +228,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $id = $this->params('id');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('SbmPaiement\Plugin\Table')
                 ->setSelection($id, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -252,7 +252,7 @@ class FinanceController extends AbstractActionController
     {
         try {
             $id = $this->params('id');
-            $this->getServiceLocator()
+            $this->config['db_manager']
                 ->get('SbmPaiement\Plugin\Table')
                 ->setSelection($id, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -275,7 +275,7 @@ class FinanceController extends AbstractActionController
     public function listepreinscritsAction()
     {
         $responsableId = $this->params('responsableId', - 1);
-        $tEleves = $this->getServiceLocator()->get('Sbm\Db\Query\ElevesScolarites');
+        $tEleves = $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites');
         $result = $tEleves->getElevesPreinscritsWithMontant($responsableId);
         $data = array();
         foreach ($result as $row) {
@@ -289,7 +289,7 @@ class FinanceController extends AbstractActionController
         }
         $nbDuplicatas = $tEleves->getNbDuplicatas($responsableId);
         if ($nbDuplicatas) {
-            $montantUnitaire = $this->getServiceLocator()
+            $montantUnitaire = $this->config['db_manager']
                 ->get('Sbm\Db\Table\Tarifs')
                 ->getMontant('duplicata');
             $montantDuplicatas = $nbDuplicatas * $montantUnitaire;
@@ -298,7 +298,7 @@ class FinanceController extends AbstractActionController
             $millesime = Session::get('millesime');
             $as = sprintf('%d-%d', $millesime, $millesime + 1);
             $where->equalTo('anneeScolaire', $as)->equalTo('responsableId', $responsableId);
-            $totalEncaisse = $this->getServiceLocator()
+            $totalEncaisse = $this->config['db_manager']
                 ->get('Sbm\Db\Table\Paiements')
                 ->total($where);
             $totalInscriptions = $tEleves->getMontantElevesInscrits($responsableId);

@@ -7,8 +7,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 janv. 2016
- * @version 2016-1.7.1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmAdmin\Model\Db\Service\Libelle;
 
@@ -18,14 +18,16 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Liste implements FactoryInterface
 {
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db;
+    private $db_manager;
 
     /**
      *
@@ -53,8 +55,12 @@ class Liste implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        if (!($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
@@ -62,15 +68,15 @@ class Liste implements FactoryInterface
     public function forNature($nature)
     {
         $select = $this->sql->select();
-        $select->from(array(
-            'l' => $this->db->getCanonicName('libelles', 'system')
-        ))
-            ->where(array(
+        $select->from([
+            'l' => $this->db_manager->getCanonicName('libelles', 'system')
+        ])
+            ->where([
             'nature' => $nature
-        ))
-            ->order(array(
+        ])
+            ->order([
             'code'
-        ));
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }

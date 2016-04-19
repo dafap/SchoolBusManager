@@ -10,8 +10,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @date 9 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun;
 
@@ -42,15 +42,12 @@ class Module extends AbstractModule implements BootstrapListenerInterface
     {
         $doctypeHelper = new Doctype();
         $doctypeHelper('HTML5');
-        $tCalendar = $e->getApplication()
-            ->getServiceManager()
-            ->get('Sbm\Db\System\Calendar');
-        if ($e->getApplication()
-            ->getServiceManager()
-            ->get('Dafap\Authenticate')
+        $sm = $e->getApplication()->getServiceManager();
+        $db_manager = $sm->get('Sbm\DbManager');
+        $tCalendar = $db_manager->get('Sbm\Db\System\Calendar');
+        if ($sm->get('Dafap\Authenticate')
             ->by()
-            ->hasIdentity()) {
-            
+            ->hasIdentity()) {            
             for ($millesime = Session::get('millesime', false); ! $millesime; $millesime = Session::get('millesime', false)) {
                 Session::set('millesime', $tCalendar->getDefaultMillesime());
             }

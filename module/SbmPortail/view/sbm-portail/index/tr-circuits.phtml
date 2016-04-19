@@ -13,7 +13,7 @@
 use SbmCommun\Model\StdLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $circuits = $this->paginator->getCurrentItems();
 

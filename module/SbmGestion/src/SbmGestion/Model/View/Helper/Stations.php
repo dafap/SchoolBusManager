@@ -15,27 +15,27 @@
 namespace SbmGestion\Model\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use DafapSession\Model\Session;
 
-class Stations extends AbstractHelper implements ServiceLocatorAwareInterface
+class Stations extends AbstractHelper implements FactoryInterface
 {
 
-    protected $sm;
+    protected $db_manager;
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->sm = $serviceLocator;
+        $this->db_manager = $serviceLocator->getServiceLocator()->get('Sbm\DbManager');
         return $this;
     }
 
     public function getServiceLocator()
     {
-        return $this->sm;
+        return $this->db_manager;
     }
 
     /**
@@ -54,19 +54,18 @@ class Stations extends AbstractHelper implements ServiceLocatorAwareInterface
         $where->equalTo('millesime', $millesime)
             ->equalTo('eleveId', $eleveId)
             ->equalTo('trajet', $trajet);
-        $db = $this->sm->getServiceLocator()->get('Sbm\Db\DbLib');
-        $sql = new Sql($db->getDbAdapter());
+        $sql = new Sql($this->db_manager->getDbAdapter());
         $select = $sql->select()
             ->from(array(
-            'aff' => $db->getCanonicName('affectations', 'table')
+            'aff' => $this->db_manager->getCanonicName('affectations', 'table')
         ))
             ->join(array(
-            'sta1' => $db->getCanonicName('stations', 'table')
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'sta1.stationId=aff.station1Id', array(
             'station1' => 'nom'
         ))
             ->join(array(
-            'sta2' => $db->getCanonicName('stations', 'table')
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'sta2.stationId=aff.station2Id', array(
             'station2' => 'nom'
         ), Select::JOIN_LEFT);

@@ -8,8 +8,8 @@
  * @filesource MysqlMetadata.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 févr. 2014
- * @version 2014-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Metadata\Source;
 
@@ -27,53 +27,53 @@ class MysqlMetadata extends ZendMysqlMetadata
         $this->prepareDataHierarchy('columns', $schema, $table);
         $p = $this->adapter->getPlatform();
         
-        $isColumns = array(
-            array('C', 'ORDINAL_POSITION'),
-            array('C', 'COLUMN_DEFAULT'),
-            array('C', 'IS_NULLABLE'),
-            array('C', 'DATA_TYPE'),
-            array('C', 'CHARACTER_MAXIMUM_LENGTH'),
-            array('C', 'CHARACTER_OCTET_LENGTH'),
-            array('C', 'NUMERIC_PRECISION'),
-            array('C', 'NUMERIC_SCALE'),
-            array('C', 'COLUMN_NAME'),
-            array('C', 'COLUMN_TYPE'),
-            array('C', 'EXTRA'),
-        );
+        $isColumns = [
+            ['C', 'ORDINAL_POSITION'],
+            ['C', 'COLUMN_DEFAULT'],
+            ['C', 'IS_NULLABLE'],
+            ['C', 'DATA_TYPE'],
+            ['C', 'CHARACTER_MAXIMUM_LENGTH'],
+            ['C', 'CHARACTER_OCTET_LENGTH'],
+            ['C', 'NUMERIC_PRECISION'],
+            ['C', 'NUMERIC_SCALE'],
+            ['C', 'COLUMN_NAME'],
+            ['C', 'COLUMN_TYPE'],
+            ['C', 'EXTRA'],
+        ];
         
         array_walk($isColumns, function (&$c) use ($p) { $c = $p->quoteIdentifierChain($c); });
         
         $sql = 'SELECT ' . implode(', ', $isColumns)
-        . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
-            . ' INNER JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'COLUMNS')) . 'C'
-                . ' ON ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-                . '  = ' . $p->quoteIdentifierChain(array('C', 'TABLE_SCHEMA'))
-                . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-                . '  = ' . $p->quoteIdentifierChain(array('C', 'TABLE_NAME'))
-                . ' WHERE ' . $p->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
+        . ' FROM ' . $p->quoteIdentifierChain(['INFORMATION_SCHEMA', 'TABLES']) . 'T'
+            . ' INNER JOIN ' . $p->quoteIdentifierChain(['INFORMATION_SCHEMA', 'COLUMNS']) . 'C'
+                . ' ON ' . $p->quoteIdentifierChain(['T', 'TABLE_SCHEMA'])
+                . '  = ' . $p->quoteIdentifierChain(['C', 'TABLE_SCHEMA'])
+                . ' AND ' . $p->quoteIdentifierChain(['T', 'TABLE_NAME'])
+                . '  = ' . $p->quoteIdentifierChain(['C', 'TABLE_NAME'])
+                . ' WHERE ' . $p->quoteIdentifierChain(['T', 'TABLE_TYPE'])
                 . ' IN (\'BASE TABLE\', \'VIEW\')'
-                    . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+                    . ' AND ' . $p->quoteIdentifierChain(['T', 'TABLE_NAME'])
                     . '  = ' . $p->quoteTrustedValue($table);
         
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $p->quoteIdentifierChain(['T', 'TABLE_SCHEMA'])
             . ' = ' . $p->quoteTrustedValue($schema);
         } else {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $p->quoteIdentifierChain(['T', 'TABLE_SCHEMA'])
             . ' != \'INFORMATION_SCHEMA\'';
         }
         
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        $columns = array();
+        $columns = [];
         foreach ($results->toArray() as $row) {
-            $erratas = array();
-            $matches = array();
+            $erratas = [];
+            $matches = [];
             if (preg_match('/^(?:enum|set)\((.+)\)$/i', $row['COLUMN_TYPE'], $matches)) {
                 $permittedValues = $matches[1];
                 if (preg_match_all("/\\s*'((?:[^']++|'')*+)'\\s*(?:,|\$)/", $permittedValues, $matches, PREG_PATTERN_ORDER)) {
                     $permittedValues = str_replace("''", "'", $matches[1]);
                 } else {
-                    $permittedValues = array($permittedValues);
+                    $permittedValues = [$permittedValues];
                 }
                 $erratas['permitted_values'] = $permittedValues;
             }
@@ -84,7 +84,7 @@ class MysqlMetadata extends ZendMysqlMetadata
             } else {
                 $erratas['auto_increment'] = false;
             }
-            $columns[$row['COLUMN_NAME']] = array(
+            $columns[$row['COLUMN_NAME']] = [
                 'ordinal_position'          => $row['ORDINAL_POSITION'],
                 'column_default'            => $row['COLUMN_DEFAULT'],
                 'is_nullable'               => ('YES' == $row['IS_NULLABLE']),
@@ -95,7 +95,7 @@ class MysqlMetadata extends ZendMysqlMetadata
                 'numeric_scale'             => $row['NUMERIC_SCALE'],
                 'numeric_unsigned'          => (false !== strpos($row['COLUMN_TYPE'], 'unsigned')),
                 'erratas'                   => $erratas,
-            );
+            ];
         }
         
         $this->data['columns'][$schema][$table] = $columns;

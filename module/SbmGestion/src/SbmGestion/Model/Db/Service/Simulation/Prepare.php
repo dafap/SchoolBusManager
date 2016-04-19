@@ -2,24 +2,27 @@
 /**
  * Classe contenant les méthodes servant à préparer une simulation
  *
- * (doit être déclarée dans service_manager parmi les invokables)
+ * (doit être déclarée dans db_manager parmi les factories)
  * 
  * @project sbm
- * @package SbmGestion/Model/Db/Factory/Simulation
+ * @package SbmGestion/Model/Db/Service/Simulation
  * @filesource Prepare.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 6 janv. 2016
  * @version 2016-1.7.1
  */
-namespace SbmGestion\Model\Db\Factory\Simulation;
+namespace SbmGestion\Model\Db\Service\Simulation;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmGestion\Model\Db\Service\Exception;
 
-class Prepare implements ServiceLocatorAwareInterface
+
+class Prepare implements FactoryInterface
 {
 
     /**
@@ -27,7 +30,7 @@ class Prepare implements ServiceLocatorAwareInterface
      *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
-    private $sm;
+    private $db_manager;
 
     /**
      * Table des changements de classe
@@ -44,14 +47,14 @@ class Prepare implements ServiceLocatorAwareInterface
      */
     private $eleveIds = [];
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->sm = $serviceLocator;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->sm;
+        if (!($serviceLocator instanceof DbManager)) {
+            $message = 'DbManager attendu. On a reçu un %s.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        return $this;
     }
 
     private function setClasseIds()
@@ -59,7 +62,7 @@ class Prepare implements ServiceLocatorAwareInterface
         if (empty($this->classeIds)) {
             $where = new Where();
             $where->isNotNull('suivantId');
-            $resultset = $this->getServiceLocator()
+            $resultset = $this->db_manager
                 ->get('Sbm\Db\Table\Classes')
                 ->fetchAll($where);
             foreach ($resultset as $classe) {
@@ -82,7 +85,7 @@ class Prepare implements ServiceLocatorAwareInterface
      */
     public function duplicateCircuits($source, $cible)
     {
-        $table = $this->getServiceLocator()->get('Sbm\Db\Table\Circuits');
+        $table = $this->db_manager->get('Sbm\Db\Table\Circuits');
         if ($table->isEmptyMillesime($cible)) {
             $resultset = $table->fetchAll(array(
                 'millesime' => $source
@@ -108,7 +111,7 @@ class Prepare implements ServiceLocatorAwareInterface
      */
     private function duplicateScolarites($source, $cible)
     {
-        $table = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+        $table = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         if ($table->isEmptyMillesime($cible)) {
             $this->eleveIds = [];
             $this->setClasseIds();
@@ -137,7 +140,7 @@ class Prepare implements ServiceLocatorAwareInterface
      */
     public function duplicateEleves($source, $cible)
     {
-        $table = $this->getServiceLocator()->get('Sbm\Db\Table\Affectations');
+        $table = $this->db_manager->get('Sbm\Db\Table\Affectations');
         if ($table->isEmptyMillesime($cible)) {
             $this->duplicateScolarites($source, $cible);
             $where = new Where();

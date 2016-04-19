@@ -2,13 +2,15 @@
 /**
  * Controller permettant de créer les cartes etablissements et stations
  *
+ * Compatible ZF3
+ * 
  * @project sbm
  * @package SbmCartographie/Controller
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCartographie\Controller;
 
@@ -25,10 +27,17 @@ class CarteController extends AbstractActionController
 
     /**
      * projection utilisée
-     * 
+     *
      * @var \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface
      */
     private $projection;
+    
+    /**
+     * Db manager
+     * 
+     * @var \Zend\ServiceManager\ServiceManager
+     */
+    private $db_manager;
 
     public function indexAction()
     {
@@ -53,7 +62,7 @@ class CarteController extends AbstractActionController
             }
         }
         $this->init();
-        $tEtablissements = $this->getServiceLocator()->get('Sbm\Db\Vue\Etablissements');
+        $tEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
         $ptEtablissements = array();
         foreach ($tEtablissements->fetchAll() as $etablissement) {
             $pt = new Point($etablissement->x, $etablissement->y);
@@ -63,11 +72,7 @@ class CarteController extends AbstractActionController
         
         return new ViewModel(array(
             'ptEtablissements' => $ptEtablissements,
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'etablissements'
-            ), $this->getServiceLocator()->get('config'))
+            'config' => StdLib::getParam('etablissements', $this->config['config_cartes'])
         ));
     }
 
@@ -89,7 +94,7 @@ class CarteController extends AbstractActionController
             }
         }
         $this->init();
-        $tStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
+        $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
         $ptStations = array();
         foreach ($tStations->fetchAll() as $station) {
             $pt = new Point($station->x, $station->y);
@@ -99,28 +104,16 @@ class CarteController extends AbstractActionController
         
         return new ViewModel(array(
             'ptStations' => $ptStations,
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes', // on utilise la même configuration (centre, zoom) que pour les établissements
-                'etablissements'
-            ), $this->getServiceLocator()->get('config'))
+            // on utilise la même configuration (centre, zoom) que pour les établissements
+            'config' => StdLib::getParam('etablissements', $this->config['config_cartes'])
         ));
     }
 
     private function init()
     {
         if (! $this->_initcarto) {
-            $ns = '\\' . explode('\\', __NAMESPACE__)[0] . '\\ConvertSystemGeodetic\\Projection\\';
-            $config = $this->getServiceLocator()->get('Config');
-            $this->system = $ns . StdLib::getParamR(array(
-                'cartographie',
-                'system'
-            ), $config);
-            $nzone = StdLib::getParamR(array(
-                'cartographie',
-                'nzone'
-            ), $config, 0);
-            $this->projection = new $this->system($nzone);
+            $this->projection = $this->config['projection'];
+            $this->db_manager = $this->config['db_manager'];
             $this->_init = true;
         }
     }

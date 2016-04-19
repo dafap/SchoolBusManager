@@ -40,14 +40,14 @@ function printResult($args)
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $retour = $this->url("sbminstall");
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Création des tables et des vues</h1>
 <div id="data-wrapper">
@@ -81,7 +81,7 @@ echo $this->flashMessenger()->render('default');
 			</thead>
 			<tbody>
 	<?php foreach ($this->args as $row) : ?>
-		        <tr class="<?php echo $this->cycle(array("even", "odd"))->next(); ?>">
+		        <tr class="<?php echo $this->cycle(["even", "odd"])->next(); ?>">
 					<td><?php echo $row['name']?></td>
 					<td><?php echo $row['type']?></td>
 					<td><?php echo $row['drop']?></td>

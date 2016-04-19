@@ -12,8 +12,8 @@
  * @filesource ModifCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 févr. 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmFront\Form;
 
@@ -21,11 +21,9 @@ use SbmCommun\Form\AbstractSbmForm;
 
 class ModifCompte extends AbstractSbmForm
 {
-    private $categorieId;
-    public function __construct($categorieId, $param = 'compte')
+    public function __construct()
     {
-        $this->categorieId = $categorieId;
-        parent::__construct($param);
+        parent::__construct('compte');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'userId',
@@ -118,7 +116,6 @@ class ModifCompte extends AbstractSbmForm
                 'id' => 'responsable-cancel',
                 'class' => 'button cancel left-10px'
             )
-        ));
-        
+        ));        
     }
 }

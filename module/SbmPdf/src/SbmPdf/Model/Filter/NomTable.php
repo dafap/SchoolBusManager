@@ -9,8 +9,8 @@
  * @filesource NomTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2015
- * @version 2015-1
+ * @date 12 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Model\Filter;
 
@@ -20,20 +20,13 @@ class NomTable implements FilterInterface
 {
     /**
      *
-     * @var \Zend\ServiceManager\ServiceLocatorInterface
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $sm;
-    
-    /**
-     *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
-     */
-    private $db;
+    private $db_manager;
     
     public function __construct(array $options)
     {
-        $this->sm = $options['sm'];
-        $this->db = $this->sm->get('Sbm\Db\DbLib');
+        $this->db_manager = $options['db_manager'];
     }
     
     public function filter($value)
@@ -41,7 +34,7 @@ class NomTable implements FilterInterface
         $pattern = '/%([a-z]+)\(([0-9A-Za-z]*)\)%/i';
         if (preg_match_all($pattern, $value, $array)) {
             for ($i = 0; $i < count($array[0]); $i++) {
-                $value = str_replace($array[0][$i], $this->db->getCanonicName($array[2][$i], $array[1][$i]), $value);
+                $value = str_replace($array[0][$i], $this->db_manager->getCanonicName($array[2][$i], $array[1][$i]), $value);
             }
         }
         return $value;

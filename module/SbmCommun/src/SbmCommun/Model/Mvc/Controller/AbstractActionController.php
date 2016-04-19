@@ -11,8 +11,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2015
- * @version 2015-1.6.9
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -41,6 +41,24 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @var Boolean
      */
     protected $sbm_isPost;
+
+    protected $config;
+
+    public function __construct($config = [])
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * Retrieve serviceManager instance
+     * (provisoire pour la version 2.5 du framework - incompatible avec la version 3)
+     *
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
 
     /**
      * Get Base Url
@@ -131,11 +149,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
             // dans le tableau $criteresObject. (Utile par exemple pour modifier le format date avant le
             // déclanchement de l'évènement ou pour prendre en compte un autre where pour les groupes).
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
-                // var_dump($where);
                 $where = $criteresObject[2]($where, $args);
-                // die(var_dump($where));
             }
-            $call_pdf = $this->getServiceLocator()->get('RenderPdfService');
+            $call_pdf = $this->config['RenderPdfService'];
             
             if ($docaffectationId = $this->params('id', false)) {
                 // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
@@ -221,7 +237,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
         // formulaire des critères de recherche
         $criteres_form = new CriteresForm($formName);
         if (! is_null($initForm)) {
-            $initForm($this->getServiceLocator(), $criteres_form);
+            $initForm($this->config, $criteres_form);
         }
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
         
@@ -248,6 +264,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * Le formulaire, le nom de la table, son type et son alias sont passés dans le paramètre $params
      * Le paramètre $renvoyer permet de retourner des données de POST
      *
+     * @param
+     *            $db
      * @param array $params
      *            Tableau associatif dont les clés principales sont 'form' et 'data'.
      *            La clé 'form' contient l'objet formulaire ;
@@ -261,7 +279,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *         ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
      *         ou le résultat de la fonction $renvoyer (souvent une fonction anonyme)
      */
-    protected function addData($params, $renvoyer = null, $initform = null)
+    protected function addData($db_manager, $params, $renvoyer = null, $initform = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -280,10 +298,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $this->flashMessenger()->addWarningMessage("Aucun enregistrement n'a été ajouté.");
             return 'warning';
         }
-        $table = $this->getServiceLocator()->get($params['data']['alias']);
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
+        $table = $db_manager->get($params['data']['alias']);
         $form = $params['form'];
-        $form->setMaxLength($db->getMaxLengthArray($params['data']['table'], $params['data']['type']));
+        $form->setMaxLength($db_manager->getMaxLengthArray($params['data']['table'], $params['data']['type']));
         if (is_callable($initform)) {
             $initform($args);
         }
@@ -296,7 +313,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 return 'success';
             }
         } else {
-            $form->setData($db->getColumnDefaults($params['data']['table'], $params['data']['type']));
+            $form->setData($db_manager->getColumnDefaults($params['data']['table'], $params['data']['type']));
         }
         if (is_callable($renvoyer)) {
             return $renvoyer($args);
@@ -319,7 +336,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post,
      *         ou un \SbmCommun\Model\Mvc\Controller\EditResponse contenant les données à renvoyer
      */
-    protected function editData($params, $renvoyer = null, $initform = null)
+    protected function editData($db_manager, $params, $renvoyer = null, $initform = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -355,11 +372,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
             return new EditResponse('warning', $args);
         }
-        $table = $this->getServiceLocator()->get($params['data']['alias']);
-        $db = $this->getServiceLocator()->get('Sbm\Db\DbLib');
+        $table = $db_manager->get($params['data']['alias']);
         
         $form = $params['form'];
-        $form->setMaxLength($db->getMaxLengthArray($params['data']['table'], $params['data']['type']));
+        $form->setMaxLength($db_manager->getMaxLengthArray($params['data']['table'], $params['data']['type']));
         if (is_callable($initform)) {
             $initform($args);
         }
@@ -396,7 +412,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est un post, ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
      *         ou le résultat de la fonction $renvoyer (souvent une fonction anonyme)
      */
-    protected function supprData($params, $renvoyer = null)
+    protected function supprData($db_manager, $params, $renvoyer = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -415,9 +431,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
                     if ($id[$item] = StdLib::getParam($item, $args, false)) {
                         $this->setToSession($item, $id[$item], 'sbm_suppr');
                     } else {
-                        $id[$item]=  $this->getFromSession($item, -1, 'sbm_suppr');
+                        $id[$item] = $this->getFromSession($item, - 1, 'sbm_suppr');
                     }
-                    $interdit |= $id[$item] == -1;
+                    $interdit |= $id[$item] == - 1;
                 }
                 if ($interdit) {
                     $id = null;
@@ -434,7 +450,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 }
             }
         }
-        $table = $this->getServiceLocator()->get($params['data']['alias']);
+        $table = $db_manager->get($params['data']['alias']);
         if (is_null($id) || ! $table->getObjData()->isValidId($id)) {
             $this->flashMessenger()->addErrorMessage("Action interdite.");
             return new EditResponse('error', $args);
@@ -478,14 +494,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param int $default            
      * @return int
      */
-    protected function getNbPagination($paginateurId, $default)
+    protected function getPaginatorCountPerPage($paginateurId, $default)
     {
-        $config = $this->getServiceLocator()->get('Config');
-        return (int) StdLib::getParamR(array(
-            'liste',
-            'paginator',
-            $paginateurId
-        ), $config, $default);
+        if (array_key_exists('paginator_count_per_page', $this->config)) {
+            return (int) StdLib::getParam($paginateurId, $this->config['paginator_count_per_page'], $default);
+        } else {
+            return $default;
+        }
     }
 
     /**

@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 nov. 2014
- * @version 2014-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -17,14 +17,21 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Expression;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
+use SbmCommun\Model\Db\SbmCommun\Model\Db;
 
 class Responsables implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $db = $serviceLocator->get('Sbm\Db\DbLib');
-        $sql = new Sql($db->getDbAdapter());
-        $select = $sql->select($db->getCanonicName('responsables', 'table'));
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $db_manager = $serviceLocator;
+        $sql = new Sql($db_manager->getDbAdapter());
+        $select = $sql->select($db_manager->getCanonicName('responsables', 'table'));
         $select->columns(array('responsableId', 'nom', 'prenom'));
         $select->order('nom', 'prenom');
         $statement = $sql->prepareStatementForSqlObject($select);

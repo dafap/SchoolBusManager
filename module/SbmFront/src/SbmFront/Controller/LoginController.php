@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 janv. 2016
- * @version 2016-1.7.2
+ * @date 15 avr. 2016
+ * @version 2016-2
  */
 namespace SbmFront\Controller;
 
@@ -23,16 +23,8 @@ use SbmCommun\Model\DateLib;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmFront\Form\InputFilter\CreerCompte as CreerCompteInputFilter;
-use SbmFront\Form\CreerCompte;
-use SbmFront\Form\EmailChange;
-use SbmFront\Form\Login;
-use SbmFront\Form\MdpChange;
-use SbmFront\Form\MdpDemande;
-use SbmFront\Form\MdpFirst;
-use SbmFront\Form\ModifCompte;
-use SbmParent\Model\Responsable;
-use SbmParent\Model\Exception as CreateResponsableException;
+use SbmFront\Form;
+use SbmFront\Model\Respondable\Exception as CreateResponsableException;
 use DafapMail\Model\Template as MailTemplate;
 use DafapMail\Model\DafapMail\Model;
 use SbmCommun\Form\LatLng as LatLngForm;
@@ -57,14 +49,12 @@ class LoginController extends AbstractActionController
         $args = $prg;
         if (\array_key_exists('signin', $args)) {
             // login demandé
-            $form = new Login($this->getServiceLocator());
+            $form = $this->config['form_manager']->get(Form\Login::class);
             $form->setData($args);
             if ($form->isValid()) {
                 // isValid() vérifie l'existence de l'email
                 $data = $form->getData();
-                $auth = $this->getServiceLocator()
-                    ->get('Dafap\Authenticate')
-                    ->by('email');
+                $auth = $this->config['authenticate']->by('email');
                 $auth->getAdapter()
                     ->setIdentity($data)
                     ->setCredential($data);
@@ -96,11 +86,9 @@ class LoginController extends AbstractActionController
      */
     public function confirmAction()
     {
-        $tableUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
-        $form = new MdpFirst();
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('token');
+        $tableUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+        $form = $this->config['form_manager']->get(Form\MdpFirst::class);
+        $auth = $this->config['authenticate']->by('token');
         
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -155,7 +143,7 @@ class LoginController extends AbstractActionController
      */
     public function annulerAction()
     {
-        $tableUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+        $tableUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
         if ($tableUsers->deleteRecordByToken($this->params('id'))) {
             $this->flashMessenger()->addInfoMessage('Le compte a été supprimé. Merci.');
         } else {
@@ -173,22 +161,17 @@ class LoginController extends AbstractActionController
      */
     public function homePageAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if ($auth->hasIdentity()) {
             switch ($auth->getCategorieId()) {
                 case 1:
                     try {
-                        $d2etab = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
-                        $test = new Responsable($this->getServiceLocator());
-                        $point = new Point($test->x, $test->y);
+                        $responsable = $this->config['responsable']->get();
+                        $d2etab = $this->config['distance_etablissements'];
+                        // contrôle de position géographique
+                        $point = new Point($responsable->x, $responsable->y);
                         $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-                        $configCarte = StdLib::getParamR(array(
-                            'sbm',
-                            'cartes',
-                            'parent'
-                        ), $this->getServiceLocator()->get('config'));
+                        $configCarte = StdLib::getParam('parent', $this->config['config_cartes']);
                         $form = new LatLngForm([], [], $configCarte['valide']);
                         $form->setData([
                             'lat' => $pt->getLatitude(),
@@ -250,15 +233,9 @@ class LoginController extends AbstractActionController
      */
     public function logoutAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by();
+        $auth = $this->config['authenticate']->by();
         $auth->clearIdentity();
         Session::remove('millesime');
-        try {
-            $responsable = new Responsable($this->getServiceLocator());
-            unset($responsable);
-        } catch (CreateResponsableException $e) {}
         return $this->redirect()->toRoute('home');
     }
 
@@ -279,13 +256,13 @@ class LoginController extends AbstractActionController
             $this->flashMessenger()->addErrorMessage('Demande abandonnée.');
             return $this->redirect()->toRoute('home');
         }
-        $form = new MdpDemande($this->getServiceLocator());
+        $form = $this->config['form_manager']->get(Form\MdpDemande::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('login', array(
             'action' => 'mdp-demande'
         )));
         if (\array_key_exists('submit', $args) && \array_key_exists('email', $args)) {
-            $tUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+            $tUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
             $form->bind($tUsers->getObjData());
             $form->setData($args);
             if ($form->isValid()) {
@@ -320,7 +297,7 @@ class LoginController extends AbstractActionController
                         )
                     );
                     $this->getEventManager()->addIdentifiers('SbmMail\Send');
-                    $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+                    $this->getEventManager()->trigger('sendMail', null, $params);
                     $this->flashMessenger()->addInfoMessage('Une réponse a été envoyée à l\'adresse indiquée. Consultez votre messagerie.');
                 } else {
                     $this->flashMessenger()->addWarningMessage('Votre compte a été bloqué. Prenez contact avec le service organisateur.');
@@ -354,15 +331,13 @@ class LoginController extends AbstractActionController
             return $prg;
         }
         $args = (array) $prg;
-        $form = new MdpChange();
+        $form = $this->config['form_manager']->get(Form\MdpChange::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('login', array(
             'action' => 'mdp-change'
         )));
         if (\array_key_exists('submit', $args) && \array_key_exists('mdp_old', $args) && \array_key_exists('mdp_new', $args)) {
-            $auth = $this->getServiceLocator()
-                ->get('Dafap\Authenticate')
-                ->by('email');
+            $auth = $this->config['authenticate']->by('email');
             $identity = $auth->getIdentity();
             $auth->getAdapter()
                 ->setIdentity($identity['email'])
@@ -374,7 +349,7 @@ class LoginController extends AbstractActionController
                     return $this->homePageAction();
                 }
                 // ici, on change le mot de passe
-                $tUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+                $tUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
                 $form->setData($args);
                 if ($form->isValid()) {
                     $mdp = $form->getData()['mdp_new'];
@@ -419,12 +394,10 @@ class LoginController extends AbstractActionController
             return $prg;
         }
         $args = (array) $prg;
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         $identity = $auth->getIdentity();
         $email_old = $identity['email'];
-        $form = new EmailChange($this->getServiceLocator());
+        $form = $this->config['form_manager']->get(Form\EmailChange::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('login', array(
             'action' => 'email-change'
@@ -444,7 +417,7 @@ class LoginController extends AbstractActionController
                 if ($form->isValid()) {
                     // données validées
                     $email_new = $form->getData()['email_new'];
-                    $tUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+                    $tUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
                     $oData = $tUsers->getObjData()
                         ->exchangeArray(array(
                         'userId' => $identity['userId'],
@@ -458,7 +431,7 @@ class LoginController extends AbstractActionController
                         ->completeToModif();
                     $tUsers->saveRecord($oData);
                     // modifie l'email dans la table des responsables si nécessaire
-                    $tResponsables = $this->getServiceLocator()->get('Sbm\Db\Table\Responsables');
+                    $tResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
                     $tResponsables->changeEmail($email_old, $email_new);
                     $auth->refreshIdentity();
                     // retour
@@ -495,9 +468,9 @@ class LoginController extends AbstractActionController
             $this->flashMessenger()->addErrorMessage('Création abandonnée.');
             return $this->redirect()->toRoute('home');
         }
-        $form = new CreerCompte($this->getServiceLocator());
+        $form = $this->config['form_manager']->get(Form\CreerCompte::class);
         if (\array_key_exists('submit', $args)) {
-            $table_users = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+            $table_users = $this->config['db_manager']->get('Sbm\Db\Table\Users');
             $form->bind($table_users->getObjData());
             $form->setData($args);
             if ($form->isValid()) {
@@ -538,7 +511,7 @@ class LoginController extends AbstractActionController
                     )
                 );
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
-                $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+                $this->getEventManager()->trigger('sendMail', null, $params);
                 $this->flashMessenger()->addInfoMessage('Un mail a été envoyé à l\'adresse indiquée. Consultez votre messagerie.');
                 // retour
                 return $this->redirect()->toRoute('home');
@@ -561,9 +534,7 @@ class LoginController extends AbstractActionController
      */
     public function modifCompteAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by();
+        $auth = $this->config['authenticate']->by();
         if ($auth->hasIdentity()) {
             $prg = $this->prg();
             if ($prg instanceof Response) {
@@ -575,8 +546,8 @@ class LoginController extends AbstractActionController
                 return $this->homePageAction();
             }
             $identity = $auth->getIdentity();
-            $table_users = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
-            $form = new ModifCompte($identity['categorieId']);
+            $table_users = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+            $form = $this->config['form_manager']->get(Form\ModifCompte::class);
             $form->bind($table_users->getObjData());
             if (\array_key_exists('submit', $args)) {
                 $form->setData($args);
@@ -611,12 +582,10 @@ class LoginController extends AbstractActionController
      */
     public function synchroCompteAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by();
+        $auth = $this->config['authenticate']->by();
         if ($auth->hasIdentity()) {
             try {
-                $responsable = new Responsable($this->getServiceLocator());
+                $responsable = $this->config['responsable']->get();
             } catch (CreateResponsableException $e) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
                 return $this->redirect()->toRoute('login', array(
@@ -626,7 +595,7 @@ class LoginController extends AbstractActionController
             $identity = $auth->getIdentity();
             $responsableArray = $responsable->getArrayCopy();
             $responsableArray['userId'] = $identity['userId'];
-            $table_users = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+            $table_users = $this->config['db_manager']->get('Sbm\Db\Table\Users');
             $oUser = $table_users->getObjData()
                 ->exchangeArray($responsableArray)
                 ->completeToModif();

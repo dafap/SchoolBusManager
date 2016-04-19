@@ -7,39 +7,39 @@
  * @filesource libelle-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 janv. 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$retour = $this->url('sbmadmin', array(
+$retour = $this->url('sbmadmin', [
     'action' => 'libelle-liste',
     'page' => $this->page
-));
-$pdf = $this->url('sbmadmin', array(
+]);
+$pdf = $this->url('sbmadmin', [
     'action' => 'libelle-pdf',
     'page' => $this->page
-));
-$hiddens = array(
+]);
+$hiddens = [
     'nature' => $this->nature,
     'code' => $this->code
-);
+];
 
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
-    'rapports' => array(
+    ],
+    'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $pdf,
         'title' => 'Rapports à imprimer'
-    )
-);
+    ]
+];
 ?>
 <h1>Libellés de même nature</h1>
 <div id="liste-wrapper">
@@ -65,7 +65,7 @@ $actions = array(
 				</tr>
                     <?php foreach($this->data as $row): ?>
                     <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="nature"><?php echo $this->escapeHtml($row['nature']); ?></td>
 					<td class="code centre"><?php echo $this->escapeHtml($row['code']); ?></td>
 					<td class="libelle"><?php echo $this->escapeHtml($row['libelle']); ?></td>

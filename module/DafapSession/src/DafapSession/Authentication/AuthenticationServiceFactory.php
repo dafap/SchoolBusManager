@@ -1,16 +1,16 @@
 <?php
 /**
- * Description courte du fichier
+ * Service fournissant un AuthenticationService
  *
- * Description longue du fichier s'il y en a une
+ * (version adaptée pour ZF3)
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package DafapSession/Authentication
  * @filesource AuthenticationServiceFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2015
- * @version 2015-1
+ * @date 18 avr. 2016
+ * @version 2016-2
  */
 namespace DafapSession\Authentication;
 
@@ -24,6 +24,12 @@ class AuthenticationServiceFactory implements FactoryInterface
     const SESSION_AUTH_NAMESPACE = 'sbm_auth';
 
     /**
+     * 
+     * @var Zend\ServiceManager\ServiceLocatorInterface
+     */
+    private $db_manager;
+    
+    /**
      *
      * @var \Zend\Authentication\AuthenticationService
      */
@@ -34,18 +40,19 @@ class AuthenticationServiceFactory implements FactoryInterface
      * @var \Zend\Authentication\Adapter\ValidatableAdapterInterface
      */
     private $adapterEmail;
-
+    
     /**
-     *
+     * 
      * @var \Zend\Authentication\Adapter\ValidatableAdapterInterface
      */
     private $adapterToken;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->adapterEmail = $serviceLocator->get('Dafap\AdapterByEmail');
-        $this->adapterToken = $serviceLocator->get('Dafap\AdapterByToken');
-        $this->authService = new AuthenticationService(new Session(self::SESSION_AUTH_NAMESPACE));
+        $this->adapterEmail = null;
+        $this->adapterToken = null;
+        $this->db_manager = $serviceLocator->get('Sbm\DbManager');
+        $this->authService = new AuthenticationService($this->db_manager, new Session(self::SESSION_AUTH_NAMESPACE));
         return $this;
     }
 
@@ -59,8 +66,14 @@ class AuthenticationServiceFactory implements FactoryInterface
     public function by($adapter = 'email')
     {
         if ($adapter == 'token') {
+            if (empty($this->adapterToken)) {
+                $this->adapterToken = new AdapterToken($this->db_manager);
+            }
             $this->authService->setAdapter($this->adapterToken);
         } else {
+            if (empty($this->adapterEmail)) {
+                $this->adapterEmail = new AdapterEmail($this->db_manager);
+            }
             $this->authService->setAdapter($this->adapterEmail);
         }
         return $this->authService;

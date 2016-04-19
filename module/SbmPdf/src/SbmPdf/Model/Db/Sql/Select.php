@@ -18,8 +18,8 @@
  * @filesource Select.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 août 2015
- * @version 2015-1
+ * @date 13 avr. 2016
+ * @version 2016-1
  */
 namespace SbmPdf\Model\Db\Sql;
 
@@ -73,32 +73,32 @@ class Select extends ZendSelect
             list ($table, $fromTable) = $this->resolveTable($this->recordSource, $platform);
         }
         // process table columns
-        $columns = array();
+        $columns = [];
         foreach ($this->columns as $columnIndexOrAs => $column) {
             if ($column === self::SQL_STAR) {
-                $columns[] = array(
+                $columns[] = [
                     $fromTable . self::SQL_STAR
-                );
+                ];
                 continue;
             }
             
-            $columnName = $this->resolveColumnValue(array(
+            $columnName = $this->resolveColumnValue([
                 'column' => $column,
                 'fromTable' => $fromTable,
                 'isIdentifier' => true
-            ), $platform, $driver, $parameterContainer, (is_string($columnIndexOrAs) ? $columnIndexOrAs : 'column'));
+            ], $platform, $driver, $parameterContainer, (is_string($columnIndexOrAs) ? $columnIndexOrAs : 'column'));
             // process As portion
             if (is_string($columnIndexOrAs)) {
                 $columnAs = $platform->quoteIdentifier($columnIndexOrAs);
             } elseif (stripos($columnName, ' as ') === false) {
                 $columnAs = (is_string($column)) ? $platform->quoteIdentifier($column) : 'Expression' . $expr ++;
             }
-            $columns[] = (isset($columnAs)) ? array(
+            $columns[] = (isset($columnAs)) ? [
                 $columnName,
                 $columnAs
-            ) : array(
+            ] : [
                 $columnName
-            );
+            ];
         }
         
         // process join columns
@@ -107,13 +107,13 @@ class Select extends ZendSelect
             $joinName = parent::resolveTable($joinName, $platform, $driver, $parameterContainer);
             
             foreach ($join['columns'] as $jKey => $jColumn) {
-                $jColumns = array();
+                $jColumns = [];
                 $jFromTable = is_scalar($jColumn) ? $joinName . $platform->getIdentifierSeparator() : '';
-                $jColumns[] = $this->resolveColumnValue(array(
+                $jColumns[] = $this->resolveColumnValue([
                     'column' => $jColumn,
                     'fromTable' => $jFromTable,
                     'isIdentifier' => true
-                ), $platform, $driver, $parameterContainer, (is_string($jKey) ? $jKey : 'column'));
+                ], $platform, $driver, $parameterContainer, (is_string($jKey) ? $jKey : 'column'));
                 if (is_string($jKey)) {
                     $jColumns[] = $platform->quoteIdentifier($jKey);
                 } elseif ($jColumn !== self::SQL_STAR) {
@@ -128,20 +128,20 @@ class Select extends ZendSelect
         }
         
         if (! isset($table)) {
-            return array(
+            return [
                 $columns
-            );
+            ];
         } elseif (isset($quantifier)) {
-            return array(
+            return [
                 $quantifier,
                 $columns,
                 $table
-            );
+            ];
         } else {
-            return array(
+            return [
                 $columns,
                 $table
-            );
+            ];
         }
     }
 
@@ -167,10 +167,10 @@ class Select extends ZendSelect
             $fromTable = '';
         }
         
-        return array(
+        return [
             $table,
             $fromTable
-        );
+        ];
     }
 
     protected function renderTable($table, $alias = null, $parent = true)

@@ -13,21 +13,21 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_create = $this->url('sbminstall', array(
+$url_create = $this->url('sbminstall', [
     'action' => 'create-tables'
-));
-$url_dumpdoc = $this->url('sbminstall', array(
+]);
+$url_dumpdoc = $this->url('sbminstall', [
     'action' => 'dump-tables'
-));
-$url_tablealias = $this->url('sbminstall', array(
+]);
+$url_tablealias = $this->url('sbminstall', [
     'action' => 'table-alias'
-));
-$url_version = $this->url('sbminstall', array(
+]);
+$url_version = $this->url('sbminstall', [
     'action' => 'version'
-));
-$url_fichierslog = $this->url('sbminstall', array(
+]);
+$url_fichierslog = $this->url('sbminstall', [
     'action' => 'fichierslog'
-));
+]);
 $url_admin = $this->url('sbmadmin');
 $url_gestion = $this->url('sbmgestion');
 $url_portail = $this->url('sbmportail');

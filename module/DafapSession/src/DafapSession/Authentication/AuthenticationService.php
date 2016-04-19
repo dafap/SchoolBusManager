@@ -1,25 +1,38 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Adaptation d'un Zend\Authentication\AuthenticationService pour ce projet
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package DafapSession/Authentication
  * @filesource AuthenticationService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2015
- * @version 2015-1
+ * @date 18 avr. 2016
+ * @version 2016-2
  */
 namespace DafapSession\Authentication;
 
 use Zend\Authentication\AuthenticationService as ZendAuthenticationService;
 use Zend\Authentication\Storage\StorageInterface;
 use Zend\Authentication\Adapter\AdapterInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class AuthenticationService extends ZendAuthenticationService
 {
+    /**
+     * C'est un db manager mais on n'utilise que sa méthode get()
+     * 
+     * @var ServiceLocatorInterface
+     */
+    private $db_manager;
+    
+    
+    public function __construct(ServiceLocatorInterface $db_manager,StorageInterface $storage = null,AdapterInterface $adapter = null)
+    {
+        $this->db_manager = $db_manager;
+        parent::__construct($storage, $adapter);
+    }
+    
     public function getUserId()
     {
         $storage = $this->getStorage();
@@ -42,9 +55,7 @@ class AuthenticationService extends ZendAuthenticationService
 
     public function refreshIdentity()
     {
-        $tUsers = $this->getAdapter()
-            ->getServiceLocator()
-            ->get('Sbm\Db\Table\Users');
+        $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
         try {
             $odata = $tUsers->getRecord($this->getUserId());
             $data = $odata->getArrayCopy();

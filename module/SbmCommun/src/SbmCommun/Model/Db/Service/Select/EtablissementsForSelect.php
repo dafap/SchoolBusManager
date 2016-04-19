@@ -10,8 +10,8 @@
  * @filesource EtablissementsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -20,15 +20,17 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class EtablissementsForSelect implements FactoryInterface
 {
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db;
+    private $db_manager;
 
     /**
      *
@@ -44,15 +46,19 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->table_name = $this->db->getCanonicName('etablissements', 'table');
-        $this->sql = new Sql($this->db->getDbAdapter());
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->table_name = $this->db_manager->getCanonicName('etablissements', 'table');
+        $this->sql = new Sql($this->db_manager->getDbAdapter());
         return $this;
     }
 
     public function desservis()
     {
-        $select = $this->sql->select($this->db->getCanonicName('etablissements', 'vue'));
+        $select = $this->sql->select($this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('desservie = true');
         $select->columns(array(
             'etablissementId',
@@ -74,7 +80,7 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function visibles()
     {
-        $select = $this->sql->select($this->db->getCanonicName('etablissements', 'vue'));
+        $select = $this->sql->select($this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('visible = true');
         $select->columns(array(
             'etablissementId',
@@ -96,7 +102,7 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function clgPu()
     {
-        $select = $this->sql->select($this->db->getCanonicName('etablissements', 'vue'));
+        $select = $this->sql->select($this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('statut = 1 AND niveau = 4');
         $select->columns(array(
             'etablissementId',

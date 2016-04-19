@@ -5,13 +5,15 @@
  * Ce formulaire ne présente pas de garde alternée.
  * Lorsqu'il s'agit d'un nouvel élève, il est forcément inscrit par son responsable1.
  * 
+ * Compatible ZF3
+ * 
  * @project sbm
  * @package SbmParent/Form
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 avr. 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmParent\Form;
 
@@ -21,20 +23,21 @@ use Zend\Db\Sql\Where;
 use SbmCommun\Form\AbstractSbmForm;
 use SbmCommun\Filter\SansAccent;
 use SbmCommun\Model\Strategy\Semaine;
+use SbmCommun\Model\Db\Service\DbManager;
 
 class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     /**
-     * Service manager (nécessaire pour vérifier l'email)
+     * Db manager (nécessaire pour vérifier l'email)
      *
-     * @var ServiceLocatorInterface
+     * @var DbManager
      */
-    private $sm;
+    private $db_manager;
 
-    public function __construct(ServiceLocatorInterface $sm)
+    public function __construct($db_manager)
     {
-        $this->sm = $sm;
+        $this->db_manager = $db_manager;
         parent::__construct('enfant');
         $this->setAttribute('method', 'post');
         $this->add(array(
@@ -307,8 +310,8 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
         if (parent::isValid()) {
             $data = $this->getData();
             // vérifie que la classe est ouverte dans l'établissement
-            $classe = $this->sm->get('Sbm\Db\Table\Classes')->getRecord($data['classeId']);
-            $etablissement = $this->sm->get('Sbm\Db\Table\Etablissements')->getRecord($data['etablissementId']);
+            $classe = $this->db_manager->get('Sbm\Db\Table\Classes')->getRecord($data['classeId']);
+            $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord($data['etablissementId']);
             $ok = false;
             foreach ($classe->niveau as $n) {
                 $ok |= in_array($n, $etablissement->niveau);
@@ -330,7 +333,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     ->equalTo('dateN', $data['dateN'])
                     ->nest()
                     ->equalTo('responsable1Id', $data['responsable1Id'])->OR->equalTo('responsable2Id', $data['responsable1Id'])->unnest();
-                $result = $this->sm->get('Sbm\Db\Table\Eleves')->fetchAll($where);
+                $result = $this->db_manager->get('Sbm\Db\Table\Eleves')->fetchAll($where);
                 $ok = $result->count() == 0;
                 if (! $ok) {
                     // reprise d'un enfant inscrit antérieurement (modif du 21/O5/2015)
@@ -355,7 +358,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     ->notEqualTo('eleveId', $data['eleveId'])
                     ->nest()
                     ->equalTo('responsable1Id', $data['responsable1Id'])->OR->equalTo('responsable2Id', $data['responsable2Id'])->unnest();
-                $ok = $this->sm->get('Sbm\Db\Table\Eleves')
+                $ok = $this->db_manager->get('Sbm\Db\Table\Eleves')
                     ->fetchAll($where)
                     ->count() == 0;
                 if (! $ok) {

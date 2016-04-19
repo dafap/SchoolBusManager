@@ -15,25 +15,20 @@
 namespace SbmGestion\Model\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Where;
 use DafapSession\Model\Session;
 
-class Services extends AbstractHelper implements ServiceLocatorAwareInterface
+class Services extends AbstractHelper implements FactoryInterface
 {
 
-    protected $sm;
+    protected $db_manager;
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->sm = $serviceLocator;
+        $this->db_manager = $serviceLocator->getServiceLocator()->get('Sbm\DbManager');
         return $this;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->sm;
     }
 
     /**
@@ -50,7 +45,7 @@ class Services extends AbstractHelper implements ServiceLocatorAwareInterface
         $millesime = Session::get('millesime');
         $where = new Where();
         $where->equalTo('millesime', $millesime)->equalTo('eleveId', $eleveId)->equalTo('trajet', $trajet);
-        $resultset = $this->sm->getServiceLocator()->get('Sbm\Db\Table\Affectations')->fetchAll($where);
+        $resultset = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll($where);
         $content = array();
         foreach ($resultset as $affectation) {
             $service1Id = $affectation->service1Id;

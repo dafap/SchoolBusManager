@@ -5,28 +5,34 @@
  * Renvoie un tableau de valueOptions pour le Select du formulaire DocAffectation
  *
  * @project sbm
- * @package SbmPdf/Service
+ * @package SbmPdf/Model/Service
  * @filesource ListeRoutesService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2015
- * @version 2015-1
+ * @date 12 avr. 2016
+ * @version 2016-2
  */
-namespace SbmPdf\Service;
+namespace SbmPdf\Model\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Filter\Word\CamelCaseToDash;
+use SbmPdf\Service\PdfManager;
+use SbmPdf\Model\Exception;
 
 class ListeRoutesService implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $sm)
+    public function createService(ServiceLocatorInterface $pdfManager)
     {
+        if (!($pdfManager instanceof PdfManager)) {
+            $message = 'PdfManager attendu. On a reçu un %s.';
+            throw new Exception(sprintf($message, gettype($pdfManager)));
+        }
         // liste des controleurs associée à une route
         // $routes = array();
         $controllers = array();
-        foreach ($sm->get('config')['router']['routes'] as $routeName => $description) {
+        foreach ($pdfManager->get('routes') as $routeName => $description) {
             $routeUrl = $description['options']['route'];
             if ($description['type'] == 'segment') {
                 $routeUrl = preg_replace('/(\[.*\])/', '', $routeUrl);
@@ -47,10 +53,8 @@ class ListeRoutesService implements FactoryInterface
         // liste des controleurs par module
         $valueOptions = array();
         $actions = array();
-        $listeControlers = $sm->get('config')['controllers']['invokables'];
-        asort($listeControlers);
         $filter = new CamelCaseToDash();
-        foreach ($listeControlers as $alias => $classControler) {
+        foreach ($pdfManager->get('controllers') as $alias => $classControler) {
             $methodes = get_class_methods($classControler);
             asort($methodes);
             foreach ($methodes as $key => &$item) {

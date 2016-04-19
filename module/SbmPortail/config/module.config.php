@@ -12,6 +12,8 @@
  * @date 30 juil. 2015
  * @version 2015-1
  */
+use SbmPortail\Controller\Service\IndexControllerFactory;
+
 return array(
     'acl' => array(
         'resources' => array(
@@ -25,8 +27,8 @@ return array(
         )
     ),
     'controllers' => array(
-        'invokables' => array(
-            'SbmPortail\Controller\Index' => 'SbmPortail\Controller\IndexController'
+        'factories' => array(
+            'SbmPortail\Controller\Index' => IndexControllerFactory::class
         )
     ),
     'router' => array(
