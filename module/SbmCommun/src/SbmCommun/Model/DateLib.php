@@ -117,7 +117,7 @@ class DateLib
     }
     
     /**
-     * Renvoie la date actuelle au format (an/mois/jour)
+     * Renvoie la date actuelle au format (an-mois-jour)
      */
     public static function todayToMysql()
     {

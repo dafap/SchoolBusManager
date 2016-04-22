@@ -87,17 +87,17 @@ return [
     ],
     'controllers' => [
         'invokables' => [
-            'SbmGestion\Controller\Config' => Controller\ConfigController::class
+            Controller\ConfigController::class => Controller\ConfigController::class
         ],
         'factories' => [
-            'SbmGestion\Controller\AnneeScolaire' => Service\AnneeScolaireControllerFactory::class,
-            'SbmGestion\Controller\Eleve' => Service\EleveControllerFactory::class,
-            'SbmGestion\Controller\EleveGestion' => Service\EleveGestionControllerFactory::class,
-            'SbmGestion\Controller\Finance' => Service\FinanceControllerFactory::class,
-            'SbmGestion\Controller\Index' => Service\IndexControllerFactory::class,
-            'SbmGestion\Controller\Simulation' => Service\SimulationControllerFactory::class,
-            'SbmGestion\Controller\Statistiques' => Service\StatistiquesControllerFactory::class,
-            'SbmGestion\Controller\Transport' => Service\TransportControllerFactory::class
+            Controller\AnneeScolaireController::class => Service\AnneeScolaireControllerFactory::class,
+            Controller\EleveController::class => Service\EleveControllerFactory::class,
+            Controller\EleveGestionController::class => Service\EleveGestionControllerFactory::class,
+            Controller\FinanceController::class => Service\FinanceControllerFactory::class,
+            Controller\IndexController::class => Service\IndexControllerFactory::class,
+            Controller\SimulationController::class => Service\SimulationControllerFactory::class,
+            Controller\StatistiquesController::class => Service\StatistiquesControllerFactory::class,
+            Controller\TransportController::class => Service\TransportControllerFactory::class
         ]
     ],
     'router' => [
@@ -107,7 +107,7 @@ return [
                 'options' => [
                     'route' => '/gestion',
                     'defaults' => [
-                        'controller' => 'SbmGestion\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     ]
                 ],
@@ -124,7 +124,7 @@ return [
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\Eleve',
+                                'controller' => Controller\EleveController::class,
                                 'action' => 'index'
                             ]
                         ]
@@ -140,7 +140,7 @@ return [
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\EleveGestion',
+                                'controller' => Controller\EleveGestionController::class,
                                 'action' => 'index'
                             ]
                         ]
@@ -156,7 +156,7 @@ return [
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\Finance',
+                                'controller' => Controller\FinanceController::class,
                                 'action' => 'index'
                             ]
                         ]
@@ -172,7 +172,7 @@ return [
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\Transport',
+                                'controller' => Controller\TransportController::class,
                                 'action' => 'index'
                             ]
                         ]
@@ -188,7 +188,7 @@ return [
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\AnneeScolaire',
+                                'controller' => Controller\AnneeScolaireController::class,
                                 'action' => 'index'
                             ]
                         ]
@@ -199,7 +199,7 @@ return [
                             'route' => '/simul',
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\Simulation',
+                                'controller' => Controller\SimulationController::class,
                                 'action' => 'index'
                             ]
                         ]
@@ -214,7 +214,7 @@ return [
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\Statistiques',
+                                'controller' => Controller\StatistiquesController::class,
                                 'action' => 'index'
                             ]
                         ]
@@ -228,7 +228,7 @@ return [
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',
-                                'controller' => 'SbmGestion\Controller\Config',
+                                'controller' => Controller\ConfigController::class,
                                 'action' => 'index'
                             ]
                         ]

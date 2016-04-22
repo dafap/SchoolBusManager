@@ -15,8 +15,8 @@
  * @filesource AbstractResponsable2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2015
- * @version 2015-1
+ * @date 22 avr. 2016
+ * @version 2015-2
  */
 namespace SbmParent\Form;
 
@@ -213,8 +213,7 @@ abstract class AbstractResponsable2 extends AbstractSbmForm implements InputFilt
     public function getInputFilterSpecification()
     {
         if ($this->complet) {
-            return array(
-                
+            return array(                
                 'r2telephoneF' => array(
                     'name' => 'r2telephoneF',
                     'required' => false

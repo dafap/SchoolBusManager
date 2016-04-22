@@ -10,8 +10,9 @@
  * @date 6 avr. 2016
  * @version 2016-2
  */
-use SbmParent\Controller\Service;
+use SbmParent\Controller;
 use SbmParent\Form;
+use SbmParent\Model\Db\Service\Query;
 
 return [
     'acl' => [
@@ -32,10 +33,16 @@ return [
             ]
         ]
     ],
+    'db_manager' => [
+        'factories' => [
+            Query\Eleves::class => Query\Eleves::class
+        ]
+    ],
     'form_manager' => [
         'invokables' => [
             Form\Responsable2Complet::class => Form\Responsable2Complet::class,
-            Form\Responsable2Restreint::class => Form\Responsable2Restreint::class
+            Form\Responsable2Restreint::class => Form\Responsable2Restreint::class,
+            Form\ModifAdresse::class => Form\ModifAdresse::class
         ],
         'factories' => [
             Form\Enfant::class => Form\Service\EnfantFactory::class
@@ -43,8 +50,8 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            'SbmParent\Controller\Index' => Service\IndexControllerFactory::class,
-            'SbmParent\Controller\Config' => Service\ConfigControllerFactory::class
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
+            Controller\ConfigController::class => Controller\Service\ConfigControllerFactory::class
         ]
     ],
     'router' => [
@@ -60,7 +67,7 @@ return [
                     ],
                     'defaults' => [
                         'module' => 'SbmParent',
-                        'controller' => 'SbmParent\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     ]
                 ],
@@ -76,7 +83,7 @@ return [
                     ],
                     'defaults' => [
                         'module' => 'SbmParent',
-                        'controller' => 'SbmParent\Controller\Config',
+                        'controller' => Controller\ConfigController::class,
                         'action' => 'index'
                     ]
                 ],

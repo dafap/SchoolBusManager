@@ -10,7 +10,7 @@
  * @date 10 avr. 2016
  * @version 2016-2
  */
-use SbmInstallation\Controller\Service\IndexControllerFactory;
+use SbmInstallation\Controller;
 use SbmInstallation\Model\Service;
 return [
     'acl' => [
@@ -24,7 +24,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            'SbmInstallation\Controller\Index' => IndexControllerFactory::class
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
         ]
     ],
     'router' => [
@@ -42,7 +42,7 @@ return [
                     ],
                     'defaults' => [
                         'module' => 'SbmInstallation',
-                        'controller' => 'SbmInstallation\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     ]
                 ],

@@ -105,7 +105,7 @@ class ModifCompte extends AbstractSbmForm
                 'value' => 'Enregistrer les modifications',
                 'id' => 'responsable-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left-95px'
+                'class' => 'button default submit left-95px'
             )
         ));
         $this->add(array(
@@ -114,7 +114,7 @@ class ModifCompte extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'responsable-cancel',
-                'class' => 'button cancel left-10px'
+                'class' => 'button default cancel left-10px'
             )
         ));        
     }

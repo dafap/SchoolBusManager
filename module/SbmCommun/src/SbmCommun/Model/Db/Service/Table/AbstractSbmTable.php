@@ -18,6 +18,8 @@ namespace SbmCommun\Model\Db\Service\Table;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate\PredicateInterface;
+use Zend\Db\Sql\Predicate\PredicateSet;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Paginator\Paginator;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
@@ -231,7 +233,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Retourne un Zend\Paginator\Paginator basé sur la requête.
      * Les résultats sont hydratés et sont conformes au ResultSetPrototype du TableGateway
      *
-     * @param \Zend\Db\Sql\Where $where_obj            
+     * @param Where|\Closure|string|array|Predicate\PredicateInterface $where_obj            
      * @param array|string|null $order            
      * @return Zend\Paginator\Paginator
      */
@@ -249,7 +251,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
-    public function fetchAll($where = null, $order = null)
+    public function fetchAll($where = null, $order = null, $combination = PredicateSet::OP_AND)
     {
         if (! $this->table_gateway->isInitialized()) {
             $this->initialize();
@@ -258,7 +260,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         $select = $this->table_gateway->getSql()->select();
         
         if ($where !== null) {
-            $select->where($where);
+            $select->where($where, $combination);
         }
         if ($order !== null) {
             $select->order($order);

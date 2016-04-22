@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 22 avr. 2016
+ * @version 2016-2.0.1
  */
 namespace SbmCartographie\Controller;
 
@@ -22,22 +22,6 @@ use Zend\Http\PhpEnvironment\Response;
 
 class CarteController extends AbstractActionController
 {
-
-    private $_initcarto;
-
-    /**
-     * projection utilisée
-     *
-     * @var \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface
-     */
-    private $projection;
-    
-    /**
-     * Db manager
-     * 
-     * @var \Zend\ServiceManager\ServiceManager
-     */
-    private $db_manager;
 
     public function indexAction()
     {
@@ -58,16 +42,15 @@ class CarteController extends AbstractActionController
             try {
                 $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                $this->redirect()->toRoute('home');
+                return $this->redirect()->toRoute('home');
             }
         }
-        $this->init();
-        $tEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
+        $tEtablissements = $this->config['db_manager']->get('Sbm\Db\Vue\Etablissements');
         $ptEtablissements = array();
         foreach ($tEtablissements->fetchAll() as $etablissement) {
             $pt = new Point($etablissement->x, $etablissement->y);
             $pt->setAttribute('etablissement', $etablissement);
-            $ptEtablissements[] = $this->projection->xyzVersgRGF93($pt);
+            $ptEtablissements[] = $this->config['projection']->xyzVersgRGF93($pt);
         }
         
         return new ViewModel(array(
@@ -90,16 +73,15 @@ class CarteController extends AbstractActionController
             try {
                 $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                $this->redirect()->toRoute('home');
+                return $this->redirect()->toRoute('home');
             }
         }
-        $this->init();
-        $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
+        $tStations = $this->config['db_manager']->get('Sbm\Db\Vue\Stations');
         $ptStations = array();
         foreach ($tStations->fetchAll() as $station) {
             $pt = new Point($station->x, $station->y);
             $pt->setAttribute('station', $station);
-            $ptStations[] = $this->projection->xyzVersgRGF93($pt);
+            $ptStations[] = $this->config['projection']->xyzVersgRGF93($pt);
         }
         
         return new ViewModel(array(
@@ -107,14 +89,5 @@ class CarteController extends AbstractActionController
             // on utilise la même configuration (centre, zoom) que pour les établissements
             'config' => StdLib::getParam('etablissements', $this->config['config_cartes'])
         ));
-    }
-
-    private function init()
-    {
-        if (! $this->_initcarto) {
-            $this->projection = $this->config['projection'];
-            $this->db_manager = $this->config['db_manager'];
-            $this->_init = true;
-        }
     }
 } 

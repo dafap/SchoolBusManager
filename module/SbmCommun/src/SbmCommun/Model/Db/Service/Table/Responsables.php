@@ -16,6 +16,7 @@ namespace SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\ObjectData\Responsable as ObjectDataResponsable;
 use SbmCommun\Model\Db\ObjectData\Exception as ExceptionObjectData;
+use SbmCommun\Model\DateLib;
 
 class Responsables extends AbstractSbmTable
 {
@@ -50,6 +51,25 @@ class Responsables extends AbstractSbmTable
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
+        return $this->saveResponsable($obj_data);
+    }
+
+    /**
+     *
+     * @see \SbmCommun\Model\Db\Service\Table\Responsables
+     *
+     * @param ObjectDataInterface $obj_data            
+     * @param boolean $checkDemenagement
+     *            false par défaut.
+     *            Si true alors on vérifie si l'adresse a changé et on met à jour les
+     *            éléments concernant le déménagement si nécessaire.
+     *            
+     * @return boolean Si checkDemenagement alors on renvoie vrai si l'adresse a changé
+     *         (adresseL1 ou adresseL2 ou codePostal ou commune).
+     *         Si non on renvoie vrai si la commune a changé.
+     */
+    public function saveResponsable(ObjectDataInterface $obj_data, $checkDemenagement = false)
+    {
         try {
             $old_data = $this->getRecord($obj_data->getId());
             $is_new = false;
@@ -63,11 +83,11 @@ class Responsables extends AbstractSbmTable
                 $telephone = $obj_data->telephoneF;
                 $email = $obj_data->email;
                 $old_data = $this->getRecordByEmail($email);
-                // $old_data est false si pas trouvé                
+                // $old_data est false si pas trouvé
                 if (! $old_data) {
-                    $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL1, $communeId);                    
+                    $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL1, $communeId);
                     if (! $old_data) {
-                        $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL2, $communeId);                        
+                        $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL2, $communeId);
                         if (! $old_data) {
                             $old_data = $this->getRecordByNomPrenomTelephone($nom, $prenom, $telephone);
                         }
@@ -79,7 +99,6 @@ class Responsables extends AbstractSbmTable
                     $obj_data = $old_data;
                 }
             } catch (ExceptionObjectData $e) {
-                //die($e->getMessage());
                 $is_new = true;
             }
         }
@@ -118,12 +137,34 @@ class Responsables extends AbstractSbmTable
                     $obj_data->addCalculateField('prenom2SA');
                 }
             } catch (ExceptionObjectData $e) {}
-            try {
-                $changeCommuneId = $old_data->communeId != $obj_data->communeId;
-            } catch (ExceptionObjectData $e) {
-                $changeCommuneId = false;
+            if ($checkDemenagement) {
+                try {
+                    $demenagement = $old_data->adresseL1 != $obj_data->adresseL1;
+                    $demenagement |= $old_data->adresseL2 != $obj_data->adresseL2;
+                    $demenagement |= $old_data->codePostal != $obj_data->codePostal;
+                    $demenagement |= $old_data->communeId != $obj_data->communeId;
+                    if ($demenagement) {
+                        $dataDemenagement = [
+                            'demenagement' => 1,
+                            'dateDemenagement' => DateLib::todayToMysql(),
+                            'ancienAdresseL1' => $old_data->adresseL1,
+                            'ancienAdresseL2' => $old_data->adresseL2,
+                            'ancienCodePostal' => $old_data->codePostal,
+                            'ancienCommuneId' => $old_data->communeId
+                        ];
+                        $obj_data->exchangeArray(array_merge($obj_data->getArrayCopy(), $dataDemenagement));
+                    }
+                    $changeCommuneId = $demenagement;
+                } catch (ExceptionObjectData $e) {
+                    $changeCommuneId = false;
+                }
+            } else {
+                try {
+                    $changeCommuneId = $old_data->communeId != $obj_data->communeId;
+                } catch (ExceptionObjectData $e) {
+                    $changeCommuneId = false;
+                }
             }
-            
             $obj_data->addCalculateField('dateModification');
         }
         parent::saveRecord($obj_data);

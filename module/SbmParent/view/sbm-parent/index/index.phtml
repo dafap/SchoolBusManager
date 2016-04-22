@@ -47,22 +47,23 @@ $nbInscrits = $this->inscrits->count();
 $nbPaiements = $this->paiements->count();
 $etat = $this->etatSite['etat'];
 $dateLimite = $this->etatSite['echeance']->format('d/m/Y');
-$url_ajoutEleve = $this->url('sbmparent', array(
-    'action' => 'inscription-eleve'
-));
-$url_payer = $this->url('sbmpaiement', array(
+$url_ajoutEleve = $this->url('sbmparent', [
+    'action' => 'reinscription-eleve'
+]);
+$url_payer = $this->url('sbmpaiement', [
     'action' => 'formulaire'
-));
-$url_horaires = $this->url('sbmparent', array(
+]);
+$url_horaires = $this->url('sbmparent', [
     'action' => 'horaires'
-));
-$boutons_horaires = array(
-    'horaires' => array(
+]);
+$url_modif_adresse = $this->url('sbmparentconfig',['action' => 'modif-adresse']);
+$boutons_horaires = [
+    'horaires' => [
         'class' => 'button ligne',
         'formaction' => $url_horaires,
         'value' => 'Horaires'
-    )
-);
+    ]
+];
 ?>
 <div id="winpopup">
 	<div id="winpopup-content"
@@ -97,18 +98,26 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
 			enregistré.</b>
 	</p>
 	<p>
-		Cliquez sur le bouton <b><i>Inscrire un enfant</i></b> pour commencer
-		les inscriptions.
+		<b><i>Vérifiez votre adresse et vos numéros de téléphone</i></b> puis cliquez sur le bouton <b><i>Inscrire
+				un enfant</i></b> pour commencer les inscriptions.
 	</p>
+	<blockquote>
+	<?php echo implode('<br>', $this->adresse);?>
+	</blockquote>
 	<div class="menu clearfix">
     <?php
-        echo $this->listeZoneActions(array(), array(
-            'inscrire' => array(
+        echo $this->listeZoneActions([], [
+            'modif-adresse' => [
+                'class' => 'accueil default',
+                'formaction' => $url_modif_adresse,
+                'value' => 'Modifier adresse ou téléphone'
+            ],
+            'inscrire' => [
                 'class' => 'accueil default',
                 'formaction' => $url_ajoutEleve,
                 'value' => 'Inscrire un enfant'
-            )
-        ));
+            ]
+        ]);
         ?>
     </div>	
     <?php else :?>
@@ -142,7 +151,7 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
         foreach ($this->inscrits as $row) {
             $reseau = $this->affectations->getCorrespondances($row['eleveId']);
             $nbAffectations = $reseau->count();
-            $circuit = $station = $service = array();
+            $circuit = $station = $service = [];
             if ($nbAffectations) {
                 // construction des tableaux $service, $station et $circuit sans doublons
                 foreach ($reseau as $transport) {
@@ -180,10 +189,10 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
                 $station = array_values($station);
                 $circuit = array_values($circuit);
             }
-            $css = $this->cycle(array(
+            $css = $this->cycle([
                 "odd",
                 "even"
-            ))->next();
+            ])->next();
             $colonne1_4 = '<td %s' . $nbAffectations . '>' . $row['nom'] . '</td>';
             $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
             $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] . '</td>';
@@ -202,10 +211,10 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
                     if (empty($circuit[0])) {
                         $code_boutons = '';
                     } else {
-                        $hiddens_horaires = array(
+                        $hiddens_horaires = [
                             'circuit1Id' => $circuit[0],
                             'etablissementId' => $row['etablissementId']
-                        );
+                        ];
                         $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
                     }
                     $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité, scolarité
@@ -214,18 +223,22 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
                     break;
                 default:
                     $colonne1_4 = str_replace('%s', 'rowspan="' . $nbCircuits . '"', $colonne1_4);
-                    $lignesTableau = array('');
-                    $hiddens_horaires = array('enfant' => $row['prenom'] . ' ' . $row['nom']);
+                    $lignesTableau = [
+                        ''
+                    ];
+                    $hiddens_horaires = [
+                        'enfant' => $row['prenom'] . ' ' . $row['nom']
+                    ];
                     for ($i = 0; $i < $nbCircuits; $i ++) {
                         if (! empty($circuit[$i])) {
-                            $hiddens_horaires['circuit'. ($i + 1) . 'Id'] = $circuit[$i];                            
+                            $hiddens_horaires['circuit' . ($i + 1) . 'Id'] = $circuit[$i];
                         }
                         $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_4;
                         $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' . $station[$i] . '</td>';
                         // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les hiddens
                         if ($i > 0) {
                             $lignesTableau[$i] .= "</tr>\n";
-                        }                        
+                        }
                         $colonne1_4 = '';
                     }
                     // pour terminer la ligne 0
@@ -236,7 +249,7 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
                         $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
                         $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' . $code_boutons . "</td></tr>\n";
                     }
-                    $ligneHtml = implode('', $lignesTableau);                    
+                    $ligneHtml = implode('', $lignesTableau);
                     break;
             }
             echo $ligneHtml;
@@ -275,53 +288,53 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
                 $montantUnitaire = '<span class="exces" title="Prenez contact avec le service des transports à la CCDA">pas de droit au transport scolaire</span>';
                 $enAttente = true;
             }
-            $url_edit = $this->url('sbmparent', array(
+            $url_edit = $this->url('sbmparent', [
                 'action' => 'edit-eleve'
-            ));
-            $url_delete = $this->url('sbmparent', array(
+            ]);
+            $url_delete = $this->url('sbmparent', [
                 'action' => 'suppr-eleve'
-            ));
-            $url_attente = $this->url('sbmparent', array(
+            ]);
+            $url_attente = $this->url('sbmparent', [
                 'action' => 'attente-eleve'
-            ));
-            $hiddens = array(
+            ]);
+            $hiddens = [
                 'id' => $row['eleveId']
-            );
+            ];
             if ($etat == 1) {
-                $buttons = array(
-                    'modifier' => array(
+                $buttons = [
+                    'modifier' => [
                         'class' => 'button default left-10px',
                         'formaction' => $url_edit,
                         'title' => 'modifier la scolarité de ' . $row['prenom'],
                         'value' => 'Modifier'
-                    ),
-                    'supprimer' => array(
+                    ],
+                    'supprimer' => [
                         'class' => 'button default left-10px',
                         'formaction' => $url_delete,
                         'title' => 'supprimer l\'incription de ' . $row['prenom'],
                         'value' => 'Supprimer'
-                    )
-                );
+                    ]
+                ];
                 if ($peutPayer) {
                     $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente';
                     $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' . $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
                     $attenteTitle .= ' la liste des inscriptions à payer';
-                    $buttons['attente'] = array(
+                    $buttons['attente'] = [
                         'class' => 'button default left-10px',
                         'formaction' => $url_attente,
                         'title' => $attenteTitle,
                         'value' => $attenteValue
-                    );
+                    ];
                 }
             } else {
-                $buttons = array();
+                $buttons = [];
             }
             $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
             $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>';
-            echo sprintf($modeleligne, $this->cycle(array(
+            echo sprintf($modeleligne, $this->cycle([
                 "odd",
                 "even"
-            ))->next(), $row['nom'], $row['prenom'], $row['etablissement'], $row['communeEtablissement'], $montantUnitaire, $btligne);
+            ])->next(), $row['nom'], $row['prenom'], $row['etablissement'], $row['communeEtablissement'], $montantUnitaire, $btligne);
         }
         ?>
             </tbody>
@@ -338,47 +351,47 @@ communes du Bassin Decazeville Aubin avant le <?php echo $dateLimite; ?> afin de
         <div class="bouton-inscrire">
 			<div class="menu clearfix">
         <?php
-        $boutons = array(
-            array(
+        $boutons = [
+            'inscrire' => [
                 'class' => 'button default float-right left-10px',
                 'formaction' => $url_ajoutEleve,
                 'value' => 'Inscrire un autre enfant'
-            )
-        );
+            ]
+        ];
         if ($montantTotal > 0) {
             if ($enAttente) {
                 $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
             } else {
                 $payerTitle = "valider et payer toutes les inscriptions\nde la liste de enfants préinscrits.";
             }
-            $boutons['payer'] = array(
+            $boutons['payer'] = [
                 'class' => 'button default float-right left-10px',
                 'formaction' => $url_payer,
                 'value' => 'Valider la liste et payer',
                 'title' => $payerTitle
-            );
+            ];
         }
-        echo $this->listeZoneActions(array(
+        echo $this->listeZoneActions([
             'montant' => $montantTotal
-        ), $boutons);
+        ], $boutons);
         ?>
             </div>
 		</div>
     <?php
-    switch ($etat) {
-        case 0:
-            $msg = '';
-            break;
-        case 1:
-            $msg = "N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
-            $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " . $this->permanences[0] . '.';
-            break;
-        default:
-            $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
-            $msg .= $this->permanences[0] . '.';
-            break;
-    }
-    ?>
+        switch ($etat) {
+            case 0:
+                $msg = '';
+                break;
+            case 1:
+                $msg = "N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
+                $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " . $this->permanences[0] . '.';
+                break;
+            default:
+                $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
+                $msg .= $this->permanences[0] . '.';
+                break;
+        }
+        ?>
 		<p class="sbm-description">
 			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?php echo $msg;?>
 		</p>

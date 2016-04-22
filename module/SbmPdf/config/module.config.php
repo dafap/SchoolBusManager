@@ -26,8 +26,7 @@ use SbmPdf\Model\Service\ColumnsFactory;
 use SbmPdf\Model\Service\TcpdfFactory;
 use SbmPdf\Model\Columns;
 use SbmPdf\Model\Tcpdf;
-use SbmPdf\Controller\Service\PdfControllerFactory;
-use SbmPdf\Controller\Service\DocumentControllerFactory;
+use SbmPdf\Controller;
 
 
 return [
@@ -93,8 +92,8 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            'SbmPdf\Controller\Pdf' => PdfControllerFactory::class,
-            'SbmPdf\Controller\Document' => DocumentControllerFactory::class
+            Controller\PdfController::class => Controller\Service\PdfControllerFactory::class,
+            Controller\DocumentController::class => Controller\Service\DocumentControllerFactory::class
         ]
     ],
     'router' => [
@@ -110,7 +109,7 @@ return [
                     ],
                     'defaults' => [
                         'module' => 'SbmPdf',
-                        'controller' => 'SbmPdf\Controller\Pdf',
+                        'controller' => Controller\PdfController::class,
                         'action' => 'pdf-liste'
                     ]
                 ],
@@ -127,7 +126,7 @@ return [
                     ],
                     'defaults' => [
                         'module' => 'SbmPdf',
-                        'controller' => 'SbmPdf\Controller\Document',
+                        'controller' => Controller\DocumentController::class,
                         'action' => 'index'
                     ]
                 ],

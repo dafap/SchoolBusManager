@@ -11,7 +11,7 @@
  * @version 2016-2
  */
 use SbmAdmin\Form;
-use SbmAdmin\Controller\Service;
+use SbmAdmin\Controller;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
 use SbmAdmin\Model\Db\Service\Libelle\Liste;
@@ -53,7 +53,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            'SbmAdmin\Controller\Index' => Service\IndexControllerFactory::class,
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
         ]
     ],
     'router' => [
@@ -69,7 +69,7 @@ return [
                     ],
                     'defaults' => [
                         'module' => 'SbmAdmin',
-                        'controller' => 'SbmAdmin\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     ]
                 ],

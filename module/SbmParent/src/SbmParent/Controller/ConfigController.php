@@ -20,6 +20,7 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Form;
 use SbmCommun\Form\LatLng as LatLngForm;
+use SbmParent\Form\ModifAdresse;
 use SbmParent\Model\Responsable;
 use Zend\Mvc\Controller\Plugin\Redirect;
 
@@ -96,6 +97,70 @@ class ConfigController extends AbstractActionController
         }
         return new ViewModel(array(
             'hasEnfantInscrit' => $hasEnfantInscrit,
+            'form' => $form->prepare(),
+            'responsableId' => $responsableId,
+            'responsable' => $responsable->getArrayCopy(),
+            'demenagement' => StdLib::getParam('demenagement', $args, false)
+        ));
+    }
+
+    /**
+     * Modifie l'adresse et demande la localisation
+     */
+    public function modifAdresseAction()
+    {
+        try {
+            $responsable = $this->config['responsable']->get();
+        } catch (Exception $e) {
+            return $this->redirect()->toRoute('login', array(
+                'action' => 'logout'
+            ));
+        }
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            $args = $responsable->getArrayCopy();
+        } else {
+            $args = $prg;
+            if (array_key_exists('cancel', $args)) {
+                return $this->redirect()->toRoute('login', array(
+                    'action' => 'home-page'
+                ));
+            }
+            if (array_key_exists('modif-adresse', $args)) {
+                $args = $responsable->getArrayCopy();
+            }
+       }
+        // ici on a le tableau d'initialisation du formulaire dans $args
+        $responsableId = StdLib::getParam('responsableId', $args, $responsable->responsableId);
+        $hasEnfantInscrit = $this->config['db_manager']->get('Sbm\Db\Query\Responsables')->hasEnfantInscrit($responsableId);
+        $tableResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
+        $db = $this->config['db_manager'];
+        // on ouvre le formulaire complet et on l'adapte
+        $form = $this->config['form_manager']->get(ModifAdresse::class);
+        $value_options = $this->config['db_manager']->get('Sbm\Db\Select\Communes')->membres();
+        $form->setValueOptions('communeId', $value_options)->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        unset($value_options);
+        $form->bind($tableResponsables->getObjData());
+        $form->setData($args);
+        if (array_key_exists('submit', $args)) {
+            if ($form->isValid()) {
+                $changeAdresse = $tableResponsables->saveResponsable($form->getData(), true);
+                $responsable->refresh();
+                $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
+                if ($changeAdresse) {
+                    return $this->redirect()->toRoute('sbmparentconfig', array(
+                        'action' => 'localisation'
+                    ));
+                }
+            } else {
+                $this->flashMessenger()->addWarningMessage('Données inchangées');
+            }
+            return $this->redirect()->toRoute('sbmparent');
+        }
+        return new ViewModel(array(
             'form' => $form->prepare(),
             'responsableId' => $responsableId,
             'responsable' => $responsable->getArrayCopy(),

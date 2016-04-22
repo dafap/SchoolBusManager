@@ -12,7 +12,7 @@
  * @date 8 avr. 2016
  * @version 2016-2
  */
-use SbmCartographie\Controller\Service\CarteControllerFactory;
+use SbmCartographie\Controller;
 use SbmCartographie\Model\Service\CartographieManager;
 use SbmCartographie\GoogleMaps\DistanceEtablissements;
 use SbmCartographie\GoogleMaps\Service\DistanceEtablissementsFactory;
@@ -70,7 +70,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            'SbmCartographie\Controller\Carte' => CarteControllerFactory::class
+            Controller\CarteController::class => Controller\Service\CarteControllerFactory::class
         ]
     ],
     'router' => [
@@ -84,7 +84,7 @@ return [
                     ],
                     'defaults' => [
                         'module' => 'SbmCartographie',
-                        'controller' => 'SbmCartographie\Controller\Carte',
+                        'controller' => Controller\CarteController::class,
                         'action' => 'index'
                     ]
                 ]

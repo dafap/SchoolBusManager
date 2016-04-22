@@ -64,7 +64,7 @@ class IndexController extends AbstractActionController
                     $filename = $parts[count($parts) - 1];
                     break;
                 default:
-                    $this->redirect()->toRoute('sbminstall');
+                    return $this->redirect()->toRoute('sbminstall');
                     break;
             }
             if (array_key_exists('drop', $args)) {

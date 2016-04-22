@@ -25,13 +25,13 @@ class ListeRoutesService implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $pdfManager)
     {
-        if (!($pdfManager instanceof PdfManager)) {
+        if (! ($pdfManager instanceof PdfManager)) {
             $message = 'PdfManager attendu. On a reçu un %s.';
             throw new Exception(sprintf($message, gettype($pdfManager)));
         }
         // liste des controleurs associée à une route
-        // $routes = array();
-        $controllers = array();
+        // $routes = [];
+        $controllers = [];
         foreach ($pdfManager->get('routes') as $routeName => $description) {
             $routeUrl = $description['options']['route'];
             if ($description['type'] == 'segment') {
@@ -51,26 +51,27 @@ class ListeRoutesService implements FactoryInterface
             }
         }
         // liste des controleurs par module
-        $valueOptions = array();
-        $actions = array();
+        $valueOptions = [];
+        $actions = [];
         $filter = new CamelCaseToDash();
         foreach ($pdfManager->get('controllers') as $alias => $classControler) {
-            $methodes = get_class_methods($classControler);
+            // $classControler = str_replace(['ControllerFactory'], 'Controller', $classControler);
+            $methodes = (array) get_class_methods($alias);
             asort($methodes);
             foreach ($methodes as $key => &$item) {
                 if (substr($item, - 6) == 'Action' && $item != 'notFoundAction' && $item != 'getMethodFromAction') {
-                    //$method = $classControler . '::' . $item;
+                    // $method = $classControler . '::' . $item;
                     $item = strtolower($filter->filter(substr($item, 0, - 6)));
                     $method = $controllers[$alias] . '/' . $item;
                     if (array_key_exists($alias, $valueOptions)) {
                         $valueOptions[$alias]['options'][$method] = $item;
                     } else {
-                        $valueOptions[$alias] = array(
+                        $valueOptions[$alias] = [
                             'label' => $controllers[$alias],
-                            'options' => array(
+                            'options' => [
                                 $method => $item
-                            )
-                        );
+                            ]
+                        ];
                     }
                 }
             }

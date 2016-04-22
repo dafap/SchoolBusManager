@@ -9,7 +9,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
+ * @date 22 avr. 2016
  * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -76,22 +76,22 @@ class Eleves implements FactoryInterface
         $predicate = new Where();
         $predicate->literal('sc2.eleveId=sco.eleveId');
         $select2 = new Select();
-        $select2->from(array(
+        $select2->from([
             'sc2' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ))
-            ->columns(array(
+        ])
+            ->columns([
             'dernierMillesime' => new Literal('max(millesime)')
-        ))
+        ])
             ->where($predicate);
         $where = new Where();
         $where->equalTo('res.responsableId', $responsableId)
             ->nest()
             ->isNull('millesime')->or->equalTo('millesime', $select2)->unnest();
         $select = $this->sql->select()
-            ->from(array(
+            ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-            ->columns(array(
+        ])
+            ->columns([
             'eleveId' => 'eleveId',
             'dateCreation' => 'dateCreation',
             'dateModificationEleve' => 'dateModification',
@@ -110,13 +110,13 @@ class Eleves implements FactoryInterface
             'responsableFId' => 'responsableFId',
             'selectionEleve' => 'selection',
             'noteEleve' => 'note'
-        ))
-            ->join(array(
+        ])
+            ->join([
             'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ), 'res.responsableId = ele.' . $lequel, array())
-            ->join(array(
+        ], 'res.responsableId = ele.' . $lequel, [])
+            ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'ele.eleveId = sco.eleveId', array(
+        ], 'ele.eleveId = sco.eleveId', [
             'millesime',
             'paiement',
             'inscrit',
@@ -128,22 +128,22 @@ class Eleves implements FactoryInterface
             'accordR2',
             'subventionR1',
             'subventionR2'
-        ), Select::JOIN_LEFT)
-            ->join(array(
+        ], Select::JOIN_LEFT)
+            ->join([
             'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-        ), 'sco.etablissementId = eta.etablissementId', array(
+        ], 'sco.etablissementId = eta.etablissementId', [
             'etablissement' => 'nom'
-        ), Select::JOIN_LEFT)
-            ->join(array(
+        ], Select::JOIN_LEFT)
+            ->join([
             'cometa' => $this->db_manager->getCanonicName('communes', 'table')
-        ), 'eta.communeId = cometa.communeId', array(
+        ], 'eta.communeId = cometa.communeId', [
             'communeEtablissement' => 'nom'
-        ), Select::JOIN_LEFT)
-            ->join(array(
+        ], Select::JOIN_LEFT)
+            ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
-        ), 'cla.classeId = sco.classeId', array(
+        ], 'cla.classeId = sco.classeId', [
             'classe' => 'nom'
-        ), Select::JOIN_LEFT)
+        ], Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();

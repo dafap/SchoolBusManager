@@ -10,8 +10,7 @@
  * @date 7 avr. 2016
  * @version 2016-2
  */
-use SbmFront\Controller\Service\IndexControllerFactory;
-use SbmFront\Controller\Service\LoginControllerFactory;
+use SbmFront\Controller;
 use SbmFront\Model\Responsable\Responsable;
 use SbmFront\Model\Responsable\Service\ResponsableManager;
 use SbmFront\Form\Service\CreerCompteFactory;
@@ -157,7 +156,7 @@ return array(
                     ),
                     'defaults' => array(
                         'module' => __NAMESPACE__,
-                        'controller' => 'SbmFront\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     )
                 ),
@@ -173,7 +172,7 @@ return array(
                     ),
                     'defaults' => array(
                         'module' => __NAMESPACE__,
-                        'controller' => 'SbmFront\Controller\Login',
+                        'controller' => Controller\LoginController::class,
                         'action' => 'login'
                     )
                 )
@@ -182,8 +181,8 @@ return array(
     ),
     'controllers' => array(
         'factories' => array(
-            'SbmFront\Controller\Index' => IndexControllerFactory::class,
-            'SbmFront\Controller\Login' => LoginControllerFactory::class
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
+            Controller\LoginController::class => Controller\Service\LoginControllerFactory::class
         )
     ),
     'view_helpers' => array(

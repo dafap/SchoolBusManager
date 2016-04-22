@@ -24,7 +24,7 @@ use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmFront\Form;
-use SbmFront\Model\Respondable\Exception as CreateResponsableException;
+use SbmFront\Model\Responsable\Exception as CreateResponsableException;
 use DafapMail\Model\Template as MailTemplate;
 use DafapMail\Model\DafapMail\Model;
 use SbmCommun\Form\LatLng as LatLngForm;
@@ -72,7 +72,7 @@ class LoginController extends AbstractActionController
             }
         } elseif (\array_key_exists('signup', $args)) {
             // création de compte demandée - il n'y a pas de paramètres
-            $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', array(
                 'action' => 'creer-compte'
             ));
         } else {
@@ -166,7 +166,11 @@ class LoginController extends AbstractActionController
             switch ($auth->getCategorieId()) {
                 case 1:
                     try {
+                        try {
                         $responsable = $this->config['responsable']->get();
+                        } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
+                            throw $e->getPrevious();
+                        }
                         $d2etab = $this->config['distance_etablissements'];
                         // contrôle de position géographique
                         $point = new Point($responsable->x, $responsable->y);

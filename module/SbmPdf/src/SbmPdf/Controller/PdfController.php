@@ -9,8 +9,8 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 22 avr. 2016
+ * @version 2016-2.0.1
  */
 namespace SbmPdf\Controller;
 
@@ -130,7 +130,7 @@ class PdfController extends AbstractActionController
             }
         } else {
             // initialisation du formulaire
-            $defaults = array_merge($db_manager->getColumnDefaults('documents', 'system'), include (__DIR__ . '/../Model/default/documents.inc.php'));
+            $defaults = array_merge($this->config['db_manager']->getColumnDefaults('documents', 'system'), include (__DIR__ . '/../Model/default/documents.inc.php'));
             $form->setData($defaults);
         }
         $view = new ViewModel([
@@ -284,7 +284,7 @@ class PdfController extends AbstractActionController
                 unset($data['documentId']);
                 $form->setData($data);
             } else {
-                $defaults = array_merge($db_manager->getColumnDefaults('documents', 'system'), include (__DIR__ . '/../Model/default/documents.inc.php'));
+                $defaults = array_merge($this->config['db_manager']->getColumnDefaults('documents', 'system'), include (__DIR__ . '/../Model/default/documents.inc.php'));
                 $form->setData($defaults);
             }
         }
@@ -605,7 +605,7 @@ class PdfController extends AbstractActionController
         ];
         $r = $this->addData($this->config['db_manager'], $params, function ($post) {
             return $post;
-        }, function ($post) use($pdf_manager) {
+        }, function ($post) use($pdf_manager, $form){
             $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                 ->setRecordSource($post['documentId']);
             $form->setValueOptions('tbody', $columns->getListeForSelect());
@@ -1116,8 +1116,8 @@ class PdfController extends AbstractActionController
         ];
         $r = $this->addData($this->config['db_manager'], $params, function ($post) {
             return $post;
-        }, function ($post) use($sm, $form) {
-            $form->setValueOptions('route', $sm->get('ListeRoutes'));
+        }, function ($post) use($pdf_manager, $form) {
+            $form->setValueOptions('route', $pdf_manager->get('ListeRoutes'));
         });
         switch ($r) {
             case $r instanceof Response:

@@ -19,7 +19,7 @@
  * @date 30 mars 2015
  * @version 2015-1
  */
-use SbmPaiement\Controller\Service\IndexControllerFactory;
+use SbmPaiement\Controller;
 use SbmPaiement\Listener;
 
 if (! defined('MODULE_PAIEMENT_PATH')) {
@@ -75,7 +75,7 @@ return array(
     ),
     'controllers' => array(
         'factories' => array(
-            'SbmPaiement\Controller\Index' => IndexControllerFactory::class
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
         )
     ),
     'router' => array(
@@ -91,7 +91,7 @@ return array(
                     ),
                     'defaults' => array(
                         'module' => 'SbmPaiement',
-                        'controller' => 'SbmPaiement\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'liste'
                     )
                 ),

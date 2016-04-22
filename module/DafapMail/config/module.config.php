@@ -14,6 +14,7 @@
  */
 use DafapMail\Form\Mail;
 use DafapMail\Model;
+use DafapMail\Controller;
 
 return array(
     'acl' => array(
@@ -79,7 +80,7 @@ return array(
     ],
     'controllers' => array(
         'factories' => array(
-            'DafapMail\Controller\Index' => 'DafapMail\Controller\Service\IndexControllerFactory'
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
         )
     ),
     'router' => array(
@@ -93,7 +94,7 @@ return array(
                     ),
                     'defaults' => array(
                         'module' => 'DafapMail',
-                        'controller' => 'DafapMail\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     )
                 ),

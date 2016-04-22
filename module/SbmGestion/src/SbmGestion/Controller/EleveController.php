@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 22 avr. 2016
+ * @version 2016-2.0.1
  */
 namespace SbmGestion\Controller;
 
@@ -557,11 +557,10 @@ class EleveController extends AbstractActionController
                 ]);
             }
         }
-        $db_manager = $this->config['db_manager'];
-        $tEleves = $db_manager->get('Sbm\Db\Table\Eleves');
-        $tScolarites = $db_manager->get('Sbm\Db\Table\Scolarites');
-        $tTarifs = $db_manager->get('Sbm\Db\Table\Tarifs');
-        $qAffectations = $db_manager->get('Sbm\Db\Query\AffectationsServicesStations');
+        $tEleves = $this->config['db_manager']->get('Sbm\Db\Table\Eleves');
+        $tScolarites = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites');
+        $tTarifs = $this->config['db_manager']->get('Sbm\Db\Table\Tarifs');
+        $qAffectations = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations');
         // les invariants
         $invariants = [];
         $historique = [];
@@ -603,9 +602,9 @@ class EleveController extends AbstractActionController
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
         $historique['scolarite']['internet'] = $odata1->internet;
         
-        $respSelect = $db_manager->get('Sbm\Db\Select\Responsables');
-        $etabSelect = $db_manager->get('Sbm\Db\Select\Etablissements')->desservis();
-        $clasSelect = $db_manager->get('Sbm\Db\Select\Classes');
+        $respSelect = $this->config['db_manager']->get('Sbm\Db\Select\Responsables');
+        $etabSelect = $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')->desservis();
+        $clasSelect = $this->config['db_manager']->get('Sbm\Db\Select\Classes');
         $form = new FormEleve();
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmgestion/eleve', [
@@ -617,7 +616,7 @@ class EleveController extends AbstractActionController
             ->setValueOptions('etablissementId', $etabSelect)
             ->setValueOptions('classeId', $clasSelect)
             ->setValueOptions('joursTransport', Semaine::getJours())
-            ->setMaxLength($db_manager->getMaxLengthArray('eleves', 'table'));
+            ->setMaxLength($this->config['db_manager']->getMaxLengthArray('eleves', 'table'));
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
@@ -638,7 +637,7 @@ class EleveController extends AbstractActionController
                 $tEleves->saveRecord($tEleves->getObjData()
                     ->exchangeArray($dataValid));
                 // maj en cascade dans la table affectations
-                $tAffectations = $db_manager->get('Sbm\Db\Table\Affectations');
+                $tAffectations = $this->config['db_manager']->get('Sbm\Db\Table\Affectations');
                 if ($changeR1) {
                     // maj du responsableId
                     $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable1Id, $dataValid['responsable1Id']);
@@ -793,7 +792,7 @@ class EleveController extends AbstractActionController
             $args = $this->getFromSession('post', false);
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
-                $this->redirect()->toRoute('login', [
+                return $this->redirect()->toRoute('login', [
                     'action' => 'logout'
                 ]);
             }
@@ -1565,6 +1564,34 @@ class EleveController extends AbstractActionController
         $retour = [
             'route' => 'sbmgestion/eleve',
             'action' => 'responsable-liste'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function responsableGroupPdfAction()
+    {
+        $criteresObject = [
+            '\SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) {
+                // responsableId = 376 AND (millesime IS NULL OR millesime = maxmillesime)
+                $where = new Where();
+                $or = false;
+                $where->equalTo('responsableId', $args['responsableId'])
+                    ->nest()
+                    ->isNull('millesime')->or->literal('millesime = maxmillesime')->unnest();
+                $tResponsableIds = explode('|', $args['op']);
+                return $where;
+            }
+        ];
+        $criteresForm = [
+            '\SbmCommun\Form\CriteresForm',
+            'responsables'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/eleve',
+            'action' => 'responsable-groupe'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
