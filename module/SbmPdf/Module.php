@@ -11,8 +11,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 13 avr. 2016
+ * @version 2016-2
  */
  namespace SbmPdf;
  
@@ -35,8 +35,8 @@
      
      public function onBootstrap(MvcEvent $e)
      {
-         
-         $eventManager = $e->getTarget()->getEventManager();
-         $eventManager->attach(new PdfListener());
+         $pdfListener = $e->getApplication()->getServiceManager()->get(PdfListener::class);
+         $eventManager = $e->getTarget()->getEventManager();         
+         $eventManager->attach($pdfListener);
      }
  }

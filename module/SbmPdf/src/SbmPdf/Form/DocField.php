@@ -9,8 +9,8 @@
  * @filesource DocField.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2015
- * @version 2015-1
+ * @date 12 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Form;
 
@@ -20,479 +20,476 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class DocField extends Form implements InputFilterProviderInterface
 {
 
-    private $sm;
-
-    public function __construct($sm, $param = 'documentpdf')
+    public function __construct()
     {
-        $this->sm = $sm;
-        parent::__construct($param);
+        parent::__construct('champdocumentpdf');
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'type' => 'hidden',
             'name' => 'docfieldId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'documentId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'name'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'recordSource'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'name' => 'csrf',
             'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
+            'options' => [
+                'csrf_options' => [
                     'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'ordinal_position',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-ordinal_position'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Rang du champ dans le document',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'fieldname',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-fieldname'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Donnée à mettre dans ce champ',
-                'label_attributes' => array(),
+                'label_attributes' => [],
                 'empty_option' => 'Choisissez un champ',
-                'error_options' => array(
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'fieldname_width',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-fieldname_width'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Largeur (mettre 0 pour ne pas imposer la largeur)',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'fieldname_align',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-fieldname_align'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Alignement horizontal du texte dans la cellule',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     'L' => 'Aligné à gauche',
                     'C' => 'Centré',
                     'R' => 'Aligné à droite',
                     'J' => 'Justifié'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'fieldname_stretch',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-fieldname_stretch'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Etalement (si la largeur est fixée)',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     '0' => 'Sans étalement',
                     '1' => 'Etalement par mise à l\'échelle si le texte est plus large que la cellule',
                     '2' => 'Etalement par mise à l\'échelle à la largeur de la cellule',
                     '3' => 'Etalement par réglage de l\'espacement si le texte est plus large que la cellule',
                     '4' => 'Etalement par réglage de l\'espacement à la largeur de la cellule'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'fieldname_precision',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-fieldname_precision'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Précision',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'fieldname_completion',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-fieldname_completion'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Complétion à gauche (nombre total de caractères pour ce champ)',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Textarea',
             'name' => 'filter',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-filter',
                 'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Valeurs de remplacement',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label-top'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'is_date',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-is_date'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Est-ce une date ?',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'format',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-format',
                 'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Description du format',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Textarea',
             'name' => 'label',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-label',
                 'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Texte précédent la donnée',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label-top'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'label_space',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-label_space'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Espacement du texte par rapport à la donnée',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'label_width',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-label_width'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Largeur ou marge gauche (mettre 0 pour ne pas imposer de largeur)',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'label_align',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-label_align'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Alignement horizontal du texte dans la cellule',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     'L' => 'Aligné à gauche',
                     'C' => 'Centré',
                     'R' => 'Aligné à droite',
                     'J' => 'Justifié'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'label_stretch',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-label_stretch'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Etalement (si la largeur est fixée)',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     '0' => 'Sans étalement',
                     '1' => 'Etalement par mise à l\'échelle si le texte est plus large que la cellule',
                     '2' => 'Etalement par mise à l\'échelle à la largeur de la cellule',
                     '3' => 'Etalement par réglage de l\'espacement si le texte est plus large que la cellule',
                     '4' => 'Etalement par réglage de l\'espacement à la largeur de la cellule'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'style',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-style'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Style',
-                'label_attributes' => array(),
+                'label_attributes' => [],
                 'empty_option' => 'Choisissez',
-                'value_options' => array(
+                'value_options' => [
                     'main' => 'Police principale',
                     'data' => 'Police des données',
                     'titre1' => 'Titre 1',
                     'titre2' => 'Titre 2',
                     'titre3' => 'Titre 3',
                     'titre4' => 'Titre 4'
-                ),
-                'error_options' => array(
+                ],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'height',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'field-height'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Hauteur des cellules (label et donnée)',
-                'label_attributes' => array(),
-                'error_options' => array(
+                'label_attributes' => [],
+                'error_options' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'documentpdf-cancel',
                 'autofocus' => 'autofocus',
                 'class' => 'button default cancel'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'documentpdf-submit',
                 'class' => 'button default submit'
-            )
-        ));
+            ]
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'ordinal_position' => array(
+        return [
+            'ordinal_position' => [
                 'name' => 'ordinal_position',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\Digits'
-                    )
-                )
-            ),
-            'filter' => array(
+                    ]
+                ]
+            ],
+            'filter' => [
                 'name' => 'filter',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'fieldname_width' => array(
+                    ]
+                ]
+            ],
+            'fieldname_width' => [
                 'name' => 'fieldname_width',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'fieldname_completion' => array(
+                    ]
+                ]
+            ],
+            'fieldname_completion' => [
                 'name' => 'fieldname_completion',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\Digits'
-                    )
-                )
-            ),
-            'fieldname_precision' => array(
+                    ]
+                ]
+            ],
+            'fieldname_precision' => [
                 'name' => 'fieldname_precision',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'format' => array(
+                    ]
+                ]
+            ],
+            'format' => [
                 'name' => 'format',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'height' => array(
+                    ]
+                ]
+            ],
+            'height' => [
                 'name' => 'height',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'label' => array(
+                    ]
+                ]
+            ],
+            'label' => [
                 'name' => 'label',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'label_width' => array(
+                    ]
+                ]
+            ],
+            'label_width' => [
                 'name' => 'label_width',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'label_space' => array(
+                    ]
+                ]
+            ],
+            'label_space' => [
                 'name' => 'label_space',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            )
+                    ]
+                ]
+            ]
             
-        );
+        ];
     }
 
     public function setMaxLength(array $array)

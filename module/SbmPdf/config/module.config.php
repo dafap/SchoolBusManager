@@ -6,106 +6,138 @@
  * @package SbmPdf
  * @filesource module.config.php
  * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
+ * @date 12 avr. 2016
+ * @version 2016-2
  */
-return array(
-    'tcpdf' => array(),
-    'acl' => array(
-        'resources' => array(
-            'sbmpdf' => array(
-                'allow' => array(
-                    'roles' => array(
+use SbmPdf\Service;
+use SbmPdf\Model\Service as PdfService;
+use SbmPdf\Listener\Service\PdfListenerFactory;
+use SbmPdf\Listener\PdfListener;
+use SbmPdf\Model\Filter\Service\NomTableFactory;
+use SbmPdf\Model\Filter\NomTable;
+use SbmPdf\Form\Service\DocumentPdfFactory as FormDocumentPdfFactory;
+use SbmPdf\Form\DocTable as FormDocTable;
+use SbmPdf\Form\DocColumn as FormDocColumn;
+use SbmPdf\Form\DocField as FormDocField;
+use SbmPdf\Form\DocLabel as FormDocLabel;
+use SbmPdf\Form\DocAffectation as FormDocAffectation;
+use SbmPdf\Model\Service\ColumnsFactory;
+use SbmPdf\Model\Service\TcpdfFactory;
+use SbmPdf\Model\Columns;
+use SbmPdf\Model\Tcpdf;
+use SbmPdf\Controller;
+
+
+return [
+    'tcpdf' => [],
+    'acl' => [
+        'resources' => [
+            'sbmpdf' => [
+                'allow' => [
+                    'roles' => [
                         'admin',
                         'sadmin'
-                    )
-                )
-            ),
-            'sbmdocument' => array(
-                'allow' => array(
-                    'roles' => array(
+                    ]
+                ]
+            ],
+            'sbmdocument' => [
+                'allow' => [
+                    'roles' => [
                         'admin',
                         'sadmin'
-                    )
-                ),
-                'actions' => array(
-                    'horaires' => array(
-                        'allow' => array(
-                            'roles' => array(
+                    ]
+                ],
+                'actions' => [
+                    'horaires' => [
+                        'allow' => [
+                            'roles' => [
                                 'parent',
                                 'transporteur',
                                 'etablissement',
                                 'secretariat'
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    ),
-    'liste' => array(
-        'paginator' => array(
-            'nb_pdf' => 1
-        )
-    ),
-    'service_manager' => array(
-        'invokables' => array(
-            'RenderPdfService' => 'SbmPdf\Service\RenderPdfService',
-            'PdfListener' => 'SbmPdf\Listener\PdfListener'
-        ),
-        'factories' => array(
-            'ListeRoutes' => 'SbmPdf\Service\ListeRoutesService'
-        )
-    ),
-    'controllers' => array(
-        'invokables' => array(
-            'SbmPdf\Controller\Pdf' => 'SbmPdf\Controller\PdfController',
-            'SbmPdf\Controller\Document' => 'SbmPdf\Controller\DocumentController'
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'sbmpdf' => array(
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'pdf_manager' => [
+        'invokables' => [
+            'FormDocTable' => FormDocTable::class,
+            'FormDocColumn' => FormDocColumn::class,
+            'FormDocField' => FormDocField::class,
+            'FormDocLabel' => FormDocLabel::class,
+            'FormDocAffectation' => FormDocAffectation::class
+        ],
+        'factories' => [
+            'ListeRoutes' => PdfService\ListeRoutesService::class,
+            'FormDocumentPdf' => FormDocumentPdfFactory::class,
+            Columns::class => ColumnsFactory::class,
+            Tcpdf::class => TcpdfFactory::class
+        ],
+        'services' => [
+            'paginator' => [
+                'nb_pdf' => 1
+            ]
+        ]
+    ],
+    'service_manager' => [
+        'factories' => [
+            'RenderPdfService' => Service\RenderPdfService::class,
+            'Sbm\PdfManager' => Service\PdfManagerFactory::class,
+            PdfListener::class => PdfListenerFactory::class
+        ]
+    ],
+    'controllers' => [
+        'factories' => [
+            Controller\PdfController::class => Controller\Service\PdfControllerFactory::class,
+            Controller\DocumentController::class => Controller\Service\DocumentControllerFactory::class
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'sbmpdf' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/pdf[/:action[/page/:page][/id/:id]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',
                         'id' => '[0-9]+'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmPdf',
-                        'controller' => 'SbmPdf\Controller\Pdf',
+                        'controller' => Controller\PdfController::class,
                         'action' => 'pdf-liste'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            ),
-            'sbmdocument' => array(
+            ],
+            'sbmdocument' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/document[/:action[/page/:page][/id/:id]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',
                         'id' => '[0-9]+'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmPdf',
-                        'controller' => 'SbmPdf\Controller\Document',
+                        'controller' => Controller\DocumentController::class,
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            )
-        )
-    ),
-    'view_manager' => array(
-        'template_map' => array(),
-        'template_path_stack' => array(
+            ]
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [],
+        'template_path_stack' => [
             __DIR__ . '/../view'
-        )
-    )
-); 
+        ]
+    ]
+]; 

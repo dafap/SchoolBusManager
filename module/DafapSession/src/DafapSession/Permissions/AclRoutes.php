@@ -13,20 +13,19 @@
  * @filesource AclRoutes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mai 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace DafapSession\Permissions;
 
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Permissions\Acl\Acl;
 use Zend\Mvc\MvcEvent;
-// use Zend\Mvc\Controller\Plugin\PluginInterface;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Mvc\Router\Http\RouteMatch;
 use SbmCommun\Model\StdLib;
 
-class AclRoutes extends AbstractPlugin
+class AclRoutes implements  FactoryInterface
 {
 
     /**
@@ -40,25 +39,29 @@ class AclRoutes extends AbstractPlugin
     const DEFAULT_REDIRECT_TO = 'home';
 
     /**
-     *
+     * Est créé dans le createService
+     * 
      * @var \Zend\Permissions\Acl\Acl
      */
     protected $acl;
 
     /**
-     *
-     * @var \Zend\ServiceManager\ServiceLocatorInterface
+     * Est initialisé par la config_application dans le createService
+     * 
+     * @var array
      */
-    protected $serviceLocator;
+    private $acl_config = []; 
 
     /**
-     *
+     * Est initialisé par la service manager dans le createService
+     * 
      * @var \DafapSession\Authentication\AuthenticationService
      */
     protected $authenticationService;
 
     /**
      * Route vers laquelle on redirige si les accès ne sont pas valides
+     * (dépend de la catégorie de l'utilisateur ou prend la valeur par défaut)
      *
      * @var string
      */
@@ -78,26 +81,24 @@ class AclRoutes extends AbstractPlugin
      *
      * @see \Zend\ServiceManager\FactoryInterface::createService()
      */
-    public function init()
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $this->controller->getServiceLocator(); // $servicePlugin->getServiceLocator();
-        $this->authenticationService = $this->serviceLocator->get('Dafap\Authenticate')->by('email');
+        $this->authenticationService = $serviceLocator->get('Dafap\Authenticate')->by('email');
+        $this->acl_config = $serviceLocator->get('config')['acl'];
         $this->acl = new Acl();
-        $config = $this->serviceLocator->get('config')['acl'];
-        if (array_key_exists('roleId', $config)) {
-            $this->roleId = $config['roleId'];
-            if (array_key_exists('roles', $config)) {
-                $roles = $config['roles'];
-                foreach ($roles as $role => $parents) {
+        if (array_key_exists('roleId', $this->acl_config)) {
+            $this->roleId = $this->acl_config['roleId'];
+            if (array_key_exists('roles', $this->acl_config)) {
+                foreach ($this->acl_config['roles'] as $role => $parents) {
                     $this->acl->addRole($role, $parents);
                 }
             }
         }
-        if ($this->authenticationService->hasIdentity() && array_key_exists('redirectTo', $config)) {
+        if ($this->authenticationService->hasIdentity() && array_key_exists('redirectTo', $this->acl_config)) {
             $key = $this->authenticationService->getCategorieId();
             if (array_key_exists($key, $this->roleId)) {
-                $this->redirectTo = $config['redirectTo'][$this->roleId[$key]];
-                return;
+                $this->redirectTo = $this->acl_config['redirectTo'][$this->roleId[$key]];
+                return $this;
             }
         }
         $this->redirectTo = self::DEFAULT_REDIRECT_TO;
@@ -106,7 +107,6 @@ class AclRoutes extends AbstractPlugin
 
     public function dispatch(MvcEvent $e)
     {
-        $this->init();
         $this->build($e->getRouteMatch());
         
         // Récupération du rôle de l'utilisateur courant
@@ -132,9 +132,9 @@ class AclRoutes extends AbstractPlugin
      */
     private function redirect(MvcEvent $e, $route)
     {
-        $url = $e->getRouter()->assemble(array(), array(
+        $url = $e->getRouter()->assemble([], [
             'name' => $route
-        ));
+        ]);
         $response = $e->getResponse();
         $response->getHeaders()->addHeaderLine('Location', $url);
         $response->setStatusCode(302);
@@ -153,16 +153,12 @@ class AclRoutes extends AbstractPlugin
     {
         $matchedRouteName = $routeMatch->getMatchedRouteName();
         $action = $routeMatch->getParam('action');
-        $actions = array();
+        $actions = [];
         // Récupération de la configuration
-        $config = $this->serviceLocator->get('config')['acl'];
-        $resources = StdLib::getParamR(array(
-            'acl',
-            'resources'
-        ), $this->serviceLocator->get('config'), array());
+        $resources = StdLib::getParam('resources', $this->acl_config, []);
         $routeParts = explode('/', $matchedRouteName);
         $parentName = null;
-        $resourceNameParts = array();
+        $resourceNameParts = [];
         foreach ($routeParts as $routePart) {
             $resourceNameParts[] = $routePart;
             $resourceName = implode('/', $resourceNameParts);            

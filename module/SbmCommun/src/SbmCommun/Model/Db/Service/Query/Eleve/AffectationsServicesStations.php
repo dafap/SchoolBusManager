@@ -22,16 +22,18 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class AffectationsServicesStations implements FactoryInterface
 {
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
-    
+    protected $db_manager;
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -59,7 +61,7 @@ class AffectationsServicesStations implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -70,13 +72,17 @@ class AffectationsServicesStations implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from(array(
-            'aff' => $this->db->getCanonicName('affectations', 'table')
+            'aff' => $this->db_manager->getCanonicName('affectations', 'table')
         ))
             ->columns(array(
             'millesime' => 'millesime',
@@ -129,33 +135,33 @@ class AffectationsServicesStations implements FactoryInterface
     {
         $select = clone $this->select;
         $select->join(array(
-            'ser1' => $this->db->getCanonicName('services', 'table')
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
         ), 'aff.service1Id = ser1.serviceId', array(
             'service1' => 'nom',
             'operateur1' => 'operateur'
         ))
             ->join(array(
-            'tra1' => $this->db->getCanonicName('transporteurs', 'table')
+            'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
         ), 'ser1.transporteurId = tra1.transporteurId', array(
             'transporteur1' => 'nom'
         ))
             ->join(array(
-            'sta1' => $this->db->getCanonicName('stations', 'table')
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'aff.station1Id = sta1.stationId', array(
             'station1' => 'nom'
         ))
             ->join(array(
-            'com1' => $this->db->getCanonicName('communes', 'table')
+            'com1' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sta1.communeId = com1.communeId', array(
             'commune1' => 'nom'
         ))
             ->join(array(
-            'sta2' => $this->db->getCanonicName('stations', 'table')
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'aff.station2Id = sta2.stationId', array(
             'station2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'com2' => $this->db->getCanonicName('communes', 'table')
+            'com2' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sta2.communeId = com2.communeId', array(
             'commune2' => 'nom'
         ), $select::JOIN_LEFT)
@@ -178,54 +184,54 @@ class AffectationsServicesStations implements FactoryInterface
     {
         $select = clone $this->select;
         $select->join(array(
-            'ser1' => $this->db->getCanonicName('services', 'table')
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
         ), 'aff.service1Id = ser1.serviceId', array(
             'service1' => 'nom',
             'operateur1' => 'operateur'
         ))
             ->join(array(
-            'tra1' => $this->db->getCanonicName('transporteurs', 'table')
+            'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
         ), 'ser1.transporteurId = tra1.transporteurId', array(
             'transporteur1' => 'nom'
         ))
             ->join(array(
-            'sta1' => $this->db->getCanonicName('stations', 'table')
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'aff.station1Id = sta1.stationId', array(
             'station1' => 'nom'
         ))
             ->join(array(
-            'com1' => $this->db->getCanonicName('communes', 'table')
+            'com1' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sta1.communeId = com1.communeId', array(
             'commune1' => 'nom'
         ))
             ->join(array(
-            'cir1' => $this->db->getCanonicName('circuits', 'table')
+            'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
         ), 'ser1.serviceId = cir1.serviceId AND cir1.stationId = sta1.stationId', array(
             'circuit1Id' => 'circuitId'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'ser2' => $this->db->getCanonicName('services', 'table')
+            'ser2' => $this->db_manager->getCanonicName('services', 'table')
         ), 'aff.service2Id = ser2.serviceId', array(
             'service2' => 'nom',
             'operateur2' => 'operateur'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'tra2' => $this->db->getCanonicName('transporteurs', 'table')
+            'tra2' => $this->db_manager->getCanonicName('transporteurs', 'table')
         ), 'ser2.transporteurId = tra2.transporteurId', array(
             'transporteur2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'sta2' => $this->db->getCanonicName('stations', 'table')
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'aff.station2Id = sta2.stationId', array(
             'station2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'com2' => $this->db->getCanonicName('communes', 'table')
+            'com2' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sta2.communeId = com2.communeId', array(
             'commune2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'cir2' => $this->db->getCanonicName('circuits', 'table')
+            'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
         ), 'ser2.serviceId = cir2.serviceId AND cir2.stationId = sta2.stationId', array(
             'circuit2Id' => 'circuitId'
         ), $select::JOIN_LEFT);
@@ -247,7 +253,7 @@ class AffectationsServicesStations implements FactoryInterface
     private function selectLocalisation(Where $where, $order = null)
     {
         $where->equalTo('aff.millesime', $this->millesime);
-        $sql = new Sql($this->db->getDbAdapter());
+        $sql = new Sql($this->db_manager->getDbAdapter());
         $select = clone $this->select;
         ;
         $select->columns(array(
@@ -257,7 +263,7 @@ class AffectationsServicesStations implements FactoryInterface
             'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.y, sco.y)')
         ))
             ->join(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ), 'ele.eleveId=aff.eleveId', array(
             'id_ccda',
             'numero',
@@ -266,7 +272,7 @@ class AffectationsServicesStations implements FactoryInterface
             'dateN'
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId=sco.eleveId', array(
             'transportGA' => new Expression('CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
             'x_eleve' => 'x',
@@ -277,29 +283,29 @@ class AffectationsServicesStations implements FactoryInterface
             'codePostal_chez' => 'codePostal'
         ))
             ->join(array(
-            'comsco' => $this->db->getCanonicName('communes', 'table')
+            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sco.communeId=comsco.communeId', array(
             'commune_chez' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId=eta.etablissementId', array(
             'etablissement' => new Expression('CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
             'x_etablissement' => 'x',
             'y_etablissement' => 'y'
         ))
             ->join(array(
-            'cometa' => $this->db->getCanonicName('communes', 'table')
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'cometa.communeId=eta.communeId', array(
             'commune_etablissement' => 'nom'
         ))
             ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ), 'sco.classeId=cla.classeId', array(
             'classe' => 'nom'
         ))
             ->join(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'res.responsableId=aff.responsableId', array(
             'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
             'x_responsable' => 'x',
@@ -313,47 +319,47 @@ class AffectationsServicesStations implements FactoryInterface
             'codePostal_responsable' => 'codePostal'
         ))
             ->join(array(
-            'comres' => $this->db->getCanonicName('communes', 'table')
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'comres.communeId=res.communeId', array(
             'commune_responsable' => 'nom'
         ))
             ->join(array(
-            'ser1' => $this->db->getCanonicName('services', 'table')
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
         ), 'ser1.serviceId=aff.service1Id', array(
             'service1' => 'serviceId'
         ))
             ->join(array(
-            'tra1' => $this->db->getCanonicName('transporteurs', 'table')
+            'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
         ), 'ser1.transporteurId=tra1.transporteurId', array(
             'transporteur1' => 'nom'
         ))
             ->join(array(
-            'sta1' => $this->db->getCanonicName('stations', 'table')
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'aff.station1Id = sta1.stationId', array(
             'station1' => 'nom'
         ))
             ->join(array(
-            'com1' => $this->db->getCanonicName('communes', 'table')
+            'com1' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sta1.communeId = com1.communeId', array(
             'commune1' => 'nom'
         ))
             ->join(array(
-            'ser2' => $this->db->getCanonicName('services', 'table')
+            'ser2' => $this->db_manager->getCanonicName('services', 'table')
         ), 'ser2.serviceId=aff.service2Id', array(
             'service2' => 'serviceId'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'tra2' => $this->db->getCanonicName('transporteurs', 'table')
+            'tra2' => $this->db_manager->getCanonicName('transporteurs', 'table')
         ), 'ser2.transporteurId=tra2.transporteurId', array(
             'transporteur2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'sta2' => $this->db->getCanonicName('stations', 'table')
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'aff.station2Id = sta2.stationId', array(
             'station2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'com2' => $this->db->getCanonicName('communes', 'table')
+            'com2' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sta2.communeId = com2.communeId', array(
             'commune2' => 'nom'
         ), $select::JOIN_LEFT);
@@ -367,7 +373,7 @@ class AffectationsServicesStations implements FactoryInterface
     {
         $select = $this->selectScolaritesR($where, $order);
         // die($select->getSqlString());
-        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+        return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
     /**
@@ -381,7 +387,7 @@ class AffectationsServicesStations implements FactoryInterface
     {
         $select = clone $this->select;
         $select->join(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ), 'ele.eleveId=aff.eleveId', array(
             'numero',
             'nom',
@@ -391,54 +397,54 @@ class AffectationsServicesStations implements FactoryInterface
             'dateN'
         ))
             ->join(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'res.responsableId=aff.responsableId', array(
             'responsable' => new Expression('concat(res.nom," ",res.prenom)')
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId=aff.eleveId AND sco.millesime=aff.millesime', array(
             'inscrit',
             'paiement',
             'fa'
         ))
             ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId=eta.etablissementId', array(
             'etablissement' => new Expression('CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END')
         ))
             ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ), 'sco.classeId=cla.classeId', array(
             'classe' => 'nom'
         ))
             ->join(array(
-            'sta1' => $this->db->getCanonicName('stations', 'table')
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'sta1.stationId=aff.station1Id', array(
             'station1' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'sta2' => $this->db->getCanonicName('stations', 'table')
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'sta2.stationId=aff.station2Id', array(
             'station2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'ser1' => $this->db->getCanonicName('services', 'table')
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
         ), 'ser1.serviceId=aff.service1Id', array(
             'service1' => 'nom'
         ))
             ->join(array(
-            'tra1' => $this->db->getCanonicName('transporteurs', 'table')
+            'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
         ), 'ser1.transporteurId=tra1.transporteurId', array(
             'transporteur1' => 'nom'
         ))
             ->join(array(
-            'ser2' => $this->db->getCanonicName('services', 'table')
+            'ser2' => $this->db_manager->getCanonicName('services', 'table')
         ), 'ser2.serviceId=aff.service2Id', array(
             'service2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'tra2' => $this->db->getCanonicName('transporteurs', 'table')
+            'tra2' => $this->db_manager->getCanonicName('transporteurs', 'table')
         ), 'ser2.transporteurId=tra2.transporteurId', array(
             'transporteur2' => 'nom'
         ), $select::JOIN_LEFT);
@@ -472,28 +478,28 @@ class AffectationsServicesStations implements FactoryInterface
     public function paginatorTelephonesPortables(Where $where)
     {
         $select = $this->selectTelephonesPortables($where);
-        return new Paginator(new DbSelect($select, $this->db->getDbAdapter()));
+        return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
     private function selectTelephonesPortables(Where $where)
     {
         $selectBase = clone $this->select;
         $selectBase->join(array(
-            'ser1' => $this->db->getCanonicName('services', 'table')
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
         ), 'ser1.serviceId = aff.service1Id', array())
             ->join(array(
-            'ser2' => $this->db->getCanonicName('services', 'table')
+            'ser2' => $this->db_manager->getCanonicName('services', 'table')
         ), 'ser2.serviceId = aff.service2Id', array(), Select::JOIN_LEFT)
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', array())
             ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId = eta.etablissementId', array(
             'etablissement' => 'nom'
         ))
             ->join(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'aff.responsableId = res.responsableId', array(
             'responsable' => new Expression('concat(res.nomSA, " ", res.prenomSA)'),
             'telephoneF',
@@ -501,7 +507,7 @@ class AffectationsServicesStations implements FactoryInterface
             'telephoneT'
         ))
             ->join(array( // utile uniquement pour filtrer sur nomSA, prenomSA ou numero
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ), 'ele.eleveId = aff.eleveId', array(
             'eleve' => new Expression('concat(ele.nomSA, " ", ele.prenomSA)')
         ))

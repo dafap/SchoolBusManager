@@ -9,8 +9,8 @@
  * @date 1 juil. 2015
  * @version 2015-2
  */
-return array(
-    'thead' => array(
+return [
+    'thead' => [
         'visible' => true,
         'width' => null,
         'row_height' => 7,
@@ -26,8 +26,8 @@ return array(
         'fill_color' => 'red',
         'text_color' => 'white',
         'font_style' => 'B'
-    ),
-    'tbody' => array(
+    ],
+    'tbody' => [
         'visible' => true,
         'width' => 'auto',
         'row_height' => 6,
@@ -43,8 +43,8 @@ return array(
         'fill_color' => 'E0EBFF',
         'text_color' => 'black',
         'font_style' => ''
-    ),
-    'tfoot' => array(
+    ],
+    'tfoot' => [
         'visible' => true,
         'width' => null,
         'row_height' => 7,
@@ -60,5 +60,5 @@ return array(
         'fill_color' => 'white',
         'text_color' => 'black',
         'font_style' => 'B'
-    )
-);
+    ]
+];

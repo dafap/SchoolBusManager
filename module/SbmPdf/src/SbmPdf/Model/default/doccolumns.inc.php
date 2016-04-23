@@ -10,7 +10,7 @@
  * @date 1 juil. 2015
  * @version 2015-2
  */
-return array(
+return [
     'thead' => '',
     'thead_align' => 'standard',
     'thead_stretch' => 0,
@@ -31,4 +31,4 @@ return array(
     'truncate' => true,
     'precision' => - 1,
     'completion' => 0
-);
+];

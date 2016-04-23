@@ -1,6 +1,6 @@
 <?php
 /**
- * Objet contenant les données à manipuler pour la table Affectations
+ * Objet contenant les données à manipuler pour la table Appel
  * (à déclarer dans module.config.php)
  *
  * Il s'agit des appels à la plateforme de paiement pour essayer de payer.
@@ -11,8 +11,8 @@
  * @filesource Appel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2015
- * @version 2015-1
+ * @date 15 avr. 2016
+ * @version 2015-1.1
  */
 namespace SbmCommun\Model\Db\ObjectData;
 

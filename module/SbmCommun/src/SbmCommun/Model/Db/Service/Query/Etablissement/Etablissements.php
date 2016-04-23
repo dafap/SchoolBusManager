@@ -8,8 +8,8 @@
  * @filesource Etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juin 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
  
@@ -18,14 +18,16 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Etablissements implements FactoryInterface
 {
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
+    protected $db_manager;
     
     /**
      *
@@ -59,9 +61,13 @@ class Etablissements implements FactoryInterface
     
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
@@ -83,7 +89,7 @@ class Etablissements implements FactoryInterface
     {
         $select = clone $this->sql->select();
         $select->from(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
         ))
             ->columns(array(
             'nom',
@@ -91,7 +97,7 @@ class Etablissements implements FactoryInterface
             'y'
         ))
             ->join(array(
-            'com' => $this->db->getCanonicName('communes', 'table')
+            'com' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'eta.communeId=com.communeId', array(
             'commune' => 'nom'
         ));

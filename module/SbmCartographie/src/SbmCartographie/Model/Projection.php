@@ -2,32 +2,24 @@
 /**
  * Projection configurée dans le fier module.config.phpchi
  *
- * Description longue du fichier s'il y en a une
+ * Compatible ZF3
  * 
  * @project sbm
  * @package SbmCartographie/Model
  * @filesource Projection.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCartographie\Model;
 
 use SbmCartographie\ConvertSystemGeodetic\Projection\AbstractProjection;
 use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmCommun\Model\StdLib;
 
-class Projection extends AbstractProjection implements ProjectionInterface, ServiceLocatorAwareInterface
+class Projection extends AbstractProjection implements ProjectionInterface
 {
-
-    /**
-     *
-     * @var \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    private $sm;
 
     /**
      *
@@ -43,78 +35,56 @@ class Projection extends AbstractProjection implements ProjectionInterface, Serv
 
     private $rangeY = array();
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    /**
+     *
+     * @param \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection            
+     * @param array $config_cartes            
+     */
+    public function __construct($projection, $config_cartes)
     {
-        $this->sm = $serviceLocator;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->sm;
-    }
-
-    private function init()
-    {
-        if (is_null($this->projection)) {
-            $ns = '\\' . explode('\\', __NAMESPACE__)[0] . '\\ConvertSystemGeodetic\\Projection\\';
-            $config = $this->getServiceLocator()->get('Config');
-            $system = $ns . StdLib::getParamR(array(
-                'cartographie',
-                'system'
-            ), $config);
-            $nzone = StdLib::getParamR(array(
-                'cartographie',
-                'nzone'
-            ), $config, 0);
-            $this->projection = new $system($nzone);
-            
-            $rangeEtab = StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'etablissements',
-                'valide'
-            ), $config);
-            $rangeParent = StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'parent',
-                'valide'
-            ), $config);
-            // configure le rectangle de validité pour les etablissements et les stations
-            $this->rangeLat['etablissements'] = $rangeEtab['lat'];
-            $this->rangeLng['etablissements'] = $rangeEtab['lng'];
-            $pt = new Point();
-            $pt->setLatitude($rangeEtab['lat'][0]);
-            $pt->setLongitude($rangeEtab['lng'][0]);
-            $pt = $this->gRGF93versXYZ($pt);
-            $this->rangeX['etablissements'][0] = $pt->getX();
-            $this->rangeY['etablissements'][0] = $pt->getY();
-            unset($pt);
-            $pt = new Point();
-            $pt->setLatitude($rangeEtab['lat'][1]);
-            $pt->setLongitude($rangeEtab['lng'][1]);
-            $pt = $this->gRGF93versXYZ($pt);
-            $this->rangeX['etablissements'][1] = $pt->getX();
-            $this->rangeY['etablissements'][1] = $pt->getY();
-            unset($pt);
-            // configure le rectangle de validité pour les parents et les élèves
-            $this->rangeLat['parent'] = $rangeEtab['lat'];
-            $this->rangeLng['parent'] = $rangeEtab['lng'];
-            $pt = new Point();
-            $pt->setLatitude($rangeParent['lat'][0]);
-            $pt->setLongitude($rangeParent['lng'][0]);
-            $pt = $this->gRGF93versXYZ($pt);
-            $this->rangeX['parent'][0] = $pt->getX();
-            $this->rangeY['parent'][0] = $pt->getY();
-            unset($pt);
-            $pt = new Point();
-            $pt->setLatitude($rangeEtab['lat'][1]);
-            $pt->setLongitude($rangeEtab['lng'][1]);
-            $pt = $this->gRGF93versXYZ($pt);
-            $this->rangeX['parent'][1] = $pt->getX();
-            $this->rangeY['parent'][1] = $pt->getY();
-            unset($pt);
-        }
+        $this->projection = $projection;        
+        $rangeEtab = StdLib::getParamR(array(
+            'etablissements',
+            'valide'
+        ), $config_cartes);
+        $rangeParent = StdLib::getParamR(array(
+            'parent',
+            'valide'
+        ), $config_cartes);
+        // configure le rectangle de validité pour les etablissements et les stations
+        $this->rangeLat['etablissements'] = $rangeEtab['lat'];
+        $this->rangeLng['etablissements'] = $rangeEtab['lng'];
+        $pt = new Point();
+        $pt->setLatitude($rangeEtab['lat'][0]);
+        $pt->setLongitude($rangeEtab['lng'][0]);
+        $pt = $this->gRGF93versXYZ($pt);
+        $this->rangeX['etablissements'][0] = $pt->getX();
+        $this->rangeY['etablissements'][0] = $pt->getY();
+        unset($pt);
+        $pt = new Point();
+        $pt->setLatitude($rangeEtab['lat'][1]);
+        $pt->setLongitude($rangeEtab['lng'][1]);
+        $pt = $this->gRGF93versXYZ($pt);
+        $this->rangeX['etablissements'][1] = $pt->getX();
+        $this->rangeY['etablissements'][1] = $pt->getY();
+        unset($pt);
+        // configure le rectangle de validité pour les parents et les élèves
+        $this->rangeLat['parent'] = $rangeEtab['lat'];
+        $this->rangeLng['parent'] = $rangeEtab['lng'];
+        $pt = new Point();
+        $pt->setLatitude($rangeParent['lat'][0]);
+        $pt->setLongitude($rangeParent['lng'][0]);
+        $pt = $this->gRGF93versXYZ($pt);
+        $this->rangeX['parent'][0] = $pt->getX();
+        $this->rangeY['parent'][0] = $pt->getY();
+        unset($pt);
+        $pt = new Point();
+        $pt->setLatitude($rangeEtab['lat'][1]);
+        $pt->setLongitude($rangeEtab['lng'][1]);
+        $pt = $this->gRGF93versXYZ($pt);
+        $this->rangeX['parent'][1] = $pt->getX();
+        $this->rangeY['parent'][1] = $pt->getY();
+        unset($pt);
     }
 
     /**
@@ -127,7 +97,6 @@ class Projection extends AbstractProjection implements ProjectionInterface, Serv
      */
     public function gRGF93versXYZ(Point $p)
     {
-        $this->init();
         return $this->projection->gRGF93versXYZ($p);
     }
 
@@ -139,7 +108,6 @@ class Projection extends AbstractProjection implements ProjectionInterface, Serv
      */
     public function xyzVersgRGF93(Point $p)
     {
-        $this->init();
         return $this->projection->xyzVersgRGF93($p);
     }
 
@@ -154,30 +122,28 @@ class Projection extends AbstractProjection implements ProjectionInterface, Serv
      */
     public function isValid(Point $p, $nature = 'parent')
     {
-        $this->init();
         return $p->setLatLngRange($this->rangeLat[$nature], $this->rangeLng[$nature])
             ->setXYRange($this->rangeX[$nature], $this->rangeY[$nature])
             ->isValid();
     }
-    
+
     public function getRangeLat()
     {
-        $this->init();
         return $this->rangeLat;
     }
+
     public function getRangeLng()
     {
-        $this->init();
         return $this->rangeLng;
     }
+
     public function getRangeX()
     {
-        $this->init();
         return $this->rangeX;
     }
+
     public function getRangeY()
     {
-        $this->init();
         return $this->rangeY;
     }
 }

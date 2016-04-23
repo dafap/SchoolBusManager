@@ -3,28 +3,29 @@
  * Objet de description de la carte de transport
  *
  * Utilisé dans Tcpdf pour le templateDocBodyMethod3
+ * N'est pas enregistré dans service manager afin de passer aisément le documentId.
+ *   $label = new Carte($this->pdf_manager->get('Sbm\DbManager'), $this->getDocumentId());
  * 
  * @project sbm
  * @package SbmPdf/Model
  * @filesource Carte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juil. 2015
- * @version 2015-1
+ * @date 13 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Model;
 
-class Carte extends Label
+class Carte extends Etiquette
 {
 
     private $positions;
 
-    public function __construct($sm, $documentId)
+    public function __construct($db_manager, $documentId)
     {
-        parent::__construct($sm, $documentId);
+        parent::__construct($db_manager, $documentId);
         $this->initPositions(3.3, $this->writingAreaHeight());
         $this->NewPage();
-        //die(var_dump($this->positions));
     }
 
     private function initPositions($delta, $hauteur_utile)

@@ -10,14 +10,16 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 0 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate\PredicateInterface;
+use Zend\Db\Sql\Predicate\PredicateSet;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Paginator\Paginator;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
@@ -29,9 +31,9 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Descripteur de la base de données
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
+    protected $db_manager;
 
     /**
      * Objet d'échange de données
@@ -105,20 +107,26 @@ abstract class AbstractSbmTable implements FactoryInterface
      * @param ServiceLocatorInterface $sm            
      * @param ObjectDataInterface $objectData            
      */
-    public function createService(ServiceLocatorInterface $sm)
+    public function createService(ServiceLocatorInterface $db_manager)
     {
+        if ($db_manager instanceof \SbmCommun\Model\Db\Service\DbManager) {
+            $this->db_manager = $db_manager;
+        } else {
+            $type = gettype($db_manager); 
+            $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\Db\\Service\\DbManager. %s fourni.';
+            throw new Exception($message, $type);
+        }
         $this->init();
-        $this->db = $sm->get('Sbm\Db\DbLib');
-        $this->primary_key = $this->db->getPrimaryKey($this->table_name, $this->table_type);
+        $this->primary_key = $db_manager->getPrimaryKey($this->table_name, $this->table_type);
         
-        $this->table_gateway = $sm->get($this->table_gateway_alias);
+        $this->table_gateway = $db_manager->get($this->table_gateway_alias);
         $this->obj_select = clone $this->table_gateway->getSql()->select(); // utile pour join() et pour paginator()
         $this->join();
         // à placer après join()
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
         $this->obj_data->setArrayMask($this->getColumnsNames());
         try {
-            $this->obj_data->setAreNullable($this->db->getAreNullableColumns($this->table_name, $this->table_type));
+            $this->obj_data->setAreNullable($this->db_manager->getAreNullableColumns($this->table_name, $this->table_type));
         } catch (\SbmCommun\Model\Db\Exception $e) {
             die('<!DOCTYPE Html><head><meta charset="utf-8"><title>SBM School Bus Manager</title></head><body>Il faut installer les tables dans la base de données.</body></html>');
         }
@@ -196,7 +204,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      */
     public function getColumnsNames()
     {
-        return $this->db->getMetadata()->getColumnNames($this->db->getCanonicName($this->table_name, $this->table_type));
+        return $this->db_manager->getMetadata()->getColumnNames($this->db_manager->getCanonicName($this->table_name, $this->table_type));
     }
 
     /**
@@ -225,13 +233,13 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Retourne un Zend\Paginator\Paginator basé sur la requête.
      * Les résultats sont hydratés et sont conformes au ResultSetPrototype du TableGateway
      *
-     * @param \Zend\Db\Sql\Where $where_obj            
+     * @param Where|\Closure|string|array|Predicate\PredicateInterface $where_obj            
      * @param array|string|null $order            
      * @return Zend\Paginator\Paginator
      */
     public function paginator($where_obj = null, $order = null)
     {
-        return new Paginator(new DbSelect($this->select($where_obj, $order), $this->db->getDbadapter(), $this->table_gateway->getResultSetPrototype()));
+        return new Paginator(new DbSelect($this->select($where_obj, $order), $this->db_manager->getDbadapter(), $this->table_gateway->getResultSetPrototype()));
     }
 
     /**
@@ -243,7 +251,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
-    public function fetchAll($where = null, $order = null)
+    public function fetchAll($where = null, $order = null, $combination = PredicateSet::OP_AND)
     {
         if (! $this->table_gateway->isInitialized()) {
             $this->initialize();
@@ -252,7 +260,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         $select = $this->table_gateway->getSql()->select();
         
         if ($where !== null) {
-            $select->where($where);
+            $select->where($where, $combination);
         }
         if ($order !== null) {
             $select->order($order);
@@ -265,7 +273,7 @@ abstract class AbstractSbmTable implements FactoryInterface
             if (is_string($where)) {
                 $msg .= "\n WHERE = (" . $where . ')';
             } else {
-                $msg .= "\n" . $select->getSqlString($this->db->getDbAdapter()->platform);
+                $msg .= "\n" . $select->getSqlString($this->db_manager->getDbAdapter()->platform);
             }
             if (getenv('APPLICATION_ENV') != 'development') {
                 $msg = "Impossible d'exécuter la requête.";

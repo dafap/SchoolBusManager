@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -23,15 +23,17 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Responsables implements FactoryInterface
 {
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
+    protected $db_manager;
     
     /**
      *
@@ -71,13 +73,17 @@ class Responsables implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ))
             ->columns(array(
             'responsableId' => 'responsableId',
@@ -122,7 +128,7 @@ class Responsables implements FactoryInterface
             'note' => 'note'
         ))
             ->join(array(
-            'com' => $this->db->getCanonicName('communes', 'table')
+            'com' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'com.communeId=res.communeId', array(
             'commune' => 'nom'
         ));
@@ -145,12 +151,12 @@ class Responsables implements FactoryInterface
             ->equalTo('millesime', $this->millesime);
         $select = clone $this->select;
         $select->join(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ), 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', array(
             'nb' => new Expression('count(ele.eleveId)')
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId=sco.eleveId', array())
             ->where($where);
         if (! is_null($order)) {
@@ -197,7 +203,7 @@ class Responsables implements FactoryInterface
      */
     public function paginator($where, $order)
     {
-        return new Paginator(new DbSelect($this->selectResponsables($where, $order), $this->db->getDbAdapter()));
+        return new Paginator(new DbSelect($this->selectResponsables($where, $order), $this->db_manager->getDbAdapter()));
     }
 
     /**
@@ -215,7 +221,7 @@ class Responsables implements FactoryInterface
             ->literal('paiement = 0')
             ->equalTo('millesime', $this->millesime);
         $select1 = new Select();
-        $select1->from($this->db->getCanonicName('scolarites', 'table'))
+        $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(array(
             'eleveId'
         ))
@@ -226,7 +232,7 @@ class Responsables implements FactoryInterface
             ->literal('paiement = 1')
             ->equalTo('millesime', $this->millesime);
         $select2 = new Select();
-        $select2->from($this->db->getCanonicName('scolarites', 'table'))
+        $select2->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(array(
             'eleveId'
         ))
@@ -237,7 +243,7 @@ class Responsables implements FactoryInterface
             ->literal('gratuit = 1')
             ->equalTo('millesime', $this->millesime);
         $select3 = new Select();
-        $select3->from($this->db->getCanonicName('scolarites', 'table'))
+        $select3->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(array(
             'eleveId'
         ))
@@ -248,7 +254,7 @@ class Responsables implements FactoryInterface
             ->literal('fa = 1')
             ->equalTo('millesime', $this->millesime);
         $select4 = new Select();
-        $select4->from($this->db->getCanonicName('scolarites', 'table'))
+        $select4->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(array(
             'eleveId'
         ))
@@ -259,7 +265,7 @@ class Responsables implements FactoryInterface
             ->literal('duplicata > 0')
             ->equalTo('millesime', $this->millesime);
         $select5 = new Select();
-        $select5->from($this->db->getCanonicName('scolarites', 'table'))
+        $select5->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(array(
             'eleveId',
             'duplicata'
@@ -268,7 +274,7 @@ class Responsables implements FactoryInterface
         // requête principale
         $select = clone $this->select;
         $select->join(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ), 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', array(
             'nbEnfants' => new Expression('count(ele.eleveId)')
         ), $select::JOIN_LEFT)

@@ -10,32 +10,31 @@
  * @filesource CreerCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 févr. 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmFront\Form;
 
 use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use SbmCommun\Model\Db\Service\DbManager;
 use Zend\Db\Sql\Where;
 use SbmCommun\Filter\SansAccent;
-use Zend\Db\Sql\Zend\Db\Sql;
 
 class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     /**
-     * Service manager (nécessaire pour vérifier l'email)
+     * Db manager (nécessaire pour vérifier l'email)
      *
-     * @var ServiceLocatorInterface
+     * @var DbManager
      */
-    private $sm;
+    private $db_manager;
 
-    public function __construct(ServiceLocatorInterface $sm, $param = 'compte')
+    public function __construct($db_manager)
     {
-        $this->sm = $sm;
-        parent::__construct($param);
+        $this->db_manager = $db_manager;
+        parent::__construct('compte');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'userId',
@@ -150,7 +149,6 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
 
     public function getInputFilterSpecification()
     {
-        $db = $this->sm->get('Sbm\Db\DbLib');
         return array(
             'titre' => array(
                 'name' => 'titre',
@@ -174,9 +172,9 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                     array(
                         'name' => 'Zend\Validator\Db\NoRecordExists',
                         'options' => array(
-                            'table' => $db->getCanonicName('users', 'table'),
+                            'table' => $this->db_manager->getCanonicName('users', 'table'),
                             'field' => 'email',
-                            'adapter' => $this->sm->get('Zend\Db\Adapter\Adapter')
+                            'adapter' => $this->db_manager->getDbAdapter()
                         )
                     )
                 )
@@ -193,7 +191,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             // d'abord dans la table user pour savoir s'il n'y a pas un compte avec un autre email
             $where = new Where();
             $where->equalTo('nom', $this->data['nom'])->equalTo('prenom', $this->data['prenom']);
-            $tUsers = $this->sm->get('Sbm\Db\Table\Users');
+            $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
             $resultset = $tUsers->fetchAll($where);
             if ($resultset->count()) {
                 $u = $resultset->current();
@@ -213,7 +211,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                 $nomSA = $filterSA->filter($this->data['nom']);
                 $prenomSA = $filterSA->filter($this->data['prenom']);
                 $where->equalTo('nomSA', $nomSA)->equalTo('prenomSA', $prenomSA);
-                $tResponsables = $this->sm->get('Sbm\Db\Table\Responsables');
+                $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
                 $resultset = $tResponsables->fetchAll($where);
                 if ($resultset->count()) {
                     $msg = 'Il existe déjà une personne enregistrée avec ce nom et ce prénom. Rapprochez vous des services de la Communauté de communes pour vous faire créer un compte.';

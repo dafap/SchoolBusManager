@@ -8,83 +8,83 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 22 avr. 2016
+ * @version 2016-2
  */
 use DafapSession\Model\Session;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_retour = $this->url('sbmgestion/eleve', array(
+$url_retour = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-liste',
     'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/eleve', array(
+]);
+$url_rapports = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-group-pdf',
     'page' => $this->page
-));
-$url_ajouter = $this->url('sbmgestion/eleve', array(
+]);
+$url_ajouter = $this->url('sbmgestion/eleve', [
     'action' => 'eleve-ajout',
     'page' => $this->page
-));
-$url_origine = $this->url('sbmgestion/eleve', array(
+]);
+$url_origine = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-group',
     'page' => $this->page
-));
-$url_duplicata = $this->url('sbmgestion/gestioneleve', array(
+]);
+$url_duplicata = $this->url('sbmgestion/gestioneleve', [
     'action' => 'duplicata-carte',
     'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/eleve', array(
+]);
+$url_edit = $this->url('sbmgestion/eleve', [
     'action' => 'eleve-edit',
     'page' => $this->page
-));
-$url_raye = $this->url('sbmgestion/eleve', array(
+]);
+$url_raye = $this->url('sbmgestion/eleve', [
     'action' => 'eleve-rayer',
     'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
-$hiddens = array(
+]);
+$hiddens = [
     'origine' => $url_origine,
     'responsableId' => $this->responsableId
-);
+];
 $email = $this->responsable->email;
 if (! empty($email)) {
-    $hiddens = array_merge($hiddens, array(
+    $hiddens = array_merge($hiddens, [
         'group' => $url_origine,
         'responsable' => sprintf('%s %s %s', $this->responsable->titre, $this->responsable->nom, $this->responsable->prenom),
         'email' => $this->responsable->email
-    ));
+    ]);
 }
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'classe-group'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', [
+    'action' => 'responsable-group'
+]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Ajouter'
-    )
-);
-//die(var_dump($this->responsable));
+    ]
+];
+// die(var_dump($this->responsable));
 if (! empty($email)) {
-    $actions['ecrire'] = array(
+    $actions['ecrire'] = [
         'class' => 'fam-email',
         'formaction' => $url_mail,
         'title' => 'Envoyer un email'
-    );
+    ];
 }
 ?>
 <div id="liste-wrapper">
@@ -148,26 +148,26 @@ echo $this->flashMessenger()->render('default');
 				</tr>
 			    <?php foreach ($liste as $row) : ?>
 			    <?php
-            $pictogrammes = array();
+            $pictogrammes = [];
             $ga = is_null($row['responsable2Id']);
             if ($row['millesime'] == Session::get('millesime')) {
-                $buttons = array(
-                    'modifier' => array(
+                $buttons = [
+                    'modifier' => [
                         'class' => 'fam-pencil',
                         'formaction' => $url_edit,
                         'title' => 'Modifier'
-                    ),
-                    'rayer' => array(
+                    ],
+                    'rayer' => [
                         'class' => $row['inscrit'] ? 'fam-pencil-delete' : 'fam-pencil-add',
                         'formaction' => $url_raye,
                         'title' => $row['inscrit'] ? 'Rayer' : 'Activer'
-                    ),
-                    'duplicata' => array(
+                    ],
+                    'duplicata' => [
                         'class' => 'fam-vcard-add',
                         'formaction' => $url_duplicata,
                         'title' => 'duplicata de la carte de transport'
-                    )
-                );
+                    ]
+                ];
                 $inscrit = $row['paiement'] == 1;
                 $inscrit |= $row['fa'] == 1;
                 $inscrit |= $row['gratuit'] > 0;
@@ -176,39 +176,39 @@ echo $this->flashMessenger()->render('default');
                 $this->pictogrammes('init')->addPreinscrit($row['inscrit'] == 1 && ! $inscrit);
                 $tr_css = 'noir';
             } else {
-                $url_edit = $this->url('sbmgestion/eleve', array(
+                $url_edit = $this->url('sbmgestion/eleve', [
                     'action' => 'eleve-inscrire',
                     'page' => $this->page
-                ));
-                $buttons = array(
-                    'inscrire' => array(
+                ]);
+                $buttons = [
+                    'inscrire' => [
                         'class' => 'fam-basket-put',
                         'formaction' => $url_edit,
                         'title' => 'Inscrire'
-                    )
-                );
+                    ]
+                ];
                 $tr_css = 'gris';
             }
             
             if (! $row['inscrit']) {
                 $tr_css .= ' barre';
             }
-            $hiddens = array(
+            $hiddens = [
                 'origine' => $url_origine,
                 'info' => $row['nom'] . ' ' . $row['prenom'],
                 'responsableId' => $this->responsableId,
                 'eleveId' => $row['eleveId']
-            );
-            $services = array();
+            ];
+            $services = [];
             foreach ($this->data['fnc_affectations']($row['eleveId']) as $affectation) {
                 $services[$affectation['service1Id']] = $affectation['service1Id'];
-                if (!empty($affectation['service2Id'])) {
+                if (! empty($affectation['service2Id'])) {
                     $services[$affectation['service2Id']] = $affectation['service2Id'];
                 }
             }
             ?>
 			    <tr
-					class="<?php echo $tr_css . ' ' . $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $tr_css . ' ' . $this->cycle(["even", "odd"])->next();?>">
 					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $row['nom']; ?></td>
 					<td><?php echo $row['prenom']; ?></td>

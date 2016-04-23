@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace SbmAjax\Controller;
 
@@ -42,9 +42,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $responsableId = $this->params('responsableId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Responsables')
-                ->setSelection($responsableId, 1);
+            $this->config['db_manager']->get('Sbm\Db\Table\Responsables')->setSelection($responsableId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -66,9 +64,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $responsableId = $this->params('responsableId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Responsables')
-                ->setSelection($responsableId, 0);
+            $this->config['db_manager']->get('Sbm\Db\Table\Responsables')->setSelection($responsableId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -90,9 +86,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Eleves')
-                ->setSelection($eleveId, 1);
+            $this->config['db_manager']->get('Sbm\Db\Table\Eleves')->setSelection($eleveId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -114,9 +108,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Eleves')
-                ->setSelection($eleveId, 0);
+            $this->config['db_manager']->get('Sbm\Db\Table\Eleves')->setSelection($eleveId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -139,11 +131,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $responsableId = $this->params('responsableId');
-            $responsable = $this->getServiceLocator()
-                ->get('Sbm\Db\Vue\Responsables')
-                ->getRecord($responsableId);
-            // $response = new JsonModel(array_merge($responsable->getArrayCopy(), array('success' => true)));
-            // $response->setTerminal(true);
+            $responsable = $this->config['db_manager']->get('Sbm\Db\Vue\Responsables')->getRecord($responsableId);
             
             return $this->getResponse()->setContent(Json::encode(array_merge($responsable->getArrayCopy(), array(
                 'success' => 1
@@ -164,10 +152,8 @@ class EleveController extends AbstractActionController
      */
     private function getFormAffectationDecision($trajet)
     {
-        $values_options1 = $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Stations')
-            ->ouvertes();
-        $values_options2 = $this->getServiceLocator()->get('Sbm\Db\Select\Services');
+        $values_options1 = $this->config['db_manager']->get('Sbm\Db\Select\Stations')->ouvertes();
+        $values_options2 = $this->config['db_manager']->get('Sbm\Db\Select\Services');
         $form = new \SbmGestion\Form\AffectationDecision($trajet, 2);
         $form->remove('back');
         $form->setAttribute('action', $this->url()
@@ -251,7 +237,7 @@ class EleveController extends AbstractActionController
                         'success' => 0
                     )));
                 } else {
-                    $tAffectations = $this->getServiceLocator()->get('Sbm\Db\Table\Affectations');
+                    $tAffectations = $this->config['db_manager']->get('Sbm\Db\Table\Affectations');
                     $oData = $tAffectations->getObjData();
                     $oData->exchangeArray($form->getData());
                     try {
@@ -309,8 +295,7 @@ class EleveController extends AbstractActionController
             ->fromRoute(self::ROUTE, array(
             'action' => 'formpaiementvalidate'
         )));
-        $form->setValueOptions('organismeId', $this->getServiceLocator()
-            ->get('Sbm\Db\Select\Organismes'));
+        $form->setValueOptions('organismeId', $this->config['db_manager']->get('Sbm\Db\Select\Organismes'));
         return $form;
     }
 
@@ -318,7 +303,7 @@ class EleveController extends AbstractActionController
     {
         $eleveId = $this->params('eleveId', 0);
         if ($eleveId) {
-            $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+            $tScolarites = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites');
             $oData = $tScolarites->getRecord(array(
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $eleveId
@@ -374,7 +359,7 @@ class EleveController extends AbstractActionController
                 } else {
                     $data = $form->getData();
                     $eleveId = $data['eleveId'];
-                    $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+                    $tScolarites = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites');
                     try {
                         $oData = $tScolarites->getRecord(array(
                             'millesime' => Session::get('millesime'),
@@ -427,16 +412,15 @@ class EleveController extends AbstractActionController
             $responsableId = $this->params('responsableId', false);
             $distance = 0;
             if ($etablissementId && $responsableId) {
-                $responsable = $this->getServiceLocator()
-                    ->get('Sbm\Db\Table\Responsables')
-                    ->getRecord($responsableId);
+                $responsable = $this->config['db_manager']->get('Sbm\Db\Table\Responsables')->getRecord($responsableId);
                 $origine = new Point($responsable->x, $responsable->y);
-                $etablissement = $this->getServiceLocator()
-                    ->get('Sbm\Db\Table\Etablissements')
-                    ->getRecord($etablissementId);
+                $etablissement = $this->config['db_manager']->get('Sbm\Db\Table\Etablissements')->getRecord($etablissementId);
                 $destination = new Point($etablissement->x, $etablissement->y);
-                $oOrigineDestination = $this->getServiceLocator()->get('SbmCarto\DistanceEtablissements');
-                $distance = round($oOrigineDestination->calculDistance($origine, $destination) / 1000, 1);
+                $oOrigineDestination = $this->config['cartographie_manager']->get('SbmCarto\DistanceEtablissements');
+                $distance = $oOrigineDestination->calculDistance($origine, $destination);
+                if ($distance) {
+                    $distance = round($distance / 1000, 1);
+                }
             }
             $response->setContent(Json::encode(array(
                 'distance' => $distance,
@@ -455,9 +439,7 @@ class EleveController extends AbstractActionController
     {
         $eleveId = $this->params('eleveId');
         $trajet = $this->params('trajet');
-        $resultset = $this->getServiceLocator()
-            ->get('Sbm/Db/Query/AffectationsServicesStations')
-            ->getAffectations($eleveId, $trajet);
+        $resultset = $this->config['db_manager']->get('Sbm/Db/Query/AffectationsServicesStations')->getAffectations($eleveId, $trajet);
         $structure = null;
         if ($resultset->count()) {
             $structure = array();
@@ -483,9 +465,7 @@ class EleveController extends AbstractActionController
     {
         $eleveId = $this->params('eleveId');
         $trajet = $this->params('trajet');
-        $resultset = $this->getServiceLocator()
-            ->get('Sbm/Db/Query/AffectationsServicesStations')
-            ->getAffectations($eleveId, $trajet);
+        $resultset = $this->config['db_manager']->get('Sbm/Db/Query/AffectationsServicesStations')->getAffectations($eleveId, $trajet);
         $enable = $resultset->count() ? 0 : 1;
         return $this->getResponse()->setContent(Json::encode(array(
             'enable' => $enable,
@@ -496,7 +476,7 @@ class EleveController extends AbstractActionController
     public function getstationsforselectAction()
     {
         $serviceId = $this->params('serviceId');
-        $queryStations = $this->getServiceLocator()->get('Sbm\Db\Select\Stations');
+        $queryStations = $this->config['db_manager']->get('Sbm\Db\Select\Stations');
         $stations = $queryStations->surcircuit($serviceId, Session::get('millesime'));
         return $this->getResponse()->setContent(Json::encode(array(
             'data' => $stations,
@@ -514,9 +494,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Scolarites')
-                ->setAccord(Session::get('millesime'), $eleveId, 'R1', 1);
+            $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R1', 1);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -538,9 +516,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Scolarites')
-                ->setAccord(Session::get('millesime'), $eleveId, 'R1', 0);
+            $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R1', 0);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -562,9 +538,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Scolarites')
-                ->setAccord(Session::get('millesime'), $eleveId, 'R2', 1);
+            $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R2', 1);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -586,9 +560,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Scolarites')
-                ->setAccord(Session::get('millesime'), $eleveId, 'R2', 0);
+            $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R2', 0);
             return $this->getResponse()->setContent(Json::encode(array(
                 'success' => 1
             )));
@@ -604,7 +576,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $tScolarites = $this->getServiceLocator()->get('Sbm\Db\Table\Scolarites');
+            $tScolarites = $this->config['db_manager'] > get('Sbm\Db\Table\Scolarites');
             $odata = $tScolarites->getRecord(array(
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $eleveId

@@ -2,28 +2,30 @@
 /**
  * Objet étiquette
  *
- * Description longue du fichier s'il y en a une
+ * En version 2, cette classe est appelée dans Tcpdf et n'est pas considérée comme un service 
+ * afin de pourvoir passer aisément le documentId
+ *   $label = new Etiquette($this->pdf_manager->get('Sbm\DbManager'), $this->getDocumentId());
  * 
  * @project sbm
  * @package SbmPdf/Model
- * @filesource Label.php
+ * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 juil. 2015
- * @version 2015-1
+ * @date 13 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Model;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class Label
+class Etiquette
 {
 
     /**
      *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
-    private $sm;
+    private $db_manager;
 
     /**
      *
@@ -67,48 +69,44 @@ class Label
     protected $y_space;
 
     /**
-     * Initialise la structure. 
+     * Initialise la structure.
+     *
      * Doit être suivi par :
      * $label->setCurrentColumn($j); // optionnel
      * $label->setCurrentRow($k); // optionnel
      * list($this->x, $this->y) = $label->xyStart(); // nécessaire
-     * 
-     * @param ServiceLocatorInterface $sm
-     * @param int $documentId
+     *
+     * @param ServiceLocatorInterface $db_manager            
+     * @param int $documentId            
      */
-    public function __construct(ServiceLocatorInterface $sm, $documentId)
+    public function __construct(ServiceLocatorInterface $db_manager, $documentId)
     {
-        $this->sm = $sm;
+        $this->db_manager = $db_manager;
         $this->documentId = $documentId;
-        $this->init();
-    }
-
-    /**
-     * Lecture des tables system document, doclabel et docfields pour initialiser les paramètres de la structure
-     */
-    private function init()
-    {
+        
+        
+        // Lecture des tables system document, doclabel et docfields pour initialiser les paramètres de la structure
         /*
          * il ne semble pas être nécessaire d'utiliser la config du document dans cette classe.
          * (en réserve au cas où ...)
          */
-        // $t = $this->sm->get('Sbm\Db\System\Documents');
+        // $t = $this->db_manager->get('Sbm\Db\System\Documents');
         // try {
         // $this->config['document'] = $t->getConfig($this->documentId);
         // } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
         // $this->config['document'] = require (__DIR__ . '/default/documents.inc.php');
         // }
-        $t = $this->sm->get('Sbm\Db\System\DocLabels');
+        $t = $this->db_manager->get('Sbm\Db\System\DocLabels');
         try {
             $this->config['doclabel'] = $t->getConfig($this->documentId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $this->config['doclabel'] = require (__DIR__ . '/default/doclabels.inc.php');
         }
-        $t = $this->sm->get('Sbm\Db\System\DocFields');
+        $t = $this->db_manager->get('Sbm\Db\System\DocFields');
         try {
             $this->config['docfields'] = $t->getConfig($this->documentId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-            $this->config['docfields'] = array();
+            $this->config['docfields'] = [];
         }
         $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) / ($this->lineCount() - 1);
         $this->NewPage();
@@ -128,7 +126,7 @@ class Label
     {
         return (float) $this->config['doclabel']['label_height'];
     }
-    
+
     /**
      * Hauteur de la zone d'écriture dans une étiquette
      *
@@ -227,7 +225,7 @@ class Label
      * list($this->x, $this->y) = $label->xyStart();
      *
      * Pour un changement d'étiquette on fera :
-     * $label = new Label($sm, $documentId);
+     * $label = new Etiquette($sm, $documentId);
      * list($this->x, $this->y) = $label->xyStart();
      *
      * @return array of float (x, y) en coordonnées absolue (page)
@@ -240,10 +238,10 @@ class Label
             $label_width = 0;
         }
         $this->y = 0;
-        return array(
+        return [
             $this->xStart() + $label_width,
             $this->yStart()
-        );
+        ];
     }
 
     /**
@@ -265,10 +263,10 @@ class Label
             $label_width = 0;
         }
         $this->y += $this->y_space + $height;
-        return array(
+        return [
             $this->xStart() + $label_width,
             $this->yStart() + $this->y
-        );
+        ];
     }
 
     /**
@@ -311,7 +309,7 @@ class Label
         $this->y = 0;
         return $this->xyStart();
     }
-    
+
     public function wCell($rang)
     {
         $label_width = (float) $this->config['doclabel']['label_width'];
@@ -324,49 +322,65 @@ class Label
         }
         return $label_width - $padding_left - $padding_right - $margin_left;
     }
+
     public function hCell($rang)
     {
         return (float) $this->config['docfields'][$rang]['height'];
     }
+
     public function alignCell($rang)
     {
         return $this->config['docfields'][$rang]['fieldname_align'];
     }
+
     public function stretchCell($rang)
     {
         return $this->config['docfields'][$rang]['fieldname_stretch'];
     }
-    public function wLab($rang) 
+
+    public function wLab($rang)
     {
         return (float) $this->config['doclabel']['label_width'];
     }
+
     public function txtLab($rang)
     {
         return (float) $this->config['doclabel']['label'];
     }
+
     public function alignLab($rang)
     {
         return $this->config['docfields'][$rang]['label_align'];
     }
+
     public function stretchLab($rang)
     {
         return $this->config['docfields'][$rang]['label_stretch'];
     }
+
     public function labelSpace($rang)
     {
         return (float) $this->config['docfields'][$rang]['label_space'];
     }
+
     /**
      * Renvoie un tableau indexé à partir de 0
-     * 
+     *
      * @return array
      */
     public function descripteurData()
     {
-        $cles = array('fieldname', 'filter', 'format', 'label', 'is_date', 'style');
-        $result = array();
+        $cles = [
+            'fieldname',
+            'filter',
+            'format',
+            'label',
+            'is_date',
+            'style'
+        ];
+        $result = [];
         foreach ($this->config['docfields'] as $field) {
-            $descripteur = array();
+            $descripteur = [];
             foreach ($cles as $key) {
                 $descripteur[$key] = $field[$key];
             }

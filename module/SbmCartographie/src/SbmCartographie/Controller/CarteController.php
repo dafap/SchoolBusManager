@@ -2,13 +2,15 @@
 /**
  * Controller permettant de créer les cartes etablissements et stations
  *
+ * Compatible ZF3
+ * 
  * @project sbm
  * @package SbmCartographie/Controller
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2015
- * @version 2015-1
+ * @date 22 avr. 2016
+ * @version 2016-2.0.1
  */
 namespace SbmCartographie\Controller;
 
@@ -20,15 +22,6 @@ use Zend\Http\PhpEnvironment\Response;
 
 class CarteController extends AbstractActionController
 {
-
-    private $_initcarto;
-
-    /**
-     * projection utilisée
-     * 
-     * @var \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface
-     */
-    private $projection;
 
     public function indexAction()
     {
@@ -49,25 +42,20 @@ class CarteController extends AbstractActionController
             try {
                 $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                $this->redirect()->toRoute('home');
+                return $this->redirect()->toRoute('home');
             }
         }
-        $this->init();
-        $tEtablissements = $this->getServiceLocator()->get('Sbm\Db\Vue\Etablissements');
+        $tEtablissements = $this->config['db_manager']->get('Sbm\Db\Vue\Etablissements');
         $ptEtablissements = array();
         foreach ($tEtablissements->fetchAll() as $etablissement) {
             $pt = new Point($etablissement->x, $etablissement->y);
             $pt->setAttribute('etablissement', $etablissement);
-            $ptEtablissements[] = $this->projection->xyzVersgRGF93($pt);
+            $ptEtablissements[] = $this->config['projection']->xyzVersgRGF93($pt);
         }
         
         return new ViewModel(array(
             'ptEtablissements' => $ptEtablissements,
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes',
-                'etablissements'
-            ), $this->getServiceLocator()->get('config'))
+            'config' => StdLib::getParam('etablissements', $this->config['config_cartes'])
         ));
     }
 
@@ -85,43 +73,21 @@ class CarteController extends AbstractActionController
             try {
                 $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                $this->redirect()->toRoute('home');
+                return $this->redirect()->toRoute('home');
             }
         }
-        $this->init();
-        $tStations = $this->getServiceLocator()->get('Sbm\Db\Vue\Stations');
+        $tStations = $this->config['db_manager']->get('Sbm\Db\Vue\Stations');
         $ptStations = array();
         foreach ($tStations->fetchAll() as $station) {
             $pt = new Point($station->x, $station->y);
             $pt->setAttribute('station', $station);
-            $ptStations[] = $this->projection->xyzVersgRGF93($pt);
+            $ptStations[] = $this->config['projection']->xyzVersgRGF93($pt);
         }
         
         return new ViewModel(array(
             'ptStations' => $ptStations,
-            'config' => StdLib::getParamR(array(
-                'sbm',
-                'cartes', // on utilise la même configuration (centre, zoom) que pour les établissements
-                'etablissements'
-            ), $this->getServiceLocator()->get('config'))
+            // on utilise la même configuration (centre, zoom) que pour les établissements
+            'config' => StdLib::getParam('etablissements', $this->config['config_cartes'])
         ));
-    }
-
-    private function init()
-    {
-        if (! $this->_initcarto) {
-            $ns = '\\' . explode('\\', __NAMESPACE__)[0] . '\\ConvertSystemGeodetic\\Projection\\';
-            $config = $this->getServiceLocator()->get('Config');
-            $this->system = $ns . StdLib::getParamR(array(
-                'cartographie',
-                'system'
-            ), $config);
-            $nzone = StdLib::getParamR(array(
-                'cartographie',
-                'nzone'
-            ), $config, 0);
-            $this->projection = new $this->system($nzone);
-            $this->_init = true;
-        }
     }
 } 

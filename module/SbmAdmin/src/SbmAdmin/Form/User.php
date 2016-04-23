@@ -6,9 +6,9 @@
  * @package SbmAdmin/Form
  * @filesource User.php
  * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2015
- * @version 2015-1
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmAdmin\Form;
 
@@ -20,291 +20,300 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     /**
-     * Service manager (nécessaire pour vérifier l'email)
      *
-     * @var ServiceLocatorInterface
+     * @var string
      */
-    private $sm;
+    private $canonical_name;
     
+    /**
+     * 
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    private $db_adapter;
+    
+    /**
+     * 
+     * @var int
+     */
     private $userId;
 
-    public function __construct(ServiceLocatorInterface $sm, $param = 'compte')
+    public function __construct($canonical_name, $db_adapter)
     {
-        $this->sm = $sm;
-        parent::__construct($param);
+        $this->canonical_name = $canonical_name;
+        $this->db_adapter = $db_adapter;
+        parent::__construct('compte');
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'name' => 'userId',
             'type' => 'hidden'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'name' => 'csrf',
             'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
+            'options' => [
+                'csrf_options' => [
                     'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'titre',
             'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-titre',
                 'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Votre identité',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'value_options' => array(
+                ],
+                'value_options' => [
                     'M.' => 'Monsieur',
                     'Mme' => 'Madame',
                     'Mlle' => 'Mademoiselle',
                     'Dr' => 'Docteur',
                     'Me' => 'Maître',
                     'Pr' => 'Professeur'
-                ),
+                ],
                 'empty_option' => 'Choisissez la civilité',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'nom',
             'type' => 'SbmCommun\Form\Element\NomPropre',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-nom',
                 'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Nom',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'prenom',
             'type' => 'SbmCommun\Form\Element\Prenom',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-prenom',
                 'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Prénom',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'email',
             'type' => 'Zend\Form\Element\Email',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-email',
                 'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Email',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'categorieId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-categorieId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Catégorie',
-                'label-attributes' => array(
+                'label-attributes' => [
                     'class' => 'sbm-label'
-                ),
+                ],
                 'empty_option' => 'Quelle catégorie ?',
-                'value_options' => array(
+                'value_options' => [
                     '1' => 'Parent',
                     '2' => 'Transporteur',
                     '3' => 'Etablissement scolaire',
                     '200' => 'Secrétariat',
                     '253' => 'Gestionnaire',
                     '254' => 'Administrateur'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'tokenalive',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-tokenalive'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Mot de passe bloqué',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'confirme',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-confirme'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Confirmé',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'active',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-active'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Activé',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-selection'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Sélectionné',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Textarea',
             'name' => 'note',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'user-note',
                 'class' => 'sbm-note'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Commentaires',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'responsable-submit',
                 'autofocus' => 'autofocus',
                 'class' => 'button default submit left-95px'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'responsable-cancel',
                 'class' => 'button default cancel left-10px'
-            )
-        ));
+            ]
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        $db = $this->sm->get('Sbm\Db\DbLib');
-        return array(
-            'titre' => array(
+        return [
+            'titre' => [
                 'name' => 'titre',
                 'required' => true
-            ),
-            'nom' => array(
+            ],
+            'nom' => [
                 'name' => 'nom',
                 'required' => true
-            ),
-            'prenom' => array(
+            ],
+            'prenom' => [
                 'name' => 'prenom',
                 'required' => true
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'name' => 'email',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'Zend\Validator\EmailAddress'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Validator\Db\NoRecordExists',
-                        'options' => array(
-                            'table' => $db->getCanonicName('users', 'table'),
+                        'options' => [
+                            'table' => $this->canonical_name,
                             'field' => 'email',
-                            'adapter' => $this->sm->get('Zend\Db\Adapter\Adapter'),
-                            'exclude' => array(
+                            'adapter' => $this->db_adapter,
+                            'exclude' => [
                                 'field' => 'userId',
                                 'value' => $this->userId
-                            )
-                        )
-                    )
-                )
-            ),
-            'categorieId' => array(
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'categorieId' => [
                 'name' => 'categorieId',
                 'required' => true
-            )
-        );
+            ]
+        ];
     }
     
     /**
      * Initialise la propriété userId pour le validateur avant d'appeler la méthode standard
      * 
-     * (non-PHPdoc)
-     * @see \Zend\Form\Form::setData()
+     * (non-PHPdoc]
+     * @see \Zend\Form\Form::setData(]
      */
     public function setData($data)
     {

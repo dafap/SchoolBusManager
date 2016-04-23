@@ -9,8 +9,8 @@
  * @filesource Transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 févr. 2016
- * @version 2016-1.7.3
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\Transporteur;
 
@@ -20,15 +20,17 @@ use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Transporteurs implements FactoryInterface
 {
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
+    protected $db_manager;
 
     /**
      *
@@ -56,8 +58,12 @@ class Transporteurs implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
@@ -80,10 +86,10 @@ class Transporteurs implements FactoryInterface
     private function selectUserEmails($transporteurId, $order)
     {
         $select = $this->sql->select([
-            'ut' => $this->db->getCanonicName('users-transporteurs', 'table')
+            'ut' => $this->db_manager->getCanonicName('users-transporteurs', 'table')
         ])
             ->join([
-            'u' => $this->db->getCanonicName('users', 'table')
+            'u' => $this->db_manager->getCanonicName('users', 'table')
         ], 'u.userId = ut.userId', [
             'email'
         ])

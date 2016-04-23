@@ -2,14 +2,15 @@
 /**
  * Controleur du module SbmInstallation
  *
- *
+ * Compatible ZF3
+ * 
  * @project sbm
  * @package module/SbmInstallation/src/SbmInstallation/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmInstallation\Controller;
 
@@ -47,14 +48,13 @@ class IndexController extends AbstractActionController
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbminstall');
         }
-        $config = $this->getServiceLocator()->get('config')['sbm']['paiement'];
-        $fileNamePaiement = strtolower($config['plateforme']) . '_error.log';
-        $filePaiement = $config['path_filelog'] . DIRECTORY_SEPARATOR . $fileNamePaiement;
-        $fileErrors = $this->getServiceLocator()->get('config')['php_settings']['error_log'];
+        $config_paiement = $this->config['config_paiement'];
+        $fileNamePaiement = strtolower($config_paiement['plateforme']) . '_error.log';
+        $filePaiement = $config_paiement['path_filelog'] . DIRECTORY_SEPARATOR . $fileNamePaiement;
+        $fileErrors = $this->config['error_log'];
         if (array_key_exists('fichier', $args)) {
             switch ($args['fichier']) {
                 case 'paiement':
-                    $config = $this->getServiceLocator()->get('config')['sbm']['paiement'];
                     $filename = $fileNamePaiement;
                     $filenameWithPath = $filePaiement;
                     break;
@@ -64,7 +64,7 @@ class IndexController extends AbstractActionController
                     $filename = $parts[count($parts) - 1];
                     break;
                 default:
-                    $this->redirect()->toRoute('sbminstall');
+                    return $this->redirect()->toRoute('sbminstall');
                     break;
             }
             if (array_key_exists('drop', $args)) {
@@ -86,46 +86,46 @@ class IndexController extends AbstractActionController
                 return $response;
             }
         }
-        return new ViewModel(array(
-            'form1' => new ButtonForm(array(
+        return new ViewModel([
+            'form1' => new ButtonForm([
                 'fichier' => 'paiement'
-            ), array(
-                'drop' => array(
+            ], [
+                'drop' => [
                     'class' => 'confirm default',
                     'value' => 'Vider le fichier'
-                ),
-                'download' => array(
+                ],
+                'download' => [
                     'class' => 'confirm default',
                     'value' => 'Télécharger le fichier des transactions'
-                )
-            )),
-            'form2' => new ButtonForm(array(
+                ]
+            ]),
+            'form2' => new ButtonForm([
                 'fichier' => 'logerror'
-            ), array(
-                'drop' => array(
+            ], [
+                'drop' => [
                     'class' => 'confirm default',
                     'value' => 'Vider le fichier'
-                ),
-                'download' => array(
+                ],
+                'download' => [
                     'class' => 'confirm default',
                     'value' => 'Télécharger le fichier d\'erreurs'
-                ),
-                'cancel' => array(
+                ],
+                'cancel' => [
                     'class' => 'confirm default',
                     'value' => 'Quitter'
-                )
-            )),
-            'paiement' => array(
+                ]
+            ]),
+            'paiement' => [
                 'date' => date('d/m/Y H:i:s', filemtime($filePaiement)),
                 'taille' => filesize($filePaiement),
                 'lignes' => count(file($filePaiement))
-            ),
-            'errors' => array(
+            ],
+            'errors' => [
                 'date' => date('d/m/Y H:i:s', filemtime($fileErrors)),
                 'taille' => filesize($fileErrors),
                 'lignes' => count(file($fileErrors))
-            )
-        ));
+            ]
+        ]);
     }
 
     public function createTablesAction()
@@ -134,31 +134,31 @@ class IndexController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
-                return $this->redirect()->toRoute('sbminstall', array(
+                return $this->redirect()->toRoute('sbminstall', [
                     'action' => 'index'
-                ));
-                $viewArgs = array();
+                ]);
+                $viewArgs = [];
             } else {
-                $viewArgs = array(
+                $viewArgs = [
                     'args' => $create->run(),
                     'form' => null
-                );
+                ];
             }
         } else {
-            $form = new ButtonForm(array(), array(
-                'create' => array(
+            $form = new ButtonForm([], [
+                'create' => [
                     'class' => 'confirm default',
                     'value' => 'Confirmer'
-                ),
-                'cancel' => array(
+                ],
+                'cancel' => [
                     'class' => 'confirm default',
                     'value' => 'Abandonner'
-                )
-            ));
-            $viewArgs = array(
+                ]
+            ]);
+            $viewArgs = [
                 'args' => $create->voir(),
                 'form' => $form
-            );
+            ];
         }
         return new ViewModel($viewArgs);
     }
@@ -168,27 +168,27 @@ class IndexController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             if ($request->getPost('cancel', false)) {
-                return $this->redirect()->toRoute('sbminstall', array(
+                return $this->redirect()->toRoute('sbminstall', [
                     'action' => 'index'
-                ));
-                $viewArgs = array();
+                ]);
+                $viewArgs = [];
             } else {
                 // TRAITEMENT DE LA DEMANDE
-                $tables = $request->getPost('tables', array());
-                $systems = $request->getPost('systems', array());
+                $tables = $request->getPost('tables', []);
+                $systems = $request->getPost('systems', []);
                 $onscreen = $request->getPost('onscreen', false);
                 $tables = array_merge($tables, $systems);
                 
-                $oDumpTable = $this->getServiceLocator()->get('SbmInstallation\DumpTables');
+                $oDumpTable = new DumpTables($this->config['db_manager']);
                 $oDumpTable->init($tables, $onscreen);
                 $description = $oDumpTable->copy();
                 
-                $viewArgs = array(
+                $viewArgs = [
                     'tables' => $tables,
                     'titre' => 'Copie du contenu des tables',
                     'description' => empty($description) ? 'La copie est terminée.' : $description,
                     'form' => null
-                );
+                ];
             }
         } else {
             // FORMULAIRE DE DEMANDE
@@ -196,34 +196,33 @@ class IndexController extends AbstractActionController
             $form->setValueOptions('tables', $this->getDbTablesAlias('table'));
             $form->setValueOptions('systems', $this->getDbTablesAlias('system'));
             
-            $viewArgs = array(
-                'tables' => array(),
+            $viewArgs = [
+                'tables' => [],
                 'titre' => 'Copie du contenu des tables',
                 'description' => 'Cochez les tables que vous souhaitez récupérer dans un fichier de configuration.',
                 'form' => $form
-            );
+            ];
         }
         return new ViewModel($viewArgs);
     }
 
     public function tableAliasAction()
     {
-        $config = $this->getServiceLocator()->get('config');
-        return new ViewModel(array(
+        return new ViewModel([
             'tables' => $this->getDbTablesAlias('table'),
             'systems' => $this->getDbTablesAlias('system'),
             'vues' => $this->getDbTablesAlias('vue')
-        ));
+        ]);
     }
 
     /**
-     * Renvoie l'adapter donné par le ServiceManager factories
+     * Renvoie l'adapter donné par le DbManager 
      *
      * @return \Zend\Db\Adapter\Adapter
      */
     private function getDbAdapter()
     {
-        return $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        return $this->config['db_manager']->getDbAdapter();
     }
 
     /**
@@ -236,8 +235,7 @@ class IndexController extends AbstractActionController
      */
     private function getDbConfig()
     {
-        $config = $this->getServiceLocator()->get('config');
-        return $config['db'];
+        return $this->config['db_config'];
     }
 
     /**
@@ -248,8 +246,7 @@ class IndexController extends AbstractActionController
      */
     private function getDbDesign()
     {
-        $config = $this->getServiceLocator()->get('config');
-        return $config['db_design'];
+        return $this->config['db_design'];
     }
 
     /**
@@ -261,27 +258,27 @@ class IndexController extends AbstractActionController
     private function getDbTablesAlias($filter = '')
     {
         $filter = strtolower($filter);
-        if (! is_string($filter) || ! ($filter == '' || in_array($filter, array(
+        if (! is_string($filter) || ! ($filter == '' || in_array($filter, [
             'table',
             'system',
             'vue'
-        )))) {
+        ]))) {
             throw new \Exception('Filtre incorrect dans ' . __METHOD__);
         }
         if ($filter == '') {
-            $filters = array(
+            $filters = [
                 'Sbm\\Db\\Table\\',
                 'Sbm\\Db\\System\\',
                 'Sbm\\Db\\Vue\\'
-            );
+            ];
         } else {
-            $filters = array(
+            $filters = [
                 'Sbm\\Db\\' . ucfirst($filter) . '\\'
-            );
+            ];
         }
-        $config = $this->getServiceLocator()->get('config');
-        $result = array();
-        foreach (array_keys($config['service_manager']['factories']) as $alias) {
+        $config_db_manager = $this->config['db_manager']->getDbManagerConfig();
+        $result = [];
+        foreach (array_keys($config_db_manager['factories']) as $alias) {
             foreach ($filters as $f) {
                 if (strpos($alias, $f) !== false) {
                     $result[] = $alias;
@@ -295,19 +292,19 @@ class IndexController extends AbstractActionController
     public function modifCompteAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'modif-compte'));
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', ['action' => 'modif-compte']);
     }
     
     public function mdpChangeAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'mdp-change'));
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', ['action' => 'mdp-change']);
     }
     
     public function emailChangeAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', array('action' => 'email-change'));
+        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', ['action' => 'email-change']);
     }
     
     public function messageAction()

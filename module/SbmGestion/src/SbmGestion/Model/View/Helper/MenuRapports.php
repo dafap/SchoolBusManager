@@ -15,25 +15,20 @@
 namespace SbmGestion\Model\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Where;
 use DafapSession\Model\Session;
 
-class MenuRapports extends AbstractHelper implements ServiceLocatorAwareInterface
+class MenuRapports extends AbstractHelper implements FactoryInterface
 {
 
-    protected $sm;
+    protected $db_manager;
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->sm = $serviceLocator;
+        $this->db_manager = $serviceLocator->getServiceLocator()->get('Sbm\DbManager');
         return $this;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->sm;
     }
 
     /**
@@ -56,9 +51,7 @@ class MenuRapports extends AbstractHelper implements ServiceLocatorAwareInterfac
     {
         $where = new Where();
         $where->equalTo('route', $route);
-        $resultset = $this->sm->getServiceLocator()
-            ->get('Sbm\Db\System\DocAffectations')
-            ->fetchAll($where, 'ordinal_position');
+        $resultset = $this->db_manager->get('Sbm\Db\System\DocAffectations')->fetchAll($where, 'ordinal_position');
         $content = array();
         foreach ($resultset as $affectation) {
             $documentId = sprintf('documentId[%d]', $affectation->ordinal_position);
@@ -67,7 +60,7 @@ class MenuRapports extends AbstractHelper implements ServiceLocatorAwareInterfac
                 'formaction' => $formaction . '/id/' . $affectation->docaffectationId
             );
         }
-        //die(var_dump($content));
+        // die(var_dump($content));
         if (count($content) == 1) {
             $hiddens['documentId'] = $affectation->libelle;
             return array(

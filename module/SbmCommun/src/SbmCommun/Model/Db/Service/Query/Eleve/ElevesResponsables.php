@@ -22,15 +22,17 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class ElevesResponsables implements FactoryInterface
 {
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
+    protected $db_manager;
     
     /**
      *
@@ -70,13 +72,17 @@ class ElevesResponsables implements FactoryInterface
     
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->columns(array(
             'eleveId' => 'eleveId',
@@ -95,7 +101,7 @@ class ElevesResponsables implements FactoryInterface
             'noteEleve' => 'note'
         ))
             ->join(array(
-            'r1' => $this->db->getCanonicName('responsables', 'table')
+            'r1' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable1Id=r1.responsableId', array(
             'titreR1' => 'titre',
             'responsable1NomPrenom' => new Expression('concat(r1.nom," ",r1.prenom)'),
@@ -110,7 +116,7 @@ class ElevesResponsables implements FactoryInterface
             'y1' => 'y'
         ))
             ->join(array(
-            'r1c' => $this->db->getCanonicName('communes', 'table')
+            'r1c' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r1.communeId=r1c.communeId', array(
             'communeR1' => 'nom'
         ));
@@ -149,14 +155,14 @@ class ElevesResponsables implements FactoryInterface
 
     public function paginatorR2(Where $where, $order = null)
     {
-        return new Paginator(new DbSelect($this->selectR2($where, $order), $this->db->getDbAdapter()));
+        return new Paginator(new DbSelect($this->selectR2($where, $order), $this->db_manager->getDbAdapter()));
     }
 
     private function selectR2(Where $where, $order = null)
     {
         $select = clone $this->select;
         $select->join(array(
-            'r2' => $this->db->getCanonicName('responsables', 'table')
+            'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable2Id=r2.responsableId', array(
             'titreR2' => 'titre',
             'responsable2NomPrenom' => new Expression('CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
@@ -171,7 +177,7 @@ class ElevesResponsables implements FactoryInterface
             'y2' => 'y'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'r2c' => $this->db->getCanonicName('communes', 'table')
+            'r2c' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r2.communeId=r2c.communeId', array(
             'communeR2' => 'nom'
         ), $select::JOIN_LEFT);
@@ -200,7 +206,7 @@ class ElevesResponsables implements FactoryInterface
 
     public function paginatorScolaritesR2(Where $where, $order = null, $millesime = null)
     {
-        return new Paginator(new DbSelect($this->selectScolaritesR2($where, $order), $this->db->getDbAdapter()));
+        return new Paginator(new DbSelect($this->selectScolaritesR2($where, $order), $this->db_manager->getDbAdapter()));
     }
 
     private function selectScolaritesR2(Where $where, $order = null, $millesime = null)
@@ -211,7 +217,7 @@ class ElevesResponsables implements FactoryInterface
         $where->equalTo('sco.millesime', $millesime);
         $select = clone $this->select;
         $select->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId = sco.eleveId', array(
             'millesime' => 'millesime',
             'selectionScolarite' => 'selection',
@@ -256,24 +262,24 @@ class ElevesResponsables implements FactoryInterface
             'commentaire' => 'commentaire'
         ))
             ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId = eta.etablissementId', array(
             'etablissement' => new Expression('CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
             'xeta' => 'x',
             'yeta' => 'y'
         ))
             ->join(array(
-            'com' => $this->db->getCanonicName('communes', 'table')
+            'com' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'eta.communeId = com.communeId', array(
             'communeEtablissement' => 'nom'
         ))
             ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ), 'cla.classeId = sco.classeId', array(
             'classe' => 'nom'
         ))
             ->join(array(
-            'r2' => $this->db->getCanonicName('responsables', 'table')
+            'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable2Id=r2.responsableId', array(
             'titreR2' => 'titre',
             'responsable2NomPrenom' => new Expression('CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
@@ -285,12 +291,12 @@ class ElevesResponsables implements FactoryInterface
             'y2' => 'y'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'r2c' => $this->db->getCanonicName('communes', 'table')
+            'r2c' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r2.communeId=r2c.communeId', array(
             'communeR2' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'aff' => $this->db->getCanonicName('affectations', 'table')
+            'aff' => $this->db_manager->getCanonicName('affectations', 'table')
         ), 'aff.millesime = sco.millesime And aff.eleveId = sco.eleveId', array(
             'affecte' => new Expression('count(aff.eleveId) > 0')
         ), $select::JOIN_LEFT)
@@ -320,10 +326,10 @@ class ElevesResponsables implements FactoryInterface
     private function selectLocalisation(Where $where, $order = null)
     {
         $where->equalTo('millesime', $this->millesime);
-        $sql = new Sql($this->db->getDbAdapter());
+        $sql = new Sql($this->db_manager->getDbAdapter());
         $select = $sql->select();
         $select->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->columns(array(
             'id_ccda',
@@ -335,7 +341,7 @@ class ElevesResponsables implements FactoryInterface
             'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, r1.y, sco.y)')
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId=sco.eleveId', array(
             'transportGA' => new Expression('CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
             'x_eleve' => 'x',
@@ -346,29 +352,29 @@ class ElevesResponsables implements FactoryInterface
             'codePostal_chez' => 'codePostal'
         ))
             ->join(array(
-            'comsco' => $this->db->getCanonicName('communes', 'table')
+            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'sco.communeId=comsco.communeId', array(
             'commune_chez' => 'nom'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId=eta.etablissementId', array(
             'etablissement' => new Expression('CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
             'x_etablissement' => 'x',
             'y_etablissement' => 'y'
         ))
             ->join(array(
-            'cometa' => $this->db->getCanonicName('communes', 'table')
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'cometa.communeId=eta.communeId', array(
             'commune_etablissement' => 'nom'
         ))
             ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ), 'sco.classeId=cla.classeId', array(
             'classe' => 'nom'
         ))
             ->join(array(
-            'r1' => $this->db->getCanonicName('responsables', 'table')
+            'r1' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'r1.responsableId=ele.responsable1Id', array(
             'responsable1' => new Expression('concat(r1.nom," ",r1.prenom)'),
             'x_responsable1' => 'x',
@@ -382,12 +388,12 @@ class ElevesResponsables implements FactoryInterface
             'codePostal_responsable1' => 'codePostal'
         ))
             ->join(array(
-            'comr1' => $this->db->getCanonicName('communes', 'table')
+            'comr1' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'comr1.communeId=r1.communeId', array(
             'commune_responsable1' => 'nom'
         ))
             ->join(array(
-            'r2' => $this->db->getCanonicName('responsables', 'table')
+            'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'r2.responsableId=ele.responsable2Id', array(
             'responsable2' => new Expression('CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
             'x_responsable2' => 'x',
@@ -401,7 +407,7 @@ class ElevesResponsables implements FactoryInterface
             'codePostal_responsable2' => 'codePostal'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'comr2' => $this->db->getCanonicName('communes', 'table')
+            'comr2' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'comr2.communeId=r2.communeId', array(
             'commune_responsable2' => 'nom'
         ), $select::JOIN_LEFT);

@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2016
- * @version 2016-1.7.0
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -21,6 +21,8 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\ResultSet\ResultSet;
 use DafapSession\Model\Session;
 use Zend\Db\Sql\Having;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Effectif extends AbstractQuery implements FactoryInterface
 {
@@ -49,21 +51,24 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     private $tableName = array();
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $db_manager)
     {
+        if (! ($db_manager instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($db_manager)));
+        }
         $this->millesime = Session::get('millesime');
-        $db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $db->getDbAdapter();
-        $this->tableName['affectations'] = $db->getCanonicName('affectations', 'table');
-        $this->tableName['circuits'] = $db->getCanonicName('circuits', 'table');
-        $this->tableName['classes'] = $db->getCanonicName('classes', 'table');
-        $this->tableName['communes'] = $db->getCanonicName('communes', 'table');
-        $this->tableName['eleves'] = $db->getCanonicName('eleves', 'table');
-        $this->tableName['etablissements'] = $db->getCanonicName('etablissements', 'table');
-        $this->tableName['responsables'] = $db->getCanonicName('responsables', 'table');
-        $this->tableName['scolarites'] = $db->getCanonicName('scolarites', 'table');
-        $this->tableName['services'] = $db->getCanonicName('services', 'table');
-        $this->sql = new Sql($db->getDbAdapter());
+        $this->dbAdapter = $db_manager->getDbAdapter();
+        $this->tableName['affectations'] = $db_manager->getCanonicName('affectations', 'table');
+        $this->tableName['circuits'] = $db_manager->getCanonicName('circuits', 'table');
+        $this->tableName['classes'] = $db_manager->getCanonicName('classes', 'table');
+        $this->tableName['communes'] = $db_manager->getCanonicName('communes', 'table');
+        $this->tableName['eleves'] = $db_manager->getCanonicName('eleves', 'table');
+        $this->tableName['etablissements'] = $db_manager->getCanonicName('etablissements', 'table');
+        $this->tableName['responsables'] = $db_manager->getCanonicName('responsables', 'table');
+        $this->tableName['scolarites'] = $db_manager->getCanonicName('scolarites', 'table');
+        $this->tableName['services'] = $db_manager->getCanonicName('services', 'table');
+        $this->sql = new Sql($db_manager->getDbAdapter());
         return $this;
     }
 

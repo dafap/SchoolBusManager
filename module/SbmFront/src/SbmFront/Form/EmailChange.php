@@ -9,27 +9,23 @@
  * @filesource EmailChange.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmFront\Form;
 
 use Zend\InputFilter\InputFilterProviderInterface;
 use SbmCommun\Form\AbstractSbmForm;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class EmailChange extends AbstractSbmForm implements InputFilterProviderInterface
 {
-    /**
-     * Service manager (nécessaire pour vérifier l'email)
-     *
-     * @var ServiceLocatorInterface
-     */
-    private $sm;
+    private $canonic_name;
+    private $db_adapter;
     
-    public function __construct(ServiceLocatorInterface $sm)
+    public function __construct($canonic_name, $db_adapter)
     {
-        $this->sm = $sm;
+        $this->canonic_name = $canonic_name;
+        $this->db_adapter = $db_adapter;
         parent::__construct('mdp');
         $this->setAttribute('method', 'post');
         $this->add(array(
@@ -122,7 +118,6 @@ class EmailChange extends AbstractSbmForm implements InputFilterProviderInterfac
     
     public function getInputFilterSpecification()
     {
-        $db = $this->sm->get('Sbm\Db\DbLib');
         return array(
             'mdp' => array(
                 'name' => 'mdp',
@@ -146,9 +141,9 @@ class EmailChange extends AbstractSbmForm implements InputFilterProviderInterfac
                     array(
                         'name' => 'Zend\Validator\Db\NoRecordExists',
                         'options' => array(
-                            'table' => $db->getCanonicName('users', 'table'),
+                            'table' => $this->canonic_name,
                             'field' => 'email',
-                            'adapter' => $this->sm->get('Zend\Db\Adapter\Adapter')
+                            'adapter' => $this->db_adapter
                         )
                     )
                 )

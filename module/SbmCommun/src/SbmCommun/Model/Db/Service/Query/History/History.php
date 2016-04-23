@@ -9,8 +9,8 @@
  * @filesource History.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 janv. 2016
- * @version 2016-1.7.1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 
@@ -22,15 +22,17 @@ use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class History implements FactoryInterface
 {
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db;
+    private $db_manager;
 
     /**
      *
@@ -64,10 +66,14 @@ class History implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
-        $this->history_name = $this->db->getCanonicName('history', 'sys');
+        $this->history_name = $this->db_manager->getCanonicName('history', 'sys');
         return $this;
     }
 
@@ -79,7 +85,7 @@ class History implements FactoryInterface
     public function getLastDayChanges($table_name)
     {
         $select = $this->sql->select($this->history_name);
-        $table_affectations = $this->db->getCanonicName($table_name);
+        $table_affectations = $this->db_manager->getCanonicName($table_name);
         $hier = date('Y-m-d H:i', strtotime('-1 day'));
         $where = new Where();
         $where->equalTo('table_name', $table_affectations)->greaterThanOrEqualTo('dt', $hier);

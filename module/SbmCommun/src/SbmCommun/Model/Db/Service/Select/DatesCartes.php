@@ -19,20 +19,26 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use DafapSession\Model\Session;
 use SbmCommun\Model\DateLib;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class DatesCartes implements FactoryInterface
 {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $millesime = Session::get('millesime');
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
         $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
+        $millesime = Session::get('millesime');
         $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
         $where = new Where();
         $where->greaterThanOrEqualTo('dateCarte', $dateDebut);
-        $db = $serviceLocator->get('Sbm\Db\DbLib');
-        $sql = new Sql($db->getDbAdapter());
-        $select = $sql->select($db->getCanonicName('scolarites', 'table'));
+        $db_manager = $serviceLocator;
+        $sql = new Sql($db_manager->getDbAdapter());
+        $select = $sql->select($db_manager->getCanonicName('scolarites', 'table'));
         $select->columns(array(
             'dateCarte'
         ))

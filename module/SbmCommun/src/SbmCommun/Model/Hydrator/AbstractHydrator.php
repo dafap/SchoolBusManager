@@ -10,12 +10,15 @@
  * @filesource AbstractHydrator.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 oct. 2014
- * @version 2014-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Hydrator;
  
-use Zend\Stdlib\Hydrator\ArraySerializable;
+/*
+ * @deprecated use Zend\Stdlib\Hydrator\ArraySerializable;
+ */ 
+use Zend\Hydrator\ArraySerializable;
 
 abstract class AbstractHydrator extends ArraySerializable
 {

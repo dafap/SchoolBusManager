@@ -8,8 +8,8 @@
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2015
- * @version 2015-1
+ * @date 8 avr 2016
+ * @version 2016-2
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -19,7 +19,7 @@ function renderCheckbox($view, $name, $id, $value)
         ->setValue($value);
     return $view->formCheckbox($element);
 }
-$acategories = array(
+$acategories = [
     255 => 'Administrateur',
     254 => 'Administrateur',
     253 => 'Gestionnaire',
@@ -27,55 +27,64 @@ $acategories = array(
     1 => 'Parent',
     2 => 'Transporteur',
     3 => 'Etablissement'
-);
+];
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
 
-$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $users = $this->paginator->getCurrentItems();
-$url_edit = $this->url('sbmadmin', array(
+$url_edit = $this->url('sbmadmin', [
     'action' => 'user-edit',
     'page' => $this->page
-));
-$url_delete = $this->url('sbmadmin', array(
+]);
+$url_delete = $this->url('sbmadmin', [
     'action' => 'user-suppr',
     'page' => $this->page
-));
-$url_group = $this->url('sbmadmin', array(
+]);
+$url_group = $this->url('sbmadmin', [
     'action' => 'user-link',
     'page' => $this->page
-));
-$url_ajouter = $this->url('sbmadmin', array(
+]);
+$url_ajouter = $this->url('sbmadmin', [
     'action' => 'user-ajout',
     'page' => $this->page
-));
-$url_rapports = $this->url('sbmadmin', array(
+]);
+$url_rapports = $this->url('sbmadmin', [
     'action' => 'user-pdf',
     'page' => $this->page
-));
+]);
+$url_creer_comptes_parent = $this->url('sbmadmin', [
+    'action' => 'user-prepare-nouveaux-comptes',
+    'page' => $this->page
+]);
 $url_retour = $this->url('sbmadmin');
-$hiddens = array();
-$menuImpression = $this->menuRapports($this->url('sbmadmin', array(
+$hiddens = [];
+$menuImpression = $this->menuRapports($this->url('sbmadmin', [
     'action' => 'user-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    '' => [
+        'class' => 'fam-cog-add',
+        'formaction' => $url_creer_comptes_parent,
+        'title' => 'Créer tous les comptes de parents ayant un email'
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvel utilisateur'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des utilisateurs</h1>
 <div id="liste-wrapper">
@@ -122,7 +131,7 @@ EOT;
             $jsCallback .= sprintf("$modele\n", $user->userId, $user->userId);
             ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="nom"><?php echo $this->escapeHtml($user->nom); ?></td>
 					<td class="prenom"><?php echo $this->escapeHtml($user->prenom); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($user->email); ?></td>
@@ -133,27 +142,27 @@ EOT;
 					<td class="selection centre"><?php echo $user->categorieId == 255 ? '' : renderCheckbox($this, 'selection', 'chk' . $user->userId, $user->selection)?></td>
 					<td class="boutons">
             <?php
-            $hiddens = array(
+            $hiddens = [
                 'userId' => $user->userId,
                 'email' => $user->email
-            );
-            $buttons = array(
-                'modifier' => array(
+            ];
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier'
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer'
-                ),
-                'relation' => array(
+                ],
+                'relation' => [
                     'class' => 'fam-group-link',
                     'formaction' => $url_group,
                     'title' => 'fiche du compte associé (responsable, transporteur ou établissement)'
-                )
-            );
+                ]
+            ];
             echo $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);
             ?>
 				    </td>
@@ -163,7 +172,7 @@ EOT;
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
         <?php echo $this->form()->openTag($this->criteres_form);?>
         <?php echo $this->formCollection($this->criteres_form, true);?>

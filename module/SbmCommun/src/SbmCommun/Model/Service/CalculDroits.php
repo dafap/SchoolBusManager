@@ -20,8 +20,8 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2015
- * @version 2015-1
+ * @date 15 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Service;
 
@@ -29,7 +29,10 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Session;
 use SbmCartographie\Model\Point;
+use SbmCartographie\Model\Service\CartographieManager;
+use SbmCartographie\Model\Exception;
 use SbmCommun\Model\Strategy\Niveau;
+use SbmCartographie\Model\SbmCartographie\Model;
 
 class CalculDroits implements FactoryInterface
 {
@@ -82,26 +85,33 @@ class CalculDroits implements FactoryInterface
      * @var \SbmCartographie\GoogleMaps\DistanceEtablissements
      */
     private $oDistanceEtablissement;
-    
+
     /**
      * Les distances en km des domiciles de l'élève à son établissement scolaire.
      * Lorsque l'élève a une résidence différente de celles de ses responsable, elle remplace la résidence du responsable n°1.
      * Cette propriété mise à jour dans la méthode district et est reprise dans les méthodes saveAcquisition() et saveAcquisitionPerte()
-     * 
+     *
      * @var array of float
      */
-    private $distance = array();
+    private $distance = [];
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        if (!$serviceLocator->has('SbmCarto\DistanceEtablissements')) {
+            throw new Exception(sprintf('CartographieManager attendu.'));
+        }
         $this->millesime = Session::get('millesime');
-        $this->tEleves = $serviceLocator->get('Sbm\Db\Table\Eleves');
-        $this->tScolarites = $serviceLocator->get('Sbm\Db\Table\Scolarites');
-        $this->tResponsables = $serviceLocator->get('Sbm\Db\Table\Responsables');
-        $this->tEtablissements = $serviceLocator->get('Sbm\Db\Table\Etablissements');
-        $this->tClasses = $serviceLocator->get('Sbm\Db\Table\Classes');
+        $db_manager = $serviceLocator->get('Sbm\DbManager');
+        $this->tEleves = $db_manager->get('Sbm\Db\Table\Eleves');
+        $this->tScolarites = $db_manager->get('Sbm\Db\Table\Scolarites');
+        $this->tResponsables = $db_manager->get('Sbm\Db\Table\Responsables');
+        $this->tEtablissements = $db_manager->get('Sbm\Db\Table\Etablissements');
+        $this->tClasses = $db_manager->get('Sbm\Db\Table\Classes');
         $this->oDistanceEtablissement = $serviceLocator->get('SbmCarto\DistanceEtablissements');
-        $this->distance = array('R1' => 0.0, 'R2' => 0.0);
+        $this->distance = [
+            'R1' => 0.0,
+            'R2' => 0.0
+        ];
         return $this;
     }
 
@@ -120,10 +130,10 @@ class CalculDroits implements FactoryInterface
     private function distancesDistrict($eleveId)
     {
         // scolarisation
-        $scolarite = $this->tScolarites->getRecord(array(
+        $scolarite = $this->tScolarites->getRecord([
             'millesime' => $this->millesime,
             'eleveId' => $eleveId
-        ));
+        ]);
         $etablissement = $this->tEtablissements->getRecord($scolarite->etablissementId);
         $destination = new Point($etablissement->x, $etablissement->y);
         $destination->setAttribute('etablissementId', $etablissement->etablissementId);
@@ -146,7 +156,7 @@ class CalculDroits implements FactoryInterface
         $domiciles[0]->setAttribute('communeId', $resp->communeId);
         // résidence du 2e responsable
         $tmp = $elv->responsable2Id;
-        if (!empty($tmp)) {
+        if (! empty($tmp)) {
             $resp = $this->tResponsables->getRecord($elv->responsable2Id);
             $domiciles[1] = new Point($resp->x, $resp->y);
             $domiciles[1]->setAttribute('communeId', $resp->communeId);
@@ -156,18 +166,18 @@ class CalculDroits implements FactoryInterface
         $tmp2 = $scolarite->adresseL1;
         $tmp3 = $scolarite->codePostal;
         $tmp4 = $scolarite->communeId;
-        if (!empty($tmp1) && !empty($tmp2) && !empty($tmp3) && !empty($tmp4)) {
+        if (! empty($tmp1) && ! empty($tmp2) && ! empty($tmp3) && ! empty($tmp4)) {
             $domiciles[0] = new Point($scolarite->x, $scolarite->y);
             $domiciles[0]->setAttribute('communeId', $scolarite->communeId);
         }
-            
+        
         switch ($niveau) {
             case 8:
-                // lycée    
+                // lycée
                 $distances = $this->oDistanceEtablissement->plusieursOriginesUneDestination($domiciles, $destination);
                 $j = 1;
                 foreach ($distances as $distance) {
-                    $this->distance['R' . $j++] = round($distance / 1000, 1);
+                    $this->distance['R' . $j ++] = round($distance / 1000, 1);
                 }
                 // dans tous les cas, l'élève est dans le district du lycée
                 return true;
@@ -175,24 +185,24 @@ class CalculDroits implements FactoryInterface
             case 4:
                 // collège
                 $result = $this->oDistanceEtablissement->domicilesCollege($domiciles, $destination);
-                $j=1;
+                $j = 1;
                 foreach ($result['distances'] as $distance) {
-                    $this->distance['R' . $j++] = round($distance / 1000, 1);
+                    $this->distance['R' . $j ++] = round($distance / 1000, 1);
                 }
                 return $result['droit'];
                 break;
             default:
                 // école
                 $result = $this->oDistanceEtablissement->domicilesEcole($niveau, $domiciles, $destination);
-                $j=1;
+                $j = 1;
                 foreach ($result['distances'] as $distance) {
-                    $this->distance['R' . $j++] = round($distance / 1000, 1);
+                    $this->distance['R' . $j ++] = round($distance / 1000, 1);
                 }
                 return $result['droit'];
                 break;
         }
         // inutile mais pour le style
-        return false; 
+        return false;
     }
 
     /**
@@ -205,43 +215,43 @@ class CalculDroits implements FactoryInterface
     {
         if ($this->distancesDistrict($eleveId)) {
             $oData = $this->tScolarites->getObjData();
-            $oData->exchangeArray(array(
+            $oData->exchangeArray([
                 'millesime' => $this->millesime,
                 'eleveId' => $eleveId,
                 'distanceR1' => round($this->distance['R1'], 1),
                 'distanceR2' => round($this->distance['R2'], 1),
                 'district' => 1
-            ));
+            ]);
             $this->tScolarites->saveRecord($oData);
         }
     }
-    
+
     /**
      * Méthode à utiliser s'il y a changement d'établissement scolaire en cours d'année.
-     * 
-     * @param int $eleveId
+     *
+     * @param int $eleveId            
      */
     public function majDistancesDistrict($eleveId)
     {
         // à faire au début puisque la méthode met aussi à jour la propriété 'distance'
         $district = $this->distancesDistrict($eleveId);
         $oData = $this->tScolarites->getObjData();
-        $oData->exchangeArray(array(
+        $oData->exchangeArray([
             'millesime' => $this->millesime,
             'eleveId' => $eleveId,
             'distanceR1' => round($this->distance['R1'], 1),
             'distanceR2' => round($this->distance['R2'], 1),
-            'district' =>  $district ? 1 : 0
-        ));
+            'district' => $district ? 1 : 0
+        ]);
         $this->tScolarites->saveRecord($oData);
     }
-    
+
     /**
      * Renvoie un boolean indiquant si une préincription est en attente
-     * 
+     *
      * @param array $row
-     * tableau décrivant la scolarité d'un élève avec au moins les champs suivants : distanceR1, distanceR2, district, derogation, selectionScolarite
-     * 
+     *            tableau décrivant la scolarité d'un élève avec au moins les champs suivants : distanceR1, distanceR2, district, derogation, selectionScolarite
+     *            
      * @return boolean
      */
     public function estEnAttente($row)

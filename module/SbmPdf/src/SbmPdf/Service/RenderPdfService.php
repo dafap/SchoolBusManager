@@ -4,7 +4,7 @@
  * 
  * $call_pdf = new RenderPdfService()
  * $call_pdf->setData($rowset)
- *          ->setHead(array('column1', 'column2, 'column3')
+ *          ->setHead(['column1', 'column2, 'column3')
  *          ->setPdfConfig($setting)
  *          ->setTableConfig($theme)
  *          ->renderPdf();
@@ -15,18 +15,18 @@
  * @filesource RenderPdfService.pdf
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 13 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Service;
 
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwareInterface
+class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
 {
     /**
      * @var EventManagerInterface
@@ -43,8 +43,19 @@ class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwar
      * Les méthodes de construction sont publiques (voir ci-dessous)
      * @var array
      */
-    protected $content = array();
+    protected $content = [];
 
+    /**
+     * Injecte les objets nécessaires
+     * 
+     * @param ServiceLocatorInterface $serviceLocator
+     */
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->setServiceLocator($serviceLocator);
+        return $this;
+    }
+    
     /**
      * (non-PHPdoc)
      * @see \Zend\ServiceManager\ServiceLocatorAwareInterface::setServiceLocator()
@@ -64,7 +75,7 @@ class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwar
     }
     
     /**
-     * Lance un évènement renderPdf avec comme `target` le ServiceManager et comme `argv` la propriété $content
+     * Lance un évènement renderPdf avec comme `target` le PdfManager et comme `argv` la propriété $content
      */
     public function renderPdf()
     {
@@ -78,9 +89,9 @@ class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwar
      */
     public function setEventManager(EventManagerInterface $eventManager)
     {
-        $eventManager->addIdentifiers(array(
+        $eventManager->addIdentifiers([
             get_called_class()
-        ));
+        ]);
         $this->eventManager = $eventManager;
     }
 
@@ -113,7 +124,7 @@ class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwar
      * 
      * @return \SbmPdf\Service\RenderPdfService
      */
-    public function setData($data, $head = array())
+    public function setData($data, $head = [])
     {
         $this->content['data'] = $data;
         if (!empty($head)) {
@@ -132,7 +143,7 @@ class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwar
      * 
      * @return \SbmPdf\Service\RenderPdfService
      */
-    public function setHead(array $head = array())
+    public function setHead(array $head = [])
     {
         $this->content['head'] = $head;
         return $this;
@@ -148,7 +159,7 @@ class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwar
      * 
      * @return \SbmPdf\Service\RenderPdfService
      */
-    public function setPdfConfig($config = array())
+    public function setPdfConfig($config = [])
     {
         $this->content['pdf_config'] = $config;
         return $this;
@@ -162,7 +173,7 @@ class RenderPdfService implements EventManagerAwareInterface, ServiceLocatorAwar
      * @param array $config
      * @return \SbmPdf\Service\RenderPdfService
      */
-    public function setTableConfig($config = array()) 
+    public function setTableConfig($config = []) 
     {
         $this->content['table_config'] = $config;
         return $this;

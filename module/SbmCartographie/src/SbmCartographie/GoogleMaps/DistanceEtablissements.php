@@ -180,40 +180,27 @@
  * @filesource DistanceEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCartographie\GoogleMaps;
 
 use SbmCartographie\Model\Point;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceManager;
 use Zend\Db\Sql\Where;
 use SbmCommun\Model\StdLib;
 use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 
-class DistanceEtablissements implements ServiceLocatorAwareInterface
+class DistanceEtablissements
 {
 
     /**
-     * Nécessaire pour savoir s'il faut initialiser la classe
+     * Db manager
      *
-     * @var bool
+     * @var \Zend\ServiceManager\ServiceManager
      */
-    private $_init;
-
-    /**
-     *
-     * @var ServiceLocatorInterface
-     */
-    private $sm;
-
-    /**
-     * Système cartographique permettant de déterminer la projection
-     *
-     * @var string
-     */
-    private $system;
+    private $db_manager;
 
     /**
      * URL d'appel de l'API distanceMatrix
@@ -235,45 +222,18 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     private $projection;
 
-    public function __construct()
+    /**
+     *
+     * @param \Zend\ServiceManager\ServiceManager $db_manager            
+     * @param \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection            
+     * @param array $google_api            
+     */
+    public function __construct($db_manager, $projection, $google_api)
     {
-        $this->_init = false;
-    }
-
-    public function init()
-    {
-        if (! $this->_init) {
-            $ns = '\\' . explode('\\', __NAMESPACE__)[0] . '\\ConvertSystemGeodetic\\Projection\\';
-            $config = $this->getServiceLocator()->get('Config');
-            $this->system = $ns . StdLib::getParamR(array(
-                'cartographie',
-                'system'
-            ), $config);
-            $nzone = StdLib::getParamR(array(
-                'cartographie',
-                'nzone'
-            ), $config, 0);
-            $this->projection = new $this->system($nzone);
-            $this->google_directions_url = StdLib::getParamR(array(
-                'google_api',
-                'directions'
-            ), $config);
-            $this->google_distancematrix_url = StdLib::getParamR(array(
-                'google_api',
-                'distancematrix'
-            ), $config);
-            $this->_init = true;
-        }
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->sm = $serviceLocator;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->sm;
+        $this->projection = $projection;
+        $this->db_manager = $db_manager;
+        $this->google_directions_url = StdLib::getParam('directions', $google_api);
+        $this->google_distancematrix_url = StdLib::getParam('distancematrix', $google_api);
     }
 
     /**
@@ -283,7 +243,6 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     public function getProjection()
     {
-        $this->init();
         return $this->projection;
     }
 
@@ -296,7 +255,6 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     public function getLatLngString(Point $point)
     {
-        $this->init();
         if (! in_array($point->getUnite(), array(
             'degré',
             'grade',
@@ -319,17 +277,16 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     public function calculDistance(Point $origine, Point $destination)
     {
-        $this->init();
         $url = sprintf($this->google_distancematrix_url, $this->getLatLngString($origine), $this->getLatLngString($destination));
         $obj = json_decode(file_get_contents($url));
         if ($obj->status == 'OK') {
             if ($obj->rows[0]->elements[0]->status == 'OK') {
                 $d = $obj->rows[0]->elements[0]->distance->value;
             } else {
-                $d = 0;
+                $d = null;
             }
         } else {
-            $d = 0;
+            $d = null;
         }
         return $d;
     }
@@ -347,7 +304,6 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     public function plusieursOriginesUneDestination(array $origines, Point $destination)
     {
-        $this->init();
         if (! is_array($origines)) {
             throw new Exception(__METHOD__ . ' - Le paramètre 1 de cette méthode doit être un tableau. On a reçu ' . gettype($origines));
         }
@@ -386,7 +342,6 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     public function uneOriginePlusieursDestinations(Point $origine, array $destinations)
     {
-        $this->init();
         if (! is_array($destinations)) {
             throw new Exception(__METHOD__ . ' - Le paramètre 2 de cette méthode doit être un tableau. On a reçu ' . gettype($destinations));
         }
@@ -420,8 +375,6 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     public function calculDistanceByDirections(Point $origine, Point $destination)
     {
-        $this->init();
-        // $url = sprintf($this->google_directions_url, urlencode($domicile->getAdresse()), $this->getLatLngString($ecole));
         $url = sprintf($this->google_directions_url, $this->getLatLngString($origine), $this->getLatLngString($destination));
         $obj = json_decode(file_get_contents($url));
         if ($obj->status == 'OK') {
@@ -448,7 +401,7 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     private function prepareListeEcolesZone($niveau, $statut = null, $communeId = null)
     {
-        $tableEtablissements = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
+        $tableEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
         $result = array(
             'tEtablissements' => array(),
             'tLatLng' => array()
@@ -553,7 +506,7 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
      */
     public function collegesPrisEnCompte(Point $domicile)
     {
-        $tSecteurScolaireClgPu = $this->getServiceLocator()->get('Sbm\Db\Table\SecteursScolairesClgPu');
+        $tSecteurScolaireClgPu = $this->db_manager->get('Sbm\Db\Table\SecteursScolairesClgPu');
         $rowset = $tSecteurScolaireClgPu->fetchAll(array(
             'communeId' => $domicile->getAttribute('communeId')
         ));
@@ -561,7 +514,7 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
         foreach ($rowset as $clg) {
             $listePublic[] = $clg->etablissementId;
         }
-        $tClg = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
+        $tClg = $this->db_manager->get('Sbm\Db\Table\Etablissements');
         $rowset = $tClg->fetchAll(array(
             'niveau' => 4
         ));
@@ -636,7 +589,7 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
         $where = new Where();
         if ($college->getAttribute('statut')) {
             // collège public : l'élève est-il du secteur scolaire ?
-            $tSecteurScolaireClgPu = $this->getServiceLocator()->get('Sbm\Db\Table\SecteursScolairesClgPu');
+            $tSecteurScolaireClgPu = $this->db_manager->get('Sbm\Db\Table\SecteursScolairesClgPu');
             $where->equalTo('communeId', $domiciles[0]->getAttribute('communeId'));
             if (count($domiciles) == 2) {
                 $where->OR->equalTo('communeId', $domiciles[1]->getAttribute('communeId'));
@@ -662,7 +615,7 @@ class DistanceEtablissements implements ServiceLocatorAwareInterface
                 $origines[$j ++] = $this->getLatLngString($pt);
             }
             // quels sont les établissements privés ?
-            $tClg = $this->getServiceLocator()->get('Sbm\Db\Table\Etablissements');
+            $tClg = $this->db_manager->get('Sbm\Db\Table\Etablissements');
             $where->equalTo('statut', 0)->equalTo('niveau', 4);
             if ($estDeLaCommune) {
                 $where->equalTo('communeId', $college->getAttribute('communeId'));

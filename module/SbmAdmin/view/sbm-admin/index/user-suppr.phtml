@@ -9,29 +9,29 @@
  * @filesource user-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$acategories = array(
+$acategories = [
     255 => 'Administrateur',
     254 => 'Administrateur',
     253 => 'Gestionnaire',
     1 => 'Parent',
     2 => 'Transporteur',
     3 => 'Etablissement'
-);
-$url_retour = $this->url('sbmadmin', array(
+];
+$url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page
-));
-$actions = array(
-    'retour' => array(
+]);
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Suppression d'un compte d'utilisateur</h1>
 <div id="suppr-wrapper">
@@ -54,6 +54,6 @@ $actions = array(
     <?php else :?>
     <p>Ce compte est celui d'un responsable. Pour supprimer ce compte,
 		vous devez d'abord supprimer le responsable associé.</p>
-	<div class="menu clearfix"><?php echo $this->listeZoneActions(array(), $actions);?></div>
+	<div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions);?></div>
     <?php endif;?>
 </div>

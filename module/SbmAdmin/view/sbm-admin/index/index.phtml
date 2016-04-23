@@ -8,20 +8,26 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1.6.7
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_pdf_liste = $this->url('sbmpdf', array(
+$url_pdf_liste = $this->url('sbmpdf', [
     'action' => 'pdf-liste'
-));
-$url_libelle_liste = $this->url('sbmadmin', array(
+]);
+$url_libelle_liste = $this->url('sbmadmin', [
     'action' => 'libelle-liste'
-));
-$url_droits = $this->url('sbmadmin', array('action' => 'user-liste'));
-$url_secteurs_scolaires_liste = $this->url('sbmadmin', array('action' => 'secteur-scolaire-liste'));
+]);
+$url_droits = $this->url('sbmadmin', [
+    'action' => 'user-liste'
+]);
+$url_secteurs_scolaires_liste = $this->url('sbmadmin', [
+    'action' => 'secteur-scolaire-liste'
+]);
 $url_gestion = $this->url('sbmgestion');
-$url_export = $this->url('sbmadmin', array('action'=> 'export'));
+$url_export = $this->url('sbmadmin', [
+    'action' => 'export'
+]);
 ?>
 <h1>Espace d'administration</h1>
 <div id="menugeneral">
@@ -34,14 +40,21 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
     </div>
-	<div  id="menugeneral-inner">
+	<div id="menugeneral-inner">
 		<ul>
-			<li><a href="<?php echo $url_droits; ?>"><i class="fam-bullet-go"></i>Gestion des utilisateurs</a></li>
-			<li><a href="<?php echo $url_export; ?>"><i class="fam-bullet-go"></i>Exportation des données géolocalisées</a></li>
-			<li><a href="<?php echo $url_secteurs_scolaires_liste; ?>"><i class="fam-bullet-go"></i>Gestion des secteurs scolaires des collèges publics</a></li>
-			<li><a href="<?php echo $url_libelle_liste; ?>"><i class="fam-bullet-go"></i>Gestion des libellés de l'application</a></li>
-			<li><a href="<?php echo $url_pdf_liste; ?>"><i class="fam-bullet-go"></i>Gestion des documents pdf</a></li>
-			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-bullet-go"></i>Espace des gestionnaires</a></li>
+			<li><a href="<?php echo $url_droits; ?>"><i class="fam-bullet-go"></i>Gestion
+					des utilisateurs</a></li>
+			<li><a href="<?php echo $url_export; ?>"><i class="fam-bullet-go"></i>Exportation
+					des données géolocalisées</a></li>
+			<li><a href="<?php echo $url_secteurs_scolaires_liste; ?>"><i
+					class="fam-bullet-go"></i>Gestion des secteurs scolaires des
+					collèges publics</a></li>
+			<li><a href="<?php echo $url_libelle_liste; ?>"><i
+					class="fam-bullet-go"></i>Gestion des libellés de l'application</a></li>
+			<li><a href="<?php echo $url_pdf_liste; ?>"><i class="fam-bullet-go"></i>Gestion
+					des documents pdf</a></li>
+			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-bullet-go"></i>Espace
+					des gestionnaires</a></li>
 		</ul>
 	</div>
 </div>

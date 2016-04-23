@@ -36,9 +36,9 @@ class IndexController extends AbstractActionController
             return $prg;
         }
         $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
-        $statEleve = $this->getServiceLocator()->get('Sbm\Statistiques\Eleve');
-        $statResponsable = $this->getServiceLocator()->get('Sbm\Statistiques\Responsable');
-        $statPaiement = $this->getServiceLocator()->get('Sbm\Statistiques\Paiement');
+        $statEleve = $this->config['db_manager']->get('Sbm\Statistiques\Eleve');
+        $statResponsable = $this->config['db_manager']->get('Sbm\Statistiques\Responsable');
+        $statPaiement = $this->config['db_manager']->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
         return new ViewModel(array(
             'elevesEnregistres' => current($statEleve->getNbEnregistresByMillesime($millesime))['effectif'],

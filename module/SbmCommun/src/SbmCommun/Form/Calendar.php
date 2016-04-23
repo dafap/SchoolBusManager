@@ -7,8 +7,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 nov. 2014
- * @version 2014-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Form;
 
@@ -16,9 +16,9 @@ use Zend\InputFilter\InputFilterProviderInterface;
 
 class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
 {
-    public function __construct($param = 'calendar')
+    public function __construct()
     {
-        parent::__construct($param);
+        parent::__construct('calendar');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'calendarId',

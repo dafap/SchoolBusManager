@@ -9,22 +9,22 @@
  * @filesource user-link.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmadmin', array(
+$url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page
-));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Fiche du responsable associé à un compte d'utilisateur</h1>
 <div id="fiche-wrapper">
@@ -32,18 +32,18 @@ $actions = array(
 		<div class="menu float-left">
         <?php echo $this->listeZoneActions($hiddens, $actions);?>
         </div>
-        <div class="float-left">
-            <ul style="margin-top: 0;" class="gras">
-                <li><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
-                <li>Identifiant: <?php echo $this->user->email;?></li>
-                <li>Créé le: <?php echo $this->user->dateCreation;?> - Modifié le: <?php echo $this->user->dateModification;?></li>
-            </ul>
-        </div>
+		<div class="float-left">
+			<ul style="margin-top: 0;" class="gras">
+				<li><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
+				<li>Identifiant: <?php echo $this->user->email;?></li>
+				<li>Créé le: <?php echo $this->user->dateCreation;?> - Modifié le: <?php echo $this->user->dateModification;?></li>
+			</ul>
+		</div>
 	</div>
 	<div id="fiche-inner">
 <?php if ($this->responsable === false) :?>
-        <p class="left-10px">Il n'y a pas de responsable associé à ce compte
-			d'utilisateur.</p>
+        <p class="left-10px">Il n'y a pas de responsable associé à ce
+			compte d'utilisateur.</p>
 <?php else :?>
         <fieldset id="user" class="page1">
 			<div>

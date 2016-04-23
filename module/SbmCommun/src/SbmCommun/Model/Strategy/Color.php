@@ -9,12 +9,15 @@
  * @filesource Color.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 juil. 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Strategy;
 
-use Zend\Stdlib\Hydrator\Strategy\StrategyInterface;
+/*
+ * @deprecated use Zend\Stdlib\Hydrator\Strategy\StrategyInterface;
+ */
+use Zend\Hydrator\Strategy\StrategyInterface;
 use SbmCommun\Model\Strategy\Exception;
 use SbmCommun\Model\StdLib;
 

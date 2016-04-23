@@ -2,7 +2,8 @@
 /**
  * Listener qui appelle la plateforme pour obtenir le formulaire de paiement.
  *
- * L'appel est déclanché par un évènement 'appelPaiement' lancé par la méthode SbmParent\Controller\IndexController::payerAction().
+ * L'appel est déclanché par un évènement 'appelPaiement' lancé par 
+ * la méthode SbmParent\Controller\IndexController::payerAction().
  * On utilisera comme identifiant de l'évènement la chaine 'appelPaiement'.
  * 
  * Les paramètres de l'évènement contiennent les données suivantes :
@@ -21,8 +22,8 @@
  * @filesource AppelPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPaiement\Listener;
 
@@ -40,7 +41,7 @@ class AppelPlateforme implements ListenerAggregateInterface
      *
      * @var \Zend\Stdlib\CallbackHandler[]
      */
-    protected $listeners = array();
+    protected $listeners = [];
 
     /**
      * {@inheritDoc}
@@ -48,10 +49,10 @@ class AppelPlateforme implements ListenerAggregateInterface
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPaiement\AppelPlateforme', 'appelPaiement', array(
+        $this->listeners[] = $sharedEvents->attach('SbmPaiement\AppelPlateforme', 'appelPaiement', [
             $this,
             'onAppelPaiement'
-        ), 1);
+        ], 1);
     }
 
     /**
@@ -68,21 +69,26 @@ class AppelPlateforme implements ListenerAggregateInterface
         }
     }
 
+    /**
+     * Le contexte (target) de l'evenement $e donne la plate-forme configurée dans le 
+     * service manager sous la clé 'SbmPaiement\Plugin\Plateforme'
+     
+     * @param Event $e
+     */
     public function onAppelPaiement(Event $e)
     {
-        $sm = $e->getTarget();
         $params = $e->getParams();
         // où sont mes certificats ?
         $cacert = realpath(__DIR__ . '/../../../config') . DIRECTORY_SEPARATOR . 'cacert.pem';
         // ouvre l'objet de la plateforme
-        $objectPlateforme = $sm->get('SbmPaiement\Plugin\Plateforme');
+        $objectPlateforme = $e->getTarget();
         
         $adapter = new Curl();
-        $adapter->setOptions(array(
+        $adapter->setOptions([
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => true
-        ));
+        ]);
         $adapter->setCurlOption(CURLOPT_CAINFO, $cacert);
         $client = new Client($objectPlateforme->getUrl());
         $client->setAdapter($adapter);

@@ -15,11 +15,27 @@
  * @filesource cartes.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 use SbmCommun\Model\DateLib;
 
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmgestion/eleve', [
+    'action' => 'eleve-liste',
+    'page' => $this->page
+]);
+$hiddens = [
+    // afin de retrouver les critères en session
+    'op' => 'retour' 
+];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour, 
+        'title' => 'Retour'
+    ]
+];
 $this->headScript()
     ->appendFile($this->basePath('/js/jquery.min.js'))
     ->captureStart();
@@ -45,6 +61,9 @@ montreDate();
 <div id="fiche-wrapper">
 	<h1>Edition des cartes</h1>
 	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
 	<?php if ($this->lastDateCarte >= $this->dateDebut) : ?>
 	<p>La dernière préparation a été faite le <?php echo DateLib::formatDateTimeFromMysql($this->lastDateCarte);?>.</p>
 	<?php endif;?>
@@ -52,11 +71,16 @@ montreDate();
 	<div id="fiche-inner">	    
 		<?php echo $this->form()->openTag($this->form1); ?>
 	    <fieldset class="sbm-page1">
-	        <p>Si vous souhaitez préparer une nouvelle édition, cliquez sur le bouton ci-dessous.</p>
-	        <div class="row-inner"><?php echo $this->formSubmit($this->form1->get('nouvelle')) . $this->formSubmit($this->form1->get('cancel')); ?></div>
-	        <p>Par la suite, cochez <i>Dernière édition</i>, sélectionnez vos critères (élèves inscrits ou élèves préinscrits) ainsi que le document que vous voulez obtenir et
-	        cliquez sur le bouton <i>Lancer l'édition</i>.</p>
-	    </fieldset>
+			<p>Si vous souhaitez préparer une nouvelle édition, cliquez sur le
+				bouton ci-dessous.</p>
+			<div class="row-inner"><?php echo $this->formSubmit($this->form1->get('nouvelle')); ?></div>
+			<p>
+				Par la suite, cochez <i>Dernière édition</i>, sélectionnez vos
+				critères (élèves inscrits ou élèves préinscrits) ainsi que le
+				document que vous voulez obtenir et cliquez sur le bouton <i>Lancer
+					l'édition</i>.
+			</p>
+		</fieldset>
 	    <?php echo $this->form()->closeTag(); ?>
 	    <p></p>
 	    <?php echo $this->form()->openTag($this->form2); ?>

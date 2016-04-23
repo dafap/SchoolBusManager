@@ -8,8 +8,8 @@
  * @filesource Station.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2014
- * @version 2014-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Form;
 
@@ -18,9 +18,9 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class Station extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
-    public function __construct($param = 'station')
+    public function __construct()
     {
-        parent::__construct($param);
+        parent::__construct('station');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'stationId',

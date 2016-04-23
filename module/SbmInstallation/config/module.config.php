@@ -7,70 +7,53 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
-return array(
-    'acl' => array(
-        'resources' => array(
-            'sbminstall' => array(
-                'allow' => array(
-                    'roles' => array('sadmin')
-                )
-            )
-        ),
-    ),
-    'service_manager' => array(
-        'invokables' => array(
-            'SbmInstallation\DumpTables' => 'SbmInstallation\Model\DumpTables'
-        )
-    ),
-    'controllers' => array(
-        'invokables' => array(
-            'SbmInstallation\Controller\Index' => 'SbmInstallation\Controller\IndexController'
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'sbminstall' => array(
+use SbmInstallation\Controller;
+use SbmInstallation\Model\Service;
+return [
+    'acl' => [
+        'resources' => [
+            'sbminstall' => [
+                'allow' => [
+                    'roles' => ['sadmin']
+                ]
+            ]
+        ],
+    ],
+    'controllers' => [
+        'factories' => [
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'sbminstall' => [
                 
                 // 'type' => 'literal',
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     
                     // 'route' => '/install',
                     'route' => '/install[/:action]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmInstallation',
-                        'controller' => 'SbmInstallation\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            )
-            // 'child_routes' => array(
-            // 'create-tables' => array(
-            // 'type' => 'literal',
-            // 'options' => array(
-            // 'route' => '/create-tables',
-            // 'defaults' => array(
-            // 'module' => 'SbmInstallation',
-            // 'controller' => 'SbmInstallation\Controller\Index',
-            // 'action' => 'create'
-            // )
-            // )
-            // )
-            // )
-            
-        )
-    ),
-    'view_manager' => array(
-        'template_map' => array(),
-        'template_path_stack' => array(
+            ]
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [],
+        'template_path_stack' => [
             __DIR__ . '/../view'
-        )
-    )
-);  
+        ]
+    ]
+];  
