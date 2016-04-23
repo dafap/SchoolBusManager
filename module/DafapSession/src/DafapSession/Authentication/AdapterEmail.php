@@ -1,26 +1,25 @@
 <?php
 /**
- * Description courte du fichier
+ * Adapter pour une autentification par email
  *
- * Description longue du fichier s'il y en a une
+ * (version adaptée pour ZF3)
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package DafapSession/Authentication
  * @filesource AdapterEmail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2015
- * @version 2015-1
+ * @date 18 avr. 2016
+ * @version 2016-2
  */
 namespace DafapSession\Authentication;
 
 use Zend\Authentication\Adapter\ValidatableAdapterInterface;
 use Zend\Authentication\Result;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Mdp;
 
-class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareInterface
+class AdapterEmail implements ValidatableAdapterInterface
 {
 
     /**
@@ -36,10 +35,11 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
     protected $credential;
 
     /**
-     *
+     * C'est un db manager mais on n'utilise que la méthode get()
+     * 
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
-    protected $sm;
+    protected $db_manager;
 
     /**
      *
@@ -52,10 +52,14 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
      * Pour chaque catégorie, les valeurs autorisées sont regroupées dans une chaine de caractères.
      * Dans les valeurs par défaut, par de o, pas de i, pas de l. Les ensembles autorisées de lettres minuscules et majuscules sont les mêmes.
      *
+     * @param
+     *            Zend\ServiceManager\ServiceLocatorInterface
      * @param array $args            
      */
-    public function __construct(array $args = array())
+    public function __construct(ServiceLocatorInterface $db_manager, array $args = [])
     {
+        $this->db_manager = $db_manager;
+        
         $chars = 'abcdefghjkmnpqrstuvwxyz';
         if (array_key_exists('chars', $args))
             $chars = $args['chars'];
@@ -69,21 +73,12 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
         $this->mdp = new Mdp($chars, $nums, $syms);
     }
 
-    public function getServiceLocator()
-    {
-        return $this->sm;
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->sm = $serviceLocator;
-    }
-
     /**
      * Renvoie un Result contenant le code, le tableau de données à stocker et le message.
      * S'il y a une erreur, le tableau de données à stocker est remplacé par une chaine vide.
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Zend\Authentication\Adapter\AdapterInterface::authenticate()
      */
     public function authenticate()
@@ -91,30 +86,37 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
         if (empty($this->identity) || empty($this->mdp)) {
             throw new Exception(__METHOD__ . 'Paramètres d\'identification incorrects. L\'email ou le mot de passe n\'ont pas été donnés.');
         }
-        $tUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+        $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
         $result = $tUsers->getMdpGdsByEmail($this->identity);
         if ($result) {
             list ($hash, $gds) = $result;
             if ($this->mdp->verify($this->credential, $hash, $gds)) {
                 $odata = $tUsers->getRecordByEmail($this->identity);
-                $identity =$odata->getArrayCopy();
+                $identity = $odata->getArrayCopy();
                 unset($identity['mdp']);
                 unset($identity['token']);
                 $odata->completeForLogin();
                 $tUsers->saveRecord($odata);
-                return new Result(Result::SUCCESS, $identity, array('Identification réussie.'));
+                return new Result(Result::SUCCESS, $identity, [
+                    'Identification réussie.'
+                ]);
             } else {
-                return new Result(Result::FAILURE_CREDENTIAL_INVALID, '', array('Mot de passe incorrect ou compte bloqué.'));
+                return new Result(Result::FAILURE_CREDENTIAL_INVALID, '', [
+                    'Mot de passe incorrect ou compte bloqué.'
+                ]);
             }
         } else {
-            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', array('Email inconnu ou compte inactif.'));
+            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', [
+                'Email inconnu ou compte inactif.'
+            ]);
         }
     }
 
     /**
      * L'email
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::getIdentity()
      */
     public function getIdentity()
@@ -124,8 +126,9 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
 
     /**
      * On donne un tableau contenant l'email (clé 'email') ou une chaine représentant l'email
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::setIdentity()
      */
     public function setIdentity($identity)
@@ -142,8 +145,9 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
 
     /**
      * Le mot de passe en clair
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::getCredential()
      */
     public function getCredential()
@@ -153,8 +157,9 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
 
     /**
      * On donne un tableau contenant le mot de passe (clé 'mdp') ou le mot de passe en clair
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::setCredential()
      */
     public function setCredential($credential)
@@ -168,10 +173,10 @@ class AdapterEmail implements ValidatableAdapterInterface, ServiceLocatorAwareIn
         }
         return $this;
     }
-    
+
     /**
      * Renvoie un objet Mdp
-     * 
+     *
      * @return \DafapSession\Model\Mdp
      */
     public function getMdp()

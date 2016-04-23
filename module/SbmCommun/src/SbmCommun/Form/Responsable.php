@@ -9,8 +9,8 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juin 2014
- * @version 2014-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Form;
 

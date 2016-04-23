@@ -25,7 +25,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
 
-$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $tarifs = $this->paginator->getCurrentItems();
 $url_ajouter = $this->url('sbmgestion/finance', array(

@@ -4,16 +4,16 @@
  *
  * L'évènement 'sendMail' contient :
  * - name : sendMail
- * - target : ServiceManager
- * - params : array(
- *              'to' => array(),     // tableau des adresses des destinataires. 
- *                                      Les adresses sont données sous la forme array('email' => string, 'name' => string)
- *              'cc' => array(),     // optionnel - comme 'to'
- *              'bcc' => array(),    // optionnel - comme 'to'                        
+ * - target : null
+ * - params : [
+ *              'to' => [],     // tableau des adresses des destinataires. 
+ *                                      Les adresses sont données sous la forme ['email' => string, 'name' => string)
+ *              'cc' => [],     // optionnel - comme 'to'
+ *              'bcc' => [],    // optionnel - comme 'to'                        
  *              'subject' => string, // sujet qui sera concaténé à config['sbm']['mail']['message']['subject']
- *              'body' => array(),   // le corps du message et les fichiers joints sous la forme array('text' => string, 'html' => string, 'files' => array())
+ *              'body' => [],   // le corps du message et les fichiers joints sous la forme ['text' => string, 'html' => string, 'files' => [])
  *                                   // où files est un tableau de filename (avec chemin complet dans le filename)
- *              '' => array()        // les pièces jointes
+ *              '' => []        // les pièces jointes
  *           )
  *           
  * @project sbm
@@ -21,8 +21,8 @@
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mai 2015
- * @version 2015-1
+ * @date 14 avril 2016
+ * @version 2016-2
  */
 namespace DafapMail\Model;
 
@@ -31,7 +31,6 @@ use Zend\Mime;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\Event;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class EnvoiMail implements ListenerAggregateInterface
 {
@@ -40,25 +39,45 @@ class EnvoiMail implements ListenerAggregateInterface
      *
      * @var \Zend\Stdlib\CallbackHandler[]
      */
-    protected $listeners = array();
+    protected $listeners = [];
+
+    /**
+     * Tableau de configuration de Mail
+     *
+     * @var array
+     */
+    private $config;
+
+    /**
+     * Tableau défini dans les module.config.php et sbm.local.php sous la clé 'sbm' => 'mail' => []
+     * Ce tableau a pour clés 'transport', 'message' et 'destinataires'.
+     * Les destinaitaires sont les adresses de réception des messages adressés au service de transport.
+     * (non utilisé ici)
+     *
+     * @param array $config_mail            
+     */
+    public function __construct($config_mail)
+    {
+        $this->config = $config_mail;
+    }
 
     /**
      * Service manager
      *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
-    protected $sm;
-
+    // protected $sm;
+    
     /**
      * {@inheritDoc}
      */
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmMail\Send', 'sendMail', array(
+        $this->listeners[] = $sharedEvents->attach('SbmMail\Send', 'sendMail', [
             $this,
             'onSendMail'
-        ), 1);
+        ], 1);
     }
 
     /**
@@ -76,57 +95,55 @@ class EnvoiMail implements ListenerAggregateInterface
     }
 
     /**
-     * Traitement de l'évènement 'paiementOK'
-     * Le contexte de l'évènement est le ServiceManager.
-     * Les paramètres sont les données à enregistrer.
+     * Traitement de l'évènement 'sendMail'
+     *
+     * Les paramètres de l'évènement (params) sont les données à enregistrer.
      *
      * @param Event $e            
      */
     public function onSendMail(Event $e)
     {
-        $this->setServiceLocator($e->getTarget());
         $params = $e->getParams();
-        $config = $this->sm->get('config')['sbm']['mail'];
         
         // message
         $mail = new Mail\Message();
-        $mail->setEncoding($config['message']['message_encoding']);
-        $mail->setFrom($config['message']['from']['email'], $config['message']['from']['name']);
-        $mail->setReplyTo($config['message']['replyTo']['email'], $config['message']['replyTo']['name']);
-        $to = empty($params['to']) ? array() : $params['to'];
+        $mail->setEncoding($this->config['message']['message_encoding']);
+        $mail->setFrom($this->config['message']['from']['email'], $this->config['message']['from']['name']);
+        $mail->setReplyTo($this->config['message']['replyTo']['email'], $this->config['message']['replyTo']['name']);
+        $to = empty($params['to']) ? [] : $params['to'];
         foreach ($to as $destinataire) {
             
             $mail->addTo($this->getAdresse($destinataire));
         }
-        $cc = empty($params['cc']) ? array() : $params['cc'];
+        $cc = empty($params['cc']) ? [] : $params['cc'];
         foreach ($cc as $destinataire) {
             $mail->addCc($this->getAdresse($destinataire));
         }
-        $bcc = empty($params['bcc']) ? array() : $params['bcc'];
+        $bcc = empty($params['bcc']) ? [] : $params['bcc'];
         foreach ($bcc as $destinataire) {
             $mail->addBcc($this->getAdresse($destinataire));
         }
-        $mail->setSubject($config['message']['subject'] . $params['subject']);
-        $this->setBody($mail, $params['body'], $config['message']['message_encoding']);
+        $mail->setSubject($this->config['message']['subject'] . $params['subject']);
+        $this->setBody($mail, $params['body'], $this->config['message']['message_encoding']);
         // transport
-        if ($config['transport']['mode'] == 'sendmail') {
+        if ($this->config['transport']['mode'] == 'sendmail') {
             $transport = new Mail\Transport\Sendmail();
-        } elseif ($config['transport']['mode'] == 'smtp') {
+        } elseif ($this->config['transport']['mode'] == 'smtp') {
             $options = new Mail\Transport\SmtpOptions();
-            if (! empty($config['transport']['smtpOptions']['host'])) {
-                $options->setHost($config['transport']['smtpOptions']['host']);
+            if (! empty($this->config['transport']['smtpOptions']['host'])) {
+                $options->setHost($this->config['transport']['smtpOptions']['host']);
             }
-            if (! empty($config['transport']['smtpOptions']['port'])) {
-                $options->setPort($config['transport']['smtpOptions']['port']);
+            if (! empty($this->config['transport']['smtpOptions']['port'])) {
+                $options->setPort($this->config['transport']['smtpOptions']['port']);
             }
-            if (! empty($config['transport']['smtpOptions']['name'])) {
-                $options->setName($config['transport']['smtpOptions']['name']);
+            if (! empty($this->config['transport']['smtpOptions']['name'])) {
+                $options->setName($this->config['transport']['smtpOptions']['name']);
             }
-            if (! empty($config['transport']['smtpOptions']['connexion_class'])) {
-                //$options->setConnectionClass($config['transport']['smtpOptions']['connexion_class']);
+            if (! empty($this->config['transport']['smtpOptions']['connexion_class'])) {
+                // $options->setConnectionClass($config['transport']['smtpOptions']['connexion_class']);
             }
-            if (! empty($config['transport']['smtpOptions']['connexion_config'])) {
-                //$options->setConnectionConfig($config['transport']['smtpOptions']['connexion_config']);
+            if (! empty($this->config['transport']['smtpOptions']['connexion_config'])) {
+                // $options->setConnectionConfig($config['transport']['smtpOptions']['connexion_config']);
             }
             $transport = new Mail\Transport\Smtp($options);
         } else {
@@ -174,15 +191,15 @@ class EnvoiMail implements ListenerAggregateInterface
         } elseif (empty($bodyinfo['text'])) {
             throw new Exception('Le message est vide. Donnez un texte, éventuellement formaté en html.');
         }
-        if (!array_key_exists('files', $bodyinfo)) {
-            $bodyinfo['files'] = array();
+        if (! array_key_exists('files', $bodyinfo)) {
+            $bodyinfo['files'] = [];
         }
         // on place obligatoirement un message en text
         $content = new Mime\Message();
         $textPart = new Mime\Part($bodyinfo['text']);
         $textPart->type = Mime\Mime::TYPE_TEXT;
         // et les fichiers joints
-        $attaches = array();
+        $attaches = [];
         $fileinfo = finfo_open(FILEINFO_MIME_TYPE);
         if (! $fileinfo) {
             throw new Exception("Erreur à l'ouverture de fileinfo.");
@@ -202,16 +219,16 @@ class EnvoiMail implements ListenerAggregateInterface
         }
         finfo_close($fileinfo);
         if (count($attaches) > 0) {
-            $parts = array_merge(array(
+            $parts = array_merge([
                 $textPart,
                 $htmlPart
-            ), $attaches);
+            ], $attaches);
             $type = Mime\Mime::MULTIPART_MIXED;
         } else {
-            $parts = array(
+            $parts = [
                 $textPart,
                 $htmlPart
-            );
+            ];
             $type = Mime\Mime::MULTIPART_ALTERNATIVE;
         }
         $body = new Mime\Message();
@@ -221,25 +238,5 @@ class EnvoiMail implements ListenerAggregateInterface
             ->getHeaders()
             ->get('content-type')
             ->setType($type);
-    }
-
-    /**
-     * Installe le service manager
-     *
-     * @param ServiceLocatorInterface $sm            
-     */
-    protected function setServiceLocator(ServiceLocatorInterface $sm)
-    {
-        $this->sm = $sm;
-    }
-
-    /**
-     * Renvoie le service manager
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    protected function getServiceLocator()
-    {
-        return $this->sm;
     }
 } 

@@ -1,25 +1,24 @@
 <?php
 /**
- * Description courte du fichier
+ * Adapter pour une autentification par token
  *
- * Description longue du fichier s'il y en a une
+ * (version adptée pour ZF3)
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package DafapSession/Authentication
  * @filesource AdapterToken.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2015
- * @version 2015-1
+ * @date 18 avr. 2016
+ * @version 2016-2
  */
 namespace DafapSession\Authentication;
 
 use Zend\Authentication\Adapter\ValidatableAdapterInterface;
 use Zend\Authentication\Result;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class AdapterToken implements ValidatableAdapterInterface, ServiceLocatorAwareInterface
+class AdapterToken implements ValidatableAdapterInterface
 {
 
     /**
@@ -37,21 +36,22 @@ class AdapterToken implements ValidatableAdapterInterface, ServiceLocatorAwareIn
     protected $credential;
 
     /**
-     *
+     * C'est un db manager mais on n'utilise que la méthode get()
+     * 
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
-    protected $sm;
-
-    public function getServiceLocator()
+    protected $db_manager;
+    
+    /**
+     * Constructeur passant le serviceManager pour pouvoir retrouver la table users
+     * 
+     * @param \Zend\ServiceManager\ServiceLocatorInterface $db_manager
+     */
+    public function __construct(ServiceLocatorInterface $db_manager)
     {
-        return $this->sm;
-    }
+        $this->db_manager = $db_manager;
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->sm = $serviceLocator;
     }
-
     /**
      * Renvoie un Result contenant le code, le tableau de données à stocker et le message.
      * S'il y a une erreur, le tableau de données à stocker est remplacé par une chaine vide.
@@ -64,7 +64,7 @@ class AdapterToken implements ValidatableAdapterInterface, ServiceLocatorAwareIn
         if (empty($this->identity)) {
             throw new Exception(__METHOD__ . 'Paramètre d\'entrée incorrect. Le token n\'a pas été donné.');
         }
-        $tUsers = $this->getServiceLocator()->get('Sbm\Db\Table\Users');
+        $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
         try {
             $odata = $tUsers->getRecordByToken($this->identity);
             $identity = $odata->clearToken()->getArrayCopy();

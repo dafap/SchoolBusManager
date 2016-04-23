@@ -14,8 +14,8 @@
  * @filesource LibelleForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juil. 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -24,11 +24,13 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Literal;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class LibelleForSelect implements FactoryInterface
 {
 
-    private $db;
+    private $db_manager;
 
     private $table_name;
 
@@ -36,9 +38,13 @@ class LibelleForSelect implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->sql = new Sql($this->db->getDbAdapter());
-        $this->table_name = $this->db->getCanonicName('libelles', 'system');
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->sql = new Sql($this->db_manager->getDbAdapter());
+        $this->table_name = $this->db_manager->getCanonicName('libelles', 'system');
         return $this;
     }
 

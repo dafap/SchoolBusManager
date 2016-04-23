@@ -7,8 +7,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 janv. 2016
- * @version 2016-1.7.1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmGestion\Model\Db\Service\Circuit;
 
@@ -19,14 +19,16 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 use DafapSession\Model\Session;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Liste implements FactoryInterface
 {
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db;
+    private $db_manager;
 
     /**
      *
@@ -54,8 +56,12 @@ class Liste implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
@@ -70,7 +76,7 @@ class Liste implements FactoryInterface
     {
         $select = $this->sql->select();
         $select->from(array(
-            'c' => $this->db->getCanonicName('circuits', 'table')
+            'c' => $this->db_manager->getCanonicName('circuits', 'table')
         ))
             ->where(array(
             'millesime' => Session::get('millesime')
@@ -78,7 +84,7 @@ class Liste implements FactoryInterface
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(array())
             ->join(array(
-            's' => $this->db->getCanonicName('services')
+            's' => $this->db_manager->getCanonicName('services')
         ), 's.serviceId=c.serviceId')
             ->where(array(
             'stationId' => $stationId
@@ -95,7 +101,7 @@ class Liste implements FactoryInterface
     public function stationsNonDesservies()
     {
         $select1 = new Select();
-        $select1->from($this->db->getCanonicName('circuits'))
+        $select1->from($this->db_manager->getCanonicName('circuits'))
             ->columns(array(
             'stationId'
         ))
@@ -104,10 +110,10 @@ class Liste implements FactoryInterface
         ));
         $select = $this->sql->select();
         $select->from(array(
-            's' => $this->db->getCanonicName('stations')
+            's' => $this->db_manager->getCanonicName('stations')
         ))
             ->join(array(
-            'v' => $this->db->getCanonicName('communes')
+            'v' => $this->db_manager->getCanonicName('communes')
         ), 'v.communeId=s.communeId', array(
             'commune' => 'nom'
         ))

@@ -9,8 +9,8 @@
  * @filesource BordereauxForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -21,15 +21,17 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use SbmCommun\Model\DateLib;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class BordereauxForSelect implements FactoryInterface
 {
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db;
+    private $db_manager;
 
     private $table_name;
 
@@ -41,9 +43,13 @@ class BordereauxForSelect implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->table_name = $this->db->getCanonicName('paiements', 'vue');
-        $this->sql = new Sql($this->db->getDbAdapter());
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->table_name = $this->db_manager->getCanonicName('paiements', 'vue');
+        $this->sql = new Sql($this->db_manager->getDbAdapter());
         return $this;
     }
 

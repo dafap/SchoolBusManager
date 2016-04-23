@@ -24,7 +24,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
 
-$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $organismes = $this->paginator->getCurrentItems();
 

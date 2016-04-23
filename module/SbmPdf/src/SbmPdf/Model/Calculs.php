@@ -44,7 +44,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 1 juil. 2015
- * @version 2015-2
+ * @version 2016-2
  */
 namespace SbmPdf\Model;
 
@@ -62,7 +62,7 @@ class Calculs
 
     private $arg_default;
 
-    private $expressions = array();
+    private $expressions = [];
 
     private $resultats;
 
@@ -87,7 +87,7 @@ class Calculs
      */
     public function reset()
     {
-        $this->resultats = array();
+        $this->resultats = [];
     }
 
     /**
@@ -129,8 +129,8 @@ class Calculs
         $pattern = '/%([a-z]+)(?:{([^};]*)})?%/i';
         $cr = preg_match_all($pattern, $s, $matches);
         $this->expressions[$idx]['search'] = $matches[0];
-        $this->expressions[$idx]['functions'] = isset($matches[1]) ? $matches[1] : array();
-        $this->expressions[$idx]['args'] = isset($matches[2]) ? $matches[2] : array();
+        $this->expressions[$idx]['functions'] = isset($matches[1]) ? $matches[1] : [];
+        $this->expressions[$idx]['args'] = isset($matches[2]) ? $matches[2] : [];
         return $s;
     }
 
@@ -144,7 +144,7 @@ class Calculs
      */
     private function getExpression($expression)
     {
-        $parentheses = array();
+        $parentheses = [];
         for ($np = 0, $i = 0; $i < mb_strlen($expression) && $np >= 0; $i ++) {
             $c = $expression[$i];
             if ($c == '(' || $c == ')') {
@@ -187,7 +187,7 @@ class Calculs
             $s = $this->analyse($s, $key);
         }
         $search = $this->expressions[$key]['search'];
-        $replace = array();
+        $replace = [];
         for ($j = 0; $j < count($search); $j ++) {
             if (! method_exists($this, $this->expressions[$key]['functions'][$j])) continue;
             $replace[] = $this->{$this->expressions[$key]['functions'][$j]}($this->expressions[$key]['args'][$j]);

@@ -7,9 +7,23 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2014
- * @version 2014-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
+use SbmFront\Controller;
+use SbmFront\Model\Responsable\Responsable;
+use SbmFront\Model\Responsable\Service\ResponsableManager;
+use SbmFront\Form\Service\CreerCompteFactory;
+use SbmFront\Form\CreerCompte;
+use SbmFront\Form\Service\EmailChangeFactory;
+use SbmFront\Form\EmailChange;
+use SbmFront\Form\Service\LoginFactory;
+use SbmFront\Form\Login;
+use SbmFront\Form\Service\MdpDemandeFactory;
+use SbmFront\Form\MdpDemande;
+use SbmFront\Form;
+
+
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
     define('ROOT_PATH', dirname(dirname(MODULE_PATH)));
@@ -111,12 +125,26 @@ return array(
             )
         )
     ),
-    'service_manager' => array(
-        'invokables' => array(),
-        'factories' => array(
-            'Navigation' => 'SbmFront\Model\Navigation\Navigation'
-        )
-    ),
+    'form_manager' => [
+        'invokables' => [
+            Form\MdpChange::class => Form\MdpChange::class,
+            Form\MdpFirst::class => Form\MdpFirst::class,
+            Form\ModifCompte::class => Form\ModifCompte::class
+        ],
+        'factories' => [
+            CreerCompte::class => CreerCompteFactory::class,
+            EmailChange::class => EmailChangeFactory::class,
+            Login::class => LoginFactory::class,
+            MdpDemande::class => MdpDemandeFactory::class
+        ]
+    ],
+    'service_manager' => [
+        'invokables' => [],
+        'factories' => [
+            SbmFront\Form\Login::class => SbmFront\Form\Service\LoginFactory::class,
+            Responsable::class => ResponsableManager::class,           
+        ]
+    ],
     'router' => array(
         'routes' => array(
             'home' => array(
@@ -128,7 +156,7 @@ return array(
                     ),
                     'defaults' => array(
                         'module' => __NAMESPACE__,
-                        'controller' => 'SbmFront\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     )
                 ),
@@ -144,7 +172,7 @@ return array(
                     ),
                     'defaults' => array(
                         'module' => __NAMESPACE__,
-                        'controller' => 'SbmFront\Controller\Login',
+                        'controller' => Controller\LoginController::class,
                         'action' => 'login'
                     )
                 )
@@ -152,9 +180,9 @@ return array(
         )
     ),
     'controllers' => array(
-        'invokables' => array(
-            'SbmFront\Controller\Index' => 'SbmFront\Controller\IndexController',
-            'SbmFront\Controller\Login' => 'SbmFront\Controller\LoginController'
+        'factories' => array(
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
+            Controller\LoginController::class => Controller\Service\LoginControllerFactory::class
         )
     ),
     'view_helpers' => array(

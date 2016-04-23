@@ -9,23 +9,23 @@
  * @filesource export.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juin 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_exportEleves = $this->url('sbmadmin', array(
+$url_exportEleves = $this->url('sbmadmin', [
     'action' => 'export-eleve'
-));;
-$url_exportEtablissements = $this->url('sbmadmin', array(
+]);
+$url_exportEtablissements = $this->url('sbmadmin', [
     'action' => 'export-etablissement'
-));;
-$url_exportResponsables = $this->url('sbmadmin', array(
+]);
+$url_exportResponsables = $this->url('sbmadmin', [
     'action' => 'export-responsable'
-));;
-$url_exportStations = $this->url('sbmadmin', array(
+]);
+$url_exportStations = $this->url('sbmadmin', [
     'action' => 'export-station'
-));;
+]);
 $url_retour = $this->url('sbmadmin');
 ?>
 <div id="menugeneral">

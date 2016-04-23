@@ -18,8 +18,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 févr. 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 return array(
     'acl' => array(
@@ -96,17 +96,9 @@ return array(
         )
     ),
     'service_manager' => array(
-        'invokables' => array(
-            'Dafap\AdapterByEmail' => 'DafapSession\Authentication\AdapterEmail',
-            'Dafap\AdapterByToken' => 'DafapSession\Authentication\AdapterToken'
-        ),
         'factories' => array(
-            'Dafap\Authenticate' => 'DafapSession\Authentication\AuthenticationServiceFactory'
-        )
-    ),
-    'controller_plugins' => array(
-        'invokables' => array(
-            'DafapSessionAclRoutes' => 'DafapSession\Permissions\AclRoutes'
+            'Dafap\Authenticate' => 'DafapSession\Authentication\AuthenticationServiceFactory',
+            'Dafap\AclRoutes' => 'DafapSession\Permissions\AclRoutes'
         )
     )
 );

@@ -48,7 +48,7 @@ EOT;
 $js_op = 'javascript:window.document.getElementById(\'op%s%s\').value=\'%s\';';
 
 // le paginateur
-$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 try {
     $eleves = $this->paginator->getCurrentItems();

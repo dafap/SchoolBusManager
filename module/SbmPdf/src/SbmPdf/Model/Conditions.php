@@ -22,8 +22,8 @@
  * @filesource Conditions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 13 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Model;
 
@@ -64,7 +64,7 @@ class Conditions
             throw new Exception("La condition indiquée devrait être une chaîne. On a reçu :\n$dump");
         }
         
-        $this->enable = array();
+        $this->enable = [];
         $this->setCondition($condition);
     }
 
@@ -105,7 +105,7 @@ class Conditions
     private function liste_structures()
     {
         $array = get_class_methods($this);
-        $result = array();
+        $result = [];
         foreach ($array as $item) {
             if (substr($item, 0, strlen('struct_')) == 'struct_') {
                 $result[] = $item;
@@ -183,7 +183,7 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? dans (...)` en une structure `in_array(?, array(...))` correcte pour le langage PHP
+     * Transforme la structure `? dans (...)` en une structure `in_array(?, [...))` correcte pour le langage PHP
      * et met à jour la propriété `enable_in_array`
      *
      * @param string $condition            
@@ -194,7 +194,7 @@ class Conditions
         $pattern = '/\?\s*dans\s*\((.*)\)/i';
         if (preg_match($pattern, $condition, $matches)) {
             $this->enable['in_array'] = true;
-            $replace = 'in_array(?, array(' . $matches[1] . '))';
+            $replace = 'in_array(?, [' . $matches[1] . '))';
             return str_replace($matches[0], $replace, $condition);
         } else {
             return $condition;
@@ -202,7 +202,7 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? sauf (...)` en une structure `!in_array(?, array(...))` correcte pour le langage PHP
+     * Transforme la structure `? sauf (...)` en une structure `!in_array(?, [...))` correcte pour le langage PHP
      * et met à jour la propriété `enable_in_array`
      *
      * @param string $condition            
@@ -213,7 +213,7 @@ class Conditions
         $pattern = '/\?\s*sauf\s*\((.*)\)/i';
         if (preg_match($pattern, $condition, $matches)) {
             $this->enable['in_array'] = true;
-            $replace = '!in_array(?, array(' . $matches[1] . '))';
+            $replace = '!in_array(?, [' . $matches[1] . '))';
             return str_replace($matches[0], $replace, $condition);
         } else {
             return $condition;

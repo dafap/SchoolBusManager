@@ -1,26 +1,27 @@
 <?php
 /**
  * Méthode de copie des tables sélectionnées
+ * 
+ * Compatible ZF3
  *
  * @project sbm
  * @package SbmInstallation/Model
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 janv. 2016
- * @version 2016-1.7.1
+ * @date 11 avr. 2016
+ * @version 2016-2
  */
 namespace SbmInstallation\Model;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Model\Strategy\TarifAttributs;
 
-class DumpTables implements ServiceLocatorAwareInterface
+class DumpTables
 {
-    private $sm;
+    private $db_manager;
     
     private $template_head = <<<EOT
 <?php
@@ -40,11 +41,16 @@ class DumpTables implements ServiceLocatorAwareInterface
 return array(
 EOT;
     
-    private $tables = array();
+    private $tables = [];
     
     private $onScreen;
     
     private $screen = '';
+    
+    public function __construct(DbManager $db_manager)
+    {
+        $this->db_manager = $db_manager;
+    }
     
     /**
      * Initialisation :
@@ -58,24 +64,6 @@ EOT;
     {
         $this->tables = $tables;
         $this->onScreen = $onScreen;
-    }
-    
-    /**
-     * (non-PHPdoc)
-     * @see \Zend\ServiceManager\ServiceLocatorAwareInterface::setServiceLocator()
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->sm = $serviceLocator;
-    }
-    
-    /**
-     * (non-PHPdoc)
-     * @see \Zend\ServiceManager\ServiceLocatorAwareInterface::getServiceLocator()
-     */
-    public function getServiceLocator()
-    {
-        return $this->sm;
     }
     
     /**
@@ -98,7 +86,7 @@ EOT;
         
         foreach ($this->tables as $table_alias) {
             // initialisation des variables de boucle
-            $table = $this->getServiceLocator()->get($table_alias);
+            $table = $this->db_manager->get($table_alias);
             $table_type = $table->getTableType();
             $table_name = $table->getTableName();
             if ($table_type == 'system') {

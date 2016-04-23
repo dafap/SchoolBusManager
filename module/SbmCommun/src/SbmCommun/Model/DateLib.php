@@ -9,8 +9,8 @@
  * @filesource DateLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2015
- * @version 2015-1
+ * @date 19 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model;
 
@@ -117,12 +117,30 @@ class DateLib
     }
     
     /**
-     * Renvoie la date actuelle au format (jour/mois/an)
+     * Renvoie la date actuelle au format (an-mois-jour)
      */
     public static function todayToMysql()
     {
         $date = new DateTime();
         return $date->format('Y-m-d');
+    }
+    
+    /**
+     * Renvoie la date-heure actuele au format (jour-mois-an heure:min:s)
+     */
+    public static function now()
+    {
+        $date = new DateTime();
+        return $date->format('d-m-Y H:i:s');
+    }
+    
+    /**
+     * Renvoie la date actuelle au format (jour/mois/an)
+     */
+    public static function today()
+    {
+        $date = new DateTime();
+        return $date->format('d-m-Y');
     }
 }
  

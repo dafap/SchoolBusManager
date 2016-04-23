@@ -12,107 +12,113 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $libelles = $this->paginator->getCurrentItems();
-$url_ajouter = $this->url('sbmadmin', array(
+$url_ajouter = $this->url('sbmadmin', [
     'action' => 'libelle-ajout',
     'page' => $this->page
-));
-$url_rapports = $this->url('sbmadmin', array(
+]);
+$url_rapports = $this->url('sbmadmin', [
     'action' => 'libelle-pdf',
     'page' => $this->page
-));
+]);
 $url_retour = $this->url('sbmadmin');
-$hiddens = array();
-$menuImpression = $this->menuRapports($this->url('sbmadmin', array(
+$hiddens = [];
+$menuImpression = $this->menuRapports($this->url('sbmadmin', [
     'action' => 'libelle-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau libellé'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des libellés de l'application</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-	    <div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-	    <div class="flashMessenger float-right"><?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?></div>
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
 	<div id="liste-inner">
-	    <table class="libelles">
-		    <tbody>
-		        <tr><th>Nature</th><th>Code</th><th>Libellé</th><th>Ouvert</th></tr>
+		<table class="libelles">
+			<tbody>
+				<tr>
+					<th>Nature</th>
+					<th>Code</th>
+					<th>Libellé</th>
+					<th>Ouvert</th>
+				</tr>
           <?php foreach($libelles as $test => $libelle): ?>
-                <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-				    <td class="nature"><?php echo $this->escapeHtml($libelle->nature); ?></td>
-				    <td class="code centre"><?php echo $this->escapeHtml($libelle->code); ?></td>
-				    <td class="libelle"><?php echo $this->escapeHtml($libelle->libelle); ?></td>
-				    <td class="ouvert centre"><?php echo $this->escapeHtml($libelle->ouvert); ?></td>
-				    <td class="boutons">
+                <tr
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
+					<td class="nature"><?php echo $this->escapeHtml($libelle->nature); ?></td>
+					<td class="code centre"><?php echo $this->escapeHtml($libelle->code); ?></td>
+					<td class="libelle"><?php echo $this->escapeHtml($libelle->libelle); ?></td>
+					<td class="ouvert centre"><?php echo $this->escapeHtml($libelle->ouvert); ?></td>
+					<td class="boutons">
             <?php
-            $url_edit = $this->url('sbmadmin', array(
+            $url_edit = $this->url('sbmadmin', [
                 'action' => 'libelle-edit',
-                'page' => $this->page,
-            ));
-            $url_delete = $this->url('sbmadmin', array(
+                'page' => $this->page
+            ]);
+            $url_delete = $this->url('sbmadmin', [
                 'action' => 'libelle-suppr',
-                'page' => $this->page,
-            ));
-            $url_group = $this->url('sbmadmin', array(
+                'page' => $this->page
+            ]);
+            $url_group = $this->url('sbmadmin', [
                 'action' => 'libelle-group',
-                'page' => $this->page,
-            ));
-            $hiddens = array(
+                'page' => $this->page
+            ]);
+            $hiddens = [
                 'id' => $libelle->nature . '|' . $libelle->code
-            );
-            $buttons = array(
-                'modifier' => array(
+            ];
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier'
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer'
-                ),
-                'eleves' => array(
+                ],
+                'eleves' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'libellés de même nature'
-                )
-            );
+                ]
+            ];
             echo $this->listeLigneActions($hiddens['id'], $hiddens, $buttons);
             ?>
 				    </td>
-			    </tr>         
+				</tr>         
         <?php endforeach;?>
             </tbody>
-	    </table>
+		</table>
 	</div>
 	<div id="liste-footer">
-	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
-	    <div class="criteres-wrapper">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="criteres-wrapper">
         <?php echo $this->form()->openTag($this->criteres_form);?>
         <?php echo $this->formCollection($this->criteres_form, true);?>
         <?php echo $this->form()->closeTag();?>
         </div>
-    </div>
+	</div>
 </div>

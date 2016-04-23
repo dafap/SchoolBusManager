@@ -9,24 +9,24 @@
  * @filesource user-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmadmin', array(
+$url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page
-));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Compte d'un utilisateur</h1>
 <div id="fiche-wrapper">

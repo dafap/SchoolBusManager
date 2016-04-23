@@ -9,80 +9,82 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
-$controllers = array(
-    \SbmAjax\Controller\AdminController::ROUTE => 'SbmAjax\Controller\AdminController',
-    \SbmAjax\Controller\EleveController::ROUTE => 'SbmAjax\Controller\EleveController',
-    \SbmAjax\Controller\TransportController::ROUTE => 'SbmAjax\Controller\TransportController',
-    \SbmAjax\Controller\FinanceController::ROUTE => 'SbmAjax\Controller\FinanceController',
-    \SbmAjax\Controller\ParentController::ROUTE => 'SbmAjax\Controller\ParentController'
+use SbmAjax\Controller\Service;
+
+$controllers = [
+    \SbmAjax\Controller\AdminController::ROUTE => Service\AdminControllerFactory::class,
+    \SbmAjax\Controller\EleveController::ROUTE => Service\EleveControllerFactory::class,
+    \SbmAjax\Controller\TransportController::ROUTE => Service\TransportControllerFactory::class,
+    \SbmAjax\Controller\FinanceController::ROUTE => Service\FinanceControllerFactory::class,
+    \SbmAjax\Controller\ParentController::ROUTE => Service\ParentControllerFactory::class
     
-);
-$routes = array();
+];
+$routes = [];
 foreach ($controllers as $key => $value) {
-    $routes[$key] = array(
+    $routes[$key] = [
         'type' => 'segment',
-        'options' => array(
+        'options' => [
             'route' => "/$key" . '[/:action][/:args]',
-            'constraints' => array(
+            'constraints' => [
                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                 'args' => '[a-zA-Z][a-zA-Z0-9_-]*:[a-zA-Z0-9_%\-\+]+(/[a-zA-Z][a-zA-Z0-9_-]*:[a-zA-Z0-9_%\-\+]+)*'
-            ),
-            'defaults' => array(
+            ],
+            'defaults' => [
                 'module' => 'SbmAjax',
                 'controller' => $key,
                 'action' => 'index'
-            )
-        ),
+            ]
+        ],
         'may_terminate' => false
-    );
+    ];
 }
-return array(
-    'acl' => array(
-        'resources' => array(
-            \SbmAjax\Controller\AdminController::ROUTE => array(
-                'allow' => array(
-                    'roles' => array('admin')
-                )
-            ),
-            \SbmAjax\Controller\EleveController::ROUTE => array(
-                'allow' => array(
-                    'roles' => array('parent')
-                )
-            ),
-            \SbmAjax\Controller\FinanceController::ROUTE => array(
-                'allow' => array(
-                    'roles' => array('gestion')
-                )
-            ),
-            \SbmAjax\Controller\TransportController::ROUTE => array(
-                'allow' => array(
-                    'roles' => array('gestion')
-                )
-            ),
-            \SbmAjax\Controller\ParentController::ROUTE => array(
-                'allow' => array(
-                    'roles' => array('parent')
-                )
-            )
-        ),
-    ),
-    'controllers' => array(
-        // de préférence dans ce module, commencer les noms par jax (pour des routes commençant par ajax) et les laisser en minuscules
-        'invokables' => $controllers
-    ),
-    'router' => array(
+return [
+    'acl' => [
+        'resources' => [
+            \SbmAjax\Controller\AdminController::ROUTE => [
+                'allow' => [
+                    'roles' => ['admin']
+                ]
+            ],
+            \SbmAjax\Controller\EleveController::ROUTE => [
+                'allow' => [
+                    'roles' => ['parent']
+                ]
+            ],
+            \SbmAjax\Controller\FinanceController::ROUTE => [
+                'allow' => [
+                    'roles' => ['gestion']
+                ]
+            ],
+            \SbmAjax\Controller\TransportController::ROUTE => [
+                'allow' => [
+                    'roles' => ['gestion']
+                ]
+            ],
+            \SbmAjax\Controller\ParentController::ROUTE => [
+                'allow' => [
+                    'roles' => ['parent']
+                ]
+            ]
+        ],
+    ],
+    'controllers' => [
+        // de préférence dans ce module, commencer les noms par sbmajax (pour des routes commençant par ajax) et les laisser en minuscules
+        'factories' => $controllers
+    ],
+    'router' => [
         'routes' => $routes
-    ),
-    'view_manager' => array(
-        'template_map' => array(),
-        'template_path_stack' => array(
+    ],
+    'view_manager' => [
+        'template_map' => [],
+        'template_path_stack' => [
             __DIR__ . '/../view'
-        ),
-        //'strategies' => array(
+        ],
+        //'strategies' => [
         //    'ViewJsonStrategy'
-        //)
-    )
-);
+        //]
+    ]
+];

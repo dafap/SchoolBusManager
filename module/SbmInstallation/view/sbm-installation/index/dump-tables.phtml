@@ -15,14 +15,14 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $retour = $this->url("sbminstall");
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 
 // pour afficher le résultat, il faut conserver la balise <pre> et échapper le texte à l'intérieur
 preg_match('/^<pre>(.*)<\/pre>\z/si', $this->description, $inner);
@@ -48,9 +48,9 @@ if (! empty($inner)) {
   <?php
     // formulaire
     $this->form->prepare();
-    $this->form->setAttribute('action', $this->url('sbminstall', array(
+    $this->form->setAttribute('action', $this->url('sbminstall', [
         'action' => 'dump-tables'
-    )));
+    ]));
     
     echo $this->form()->openTag($this->form);
     

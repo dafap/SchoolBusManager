@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2015
- * @version 2015-1
+ * @date 22 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -23,15 +23,18 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Predicate\Predicate;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Eleves implements FactoryInterface
 {
+
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
-    
+    protected $db_manager;
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -47,7 +50,7 @@ class Eleves implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -58,8 +61,12 @@ class Eleves implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
@@ -69,22 +76,22 @@ class Eleves implements FactoryInterface
         $predicate = new Where();
         $predicate->literal('sc2.eleveId=sco.eleveId');
         $select2 = new Select();
-        $select2->from(array(
-            'sc2' => $this->db->getCanonicName('scolarites', 'table')
-        ))
-            ->columns(array(
+        $select2->from([
+            'sc2' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ])
+            ->columns([
             'dernierMillesime' => new Literal('max(millesime)')
-        ))
+        ])
             ->where($predicate);
         $where = new Where();
         $where->equalTo('res.responsableId', $responsableId)
             ->nest()
             ->isNull('millesime')->or->equalTo('millesime', $select2)->unnest();
         $select = $this->sql->select()
-            ->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
-        ))
-            ->columns(array(
+            ->from([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->columns([
             'eleveId' => 'eleveId',
             'dateCreation' => 'dateCreation',
             'dateModificationEleve' => 'dateModification',
@@ -103,13 +110,13 @@ class Eleves implements FactoryInterface
             'responsableFId' => 'responsableFId',
             'selectionEleve' => 'selection',
             'noteEleve' => 'note'
-        ))
-            ->join(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
-        ), 'res.responsableId = ele.' . $lequel, array())
-            ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
-        ), 'ele.eleveId = sco.eleveId', array(
+        ])
+            ->join([
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
+        ], 'res.responsableId = ele.' . $lequel, [])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'ele.eleveId = sco.eleveId', [
             'millesime',
             'paiement',
             'inscrit',
@@ -121,22 +128,22 @@ class Eleves implements FactoryInterface
             'accordR2',
             'subventionR1',
             'subventionR2'
-        ), Select::JOIN_LEFT)
-            ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
-        ), 'sco.etablissementId = eta.etablissementId', array(
+        ], Select::JOIN_LEFT)
+            ->join([
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+        ], 'sco.etablissementId = eta.etablissementId', [
             'etablissement' => 'nom'
-        ), Select::JOIN_LEFT)
-            ->join(array(
-            'cometa' => $this->db->getCanonicName('communes', 'table')
-        ), 'eta.communeId = cometa.communeId', array(
+        ], Select::JOIN_LEFT)
+            ->join([
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'eta.communeId = cometa.communeId', [
             'communeEtablissement' => 'nom'
-        ), Select::JOIN_LEFT)
-            ->join(array(
-            'cla' => $this->db->getCanonicName('classes', 'table')
-        ), 'cla.classeId = sco.classeId', array(
+        ], Select::JOIN_LEFT)
+            ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'cla.classeId = sco.classeId', [
             'classe' => 'nom'
-        ), Select::JOIN_LEFT)
+        ], Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();

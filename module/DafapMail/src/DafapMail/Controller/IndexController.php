@@ -11,14 +11,13 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 févr. 2016
- * @version 2016-1.7.3
+ * @date 7 avril 2016
+ * @version 2016-2
  */
 namespace DafapMail\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use DafapMail\Form\Mail as MailForm;
 use DafapMail\Model\Template as MailTemplate;
 use SbmCommun\Model\StdLib;
 
@@ -35,10 +34,6 @@ class IndexController extends AbstractActionController
      */
     public function indexAction()
     {
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by();
-        
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -54,8 +49,8 @@ class IndexController extends AbstractActionController
                 ));
             }
         }
-        $user = $auth->getIdentity();
-        $form = new MailForm();
+        $user = $this->config['user'];
+        $form = $this->config['form_manager']->get('Dafap\MailForm');
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -72,11 +67,7 @@ class IndexController extends AbstractActionController
                 }
                 // envoie l'email
                 $params = array(
-                    'bcc' => StdLib::getParamR(array(
-                        'sbm',
-                        'mail',
-                        'destinataires'
-                    ), $this->getServiceLocator()->get('config')),
+                    'bcc' => StdLib::getParam('destinataires', $this->config['mail_config']),
                     'cc' => array(
                         array(
                             'email' => $user['email'],
@@ -89,7 +80,7 @@ class IndexController extends AbstractActionController
                     )
                 );
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
-                $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+                $this->getEventManager()->trigger('sendMail', null, $params);
                 $this->flashMessenger()->addInfoMessage('Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
                 try {
                     return $this->redirectToOrigin()->back();
@@ -119,9 +110,9 @@ class IndexController extends AbstractActionController
      */
     public function lastDayChangesAction()
     {
-        $history = $this->getServiceLocator()->get('Sbm\Db\Query\History');
-        $services = $this->getServiceLocator()->get('Sbm\Db\Table\Services');
-        $transporteurs = $this->getServiceLocator()->get('Sbm\Db\Table\Transporteurs');
+        $history = $this->config['db_manager']->get('Sbm\Db\Query\History');
+        $services = $this->config['db_manager']->get('Sbm\Db\Table\Services');
+        $transporteurs = $this->config['db_manager']->get('Sbm\Db\Table\Transporteurs');
         $destinataires = array();
         $changes = $history->getLastDayChanges('affectations');
         if ($changes instanceof \Traversable) {
@@ -139,7 +130,7 @@ class IndexController extends AbstractActionController
                 }
             }
             $mailTemplate = new MailTemplate('avertissement-transporteur');
-            $qtransporteurs = $this->getServiceLocator()->get('Sbm\Db\Query\Transporteurs');
+            $qtransporteurs = $this->config['db_manager']->get('Sbm\Db\Query\Transporteurs');
             $controle = array();
             foreach ($destinataires as $transporteurId => $circuits) {
                 $odata = $transporteurs->getRecord($transporteurId);
@@ -179,7 +170,7 @@ class IndexController extends AbstractActionController
                     )
                 );
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
-                $this->getEventManager()->trigger('sendMail', $this->getServiceLocator(), $params);
+                $this->getEventManager()->trigger('sendMail', null, $params);
             }
         }
         if (empty($controle)) {

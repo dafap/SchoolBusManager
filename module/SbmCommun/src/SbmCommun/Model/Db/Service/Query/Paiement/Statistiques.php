@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juin 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
 
@@ -22,6 +22,8 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Predicate\Predicate;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Statistiques implements FactoryInterface
 {
@@ -36,7 +38,7 @@ class Statistiques implements FactoryInterface
      *
      * @var \Zend\Db\Adapter\Adapter
      */
-    protected $db;
+    protected $db_manager;
     
     /**
      *
@@ -71,11 +73,14 @@ class Statistiques implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
-        // $this->modes = $serviceLocator->get('Sbm\Libelles\ModeDePaiement');
         return $this;
     }
 
@@ -96,14 +101,14 @@ class Statistiques implements FactoryInterface
     public function getSumByAsMode($millesime = null)
     {
         $select = $this->sql->select(array(
-            'p' => $this->db->getCanonicName('paiements', 'table')
+            'p' => $this->db_manager->getCanonicName('paiements', 'table')
         ));
         $select->columns(array(
             'anneeScolaire',
             'somme' => new Expression('sum(montant)')
         ))
             ->join(array(
-            'm' => $this->db->getCanonicName('libelles-modes-de-paiement', 'vue')
+            'm' => $this->db_manager->getCanonicName('libelles-modes-de-paiement', 'vue')
         ), 'm.code=p.codeModeDePaiement', array(
             'mode' => 'libelle'
         ))

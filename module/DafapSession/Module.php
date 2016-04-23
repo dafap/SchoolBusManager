@@ -20,8 +20,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 févr. 2015
- * @version 2015-1
+ * @date 14 avr. 2016
+ * @version 2016-2
  */
 namespace DafapSession;
 
@@ -84,8 +84,7 @@ class Module extends AbstractModule
         $matchedRoute = $router->match($request);
         if (null !== $matchedRoute) {
             $sharedManager->attach('Zend\Mvc\Controller\AbstractActionController', MvcEvent::EVENT_DISPATCH, function ($e) use($sm) {
-                $sm->get('ControllerPluginManager')
-                    ->get('DafapSessionAclRoutes')
+                $sm->get('Dafap\AclRoutes')
                     ->dispatch($e); // pass to the plugin...
             }, 100);
         }

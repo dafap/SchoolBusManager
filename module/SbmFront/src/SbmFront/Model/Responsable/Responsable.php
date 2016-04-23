@@ -2,19 +2,19 @@
 /**
  * Opérations sur le responsable correspondant à l'utilisateur autentifié.
  *
- * La correspondance se fait par l'email
+ * La correspondance se fait par l'email.
+ * Compatible ZF3
  * 
  * @project sbm
  * @package SbmParent/Model
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2015
- * @version 2015-1
+ * @date 6 avr. 2016
+ * @version 2015-2
  */
-namespace SbmParent\Model;
+namespace SbmFront\Model\Responsable;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use DafapSession\Model\Session;
 
 class Responsable
@@ -22,8 +22,16 @@ class Responsable
 
     const SESSION_RESPONSABLE_NAMESPACE = 'sbmparent_responsable';
 
-    private $sm;
-
+    /**
+     * 
+     * @var \Zend\Authentication\AuthenticationService
+     */
+    private $authenticate_by;
+    /**
+     * 
+     * @var \SbmCommun\Model\Db\Service\Table\Vue\Responsables
+     */
+    private $vue_responsable;
     private $responsable;
 
     /**
@@ -35,12 +43,15 @@ class Responsable
      * S'il n'existe pas de responsable correspondant à cet utilisateur, une exception est
      * lancée. Il faudra la traiter en demandant la création du responsable.
      *
-     * @param ServiceLocatorInterface $sm            
+     * @param \Zend\Authentication\AuthenticationService $authenticate_by    
+     * @param \SbmCommun\Model\Db\Service\Table\Vue $vue_responsable
+     *         
      * @throws Exception
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    public function __construct($authenticate_by, $vue_responsable)
     {
-        $this->sm = $sm;
+        $this->authenticate_by = $authenticate_by;
+        $this->vue_responsable = $vue_responsable;
         $this->responsable = Session::get('responsable', array(), self::SESSION_RESPONSABLE_NAMESPACE);
         $this->init();
     }
@@ -96,12 +107,9 @@ class Responsable
      */
     private function init()
     {
-        $email = $this->sm->get('Dafap\Authenticate')
-            ->by()
-            ->getIdentity()['email'];
+        $email = $this->authenticate_by->getIdentity()['email'];
         if ($this->invalid($email)) {
-            $table = $this->sm->get('Sbm\Db\Vue\Responsables');
-            $r = $table->getRecordByEmail($email);
+            $r = $this->vue_responsable->getRecordByEmail($email);
             if (empty($r)) {
                 $this->responsable = array();
                 throw new Exception('Responsable à créer');

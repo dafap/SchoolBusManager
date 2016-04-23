@@ -8,8 +8,8 @@
  * @filesource DocAffectation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2015
- * @version 2015-1
+ * @date 13 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Form;
 
@@ -23,117 +23,117 @@ class DocAffectation extends AbstractSbmForm implements InputFilterProviderInter
     {
         parent::__construct('docaffectation');
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'name' => 'csrf',
             'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
+            'options' => [
+                'csrf_options' => [
                     'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'docaffectationId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'documentId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'name'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'recordSource'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'libelle',
-            'attributes' => array(
+            'attributes' => [
                 'autofocus' => 'autofocus',
                 'id' => 'libelle',
                 'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Libellé dans le menu',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'route',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'route'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Page du site',
                 'empty_option' => 'Choisissez',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'ordinal_position',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'ordinal_position'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Position dans le menu',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'submit',
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'value' => 'Enregistrer',
                 'id' => 'docaffectation-submit',
                 'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'submit',
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'value' => 'Abandonner',
                 'id' => 'docaffectation-cancel',
                 'class' => 'button default cancel'
-            )
-        ));
+            ]
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'libelle' => array(
+        return [
+            'libelle' => [
                 'name' => 'libelle',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'ordinal_position' => array(
+                    ]
+                ]
+            ],
+            'ordinal_position' => [
                 'name' => 'ordinal_position',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Digits'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 }

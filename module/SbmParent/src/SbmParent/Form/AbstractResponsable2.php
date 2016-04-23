@@ -1,19 +1,22 @@
 <?php
 /**
- * Partie du formulaire d'inscription d'un enfant concernant le second responsable en cas de garde alternée
+ * Partie du formulaire d'inscription d'un enfant concernant le second responsable 
+ * en cas de garde alternée.
  *
- * Cette classe est utilisée en tant que collection
+ * Cette classe abstraite est utilisée en tant que collection et sera dérivée en précisant
+ * la propritété complet dans le constructeur.
  * Afin qu'il n'y ait pas de conflit, tous les nom d'éléments commmencent par r2.
- * Les methodes setData et getData sont adaptées en conséquence pour que ça fonctionne aussi bien si les datas
- * proviennent de la table (pas de r2 en préfixe du nom des colonnes) ou du post (r2 en préfixe).
+ * Les methodes setData et getData sont adaptées en conséquence pour que ça fonctionne 
+ * aussi bien si les datas proviennent de la table (pas de r2 en préfixe du nom des colonnes) 
+ * ou du post (r2 en préfixe).
  * 
  * @project sbm
  * @package SbmParent/Form
- * @filesource Responsable2.php
+ * @filesource AbstractResponsable2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2015
- * @version 2015-1
+ * @date 22 avr. 2016
+ * @version 2015-2
  */
 namespace SbmParent\Form;
 
@@ -21,14 +24,13 @@ use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Form\FormInterface;
 
-class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterface
+abstract class AbstractResponsable2 extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
-    private $complet;
+    protected $complet;
 
-    public function __construct($complet)
+    public function __construct()
     {
-        $this->complet = $complet;
         parent::__construct('responsable2');
         $this->add(array(
             'type' => 'hidden',
@@ -211,8 +213,7 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
     public function getInputFilterSpecification()
     {
         if ($this->complet) {
-            return array(
-                
+            return array(                
                 'r2telephoneF' => array(
                     'name' => 'r2telephoneF',
                     'required' => false

@@ -7,8 +7,8 @@
  * @filesource RecordSource.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2015
- * @version 2015-1
+ * @date 12 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Model\Validator;
 
@@ -33,31 +33,31 @@ class RecordSource extends AbstractValidator
      *
      * @var array Message templates
      */
-    protected $messageTemplates = array(
+    protected $messageTemplates = [
         self::ERROR_BAD_QUERY => "Ce n'est ni l'identifiant d'une table ou d'une vue, ni une requête Sql\n%msg%"
-    );
+    ];
     
-    protected $messageVariables = array(
+    protected $messageVariables = [
         'msg' => 'msg'
-    );
+    ];
 
     protected  $msg;
     /**
      *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
-    private $sm;
+    private $auth_userId;
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db;
+    private $db_manager;
 
     public function __construct(array $options)
     {
-        $this->sm = $options['sm'];
-        $this->db = $this->sm->get('Sbm\Db\DbLib');
+        $this->auth_userId = $options['auth_userId'];
+        $this->db_manager = $options['db_manager'];
         parent::__construct($options);
     }
 
@@ -71,27 +71,25 @@ class RecordSource extends AbstractValidator
     public function isValid($value)
     {
         $this->setValue($value);
-        if (array_key_exists($value, $this->db->getTableAliasList())) {
+        if (array_key_exists($value, $this->db_manager->getTableAliasList())) {
             // il s'agit d'une table ou d'une vue enregistrée dans le service manager
             return true;
         }
         // vérifie qu'il s'agit d'une requête Sql
         try {
             // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-            $value = str_replace(array(
+            $value = str_replace([
                 '%date%',
                 '%heure%',
                 '%millesime%',
                 '%userId%'
-            ), array(
+            ], [
                 date('Y-m-d'),
                 date('H:i:s'),
                 Session::get('millesime'),
-                $this->sm->get('Dafap\Authenticate')
-                ->by()
-                ->getUserId()
-            ), $value);
-            $result = $this->db->getDbAdapter()->query($value, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                $this->auth_userId
+            ], $value);
+            $result = $this->db_manager->getDbAdapter()->query($value, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
             return true;
         } catch (\PDOException $e) {
             $this->msg = $e->getMessage();

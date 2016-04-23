@@ -21,7 +21,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use SbmCommun\Model\StdLib;
 use Zend\View\Model\Zend\View\Model;
-use SbmParent\Model\Responsable;
+use SbmFront\Model\Responsable\Responsable;
 
 class IndexController extends AbstractActionController
 {
@@ -29,7 +29,7 @@ class IndexController extends AbstractActionController
     public function formulaireAction()
     {
         try {
-            $responsable = new Responsable($this->getServiceLocator());
+            $responsable = $this->config['responsable']->get();
         } catch (Exception $e) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'logout'
@@ -45,7 +45,7 @@ class IndexController extends AbstractActionController
         $args = (array) $prg;
         
         // préparation des données
-        $preinscrits = $this->getServiceLocator()
+        $preinscrits = $this->config['db_manager']
             ->get('Sbm\Db\Query\ElevesScolarites')
             ->getElevesPreinscrits($responsable->responsableId);
         $elevesIds = array();
@@ -57,7 +57,7 @@ class IndexController extends AbstractActionController
             }
         }
         // vérification du montant
-        $montantUnitaire = $this->getServiceLocator()
+        $montantUnitaire = $this->config['db_manager']
             ->get('Sbm\Db\Table\Tarifs')
             ->getMontant('inscription');
         if ($args['montant'] != $montantUnitaire * count($elevesIds)) {
@@ -78,12 +78,12 @@ class IndexController extends AbstractActionController
             'prenom' => $responsable->prenom,
             'eleveIds' => $elevesIds
         );
-        $objectPlateforme = $this->getServiceLocator()->get('SbmPaiement\Plugin\Plateforme');
+        $objectPlateforme = $this->config['plugin_plateforme'];
         $args = $objectPlateforme->prepareAppel($params);
         
         // enregistrement de l'appel à paiement
         $id = $objectPlateforme->getUniqueId($args);
-        $tAppels = $this->getServiceLocator()->get('Sbm\Db\Table\Appels');
+        $tAppels = $this->config['db_manager']->get('Sbm\Db\Table\Appels');
         $odata = $tAppels->getObjData();
         foreach ($elevesIds as $eleveId) {
             $odata->exchangeArray(array(
@@ -113,7 +113,7 @@ class IndexController extends AbstractActionController
 
     public function listeAction()
     {
-        $table = $this->getServiceLocator()->get('SbmPaiement\Plugin\Table');
+        $table = $this->config['db_manager']->get('SbmPaiement\Plugin\Table');
         $args = $this->initListe($table->criteres());
         if ($args instanceof Response)
             return $args;
@@ -124,14 +124,14 @@ class IndexController extends AbstractActionController
         return new ViewModel(array(
             'paginator' => $table->paginator($args['where'], $order),
             'page' => $this->params('page', 1),
-            'nb_pagination' => $this->getNbPagination('nb_paiements', 15),
+            'count_per_page' => $this->getPaginatorCountPerPage('nb_notifications', 15),
             'criteres_form' => $args['form']
         ));
     }
 
     public function pdfAction()
     {
-        $table = $this->getServiceLocator()->get('SbmPaiement\Plugin\Table');
+        $table = $this->config['db_manager']->get('SbmPaiement\Plugin\Table');
         $criteresObject = array(
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             null,
@@ -173,7 +173,7 @@ class IndexController extends AbstractActionController
                 $this->setToSession('notificationId', $notificationId);
             }
         }
-        $table = $this->getServiceLocator()->get('SbmPaiement\Plugin\Table');
+        $table = $this->config['db_manager']->get('SbmPaiement\Plugin\Table');
         return new ViewModel(array(
             'notification' => $table->getRecord($notificationId),
             'page' => $this->params('page', 1)
@@ -182,13 +182,12 @@ class IndexController extends AbstractActionController
 
     public function notificationAction()
     {
-        $plugin = $this->getServiceLocator()->get('SbmPaiement\Plugin\Plateforme');
+        $plugin = $this->config['plugin_plateforme'];
         $message = $plugin->notification($this->getRequest()
             ->getPost(), $this->getRequest()
             ->getServer()
             ->get('REMOTE_ADDR'));
         if ($message === false) {
-            $config = $this->getServiceLocator()->get('Config');
             return $this->getResponse()
                 ->setStatusCode(403)
                 ->setContent('Forbidden');

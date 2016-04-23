@@ -9,8 +9,8 @@
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juin 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 namespace SbmAdmin\Form;
 
@@ -48,31 +48,31 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->source = $source;
         $this->sm = $sm;
         parent::__construct();
-        $this->setAttribute('methos', 'post');
+        $this->setAttribute('method', 'post');
         $method = 'form' . ucwords(strtolower($source));
         if (method_exists($this, $method)) {
             $this->$method();
         } else {
             throw new Exception("Les sources de données sont 'eleve', 'etablissement', 'responsable' ou 'station'. On a reçu $source.");
         }
-        $this->add(array(
+        $this->add([
             'type' => 'submit',
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'export-cancel',
                 'class' => 'button default submit left-95px',
                 'value' => 'Extraire les données'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'submit',
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'export-cancel',
                 'class' => 'button default cancel',
                 'value' => 'Abandonner'
-            )
-        ));
+            ]
+        ]);
     }
 
     public function getInputFilterSpecification()
@@ -81,283 +81,283 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         if (method_exists($this, $method)) {
             return $this->$method();
         } else {
-            return array();
+            return [];
         }
     }
 
     private function formEleve()
     {
-        $this->add(array(
+        $this->add([
             'type' => 'text',
             'name' => 'id_ccda',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'id_ccda'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Code CCDA'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'numero',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'numero'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Numéro'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'nom_eleve',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'nom_eleve'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Nom'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'prenom_eleve',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'prenom_eleve'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Prénom'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'etablissementId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'etablissementId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Etablissement',
                 'empty_option' => 'Tous',
                 'allow_empty' => true,
                 'disable_inarray_validator' => false,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Etablissements')
                     ->desservis()
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'classeId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'classeId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Classe',
                 'empty_option' => 'Toutes',
                 'allow_empty' => true,
                 'disable_inarray_validator' => false,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Classes')
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'responsable1',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'responsable1'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Responsable 1'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId_responsable1',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'communeId_responsable1'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Commune R1',
                 'empty_option' => 'Toutes',
                 'allow_empty' => true,
                 // 'disable_inarray_validator' => false,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Communes')
                     ->desservies()
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'responsable2',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'responsable2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Responsable 2'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId_responsable2',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'communeId_responsable2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Commune R2',
                 'empty_option' => 'Toutes',
                 'allow_empty' => true,
                 // 'disable_inarray_validator' => false,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Communes')
                     ->visibles()
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'ga',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Garde alternée',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Non',
                     '1' => 'Oui',
                     '2' => 'Tous'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'chez',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Domicile personnel',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Non',
                     '1' => 'Oui',
                     '2' => 'Tous'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'lot',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '1'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Quels élèves exporter ?',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Tous, sans l\'affectation',
                     '1' => 'Uniquement les élèves ayant une affectation'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     private function formEleveSpecification()
     {
-        return array(
-            'id_ccda' => array(
+        return [
+            'id_ccda' => [
                 'name' => 'id_ccda',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    )
-                )
-            ),
-            'numero' => array(
+                    ]
+                ]
+            ],
+            'numero' => [
                 'name' => 'numero',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    )
-                )
-            ),
-            'nom_eleve' => array(
+                    ]
+                ]
+            ],
+            'nom_eleve' => [
                 'name' => 'nom_eleve',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'SbmCommun\Filter\SansAccent'
-                    )
-                )
-            ),
-            'prenom_eleve' => array(
+                    ]
+                ]
+            ],
+            'prenom_eleve' => [
                 'name' => 'prenom_eleve',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'SbmCommun\Filter\SansAccent'
-                    )
-                )
-            ),
-            'etablissementId' => array(
+                    ]
+                ]
+            ],
+            'etablissementId' => [
                 'name' => 'etablissementId',
                 'required' => false
-            ),
-            'classeId' => array(
+            ],
+            'classeId' => [
                 'name' => 'classeId',
                 'required' => false
-            ),
-            'responsable1' => array(
+            ],
+            'responsable1' => [
                 'name' => 'responsable1',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    )
-                )
-            ),
-            'communeId_responsable1' => array(
+                    ]
+                ]
+            ],
+            'communeId_responsable1' => [
                 'name' => 'communeId_responsable1',
                 'required' => false
-            ),
-            'responsable2' => array(
+            ],
+            'responsable2' => [
                 'name' => 'responsable2',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    )
-                )
-            ),
-            'communeId_responsable2' => array(
+                    ]
+                ]
+            ],
+            'communeId_responsable2' => [
                 'name' => 'communeId_responsable2',
                 'required' => false
-            ),
-            'ga' => array(
+            ],
+            'ga' => [
                 'name' => 'ga',
                 'required' => false
-            ),
-            'chez' => array(
+            ],
+            'chez' => [
                 'name' => 'chez',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -438,109 +438,109 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
     // ================= Etablissements ================================================================
     private function formEtablissement()
     {
-        $this->add(array(
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'etablissementId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'etablissementId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Etablissement',
                 'empty_option' => 'Tous',
                 'allow_empty' => true,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Etablissements')
                     ->desservis()
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'communeId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
                 'allow_empty' => true,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Communes')
                     ->desservies()
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'visible',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Visible',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Non',
                     '1' => 'Oui',
                     '2' => 'Tous'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'desservie',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Desservi',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Non',
                     '1' => 'Oui',
                     '2' => 'Tous'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'statut',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Statut',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Privé',
                     '1' => 'Public',
                     '2' => 'Tous'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\MultiCheckbox',
             'name' => 'niveau',
-            'attributes' => array(
-                'value' => array(
+            'attributes' => [
+                'value' => [
                     \SbmCommun\Model\Strategy\Niveau::CODE_NIVEAU_MATERNELLE,
                     \SbmCommun\Model\Strategy\Niveau::CODE_NIVEAU_ELEMENTAIRE,
                     \SbmCommun\Model\Strategy\Niveau::CODE_NIVEAU_PREMIER_CYCLE,
                     \SbmCommun\Model\Strategy\Niveau::CODE_NIVEAU_SECOND_CYCLE
-                )
-            ),
-            'options' => array(
+                ]
+            ],
+            'options' => [
                 'label' => 'Niveau',
                 'value_options' => \SbmCommun\Model\Strategy\Niveau::getNiveaux()
-            )
-        ));
+            ]
+        ]);
     }
 
     private function formEtablissementSpecification()
     {
-        return array(
-            'etablissementId' => array(
+        return [
+            'etablissementId' => [
                 'name' => 'etablissementId',
                 'required' => false
-            ),
-            'communeId' => array(
+            ],
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -593,138 +593,138 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
     // ====================== Responsables ==========================================================
     private function formResponsable()
     {
-        $this->add(array(
+        $this->add([
             'type' => 'text',
             'name' => 'nomSA',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'nomSA'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Nom',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-first'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'communeId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
                 'allow_empty' => true,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Communes')
                     ->desservies(),
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'selection',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'selection',
                 'useHiddenElement' => false,
-                'options' => array(
+                'options' => [
                     'checkedValue' => false,
                     'uncheckedValue' => true
-                ),
+                ],
                 'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Sélectionnés',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-new-line'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'demenagement',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'demenagement',
                 'useHiddenElement' => true,
-                'options' => array(
+                'options' => [
                     'checkedValue' => false,
                     'uncheckedValue' => true
-                ),
+                ],
                 'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Déménagement',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'nbEleves',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'nbEleves'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Nb d\'élèves',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     private function formResponsableSpecification()
     {
-        return array(
-            'nomSA' => array(
+        return [
+            'nomSA' => [
                 'name' => 'nomSA',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'SbmCommun\Filter\SansAccent'
-                    )
-                )
-            ),
-            'communeId' => array(
+                    ]
+                ]
+            ],
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => false
-            ),
-            'selection' => array(
+            ],
+            'selection' => [
                 'name' => 'selection',
                 'required' => false
-            ),
-            'demenagement' => array(
+            ],
+            'demenagement' => [
                 'name' => 'demenagement',
                 'required' => false
-            ),
-            'nbEleves' => array(
+            ],
+            'nbEleves' => [
                 'name' => 'nbEleves',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Zend\Filter\StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Filter\StringTrim'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**
@@ -757,79 +757,79 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
     // ==================== Stations ==============================================================
     private function formStation()
     {
-        $this->add(array(
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'stationId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'stationId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Station',
                 'empty_option' => 'Toutes',
                 'allow_empty' => true,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Stations')
                     ->toutes()
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'communeId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'communeId'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Commune',
                 'empty_option' => 'Toutes',
                 'allow_empty' => true,
                 'value_options' => $this->sm->get('Sbm\Db\Select\Communes')
                     ->desservies()
-            )
-        ));
+            ]
+        ]);
         
-        $this->add(array(
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'visible',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Visible',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Non',
                     '1' => 'Oui',
                     '2' => 'Tous'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'ouverte',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '2'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Ouverte',
-                'value_options' => array(
+                'value_options' => [
                     '0' => 'Non',
                     '1' => 'Oui',
                     '2' => 'Tous'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     private function formStationSpecification()
     {
-        return array(
-            'stationId' => array(
+        return [
+            'stationId' => [
                 'name' => 'stationId',
                 'required' => false
-            ),
-            'communeId' => array(
+            ],
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
 
     /**

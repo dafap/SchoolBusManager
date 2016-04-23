@@ -23,14 +23,16 @@ use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Console\Prompt\Select;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class ElevesScolarites implements FactoryInterface
 {
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbLibService
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    protected $db;
+    protected $db_manager;
     
     /**
      *
@@ -64,12 +66,16 @@ class ElevesScolarites implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->columns(array(
             'eleveId' => 'eleveId',
@@ -92,7 +98,7 @@ class ElevesScolarites implements FactoryInterface
             'noteEleve' => 'note'
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId = sco.eleveId', array(
             'millesime' => 'millesime',
             'selectionScolarite' => 'selection',
@@ -139,14 +145,14 @@ class ElevesScolarites implements FactoryInterface
             'commentaire' => 'commentaire'
         ))
             ->join(array(
-            'eta' => $this->db->getCanonicName('etablissements', 'table')
+            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
         ), 'sco.etablissementId = eta.etablissementId', array(
             'etablissement' => 'nom',
             'xeta' => 'x',
             'yeta' => 'y'
         ))
             ->join(array(
-            'com' => $this->db->getCanonicName('communes', 'table')
+            'com' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'eta.communeId = com.communeId', array(
             'communeEtablissement' => 'nom'
         ));
@@ -166,7 +172,7 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = clone $this->select;
         $select->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
+            'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ), $trajet == 1 ? 'ele.responsable1Id = r.responsableId' : 'ele.responsable2Id=r.responsableId', array(
             'responsableId' => 'responsableId',
             'adresseL1' => 'adresseL1',
@@ -176,7 +182,7 @@ class ElevesScolarites implements FactoryInterface
             'y' => 'y'
         ))
             ->join(array(
-            'comresp' => $this->db->getCanonicName('communes', 'table')
+            'comresp' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r.communeId = comresp.communeId', array(
             'commune' => 'nom'
         ));
@@ -220,13 +226,13 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = $this->sql->select()
             ->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId = sco.eleveId', array())
             ->join(array(
-            'tar' => $this->db->getCanonicName('tarifs', 'table')
+            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
         ), 'tar.tarifId = sco.tarifId', array(
             'montant',
             'nomTarif' => 'nom'
@@ -250,7 +256,7 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = clone $this->select;
         $select->join(array(
-            'tar' => $this->db->getCanonicName('tarifs', 'table')
+            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
         ), 'tar.tarifId = sco.tarifId', array(
             'montant',
             'nomTarif' => 'nom'
@@ -278,7 +284,7 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = clone $this->select;
         $select->join(array(
-            'tar' => $this->db->getCanonicName('tarifs', 'table')
+            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
         ), 'tar.tarifId = sco.tarifId', array(
             'montant',
             'nomTarif' => 'nom'
@@ -298,10 +304,10 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = $this->sql->select()
             ->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'ele.eleveId = sco.eleveId', array())
             ->columns(array(
             'nbDuplicatas' => new Expression('sum(sco.duplicata)')
@@ -322,7 +328,7 @@ class ElevesScolarites implements FactoryInterface
 
     public function paginatorInscritsNonAffectes()
     {
-        return new Paginator(new DbSelect($this->sqlInscritsNonAffectes(), $this->db->getDbAdapter()));
+        return new Paginator(new DbSelect($this->sqlInscritsNonAffectes(), $this->db_manager->getDbAdapter()));
     }
 
     private function sqlInscritsNonAffectes()
@@ -330,7 +336,7 @@ class ElevesScolarites implements FactoryInterface
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
             ->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
+            'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId', array(
             'estR1' => new Expression('CASE WHEN r.responsableId=ele.responsable1Id THEN 1 ELSE 0 END'),
             'responsableId' => 'responsableId',
@@ -338,12 +344,12 @@ class ElevesScolarites implements FactoryInterface
             'adresseL2' => 'adresseL2'
         ))
             ->join(array(
-            'comresp' => $this->db->getCanonicName('communes', 'table')
+            'comresp' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r.communeId = comresp.communeId', array(
             'commune' => 'nom'
         ))
             ->join(array(
-            'aff' => $this->db->getCanonicName('affectations', 'table')
+            'aff' => $this->db_manager->getCanonicName('affectations', 'table')
         ), 'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime', array(), $select::JOIN_LEFT);
         // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
         $predicate1 = new Predicate();
@@ -384,7 +390,7 @@ class ElevesScolarites implements FactoryInterface
 
     public function paginatorPreinscritsNonAffectes()
     {
-        return new Paginator(new DbSelect($this->sqlPreinscritsNonAffectes(), $this->db->getDbAdapter()));
+        return new Paginator(new DbSelect($this->sqlPreinscritsNonAffectes(), $this->db_manager->getDbAdapter()));
     }
 
     private function sqlPreinscritsNonAffectes()
@@ -392,7 +398,7 @@ class ElevesScolarites implements FactoryInterface
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
             ->join(array(
-            'r' => $this->db->getCanonicName('responsables', 'table')
+            'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId', array(
             'estR1' => new Expression('CASE WHEN r.responsableId=ele.responsable1Id THEN 1 ELSE 0 END'),
             'responsableId' => 'responsableId',
@@ -400,12 +406,12 @@ class ElevesScolarites implements FactoryInterface
             'adresseL2' => 'adresseL2'
         ))
             ->join(array(
-            'comresp' => $this->db->getCanonicName('communes', 'table')
+            'comresp' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r.communeId = comresp.communeId', array(
             'commune' => 'nom'
         ))
             ->join(array(
-            'aff' => $this->db->getCanonicName('affectations', 'table')
+            'aff' => $this->db_manager->getCanonicName('affectations', 'table')
         ), 'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime', array(), $select::JOIN_LEFT);
         // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
         $predicate1 = new Predicate();
@@ -449,24 +455,24 @@ class ElevesScolarites implements FactoryInterface
     {
         $select = clone $this->select;
         $select->join(array(
-            'r1' => $this->db->getCanonicName('responsables', 'table')
+            'r1' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable1Id = r1.responsableId', array(
             'adresseR1L1' => 'adresseL1',
             'adresseR1L2' => 'adresseL2'
         ))
             ->join(array(
-            'comr1' => $this->db->getCanonicName('communes', 'table')
+            'comr1' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r1.communeId = comr1.communeId', array(
             'communeR1' => 'nom'
         ))
             ->join(array(
-            'r2' => $this->db->getCanonicName('responsables', 'table')
+            'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable2Id = r2.responsableId', array(
             'adresseR2L1' => 'adresseL1',
             'adresseR2L2' => 'adresseL2'
         ), $select::JOIN_LEFT)
             ->join(array(
-            'comr2' => $this->db->getCanonicName('communes', 'table')
+            'comr2' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'r2.communeId = comr2.communeId', array(
             'communeR2' => 'nom'
         ), $select::JOIN_LEFT);

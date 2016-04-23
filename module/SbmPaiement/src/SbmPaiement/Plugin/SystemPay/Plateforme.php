@@ -2,19 +2,23 @@
 /**
  * Plugin pour la plateforme de paiement SystemPay
  *
- * La méthode `notification($data)` vérifie la signature puis lance un évènement 'paiementNotification' avec 
- * comme `target` le ServiceManager et comme `argv` le tableau des vads_ contenus dans $data
+ * La méthode `notification($data)` vérifie la signature puis lance un évènement 'paiementNotification' 
+ * avec comme `argv` le tableau des vads_ contenus dans $data
  * 
- * La version 2 abandonne l'exploitation des champs `vads_nb_products` et `vads_product_refN` qui ne sont pas
- * renvoyés dans la notification. Ajout de la méthode getUniqueId() et modification de la méthode prepareData()
+ * La version 2 (2015) abandonne l'exploitation des champs `vads_nb_products` et `vads_product_refN` qui 
+ * ne sont pas renvoyés dans la notification. 
+ * Ajout de la méthode getUniqueId() et modification de la méthode prepareData()
+ * 
+ * La version 3 (2016) abandonne le contexte (target) qui contenait le service manager et devient 
+ * compatible ZF3.
  * 
  * @project sbm
  * @package SbmPaiement/Plugin/SystemPay
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2015
- * @version 2015-2
+ * @date 18 avr. 2016
+ * @version 2016-3
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -45,10 +49,10 @@ class Plateforme extends AbstractPlateforme
     protected function init()
     {
         $this->setConfig(array_merge($this->getPlateformeConfig(), include __DIR__ . '/config/systempay.config.php'));
-        $this->certificat = $this->getParam(array(
+        $this->certificat = $this->getParam([
             'certificat',
             $this->getParam('vads_ctx_mode')
-        ));
+        ]);
     }
 
     /**
@@ -124,13 +128,13 @@ class Plateforme extends AbstractPlateforme
             return false;
         }
         // le DEBIT ou le CREDIT est correct
-        $table = $this->getServiceLocator()->get('SbmPaiement\Plugin\Table');
+        $table = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
         $objectData = $table->getObjData();
         $this->data['systempayId'] = null;
         
         // référence des élèves concernés
         $nb_ref = $this->data['vads_nb_products'];
-        for ($eleveIds = array(), $i = 0; $i < $nb_ref; $i ++) {
+        for ($eleveIds = [], $i = 0; $i < $nb_ref; $i ++) {
             $eleveIds[] = $this->data['vads_product_ref' . $i];
         }
         $this->data['ref_eleveIds'] = implode('-', $eleveIds);
@@ -164,9 +168,9 @@ class Plateforme extends AbstractPlateforme
      */
     protected function prepareData()
     {
-        $this->paiement = array(
+        $this->paiement = [
             'type' => $this->data['vads_operation_type'],
-            'paiement' => array(
+            'paiement' => [
                 'datePaiement' => \DateTime::createFromFormat('YmdHis', $this->data['vads_trans_date'])->format('Y-m-d H:i:s'),
                 'dateValeur' => \DateTime::createFromFormat('YmdHis', $this->data['vads_effective_creation_date'])->format('Y-m-d H:i:s'),
                 'responsableId' => $this->data['vads_cust_id'],
@@ -176,13 +180,13 @@ class Plateforme extends AbstractPlateforme
                 'codeModeDePaiement' => $this->getCodeModeDePaiement(),
                 'codeCaisse' => $this->getCodeCaisse(),
                 'reference' => $this->data['vads_trans_id']
-            )
-        );
-        $this->scolarite = array(
+            ]
+        ];
+        $this->scolarite = [
             'type' => $this->data['vads_operation_type'],
             'millesime' => $this->getMillesime(),
-            'eleveIds' => array()
-        );
+            'eleveIds' => []
+        ];
         /**
          * Abandon de cette partie en raison de l'absence de ces champs dans la notification
          *
@@ -201,7 +205,7 @@ class Plateforme extends AbstractPlateforme
         }
         $this->logError(Logger::INFO, $msg, $this->data);*/
         
-        $tAppels = $this->getServiceLocator()->get('Sbm\Db\Table\Appels');
+        $tAppels = $this->getDbManager()->get('Sbm\Db\Table\Appels');
         $where = new Where();
         // ATTENTION ! this->data est Zend\Stdlib\Parameters
         $where->equalTo('referenceId', $this->getUniqueId($this->data->toArray()));
@@ -277,7 +281,7 @@ class Plateforme extends AbstractPlateforme
      */
     public function prepareAppel($params)
     {
-        $champs = array(
+        $champs = [
             'vads_site_id' => $this->getParam('vads_site_id'),
             'vads_ctx_mode' => $this->getParam('vads_ctx_mode'),
             'vads_trans_id' => $this->getVadsTransId(),
@@ -306,11 +310,11 @@ class Plateforme extends AbstractPlateforme
             //'vads_redirect_error_timeout' => $this->getParam('vads_redirect_error_timeout'),
             //'vads_redirect_error_message' => $this->getParam('vads_redirect_error_message'),
             'vads_nb_products' => sprintf('%d', count($params['eleveIds']))
-        );
+        ];
         for ($i = 0; $i < count($params['eleveIds']); $i ++) {
             $champs['vads_product_ref' . ($i)] = $params['eleveIds'][$i];
         }
-        $result = array();
+        $result = [];
         foreach ($champs as $key => $value) {
             if ($value != '')
                 $result[$key] = $value;

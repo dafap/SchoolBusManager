@@ -7,21 +7,24 @@
  * @filesource libelle-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'javascript:window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmadmin', array('action'=> 'libelle-liste', 'page' => $this->page));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'libelle-liste',
+    'page' => $this->page
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Création d'un nouveau libellé</h1>
 <div id="fiche-wrapper">
@@ -31,18 +34,18 @@ $actions = array(
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('csrf'));
 ?>
     <fieldset class="sbm-page1">
-        <div id="libelle-ajout-nature" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nature')); ?></div>
-        <div id="libelle-ajout-code" class="row-inner ajout"><?php echo $this->formRow($this->form->get('code')); ?></div>
-        <div id="libelle-ajout-libelle" class="row-inner ajout"><?php echo $this->formRow($this->form->get('libelle')); ?></div>
-        <div id="libelle-ajout-ouvert" class="row-inner ajout"><?php echo $this->formRow($this->form->get('ouvert')); ?></div>
-        <div id="libelle-ajout-buttons" class="row-inner ajout">  
+			<div id="libelle-ajout-nature" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nature')); ?></div>
+			<div id="libelle-ajout-code" class="row-inner ajout"><?php echo $this->formRow($this->form->get('code')); ?></div>
+			<div id="libelle-ajout-libelle" class="row-inner ajout"><?php echo $this->formRow($this->form->get('libelle')); ?></div>
+			<div id="libelle-ajout-ouvert" class="row-inner ajout"><?php echo $this->formRow($this->form->get('ouvert')); ?></div>
+			<div id="libelle-ajout-buttons" class="row-inner ajout">  
         <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-    </fieldset>
+		</fieldset>
 <?php echo $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>

@@ -6,76 +6,95 @@
  * @package module/SbmParent/config
  * @filesource module.config.php
  * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
+ * @date 6 avr. 2016
+ * @version 2016-2
  */
-return array(
-    'acl' => array(
-        'resources' => array(
-            'sbmparent' => array(
-                'allow' => array(
-                    'roles' => array(
+use SbmParent\Controller;
+use SbmParent\Form;
+use SbmParent\Model\Db\Service\Query;
+
+return [
+    'acl' => [
+        'resources' => [
+            'sbmparent' => [
+                'allow' => [
+                    'roles' => [
                         'parent'
-                    )
-                )
-            ),
-            'sbmparentconfig' => array(
-                'allow' => array(
-                    'roles' => array(
+                    ]
+                ]
+            ],
+            'sbmparentconfig' => [
+                'allow' => [
+                    'roles' => [
                         'parent'
-                    )
-                )
-            )
-        )
-    ),
-    'controllers' => array(
-        'invokables' => array(
-            'SbmParent\Controller\Index' => 'SbmParent\Controller\IndexController',
-            'SbmParent\Controller\Config' => 'SbmParent\Controller\ConfigController'
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'sbmparent' => array(
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'db_manager' => [
+        'factories' => [
+            Query\Eleves::class => Query\Eleves::class
+        ]
+    ],
+    'form_manager' => [
+        'invokables' => [
+            Form\Responsable2Complet::class => Form\Responsable2Complet::class,
+            Form\Responsable2Restreint::class => Form\Responsable2Restreint::class,
+            Form\ModifAdresse::class => Form\ModifAdresse::class
+        ],
+        'factories' => [
+            Form\Enfant::class => Form\Service\EnfantFactory::class
+        ]
+    ],
+    'controllers' => [
+        'factories' => [
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
+            Controller\ConfigController::class => Controller\Service\ConfigControllerFactory::class
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'sbmparent' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/parent[/:action[/:page][/:id]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',
                         'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmParent',
-                        'controller' => 'SbmParent\Controller\Index',
+                        'controller' => Controller\IndexController::class,
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            ),
-            'sbmparentconfig' => array(
+            ],
+            'sbmparentconfig' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/parent-config[/:action[/:page][/:id]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmParent',
-                        'controller' => 'SbmParent\Controller\Config',
+                        'controller' => Controller\ConfigController::class,
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            )
-        )
-    ),
-    'view_manager' => array(
-        'template_map' => array(),
-        'template_path_stack' => array(
+            ]
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [],
+        'template_path_stack' => [
             __DIR__ . '/../view'
-        )
-    )
-);
+        ]
+    ]
+];

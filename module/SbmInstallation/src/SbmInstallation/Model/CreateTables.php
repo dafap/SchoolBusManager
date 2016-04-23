@@ -81,7 +81,7 @@ class CreateTables
      *
      * @var array
      */
-    protected $queue = array();
+    protected $queue = [];
 
     /**
      * Constructeur
@@ -96,7 +96,6 @@ class CreateTables
         $this->prefix = $dbconfig['prefix'];
         $this->definer = $dbconfig['definer'];
         $this->dbadapter = $dbadapter;
-        // $this->dir();
         $this->createQueue('data');
     }
 
@@ -111,12 +110,12 @@ class CreateTables
     private function createQueue()
     {
         $this->queue = array(
-            'db_design' => array(),
-            'system' => array(),
-            'table' => array(),
-            'vue' => array(),
-            'foreign key' => array(),
-            'data' => array()
+            'db_design' => [],
+            'system' => [],
+            'table' => [],
+            'vue' => [],
+            'foreign key' => [],
+            'data' => []
         );
         foreach ($this->dir() as $item) {
             $this->insereQueue($item);
@@ -201,7 +200,7 @@ class CreateTables
     protected function addData($file_data, $properties)
     {
         $donnees = include ($file_data);
-        $results = array();
+        $results = [];
         $sql = new Sql($this->dbadapter);
         foreach ($donnees as $data) {
             set_time_limit(20);
@@ -255,7 +254,7 @@ class CreateTables
             $command .= $sep . "PRIMARY KEY (`$pk_str`)";
         }
         if (array_key_exists('keys', $entityStructure) && is_array($entityStructure['keys']) && ! empty($entityStructure['keys'])) {
-            $keys_str = array();
+            $keys_str = [];
             foreach ($entityStructure['keys'] as $key => $value) {
                 $unique = array_key_exists('unique', $value) && $value['unique'] ? 'UNIQUE ' : '';
                 $tmp = implode('`,`', $value['fields']);
@@ -325,7 +324,7 @@ class CreateTables
      */
     protected function analyseView($viewName)
     {
-        $structure = array();
+        $structure = [];
         $filename = 'vue.' . $viewName . '.php';
         $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
         $viewStructure = $entity['structure'];
@@ -707,7 +706,7 @@ EOT;
      */
     public function run()
     {
-        $result = array();
+        $result = [];
         // création des tables (tables et tables systèmes)
         foreach (array(
             'system',
@@ -758,7 +757,7 @@ EOT;
 
     private function dir()
     {
-        $result = array();
+        $result = [];
         $dossier = opendir(__DIR__ . self::DB_DESIGN_PATH);
         while ($f = readdir($dossier)) {
             $p = explode('.', $f);
@@ -781,7 +780,7 @@ EOT;
             'add_data',
             'data'
         );
-        $result = array();
+        $result = [];
         foreach ($this->dir() as $filename) {
             $buffer = file(__DIR__ . self::DB_DESIGN_PATH . "/$filename");
             $row = array_fill_keys($keys, '');

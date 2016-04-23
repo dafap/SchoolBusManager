@@ -14,12 +14,12 @@
  * @filesource AbstractPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2015
- * @version 2015-1
+ * @date 18 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPaiement\Plugin;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -32,7 +32,7 @@ use DafapSession\Model\Session;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Validator\PlageIp;
 
-abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, EventManagerAwareInterface, PlateformeInterface
+abstract class AbstractPlateforme implements FactoryInterface, EventManagerAwareInterface, PlateformeInterface
 {
 
     /**
@@ -43,18 +43,18 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
     private $eventManager;
 
     /**
-     * Service manager
+     * Db manager
      *
      * @var ServiceLocatorInterface
      */
-    private $sm;
+    private $db_manager;
 
     /**
      * Configuration de la plateforme
      *
      * @var array
      */
-    private $config = array();
+    private $config = [];
 
     /**
      * Nom du fichier log
@@ -112,8 +112,8 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
     protected $error_msg = '';
 
     /**
-     * Cette méthode est appelée à la fin de la méthode initConfig().
-     * initConfig() lit la configuration enregistrée dans les fichiers de configuration standard ZF2 :
+     * Cette méthode est appelée à la fin de la méthode createService().
+     * createService() lit la configuration enregistrée dans les fichiers de configuration standard ZF2 :
      * /config/autoload/sbm.global.php
      * /config/autoload/sbm.local.php
      * /module/SbmPaiement/config/module.config.php
@@ -173,9 +173,9 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     public function setEventManager(EventManagerInterface $eventManager)
     {
-        $eventManager->addIdentifiers(array(
+        $eventManager->addIdentifiers([
             'SbmPaiement\Plugin\Plateforme'
-        ));
+        ]);
         $this->eventManager = $eventManager;
     }
 
@@ -195,22 +195,36 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
 
     /**
      * (non-PHPdoc)
-     *
-     * @see \Zend\ServiceManager\ServiceLocatorAwareInterface::setServiceLocator()
+     * @see \Zend\ServiceManager\FactoryInterface::createService()
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->sm = $serviceLocator;
+        $this->db_manager = $serviceLocator->get('Sbm\DbManager');
+        $config_paiement = StdLib::getParamR([
+            'sbm',
+            'paiement',
+        ], $serviceLocator->get('config'), []);
+        $this->plateforme = StdLib::getParam('plateforme', $config_paiement);
+        $class = __NAMESPACE__ . '\\' . $this->plateforme . '\Plateforme';
+        if (is_null($this->plateforme) || ! class_exists($class)) {
+            throw new Exception('Mauvaise configuration de la plateforme de paiement dans le fichier de configuration.');
+        }
+        $this->config = StdLib::getParam(strtolower($this->plateforme), $config_paiement);
+        $this->filelog = StdLib::getParam('path_filelog', $config_paiement) . DIRECTORY_SEPARATOR . strtolower($this->plateforme) . '_error.log';
+        // initialisation particulière de la classe dérivée
+        $this->init();        
+        
+        return $this;
     }
 
     /**
-     * (non-PHPdoc)
-     *
-     * @see \Zend\ServiceManager\ServiceLocatorAwareInterface::getServiceLocator()
+     * Renvoie le db manager permettant d'accéder à la base de données
+     * 
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
      */
-    public function getServiceLocator()
+    public function getDbManager()
     {
-        return $this->sm;
+        return $this->db_manager;
     }
 
     /**
@@ -222,46 +236,10 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     public function isAuthorizedRemoteAdress($remote_adress)
     {
-        $validator = new PlageIp(array(
+        $validator = new PlageIp([
             'range' => $this->getAuthorizedIp()
-        ));
+        ]);
         return $validator->isValid($remote_adress);
-    }
-
-    /**
-     * Lecture de la configuration
-     * La configuration de la plateforme est donnée dans /config/autoload/sbm.local.php
-     */
-    protected function initConfig()
-    {
-        if (empty($this->config)) {
-            $config = $this->getServiceLocator()->get('Config');
-            $this->plateforme = StdLib::getParamR(array(
-                'sbm',
-                'paiement',
-                'plateforme'
-            ), $config);
-            $class = __NAMESPACE__ . '\\' . $this->plateforme . '\Plateforme';
-            if (is_null($this->plateforme) || ! class_exists($class)) {
-                throw new Exception('Mauvaise configuration de la plateforme de paiement dans le fichier de configuration.');
-            }
-            $this->config = StdLib::getParamR(array(
-                'sbm',
-                'paiement',
-                strtolower(StdLib::getParamR(array(
-                    'sbm',
-                    'paiement',
-                    'plateforme'
-                ), $config))
-            ), $config);
-            $this->filelog = StdLib::getParamR(array(
-                'sbm',
-                'paiement',
-                'path_filelog'
-            ), $config) . DIRECTORY_SEPARATOR . strtolower($this->plateforme) . '_error.log';
-            // initialisation particulière de la classe dérivée
-            $this->init();
-        }
     }
 
     /**
@@ -286,7 +264,6 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     public function notification(Parameters $data, $remote_addr = '')
     {
-        $this->initConfig();
         unset($this->data);
         if ($this->isAuthorizedRemoteAdress($remote_addr)) {
             if ($this->validNotification($data)) {
@@ -296,31 +273,31 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
                     // log en INFO puis lance un évènement 'paiementOK' avec $this->data en paramètre
                     $this->logError(Logger::INFO, $this->error_no ? $this->error_msg : 'Paiement OK', $data);
                     $this->prepareData();
-                    $this->getEventManager()->trigger('paiementOK', $this->getServiceLocator(), $this->paiement);
-                    $this->getEventManager()->trigger('scolariteOK', $this->getServiceLocator(), $this->scolarite);
+                    $this->getEventManager()->trigger('paiementOK', null, $this->paiement);
+                    $this->getEventManager()->trigger('scolariteOK', null, $this->scolarite);
                     return 'Notification reçue le ' . date('d/m/Y à H/i/s') . ' (UTC).';
                 } else {
                     // log en NOTICE puis lance un évènement 'paiementKO' avec $this->data en paramètre
                     $this->logError(Logger::NOTICE, 'Paiement KO : ' . $this->error_msg, $data);
-                    $this->getEventManager()->trigger('paiementKO', $this->getServiceLocator(), $this->data);
+                    $this->getEventManager()->trigger('paiementKO', null, $this->data);
                     return 'Notification reçue le ' . date('d/m/Y à H/i/s') . ' (UTC).';
                 }
             } else {
                 // log en ERR puis lance un évènement 'notificationError' avec $data en paramètre
                 $this->logError(Logger::ERR, $this->error_msg, $data);
-                $this->getEventManager()->trigger('notificationError', $this->getServiceLocator(), $data);
+                $this->getEventManager()->trigger('notificationError', null, $data);
                 return "Notification incorrecte reçue le " . date('d/m/Y à H/i/s') . ' (UTC).';
             }
         } else {
             // log en WARN puis lance un évènement 'notificationForbidden'
-            $this->logError(Logger::WARN, 'Notification interdite: Adresse IP non autorisée', array(
+            $this->logError(Logger::WARN, 'Notification interdite: Adresse IP non autorisée', [
                 $remote_addr,
                 $data
-            ));
-            $this->getEventManager()->trigger('notificationForbidden', $this->getServiceLocator(), array(
+            ]);
+            $this->getEventManager()->trigger('notificationForbidden', null, [
                 $remote_addr,
                 $data
-            ));
+            ]);
             return false;
         }
     }
@@ -351,7 +328,6 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getParam($key)
     {
-        $this->initConfig();
         $key = (array) $key;
         if (! StdLib::array_keys_exists($key, $this->config)) {
             $propriete = count($key) == 1 ? current($key) : print_r($key, true);
@@ -367,7 +343,6 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getPlateformeName()
     {
-        $this->initConfig();
         return $this->plateforme;
     }
 
@@ -378,7 +353,6 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getAuthorizedIp()
     {
-        $this->initConfig();
         return StdLib::getParam('authorized_ip', $this->config);
     }
 
@@ -429,7 +403,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getCodeModeDePaiement()
     {
-        $table = $this->getServiceLocator()->get('Sbm\Db\System\Libelles');
+        $table = $this->getDbManager()->get('Sbm\Db\System\Libelles');
         return $table->getCode('ModeDePaiement', 'CB');
     }
 
@@ -440,7 +414,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getCodeCaisse()
     {
-        $table = $this->getServiceLocator()->get('Sbm\Db\System\Libelles');
+        $table = $this->getDbManager()->get('Sbm\Db\System\Libelles');
         return $table->getCode('Caisse', 'DFT');
     }
 
@@ -454,7 +428,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      * @param array $array
      *            contenu des data (ou remote_addr, data)
      */
-    public function logError($niveau, $message, $array = array())
+    public function logError($niveau, $message, $array = [])
     {
         if (empty($this->logger)) {
             $filter = new Priority(StdLib::getParam('error_reporting', $this->config, Logger::WARN));
@@ -473,7 +447,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
      */
     protected function getReponseMessage($code)
     {
-        $nomenclature = array(
+        $nomenclature = [
             '00' => 'Transaction approuvée ou traitée avec succès.',
             '02' => 'Contacter l\'émetteur de carte.',
             '03' => 'Accepteur invalide.',
@@ -521,7 +495,7 @@ abstract class AbstractPlateforme implements ServiceLocatorAwareInterface, Event
             '97' => 'Échéance de la temporisation de surveillance globale.',
             '98' => 'Serveur indisponible routage réseau demandé à nouveau.',
             '99' => 'Incident domaine initiateur.'
-        );
+        ];
         return StdLib::getParam($code, "$code $nomenclature", "$code Code réponse inconnu.");
     }
 }

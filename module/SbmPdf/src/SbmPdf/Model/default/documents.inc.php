@@ -9,7 +9,7 @@
  * @date 1 juil. 2015
  * @version 2015-2
  */
-return array(
+return [
     'documentId' => 0,
     'type' => 'pdf',
     'dispodition' => 'tabulaire',
@@ -103,4 +103,4 @@ return array(
     'titre4_line' => 0,
     'titre4_line_color' => '#000000',
     'default_font_monospaced' => 'courier'
-);
+];

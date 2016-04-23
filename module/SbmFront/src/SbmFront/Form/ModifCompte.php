@@ -12,8 +12,8 @@
  * @filesource ModifCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 févr. 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmFront\Form;
 
@@ -21,11 +21,9 @@ use SbmCommun\Form\AbstractSbmForm;
 
 class ModifCompte extends AbstractSbmForm
 {
-    private $categorieId;
-    public function __construct($categorieId, $param = 'compte')
+    public function __construct()
     {
-        $this->categorieId = $categorieId;
-        parent::__construct($param);
+        parent::__construct('compte');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'userId',
@@ -107,7 +105,7 @@ class ModifCompte extends AbstractSbmForm
                 'value' => 'Enregistrer les modifications',
                 'id' => 'responsable-submit',
                 'autofocus' => 'autofocus',
-                'class' => 'button submit left-95px'
+                'class' => 'button default submit left-95px'
             )
         ));
         $this->add(array(
@@ -116,9 +114,8 @@ class ModifCompte extends AbstractSbmForm
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'responsable-cancel',
-                'class' => 'button cancel left-10px'
+                'class' => 'button default cancel left-10px'
             )
-        ));
-        
+        ));        
     }
 }

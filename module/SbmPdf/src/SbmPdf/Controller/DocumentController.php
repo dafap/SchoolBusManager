@@ -31,7 +31,7 @@ class DocumentController extends AbstractActionController
 
     /**
      * Catégorie de l'utilisateur
-     * 
+     *
      * @var int
      */
     private $categorie;
@@ -56,13 +56,11 @@ class DocumentController extends AbstractActionController
         $args = (array) $prg;
         $millesime = Session::get('millesime');
         // on doit être authentifié
-        $auth = $this->getServiceLocator()
-            ->get('Dafap\Authenticate')
-            ->by('email');
+        $auth = $this->config['authenticate']->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
-            ));
+            ]);
         }
         $userId = $auth->getUserId();
         $this->categorie = $auth->getCategorieId();
@@ -70,20 +68,18 @@ class DocumentController extends AbstractActionController
         switch ($this->categorie) {
             case 1: // parent
                 try {
-                    $responsable = new Responsable($this->getServiceLocator());
+                    $responsable = $this->config['responsable'];
                 } catch (Exception $e) {
-                    return $this->redirect()->toRoute('login', array(
+                    return $this->redirect()->toRoute('login', [
                         'action' => 'logout'
-                    ));
+                    ]);
                 }
                 try {
-                    $affectations = $this->getServiceLocator()
-                        ->get('Sbm\Db\Table\Affectations')
-                        ->fetchAll(array(
+                    $affectations = $this->config['db_manager']->get('Sbm\Db\Table\Affectations')->fetchAll([
                         'responsableId' => $responsable->responsableId,
                         'millesime' => $millesime
-                    ));
-                    $services = array();
+                    ]);
+                    $services = [];
                     // construction d'une table sans doublons
                     foreach ($affectations as $affectation) {
                         $services[$affectation->service1Id] = $affectation->service1Id;
@@ -96,51 +92,43 @@ class DocumentController extends AbstractActionController
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage('Vos enfants n\'ont pas été affectés sur un circuit.');
-                    return $this->redirect()->toRoute('login', array(
+                    return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
-                    ));
+                    ]);
                 }
                 break;
             case 2: // transporteur
                 try {
-                    $transporteurId = $this->getServiceLocator()
-                        ->get('Sbm\Db\Table\UsersTransporteurs')
-                        ->getTransporteurId($userId);
-                    $oservices = $this->getServiceLocator()
-                        ->get('Sbm\Db\Table\Services')
-                        ->fetchAll(array(
+                    $transporteurId = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+                    $oservices = $this->config['db_manager']->get('Sbm\Db\Table\Services')->fetchAll([
                         'transporteurId' => $transporteurId
-                    ));
-                    $services = array();
+                    ]);
+                    $services = [];
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage('Pas d\'enfants affectés sur vos circuits.');
-                    return $this->redirect()->toRoute('login', array(
+                    return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
-                    ));
+                    ]);
                 }
                 break;
             case 3: // établissement
                 try {
-                    $etablissementId = $this->getServiceLocator()
-                        ->get('Sbm\Db\Table\UsersEtablissements')
-                        ->getEtablissementId($userId);
-                    $oservices = $this->getServiceLocator()
-                        ->get('Sbm\Db\Table\EtablissementsServices')
-                        ->fetchAll(array(
+                    $etablissementId = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
+                    $oservices = $this->config['db_manager']->get('Sbm\Db\Table\EtablissementsServices')->fetchAll([
                         'etablissementId' => $etablissementId
-                    ));
-                    $services = array();
+                    ]);
+                    $services = [];
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage('Aucun service dessert votre établissement.');
-                    return $this->redirect()->toRoute('login', array(
+                    return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
-                    ));
+                    ]);
                 }
                 break;
             case 200: // secrétariat
@@ -148,104 +136,67 @@ class DocumentController extends AbstractActionController
             case 254: // admin
             case 255: // sadmin
                 try {
-                    $services = array();
-                    $oservices = $this->getServiceLocator()
-                        ->get('Sbm\Db\Table\Services')
-                        ->fetchAll();
+                    $services = [];
+                    $oservices = $this->config['db_manager']->get('Sbm\Db\Table\Services')->fetchAll();
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage('Impossible d\'obtenir la liste des services.');
-                    return $this->redirect()->toRoute('login', array(
+                    return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
-                    ));
+                    ]);
                 }
                 break;
             default:
                 $this->flashMessenger()->addErrorMessage('La catégorie de cet utilisateur est inconnue.');
-                return $this->redirect()->toRoute('login', array(
+                return $this->redirect()->toRoute('login', [
                     'action' => 'logout'
-                ));
+                ]);
                 break;
         }
         if (array_key_exists('serviceId', $args)) {
             if (in_array($args['serviceId'], $services)) {
                 $services = (array) $args['serviceId'];
             } else {
-                $services = array();
+                $services = [];
             }
         }
         if (! empty($services)) {
             asort($services);
         }
         // ici, $services contient les 'serviceId' dont on veut obtenir les horaires (tableau indexé ordonné)
-        $qCircuits = $this->getServiceLocator()->get('Sbm\Db\Query\Circuits');
-        $qListe = $this->getServiceLocator()->get('Sbm\Db\Eleve\Liste');
-        $ahoraires = array(); // c'est un tableau
+        $qCircuits = $this->config['db_manager']->get('Sbm\Db\Query\Circuits');
+        $qListe = $this->config['db_manager']->get('Sbm\Db\Eleve\Liste');
+        $ahoraires = []; // c'est un tableau
         foreach ($services as $serviceId) {
-            $ahoraires[$serviceId] = array(
+            $ahoraires[$serviceId] = [
                 'aller' => $qCircuits->complet($serviceId, 'matin', function ($arret) use($qListe, $millesime) {
                     return $this->detailHoraireArret($arret, $qListe, $millesime);
                 }),
                 'retour' => $qCircuits->complet($serviceId, 'soir', function ($arret) use($qListe, $millesime) {
                     return $this->detailHoraireArret($arret, $qListe, $millesime);
                 })
-            );
+            ];
         }
-        $params = array(
+        $this->config['pdf_manager']->get(Tcpdf::class)
+            ->setParams([
             'documentId' => 'Horaires détaillés',
             'layout' => 'sbm-pdf/document/horaires.phtml'
-        );
-        $pdf = new Tcpdf($this->getServiceLocator(), $params);
-        $pdf->setData($ahoraires);
-        $pdf->run();
-    }
-    private function horairesAction_ancienneFin()
-    {
-        // il faudra essayer de passer des params basés sur un document de la table système
-        $params = array(
-            'documentId' => 'Horaires détaillés'
-        );
-        $pdf = new Tcpdf($this->getServiceLocator(), $params);
-        $viewRender = $this->getServiceLocator()->get('ViewRenderer');
-        $layout = new ViewModel();
-        $layout->setTemplate('sbm-pdf/document/horaires.phtml');
-        foreach ($ahoraires as $serviceId => $allerRetour) {
-            $oservice = $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Services')
-                ->getRecord($serviceId);
-            $otransporteur = $this->getServiceLocator()
-                ->get('Sbm\Db\Table\Transporteurs')
-                ->getRecord($oservice->transporteurId);
-            $transporteur = $otransporteur->nom;
-            $nbPlaces = $oservice->nbPlaces;
-            $telephone = $otransporteur->telephone;
-            $part_gauche = "Circuit n° $serviceId - car $transporteur - $nbPlaces places";
-            $part_droite = "Tél $transporteur : $telephone";
-            $pdf->AddPage();
-            $pdf->Write(0, $part_gauche, '', false, 'L');
-            $pdf->Write(0, $part_droite, '', false, 'R', true);
-            // die(var_dump($allerRetour));
-            $layout->setVariables(array(
-                'allerRetour' => $allerRetour
-            ));
-            $codeHtml = $viewRender->render($layout);
-            // die(var_dump($codeHtml));
-            $pdf->writeHTML($codeHtml, true, false, false, false, '');
-        }
-        $pdf->Output($pdf->getConfig('document', 'out_name', 'doc.pdf'), $pdf->getConfig('document', 'out_mode', 'I'));
+        ])
+            ->setData($ahoraires)
+            ->run();
     }
 
     private function detailHoraireArret($arret, $qListe, $millesime)
     {
-        // pour les parents, on ne montre que les inscrits       
-        $liste = $qListe->query($millesime, FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'], $this->categorie == 1), array(
+        // pour les parents, on ne montre que les inscrits
+        $liste = $qListe->query($millesime, FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'], $this->categorie == 1), [
             'nom',
             'prenom'
-        ));
+        ]);
         $arret['effectif'] = count($liste);
-        $arret['liste'] = array();
+        $arret['liste'] = [];
         foreach ($liste as $eleve) {
             $arret['liste'][] = $eleve['nom'] . ' ' . $eleve['prenom'] . ' - ' . $eleve['classe'];
         }

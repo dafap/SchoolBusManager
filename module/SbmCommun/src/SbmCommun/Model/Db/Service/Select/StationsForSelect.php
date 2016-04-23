@@ -14,8 +14,8 @@
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -24,13 +24,15 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Literal;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class StationsForSelect implements FactoryInterface
 {
 
     private $columns;
 
-    private $db;
+    private $db_manager;
 
     private $order;
 
@@ -40,9 +42,13 @@ class StationsForSelect implements FactoryInterface
     
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->table_name = $this->db->getCanonicName('stations', 'vue');
-        $this->sql = new Sql($this->db->getDbAdapter());
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
+        $this->table_name = $this->db_manager->getCanonicName('stations', 'vue');
+        $this->sql = new Sql($this->db_manager->getDbAdapter());
         $libelle = new Literal('concat(commune, " - ", nom)');
         $this->columns = array(
             'stationId',
@@ -112,7 +118,7 @@ class StationsForSelect implements FactoryInterface
         $select->from(array('sta' => $this->table_name))
             ->columns($this->columns)
             ->join(array(
-            'cir' => $this->db->getCanonicName('circuits', 'table')
+            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
         ), 'sta.stationId=cir.stationId', array())
             ->where($where)
             ->order($this->order);        

@@ -9,34 +9,34 @@
  * @filesource user-transporteur.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2015
- * @version 2015-1
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmadmin', array(
+$url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page
-));
-$url_suppr = $this->url('sbmadmin', array(
+]);
+$url_suppr = $this->url('sbmadmin', [
     'action' => 'user-transporteur-suppr',
     'page' => $this->page
-));
-$hiddens = array(
+]);
+$hiddens = [
     'userId' => $this->user->userId,
     'transporteurId' => $this->transporteur ? $this->transporteur->transporteurId : null
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
-    'suppr' => array(
+    ],
+    'suppr' => [
         'class' => 'fam-group-delete',
         'formaction' => $url_suppr,
         'title' => 'Supprimer la relation entre cet utilisateur et ce transporteur'
-    )
-);
+    ]
+];
 ?>
 <h1>Transporteur associé à un compte d'utilisateur</h1>
 <div id="fiche-wrapper">

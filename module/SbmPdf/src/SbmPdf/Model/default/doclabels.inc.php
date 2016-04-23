@@ -11,7 +11,7 @@
  * @version 2015-1
  */
 
- return array(
+ return [
      'margin_left' => "0", // marge de gauche du la planche (0 mm par défaut)
      'margin_top' => "8", // marge du haut de la planche d'étiquettes (8 mm par défaut)
      'x_space' => "0", // espacement horizontal entre 2 colonnes d'étiquettes (0 mm par défaut)
@@ -28,4 +28,4 @@
      'border_dash' => "0", // 0 continu; 2 tirets de 2mm séparés de 2mm; "1,2" tirets de 1mm séparés de 2mm
      'border_width' => "0.3", // épaisseur du trait (0.3 mmm par défaut)
      'border_color' => "000000"
- );
+ ];

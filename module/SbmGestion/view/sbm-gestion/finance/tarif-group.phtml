@@ -51,7 +51,7 @@ $actions = array(
 );
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 
-$this->paginator->setDefaultItemCountPerPage($this->nb_pagination);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $data = $this->paginator->getCurrentItems();
 ?>

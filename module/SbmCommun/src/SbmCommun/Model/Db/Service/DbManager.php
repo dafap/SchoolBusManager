@@ -1,18 +1,21 @@
 <?php
 /**
- * Service 'Sbm\Db\DbLib'
- *
+ * Service 'Sbm\DbManager'
+ * 
+ * Crée un db_manager et propose les méthodes publiques pour accéder aux tables de la base de données.
  *
  * @project sbm
  * @package SbmCommun
- * @filesource Service/DbLibService.php
+ * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mai 2014, 12 juillet 2015
- * @version 2014-2
+ * @date 9 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service;
 
+use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Metadata\Object\TableObject;
@@ -21,15 +24,15 @@ use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Exception;
 use DafapSession\Model\Session;
 
-class DbLibService implements FactoryInterface
+class DbManager extends ServiceManager implements FactoryInterface
 {
 
     /**
-     * Service manager
+     * Tableau de configuration du db_manager
      *
-     * @var ServiceLocatorInterface
+     * @var array
      */
-    private $sm;
+    private $db_manager_config;
 
     /**
      * Adapter permettant d'accéder à la base de données
@@ -68,14 +71,26 @@ class DbLibService implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        // return new DbLib($serviceLocator);
-        $this->sm = $serviceLocator;
-        $config = $serviceLocator->get('config');
-        $this->prefix = $config['db']['prefix'];
-        $this->dbadapter = $serviceLocator->get('Zend\Db\Adapter\Adapter');
+        $sm = $serviceLocator;
+        while (method_exists($sm, 'getServiceLocator')) {
+            $sm = $sm->getServiceLocator();
+        }
+        $config_application = $sm->get('config');
+        $this->prefix = $config_application['db']['prefix'];
+        $this->db_manager_config = $config_application['db_manager'];
+        $config = new Config($this->db_manager_config);
+        if ($config){
+            $config->configureServiceManager($this);
+        }
+        $this->dbadapter = $sm->get('Zend\Db\Adapter\Adapter');
         $this->metadata = new Metadata($this->dbadapter);
         $this->table_list = $this->metadata->getTableNames(null, true);
         return $this;
+    }
+    
+    public function getDbManagerConfig()
+    {
+        return $this->db_manager_config;
     }
 
     /**
@@ -129,15 +144,15 @@ class DbLibService implements FactoryInterface
     public function getMaxLengthArray($tableName, $type)
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists(array(
+        if (! StdLib::array_keys_exists([
             $type,
             $tableName,
             'columns'
-        ), $this->table_descriptor)) {
+        ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
         
-        $result = array();
+        $result = [];
         foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {
             if (! is_null($descriptor['char_max_len'])) {
                 $result[$colName] = $descriptor['char_max_len'];
@@ -175,15 +190,15 @@ class DbLibService implements FactoryInterface
     public function getColumnDefaults($tableName, $type)
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists(array(
+        if (! StdLib::array_keys_exists([
             $type,
             $tableName,
             'columns'
-        ), $this->table_descriptor)) {
+        ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
         
-        $result = array();
+        $result = [];
         foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {
             if ($colName == 'millesime') {
                 $result[$colName] = Session::get('millesime', 0);
@@ -197,14 +212,14 @@ class DbLibService implements FactoryInterface
     public function getAreNullableColumns($tableName, $type)
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists(array(
+        if (! StdLib::array_keys_exists([
             $type,
             $tableName,
             'columns'
-        ), $this->table_descriptor)) {
+        ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
-        $result = array();
+        $result = [];
         foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {
             $result[$colName] = $descriptor['is_nullable'];
         }
@@ -232,16 +247,6 @@ class DbLibService implements FactoryInterface
     }
 
     /**
-     * Renvoie le ServiceManager
-     *
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->sm;
-    }
-
-    /**
      * Renvoie la liste des noms de tables de la base de données.
      * C'est le nom complet qui est renvoyé, préfixé et avec l'indicateur de table, system ou de vue.
      *
@@ -259,7 +264,7 @@ class DbLibService implements FactoryInterface
      */
     public function getTableList()
     {
-        $result = array();
+        $result = [];
         foreach ($this->table_list as $nom_reel) {
             $nom_sans_prefix = str_replace($this->prefix . '_', '', $nom_reel);
             $type_nom = explode('_', $nom_sans_prefix);
@@ -270,10 +275,10 @@ class DbLibService implements FactoryInterface
             if ($type == 's')
                 continue;
             $type = $type == 't' ? 'table' : ($type == 'v' ? 'données complètes' : 'table système');
-            $result[$nom_reel] = implode(' ', array(
+            $result[$nom_reel] = implode(' ', [
                 $nom,
                 '(' . $type . ')'
-            ));
+            ]);
         }
         asort($result);
         return $result;
@@ -282,18 +287,29 @@ class DbLibService implements FactoryInterface
     /**
      * Renvoie un tableau de la forme (alias => libellé de l'entité,...)
      *
+     * @param array $filters
+     *   contient des chaines parmi les suivantes : 'table', 'system', 'vue'
+     * 
      * @return array
      */
-    public function getTableAliasList()
+    public function getTableAliasList($filters = [])
     {
-        $result = array();
-        $filters = array(
-            'Sbm\\Db\\Table\\',
-            'Sbm\\Db\\System\\',
-            'Sbm\\Db\\Vue\\'
-        );
-        $config = $this->sm->get('config');
-        foreach (array_keys($config['service_manager']['factories']) as $alias) {
+        $result = [];
+        if (empty($filters)) {
+            $filters = [
+                'Sbm\\Db\\Table\\',
+                'Sbm\\Db\\System\\',
+                'Sbm\\Db\\Vue\\'
+            ];
+        } else {
+            if (! is_array($filters)) {
+                $filters = (array) $filters;
+            }
+            foreach ($filters as &$filter) {
+                $filter = 'Sbm\\Db\\' . ucfirst($filter) . '\\';
+            }
+        }
+        foreach (array_keys($this->db_manager_config['factories']) as $alias) {
             if ($alias == 'SbmPaiement\Plugin\Table') {
                 $result[$alias] = 'Notifications de paiement';
             } else
@@ -333,7 +349,7 @@ class DbLibService implements FactoryInterface
         if (! $this->existsTable($tableName, $type)) {
             throw new Exception(sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", $type == 'vue' ?  : $type == 'table' ?  : 'table système', $tableName));
         }
-        $result = array();
+        $result = [];
         foreach ($this->getColumns($tableName, $type) as $column) {
             $result[$column->getName()]['data_type'] = $column->getDataType();
             $result[$column->getName()]['column_default'] = $column->getColumnDefault();
@@ -380,18 +396,18 @@ class DbLibService implements FactoryInterface
     {
         if ($type == 'table') {
             // initialise self::table_descriptor si nécessaire
-            if (! StdLib::array_keys_exists(array(
+            if (! StdLib::array_keys_exists([
                 $type,
                 $tableName,
                 'columns'
-            ), $this->table_descriptor)) {
+            ], $this->table_descriptor)) {
                 $this->structureTable($tableName, $type);
             }
-            if (StdLib::array_keys_exists(array(
+            if (StdLib::array_keys_exists([
                 $type,
                 $tableName,
                 'primary_key'
-            ), $this->table_descriptor)) {
+            ], $this->table_descriptor)) {
                 return ! is_null($this->table_descriptor[$type][$tableName]['primary_key']);
             } else {
                 return false;
@@ -469,11 +485,11 @@ class DbLibService implements FactoryInterface
     public function isColumn($columnName, $tableName, $type = 'table')
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists(array(
+        if (! StdLib::array_keys_exists([
             $type,
             $tableName,
             'columns'
-        ), $this->table_descriptor)) {
+        ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
         return array_key_exists($columnName, $this->table_descriptor[$type][$tableName]['columns']);
@@ -493,13 +509,13 @@ class DbLibService implements FactoryInterface
     public function isDateTimeColumn($columnName, $tableName, $type = 'table')
     {
         $this->validColumn($columnName, $tableName, $type, __METHOD__);
-        return in_array($this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], array(
+        return in_array($this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], [
             'date',
             'datetime',
             'timestamp',
             'time',
             'year'
-        ));
+        ]);
     }
 
     /**
@@ -516,7 +532,7 @@ class DbLibService implements FactoryInterface
     public function isNumericColumn($columnName, $tableName, $type = 'table')
     {
         $this->validColumn($columnName, $tableName, $type, __METHOD__);
-        return in_array($this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], array(
+        return in_array($this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], [
             'integer',
             'int',
             'smallint',
@@ -528,7 +544,7 @@ class DbLibService implements FactoryInterface
             'float',
             'double',
             'bit'
-        ));
+        ]);
     }
 
     /**

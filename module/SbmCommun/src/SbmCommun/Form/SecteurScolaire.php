@@ -7,16 +7,16 @@
  * @filesource SecteurScolaire.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Form;
 
 class SecteurScolaire extends AbstractSbmForm
 {
-    public function __construct($param = 'secteur-scolaire') 
+    public function __construct() 
     {
-        parent::__construct($param);
+        parent::__construct('secteur-scolaire');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'csrf',

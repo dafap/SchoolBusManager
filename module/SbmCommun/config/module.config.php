@@ -7,9 +7,15 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 févr. 2016
- * @version 2016-1.7.3
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Service\CalculDroits;
+use SbmCommun\Model\Service\MajDistances;
+use SbmCommun\Model\Service\FormManager;
+use SbmCommun\Form;
+
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
     define('ROOT_PATH', dirname(MODULE_PATH));
@@ -17,15 +23,16 @@ if (! defined('MODULE_PATH')) {
 if (! defined('APPL_NAME')) {
     define('APPL_NAME', 'School Bus Manager');
 }
-return array(
-    'controller_plugins' => array(
-        'invokables' => array(
+
+return [
+    'controller_plugins' => [
+        'invokables' => [
             'redirectToOrigin' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack',
             'csvExport' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport'
-        )
-    ),
-    'service_manager' => array(
-        'invokables' => array(
+        ]
+    ],
+    'db_manager' => [
+        'invokables' => [
             'Sbm\Db\ObjectData\Affectation' => 'SbmCommun\Model\Db\ObjectData\Affectation',
             'Sbm\Db\ObjectData\Appel' => 'SbmCommun\Model\Db\ObjectData\Appel',
             'Sbm\Db\ObjectData\Circuit' => 'SbmCommun\Model\Db\ObjectData\Circuit',
@@ -54,12 +61,8 @@ return array(
             'Sbm\Db\SysObjectData\DocLabel' => 'SbmCommun\Model\Db\ObjectData\Sys\DocLabel',
             'Sbm\Db\SysObjectData\DocTable' => 'SbmCommun\Model\Db\ObjectData\Sys\DocTable',
             'Sbm\Db\SysObjectData\Libelle' => 'SbmCommun\Model\Db\ObjectData\Sys\Libelle'
-        ),
-        'factories' => array(
-            'Sbm\CalculDroitsTransport' => 'SbmCommun\Model\Service\CalculDroits',
-            'Sbm\MajDistances' => 'SbmCommun\Model\Service\MajDistances',
-            
-            'Sbm\Db\DbLib' => 'SbmCommun\Model\Db\Service\DbLibService',
+        ],
+        'factories' => [
             'Sbm\Db\Table\Affectations' => 'SbmCommun\Model\Db\Service\Table\Affectations',
             'Sbm\Db\Table\Appels' => 'SbmCommun\Model\Db\Service\Table\Appels',
             'Sbm\Db\Table\Circuits' => 'SbmCommun\Model\Db\Service\Table\Circuits',
@@ -168,16 +171,49 @@ return array(
             'Sbm\Statistiques\Eleve' => 'SbmCommun\Model\Db\Service\Query\Eleve\Statistiques',
             'Sbm\Statistiques\Paiement' => 'SbmCommun\Model\Db\Service\Query\Paiement\Statistiques',
             'Sbm\Statistiques\Responsable' => 'SbmCommun\Model\Db\Service\Query\Responsable\Statistiques'
-        )
-    ),
-    'view_manager' => array(
-        'template_map' => array(
+        ]
+    ],
+    'form_manager' => [
+        'invokables' => [
+            Form\Calendar::class => Form\Calendar::class,
+            Form\Circuit::class => Form\Circuit::class,
+            Form\Classe::class => Form\Classe::class,
+            Form\Commune::class => Form\Commune::class,
+            Form\Eleve::class => Form\Eleve::class,
+            Form\Etablissement::class => Form\Etablissement::class,
+            Form\Organisme::class => Form\Organisme::class,
+            Form\Responsable::class => Form\Responsable::class,
+            Form\ResponsableVerrouille::class => Form\ResponsableVerrouille::class,
+            Form\SecteurScolaire::class => Form\SecteurScolaire::class,
+            Form\Service::class => Form\Service::class,
+            Form\Station::class => Form\Station::class,
+            Form\Tarif::class => Form\Tarif::class,
+            Form\Transporteur::class => Form\Transporteur::class
+        ],
+        'factories' => []
+
+        
+    ],
+    'cartographie_manager' => [
+        'factories' => [
+            'Sbm\CalculDroitsTransport' => CalculDroits::class,
+            'Sbm\MajDistances' => MajDistances::class
+        ]
+    ],
+    'service_manager' => [
+        'factories' => [
+            'Sbm\DbManager' => DbManager::class,
+            'Sbm\FormManager' => FormManager::class
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [
             'sbm/pagination' => __DIR__ . '/../view/partial/pagination.phtml',
             'sbm/mdpchange' => __DIR__ . '/../view/partial/mdpchange.phtml'
-        )
-    ),
-    'view_helpers' => array(
-        'invokables' => array(
+        ]
+    ],
+    'view_helpers' => [
+        'invokables' => [
             'affectations' => 'SbmCommun\Form\View\Helper\Affectations',
             'listeLigneActions' => 'SbmCommun\Form\View\Helper\ListeLigneActions',
             'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',
@@ -185,6 +221,6 @@ return array(
             'pictogrammes' => 'SbmCommun\Form\View\Helper\Pictogrammes',
             'formRowDate' => 'SbmCommun\Form\View\Helper\FormRowDate',
             'formRowDateTime' => 'SbmCommun\Form\View\Helper\FormRowDateTime'
-        )
-    )
-);
+        ]
+    ]
+];

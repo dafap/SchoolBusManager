@@ -185,7 +185,7 @@ class Scolarites extends AbstractSbmTable
     {
         $where1 = new Where();
         $where1->expression('millesime = ?', $millesime);
-        $select = new Select($this->db->getCanonicName('affectations', 'table'));
+        $select = new Select($this->db_manager->getCanonicName('affectations', 'table'));
         $select->columns(array(
             'eleveId'
         ))

@@ -8,8 +8,8 @@
  * @filesource Organismes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 
 namespace SbmCommun\Model\Db\Service\Select; 
@@ -18,14 +18,20 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Expression;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Organismes implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $db = $serviceLocator->get('Sbm\Db\DbLib');
-        $sql = new Sql($db->getDbAdapter());
-        $select = $sql->select($db->getCanonicName('organismes', 'vue'));
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $db_manager = $serviceLocator;
+        $sql = new Sql($db_manager->getDbAdapter());
+        $select = $sql->select($db_manager->getCanonicName('organismes', 'vue'));
         $select->columns(array('organismeId', 'nom', 'commune'));
         $select->order('nom');
         $statement = $sql->prepareStatementForSqlObject($select);

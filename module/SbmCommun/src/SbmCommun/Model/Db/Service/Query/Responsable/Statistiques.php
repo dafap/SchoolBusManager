@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juin 2015
- * @version 2015-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -22,6 +22,8 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Predicate\Predicate;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Exception;
 
 class Statistiques implements FactoryInterface
 {
@@ -36,7 +38,7 @@ class Statistiques implements FactoryInterface
      *
      * @var \Zend\Db\Adapter\Adapter
      */
-    protected $db;
+    protected $db_manager;
     
     /**
      *
@@ -64,9 +66,13 @@ class Statistiques implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        if (! ($serviceLocator instanceof DbManager)) {
+            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
+        }
+        $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $this->db = $serviceLocator->get('Sbm\Db\DbLib');
-        $this->dbAdapter = $this->db->getDbAdapter();
+        $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
@@ -79,7 +85,7 @@ class Statistiques implements FactoryInterface
     public function getNbEnregistres()
     {
         $select = $this->sql->select();
-        $select->from($this->db->getCanonicName('responsables', 'table'))
+        $select->from($this->db_manager->getCanonicName('responsables', 'table'))
             ->columns(array(
             'effectif' => new Expression('count(responsableId)')
         ));
@@ -99,26 +105,26 @@ class Statistiques implements FactoryInterface
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
         $select1->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->columns(array(
             'responsableId' => 'responsable1Id'
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId = ele.eleveId', array())
             ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
         $select2 = $this->sql->select();
         $select2->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->columns(array(
             'responsableId' => 'responsable2Id'
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId = ele.eleveId', array())
             ->where($where2);
         $select1->combine($select2);
@@ -129,14 +135,13 @@ class Statistiques implements FactoryInterface
         $where->in('responsableId', $select3);
         $select = $this->sql->select();
         $select->from(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ))
             ->columns(array(
             'effectif' => new Expression('count(responsableId)')
         ))
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
-        // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
         return iterator_to_array($statement->execute());
     }
 
@@ -151,10 +156,10 @@ class Statistiques implements FactoryInterface
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
         $select1->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId = ele.eleveId', array())
             ->where($where1);
         
@@ -162,7 +167,7 @@ class Statistiques implements FactoryInterface
         $where2->isNull('eleveId');
         $select2 = $this->sql->select();
         $select2->from(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ))
             ->columns(array(
             'effectif' => new Expression('count(responsableId)')
@@ -187,26 +192,26 @@ class Statistiques implements FactoryInterface
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
         $select1->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
         ->columns(array(
             'responsableId' => 'responsable1Id'
         ))
         ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId = ele.eleveId', array())
         ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
         $select2 = $this->sql->select();
         $select2->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
         ->columns(array(
             'responsableId' => 'responsable2Id'
         ))
         ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId = ele.eleveId', array())
         ->where($where2);
         $select1->combine($select2);
@@ -217,13 +222,13 @@ class Statistiques implements FactoryInterface
         $where->in('responsableId', $select3)->literal('com.membre = 0');
         $select = $this->sql->select();
         $select->from(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ))
             ->columns(array(
             'effectif' => new Expression('count(responsableId)')
         ))
             ->join(array(
-            'com' => $this->db->getCanonicName('communes', 'table')
+            'com' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'com.communeId = res.communeId', array())
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -242,26 +247,26 @@ class Statistiques implements FactoryInterface
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
         $select1->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->columns(array(
             'responsableId' => 'responsable1Id'
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId = ele.eleveId', array())
             ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
         $select2 = $this->sql->select();
         $select2->from(array(
-            'ele' => $this->db->getCanonicName('eleves', 'table')
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ))
             ->columns(array(
             'responsableId' => 'responsable2Id'
         ))
             ->join(array(
-            'sco' => $this->db->getCanonicName('scolarites', 'table')
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ), 'sco.eleveId = ele.eleveId', array())
             ->where($where2);
         $select1->combine($select2);
@@ -272,7 +277,7 @@ class Statistiques implements FactoryInterface
         $where->in('responsableId', $select3)->literal('demenagement = 1');
         $select = $this->sql->select();
         $select->from(array(
-            'res' => $this->db->getCanonicName('responsables', 'table')
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ))
             ->columns(array(
             'effectif' => new Expression('count(responsableId)')

@@ -1,29 +1,27 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Liste des alias de tables et de vues gérées par ce module
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmInstallation/view
  * @filesource table-alias.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 oct. 2014
- * @version 2014-1
+ * @date 10 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url("sbminstall");
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
-<h1>Création des tables et des vues</h1>
+<h1>Liste des tables et des vues enregistrées</h1>
 <div id="data-wrapper">
 	<div id="data-header" class="clearfix">
 		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>

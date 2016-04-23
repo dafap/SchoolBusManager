@@ -38,8 +38,8 @@
  * @filesource DocTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-1
+ * @date 13 avr. 2016
+ * @version 2016-2
  */
 namespace SbmPdf\Form;
 
@@ -56,457 +56,457 @@ class DocTable extends Form implements InputFilterProviderInterface
     {
         parent::__construct($param);
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'type' => 'hidden',
             'name' => 'doctableId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'documentId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'name'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'recordSource'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'name' => 'csrf',
             'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
+            'options' => [
+                'csrf_options' => [
                     'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'ordinal_table',
-            'attributes' => array(
+            'attributes' => [
                 'value' => '1',
                 'id' => 'doctable-ordinal_table'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Numéro du tableau dans le document',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // prend les valeurs thead, tbody ou tfoot
             'type' => 'Zend\Form\Element\Select',
             'name' => 'section',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-section'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Section',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     'thead' => 'Ligne d\'en-tête du tableau',
                     'tbody' => 'Corps du tableau',
                     'tfoot' => 'Ligne de pied du tableau'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'description',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-description'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Description',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'visible',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-visible',
                 'value' => 1,
                 'cheched' => 'checked'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Section visible',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // prend la valeur auto ou un nombre de 1 à 100 (% de la largeur de la zone d'écriture) - null par défaut
             'type' => 'text',
             'name' => 'width',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-width'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Largeur de la section',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // nombre
             'type' => 'text',
             'name' => 'row_height',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-row_height'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Hauteur de la section',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // 0, 1, L, R, T, B
             'type' => 'Zend\Form\Element\MultiCheckbox',
             'name' => 'cell_border',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-cell_border'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Bordure des cellules',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     '-1' => 'Sans bordure',
                     '1' => 'Bordure autour',
                     'L' => 'Bordure à gauche',
                     'R' => 'Bordure à droite',
                     'T' => 'Bordure au dessus',
                     'B' => 'Bordure au dessous'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // L, C, R, J
             'type' => 'Zend\Form\Element\Select',
             'name' => 'cell_align',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-cell_align'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Alignement horizontal du texte dans les cellules',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     'L' => 'Aligné à gauche',
                     'C' => 'Centré',
                     'R' => 'Aligné à droite',
                     'J' => 'Justifié'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Url',
             'name' => 'cell_link',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-cell_link'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Lien sur les cellules',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // de 0 à 4
             'type' => 'Zend\Form\Element\Select',
             'name' => 'cell_stretch',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-cell_stretch'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Etalement',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     '0' => 'Sans étalement',
                     '1' => 'Etalement par mise à l\'échelle si le texte est plus large que la cellule',
                     '2' => 'Etalement par mise à l\'échelle à la largeur de la cellule',
                     '3' => 'Etalement par réglage de l\'espacement si le texte est plus large que la cellule',
                     '4' => 'Etalement par réglage de l\'espacement à la largeur de la cellule'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'cell_ignore_min_height',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-cell_ignore_min_height'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Ignore la hauteur minimale',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // T, C, B, A, L, D
             'type' => 'Zend\Form\Element\Select',
             'name' => 'cell_calign',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-cell_calign'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Alignement de la cellule par rapport à la ligne de base',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     'T' => 'Cellule au dessus de la ligne de base',
                     'C' => 'Cellule centrée sur la ligne de base',
                     'B' => 'Cellule en dessous de la ligne de base',
                     'A' => 'Texte au dessus de la ligne de base',
                     'L' => 'Texte centré sur la ligne de base',
                     'D' => 'Texte en dessous de la ligne de base'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // M, T, B
             'type' => 'Zend\Form\Element\Select',
             'name' => 'cell_valign',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-cell_valign'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Alignement vertical du texte dans les cellules',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     'T' => 'Haut',
                     'M' => 'Milieu',
                     'B' => 'Bas'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Color',
             'name' => 'draw_color',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-draw_color'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Couleur des traits',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'text',
             'name' => 'line_width',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-line_width'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Epaisseur des traits',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Color',
             'name' => 'fill_color',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-fill_color'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Couleur de remplissage',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Color',
             'name' => 'text_color',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-text_color'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Couleur du texte',
-                'label_attributes' => array(),
-                'error_attributes' => array(
+                'label_attributes' => [],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             // '', B, I, U, D, O ou combinaison de 2 d'entre elles
             'type' => 'Zend\Form\Element\MultiCheckbox',
             'name' => 'font_style',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'doctable-font_style'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Style de la police',
-                'label_attributes' => array(),
-                'value_options' => array(
+                'label_attributes' => [],
+                'value_options' => [
                     '-1' => 'Aucun',
                     'B' => 'Gras',
                     'I' => 'Italique',
                     'U' => 'Souligné',
                     'D' => 'Barré',
                     'O' => 'Trait suscrit'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Enregistrer',
                 'id' => 'documentpdf-submit',
                 'autofocus' => 'autofocus',
                 'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Abandonner',
                 'id' => 'documentpdf-cancel',
                 'class' => 'button default cancel'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'name' => 'colonnes',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Liste des colonnes',
                 'id' => 'documentpdf-colonnes',
                 'class' => 'button default cancel'
-            )
-        ));
+            ]
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'ordinal_table' => array(
+        return [
+            'ordinal_table' => [
                 'name' => 'ordinal_table',
                 'required' => true
-            ),
-            'description' => array(
+            ],
+            'description' => [
                 'name' => 'description',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'width' => array(
+                    ]
+                ]
+            ],
+            'width' => [
                 'name' => 'width',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                )
-            ),
-            'row_height' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'row_height' => [
                 'name' => 'row_height',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                )
-            ),
-            'cell_link' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'cell_link' => [
                 'name' => 'cell_link',
                 'required' => false
-            ),
-            'line_width' => array(
+            ],
+            'line_width' => [
                 'name' => 'line_width',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                )
-            ),
-            'font_style' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'font_style' => [
                 'name' => 'font_style',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
 
     public function setData($data)

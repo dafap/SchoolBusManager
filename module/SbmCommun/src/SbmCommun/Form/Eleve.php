@@ -9,17 +9,17 @@
  * @filesource Eleve.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juin 2014
- * @version 2014-1
+ * @date 7 avr. 2016
+ * @version 2016-2
  */
 namespace SbmCommun\Form;
 
 class Eleve extends AbstractSbmForm
 {
 
-    public function __construct($param = 'eleve')
+    public function __construct()
     {
-        parent::__construct($param);
+        parent::__construct('eleve');
         $this->setAttribute('method', 'post');
         $this->add(array(
             'name' => 'csrf',

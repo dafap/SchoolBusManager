@@ -1,0 +1,46 @@
+<?php
+/**
+ * Page de confirmation du lancement de la procédure
+ *
+ * La procédure va supprimer les comptes non confirmés et créer les comptes des responsables
+ * sans compte associé et dont l'adresse email est connue.
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource user-prepare-nouveaux-comptes.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 8 avr. 2016
+ * @version 2016-2
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'user-liste',
+    'page' => $this->page
+]);
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Préparation des nouveaux comptes d'utilisateurs pour les parents</h1>
+<div id="suppr-wrapper">
+	<p>Cette procédure va</p>
+	<div class="header-wrapper">
+		<ul>
+			<li>supprimer les comptes de parents non confirmés (sans responsable associé) ;</li>
+			<li>créer des comptes non confirmés pour les responsables qui n'en ont pas et dont l'adresse email est connue.</li>
+		</ul>
+		<p>Cette procédure peut être lancée sans risque à tout moment de l'année.</p>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+    ?> 
+</div>
