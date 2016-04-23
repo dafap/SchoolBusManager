@@ -14,54 +14,45 @@
 $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
 $url_admin = $this->url('sbmadmin');
-$url_carte = $this->url('sbmcarte', array(
-    'action' => 'etablissements'
-));
+$url_carte = $this->url('sbmcarte', array('action' => 'etablissements'));
 
 if ($this->etat['etat'] == 0) {
     // avant le début de la période d'inscription
     $format = <<<EOT
 <p class="premiere">La période d'inscription %s sera ouverte du %s au %s.</p>
-<p>Durant cette période, vous pourrez inscrire vos enfants depuis ce site au service de transport scolaire organisé par la Communauté de communes du Bassin Decazeville Aubin. Les inscriptions ne seront définitives qu'après paiement des prestations demandées.</p>
+<p>Durant cette période, vous pourrez inscrire ici vos enfants au service de transport scolaire organisé par %s. Les inscriptions ne seront définitives qu'après paiement des prestations demandées.</p>
 <p>Les paiements pourront se faire :</p><ul>
 <li>en ligne par carte bancaire, sur une connexion sécurisée, avant le %s pour recevoir la carte de transport par courrier ;</li>
-<li>au-delà, par chèque ou espèces, lors des permanences à la Communauté de communes pour les habitants de<ul>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
-</ul></li></ul>
-<p>Cas particuliers des élèves domiciliés à Rulhe-Auzits et des élèves utilisant la navette Agnac - La Bessenoits : l'inscription en ligne n'est pas disponible. Veuillez contacter le service Transport.</p>
+<li>au-delà, par chèque ou espèces, lors des permanences à %s.</li></ul>
 <p>Pour tout autre renseignement ou tout autre mode d'inscription, vous pouvez vous adresser directement au service Transport à l'adresse :</p>
 EOT;
     
-    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);
+    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->client['name'], $this->etat['echeance']->format('d/m/Y'), $this->client['name']);
 } elseif ($this->etat['etat'] == 1) {
     // durant la période d'inscriptions
     $format = <<<EOT
-<p class="premiere">La période d'inscription %s est ouverte du %s au %s.</p>
-<p>Vous pouvez inscrire vos enfants depuis ce site au service de transport scolaire organisé par la Communauté de communes du Bassin Decazeville Aubin. Les inscriptions ne seront définitives qu'après paiement des prestations demandées.</p>
-<p>Les paiements peuvent se faire :</p><ul>
-<li>en ligne par carte bancaire, sur une connexion sécurisée, avant le %s pour recevoir la carte de transport par courrier ;</li>
-<li>au-delà, par chèque ou espèces, lors des permanences à la Communauté de communes pour les habitants de<ul>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
-</ul></li></ul>
-<p>Cas particuliers des élèves domiciliés à Rulhe-Auzits et des élèves utilisant la navette Agnac - La Bessenoits : l'inscription en ligne n'est pas disponible. Veuillez contacter le service Transport.</p>
-<p>Pour tout autre renseignement ou tout autre mode d'inscription, vous pouvez vous adresser directement au service Transport à l'adresse :</p>
+<p class="premiere">Le site de démonstration est ouvert du %s au %s.</p>
+<p>Durant cette période, vous pouvez créer votre propre compte en tant que parent et simuler une ou plusieurs inscriptions.</p>
+<p>Vous pouvez également entrer avec les rôles suivants :</p><ul>
+<li>en tant que <b>parent</b> avec le compte <em>parent.demo@dafap.fr</em>;</li>
+<li>en tant que <b>administrateur</b> avec le compte <em>admin.demo@dafap.fr</em>;</li>
+<li>en tant que <b>gestionnaire</b> avec le compte <em>gestion.demo@dafap.fr</em>;</li>
+<li>en tant que <b>secrétariat</b> avec le compte <em>secretariat.demo@dafap.fr</em>;</li>
+<li>en tant que <b>établissement</b> avec le compte <em>etablissement.demo@dafap.fr</em>;</li>
+<li>en tant que <b>transporteur</b> avec le compte <em>transporteur.demo@dafap.fr</em>.</li></ul>
+<p>Pour tous les comptes démo, le mot de passe est <b>essai33SBM</b> (le même pour tous).</p>
+<p>Pour tout autre renseignement, vous pouvez vous adresser à :</p>
 EOT;
     
-    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);
+    $msg = sprintf($format, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'));    
 } else {
+
     // après la période d'inscription
     $format = <<<EOT
-<p class="premiere">La période d'inscription %s est close.</p>
- <p>Vous pouvez consulter l’affectation de vos enfants, trouver les horaires, correspondre avec le service grâce à votre compte personnel.</p>
-<p>Pour tout renseignement ou pour une nouvelle inscription, adressez vous directement au service Transport à l'adresse :</p>
+<p class="premiere">La période de test est close.</p>
+<p>Actuellement, vous pouvez accéder, en consultation seulement, à l'espace parent par le compte <em>parent.demo@dafap.fr</em> et le mot de passe <em>essai33SBM</em></p>
+<p>L'application propose aussi les rôles d'administrateur et de gestionnaire, ainsi qu'un portail pour les établissements scolaires, pour les transporteurs et pour le service de renseignement des organisateurs.</p>
+<p>Pour l'ouverture d'une période de test complet ou pour tout renseignement, adressez vous directement à School Bus Manager par courrier ou SMS :</p>
 EOT;
     
     $msg = sprintf($format, $this->as);
@@ -78,20 +69,20 @@ EOT;
 			<div class="centre">
 				<a href="<?php echo $this->accueil;?>" class="accueil"><?php echo $this->client['name'];?></a><br>
 				<?php echo $this->client['adresse'][0]; ?><br>
-				<?php echo $this->client['adresse'][1]; ?><br>
+				<?php if (!empty($this->client['adresse'][1])) echo $this->client['adresse'][1] . '<br>'; ?>
 				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
 				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
 			</div>
 		</div>
 		<div class="column2">
-			<div class="flashMessenger">
-		    <?php
-    echo $this->flashMessenger()->render('success');
-    echo $this->flashMessenger()->render('warning');
-    echo $this->flashMessenger()->render('error');
-    echo $this->flashMessenger()->render('info');
-    echo $this->flashMessenger()->render('default');
-    ?>
+		    <div class="flashMessenger">
+		    <?php 
+		    echo $this->flashMessenger()->render('success');
+		    echo $this->flashMessenger()->render('warning');
+		    echo $this->flashMessenger()->render('error');
+		    echo $this->flashMessenger()->render('info');
+		    echo $this->flashMessenger()->render('default');
+		    ?>
 		    </div>
 		    <?php echo $this->form()->openTag($this->form); ?>
 		    <fieldset class="sbm-page1">
@@ -113,22 +104,16 @@ EOT;
 			<p></p>
 			<?php if ($this->etat['etat'] == 1): ?>
 			<fieldset class="sbm-page1">
-				<div class="centre">
+			<div class="centre">
 					<h3>Nouvel utilisateur</h3>
 					<div class="sbm-description">(si vous n'avez pas de compte)</div>
-					<div class="centre">
-					    <?php echo $this->formSubmit($this->form->get('signup')); ?>
-					</div>
+					<div class="centre"><?php echo $this->formSubmit($this->form->get('signup')); ?></div>
 				</div>
 			</fieldset>
 			<p></p>
 			<?php endif;?>
 			<?php echo $this->form()->closeTag(); ?>
-			<div class="sbm-page1">
-				<a href="<?php echo $url_carte;?>"><img
-					alt="carte des établissements desservis"
-					src="img/logocarteetablissements.png"></a>
-			</div>
+			<div class="sbm-page1"><a href="<?php echo $url_carte;?>"><img alt="carte des établissements desservis" src="img/logocarteetablissements.png"></a></div>
 		</div>
 	</div>
 </div>
