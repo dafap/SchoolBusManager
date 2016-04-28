@@ -22,6 +22,7 @@ use SbmInstallation\Model\Exception;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
 use SbmInstallation\Model\DumpTables;
 use SbmCommun\Form\ButtonForm;
+use DrewM\MailChimp;
 
 class IndexController extends AbstractActionController
 {
@@ -216,7 +217,7 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Renvoie l'adapter donné par le DbManager 
+     * Renvoie l'adapter donné par le DbManager
      *
      * @return \Zend\Db\Adapter\Adapter
      */
@@ -288,31 +289,45 @@ class IndexController extends AbstractActionController
         }
         return $result;
     }
-    
+
     public function modifCompteAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', ['action' => 'modif-compte']);
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('login', [
+            'action' => 'modif-compte'
+        ]);
     }
-    
+
     public function mdpChangeAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', ['action' => 'mdp-change']);
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('login', [
+            'action' => 'mdp-change'
+        ]);
     }
-    
+
     public function emailChangeAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('login', ['action' => 'email-change']);
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('login', [
+            'action' => 'email-change'
+        ]);
     }
-    
+
     public function messageAction()
     {
         $retour = $this->url()->fromRoute('sbminstall');
-        return $this->redirectToOrigin()->setBack($retour)->toRoute('dafapmail');
+        return $this->redirectToOrigin()
+            ->setBack($retour)
+            ->toRoute('dafapmail');
     }
-    
+
     public function localisationAction()
     {
         $this->flashMessenger()->addWarningMessage('La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');

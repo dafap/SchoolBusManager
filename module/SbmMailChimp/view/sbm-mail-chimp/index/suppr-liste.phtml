@@ -1,0 +1,52 @@
+<?php
+/**
+ * Page de confirmation de suppression d'une liste de diffusion
+ *
+ * @project sbp
+ * @package SbmMailChimp/view/sbm-mail-chimp/index
+ * @filesource suppr-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 avr. 2016
+ * @version 2016-2.1
+ */
+use SbmCommun\Model\StdLib;
+$champ = $this->field_name;
+$segment = $this->segment_name;
+?>
+<h1>Suppression d'une classe</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression <?php echo empty($champ) ? '' : 'd\'un champ'; ?> de la liste de diffusion :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><span class="label">Nom :</span> <?php echo $this->escapeHtml($this->liste_info['name']); ?></li>
+			<li><span class="label">Organisateur :</span> <?php 
+			echo $this->escapeHtml(StdLib::getParamR([
+			    'contact',
+			    'company'
+			], $this->liste_info)); ?>
+			</li>
+			<li><span class="label">Sujet :</span> <?php 
+			echo $this->escapeHtml(StdLib::getParamR([
+			    'campaign_defaults',
+			    'subject'
+			], $this->liste_info)); ?>
+			</li>
+			<?php if (! empty($champ)) : ?>
+			<li><b><span class="label">Champ à supprimer :</span> <?php 
+			echo sprintf('%d (%s)',$this->merge_id, $this->escapeHtml($this->field_name)); ?>
+			</b></li>
+			<?php elseif (! empty($segment)) :?>
+			<li><b><span class="label">Segment à supprimer :</span> <?php 
+			echo sprintf('%d (%s)',$this->segment_id, $this->escapeHtml($this->segment_name)); ?>
+			</b></li>
+			<?php endif;?>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+<?php
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

@@ -1,0 +1,136 @@
+<?php
+/**
+ * Page de gestion des listes de diffusion
+ *
+ * Utilise l'API de MailChimp
+ * 
+ * @project sbm
+ * @package SbmMailChimp/view/sbm-mail-chimp/index
+ * @filesource index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 23 avr. 2016
+ * @version 2016-2.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('login', [
+    'action' => 'home-page'
+]);
+$url_edit = $this->url('sbmmailchimp', [
+    'action' => 'edit-liste'
+]);
+$url_duplique = $this->url('sbmmailchimp', [
+    'action' => 'dupliquer-liste'
+]);
+$url_creer = $this->url('sbmmailchimp', [
+    'action' => 'creer-liste'
+]);
+$url_suppr = $this->url('sbmmailchimp', [
+    'action' => 'suppr-liste'
+]);
+$url_fields = $this->url('sbmmailchimp', [
+    'action' => 'fields-liste'
+]);
+$url_segments = $this->url('sbmmailchimp', [
+    'action' => 'segments-liste'
+]);
+$url_members = $this->url('sbmmailchimp', [
+    'action' => 'liste-members'
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'creer' => [
+        'class' => 'fam-add',
+        'formaction' => $url_creer,
+        'title' => 'Créer une nouvelle liste de diffusion'
+    ]
+];
+$this->source->setItemCountPerPage(20);
+$this->source->setCurrentPageNumber($this->page);
+$data = $this->source->getCurrentItems();
+?>
+<h1>Gestion des listes de diffusion par MailChimp</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+        </div>
+	</div>
+	<div id="liste-inner">
+		<table class="circuits">
+			<tbody>
+				<tr>
+					<th style="min-width: 8em;">Identifiant</th>
+					<th style="min-width: 30em;">Nom de la liste</th>
+					<th style="min-width: 5em;">Inscrits</th>
+					<th></th>
+				</tr>
+	    <?php foreach($data as $liste): ?>
+	    <?php
+        $hiddens = [
+            'id_liste' => $liste['id'],
+            'liste_name' => $liste['name']
+        ];
+        ?>
+	    <?php
+        $buttons = [
+            'edit' => [
+                'class' => 'fam-pencil',
+                'formaction' => $url_edit,
+                'title' => 'modifier'
+            ]
+        ];
+        if ($this->auth->hasIdentity() && $this->auth->getCategorieId() == 255) {
+            $buttons['dupliquer'] = [
+                'class' => 'fam-page-copy',
+                'formaction' => $url_duplique,
+                'title' => 'dupliquer la liste'
+            ];
+            $buttons['suppr'] = [
+                'class' => 'fam-delete',
+                'formaction' => $url_suppr,
+                'title' => 'supprimer la liste'
+            ];
+            $buttons['fields'] = [
+                'class' => 'fam-table',
+                'formaction' => $url_fields,
+                'title' => 'liste des champs'
+            ];
+            $buttons['segments'] = [
+                'class' => 'fam-basket',
+                'formaction' => $url_segments,
+                'title' => 'liste des segments'
+            ];
+        }
+        ;
+        $buttons['members'] = [
+            'class' => 'fam-group',
+            'formaction' => $url_members,
+            'title' => 'liste des membres'
+        ];
+        ?>
+	    <tr class="<?php echo $this->cycle(["even", "odd"])->next();?>">
+					<td><?php echo $liste['id'];?></td>
+					<td><?php echo $this->escapeHtml($liste['name']);?></td>
+					<td><?php echo $liste['stats']['member_count'];?></td>
+					<td><?php echo $this->listeLigneActions($liste['id'], $hiddens, $buttons);?></td>
+				</tr>
+	    <?php endforeach;?>
+	    </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
+	</div>
+</div>
