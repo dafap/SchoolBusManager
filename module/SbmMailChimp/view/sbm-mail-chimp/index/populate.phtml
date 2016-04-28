@@ -1,0 +1,98 @@
+<?php
+/**
+ * Affiche le compte-rendu d'un peuplement.
+ *
+ * Tant que le traitement du batch n'est pas terminé, le bouton de sortie affiche
+ * un nouveau compte rendu.
+ * 
+ * @project sbm
+ * @package SbmMailChimp/view/sbm-mail-chimp/index
+ * @filesource populate.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 avr. 2016
+ * @version 2016-2.1
+ */
+use SbmCommun\Model\DateLib;
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+if ($this->compte_rendu['status'] != 'finished') {
+    $hiddens = [
+        'id_batch' => $this->compte_rendu['id']
+    ];
+    $url_retour = $this->url('sbmmailchimp', [
+        'action' => 'controle'
+    ]);
+} else {
+    $hiddens = [];
+    $url_retour = $this->url('sbmmailchimp', [
+        'action' => 'liste-members'
+    ]);
+}
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+$aide = 0;
+?>
+<h1>Contrôle de la mise à jour de la liste</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="fiche-inner">
+		<fieldset class="sbm-page1">
+			<table>
+				<tr>
+					<th>Identifiant du batch</th>
+					<td><?php echo $this->compte_rendu['id'];?></td>
+				</tr>
+				<tr>
+					<th>Etat de la demande</th>
+					<td><?php echo $this->compte_rendu['status'];?></td>
+				</tr>
+				<tr>
+					<th>Nombre d'opérations</th>
+					<td><?php echo $this->compte_rendu['total_operations'];?></td>
+				</tr>
+				<tr>
+					<th>Opérations terminées</th>
+					<td><?php echo $this->compte_rendu['finished_operations'];?></td>
+				</tr>
+				<tr>
+					<th>Nombre d'échecs</th>
+					<td><?php echo $this->compte_rendu['errored_operations'];?></td>
+				</tr>
+				<tr>
+					<th>Heure d'envoi du batch</th>
+					<td><?php echo $this->compte_rendu['submitted_at'];//DateLib::formatDateTimeFromMysql($this->compte_rendu['submitted_at']);?></td>
+				</tr>
+				<tr>
+					<th>Fin du traitement à</th>
+					<td><?php echo $this->compte_rendu['completed_at'];//DateLib::formatDateTimeFromMysql($this->compte_rendu['completed_at']);?></td>
+				</tr>
+	            <?php if (!empty($this->compte_rendu['response_body_url'])): ?>
+	            <tr>
+					<td colspan="2"><a
+						href="<?php echo $this->compte_rendu['response_body_url'];?>">télécharger
+							le résultat des opérations</a></td>
+				</tr>
+	            <?php endif;?>
+	            <?php foreach ($this->compte_rendu['_links'] as $link):?>
+	                <?php if (array_key_exists('targetSchema', $link)):?>
+	                <tr>
+					<td colspan="2"><a target="_blank"
+						href="<?php echo $link['targetSchema']?>">Aide n°<?php echo ++$aide;?></a></td>
+				</tr>
+	                <?php endif;?>
+	            <?php endforeach;?>
+	        </table>
+		</fieldset>
+	</div>
+	<div id="fiche-footer">
+		<p class="sbm-description">Tant que le traitement du batch n'est pas
+			terminé, le bouton de sortie affiche un nouveau compte rendu.</p>
+	</div>
+</div>

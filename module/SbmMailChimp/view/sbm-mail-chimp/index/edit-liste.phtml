@@ -1,0 +1,59 @@
+<?php
+/**
+ * Page de modification du paramétrage d'une liste de diffusion
+ * 
+ * @project sbm
+ * @package SbmMailChimp/view/sbm-mail-chimp/index
+ * @filesource edit-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 23 avr. 2016
+ * @version 2016-2.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmmailchimp');
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1><?php echo $this->h1_msg; ?></h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('id_liste'));
+echo $this->formHidden($this->form->get('csrf'));
+?>
+        <fieldset class="sbm-page1">
+			<div id="edit-name" class="row-inner edit"><?php echo $this->formRow($this->form->get('name')); ?></div>
+			<div id="edit-company" class="row-inner edit"><?php echo $this->formRow($this->form->get('company')); ?></div>
+			<div id="edit-address1" class="row-inner edit"><?php echo $this->formRow($this->form->get('address1')); ?></div>
+			<div id="edit-address2" class="row-inner edit"><?php echo $this->formRow($this->form->get('address2')); ?></div>
+			<div id="edit-zip" class="row-inner ajout"><?php echo $this->formRow($this->form->get('zip')); ?></div>
+			<div id="edit-city" class="row-inner ajout"><?php echo $this->formRow($this->form->get('city')); ?></div>
+			<div id="edit-state" class="row-inner ajout"><?php echo $this->formRow($this->form->get('state')); ?></div>
+			<div id="edit-country" class="row-inner ajout"><?php echo $this->formRow($this->form->get('country')); ?></div>
+			<div id="edit-phone" class="row-inner ajout"><?php echo $this->formRow($this->form->get('phone')); ?></div>
+			<div id="edit-permission_reminder" class="row-inner ajout"><?php echo $this->formRow($this->form->get('permission_reminder')); ?></div>
+			<div id="edit-from_name" class="row-inner ajout"><?php echo $this->formRow($this->form->get('from_name')); ?></div>
+			<div id="edit-from_email" class="row-inner ajout"><?php echo $this->formRow($this->form->get('from_email')); ?></div>
+			<div id="edit-subject" class="row-inner ajout"><?php echo $this->formRow($this->form->get('subject')); ?></div>
+			<div id="edit-language" class="row-inner ajout"><?php echo $this->formRow($this->form->get('language')); ?></div>
+			<div id="edit-email_type_option" class="row-inner ajout"><?php echo $this->formRow($this->form->get('email_type_option')); ?></div>
+			<div id="edit-buttons" class="row-inner edit">
+        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+<?php echo $this->form()->closeTag(); ?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>

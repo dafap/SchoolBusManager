@@ -5,18 +5,18 @@
  * Préparation pour compatibilité avec ZF3
  * 
  * @project sbm
- * @package SbmInstallation/Controller/Service
+ * @package SbmMailChimp/Controller/Service
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 23 avr. 2016
+ * @version 2016-2.1
  */
-namespace SbmInstallation\Controller\Service;
+namespace SbmMailChimp\Controller\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmInstallation\Controller\IndexController;
+use SbmMailChimp\Controller\IndexController;
 use SbmCommun\Model\StdLib;
 
 class IndexControllerFactory implements FactoryInterface
@@ -28,21 +28,22 @@ class IndexControllerFactory implements FactoryInterface
         $config_application = $sm->get('config');
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
-            'db_config' => StdLib::getParam('db', $config_application),
-            'db_design' => StdLib::getParam('db_design', $config_application),
-            'config_paiement' => StdLib::getParamR([
+            'client' => StdLib::getParamR([
                 'sbm',
-                'paiement'
+                'client'
             ], $config_application),
-            'error_log' => StdLib::getParamR([
-                'php_settings',
-                'error_log'
+            'mail_config' => StdLib::getParamR([
+                'sbm',
+                'mail'
             ], $config_application),
+            'authenticate' => $sm->get('Dafap\Authenticate'),
             'mailchimp_key' => StdLib::getParamR([
                 'sbm',
-                'mailchimp'
+                'mailchimp',
+                'key'
             ], $config_application, '')
         ];
         return new IndexController($config_controller);
     }
-}   
+}
+ 
