@@ -1,0 +1,133 @@
+<?php
+/**
+ * Liste des membres d'un segment
+ *
+ * @project sbm
+ * @package SbmMailChimp/view/sbm-mail-chimp/index
+ * @filesource segment-members.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 avr. 2016
+ * @version 2016-2.1
+ */
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\ArrayAdapter;
+
+function etat($status)
+{
+    switch ($status) {
+        case 'subscribed':
+            return 'inscrit';
+        case 'unsubscribed':
+            return 'désinscrit';
+        case 'cleaned':
+            return 'nettoyé';
+        case 'pending':
+            return 'en attente';
+        default:
+            return 'supprimé';
+    }
+}
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$segment = $this->segment_name;
+if (empty($segment)) {
+    $h1 = "Liste des membres d'une liste de diffusion";
+    $h3 = 'Liste : ' . $this->liste_name;
+    $url_retour = $this->url('sbmmailchimp');
+    $url_populate = $this->url('sbmmailchimp', [
+        'action' => 'populate'
+    ]);
+    $url_clean = $this->url('sbmmailchimp', [
+        'action' => 'clean'
+    ]);
+    $actions = [
+        'populate' => [
+            'class' => 'fam-group-add',
+            'formaction' => $url_populate,
+            'title' => 'mettre à jour les membres de la liste'
+        ],
+        'clean' => [
+            'class' => 'fam-group-delete',
+            'formaction' => $url_clean,
+            'title' => 'nettoyer la liste'
+        ]
+    ];
+} else {
+    $h1 = "Liste des membres d'un segment";
+    $h3 = "Segment : $segment<br>Liste : " . $this->liste_name;
+    $url_retour = $this->url('sbmmailchimp', [
+        'action' => 'segments-liste'
+    ]);
+    $actions = [];
+}
+$actions = array_merge([
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+], $actions);
+
+// $this->source est un paginator utilisant l'adapter MailChimpAdapter
+$this->source->setItemCountPerPage(20);
+$this->source->setCurrentPageNumber($this->page);
+$data = $this->source->getCurrentItems();
+// lecture des entêtes de colonnes
+$th[] = 'EMAIL';
+$merge_fields = current($data)['merge_fields'];
+foreach ($merge_fields as $key => $value) {
+    $th[] = $key;
+}
+$th[] = 'ETAT';
+?>
+<h1><?php echo $h1; ?></h1>
+<h3><?php echo $h3; ?></h3>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?php
+echo $this->listeZoneActions([
+    'id_liste' => $this->id_liste
+], $actions);
+?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+        </div>
+	</div>
+	<div id="liste-inner">
+		<table class="mailchimp">
+			<tbody>
+				<tr>
+        <?php
+        for ($i = 0; $i < count($th); $i ++) {
+            echo '<th>' . $th[$i] . '</th>';
+        }
+        ?>
+                </tr>
+        <?php
+        foreach ($data as $member) {
+            $ligne = '<tr class="' . $this->cycle([
+                'even',
+                'odd'
+            ])->next() . '"><td>' . $member['email_address'] . '</td>';
+            foreach ($member['merge_fields'] as $value) {
+                $ligne .= '<td>' . $value . '</td>';
+            }
+            $ligne .= '<td>' . etat($member['status']) . '</td></tr>';
+            echo $ligne;
+        }
+        ?>        
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="sbm-description">Le nombre indiqué ci-dessus tient compte
+			de tous les membres : inscrits, désinscrits ou supprimés.</div>
+	</div>
+</div>

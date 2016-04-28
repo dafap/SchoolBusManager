@@ -32,6 +32,7 @@ $url_admin = $this->url('sbmadmin');
 $url_gestion = $this->url('sbmgestion');
 $url_portail = $this->url('sbmportail');
 $url_parent = $this->url('sbmparent');
+$url_mailchimp = $this->url('sbmmailchimp');
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
 <div id="menugeneral">
@@ -75,7 +76,8 @@ echo $this->flashMessenger()->render('default');
 							des tables</a></li>
 					<li><a href="<?php echo $url_tablealias;?>"><i
 							class="fam-bullet-go"></i>Liste des alias des tables</a>
-				
+					<li><a href="<?php echo $url_mailchimp;?>"><i
+							class="fam-bullet-go"></i>Gestion des listes de diffusion de MailChimp</a>
 				</ul>
 			</fieldset>
 		</div>

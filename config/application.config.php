@@ -21,6 +21,7 @@ return array(
         'SbmCommun',
         'SbmPdf',
         'SbmCartographie',
+        'SbmMailChimp',
         'SbmAjax'
     ),
     'module_listener_options' => array(
