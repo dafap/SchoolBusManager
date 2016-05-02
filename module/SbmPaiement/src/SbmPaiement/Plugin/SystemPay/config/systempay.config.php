@@ -14,12 +14,11 @@
  * @filesource systempay.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2015
- * @version 2015-1
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 return array(
     'url_paiement' => 'https://paiement.systempay.fr/vads-payment/',
-    //'url_paiement' => 'http://cc-decazeville-aubin.dafap.fr/notification/paiement.php',
     'url_marchand' => 'https://paiement.systempay.fr/vads-merchant/',
     'vads_action_mode' => 'INTERACTIVE',
     'vads_currency' => '978',

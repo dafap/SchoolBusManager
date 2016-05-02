@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2016
- * @version 2016-2
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 namespace SbmPortail\Controller;
 
@@ -482,7 +482,7 @@ class IndexController extends AbstractActionController
         if (! empty($data)) {
             $fields = array_keys(current($data));
             // s'il faut utiliser l'enclosure pour telephone, rajouter une callback en 4e parametre de csvExport()
-            // (voir http://stackoverflow.com/questions/2489553/forcing-fputcsv-to-use-enclosure-for-all-fields)
+            // (voir https://stackoverflow.com/questions/2489553/forcing-fputcsv-to-use-enclosure-for-all-fields)
             return $this->csvExport('telephones.csv', $fields, $data);
         } else {
             $this->flashMessenger()->addInfoMessage('Il n\'y a pas de données correspondant aux critères indiqués.');

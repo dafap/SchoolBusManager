@@ -12,13 +12,13 @@
  * @filesource etablissements.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2015
- * @version 2015-1
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // mise en place des JS de googleMaps
-$this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
+$this->headScript()->appendFile('https://maps.google.com/maps/api/js?sensor=false');
 $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->captureStart();
 ?>

@@ -2179,17 +2179,17 @@
         },
         {
             "name": "zendframework/zend-file",
-            "version": "2.6.1",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-file.git",
-                "reference": "91a7d5d42bd7d7767c86aaa675d4ffa3520dd9be"
+                "reference": "96f66b6698c8cccb4dd91cb08a671266cc160821"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-file-2.6.1-6b1731.zip",
-                "reference": "91a7d5d42bd7d7767c86aaa675d4ffa3520dd9be",
-                "shasum": "3b5e9d7691a1a21e74aa657a2ac4fdefeed074c4"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-file-2.7.0-2bee5f.zip",
+                "reference": "96f66b6698c8cccb4dd91cb08a671266cc160821",
+                "shasum": "783b6b59e6d78610771380ea7613d7e8702597b7"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -2213,8 +2213,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev",
-                    "dev-develop": "2.7-dev"
+                    "dev-master": "2.7-dev",
+                    "dev-develop": "2.8-dev"
                 }
             },
             "autoload": {
@@ -2236,7 +2236,7 @@
                 "file",
                 "zf2"
             ],
-            "time": "2016-03-02 18:30:10"
+            "time": "2016-04-28 19:21:43"
         },
         {
             "name": "zendframework/zend-filter",

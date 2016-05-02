@@ -14,8 +14,9 @@ use SbmCommun\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmmailchimp', [
-    'action' => 'fields-liste'
+    'action' => 'segments-liste'
 ]);
+$url_ajax = '';
 $hiddens = [
     'id_liste' => StdLib::getParam('id', $this->liste_info)
 ];
@@ -29,12 +30,12 @@ $actions = [
 ?>
 <h1><?php echo $this->h1_msg; ?></h1>
 <table>
-  <tr>
-    <th><?php echo StdLib::getParam('id', $this->liste_info); ?></th>
-    <th><?php echo StdLib::getParam('name', $this->liste_info); ?></th>
-    <th><?php echo StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
-    <th><?php ?></th>
-  </tr>
+	<tr>
+		<th><?php echo StdLib::getParam('id', $this->liste_info); ?></th>
+		<th><?php echo StdLib::getParam('name', $this->liste_info); ?></th>
+		<th><?php echo StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
+		<th><?php ?></th>
+	</tr>
 </table>
 
 <div id="fiche-wrapper">
@@ -43,20 +44,53 @@ $actions = [
         <?php echo $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
-	<div id="fiche-inner">
-<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('id_liste'));
-echo $this->formHidden($this->form->get('segment_id'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
-        <fieldset class="sbm-page1">
-			<div id="edit-name" class="row-inner edit"><?php echo $this->formRow($this->form->get('name')); ?></div>
-			<div id="edit-name" class="row-inner edit"><?php echo $this->formRow($this->form->get('match')); ?></div>
-        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-		</fieldset>
-<?php echo $this->form()->closeTag(); ?>
-    </div>
-	<div id="fiche-footer"></div>
+	<div id="fiche-inner" class="clearfix">
+
+		<div id="formulaire">
+        <?php echo $this->form()->openTag($this->form);?>
+        <?php echo $this->formHidden($this->form->get('id_liste'));?>
+        <?php echo $this->formHidden($this->form->get('segment_id'));?>
+        <?php echo $this->formHidden($this->form->get('csrf'));?>
+			<div id="colonne1" class="float-left">
+				<fieldset class="sbm-page1">
+					<legend>Définition</legend>
+					<div id="edit-name" class="row-inner edit">
+			         <?php echo $this->formRow($this->form->get('name')); ?>
+			        </div>
+					<div id="edit-match" class="row-inner edit">
+			         <?php echo $this->formRow($this->form->get('match')); ?>
+			        </div>
+				</fieldset>
+				<div class="top-6px">
+					<span class="left-95px"><?php echo $this->formSubmit($this->form->get('submit'));?></span>
+					<span class="left-10px"><?php echo $this->formSubmit($this->form->get('cancel')); ?></span>
+				</div>
+			</div>
+			<div id="colonne2" class="float-left clearfix"
+				style="min-width: 50%;">
+				<fieldset id="conditions-wrapper" style="width: 100%;"
+					class="float-left sbm-page1 left-10px">
+					<legend>Les règles du filtre</legend>
+					<div id="conditions-header" class="menu clearfix">
+				     <?php
+        echo $this->listeZoneActions([], [
+            'addcondition' => [
+                'class' => 'fam-add',
+                'formaction' => $url_ajax,
+                'title' => 'Ajouter une règle'
+            ]
+        ]);
+        ?>
+				    </div>
+					<div id="conditions"></div>
+				</fieldset>
+			</div>
+			<?php echo $this->form()->closeTag();?>
+		</div>
+	</div>
+	<div id="fiche-footer">
+		<p class="sbm-description">Les règles sont combinées par l'opérateur
+			logique indiqué.</p>
+	</div>
 </div>
- 
+<pre><?php print_r($this->segment);?></pre>
