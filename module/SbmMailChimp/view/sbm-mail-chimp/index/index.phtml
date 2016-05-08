@@ -9,47 +9,78 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2016
- * @version 2016-2.1
+ * @date 8 mai 2016
+ * @version 2016-2.1.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('login', [
     'action' => 'home-page'
 ]);
-$url_edit = $this->url('sbmmailchimp', [
-    'action' => 'edit-liste'
-]);
-$url_duplique = $this->url('sbmmailchimp', [
-    'action' => 'dupliquer-liste'
-]);
-$url_creer = $this->url('sbmmailchimp', [
-    'action' => 'creer-liste'
-]);
-$url_suppr = $this->url('sbmmailchimp', [
-    'action' => 'suppr-liste'
-]);
-$url_fields = $this->url('sbmmailchimp', [
-    'action' => 'fields-liste'
-]);
-$url_segments = $this->url('sbmmailchimp', [
-    'action' => 'segments-liste'
-]);
-$url_members = $this->url('sbmmailchimp', [
-    'action' => 'liste-members'
-]);
+$categorieId = $this->auth->getCategorieId();
+if ($this->acl->hasResource('edit-liste') && $this->acl->isAllowed($categorieId, 'edit-liste')) {
+    $url_edit = $this->url('sbmmailchimp', [
+        'action' => 'edit-liste'
+    ]);
+} else {
+    $url_edit = false;
+}
+if ($this->acl->hasResource('dupliquer-liste') && $this->acl->isAllowed($categorieId, 'dupliquer-liste')) {
+    $url_duplique = $this->url('sbmmailchimp', [
+        'action' => 'dupliquer-liste'
+    ]);
+} else {
+    $url_duplique = false;
+}
+if ($this->acl->hasResource('creer-liste') && $this->acl->isAllowed($categorieId, 'creer-liste')) {
+    $url_creer = $this->url('sbmmailchimp', [
+        'action' => 'creer-liste'
+    ]);
+} else {
+    $url_creer = false;
+}
+if ($this->acl->hasResource('suppr-liste') && $this->acl->isAllowed($categorieId, 'suppr-liste')) {
+    $url_suppr = $this->url('sbmmailchimp', [
+        'action' => 'suppr-liste'
+    ]);
+} else {
+    $url_suppr = false;
+}
+if ($this->acl->hasResource('fields-liste') && $this->acl->isAllowed($categorieId, 'fields-liste')) {
+    $url_fields = $this->url('sbmmailchimp', [
+        'action' => 'fields-liste'
+    ]);
+} else {
+    $url_fields = false;
+}
+if ($this->acl->hasResource('segments-liste') && $this->acl->isAllowed($categorieId, 'segments-liste')) {
+    $url_segments = $this->url('sbmmailchimp', [
+        'action' => 'segments-liste'
+    ]);
+} else {
+    $url_segments = false;
+}
+if ($this->acl->hasResource('liste-members') && $this->acl->isAllowed($categorieId, 'liste-members')) {
+    $url_members = $this->url('sbmmailchimp', [
+        'action' => 'liste-members'
+    ]);
+} else {
+    $url_members = false;
+}
 $hiddens = [];
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ],
-    'creer' => [
+    ]
+];
+if ($url_creer) {
+    $actions['creer'] = [
         'class' => 'fam-add',
         'formaction' => $url_creer,
         'title' => 'Créer une nouvelle liste de diffusion'
-    ]
-];
+    ];
+}
 $this->source->setItemCountPerPage(20);
 $this->source->setCurrentPageNumber($this->page);
 $data = $this->source->getCurrentItems();
@@ -64,6 +95,10 @@ echo $this->flashMessenger()->render('warning');
 echo $this->flashMessenger()->render('error');
 echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
+if ($this->message) {
+    $ligne = sprintf('<ul class="%s"><li>%s</li><ul>', 'info', $this->message);
+    echo $ligne;
+}
 ?>
         </div>
 	</div>
@@ -84,41 +119,49 @@ echo $this->flashMessenger()->render('default');
         ];
         ?>
 	    <?php
-        $buttons = [
-            'edit' => [
+        $buttons = [];
+        if ($url_edit) {
+            $buttons['edit'] = [
                 'class' => 'fam-pencil',
                 'formaction' => $url_edit,
                 'title' => 'modifier'
-            ]
-        ];
-        if ($this->auth->hasIdentity() && $this->auth->getCategorieId() == 255) {
+            ];
+        }
+        if ($url_duplique) {
             $buttons['dupliquer'] = [
                 'class' => 'fam-page-copy',
                 'formaction' => $url_duplique,
                 'title' => 'dupliquer la liste'
             ];
+        }
+        if ($url_suppr) {
             $buttons['suppr'] = [
                 'class' => 'fam-delete',
                 'formaction' => $url_suppr,
                 'title' => 'supprimer la liste'
             ];
+        }
+        if ($url_fields) {
             $buttons['fields'] = [
                 'class' => 'fam-table',
                 'formaction' => $url_fields,
                 'title' => 'liste des champs'
             ];
+        }
+        if ($url_segments) {
             $buttons['segments'] = [
                 'class' => 'fam-basket',
                 'formaction' => $url_segments,
                 'title' => 'liste des segments'
             ];
         }
-        ;
-        $buttons['members'] = [
-            'class' => 'fam-group',
-            'formaction' => $url_members,
-            'title' => 'liste des membres'
-        ];
+        if ($url_members) {
+            $buttons['members'] = [
+                'class' => 'fam-group',
+                'formaction' => $url_members,
+                'title' => 'liste des membres'
+            ];
+        }
         ?>
 	    <tr class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td><?php echo $liste['id'];?></td>
@@ -131,6 +174,6 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
 	</div>
 </div>

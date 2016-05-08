@@ -9,25 +9,42 @@
  * @filesource fields-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2016
- * @version 2016-2.1
+ * @date 8 mai 2016
+ * @version 2016-2.1.1
  */
 use SbmCommun\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$categorieId = $this->auth->getCategorieId();
 $url_retour = $this->url('sbmmailchimp');
-$url_edit = $this->url('sbmmailchimp', [
-    'action' => 'edit-field'
-]);
-$url_duplique = $this->url('sbmmailchimp', [
-    'action' => 'dupliquer-field'
-]);
-$url_creer = $this->url('sbmmailchimp', [
-    'action' => 'creer-field'
-]);
-$url_suppr = $this->url('sbmmailchimp', [
-    'action' => 'suppr-field'
-]);
+if ($this->acl->hasResource('edit-field') && $this->acl->isAllowed($categorieId, 'edit-field')) {
+    $url_edit = $this->url('sbmmailchimp', [
+        'action' => 'edit-field'
+    ]);
+} else {
+    $url_edit = false;
+}
+if ($this->acl->hasResource('dupliquer-field') && $this->acl->isAllowed($categorieId, 'dupliquer-field')) {
+    $url_duplique = $this->url('sbmmailchimp', [
+        'action' => 'dupliquer-field'
+    ]);
+} else {
+    $url_duplique = false;
+}
+if ($this->acl->hasResource('creer-field') && $this->acl->isAllowed($categorieId, 'creer-field')) {
+    $url_creer = $this->url('sbmmailchimp', [
+        'action' => 'creer-field'
+    ]);
+} else {
+    $url_creer = false;
+}
+if ($this->acl->hasResource('suppr-field') && $this->acl->isAllowed($categorieId, 'suppr-field')) {
+    $url_suppr = $this->url('sbmmailchimp', [
+        'action' => 'suppr-field'
+    ]);
+} else {
+    $url_suppr = false;
+}
 $hiddens = [
     'id_liste' => StdLib::getParam('id', $this->liste_info),
     'liste_name' => StdLib::getParam('name', $this->liste_info)
@@ -37,25 +54,27 @@ $actions = [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ],
-    'creer' => [
+    ]
+];
+if ($url_creer) {
+    $actions['creer'] = [
         'class' => 'fam-add',
         'formaction' => $url_creer,
         'title' => 'Créer une nouvelle liste de diffusion'
-    ]
-];
+    ];
+}
 $this->source->setItemCountPerPage(20);
 $this->source->setCurrentPageNumber($this->page);
 $data = $this->source->getCurrentItems();
 ?>
 <h1>Listes des champs d'une liste de diffusion de MailChimp</h1>
 <table>
-  <tr>
-    <th><?php echo StdLib::getParam('id', $this->liste_info); ?></th>
-    <th><?php echo StdLib::getParam('name', $this->liste_info); ?></th>
-    <th><?php echo StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
-    <th><?php ?></th>
-  </tr>
+	<tr>
+		<th><?php echo StdLib::getParam('id', $this->liste_info); ?></th>
+		<th><?php echo StdLib::getParam('name', $this->liste_info); ?></th>
+		<th><?php echo StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
+		<th><?php ?></th>
+	</tr>
 </table>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
@@ -85,26 +104,30 @@ echo $this->flashMessenger()->render('default');
 	    <?php $hiddens['merge_id'] = $field['merge_id']; ?>
 	    <?php $hiddens['field_name'] = $field['name']; ?>
 	    <?php
-        $buttons = [
-            'edit' => [
+        $buttons = [];
+        if ($url_edit) {
+            $buttons['edit'] = [
                 'class' => 'fam-pencil',
                 'formaction' => $url_edit,
                 'title' => 'modifier le champ'
-            ],
-            'dupliquer' => [
+            ];
+        }
+        if ($url_duplique) {
+            $buttons['dupliquer'] = [
                 'class' => 'fam-page-copy',
                 'formaction' => $url_duplique,
                 'title' => 'dupliquer le champ'
-            ],
-            'suppr' => [
+            ];
+        }
+        if ($url_suppr) {
+            $buttons['suppr'] = [
                 'class' => 'fam-delete',
                 'formaction' => $url_suppr,
                 'title' => 'supprimer le champ'
-            ]
-        ];
+            ];
+        }
         ?>
-	    <tr
-					class="<?php echo $this->cycle(['even', 'odd'])->next();?>">
+	    <tr class="<?php echo $this->cycle(['even', 'odd'])->next();?>">
 					<td><?php echo $field['merge_id'];?></td>
 					<td><?php echo $this->escapeHtml($field['tag']);?></td>
 					<td><?php echo $this->escapeHtml($field['name']);?></td>
@@ -118,6 +141,6 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
 	</div>
 </div>
