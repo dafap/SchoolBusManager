@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2016
- * @version 2016-2.1
+ * @date 8 mai 2016
+ * @version 2016-2.1.1
  */
 namespace SbmMailChimp\Controller;
 
@@ -31,7 +31,7 @@ class IndexController extends AbstractActionController
     /**
      * Affiche la liste des listes de diffusion présentent dans MailChimp
      *
-     * http://developer.mailchimp.com/documentation/mailchimp/reference/lists/
+     * https://developer.mailchimp.com/documentation/mailchimp/reference/lists/
      *
      * (non-PHPdoc)
      *
@@ -47,15 +47,15 @@ class IndexController extends AbstractActionController
         $method = 'lists';
         $listes = new Paginator(new MailChimpAdapter($mailchimp, $method, 'lists'));
         if (! $listes->count()) {
-            $listes['lists'] = [];
-            $this->flashMessenger()->addErrorMessage('La configuration du serveur ne permet pas d\'utiliser cette fonction.');
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
+            $message = 'Aucune liste n\'a encore été créée.<br>Il faut en créer une.';
+        }else {
+            $message = '';
         }
         return new ViewModel([
             'source' => $listes,
-            'auth' => $this->config['authenticate']->by('email')
+            'auth' => $this->config['authenticate']->by('email'),
+            'acl' => $this->config['acl'],
+            'message' => $message
         ]);
     }
 
@@ -99,7 +99,7 @@ class IndexController extends AbstractActionController
      *
      * Cette action n'est autorisée par les acl que pour le sadmin
      *
-     * @see http://developer.mailchimp.com/documentation/mailchimp/reference/lists/
+     * @see https://developer.mailchimp.com/documentation/mailchimp/reference/lists/
      *
      * @throws \Exception
      * @return \Zend\Http\Response|\Zend\View\Model\ViewModel
@@ -345,7 +345,7 @@ class IndexController extends AbstractActionController
     /**
      * Gestion des champs des liste
      *
-     * @see http://developer.mailchimp.com/documentation/mailchimp/reference/lists/merge-fields/
+     * @see https://developer.mailchimp.com/documentation/mailchimp/reference/lists/merge-fields/
      *
      * @throws \Exception
      * @return \Zend\Http\Response|\Zend\View\Model\ViewModel
@@ -401,6 +401,8 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel([
             'liste_info' => $liste_info,
+            'auth' => $this->config['authenticate']->by('email'),
+            'acl' => $this->config['acl'],
             'source' => $source
         ]);
     }
@@ -669,7 +671,7 @@ class IndexController extends AbstractActionController
      *
      * L'entrée par get récupère les paramètres en session.
      *
-     * @see http://developer.mailchimp.com/documentation/mailchimp/reference/lists/segments/
+     * @see https://developer.mailchimp.com/documentation/mailchimp/reference/lists/segments/
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -719,6 +721,8 @@ class IndexController extends AbstractActionController
         return new ViewModel([
             'liste_info' => $liste_info,
             'source' => $source,
+            'auth' => $this->config['authenticate']->by('email'),
+            'acl' => $this->config['acl'],
             'message' => $message
         ]);
     }
@@ -761,7 +765,7 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', 'Le segment a été créé.', 'segments-liste');
+                return $this->retourListe('success', 'Le segment a été créé. Il faut maintenant ajouter les règles de filtrage.', 'segments-liste');
             }
         } else {
             /**
@@ -776,7 +780,7 @@ class IndexController extends AbstractActionController
         $liste_info = $mailchimp->get('lists/' . $id_liste);
         if (! array_key_exists('id', $liste_info)) {
             ob_start();
-            echo "La liste n'a pas été trouvée.\n";
+            echo "La liste '$id_liste' n'a pas été trouvée.\n";
             var_dump($liste_info, $id_liste, $args);
             $message = ob_get_clean();
             throw new \Exception($message);
@@ -900,8 +904,8 @@ class IndexController extends AbstractActionController
                 return $this->retourListe('success', 'Modification enregistrée.', 'segments-liste');
             }
         } else {
-            $result = $mailchimp->get('lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
-            $form->setDataFromApi3($result);
+            $segment = $mailchimp->get('lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
+            $form->setDataFromApi3($segment);
         }
         // lecture des infos de la liste
         $liste_info = $mailchimp->get('lists/' . $args['id_liste']);
@@ -915,7 +919,10 @@ class IndexController extends AbstractActionController
         return new ViewModel([
             'h1_msg' => 'Modification d\'un segment d\'une liste',
             'liste_info' => $liste_info,
-            'form' => $form->prepare()
+            'id_liste' => $args['id_liste'],
+            'segment_id' => $args['segment_id'],
+            'form' => $form->prepare(),
+            'segment' => $segment
         ]);
     }
 
@@ -1035,6 +1042,8 @@ class IndexController extends AbstractActionController
             'id_liste' => $args['id_liste'],
             'liste_name' => $args['liste_name'],
             'segment_name' => $args['segment_name'],
+            'auth' => $this->config['authenticate']->by('email'),
+            'acl' => $this->config['acl'],
             'page' => $this->params('page', 1)
         ]);
     }
@@ -1050,7 +1059,7 @@ class IndexController extends AbstractActionController
      * Pour une entrée par get, ces paramètres doivent être en session.
      * (entrée par get nécessaire à cause du paginator)
      *
-     * @see http://developer.mailchimp.com/documentation/mailchimp/reference/lists/members/
+     * @see https://developer.mailchimp.com/documentation/mailchimp/reference/lists/members/
      */
     public function listeMembersAction()
     {
@@ -1083,12 +1092,17 @@ class IndexController extends AbstractActionController
         $method = 'lists/' . $args['id_liste'] . '/members';
         $source = new Paginator(new MailChimpAdapter($mailchimp, $method, 'members'));
         if (! $source->count()) {
-            return $this->retourListe('warning', 'Pas de membre dans cette liste.');
+            $message = 'Pas de membre dans cette liste.<br>Il faut mettre la liste à jour.';
+        } else {
+            $message = '';
         }
         $view = new ViewModel([
             'source' => $source,
             'id_liste' => $args['id_liste'],
             'liste_name' => $args['liste_name'],
+            'message' => $message,
+            'auth' => $this->config['authenticate']->by('email'),
+            'acl' => $this->config['acl'],
             'page' => $this->params('page', 1)
         ]);
         $view->setTemplate('sbm-mail-chimp/index/segment-members');

@@ -860,16 +860,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "1.3.5",
+            "version": "1.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf"
+                "reference": "2292b116f43c272ff4328083096114f84ea46a56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf",
-                "reference": "dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/2292b116f43c272ff4328083096114f84ea46a56",
+                "reference": "2292b116f43c272ff4328083096114f84ea46a56",
                 "shasum": ""
             },
             "require": {
@@ -906,7 +906,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2016-02-26 18:40:46"
+            "time": "2016-05-04 07:59:13"
         },
         {
             "name": "sebastian/exporter",
@@ -1115,7 +1115,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.4",
+            "version": "v3.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
@@ -2179,17 +2179,17 @@
         },
         {
             "name": "zendframework/zend-file",
-            "version": "2.6.1",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-file.git",
-                "reference": "91a7d5d42bd7d7767c86aaa675d4ffa3520dd9be"
+                "reference": "96f66b6698c8cccb4dd91cb08a671266cc160821"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-file-2.6.1-6b1731.zip",
-                "reference": "91a7d5d42bd7d7767c86aaa675d4ffa3520dd9be",
-                "shasum": "3b5e9d7691a1a21e74aa657a2ac4fdefeed074c4"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-file-2.7.0-2bee5f.zip",
+                "reference": "96f66b6698c8cccb4dd91cb08a671266cc160821",
+                "shasum": "783b6b59e6d78610771380ea7613d7e8702597b7"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -2213,8 +2213,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev",
-                    "dev-develop": "2.7-dev"
+                    "dev-master": "2.7-dev",
+                    "dev-develop": "2.8-dev"
                 }
             },
             "autoload": {
@@ -2236,7 +2236,7 @@
                 "file",
                 "zf2"
             ],
-            "time": "2016-03-02 18:30:10"
+            "time": "2016-04-28 19:21:43"
         },
         {
             "name": "zendframework/zend-filter",
@@ -2298,11 +2298,17 @@
         },
         {
             "name": "zendframework/zend-form",
-            "version": "2.8.1",
+            "version": "2.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-form.git",
-                "reference": "71f14114a314a722241e33819c27cf3118130af7"
+                "reference": "1524ddcac24dcc0bb68e5ff8f3fb8c01b191d3c8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-form-2.8.3-f9ac25.zip",
+                "reference": "1524ddcac24dcc0bb68e5ff8f3fb8c01b191d3c8",
+                "shasum": "1c4f9946c38a00c48c6588bf628a7452bee850ce"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -2313,10 +2319,11 @@
             "require-dev": {
                 "doctrine/annotations": "~1.0",
                 "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0",
+                "phpunit/phpunit": "^4.8",
                 "zendframework/zend-cache": "^2.6.1",
                 "zendframework/zend-captcha": "^2.5.4",
                 "zendframework/zend-code": "^2.6",
+                "zendframework/zend-escaper": "^2.5",
                 "zendframework/zend-eventmanager": "^2.6.2 || ^3.0",
                 "zendframework/zend-filter": "^2.6",
                 "zendframework/zend-i18n": "^2.6",
@@ -2352,12 +2359,36 @@
             "autoload": {
                 "psr-4": {
                     "Zend\\Form\\": "src/"
-                }
+                },
+                "files": [
+                    "autoload/formElementManagerPolyfill.php"
+                ]
             },
             "autoload-dev": {
                 "psr-4": {
                     "ZendTest\\Form\\": "test/"
                 }
+            },
+            "scripts": {
+                "check": [
+                    "@cs-check",
+                    "@test"
+                ],
+                "upload-coverage": [
+                    "coveralls -v"
+                ],
+                "cs-check": [
+                    "php-cs-fixer --version && php-cs-fixer fix -v --diff --dry-run"
+                ],
+                "cs-fix": [
+                    "php-cs-fixer fix -v"
+                ],
+                "test": [
+                    "phpunit"
+                ],
+                "test-coverage": [
+                    "phpunit --coverage-clover clover.xml"
+                ]
             },
             "license": [
                 "BSD-3-Clause"
@@ -2368,7 +2399,7 @@
                 "form",
                 "zf2"
             ],
-            "time": "2016-04-18 18:28:33"
+            "time": "2016-05-03 15:16:58"
         },
         {
             "name": "zendframework/zend-http",

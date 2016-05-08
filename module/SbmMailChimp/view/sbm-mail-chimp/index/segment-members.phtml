@@ -7,8 +7,8 @@
  * @filesource segment-members.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2016
- * @version 2016-2.1
+ * @date 8 mai 2016
+ * @version 2016-2.1.1
  */
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\ArrayAdapter;
@@ -30,29 +30,42 @@ function etat($status)
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$categorieId = $this->auth->getCategorieId();
 $segment = $this->segment_name;
 if (empty($segment)) {
     $h1 = "Liste des membres d'une liste de diffusion";
     $h3 = 'Liste : ' . $this->liste_name;
     $url_retour = $this->url('sbmmailchimp');
-    $url_populate = $this->url('sbmmailchimp', [
-        'action' => 'populate'
-    ]);
-    $url_clean = $this->url('sbmmailchimp', [
-        'action' => 'clean'
-    ]);
-    $actions = [
-        'populate' => [
+    if ($this->acl->hasResource('populate') && $this->acl->isAllowed($categorieId, 'populate')) {
+        $url_populate = $this->url('sbmmailchimp', [
+            'action' => 'populate'
+        ]);
+    } else {
+        $url_populate = false;
+    }
+    if ($this->acl->hasResource('clean') && $this->acl->isAllowed($categorieId, 'clean')) {
+        $url_clean = $this->url('sbmmailchimp', [
+            'action' => 'clean'
+        ]);
+    } else {
+        $url_populate = false;
+    }
+    $actions=[];
+    if ($url_populate) {
+        $actions['populate'] = [
+            
             'class' => 'fam-group-add',
             'formaction' => $url_populate,
             'title' => 'mettre à jour les membres de la liste'
-        ],
-        'clean' => [
+        ];
+    }
+    if ($url_clean) {
+        $actions['clean'] = [
             'class' => 'fam-group-delete',
             'formaction' => $url_clean,
             'title' => 'nettoyer la liste'
-        ]
-    ];
+        ];
+    }
 } else {
     $h1 = "Liste des membres d'un segment";
     $h3 = "Segment : $segment<br>Liste : " . $this->liste_name;
@@ -96,6 +109,10 @@ echo $this->flashMessenger()->render('warning');
 echo $this->flashMessenger()->render('error');
 echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
+if ($this->message) {
+    $ligne = sprintf('<ul class="%s"><li>%s</li><ul>', 'info', $this->message);
+    echo $ligne;
+}
 ?>
         </div>
 	</div>

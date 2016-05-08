@@ -2,7 +2,7 @@
 /**
  * Paramètres de configuration des sessions
  *
- * Consulter la documentation http://php.net/manual/fr/session.configuration.php
+ * Consulter la documentation https://secure.php.net/manual/fr/session.configuration.php
  * 
  * Voici les différentes possibilités pour les classes :
  *   array['dafap_session']['config']['class'] : 'Zend\Session\Config\StandardConfig' 
@@ -18,8 +18,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 return array(
     'acl' => array(

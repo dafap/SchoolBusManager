@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 use SbmCartographie\Controller;
 use SbmCartographie\Model\Service\CartographieManager;
@@ -56,10 +56,10 @@ return [
         ],
         'services' => [
             'google_api' => [
-                'directions' => 'http://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&alternatives=true&sensor=false',
-                'distancematrix' => 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=car&language=fr-FR&sensor=false',
+                'directions' => 'https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&alternatives=true&sensor=false',
+                'distancematrix' => 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=car&language=fr-FR&sensor=false',
                 'geocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?address=%s',
-                'reversegeocoder' => 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=true'
+                'reversegeocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=true'
             ],
         ]
     ],

@@ -9,8 +9,8 @@
  * @filesource affecter.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2015
- * @version 2015-1
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 // calcul des variables
 $url_retour = $this->url('sbmgestion/gestioneleve', array(
@@ -31,7 +31,7 @@ $lngCentre = ($this->ptElv->getLongitude() + $this->ptEta->getLongitude()) / 2;
 // page html
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
+$this->headScript()->appendFile('https://maps.google.com/maps/api/js?sensor=false');
 $this->headScript()->captureStart()?>
 function adaptedecision()
 {

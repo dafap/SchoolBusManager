@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2016
- * @version 2016-2.1
+ * @date 8 mai 2016
+ * @version 2016-2.1.1
  */
 use SbmMailChimp\Controller;
 use SbmMailChimp\Model\Db\Service\Users;
@@ -18,10 +18,147 @@ return [
     'acl' => [
         'resources' => [
             'sbmmailchimp' => [
-                'allow' => [
-                    'roles' => [
-                        'guest',
-                        'parent'
+                'actions' => [
+                    'clean' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'controle' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+
+                    'creer-field' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'creer-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'creer-segment' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'dupliquer-field' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'dupliquer-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'dupliquer-segment' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'edit-field' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'edit-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'edit-segment' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'fields-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'index' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'liste-members' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'populate' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'segment-members' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'segments-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'suppr-field' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'suppr-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
+                    ],
+                    'suppr-segment' => [
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
+                        ]
                     ]
                 ]
             ]

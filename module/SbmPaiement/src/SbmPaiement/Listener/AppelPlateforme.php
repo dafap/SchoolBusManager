@@ -22,8 +22,8 @@
  * @filesource AppelPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 namespace SbmPaiement\Listener;
 
@@ -112,7 +112,7 @@ class AppelPlateforme implements ListenerAggregateInterface
          * curl_setopt_array($ch, $options);
          * $fm = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
          * if (!curl_exec($ch)) {
-         * // libcurl - Error codes à l'adresse http://curl.haxx.se/libcurl/c/libcurl-errors.html
+         * // libcurl - Error codes à l'adresse https://curl.haxx.se/libcurl/c/libcurl-errors.html
          * $mess = sprintf('Echec de l\'appel à la plateforme de paiement. (Code erreur n° %d)', curl_errno($ch));
          * $objectPlateforme->logError(Logger::ALERT,$mess, curl_getinfo($ch));
          * $fm->addErrorMessage('Echec de l\'appel à la plateforme de paiement.');

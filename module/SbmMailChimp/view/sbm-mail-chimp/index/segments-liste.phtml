@@ -9,28 +9,49 @@
  * @filesource segments-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2016
- * @version 2016-2.1
+ * @date 8 mai 2016
+ * @version 2016-2.1.1
  */
 use SbmCommun\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$categorieId = $this->auth->getCategorieId();
 $url_retour = $this->url('sbmmailchimp');
-$url_edit = $this->url('sbmmailchimp', [
-    'action' => 'edit-segment'
-]);
-$url_duplique = $this->url('sbmmailchimp', [
-    'action' => 'dupliquer-segment'
-]);
-$url_creer = $this->url('sbmmailchimp', [
-    'action' => 'creer-segment'
-]);
-$url_suppr = $this->url('sbmmailchimp', [
-    'action' => 'suppr-segment'
-]);
-$url_members = $this->url('sbmmailchimp', [
-    'action' => 'segment-members'
-]);
+if ($this->acl->hasResource('edit-segment') && $this->acl->isAllowed($categorieId, 'edit-segment')) {
+    $url_edit = $this->url('sbmmailchimp', [
+        'action' => 'edit-segment'
+    ]);
+} else {
+    $url_edit = false;
+}
+if ($this->acl->hasResource('dupliquer-segment') && $this->acl->isAllowed($categorieId, 'dupliquer-segment')) {
+    $url_duplique = $this->url('sbmmailchimp', [
+        'action' => 'dupliquer-segment'
+    ]);
+} else {
+    $url_duplique = false;
+}
+if ($this->acl->hasResource('creer-segment') && $this->acl->isAllowed($categorieId, 'creer-segment')) {
+    $url_creer = $this->url('sbmmailchimp', [
+        'action' => 'creer-segment'
+    ]);
+} else {
+    $url_creer = false;
+}
+if ($this->acl->hasResource('suppr-segment') && $this->acl->isAllowed($categorieId, 'suppr-segment')) {
+    $url_suppr = $this->url('sbmmailchimp', [
+        'action' => 'suppr-segment'
+    ]);
+} else {
+    $url_suppr = false;
+}
+if ($this->acl->hasResource('segment-members') && $this->acl->isAllowed($categorieId, 'segment-members')) {
+    $url_members = $this->url('sbmmailchimp', [
+        'action' => 'segment-members'
+    ]);
+} else {
+    $url_members = false;
+}
 $hiddens = [
     'id_liste' => StdLib::getParam('id', $this->liste_info),
     'liste_name' => StdLib::getParam('name', $this->liste_info)
@@ -40,13 +61,15 @@ $actions = [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ],
-    'creer' => [
+    ]
+];
+if ($url_creer) {
+    $actions['creer'] = [
         'class' => 'fam-add',
         'formaction' => $url_creer,
         'title' => 'Créer un nouveau segment dans une liste de diffusion'
-    ]
-];
+    ];
+}
 $id_liste = StdLib::getParam('id', $this->liste_info);
 $liste_name = StdLib::getParam('name', $this->liste_info);
 $this->source->setItemCountPerPage(20);
@@ -72,7 +95,7 @@ echo $this->flashMessenger()->render('error');
 echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 if ($this->message) {
-    $ligne = sprintf('<ul class="%s"><li>%s</li><ul>','info', $this->message);
+    $ligne = sprintf('<ul class="%s"><li>%s</li><ul>', 'info', $this->message);
     echo $ligne;
 }
 ?>
@@ -94,28 +117,35 @@ if ($this->message) {
 	    <?php $hiddens['segment_id'] = $segment['id']; ?>
 	    <?php $hiddens['segment_name'] = $segment['name']; ?>
 	    <?php
-        $buttons = [
-            'edit' => [
+        $buttons = [];
+        if ($url_edit) {
+            $buttons['edit'] = [
                 'class' => 'fam-pencil',
                 'formaction' => $url_edit,
                 'title' => 'modifier le segment'
-            ],
-            'dupliquer' => [
+            ];
+        }
+        if ($url_duplique) {
+            $buttons['dupliquer'] = [
                 'class' => 'fam-page-copy',
                 'formaction' => $url_duplique,
                 'title' => 'dupliquer le segment'
-            ],
-            'suppr' => [
+            ];
+        }
+        if ($url_suppr) {
+            $buttons['suppr'] = [
                 'class' => 'fam-delete',
                 'formaction' => $url_suppr,
                 'title' => 'supprimer le segment'
-            ],
-            'members' => [
+            ];
+        }
+        if ($url_members) {
+            $buttons['members'] = [
                 'class' => 'fam-group',
                 'formaction' => $url_members,
                 'title' => 'liste des membres'
-            ]
-        ];
+            ];
+        }
         $match = StdLib::getParamR([
             'options',
             'match'
@@ -126,8 +156,7 @@ if ($this->message) {
         ], $segment, []));
         $conditions = sprintf('%s (%d)', $match, $n_conditions);
         ?>
-	    <tr
-					class="<?php echo $this->cycle(['even', 'odd'])->next();?>">
+	    <tr class="<?php echo $this->cycle(['even', 'odd'])->next();?>">
 					<td><?php echo $segment['id'];?></td>
 					<td><?php echo $this->escapeHtml($segment['name']);?></td>
 					<td><?php echo $conditions;?></td>
@@ -139,6 +168,6 @@ if ($this->message) {
 		</table>
 	</div>
 	<div id="liste-footer">
-	    <div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
 	</div>
 </div>

@@ -12,7 +12,7 @@
  * 
  * Voici le résultat d'une requête simple par l'API distanceMatrix :
  * requête : 
- *   http://maps.googleapis.com/maps/api/distancematrix/json?origins=44.498275,2.280882&destinations=44.530225,2.241541&mode=car&language=fr-FR&sensor=false
+ *   https://maps.googleapis.com/maps/api/distancematrix/json?origins=44.498275,2.280882&destinations=44.530225,2.241541&mode=car&language=fr-FR&sensor=false
  *   (à noter qu'on peut remplacer dans la requête les coordonnées origins ou destinations par l'adresse postale encodée html)
  *   (à noter également que dans une requête multiple, les couples de coordonnées des points origins ou destinations sont séparées par |)
  * réponse :
@@ -57,7 +57,7 @@
  * 
  * Voici le résultat d'une requête par l'API directions :
  * requête :
- *   http://maps.googleapis.com/maps/api/directions/json?origin=44.498275,2.280882&amp;destination=44.530225,2.241541&amp;alternatives=true&amp;sensor=false
+ *   https://maps.googleapis.com/maps/api/directions/json?origin=44.498275,2.280882&amp;destination=44.530225,2.241541&amp;alternatives=true&amp;sensor=false
  * réponse :
  * object(stdClass)
  * (
@@ -180,8 +180,8 @@
  * @filesource DistanceEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 2 mai 2016
+ * @version 2016-2.1.1
  */
 namespace SbmCartographie\GoogleMaps;
 
