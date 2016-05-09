@@ -1,14 +1,17 @@
 <?php
 /**
  * Controller du module SbmParent permettant de gérer les inscriptions des enfants
+ * 
+ * Dans cette version spéciale CCDA, pour la réinscription le champ établissementId est vide, 
+ * comme la classe
  *
  * @project sbm
  * @package SbmParent/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2016
- * @version 2016-2
+ * @date 9 mai 2016
+ * @version 2016-2.1.2-ccda
  */
 namespace SbmParent\Controller;
 
@@ -504,6 +507,11 @@ class IndexController extends AbstractActionController
         ]);
     }
 
+    /**
+     * Version spéciale CCDA (on vide la champ établissementId du formulaire au début de la réinscription).
+     * 
+     * @return \Zend\Http\Response|\Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
+     */
     public function reinscriptionEleveAction()
     {
         try {
@@ -635,6 +643,7 @@ class IndexController extends AbstractActionController
                 // initialisation des formulaires
                 $data = $this->config['db_manager']->get(Query\Eleves::class)->getEleve($eleveId);
                 unset($data['classeId']);
+                unset($data['etablissementId']);
                 $hasGa = ! is_null($data['responsable2Id']);
                 $data['ga'] = $hasGa ? 1 : 0;
                 if ($auth_responsable->responsableId == StdLib::getParam('responsable2Id', $data, 0)) {
