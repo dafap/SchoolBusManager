@@ -1115,7 +1115,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
@@ -2847,17 +2847,17 @@
         },
         {
             "name": "zendframework/zend-mail",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-mail.git",
-                "reference": "1dc67cccd021c65736588e0f44d9992862cb32cd"
+                "reference": "6e9ee02c89c77c4a1271fa687b73c9fa7754f2a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-mail-2.7.0-e9106a.zip",
-                "reference": "1dc67cccd021c65736588e0f44d9992862cb32cd",
-                "shasum": "f7f5f956d9ffc10ff313692ce74f3bfb2fd7cf38"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-mail-2.7.1-314dbd.zip",
+                "reference": "6e9ee02c89c77c4a1271fa687b73c9fa7754f2a5",
+                "shasum": "12d32d72faa8e656afd5fc8cd8b161a45f84920b"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -2867,8 +2867,8 @@
                 "zendframework/zend-validator": "^2.6"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0",
+                "phpunit/phpunit": "^4.8",
+                "squizlabs/php_codesniffer": "^2.3.1",
                 "zendframework/zend-config": "^2.6",
                 "zendframework/zend-crypt": "^2.6",
                 "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3"
@@ -2907,7 +2907,7 @@
                 "mail",
                 "zf2"
             ],
-            "time": "2016-04-11 20:32:54"
+            "time": "2016-05-09 21:52:30"
         },
         {
             "name": "zendframework/zend-math",
@@ -4493,13 +4493,13 @@
             "version": "2.5.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/zf2.git",
-                "reference": "001c3e28c2f02a259c23c06ede356c1dc6203d14"
+                "url": "https://github.com/zendframework/zendframework.git",
+                "reference": "aeb432d59410cd9a4a68166738745387a9bf49ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.5.3-f21828.zip",
-                "reference": "001c3e28c2f02a259c23c06ede356c1dc6203d14",
+                "url": "https://api.github.com/repos/zendframework/zendframework/zipball/aeb432d59410cd9a4a68166738745387a9bf49ab",
+                "reference": "aeb432d59410cd9a4a68166738745387a9bf49ab",
                 "shasum": "4c8a239b2d7f3dd5e087432c3cb07e445a652373"
             },
             "require": {
