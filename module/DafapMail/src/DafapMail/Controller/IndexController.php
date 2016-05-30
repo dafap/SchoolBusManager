@@ -11,8 +11,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avril 2016
- * @version 2016-2
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 namespace DafapMail\Controller;
 
@@ -129,7 +129,13 @@ class IndexController extends AbstractActionController
                     $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
                 }
             }
-            $mailTemplate = new MailTemplate('avertissement-transporteur');
+            $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
+            $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', [
+                'file_name' => $logo_bas_de_mail,
+                'path' =>StdLib::getParamR(['img','path'], $this->config),
+                'img_attributes' => StdLib::getParamR(['img','administrer',$logo_bas_de_mail], $this->config),
+                'client' => StdLib::getParam('client', $this->config)
+            ]);
             $qtransporteurs = $this->config['db_manager']->get('Sbm\Db\Query\Transporteurs');
             $controle = array();
             foreach ($destinataires as $transporteurId => $circuits) {

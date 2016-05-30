@@ -25,6 +25,7 @@ class IndexControllerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $sm = $serviceLocator->getServiceLocator();
+        $config_application = $sm->get('config');
         $config = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
@@ -34,7 +35,15 @@ class IndexControllerFactory implements FactoryInterface
             'mail_config' => StdLib::getParamR([
                 'sbm',
                 'mail'
-            ], $sm->get('config'))
+            ], $config_application),
+            'img' => StdLib::getParamR([
+                'sbm',
+                'img'
+            ], $config_application),
+            'client' => StdLib::getParamR([
+                'sbm',
+                'client'
+            ], $config_application)
         ];
         return new IndexController($config);
     }

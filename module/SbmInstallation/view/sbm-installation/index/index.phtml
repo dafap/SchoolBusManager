@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -33,6 +33,9 @@ $url_gestion = $this->url('sbmgestion');
 $url_portail = $this->url('sbmportail');
 $url_parent = $this->url('sbmparent');
 $url_mailchimp = $this->url('sbmmailchimp');
+$url_images = $this->url('sbminstall', [
+    'action' => 'gestion-images'
+]);
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
 <div id="menugeneral">
@@ -75,9 +78,13 @@ echo $this->flashMessenger()->render('default');
 					<li><a href="<?php echo $url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie
 							des tables</a></li>
 					<li><a href="<?php echo $url_tablealias;?>"><i
-							class="fam-bullet-go"></i>Liste des alias des tables</a>
-					<li><a href="<?php echo $url_mailchimp;?>"><i
-							class="fam-bullet-go"></i>Gestion des listes de diffusion de MailChimp</a>
+							class="fam-bullet-go"></i>Liste des alias des tables</a></li>
+
+					<li><a href="<?php echo $url_mailchimp;?>"><i class="fam-bullet-go"></i>Gestion
+							des listes de diffusion de MailChimp</a></li>
+
+					<li><a href="<?php echo $url_images;?>"><i class="fam-bullet-go"></i>Gestion
+							des images de l'application</a></li>
 				</ul>
 			</fieldset>
 		</div>

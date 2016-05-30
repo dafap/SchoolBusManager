@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_pdf_liste = $this->url('sbmpdf', [
@@ -27,6 +27,9 @@ $url_secteurs_scolaires_liste = $this->url('sbmadmin', [
 $url_gestion = $this->url('sbmgestion');
 $url_export = $this->url('sbmadmin', [
     'action' => 'export'
+]);
+$url_images = $this->url('sbminstall', [
+    'action' => 'gestion-images'
 ]);
 ?>
 <h1>Espace d'administration</h1>
@@ -53,6 +56,8 @@ echo $this->flashMessenger()->render('default');
 					class="fam-bullet-go"></i>Gestion des libellés de l'application</a></li>
 			<li><a href="<?php echo $url_pdf_liste; ?>"><i class="fam-bullet-go"></i>Gestion
 					des documents pdf</a></li>
+			<li><a href="<?php echo $url_images;?>"><i class="fam-bullet-go"></i>Gestion
+					des images de l'application</a></li>
 			<li><a href="<?php echo $url_gestion; ?>"><i class="fam-bullet-go"></i>Espace
 					des gestionnaires</a></li>
 		</ul>

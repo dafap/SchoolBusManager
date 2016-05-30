@@ -9,8 +9,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 nov. 2014
- * @version 2014-1
+ * @date 11 mai 2016
+ * @version 2014-2.1.3
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -129,6 +129,30 @@ class Calendar extends AbstractSbmTable
     }
 
     /**
+     * Renvoie le millesime en cours à la date actuelle.
+     */
+    public function getCurrentMillesime()
+    {
+        $where = new Where();
+        $where->greaterThanOrEqualTo('dateFin', new Expression('NOW()'))
+            ->lessThanOrEqualTo('dateDebut', new Expression('NOW()'))
+            ->equalTo('nature', 'AS');
+        $select = $this->getTableGateway()
+            ->getSql()
+            ->select()
+            ->columns(array(
+            'millesime'
+        ))
+            ->where($where);
+        $resultset = $this->getTableGateway()->selectWith($select);
+        if (! $resultset->count()) {
+            throw new Exception('Pas d\'année scolaire en cours.');
+        }
+        $row = $resultset->current();
+        return $row->millesime;
+    }
+
+    /**
      * Vérifie si la colonne date précisée ne contient pas de valeur NULL pour le millesime indiqué.
      *
      * @param
@@ -213,7 +237,7 @@ class Calendar extends AbstractSbmTable
             );
         }
     }
-    
+
     /**
      * Renvoie un tableau d'information sur les permanences
      *
@@ -224,7 +248,7 @@ class Calendar extends AbstractSbmTable
         $millesime = $this->getDefaultMillesime();
         $where = new Where();
         $where->expression('millesime = ?', $millesime)->literal('Nature="PERM"');
-        if (!empty($commune)) {
+        if (! empty($commune)) {
             $where->like('libelle', "%$commune%");
         }
         $resultset = $this->fetchAll($where, 'rang');

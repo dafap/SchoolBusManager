@@ -9,8 +9,8 @@
  * @filesource EleveControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 namespace SbmGestion\Controller\Service;
 
@@ -35,6 +35,10 @@ class EleveControllerFactory implements FactoryInterface
             'mail_config' => StdLib::getParamR([
                 'sbm',
                 'mail'
+            ], $config_application),
+            'img' => StdLib::getParamR([
+                'sbm',
+                'img'
             ], $config_application),
             'paginator_count_per_page' => StdLib::getParamR([
                 'paginator',

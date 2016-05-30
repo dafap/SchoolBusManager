@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2016
- * @version 2016-2.0.1
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 namespace SbmGestion\Controller;
 
@@ -1668,7 +1668,20 @@ class EleveController extends AbstractActionController
                 // préparation des paramètres d'envoi
                 $auth = $this->config['authenticate']->by();
                 $user = $auth->getIdentity();
-                $mailTemplate = new MailTemplate(null, 'layout-gestion');
+                $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
+                $mailTemplate = new MailTemplate(null, 'layout', [
+                    'file_name' => $logo_bas_de_mail,
+                    'path' => StdLib::getParamR([
+                        'img',
+                        'path'
+                    ], $this->config),
+                    'img_attributes' => StdLib::getParamR([
+                        'img',
+                        'administrer',
+                        $logo_bas_de_mail
+                    ], $this->config),
+                    'client' => StdLib::getParam('client', $this->config)
+                ]);
                 $params = [
                     'to' => [
                         [
@@ -1778,7 +1791,20 @@ class EleveController extends AbstractActionController
                         $this->flashMessenger()->addSuccessMessage('Le compte est créé.');
                         
                         // envoie un email
-                        $mailTemplate = new MailTemplate('ouverture-compte');
+                        $logo_bas_de_mail = 'bas-de-mail-transport-scolaire.png';
+                        $mailTemplate = new MailTemplate('ouverture-compte', 'layout', [
+                            'file_name' => $logo_bas_de_mail,
+                            'path' => StdLib::getParamR([
+                                'img',
+                                'path'
+                            ], $this->config),
+                            'img_attributes' => StdLib::getParamR([
+                                'img',
+                                'administrer',
+                                $logo_bas_de_mail
+                            ], $this->config),
+                            'client' => StdLib::getParam('client', $this->config)
+                        ]);
                         $params = [
                             'to' => [
                                 [
@@ -1798,7 +1824,8 @@ class EleveController extends AbstractActionController
                                         'id' => $odata->token
                                     ], [
                                         'force_canonical' => true
-                                    ])
+                                    ]),
+                                    'client' => StdLib::getParam('client', $this->config)
                                 ])
                             ]
                         ];

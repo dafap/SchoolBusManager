@@ -9,8 +9,8 @@
  * @filesource History.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 11 mai 2016
+ * @version 2016-2.1.3
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 
@@ -55,7 +55,7 @@ class History implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -79,16 +79,19 @@ class History implements FactoryInterface
 
     /**
      * Changements du dernier jour
-     * 
+     * On vérifie si la table affectation a été modifié pour le millesime indiqué
+     *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getLastDayChanges($table_name)
+    public function getLastDayChanges($table_name, $millesime)
     {
         $select = $this->sql->select($this->history_name);
         $table_affectations = $this->db_manager->getCanonicName($table_name);
         $hier = date('Y-m-d H:i', strtotime('-1 day'));
         $where = new Where();
-        $where->equalTo('table_name', $table_affectations)->greaterThanOrEqualTo('dt', $hier);
+        $where->equalTo('table_name', $table_affectations)
+            ->greaterThanOrEqualTo('dt', $hier)
+            ->like('id_txt', "$millesime%");
         $select->columns(array(
             'id_txt',
             'log'

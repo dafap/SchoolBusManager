@@ -14,8 +14,8 @@
  * @filesource Template.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 nov. 2015
- * @version 2015-1.6.6
+ * @date 18 mai 2016
+ * @version 2016-2.1.4
  */
 namespace DafapMail\Model;
 
@@ -38,9 +38,17 @@ class Template
      * @var string
      */
     private $template;
+    
+    /**
+     * Tableau de variables ['key' => 'value', ...] pour le layout
+     * 
+     * @var array
+     */
+    private $vars;
 
-    public function __construct($template = null, $layout = 'layout')
+    public function __construct($template = null, $layout = 'layout', $vars = [])
     {
+        $this->vars = $vars;
         $this->template = $template;
         $this->renderer = new PhpRenderer();
         $resolver = new Resolver\AggregateResolver();
@@ -77,6 +85,9 @@ class Template
             'content' => $content
         ));
         $model->setTemplate('layout');
+        foreach ($this->vars as $key => $value) {
+            $model->setVariable($key, $value);
+        }
         return $this->renderer->render($model);
     }
 }
