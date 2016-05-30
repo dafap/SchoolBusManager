@@ -1,0 +1,45 @@
+<?php
+/**
+ * Page du formulaire d'envoi d'un fichier image
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource upload-image.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
+ */
+$this->form->prepare(); // met le bon enctype
+?>
+<h1>Choix d'un nouveau fichier image</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<h3><?php echo $this->label;?></h3>
+	</div>
+	<div id="fiche-inner">
+	<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('fname'));
+echo $this->formHidden($this->form->get('label'));
+echo $this->formHidden($this->form->get('width'));
+echo $this->formHidden($this->form->get('height'));
+echo $this->formHidden($this->form->get('type'));
+echo $this->formHidden($this->form->get('mime'));
+?>
+        <fieldset class="sbm-page1">
+            <div class="form-element row-inner">
+            <?php $fileElement = $form->get('image-file'); ?>
+            <?php echo $this->formLabel($fileElement); ?>
+            <?php echo $this->formFile($fileElement); ?>
+            <?php echo $this->formElementErrors($fileElement, $fileElement->getOption('error_attributes')); ?>
+            </div>
+			<div id="classe-edit-buttons" class="row-inner edit">
+            <?php
+            echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));
+            ?>
+            </div>
+		</fieldset>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

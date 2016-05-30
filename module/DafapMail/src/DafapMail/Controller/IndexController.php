@@ -11,8 +11,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2016
- * @version 2016-1.3
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 namespace DafapMail\Controller;
 
@@ -20,7 +20,6 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DafapMail\Model\Template as MailTemplate;
 use SbmCommun\Model\StdLib;
-use SbmCommun\Model\Db\Exception as DbException;
 
 class IndexController extends AbstractActionController
 {
@@ -104,28 +103,18 @@ class IndexController extends AbstractActionController
     /**
      * Envoie des mails aux transporteurs lorsque des changements ont lieu dans les
      * inscriptions des enfants qu'ils transportent (nouvelle affectation, changement
-     * d'affectation, suppression d'une affectation ou élève rayé).
-     * On regarde la date et l'année scolaire correspondante.
+     * d'affectation, suppression d'une affectation ou élève rayé)
      * Cette tâche doit être planifiée dans un cron.
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function lastDayChangesAction()
     {
-        try {
-            $tcalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
-            $millesime = $tcalendar->getCurrentMillesime();
-        } catch (DbException $e) {
-            $message = 'Pas d\'envoi car nous ne sommes pas en cours d\'année scolaire.';
-            return $this->getResponse()
-            ->setContent($message)
-            ->setStatusCode(200);
-        }
         $history = $this->config['db_manager']->get('Sbm\Db\Query\History');
         $services = $this->config['db_manager']->get('Sbm\Db\Table\Services');
         $transporteurs = $this->config['db_manager']->get('Sbm\Db\Table\Transporteurs');
         $destinataires = array();
-        $changes = $history->getLastDayChanges('affectations', $millesime);
+        $changes = $history->getLastDayChanges('affectations');
         if ($changes instanceof \Traversable) {
             foreach ($changes as $affectation) {
                 $log = explode('|', $affectation['log']);
@@ -140,7 +129,13 @@ class IndexController extends AbstractActionController
                     $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
                 }
             }
-            $mailTemplate = new MailTemplate('avertissement-transporteur');
+            $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
+            $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', [
+                'file_name' => $logo_bas_de_mail,
+                'path' =>StdLib::getParamR(['img','path'], $this->config),
+                'img_attributes' => StdLib::getParamR(['img','administrer',$logo_bas_de_mail], $this->config),
+                'client' => StdLib::getParam('client', $this->config)
+            ]);
             $qtransporteurs = $this->config['db_manager']->get('Sbm\Db\Query\Transporteurs');
             $controle = array();
             foreach ($destinataires as $transporteurId => $circuits) {
@@ -185,7 +180,7 @@ class IndexController extends AbstractActionController
             }
         }
         if (empty($controle)) {
-            $message = 'Durant les dernières 24 heures, il n\'y a pas eu de modification d\'inscription dans l\'année scolaire en cours. Par conséquent, aucun mail n\'a été envoyé.';
+            $message = 'Durant les dernières 24 heures, il n\'y a pas eu de modification d\'inscription. Par conséquent, aucun mail n\'a été envoyé.';
         } else {
             $message = 'Suite aux modifications d\'inscription qui ont eu lieu durant les dernières 24 heures les transporteurs suivants ont reçu un email d\'information.';
             foreach ($controle as $value) {

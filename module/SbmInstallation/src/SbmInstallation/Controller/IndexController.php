@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 namespace SbmInstallation\Controller;
 
@@ -23,6 +23,9 @@ use SbmInstallation\Form\DumpTables as FormDumpTables;
 use SbmInstallation\Model\DumpTables;
 use SbmCommun\Form\ButtonForm;
 use DrewM\MailChimp;
+use Zend\Stdlib\Glob;
+use SbmCommun\Model\StdLib;
+use SbmInstallation\Form\UploadImage;
 
 class IndexController extends AbstractActionController
 {
@@ -214,6 +217,108 @@ class IndexController extends AbstractActionController
             'systems' => $this->getDbTablesAlias('system'),
             'vues' => $this->getDbTablesAlias('vue')
         ]);
+    }
+
+    public function gestionImagesAction()
+    {
+        $message = '';
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        $config = $this->config['img'];
+        $files = scandir($config['path']['system']);
+        $file_names = [];
+        foreach ($files as $fname) {
+            if (StdLib::getParamR([
+                'administrer',
+                $fname
+            ], $config, false)) {
+                $infos = getimagesize($config['path']['system'] . DIRECTORY_SEPARATOR . $fname);
+                $file_names[$fname] = [
+                    'administrer' => $config['administrer'][$fname],
+                    'width' => $infos[0],
+                    'height' => $infos[1],
+                    'type' => $infos[2],
+                    'mime' => $infos['mime']
+                ];
+            }
+        }
+        return new ViewModel([
+            'message' => $message,
+            'path' => $config['path'],
+            'file_names' => $file_names
+        ]);
+    }
+
+    public function uploadImageAction()
+    {
+        $tmpuploads = $this->config['img']['path']['tmpuploads'];
+        $form = new UploadImage('upload-form', [
+            'tmpuploads' => $tmpuploads
+        ]);
+        $tempFile = null;
+        $prg = $this->fileprg($form);
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif (is_array($prg)) {
+            if (array_key_exists('cancel', $prg)) {
+                $this->removeInSession('post', $this->getSessionNamespace());
+                $this->flashMessenger()->addWarningMessage('Aucune image n\'a été modifiée.');
+                return $this->redirect()->toRoute('sbminstall', [
+                    'action' => 'gestion-images'
+                ]);
+            }
+            $this->setToSession('post', $prg, $this->getSessionNamespace());
+            if (array_key_exists('submit', $prg)) {
+                if ($form->isValid()) {
+                    $data = $form->getData();
+                    // Form is valid, save the form!
+                    $source = $data['image-file']['tmp_name'];
+                    $dest = $this->config['img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
+                    copy($source, $dest);
+                    unlink($source);
+                    $this->removeInSession('post', $this->getSessionNamespace());
+                    $this->flashMessenger()->addSuccessMessage('L\'image a été enregistrée.');
+                    return $this->redirect()->toRoute('sbminstall', [
+                        'action' => 'gestion-images'
+                    ]);
+                } else {
+                    // Form not valid, but file uploads might be valid...
+                    // Get the temporary file information to show the user in the view
+                    $fileErrors = $form->get('image-file')->getMessages();
+                    if (empty($fileErrors)) {
+                        $tempFile = $form->get('image-file')->getValue();
+                    }
+                }
+            } else {                
+                $form = new UploadImage('upload-form');
+                $form->setData($prg);
+                $label = $prg['label'];
+            }
+        } else {
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $config = $this->config['img'];
+            $form->setAttribute('action', $this->url()
+                ->fromRoute('sbminstall', [
+                'action' => 'upload-image'
+            ]))
+                ->setData([
+                'fname' => $args['fname'],
+                'label' => ($label = $config['administrer'][$args['fname']]['label']),
+                'width' => $args['width'],
+                'height' => $args['height'],
+                'type' => $args['type'],
+                'mime' => $args['mime']
+            ]);
+        }
+        
+        return array(
+            'form' => $form,
+            'label' => $label,
+            'tempFile' => $tempFile
+        );
     }
 
     /**

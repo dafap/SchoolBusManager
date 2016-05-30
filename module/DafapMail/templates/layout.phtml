@@ -9,15 +9,29 @@
  * @filesource layout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2015
- * @version 2015-1
+ * @date 18 mai 2016
+ * @version 2016-2.1.4
  */
-
+$url_img = $this->serverUrl($this->path['url'] . $this->file_name);
+$attributes = [];
+if (is_array($this->client) && array_key_exists('name', $this->client)) {
+    $attributes[] = sprintf('alt="%s"', $this->client['name']);
+}
+if (is_array($this->img_attributes)) {
+    if (array_key_exists('taille', $this->img_attributes) && $this->img_attributes['taille'] == 'fixed') {
+        if (array_key_exists('width', $this->img_attributes) && is_numeric($this->img_attributes['width'])) {
+            $attributes[] = sprintf('width="%d"', $this->img_attributes['width']);
+        }
+        if (array_key_exists('height', $this->img_attributes) && is_numeric($this->img_attributes['height'])) {
+            $attributes[] = sprintf('height="%d"', $this->img_attributes['height']);
+        }
+    }
+}
 ?>
 <html>
 <body>
 <?php echo $this->content;?>
-<img alt="Communauté de communes du bassin Decazeville-Aubin" src="http://cc-decazeville-aubin.dafap.fr/img/bas-de-mail-transport-scolaire.png" width="427" height="128">
-<img alt="School bus manager" src="http://cc-decazeville-aubin.dafap.fr/img/sbm-logo.gif">
+<img src="<?php echo $url_img;?>"
+		<?php echo implode(' ', $attributes);?>>
 </body>
-</html> 
+</html>

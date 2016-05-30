@@ -9,8 +9,8 @@
  * @filesource LoginControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 namespace SbmFront\Controller\Service;
 
@@ -38,6 +38,14 @@ class LoginControllerFactory implements FactoryInterface
             'mail_config' => StdLib::getParamR([
                 'sbm',
                 'mail'
+            ], $config_application),
+            'img' => StdLib::getParamR([
+                'sbm',
+                'img'
+            ], $config_application),
+            'client' => StdLib::getParamR([
+                'sbm',
+                'client'
             ], $config_application)
         ];
         return new LoginController($config_controller);

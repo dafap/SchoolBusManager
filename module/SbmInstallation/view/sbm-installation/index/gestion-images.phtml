@@ -1,0 +1,83 @@
+<?php
+/**
+ * Liste des images à administrer
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource gestion-images.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$id_form_img = 0;
+$buttons = [
+    'maj' => [
+        'class' => 'fam-image-edit',
+        'formaction' => $this->url('sbminstall', [
+            'action' => 'upload-image'
+        ]),
+        'title' => 'Mettre à jour'
+    ]
+];
+$url_retour = $this->url('login', [
+    'action' => 'homepage'
+]);
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Gestion des images du logiciel</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?php echo $this->listeZoneActions([], $actions);?></div>
+		<div class="flashMessenger float-right">
+		<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+        </div>
+	</div>
+	<div id="liste-inner">
+		<table>
+    <?php foreach ($this->file_names as $fname => $descriptif) : ?>
+    <?php
+        $ratio = 1;
+        if ($descriptif['width'] > 400 || $descriptif['height'] > 100) {
+            $ratio1 = 400 / $descriptif['width'];
+            $ratio2 = 100 / $descriptif['height'];
+            $ratio = $ratio1 < $ratio2 ? $ratio1 : $ratio2;
+        }
+        $width = (int) $descriptif['width'] * $ratio;
+        $height = (int) $descriptif['height'] * $ratio;
+        $hiddens = [
+            'fname' => $fname,
+            'label' => $descriptif['administrer']['label'],
+            'width' => $descriptif['width'],
+            'height' => $descriptif['height'],
+            'type' => $descriptif['type'],
+            'mime' => $descriptif['mime']
+        ];
+        ?>
+        <tr style="border: #cccccc solid medium;">
+				<td><?php echo $descriptif['administrer']['label'];?></td>
+				<td><img alt="<?php echo $fname;?>"
+					src="<?php echo $this->path['url'] . sprintf('%s?%d',$fname, time());?>"
+					width="<?php echo $width;?>" height="<?php echo $height;?>"></td>
+				<td>Taille : <?php echo $descriptif['width'] . '<span style="font-family:sans-serif;">x</span>' . $descriptif['height'] . 'px';?><br>
+            Type : <?php echo $descriptif['mime']; ?></td>
+				<td><?php echo $this->listeLigneActions($id_form_img, $hiddens, $buttons);?></td>
+			</tr>
+    <?php endforeach;?>
+    </table>
+	</div>
+	<div id="liste-footer"></div>
+</div>

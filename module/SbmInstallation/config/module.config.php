@@ -7,20 +7,101 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 use SbmInstallation\Controller;
 use SbmInstallation\Model\Service;
+use SbmCommun\Model\Image\Image;
+
 return [
     'acl' => [
         'resources' => [
             'sbminstall' => [
                 'allow' => [
-                    'roles' => ['sadmin']
+                    'roles' => [
+                        'sadmin'
+                    ]
+                ],
+                'actions' => [
+                    'gestion-images' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'upload-image' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ]
                 ]
             ]
-        ],
+        ]
+    ],
+    'sbm' => [
+        'img' => [
+            'path' => [
+                'system' => realpath(__DIR__ . '/../../../public/img'),
+                'tmpuploads' => './data/tmpuploads',
+                'url' => '/img/'
+            ],
+            'cacher' => [ // liste des images utilisées dans SBM qu'il ne faut pas administrer
+                '_blank.png',
+                'famfamfam-icons.png',
+                'favicon.ico',
+                'sbm-logo.gif'
+            ],
+            'administrer' => [ 
+                /**
+                 * liste des images à administrer
+                 * - label : explication de la nature de l'image
+                 * - taille : prend les valeurs 
+                 *      real  (taille réelle de l'image ; width et height sont ignorés),
+                 *      fixe  (taille fixe ; width et height sont en pt)
+                 *      scale (taille proportionnelle ; sera ramenée à la taille indiquée en pt)
+                 */
+                'bandeau-ccda-1.jpg' => [
+                    'label' => 'Bandeau de haut de page du site',
+                    'taille' => Image::FIXED_SIZE,
+                    'width' => 1170,
+                    'height' => 195
+                ],
+                'bas-de-mail-service-gestion.png' => [
+                    'label' => 'Bas de mail personnalisé',
+                    'taille' => Image::PROPORTIONAL_SIZE,
+                    'width' => '427',
+                    'height' => '128'
+                ],
+                'bas-de-mail-transport-scolaire.png' => [
+                    'label' => 'Bas de mail inpersonnel avec logo TS',
+                    'taille' => Image::PROPORTIONAL_SIZE,
+                    'width' => '427',
+                    'height' => '128'
+                ],
+                'logocartedroite.jpg' => [
+                    'label' => 'Logo transport scolaire',
+                    'taille' => Image::PROPORTIONAL_SIZE,
+                    'width' => '85',
+                    'height' => '48'
+                ],
+                'logocarteetablissements.png' => [
+                    'label' => 'Image de la carte en page d\'accueil',
+                    'taille' => Image::FULL_SIZE,
+                    'width' => 0,
+                    'height' => 0
+                ],
+                'logocartegauche.jpg' => [
+                    'label' => 'Logo de l\'organisateur',
+                    'taille' => Image::PROPORTIONAL_SIZE,
+                    'width' => '48',
+                    'height' => '65'
+                ]
+            ]
+        ]
     ],
     'controllers' => [
         'factories' => [

@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2016
- * @version 2016-2
+ * @date 19 mai 2016
+ * @version 2016-2.1.4
  */
 namespace SbmFront\Controller;
 
@@ -167,7 +167,7 @@ class LoginController extends AbstractActionController
                 case 1:
                     try {
                         try {
-                        $responsable = $this->config['responsable']->get();
+                            $responsable = $this->config['responsable']->get();
                         } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
                             throw $e->getPrevious();
                         }
@@ -276,7 +276,20 @@ class LoginController extends AbstractActionController
                     $tUsers->saveRecord($odata);
                     $this->flashMessenger()->addSuccessMessage('Demande enregistrée.');
                     // envoie l'email
-                    $mailTemplate = new MailTemplate('oubli-mdp');
+                    $logo_bas_de_mail = 'bas-de-mail-transport-scolaire.png';
+                    $mailTemplate = new MailTemplate('oubli-mdp', 'layout', [
+                        'file_name' => $logo_bas_de_mail,
+                        'path' => StdLib::getParamR([
+                            'img',
+                            'path'
+                        ], $this->config),
+                        'img_attributes' => StdLib::getParamR([
+                            'img',
+                            'administrer',
+                            $logo_bas_de_mail
+                        ], $this->config),
+                        'client' => StdLib::getParam('client', $this->config)
+                    ]);
                     $params = array(
                         'to' => array(
                             array(
@@ -296,7 +309,8 @@ class LoginController extends AbstractActionController
                                     'id' => $odata->token
                                 ), array(
                                     'force_canonical' => true
-                                ))
+                                )),
+                                'client' => StdLib::getParam('client', $this->config)
                             ))
                         )
                     );
@@ -483,7 +497,21 @@ class LoginController extends AbstractActionController
                 $table_users->saveRecord($odata);
                 $this->flashMessenger()->addSuccessMessage('Création en cours...');
                 // envoie l'email
-                $mailTemplate = new MailTemplate('nouveau-compte');
+                $logo_bas_de_mail = 'bas-de-mail-transport-scolaire.png';
+                $mailTemplate = new MailTemplate('nouveau-compte', 'layout', [
+                    'file_name' => $logo_bas_de_mail,
+                    'path' => StdLib::getParamR([
+                        'img',
+                        'path'
+                    ], $this->config),
+                    'img_attributes' => StdLib::getParamR([
+                        'img',
+                        'administrer',
+                        $logo_bas_de_mail
+                    ], $this->config),
+                    'client' => StdLib::getParam('client', $this->config)
+                ]);
+                
                 $params = array(
                     'to' => array(
                         array(
@@ -510,7 +538,8 @@ class LoginController extends AbstractActionController
                                 'id' => $odata->token
                             ), array(
                                 'force_canonical' => true
-                            ))
+                            )),
+                            'client' => StdLib::getParam('client', $this->config)
                         ))
                     )
                 );
