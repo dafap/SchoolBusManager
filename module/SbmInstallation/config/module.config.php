@@ -77,7 +77,7 @@ return [
                     'height' => '128'
                 ],
                 'bas-de-mail-transport-scolaire.png' => [
-                    'label' => 'Bas de mail inpersonnel avec logo TS',
+                    'label' => 'Bas de mail impersonnel avec logo TS',
                     'taille' => Image::PROPORTIONAL_SIZE,
                     'width' => '427',
                     'height' => '128'
