@@ -10,8 +10,8 @@
  * @filesource CreerCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 1 juin 2016
+ * @version 2016-2.1.5
  */
 namespace SbmFront\Form;
 
