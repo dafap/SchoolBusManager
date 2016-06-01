@@ -12,6 +12,7 @@
  */
 namespace SbmParent\Controller;
 
+use Zend\Mvc\Controller\Plugin\Redirect;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 use SbmCartographie\Model\Point;
@@ -20,9 +21,9 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\StdLib;
 use SbmCommun\Form;
 use SbmCommun\Form\LatLng as LatLngForm;
+use SbmCommun\Filter\SansAccent;
 use SbmParent\Form\ModifAdresse;
 use SbmParent\Model\Responsable;
-use Zend\Mvc\Controller\Plugin\Redirect;
 
 class ConfigController extends AbstractActionController
 {
@@ -132,7 +133,7 @@ class ConfigController extends AbstractActionController
             if (array_key_exists('modif-adresse', $args)) {
                 $args = $responsable->getArrayCopy();
             }
-       }
+        }
         // ici on a le tableau d'initialisation du formulaire dans $args
         $responsableId = StdLib::getParam('responsableId', $args, $responsable->responsableId);
         $hasEnfantInscrit = $this->config['db_manager']->get('Sbm\Db\Query\Responsables')->hasEnfantInscrit($responsableId);
@@ -189,8 +190,11 @@ class ConfigController extends AbstractActionController
     }
 
     /**
-     * Le retour se fait par un redirectToOrigin()->back() ce qui veut dire qu'il faut avoir défini le redirectToOrigin()
-     * avant l'appel.
+     * Le retour se fait par un redirectToOrigin()->back()
+     * ce qui veut dire qu'il faut avoir défini le redirectToOrigin() avant l'appel.
+     *
+     * Si un responsable de même nom et prénom existe déjà, présenter son identité et proposer
+     * de s'identifier à cette personne ou de créer un nouveau
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
      */
@@ -203,6 +207,21 @@ class ConfigController extends AbstractActionController
         } elseif ($prg === false) {
             // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
             $args = $identity;
+            // vérification d'existence de ce responsable
+            $filterSA = new SansAccent();
+            $vueResponsables = $this->config['db_manager']->get('Sbm\Db\Vue\Responsables');
+            $rows = $vueResponsables->fetchAll([
+                'nomSA' => $filterSA->filter($args['nom']),
+                'prenomSA' => $filterSA->filter($args['prenom'])
+            ]);
+            if ($rows->count()) {
+                $view = new ViewModel([
+                    'data' => $rows,
+                    'identity' => $identity
+                ]);
+                $view->setTemplate('sbm-parent/config/existe.phtml');
+                return $view;
+            }
         } else {
             $args = $prg;
         }
