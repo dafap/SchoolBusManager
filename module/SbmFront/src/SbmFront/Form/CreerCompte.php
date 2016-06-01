@@ -10,8 +10,8 @@
  * @filesource CreerCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 1 juin 2016
+ * @version 2016-2.1.5
  */
 namespace SbmFront\Form;
 
@@ -203,17 +203,13 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                 ));
                 $result = false;
             } else {
-                // ensuite dans la table responsables pour savoir si entretemps une inscription papier n'a pas été enregistrée.
-                //@todo: il faudrait vérifier qu'aucune inscription n'a eu lieu cette année. Sinon, il va y avoir des demandes 
-                // nombreuses lors des renouvellements d'inscription.
+                // ensuite dans la table responsables pour savoir si entretemps une inscription papier 
+                // n'a pas été enregistrée cette année.
                 unset($where);
-                $where = new Where();
                 $nomSA = $filterSA->filter($this->data['nom']);
                 $prenomSA = $filterSA->filter($this->data['prenom']);
-                $where->equalTo('nomSA', $nomSA)->equalTo('prenomSA', $prenomSA);
-                $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
-                $resultset = $tResponsables->fetchAll($where);
-                if ($resultset->count()) {
+                $qResponsables = $this->db_manager->get('Sbm\Db\Query\Responsables');
+                if ($qResponsables->estDejaInscritCetteAnnee($nomSA, $prenomSA)) {
                     $msg = 'Il existe déjà une personne enregistrée avec ce nom et ce prénom. Rapprochez vous des services de la Communauté de communes pour vous faire créer un compte.';
                     $e = $this->get('prenom');
                     $e->setMessages(array(

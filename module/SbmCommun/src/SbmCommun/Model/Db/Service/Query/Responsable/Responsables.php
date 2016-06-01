@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 1 juin 2016
+ * @version 2016-2.1.5
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -34,7 +34,7 @@ class Responsables implements FactoryInterface
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
     protected $db_manager;
-    
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -62,7 +62,7 @@ class Responsables implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -306,5 +306,34 @@ class Responsables implements FactoryInterface
             ->group('responsableId')
             ->order($order);
         return $where->count() ? $select->having($where) : $select;
+    }
+
+    /**
+     * Renvoie vrai si le responsable existe et s'il a des enfants inscrits dans ce millesime
+     *
+     * @param string $nomSA            
+     * @param string $prenomSA            
+     */
+    public function estDejaInscritCetteAnnee($nomSA, $prenomSA)
+    {
+        $where = new Where();
+        $where->equalTo('res.nomSA', $nomSA)
+            ->equalTo('res.prenomSA', $prenomSA)
+            ->equalTo('sco.millesime', $this->millesime);
+        $select = $this->sql->select([
+            'res' => $this->db_manager->getCanonicName('responsables', 'table')
+        ])
+            ->join(array(
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ), 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'sco.eleveId = ele.eleveId', [])
+            ->columns([
+            'nbEnfants' => new Expression('count(sco.eleveId)')
+        ])
+            ->where($where);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute()->current()['nbEnfants'] > 0;
     }
 }
