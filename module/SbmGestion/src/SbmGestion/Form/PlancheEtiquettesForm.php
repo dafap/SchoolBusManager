@@ -11,8 +11,8 @@
  * @filesource PlancheEtiquettesForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2015
- * @version 2015-1
+ * @date 14 juin 2016
+ * @version 2016-2.1.5
  */
 namespace SbmGestion\Form;
 
@@ -24,6 +24,8 @@ class PlancheEtiquettesForm extends Form
     protected $nbcols;
 
     protected $nbrows;
+
+    protected $has_radio;
 
     /**
      * Pour renderplanche
@@ -61,20 +63,32 @@ class PlancheEtiquettesForm extends Form
         parent::__construct($name, $options);
         $this->setAttribute('method', 'post');
         $this->setAttribute('target', '_blank');
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Radio',
-            'name' => 'planche',
-            'attributes' => array(
-                'id' => 'planche'
-            ),
-            'options' => array(
-                'label' => 'Indiquez la position de l\'étiquette dans la planche',
-                'value_options' => $value_options,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
+        if (count($value_options) > 1) {
+            $this->has_radio = true;
+            $this->add(array(
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'planche',
+                'attributes' => array(
+                    'id' => 'planche'
+                ),
+                'options' => array(
+                    'label' => 'Indiquez la position de l\'étiquette dans la planche',
+                    'value_options' => $value_options,
+                    'error_attributes' => array(
+                        'class' => 'sbm-error'
+                    )
                 )
-            )
-        ));
+            ));
+        } else {
+            $this->has_radio = false;
+            $this->add([
+                'type' => 'hidden',
+                'name' => 'planche',
+                'attributes' => [
+                    'value' => '1-1'
+                ]
+            ]);
+        }
         $this->add(array(
             'type' => 'submit',
             'name' => 'submit',
@@ -111,33 +125,53 @@ class PlancheEtiquettesForm extends Form
         return $isValid;
     }
 
+    /**
+     * Retourne la valeur de la propriété has_radio
+     *
+     * @return boolean
+     */
+    public function hasPlanche()
+    {
+        return $this->has_radio;
+    }
+
+    /**
+     * Dessine la planche d'étiquettes ou renvoie un hidden s'il n'y a qu'une étiquette dans la planche
+     *
+     * @return \Zend\Form\View\Helper\string
+     */
     public function renderPlanche()
     {
         $planche = $this->get('planche');
-        $viewHelperRadio = new \Zend\Form\View\Helper\FormRadio();
-        $value_options = $planche->getValueOptions();
-        $render = "<table>\n";
-        $current_row = 0;
-        $end_row = '';
-        foreach ($value_options as $key => $inputAttributes) {
-            $inputAttributes['name'] = 'planche';
-            $inputAttributes['type'] = 'radio';
-            list ($row, $col) = explode('-', $key);
-            if ($current_row != $row) {
-                $render .= "$end_row<tr>\n";
-                $current_row = $row;
-                $end_row = "</tr>\n";
+        if ($this->has_radio) {
+            $viewHelperRadio = new \Zend\Form\View\Helper\FormRadio();
+            $value_options = $planche->getValueOptions();
+            $render = "<table>\n";
+            $current_row = 0;
+            $end_row = '';
+            foreach ($value_options as $key => $inputAttributes) {
+                $inputAttributes['name'] = 'planche';
+                $inputAttributes['type'] = 'radio';
+                list ($row, $col) = explode('-', $key);
+                if ($current_row != $row) {
+                    $render .= "$end_row<tr>\n";
+                    $current_row = $row;
+                    $end_row = "</tr>\n";
+                }
+                $render .= '    <td>';
+                $render .= sprintf('<input %s%s', $viewHelperRadio->createAttributesString($inputAttributes), $viewHelperRadio->getInlineClosingBracket());
+                $render .= "</td>\n";
             }
-            $render .= '    <td>';
-            $render .= sprintf('<input %s%s', $viewHelperRadio->createAttributesString($inputAttributes), $viewHelperRadio->getInlineClosingBracket());
-            $render .= "</td>\n";
+            $render .= "</table>\n";
+            $messages = $planche->getMessages();
+            if (! empty($messages)) {
+                $elementErrorsHelper = new \Zend\Form\View\Helper\FormElementErrors();
+                $render .= $elementErrorsHelper->render($planche);
+            }
+            return $render;
+        } else {
+            $viewHelperHidden = new \Zend\Form\View\Helper\FormHidden();
+            return $viewHelperHidden->render($planche);
         }
-        $render .= "</table>\n";
-        $messages = $planche->getMessages();
-        if (! empty($messages)) {
-            $elementErrorsHelper = new \Zend\Form\View\Helper\FormElementErrors();
-            $render .= $elementErrorsHelper->render($planche);
-        }
-        return $render;
     }
 }

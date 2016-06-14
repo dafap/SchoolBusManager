@@ -27,7 +27,7 @@ $("#btcancel").click(function(){
     form.submit();
 });
 });
-<?php 
+<?php
 $this->headScript()->captureEnd();
 $hiddens = array(
     'eleveId' => $this->eleveId,
@@ -47,7 +47,7 @@ $actions = array(
 <div id="fiche-wrapper">
 	<h1>Duplicata d'une carte de transport</h1>
 	<div id="fiche-header">
-	    <div class="menu clearfix">
+		<div class="menu clearfix">
 	    <?php echo $this->listeZoneActions($hiddens, $actions);?>
 	    </div>
 	</div>
@@ -57,7 +57,9 @@ $actions = array(
 	    <?php echo $this->formHidden($this->form->get('origine'));?>
 		<fieldset class="sbm-page1">
 			<div class="row-inner planche">
+	    <?php if ($this->form->hasPlanche()) :?>
 			Indiquez la position de l'étiquette dans la planche d'étiquettes
+	    <?php endif;?>
             <?php echo $this->form->renderPlanche();?>
             </div>
 			<div class="row-inner"><?php echo $this->formRow($this->form->get('gratuit'));?></div>
