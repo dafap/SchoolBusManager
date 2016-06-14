@@ -9,8 +9,8 @@
  * @filesource table.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2014
- * @version 2014-1
+ * @date 14 juin 2016
+ * @version 2016-2.1.5
  */
 return array(
     'name' => 'eleves',
@@ -71,7 +71,7 @@ return array(
             'evenement' => 'INSERT',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(eleves)%', 'insert', 'eleveId', NEW.eleveId, NOW(), CONCAT(NEW.selection, '|', NEW.dateCreation, '|', NEW.dateModification, '|', NEW.nom, '|', NEW.nomSA, '|', NEW.prenom, '|', NEW.prenomSA, '|', NEW.dateN, '|', NEW.numero, '|', NEW.responsable1Id, '|', NEW.responsable2Id, '|', NEW.responsableFId))
+VALUES ('%table(eleves)%', 'insert', 'eleveId', NEW.eleveId, NOW(), CONCAT(NEW.selection, '|', NEW.dateCreation, '|', NEW.dateModification, '|', NEW.nom, '|', NEW.nomSA, '|', NEW.prenom, '|', NEW.prenomSA, '|', NEW.dateN, '|', NEW.numero, '|', NEW.responsable1Id, '|', IFNULL(NEW.responsable2Id,''), '|', IFNULL(NEW.responsableFId,'')))
 EOT
 
         ),
@@ -80,7 +80,7 @@ EOT
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(eleves)%', 'update', 'eleveId', OLD.eleveId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.dateN, '|', OLD.numero, '|', OLD.responsable1Id, '|', OLD.responsable2Id, '|', OLD.responsableFId))
+VALUES ('%table(eleves)%', 'update', 'eleveId', OLD.eleveId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.dateN, '|', OLD.numero, '|', OLD.responsable1Id, '|', IFNULL(OLD.responsable2Id,''), '|', IFNULL(OLD.responsableFId,'')))
 EOT
 
         ),
@@ -89,7 +89,7 @@ EOT
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(eleves)%', 'delete', 'eleveId', OLD.eleveId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.dateN, '|', OLD.numero, '|', OLD.responsable1Id, '|', OLD.responsable2Id, '|', OLD.responsableFId))
+VALUES ('%table(eleves)%', 'delete', 'eleveId', OLD.eleveId, NOW(), CONCAT(OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.nom, '|', OLD.nomSA, '|', OLD.prenom, '|', OLD.prenomSA, '|', OLD.dateN, '|', OLD.numero, '|', OLD.responsable1Id, '|', IFNULL(OLD.responsable2Id,''), '|', IFNULL(OLD.responsableFId,'')))
 EOT
 
         )
