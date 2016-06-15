@@ -9,8 +9,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 14 juin 2016
+ * @version 2016-2.1.5
  */
 namespace SbmGestion\Controller;
 
@@ -469,6 +469,11 @@ class EleveGestionController extends AbstractActionController
         }
         $vue = true;
         $args = (array) $prg;
+        if (array_key_exists('origine', $args)) {
+            $this->setToSession('origine', $args['origine'], $this->getSessionNamespace());
+        } else {
+            $args['origine'] = $this->getFromSession('origine', null, $this->getSessionNamespace());
+        }
         if (array_key_exists('cancel', $args) || ! array_key_exists('eleveId', $args)) {
             return $this->redirect()->toUrl($args['origine']);
         }

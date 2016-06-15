@@ -656,7 +656,7 @@ class PdfController extends AbstractActionController
         ];
         $r = $this->addData($this->config['db_manager'], $params, function ($post) {
             return $post;
-        }, function ($post) use($pdf_manager) {
+        }, function ($post) use($pdf_manager, $form) {
             $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                 ->setRecordSource($post['documentId']);
             $form->setValueOptions('tbody', $columns->getListeForSelect());
@@ -871,7 +871,7 @@ class PdfController extends AbstractActionController
         ];
         $r = $this->editData($this->config['db_manager'], $params, function ($post) {
             return $post;
-        }, function ($post) use($pdf_manager) {
+        }, function ($post) use($pdf_manager, $form) {
             $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                 ->setRecordSource($post['documentId']);
             $form->setValueOptions('fieldname', $columns->getListeForSelect());
@@ -919,7 +919,7 @@ class PdfController extends AbstractActionController
         ];
         $r = $this->addData($this->config['db_manager'], $params, function ($post) {
             return $post;
-        }, function ($post) use($pdf_manager) {
+        }, function ($post) use($pdf_manager, $form) {
             $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                 ->setRecordSource($post['documentId']);
             $form->setValueOptions('fieldname', $columns->getListeForSelect());
@@ -970,7 +970,7 @@ class PdfController extends AbstractActionController
         ];
         $r = $this->addData($this->config['db_manager'], $params, function ($post) {
             return $post;
-        }, function ($post) use($pdf_manager) {
+        }, function ($post) use($pdf_manager, $form) {
             $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                 ->setRecordSource($post['documentId']);
             $form->setValueOptions('fieldname', $columns->getListeForSelect());

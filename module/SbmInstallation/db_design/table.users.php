@@ -7,8 +7,8 @@
  * @filesource users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2014
- * @version 2014-1
+ * @date 14 juin 2016
+ * @version 2016-2.1.5
  */
 return array(
     'name' => 'users',
@@ -66,7 +66,7 @@ return array(
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(users)%', 'update', 'userId', OLD.userId, NOW(), CONCAT(OLD.token, '|', OLD.tokenalive, '|', OLD.confirme, '|', OLD.active, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLastLogin, '|', OLD.datePreviousLogin, '|', OLD.adresseIp, '|', OLD.previousIp, '|', OLD.categorieId, '|', OLD.titre, '|', OLD.nom, '|', OLD.prenom, '|', OLD.email, '|', OLD.mdp, '|', OLD.gds, '|', OLD.note))
+VALUES ('%table(users)%', 'update', 'userId', OLD.userId, NOW(), CONCAT(IFNULL(OLD.token, ''), '|', OLD.tokenalive, '|', OLD.confirme, '|', OLD.active, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLastLogin, '|', OLD.datePreviousLogin, '|', OLD.adresseIp, '|', OLD.previousIp, '|', OLD.categorieId, '|', OLD.titre, '|', OLD.nom, '|', OLD.prenom, '|', OLD.email, '|', OLD.mdp, '|', OLD.gds, '|', IFNULL(OLD.note, '')))
 EOT
 
         ),
@@ -75,13 +75,11 @@ EOT
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(users)%', 'delete', 'userId', OLD.userId, NOW(), CONCAT(OLD.token, '|', OLD.tokenalive, '|', OLD.confirme, '|', OLD.active, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLastLogin, '|', OLD.datePreviousLogin, '|', OLD.adresseIp, '|', OLD.previousIp, '|', OLD.categorieId, '|', OLD.titre, '|', OLD.nom, '|', OLD.prenom, '|', OLD.email, '|', OLD.mdp, '|', OLD.gds, '|', OLD.note))
+VALUES ('%table(users)%', 'delete', 'userId', OLD.userId, NOW(), CONCAT(IFNULL(OLD.token, ''), '|', OLD.tokenalive, '|', OLD.confirme, '|', OLD.active, '|', OLD.selection, '|', OLD.dateCreation, '|', OLD.dateModification, '|', OLD.dateLastLogin, '|', OLD.datePreviousLogin, '|', OLD.adresseIp, '|', OLD.previousIp, '|', OLD.categorieId, '|', OLD.titre, '|', OLD.nom, '|', OLD.prenom, '|', OLD.email, '|', OLD.mdp, '|', OLD.gds, '|', IFNULL(OLD.note, '')))
 EOT
 
         )
     ),
     
-    // 'data' => include __DIR__ . '/data/data.users.php'
-    // 'data' => array('after' => array('communes'),'include' => __DIR__ . '/data/data.users.php')
     'data' => __DIR__ . '/data/data.users.php'
 );

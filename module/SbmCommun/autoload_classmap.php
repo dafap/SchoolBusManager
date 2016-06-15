@@ -200,6 +200,7 @@ return array(
     'SbmCommun\Model\Hydrator\Exception\InvalidArgumentException'                    => __DIR__ . '/src/SbmCommun/Model/Hydrator/Exception/InvalidArgumentException.php',
     'SbmCommun\Model\Hydrator\Responsables'                                          => __DIR__ . '/src/SbmCommun/Model/Hydrator/Responsables.php',
     'SbmCommun\Model\Hydrator\Scolarites'                                            => __DIR__ . '/src/SbmCommun/Model/Hydrator/Scolarites.php',
+    'SbmCommun\Model\Image\Image'                                                    => __DIR__ . '/src/SbmCommun/Model/Image/Image.php',
     'SbmCommun\Model\Mvc\Controller\AbstractActionController'                        => __DIR__ . '/src/SbmCommun/Model/Mvc/Controller/AbstractActionController.php',
     'SbmCommun\Model\Mvc\Controller\EditResponse'                                    => __DIR__ . '/src/SbmCommun/Model/Mvc/Controller/EditResponse.php',
     'SbmCommun\Model\Mvc\Controller\Plugin\Exception'                                => __DIR__ . '/src/SbmCommun/Model/Mvc/Controller/Plugin/Exception.php',

@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 14 juin 2016
+ * @version 2016-2.1.5
  */
 namespace SbmAjax\Controller;
 
@@ -576,7 +576,7 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
-            $tScolarites = $this->config['db_manager'] > get('Sbm\Db\Table\Scolarites');
+            $tScolarites = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites');
             $odata = $tScolarites->getRecord(array(
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $eleveId

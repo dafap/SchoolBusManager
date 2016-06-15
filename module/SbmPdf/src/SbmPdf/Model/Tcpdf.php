@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 14 juin 2016
+ * @version 2016-2.1.5
  */
 namespace SbmPdf\Model;
 
@@ -1825,7 +1825,7 @@ class Tcpdf extends \TCPDF
                 $this->x,
                 $this->y
             ];
-            $this->templateDocBodyMethod3Picture();
+            //$this->templateDocBodyMethod3Picture();
             // filigrane
             if ($duplicata) {
                 list ($x, $y) = $origine;
