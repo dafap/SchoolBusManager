@@ -13,5 +13,7 @@ return array(
     'SbmAdmin\Form\User'                                 => __DIR__ . '/src/SbmAdmin/Form/User.php',
     'SbmAdmin\Form\UserRelation'                         => __DIR__ . '/src/SbmAdmin/Form/UserRelation.php',
     'SbmAdmin\Model\Db\Service\Libelle\Liste'            => __DIR__ . '/src/SbmAdmin/Model/Db/Service/Libelle/Liste.php',
+    'SbmAdmin\Model\Db\Service\Responsable\Responsables' => __DIR__ . '/src/SbmAdmin/Model/Db/Service/Responsable/Responsables.php',
+    'SbmAdmin\Model\Db\Service\User\Users'               => __DIR__ . '/src/SbmAdmin/Model/Db/Service/User/Users.php',
     'SbmAdmin\Model\Exception'                           => __DIR__ . '/src/SbmAdmin/Model/Exception.php',
 );

@@ -5,6 +5,7 @@ return array(
     'SbmInstallation\Controller\IndexController'                => __DIR__ . '/src/SbmInstallation/Controller/IndexController.php',
     'SbmInstallation\Controller\Service\IndexControllerFactory' => __DIR__ . '/src/SbmInstallation/Controller/Service/IndexControllerFactory.php',
     'SbmInstallation\Form\DumpTables'                           => __DIR__ . '/src/SbmInstallation/Form/DumpTables.php',
+    'SbmInstallation\Form\UploadImage'                          => __DIR__ . '/src/SbmInstallation/Form/UploadImage.php',
     'SbmInstallation\Model\CreateTables'                        => __DIR__ . '/src/SbmInstallation/Model/CreateTables.php',
     'SbmInstallation\Model\DumpTables'                          => __DIR__ . '/src/SbmInstallation/Model/DumpTables.php',
     'SbmInstallation\Model\Exception'                           => __DIR__ . '/src/SbmInstallation/Model/Exception.php',
