@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2016
- * @version 2016-2.1.5
+ * @date 16 juin 2016
+ * @version 2016-2.1.6
  */
 namespace SbmPdf\Model;
 
@@ -576,8 +576,8 @@ class Tcpdf extends \TCPDF
      */
     protected function setStyle($nameStyle, $style = null, $size = null, $color = null)
     {
-        //$f = fopen('debug-style.txt', 'a');
-        //fputs($f, $nameStyle . "\n");
+        // $f = fopen('debug-style.txt', 'a');
+        // fputs($f, $nameStyle . "\n");
         $key = $nameStyle . '_font_family';
         $family = $this->getConfig('document', $key, PDF_FONT_NAME_MAIN);
         if (is_null($style)) {
@@ -588,14 +588,14 @@ class Tcpdf extends \TCPDF
             $key = $nameStyle . '_font_size';
             $size = $this->getConfig('document', $key, '');
         }
-        //fputs($f, "$family - $style - $size\n");
+        // fputs($f, "$family - $style - $size\n");
         $this->SetFont($family, $style, $size);
         if (is_null($color)) {
             $key = $nameStyle . '_text_color';
             $color = $this->getConfig('document', $key, '000000');
         }
-        //fputs($f, "$color\n");
-        //fclose($f);
+        // fputs($f, "$color\n");
+        // fclose($f);
         $this->SetTextColorArray($this->convertColor($color));
     }
 
@@ -1623,7 +1623,9 @@ class Tcpdf extends \TCPDF
         // $label->setCurrentRow($k); // optionnel
         list ($this->x, $this->y) = $label->xyStart();
         $descripteur = $label->descripteurData();
+        $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            $page_vide = false;
             for ($j = 0; $j < count($etiquetteData); $j ++) {
                 $this->setStyle($descripteur[$j]['style']);
                 $txt = $etiquetteData[$j];
@@ -1636,11 +1638,15 @@ class Tcpdf extends \TCPDF
                 list ($this->x, $this->y) = $label->Ln($j);
             }
             if (($xy = $label->NextPosition($j)) == false) {
+                $page_vide = true;
                 $this->AddPage();
                 list ($this->x, $this->y) = $label->NewPage();
             } else {
                 list ($this->x, $this->y) = $xy;
             }
+        }
+        if ($page_vide) {
+            $this->deletePage($this->PageNo());
         }
     }
 
@@ -1819,13 +1825,15 @@ class Tcpdf extends \TCPDF
         // le descripteur est indexé à partir de 0
         $descripteur = $label->descripteurData();
         $duplicata = $this->getParam('duplicata', false);
+        $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            $page_vide = false;
             // partie graphique
             $origine = [
                 $this->x,
                 $this->y
             ];
-            //$this->templateDocBodyMethod3Picture();
+            // $this->templateDocBodyMethod3Picture();
             // filigrane
             if ($duplicata) {
                 list ($x, $y) = $origine;
@@ -1855,11 +1863,15 @@ class Tcpdf extends \TCPDF
                 $this->SetXY($x, $y);
             }
             if (($xy = $label->NextPosition($i)) == false) {
+                $page_vide = true;
                 $this->AddPage();
                 list ($this->x, $this->y) = $label->NewPage();
             } else {
                 list ($this->x, $this->y) = $xy;
             }
+        }
+        if ($page_vide) {
+            $this->deletePage($this->PageNo());
         }
     }
 
