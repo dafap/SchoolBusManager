@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 17 juin 2016
+ * @version 2016-2.1.6
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -273,7 +273,7 @@ class AffectationsServicesStations implements FactoryInterface
         ))
             ->join(array(
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'ele.eleveId=sco.eleveId', array(
+        ), 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', array(
             'transportGA' => new Expression('CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
             'x_eleve' => 'x',
             'y_eleve' => 'y',
