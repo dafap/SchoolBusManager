@@ -9,8 +9,8 @@
  * @filesource DocumentPdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 16 juin 2016
+ * @version 2016-2.1.6
  */
 namespace SbmPdf\Form;
 
@@ -2405,7 +2405,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         $strategieColor = new Color();
         foreach ($data as $key => &$value) {
             if (substr($key, - 6) == '_color') {
-                $value = $strategieColor->hydrate($value);
+                $value = $strategieColor->hydrate($strategieColor->extract($value));
             }
         }
         if (isset($data['recordSource'])) {

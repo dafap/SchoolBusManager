@@ -11,14 +11,15 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 16 juin 2016
+ * @version 2016-2.1.6
  */
 namespace DafapMail\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DafapMail\Model\Template as MailTemplate;
+use DafapSession\Model\Session;
 use SbmCommun\Model\StdLib;
 
 class IndexController extends AbstractActionController
@@ -110,83 +111,97 @@ class IndexController extends AbstractActionController
      */
     public function lastDayChangesAction()
     {
-        $history = $this->config['db_manager']->get('Sbm\Db\Query\History');
-        $services = $this->config['db_manager']->get('Sbm\Db\Table\Services');
-        $transporteurs = $this->config['db_manager']->get('Sbm\Db\Table\Transporteurs');
-        $destinataires = array();
-        $changes = $history->getLastDayChanges('affectations');
-        if ($changes instanceof \Traversable) {
-            foreach ($changes as $affectation) {
-                $log = explode('|', $affectation['log']);
-                if (count($log) >= 4) {
-                    $oservice = $services->getRecord($log[3]);
-                    // enregistrement sans doublon
-                    $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
+        $tCalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
+        try {
+            $millesime = $tCalendar->getCurrentMillesime();
+            $history = $this->config['db_manager']->get('Sbm\Db\Query\History');
+            $services = $this->config['db_manager']->get('Sbm\Db\Table\Services');
+            $transporteurs = $this->config['db_manager']->get('Sbm\Db\Table\Transporteurs');
+            $destinataires = array();
+            $changes = $history->getLastDayChanges('affectations', $millesime);
+            if ($changes instanceof \Traversable) {
+                foreach ($changes as $affectation) {
+                    $log = explode('|', $affectation['log']);
+                    if (count($log) >= 4) {
+                        $oservice = $services->getRecord($log[3]);
+                        // enregistrement sans doublon
+                        $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
+                    }
+                    if (count($log) == 6) {
+                        $oservice = $services->getRecord($log[5]);
+                        // enregistrement sans doublon
+                        $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
+                    }
                 }
-                if (count($log) == 6) {
-                    $oservice = $services->getRecord($log[5]);
-                    // enregistrement sans doublon
-                    $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
-                }
-            }
-            $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
-            $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', [
-                'file_name' => $logo_bas_de_mail,
-                'path' =>StdLib::getParamR(['img','path'], $this->config),
-                'img_attributes' => StdLib::getParamR(['img','administrer',$logo_bas_de_mail], $this->config),
-                'client' => StdLib::getParam('client', $this->config)
-            ]);
-            $qtransporteurs = $this->config['db_manager']->get('Sbm\Db\Query\Transporteurs');
-            $controle = array();
-            foreach ($destinataires as $transporteurId => $circuits) {
-                $odata = $transporteurs->getRecord($transporteurId);
-                $email = $odata->email;
-                $controle[] = $odata->nom;
-                $to = [];
-                if (! empty($email)) {
-                    $to[$email] = [
-                        'email' => $email,
-                        'name' => $odata->nom
-                    ];
-                }
-                $users = $qtransporteurs->getUserEmails($transporteurId);
-                foreach ($users as $user) {
-                    $to[$user['email']] = [
-                        'email' => $user['email'],
-                        'name' => $user['nomprenom']
-                    ];
-                }
-                
-                if (empty($to))
-                    continue;
-                
-                $params = array(
-                    'to' => array_values($to),
-                    'subject' => 'Modification des inscriptions',
-                    'body' => array(
-                        'html' => $mailTemplate->render(array(
-                            'services' => $circuits,
-                            'url_portail' => $this->url()
-                                ->fromRoute('sbmportail', array(
-                                'action' => 'tr-index'
-                            ), array(
-                                'force_canonical' => true
+                $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
+                $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', [
+                    'file_name' => $logo_bas_de_mail,
+                    'path' => StdLib::getParamR([
+                        'img',
+                        'path'
+                    ], $this->config),
+                    'img_attributes' => StdLib::getParamR([
+                        'img',
+                        'administrer',
+                        $logo_bas_de_mail
+                    ], $this->config),
+                    'client' => StdLib::getParam('client', $this->config)
+                ]);
+                $qtransporteurs = $this->config['db_manager']->get('Sbm\Db\Query\Transporteurs');
+                $controle = array();
+                foreach ($destinataires as $transporteurId => $circuits) {
+                    $odata = $transporteurs->getRecord($transporteurId);
+                    $email = $odata->email;
+                    $controle[] = $odata->nom;
+                    $to = [];
+                    if (! empty($email)) {
+                        $to[$email] = [
+                            'email' => $email,
+                            'name' => $odata->nom
+                        ];
+                    }
+                    $users = $qtransporteurs->getUserEmails($transporteurId);
+                    foreach ($users as $user) {
+                        $to[$user['email']] = [
+                            'email' => $user['email'],
+                            'name' => $user['nomprenom']
+                        ];
+                    }
+                    
+                    if (empty($to))
+                        continue;
+                    
+                    $params = array(
+                        'to' => array_values($to),
+                        'subject' => 'Modification des inscriptions',
+                        'body' => array(
+                            'html' => $mailTemplate->render(array(
+                                'services' => $circuits,
+                                'url_portail' => $this->url()
+                                    ->fromRoute('sbmportail', array(
+                                    'action' => 'tr-index'
+                                ), array(
+                                    'force_canonical' => true
+                                ))
                             ))
-                        ))
-                    )
-                );
-                $this->getEventManager()->addIdentifiers('SbmMail\Send');
-                $this->getEventManager()->trigger('sendMail', null, $params);
+                        )
+                    );
+                    $this->getEventManager()->addIdentifiers('SbmMail\Send');
+                    $this->getEventManager()->trigger('sendMail', null, $params);
+                }
             }
-        }
-        if (empty($controle)) {
-            $message = 'Durant les dernières 24 heures, il n\'y a pas eu de modification d\'inscription. Par conséquent, aucun mail n\'a été envoyé.';
-        } else {
-            $message = 'Suite aux modifications d\'inscription qui ont eu lieu durant les dernières 24 heures les transporteurs suivants ont reçu un email d\'information.';
-            foreach ($controle as $value) {
-                $message .= "\n - $value";
+            if (empty($controle)) {
+                $message = 'Durant les dernières 24 heures, il n\'y a pas eu de modification d\'inscription. Par conséquent, aucun mail n\'a été envoyé.';
+            } else {
+                $message = 'Suite aux modifications d\'inscription qui ont eu lieu durant les dernières 24 heures les transporteurs suivants ont reçu un email d\'information.';
+                foreach ($controle as $value) {
+                    $message .= "\n - $value";
+                }
             }
+        } catch (\SbmCommun\Model\Db\Exception $e) {
+            $message = 'Le service d\'alerte des transporteurs est interrompu durant les vacances. Les envois reprendront à partir du début de l\'année scolaire.';
         }
+        
         return $this->getResponse()
             ->setContent($message)
             ->setStatusCode(200);

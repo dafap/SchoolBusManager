@@ -2,15 +2,13 @@
 /**
  * Requêtes sur la table users pour peupler la liste de MailChimp
  *
- * Description longue du fichier s'il y en a une
- * 
  * @project sbm
  * @package SbmMailChimp/Model/Db/Service
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2016
- * @version 2016-2.1
+ * @date 17 juin 2016
+ * @version 2016-2.1.6
  */
 namespace SbmMailChimp\Model\Db\Service;
 
@@ -28,11 +26,18 @@ class Users implements FactoryInterface
 {
 
     /**
-     * Millesime de travail
+     * Millesime d'inscription pour les parents
      *
      * @var int
      */
     private $millesime;
+
+    /**
+     * Date de début des inscriptions
+     *
+     * @var string
+     */
+    private $dateDebut;
 
     /**
      *
@@ -58,7 +63,9 @@ class Users implements FactoryInterface
             $message = 'DbManager attendu. On a reçu %s.';
             throw new Exception(sprintf($message), gettype($serviceLocator));
         }
-        $this->millesime = Session::get('millesime');
+        $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
+        $this->dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d H:i:s');
+        $this->millesime = $tCalendar->getDefaultMillesime();
         $this->db_manager = $serviceLocator;
         $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
@@ -109,26 +116,84 @@ class Users implements FactoryInterface
             'r.email'
         ])
             ->having($sub_having);
-        //die($this->getSqlString($sub_select));
+        // die($this->getSqlString($sub_select));
         $select = $this->sql->select([
-            'usr' => $this->db_manager->getCanonicName('users', 'table')
+            'usr' => $this->usrUtiles()
         ])
             ->columns([
             'email_address' => 'email',
             'PRENOM' => 'prenom',
             'NOM' => 'nom',
             'CATEGORIE' => 'categorieId',
-            'CONFIRME' => 'confirme'
+            'CONFIRME' => 'confirme',
+            'NBELV' => new Expression('IFNULL(`res`.`nbelv`, 0)')
         ])
             ->join([
             'res' => $sub_select
-        ], 'usr.email = res.email', [
-            'NBELV' => 'nbelv'
+        ], 'usr.email = res.email', [], Select::JOIN_LEFT)
+            ->where([
+            'usr.categorieId' => 1
         ]);
         if ($limit) {
             $select->limit($limit);
         }
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
+    }
+
+    /**
+     * Ce sont les usr qui ont des enfants inscrits cette année ou qui en avait l'an dernier.
+     * Pour 2016 cela donne :
+     * SELECT DISTINCT `u1`.`email`, `u1`.`prenom`, `u1`.`nom`, `u1`.`categorieId`, `u1`.`confirme`
+     * FROM `sbm_t_users` AS `u1`
+     * INNER JOIN `sbm_t_responsables` AS `r1` ON `r1`.`email` =`u1`.`email`
+     * INNER JOIN `sbm_t_eleves` AS `e1` ON `e1`.`responsable1Id` = `r1`.`responsableId` OR `e1`.`responsable2Id` = `r1`.`responsableId`
+     * INNER JOIN `sbm_t_scolarites` AS `s1` ON `e1`.`eleveId` = `s1`.`eleveId`
+     * WHERE `s1`.`millesime` = '2015'
+     * UNION
+     * SELECT DISTINCT email, prenom, nom, categorieId, confirme
+     * FROM `sbm_t_users` AS `u2`
+     * WHERE `u2`.`dateCreation` > '2016-05-01'
+     */
+    private function usrUtiles()
+    {
+        $where = new Where();
+        $where->greaterThanOrEqualTo('dateCreation', $this->dateDebut);
+        $select2 = $this->sql->select([
+            'u2' => $this->db_manager->getCanonicName('users', 'table')
+        ])
+            ->columns([
+            'email',
+            'prenom',
+            'nom',
+            'categorieId',
+            'confirme'
+        ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->where($where);
+        
+        $select1 = $this->sql->select([
+            'u1' => $this->db_manager->getCanonicName('users', 'table')
+        ])
+            ->columns([
+            'email',
+            'prenom',
+            'nom',
+            'categorieId',
+            'confirme'
+        ])
+            ->join([
+            'r1' => $this->db_manager->getCanonicName('responsables', 'table')
+        ], 'r1.email = u1.email', [])
+            ->join([
+            'e1' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], 'r1.responsableId = e1.responsable1Id OR r1.responsableId = e1.responsable2Id', [])
+            ->join([
+            's1' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'e1.eleveId = s1.eleveId', [])
+            ->where([
+            's1.millesime' => $this->millesime - 1
+        ]);
+        return $select1->combine($select2);
     }
 }
