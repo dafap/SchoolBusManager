@@ -75,7 +75,7 @@ class Field extends AbstractSbmForm implements InputFilterProviderInterface
                 'class' => 'sbm-width-35c'
             ],
             'options' => [
-                'label' => 'Libellé',
+                'label' => 'Tag',
                 'label_attributes' => [
                     'class' => 'sbm-label'
                 ],
