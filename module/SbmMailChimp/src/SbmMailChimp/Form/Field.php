@@ -9,8 +9,8 @@
  * @filesource Field.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2016
- * @version 2016-2.1
+ * @date 23 juin 2016
+ * @version 2016-2.1.7
  */
 namespace SbmMailChimp\Form;
 
