@@ -7,8 +7,8 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2016
- * @version 2016-2.1.6
+ * @date 23 juin 2016
+ * @version 2016-2.1.7
  */
 namespace SbmMailChimp\Model\Db\Service;
 
@@ -126,17 +126,26 @@ class Users implements FactoryInterface
             'NOM' => 'nom',
             'CATEGORIE' => 'categorieId',
             'CONFIRME' => 'confirme',
-            'NBELV' => new Expression('IFNULL(`res`.`nbelv`, 0)')
+            'NBELV' => new Expression('IFNULL(`res`.`nbelv`, 0)'),
+            'TERM' => new Expression('IFNULL(`term`.`userId`, 0) / IFNULL(`term`.`userId`, 1)'),
+            'HORSTERM' => new Expression('IFNULL(`horsterm`.`userId`, 0) / IFNULL(`horsterm`.`userId`, 1)')
         ])
             ->join([
             'res' => $sub_select
         ], 'usr.email = res.email', [], Select::JOIN_LEFT)
+            ->join([
+            'term' => $this->usrTerminales()
+        ], 'term.userId = usr.userId', [], Select::JOIN_LEFT)
+            ->join([
+            'horsterm' => $this->usrHorsTerminales()
+        ], 'horsterm.userId = usr.userId', [], Select::JOIN_LEFT)
             ->where([
             'usr.categorieId' => 1
         ]);
         if ($limit) {
             $select->limit($limit);
         }
+        //die($this->getSqlString($select));
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
@@ -163,6 +172,7 @@ class Users implements FactoryInterface
             'u2' => $this->db_manager->getCanonicName('users', 'table')
         ])
             ->columns([
+            'userId',
             'email',
             'prenom',
             'nom',
@@ -176,6 +186,7 @@ class Users implements FactoryInterface
             'u1' => $this->db_manager->getCanonicName('users', 'table')
         ])
             ->columns([
+            'userId',
             'email',
             'prenom',
             'nom',
@@ -191,9 +202,68 @@ class Users implements FactoryInterface
             ->join([
             's1' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'e1.eleveId = s1.eleveId', [])
+            ->group([
+            'userId'
+        ])
             ->where([
             's1.millesime' => $this->millesime - 1
         ]);
         return $select1->combine($select2);
+    }
+
+    private function usrTerminales()
+    {
+        $where = new Where();
+        $where->equalTo('s3.millesime', $this->millesime - 1)
+            ->equalTo('c3.niveau', 8)
+            ->isNull('c3.suivantId');
+        $select = $this->sql->select([
+            'u3' => $this->db_manager->getCanonicName('users', 'table')
+        ])
+            ->columns([
+            'userId'
+        ])
+            ->join([
+            'r3' => $this->db_manager->getCanonicName('responsables', 'table')
+        ], 'r3.email = u3.email', [])
+            ->join([
+            'e3' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], 'r3.responsableId = e3.responsable1Id OR r3.responsableId = e3.responsable2Id', [])
+            ->join([
+            's3' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'e3.eleveId = s3.eleveId', [])
+            ->join([
+            'c3' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'c3.classeId = s3.classeId', [])
+            ->where($where);
+        return $select;
+    }
+
+    private function usrHorsTerminales()
+    {
+        $where = new Where();
+        $where->equalTo('s4.millesime', $this->millesime - 1)
+            ->nest()
+            ->notEqualTo('c4.niveau', 8)->or->isNotNull('c4.suivantId')->unnest();
+        $select = $this->sql->select([
+            'u4' => $this->db_manager->getCanonicName('users', 'table')
+        ])
+            ->columns([
+            'userId'
+        ])
+            ->join([
+            'r4' => $this->db_manager->getCanonicName('responsables', 'table')
+        ], 'r4.email = u4.email', [])
+            ->join([
+            'e4' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], 'r4.responsableId = e4.responsable1Id OR r4.responsableId = e4.responsable2Id', [])
+            ->join([
+            's4' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'e4.eleveId = s4.eleveId', [])
+            ->join([
+            'c4' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'c4.classeId = s4.classeId', [])
+            ->where($where);
+        return $select;
     }
 }

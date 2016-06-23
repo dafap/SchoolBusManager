@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2016
- * @version 2016-2.1.1
+ * @date 23 juin 2016
+ * @version 2016-2.1.7
  */
 namespace SbmMailChimp\Controller;
 
@@ -48,7 +48,7 @@ class IndexController extends AbstractActionController
         $listes = new Paginator(new MailChimpAdapter($mailchimp, $method, 'lists'));
         if (! $listes->count()) {
             $message = 'Aucune liste n\'a encore été créée.<br>Il faut en créer une.';
-        }else {
+        } else {
             $message = '';
         }
         return new ViewModel([
@@ -1112,8 +1112,10 @@ class IndexController extends AbstractActionController
     /**
      * Mise à jour des membres de la liste (par la méthode de put)
      *
-     * Les données sont extraites de la base de données par la méthode
+     * Reçoit en post l'identifiant de la liste 'id_liste'.
+     * Eventuellement, reçoit en post les paramètres 'populate' ou 'selection'.
      *
+     * Les données sont extraites de la base de données par la méthode
      * SbmMailChimp\Model\Db\Service\Users::getMembersForMailChimpListe()
      */
     public function populateAction()
@@ -1123,8 +1125,9 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             return $this->retourListe('info', 'Choisissez une action (1).', 'liste-members');
-        }
-        if (array_key_exists('id_liste', $prg) && array_key_exists('populate', $prg)) {
+        } elseif (array_key_exists('cancel', $prg)) {
+            return $this->retourListe('warning', 'Abandon. La liste n\'a pas été mise à jour.');
+        } elseif (array_key_exists('id_liste', $prg) && array_key_exists('populate', $prg)) {
             /**
              * ALGORITHME
              * créer un batch
@@ -1240,7 +1243,7 @@ class IndexController extends AbstractActionController
             // pour chaque email
             $tusers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
             $i = 0;
-            foreach ($emails as $email) {                 
+            foreach ($emails as $email) {
                 try {
                     $testId = $tusers->getRecordByEmail($email);
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
