@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 24 juin 2016
+ * @version 2016-2.1.7
  */
 use SbmGestion\Controller;
 use SbmGestion\Controller\Service;
@@ -208,9 +208,10 @@ return [
                     'statistiques' => [
                         'type' => 'segment',
                         'options' => [
-                            'route' => '/statistiques[/:action]',
+                            'route' => '/statistiques[/:action[/id/:id]]',
                             'constraints' => [
-                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'id' => '[0-9]+'
                             ],
                             'defaults' => [
                                 'module' => 'SbmGestion',

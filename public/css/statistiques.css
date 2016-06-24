@@ -1,0 +1,41 @@
+@CHARSET "UTF-8";
+#data-inner .even {
+	background-color: #e3f0e3;
+	border-bottom: 1px solid #badaba;
+}
+#data-inner .odd {
+	border-bottom: 1px solid #badaba;
+}
+.align-right {
+	text-align: right;
+}
+.centre {
+	text-align: center;
+}
+.sbm-description {
+	font-size: 80%;
+	color: #999;
+	margin-bottom: 2px;
+}
+th {
+	font-weight: bold;
+}
+table.statistiques {
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 8pt;
+	width: 100%;
+}
+table.statistiques th, table.statistiques td {
+	padding-left: 5px;
+	padding-right: 5px;
+	border-bottom: 1px, solid #e3eaec;
+}
+table.statistiques th.border-left, table.statistiques td.border-left {
+	border-left: 1px solid #e3eaec;
+}
+table.statistiques th.border-bold, table.statistiques td.border-bold {
+	border-left: 1px solid #9ab3ba;
+}
+table.statistiques td.invisible, table.statistiques th.invisible {
+	display: none;
+}
