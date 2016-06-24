@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2016
- * @version 2016-2.1.6
+ * @date 24 juin 2016
+ * @version 2016-2.1.7
  */
 namespace SbmPdf\Model;
 
@@ -2045,5 +2045,28 @@ class Tcpdf extends \TCPDF
                 }
             }
         }
+    }
+
+    // =======================================================================================================
+    // Modèle particulier pour les copies d'écran
+    //
+    /**
+     * Doit recevoir un tableau de paramètres dont une clé est html.
+     * Cette clé donne le texte html à placer dans le pdf.
+     * 
+     * @param string $param
+     * @return string
+     */
+    public function templateDocBodyMethod5($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Copie d\'écran';
+        }
+        $html = $this->getParam('html', 'Aucune donnée reçue.');
+        //die('<pre>' . htmlentities($html) . '</pre>');
+        $this->writeHTML($html, true, false, true, false, '');
     }
 }
