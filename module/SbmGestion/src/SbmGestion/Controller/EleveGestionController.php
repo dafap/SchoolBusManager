@@ -9,8 +9,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2016
- * @version 2016-2.1.5
+ * @date 20 juil. 2016
+ * @version 2016-2.1.9
  */
 namespace SbmGestion\Controller;
 
@@ -22,6 +22,7 @@ use SbmCommun\Form\LatLng;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\StdLib;
+use SbmCommun\Model\Db\Sql\Predicate\Not;
 use SbmGestion\Form\AffectationDecision;
 use DafapSession\Model\Session;
 
@@ -386,6 +387,7 @@ class EleveGestionController extends AbstractActionController
         } elseif (array_key_exists('submit', $args)) {
             $form2->setData($args);
             if ($form2->isValid()) {
+                $where = new Where();
                 $criteres = [];
                 $expression = [
                     "millesime = $millesime",
@@ -394,8 +396,14 @@ class EleveGestionController extends AbstractActionController
                 switch ($args['critere']) {
                     case 'inscrits':
                         $expression[] = '(paiement = 1 OR fa = 1 OR gratuit > 0)';
+                        $where->equalTo('inscrit', 1)
+                            ->nest()
+                            ->equalTo('paiement', 1)->or->equalTo('fa', 1)->or->greaterThan('gratuit', 0)->unnest();
                         break;
                     case 'preinscrits':
+                        $where1 = new Where();
+                        $where1->equalTo('paiement', 1)->or->equalTo('fa', 1)->or->greaterThan('gratuit', 0);
+                        $where->equalTo('inscrit', 1)->addPredicate(new Not($where1));
                         $expression[] = 'paiement = 0';
                         $expression[] = 'fa = 0';
                         $expression[] = 'gratuit = 0';
@@ -403,7 +411,6 @@ class EleveGestionController extends AbstractActionController
                     default: // tous
                         break;
                 }
-                $where = new Where();
                 switch ($args['selection']) {
                     case 'nouvelle':
                         $lastDateCarte = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->getLastDateCarte();
