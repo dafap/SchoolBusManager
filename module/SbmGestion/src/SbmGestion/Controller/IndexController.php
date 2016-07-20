@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 20 juil. 2016
+ * @version 2016-2.1.9
  */
 namespace SbmGestion\Controller;
 
@@ -43,8 +43,9 @@ class IndexController extends AbstractActionController
         return new ViewModel(array(
             'elevesEnregistres' => current($statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
             'elevesInscrits' => current($statEleve->getNbInscritsByMillesime($millesime))['effectif'],
+            'elevesInscritsRayes' => current($statEleve->getNbRayesByMillesime($millesime, true))['effectif'],
             'elevesPreinscrits' => current($statEleve->getNbPreinscritsByMillesime($millesime))['effectif'],
-            'elevesRayes' => current($statEleve->getNbRayesByMillesime($millesime))['effectif'],
+            'elevesPreinscritsRayes' => current($statEleve->getNbRayesByMillesime($millesime, false))['effectif'],
             'elevesFamilleAcceuil' => current($statEleve->getNbFamilleAccueilByMillesime($millesime))['effectif'],
             'elevesGardeAlternee' => current($statEleve->getNbGardeAlterneeByMillesime($millesime))['effectif'],
             'elevesMoins1km' => current($statEleve->getNbMoins1KmByMillesime($millesime))['effectif'],

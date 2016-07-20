@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2016
- * @version 2016-2.1.6
+ * @date 8 juillet 2016
+ * @version 2016-2.1.8
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -280,7 +280,8 @@ class AffectationsServicesStations implements FactoryInterface
             'chez',
             'adresseL1_chez' => 'adresseL1',
             'adresseL2_chez' => 'adresseL2',
-            'codePostal_chez' => 'codePostal'
+            'codePostal_chez' => 'codePostal',
+            'commentaire'
         ))
             ->join(array(
             'comsco' => $this->db_manager->getCanonicName('communes', 'table')

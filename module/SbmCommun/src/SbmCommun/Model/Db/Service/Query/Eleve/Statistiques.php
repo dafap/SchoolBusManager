@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 20 juil. 2016
+ * @version 2016-2.1.9
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -22,6 +22,7 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Predicate\Predicate;
+use SbmCommun\Model\Db\Sql\Predicate\Not;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Exception;
 
@@ -39,7 +40,7 @@ class Statistiques implements FactoryInterface
      * @var \Zend\Db\Adapter\Adapter
      */
     protected $db_manager;
-    
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -55,7 +56,7 @@ class Statistiques implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -195,15 +196,22 @@ class Statistiques implements FactoryInterface
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément d'index 0
+     * @param string $inscrits
+     *            si true alors on ne compte que les inscrits rayés, sinon on ne compte que les préinscrits
      *            
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbRayesByMillesime($millesime = null)
+    public function getNbRayesByMillesime($millesime = null, $inscrits = true)
     {
         $where = new Where();
-        $where->literal('inscrit = 0')
-            ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+        $where->literal('inscrit = 0');
+        if ($inscrits) {
+            $where->nest()->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+        } else {
+            $where1 = new Where();
+            $where1->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0');
+            $where->addPredicate(new Not($where1));
+        }
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
