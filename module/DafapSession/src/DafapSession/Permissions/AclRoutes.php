@@ -22,10 +22,11 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Permissions\Acl\Acl;
 use Zend\Mvc\MvcEvent;
+use Zend\Mvc\Router\RouteMatch as BaseRouteMatch;
 use Zend\Mvc\Router\Http\RouteMatch;
 use SbmCommun\Model\StdLib;
 
-class AclRoutes implements  FactoryInterface
+class AclRoutes implements FactoryInterface
 {
 
     /**
@@ -40,21 +41,21 @@ class AclRoutes implements  FactoryInterface
 
     /**
      * Est créé dans le createService
-     * 
+     *
      * @var \Zend\Permissions\Acl\Acl
      */
     protected $acl;
 
     /**
      * Est initialisé par la config_application dans le createService
-     * 
+     *
      * @var array
      */
-    private $acl_config = []; 
+    private $acl_config = [];
 
     /**
      * Est initialisé par la service manager dans le createService
-     * 
+     *
      * @var \DafapSession\Authentication\AuthenticationService
      */
     protected $authenticationService;
@@ -107,21 +108,24 @@ class AclRoutes implements  FactoryInterface
 
     public function dispatch(MvcEvent $e)
     {
-        $this->build($e->getRouteMatch());
-        
-        // Récupération du rôle de l'utilisateur courant
-        if (! $this->authenticationService->hasIdentity()) {
-            $role = self::DEFAULT_ROLE;
-        } else {
-            $role = $this->roleId[$this->authenticationService->getCategorieId()];
-        }
-        
-        // Si l'utilisateur n'est pas autorisé, on le redirige vers la page par défaut, ou une autre page si elle a été spécifiée
-        // dans le fichier de configuration
-        $matchedRouteName = $e->getRouteMatch()->getMatchedRouteName();
-        $resource = $matchedRouteName . '::' . $e->getRouteMatch()->getParam('action');
-        if (! $this->acl->isAllowed($role, $resource)) {
-            $this->redirect($e, $this->redirectTo);
+        $routeMatch = $e->getRouteMatch();
+        if ($routeMatch instanceof RouteMatch) {
+            $this->build($routeMatch);
+            
+            // Récupération du rôle de l'utilisateur courant
+            if (! $this->authenticationService->hasIdentity()) {
+                $role = self::DEFAULT_ROLE;
+            } else {
+                $role = $this->roleId[$this->authenticationService->getCategorieId()];
+            }
+            
+            // Si l'utilisateur n'est pas autorisé, on le redirige vers la page par défaut, ou une autre page si elle a été spécifiée
+            // dans le fichier de configuration
+            $matchedRouteName = $e->getRouteMatch()->getMatchedRouteName();
+            $resource = $matchedRouteName . '::' . $e->getRouteMatch()->getParam('action');
+            if (! $this->acl->isAllowed($role, $resource)) {
+                $this->redirect($e, $this->redirectTo);
+            }
         }
     }
 
@@ -149,7 +153,7 @@ class AclRoutes implements  FactoryInterface
      * @param \Zend\Mvc\Router\RouteMatch $routeMatch            
      * @return mixed
      */
-    private function build(RouteMatch $routeMatch)
+    private function build(BaseRouteMatch $routeMatch)
     {
         $matchedRouteName = $routeMatch->getMatchedRouteName();
         $action = $routeMatch->getParam('action');
@@ -161,7 +165,7 @@ class AclRoutes implements  FactoryInterface
         $resourceNameParts = [];
         foreach ($routeParts as $routePart) {
             $resourceNameParts[] = $routePart;
-            $resourceName = implode('/', $resourceNameParts);            
+            $resourceName = implode('/', $resourceNameParts);
             $this->acl->addResource($resourceName, $parentName);
             // Par défaut, on interdit l'accès à toute ressource dont l'ACL racine n'a pas été défini
             if (is_null($parentName) && ! array_key_exists($routePart, $resources)) {
@@ -169,7 +173,7 @@ class AclRoutes implements  FactoryInterface
                 $resources = array();
             }
             if (array_key_exists($routePart, $resources)) {
-                $resources = $resources[$routePart];               
+                $resources = $resources[$routePart];
                 if (array_key_exists('allow', $resources)) {
                     $allow = $resources['allow'];
                     $assertion = $this->buildAssertion($allow);
@@ -179,10 +183,10 @@ class AclRoutes implements  FactoryInterface
                     $deny = $resources['deny'];
                     $assertion = $this->buildAssertion($deny);
                     $this->acl->deny($deny['roles'], $resourceName, null, $assertion);
-                }        
+                }
                 if (array_key_exists('redirect_to', $resources)) {
                     $this->redirectTo = $resources['redirect_to'];
-                }               
+                }
                 // Y a-t-il des enfants ?
                 if (array_key_exists('child_resources', $resources)) {
                     $resources = $resources['child_resources'];
@@ -191,13 +195,13 @@ class AclRoutes implements  FactoryInterface
                         $actions = $resources['actions'];
                     }
                     $resources = array();
-                }               
+                }
             } else {
                 $resource = array();
             }
             $parentName = $resourceName;
-        }        
-        // On définit la route "complète" comme enfant de la dernière ressource 
+        }
+        // On définit la route "complète" comme enfant de la dernière ressource
         // afin d'hériter de ses autorisations et d'ajouter éventuellement les siennes
         $resourceName = $matchedRouteName . '::' . $action;
         $this->acl->addResource($resourceName, $matchedRouteName);
@@ -208,7 +212,7 @@ class AclRoutes implements  FactoryInterface
                 $allow = $resources['allow'];
                 $assertion = $this->buildAssertion($allow);
                 $this->acl->allow($allow['roles'], $resourceName, null, $assertion);
-            } 
+            }
             if (array_key_exists('deny', $resources)) {
                 $deny = $resources['deny'];
                 $assertion = $this->buildAssertion($deny);
