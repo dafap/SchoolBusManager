@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avril 2016
- * @version 2016-2
+ * @date 26 juil. 2016
+ * @version 2016-2.1.10
  */
 use DafapMail\Form\Mail;
 use DafapMail\Model;
@@ -75,7 +75,8 @@ return array(
     ],
     'service_manager' => [
         'factories' => [
-            Model\EnvoiMail::class => Model\Service\EnvoiMailFactory::class
+            Model\EnvoiMail::class => Model\Service\EnvoiMailFactory::class,
+            'DafapMail\Config' => Model\Service\ConfigServiceFactory::class
         ]
     ],
     'controllers' => array(

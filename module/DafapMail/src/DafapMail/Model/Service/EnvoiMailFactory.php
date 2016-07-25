@@ -9,8 +9,8 @@
  * @filesource EnvoiMailFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 26 juil. 2016
+ * @version 2016-2.1.10
  */
 namespace DafapMail\Model\Service;
 
@@ -23,6 +23,6 @@ class EnvoiMailFactory implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new EnvoiMail($serviceLocator->get('config')['sbm']['mail']);
+        return new EnvoiMail($serviceLocator->get('DafapMail\Config'));
     }
 }
