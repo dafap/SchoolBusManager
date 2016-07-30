@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/transporteur-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 30 juill. 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', array(
@@ -57,7 +57,7 @@ $data = $this->paginator->getCurrentItems();
 <h1>Groupe des élèves pris en charge par un transporteur</h1>
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
-		<ul class=float-left">
+		<ul class="float-left">
 			<li><?php echo $this->escapeHtml($this->transporteur->nom); ?></li>
 		</ul>
 		<div class="flashMessenger float-right">

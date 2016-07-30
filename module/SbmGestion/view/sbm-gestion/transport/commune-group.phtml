@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/commune-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 30 juill. 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', array(
@@ -137,11 +137,7 @@ foreach ($data as $row) :
 			</tbody>
 		</table>
 	</div>
-	<div id="liste-footer">
-		<p>
-		
-		
+	<div id="liste-footer">		
 		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
-		</p>
 	</div>
 </div>

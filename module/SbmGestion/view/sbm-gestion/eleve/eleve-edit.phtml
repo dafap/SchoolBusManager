@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 nov. 2015
- * @version 2015-1.6.6
+ * @date 30 juill. 2016
+ * @version 2016-2.1.10
  */
 use SbmCommun\Model\DateLib;
 
@@ -580,7 +580,7 @@ echo $this->formHidden($this->form->get('csrf'));
 								<div class="eleve-tabs-3-col-2-label">Date de déménagement</div><?php echo formatDate($this->historique['responsable1']['dateDemenagement'], false);?></div>
 						</div>
 				        <?php if (array_key_exists('responsable2', $this->historique)):?>
-				        <div id="" tabs-3-col3" class="float-left left-10px">
+				        <div id="tabs-3-col3" class="float-left left-10px">
 							<h3>Responsable 2</h3>
 							<div id="#responsable2-dateCreation">
 								<div class="eleve-tabs-3-col-3-label">Date de création</div><?php echo formatDate($this->historique['responsable2']['dateCreation']);?></div>

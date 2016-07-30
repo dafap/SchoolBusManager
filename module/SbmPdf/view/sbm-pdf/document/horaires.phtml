@@ -7,8 +7,8 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 nov. 2015
- * @version 2015-1.6.6
+ * @date 30 juill. 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/horaires.css'));
 
@@ -62,7 +62,7 @@ if ($voirRemarque2) {
 }
 ?>
 <table cellspacing="0" cellpadding="1" border="1">
-    <tr><th colspan="7"><b>Mercredi midi & soir</b></th></tr>
+    <tr><th colspan="7"><b>Mercredi midi &amp; soir</b></th></tr>
     <?php echo $th2;?>
 <?php $i = 1; $effectif = 0; ?>      
 <?php foreach ($this->allerRetour['retour'] as $row):?> 
