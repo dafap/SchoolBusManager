@@ -8,8 +8,8 @@
  * @filesource AbstractSbmTableGateway.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 31 juill. 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
 
@@ -35,7 +35,7 @@ abstract class AbstractSbmTableGateway implements FactoryInterface
     {
         if (!($db_manager instanceof \SbmCommun\Model\Db\Service\DbManager)) {
             $type = gettype($db_manager);
-            $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\Db\\Service\\DbManager. %s fourni.';
+            $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\\Db\\Service\\DbManager. %s fourni.';
             throw new Exception($message, $type);
         }
         $this->init();        
