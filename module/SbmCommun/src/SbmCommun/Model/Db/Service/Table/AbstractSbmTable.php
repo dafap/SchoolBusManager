@@ -114,7 +114,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         } else {
             $type = gettype($db_manager); 
             $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\Db\\Service\\DbManager. %s fourni.';
-            throw new Exception($message, $type);
+            throw new Exception(sprintf(_($message), $type));
         }
         $this->init();
         $this->primary_key = $db_manager->getPrimaryKey($this->table_name, $this->table_type);

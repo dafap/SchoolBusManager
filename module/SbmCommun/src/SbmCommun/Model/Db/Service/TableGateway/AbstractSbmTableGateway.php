@@ -36,7 +36,7 @@ abstract class AbstractSbmTableGateway implements FactoryInterface
         if (!($db_manager instanceof \SbmCommun\Model\Db\Service\DbManager)) {
             $type = gettype($db_manager);
             $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\\Db\\Service\\DbManager. %s fourni.';
-            throw new Exception($message, $type);
+            throw new Exception(sprintf(_($message), $type));
         }
         $this->init();        
         $table_name = $db_manager->getCanonicName($this->table_name, $this->type);
