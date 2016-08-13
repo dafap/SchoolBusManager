@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 10 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmGestion\Controller;
 
@@ -1450,7 +1450,16 @@ class TransportController extends AbstractActionController
             'etablissementId' => $etablissementId,
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
-        ));
+        ));        
+        $tEtablissements = $this->config['db_manager']->get('Sbm\Db\Vue\Etablissements');
+        $ptEtablissements = array();
+        foreach ($tEtablissements->fetchAll() as $autreEtablissement) {
+            if ($autreEtablissement->etablissementId != $etablissementId) {
+                $pt = new Point($autreEtablissement->x, $autreEtablissement->y);
+                $pt->setAttribute('etablissement', $autreEtablissement);
+                $ptEtablissements[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
+            }
+        }
         return new ViewModel(array(
             // 'pt' => $pt,
             'form' => $form->prepare(),
@@ -1463,6 +1472,7 @@ class TransportController extends AbstractActionController
                 )))),
                 $etablissement->codePostal . ' ' . $commune->nom
             ),
+            'ptEtablissements' => $ptEtablissements,
             'config' => $configCarte
         ));
     }
