@@ -14,8 +14,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2015
- * @version 2015-1
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 use SbmCommun\Model\DateLib;
 
@@ -31,6 +31,21 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modele de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxfinance/'+action+'selectionpaiement/paiementId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+    //alert(action);
+  });
+EOT;
+
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -107,7 +122,7 @@ $hiddens = array(
     'responsable' => $this->escapeHtml($this->responsable)
 );
 // ne pas utiliser de guillement dans la chaine $js
-$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -153,21 +168,7 @@ echo $this->listeZoneActions($hiddens, $actions);
 				</tr>
         <?php foreach($paiements as $test => $paiement): ?>
         <?php
-            // selection
-            $modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxfinance/'+action+'selectionpaiement/paiementId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-    //alert(action);
-  });
-EOT;
-            
+            // construction des JS pour selection            
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $paiement->paiementId);
             $jsCallback .= sprintf("$modele\n", $paiement->paiementId, $paiement->paiementId);
             ?>
@@ -184,7 +185,7 @@ EOT;
              <?php
             $title_voir = 'Année scolaire : ' . $paiement->anneeScolaire . "\n" . 'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' . $paiement->titulaire . "\n" . 'Banque : ' . $paiement->banque . "\n" . 'Référence : ' . $paiement->reference . "\n" . 'Date de dépôt : ' . DateLib::formatDateTimeFromMysql($paiement->dateDepot);
             $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" . 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" . 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" . $title_voir;
-            $js_voir = 'javascript:window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' . str_replace("\n", '; ', $texte_voir) . '\');return false;';
+            $js_voir = 'window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' . str_replace("\n", '; ', $texte_voir) . '\');return false;';
             $hiddens['paiementId'] = $paiement->paiementId;
             /*
              * Pour responsableId il y a 2 cas :
@@ -194,7 +195,7 @@ EOT;
             $hiddens['responsableId'] = $paiement->responsableId;
             $hiddens['responsable'] = $this->escapeHtml($paiement->responsable);
             // ne pas utiliser de guillement dans la chaine $js
-            $js = 'javascript:window.document.getElementById(\'op' . $paiement->paiementId . '\').value=%s;';
+            $js = 'window.document.getElementById(\'op' . $paiement->paiementId . '\').value=%s;';
             $buttons = array(
                 'voir' => array(
                     'class' => 'fam-zoom',

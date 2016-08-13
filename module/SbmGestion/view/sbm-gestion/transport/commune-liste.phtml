@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/commune-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 use SbmCommun\Model\StdLib;
  
@@ -25,6 +25,19 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'selectioncommune/communeId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -91,20 +104,7 @@ $actions = array(
             $demandes = StdLib::getParamR(array($commune->communeId, 'total', 'demandes'), $this->t_nb_inscrits, 0); 
             $transportes = StdLib::getParamR(array($commune->communeId, 'total', 'transportes'), $this->t_nb_inscrits, 0);
             $nbInscrits = "$transportes / $demandes";
-            // selection
-            $modele = <<<EOT
-$("#chk%s").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectioncommune/communeId:%s',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-            
+            // construction des JS pour selection            
             $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $commune->communeId);
             $jsCallback .= sprintf("$modele\n", $commune->communeId, $commune->communeId);
             ?>

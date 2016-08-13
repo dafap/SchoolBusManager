@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 use SbmCartographie\Model\Point;
 
@@ -26,6 +26,20 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modèle pour le jsCallback de selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxeleve/'+action+'selectionresponsable/responsableId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -75,7 +89,7 @@ $menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
 )), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
                                        // ne pas utiliser de guillement dans la chaine $js
-$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -125,20 +139,7 @@ echo $this->flashMessenger()->render('default');
         <?php
             $pt = new Point($responsable['x'], $responsable['y']);
             $ptOk = $this->projection->isValid($pt, 'parent');
-            // selection
-            $modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxeleve/'+action+'selectionresponsable/responsableId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-            
+            // construction du JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $responsable['responsableId']);
             $jsCallback .= sprintf("$modele\n", $responsable['responsableId'], $responsable['responsableId']);
             ?>
@@ -179,7 +180,7 @@ EOT;
                 'group' => $url_ici
             );
             // ne pas utiliser de guillement dans la chaine $js
-            $js = 'javascript:window.document.getElementById(\'op' . $responsable['responsableId'] . '\').value=%s;';
+            $js = 'window.document.getElementById(\'op' . $responsable['responsableId'] . '\').value=%s;';
             $buttons = array(
                 'modifier' => array(
                     'class' => 'fam-pencil',
