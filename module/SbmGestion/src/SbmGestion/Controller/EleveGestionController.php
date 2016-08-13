@@ -335,8 +335,11 @@ class EleveGestionController extends AbstractActionController
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
         ]);
+        $point = new Point($args['x1'], $args['y1']);
+        $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+        $pt->setAttribute('description', $args['description']);
         return new ViewModel([
-            // 'pt' => $pt,
+            'ptR1' => $pt,
             'form' => $form->prepare(),
             'description' => $description,
             'responsable' => [

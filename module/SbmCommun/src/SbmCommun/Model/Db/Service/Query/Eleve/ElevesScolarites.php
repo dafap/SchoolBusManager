@@ -28,12 +28,13 @@ use SbmCommun\Model\Db\Exception;
 
 class ElevesScolarites implements FactoryInterface
 {
+
     /**
      *
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
     protected $db_manager;
-    
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -55,7 +56,7 @@ class ElevesScolarites implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -272,12 +273,12 @@ class ElevesScolarites implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
-    
+
     /**
      * On renvoie la liste des enfants de l'année inscrits ou préinscrits
      * à l'exception des `gratuits`, des `famille d'accueil` et des pris en charges par un organisme
-     * 
-     * @param int $responsableId
+     *
+     * @param int $responsableId            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getElevesPayantsWithMontant($responsableId)
@@ -291,11 +292,11 @@ class ElevesScolarites implements FactoryInterface
         ));
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))
-        ->literal('inscrit = 1')
-        ->literal('fa = 0')
-        ->literal('gratuit = 0')
-        ->nest()
-        ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+            ->literal('inscrit = 1')
+            ->literal('fa = 0')
+            ->literal('gratuit = 0')
+            ->nest()
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
@@ -454,11 +455,30 @@ class ElevesScolarites implements FactoryInterface
     public function getDemandeGaDistanceR2Zero()
     {
         $select = clone $this->select;
-        $select->join(array(
+        $select->columns(array(
+            'eleveId' => 'eleveId',
+            'dateCreation' => 'dateCreation',
+            'dateModificationEleve' => 'dateModification',
+            'nom' => 'nom',
+            'nomSA' => 'nomSA',
+            'prenom' => 'prenom',
+            'prenomSA' => 'prenomSA',
+            'dateN' => 'dateN',
+            'numero' => 'numero',
+            'responsable1Id' => 'responsable1Id',
+            'responsable2Id' => 'responsable2Id',
+            'responsableFId' => 'responsableFId',
+            'selectionEleve' => 'selection',
+            'noteEleve' => 'note'
+        ))
+            ->join(array(
             'r1' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable1Id = r1.responsableId', array(
+            'responsable1' => new Expression('CONCAT(r1.nom, " ", r1.prenom)'),
             'adresseR1L1' => 'adresseL1',
-            'adresseR1L2' => 'adresseL2'
+            'adresseR1L2' => 'adresseL2',
+            'x1' => 'x',
+            'y1' => 'y'
         ))
             ->join(array(
             'comr1' => $this->db_manager->getCanonicName('communes', 'table')
@@ -469,7 +489,9 @@ class ElevesScolarites implements FactoryInterface
             'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'ele.responsable2Id = r2.responsableId', array(
             'adresseR2L1' => 'adresseL1',
-            'adresseR2L2' => 'adresseL2'
+            'adresseR2L2' => 'adresseL2',
+            'x2' => 'x',
+            'y2' => 'y'
         ), $select::JOIN_LEFT)
             ->join(array(
             'comr2' => $this->db_manager->getCanonicName('communes', 'table')
