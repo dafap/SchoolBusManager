@@ -1,19 +1,24 @@
 <?php
 /**
  * Extension de Zend\Db\ResultSet\HydratingResultSet ajoutant une méthode pour renvoyer l'objectPrototype
- *
- *
+ * 
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ResulSet
  * @filesource HydratingResulSet.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 1 août 2016
+ * @version 2016-2.1.10
+ * @deprecated
  */
 namespace SbmCommun\Model\Db\ResultSet;
 
 use Zend\Db\ResultSet\HydratingResultSet as ZendHydratingResultSet;
 
+/**
+ * 
+ * @deprecated
+ *
+ */
 class HydratingResultSet extends ZendHydratingResultSet
 {
 
@@ -24,6 +29,12 @@ class HydratingResultSet extends ZendHydratingResultSet
      */
     public function getObjectPrototype()
     {
+        trigger_error(sprintf(
+            'Cette classe %s ne devrait plus être utilisée car le ZendFramework propose'
+            . ' la méthode getObjectPrototype() depuis la version 2.4.0 dans la classe'
+            . ZendHydratingResultSet::class,
+            get_class($this)
+        ), E_USER_DEPRECATED);
         return $this->objectPrototype;
     }
 }
