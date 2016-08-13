@@ -9,11 +9,11 @@
  * @filesource secteur-scolaire-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmadmin', [
     'action' => 'secteur-scolaire-liste',
     'page' => $this->page

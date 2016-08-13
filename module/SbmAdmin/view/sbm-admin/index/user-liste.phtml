@@ -8,8 +8,8 @@
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr 2016
- * @version 2016-2
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -31,8 +31,21 @@ $acategories = [
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
-$jsCallback = '';
 $jsTrigger = '';
+$jsCallback = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxadmin/'+action+'selectionuser/userId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -113,20 +126,7 @@ echo $this->flashMessenger()->render('default');
 				</tr>
           <?php foreach($users as $test => $user): ?>
           <?php
-            // selection
-            $modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxadmin/'+action+'selectionuser/userId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-            
+            // construction du JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $user->userId);
             $jsCallback .= sprintf("$modele\n", $user->userId, $user->userId);
             ?>
@@ -181,6 +181,7 @@ EOT;
 	</div>
 </div>
 <?php
+// Mise en place du JS pour selection
 $this->headScript()->captureStart();
 ?>
 $(function() {
