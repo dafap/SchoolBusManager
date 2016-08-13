@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2015
- * @version 2015-1
+ * @date 13 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
