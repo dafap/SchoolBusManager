@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 3 août 2016
+ * @version 2016-2.1.10
  */
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Service\CalculDroits;
@@ -153,7 +153,7 @@ return [
             'Sbm\Db\Select\Services' => 'SbmCommun\Model\Db\Service\Select\Services',
             'Sbm\Db\Select\Stations' => 'SbmCommun\Model\Db\Service\Select\StationsForSelect',
             'Sbm\Db\Select\Transporteurs' => 'SbmCommun\Model\Db\Service\Select\Transporteurs',
-            'Sbm\Db\Select\Libelles' => 'SbmCommun\Model\Db\Service\Select\LibelleForSelect',
+            'Sbm\Db\Select\Libelles' => 'SbmCommun\Model\Db\Service\Select\LibellesForSelect',
             'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
             
             'Sbm\Db\Query\Circuits' => 'SbmCommun\Model\Db\Service\Query\Circuit\Circuits',
