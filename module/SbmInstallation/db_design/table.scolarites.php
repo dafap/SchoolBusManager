@@ -9,8 +9,8 @@
  * @filesource table.scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2014
- * @version 2015-2
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 return array(
     'name' => 'scolarites',
@@ -59,10 +59,10 @@ return array(
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
             'tarifId' => 'int(11) NOT NULL DEFAULT "0"',
             'regimeId' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'motifDerogation' => 'text',
-            'motifRefusR1' => 'text',
-            'motifRefusR2' => 'text',
-            'commentaire' => 'text'
+            'motifDerogation' => 'text NULL',
+            'motifRefusR1' => 'text NULL',
+            'motifRefusR2' => 'text NULL',
+            'commentaire' => 'text NULL'
         ),
         'primary_key' => array(
             'millesime',

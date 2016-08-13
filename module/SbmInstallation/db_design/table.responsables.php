@@ -61,7 +61,7 @@ return array(
             'geopt' => 'GEOMETRY',
             'userId' => 'int(11) DEFAULT "3"',
             'id_ccda' => 'int(11) DEFAULT NULL',
-            'note' => 'text'
+            'note' => 'text NULL'
         ),
         'primary_key' => array(
             'responsableId'

@@ -8,8 +8,8 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2016
- * @version 2016-1.7.0
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 return array(
     'name' => 'circuits',
@@ -35,9 +35,9 @@ return array(
             'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'montee' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"',
             'descente' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
-            'typeArret' => 'text',
-            'commentaire1' => 'text', // aller
-            'commentaire2' => 'text', // retour
+            'typeArret' => 'text NULL',
+            'commentaire1' => 'text NULL', // aller
+            'commentaire2' => 'text NULL', // retour
             'geopt' => 'GEOMETRY'
         ),
         'primary_key' => array(
