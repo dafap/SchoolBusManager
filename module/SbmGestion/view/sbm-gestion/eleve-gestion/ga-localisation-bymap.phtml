@@ -9,8 +9,8 @@
  * @filesource ga-localisation-bymap.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 13 août 2016
+ * @version 2016-2.1.10
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile('https://maps.google.com/maps/api/js?sensor=false');
@@ -26,7 +26,8 @@ $this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
-const INI_ZOOM = <?php echo $this->config['zoom'];?>;initialiser("domicile de l'élève", "<?php echo $this->description;?>", <?php echo $tMarkers;?>);
+const INI_ZOOM = <?php echo $this->config['zoom'];?>;
+initialiser("domicile de l'élève", "<?php echo $this->description;?>", <?php echo $tMarkers;?>);
 <?php $this->inlineScript()->captureEnd(); ?>
 <h1>Position d'un domicile sur la carte</h1>
 <div id="carte-wrapper">
