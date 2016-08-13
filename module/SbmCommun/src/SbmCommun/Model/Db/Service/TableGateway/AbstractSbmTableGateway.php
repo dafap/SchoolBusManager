@@ -8,7 +8,7 @@
  * @filesource AbstractSbmTableGateway.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 juill. 2016
+ * @date 1 août 2016
  * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
@@ -16,7 +16,7 @@ namespace SbmCommun\Model\Db\Service\TableGateway;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\TableGateway\TableGateway;
-use SbmCommun\Model\Db\ResultSet\HydratingResultSet;
+use Zend\Db\ResultSet\HydratingResultSet;
 
 abstract class AbstractSbmTableGateway implements FactoryInterface
 {

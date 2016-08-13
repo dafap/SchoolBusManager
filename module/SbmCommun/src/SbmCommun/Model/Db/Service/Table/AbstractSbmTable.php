@@ -10,8 +10,8 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 0 avr. 2016
- * @version 2016-2
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -24,6 +24,7 @@ use Zend\Paginator\Adapter\DbSelect;
 use Zend\Paginator\Paginator;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\Service\Table\Exception;
+use Zend\Db\Metadata\Object\ColumnObject;
 
 abstract class AbstractSbmTable implements FactoryInterface
 {
@@ -101,6 +102,20 @@ abstract class AbstractSbmTable implements FactoryInterface
     protected $primary_key;
 
     /**
+     * Liste des colonnes avec le booléen correspondant
+     *
+     * @var array
+     */
+    protected $are_nullables;
+
+    /**
+     * Liste des colonnes ayant une valeur par défaut, avec la valeur par défaut associée
+     *
+     * @var array
+     */
+    protected $column_defaults;
+
+    /**
      * Constructeur
      * Les attributs $table_name et $table_type doivent être déclarés dans la méthode init() des classes dérivées.
      *
@@ -112,13 +127,14 @@ abstract class AbstractSbmTable implements FactoryInterface
         if ($db_manager instanceof \SbmCommun\Model\Db\Service\DbManager) {
             $this->db_manager = $db_manager;
         } else {
-            $type = gettype($db_manager); 
+            $type = gettype($db_manager);
             $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\Db\\Service\\DbManager. %s fourni.';
             throw new Exception(sprintf(_($message), $type));
         }
         $this->init();
         $this->primary_key = $db_manager->getPrimaryKey($this->table_name, $this->table_type);
-        
+        $this->are_nullables = $db_manager->getAreNullableColumns($this->table_name, $this->table_type);
+        $this->column_defaults = $db_manager->getColumnDefaults($this->table_name, $this->table_type);
         $this->table_gateway = $db_manager->get($this->table_gateway_alias);
         $this->obj_select = clone $this->table_gateway->getSql()->select(); // utile pour join() et pour paginator()
         $this->join();
@@ -248,6 +264,10 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @param \Zend\Db\Sql\Where|null $where            
      * @param array|string|null $order            
+     * @param string $combination
+     *            One of the OP_* constants from Predicate\PredicateSet
+     *            
+     * @throws Exception
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
@@ -367,7 +387,7 @@ abstract class AbstractSbmTable implements FactoryInterface
             $data = $obj_data->getArrayCopy();
         }
         if ($this->is_newRecord($obj_data->getId())) {
-            $this->table_gateway->insert($data);
+            $this->table_gateway->insert($this->prepareDataForInsert($data));
         } else {
             $id = $obj_data->getId();
             if ($this->getRecord($id)) {
@@ -385,7 +405,7 @@ abstract class AbstractSbmTable implements FactoryInterface
                     $condition_msg = $this->id_name . " = $id";
                 }
                 
-                $this->table_gateway->update($data, $array_where);
+                $this->table_gateway->update($this->prepareDataForUpdate($data), $array_where);
             } else {
                 throw new Exception(sprintf(_("This is not a new data and the id '%s' can not be found in the table %s."), $condition_msg, $this->table_name));
             }
@@ -424,9 +444,59 @@ abstract class AbstractSbmTable implements FactoryInterface
                 $condition_msg = $this->id_name . " = $id";
             }
             
-            $this->table_gateway->update($data, $array_where);
+            $this->table_gateway->update($this->prepareDataForUpdate($data), $array_where);
         } else {
             throw new Exception(sprintf(_("This is not a new data and the id '%s' can not be found in the table %s."), $condition_msg, $this->table_name));
         }
+    }
+
+    /**
+     *
+     * @todo écrire la préparation des données de type auto_increment, numeric ou datetime
+     *      
+     * @param array $data            
+     *
+     * @return array
+     */
+    protected function prepareDataForInsert($data)
+    {
+        foreach ($data as $key => &$value) {
+            if ($value === '') {
+                if ($this->db_manager->isAutoIncrement($key, $this->table_name, $this->table_type)) {
+                    $value = null;
+                } elseif ($this->db_manager->isDateTimeColumn($key, $this->table_name, $this->table_type) || $this->db_manager->isNumericColumn($key, $this->table_name, $this->table_type)) {
+                    if ($this->are_nullables[$key]) {
+                        $value = null;
+                    } elseif (array_key_exists($key, $this->column_defaults)) {
+                        $value = $this->column_defaults[$key];
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    /**
+     *
+     * @todo écrire la préparation des données de type auto_increment, numeric ou datetime
+     *      
+     * @param array $data            
+     *
+     * @return array
+     */
+    protected function prepareDataForUpdate($data)
+    {
+        foreach ($data as $key => &$value) {
+            if ($value === '') {
+                if ($this->db_manager->isDateTimeColumn($key, $this->table_name, $this->table_type) || $this->db_manager->isNumericColumn($key, $this->table_name, $this->table_type)) {
+                    if ($this->are_nullables[$key]) {
+                        $value = null;
+                    } elseif (array_key_exists($key, $this->column_defaults)) {
+                        $value = $this->column_defaults[$key];
+                    }
+                }
+            }
+        }
+        return $data;
     }
 }
