@@ -22,8 +22,8 @@
  * @filesource Not.php
  * @encodage UTF-8
  * @author PhpStorm - Exlord (adeli.farhad@gmail.com)
- * @date 19 juin 2014
- * @version 2015-1
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
 
@@ -31,7 +31,9 @@ use Zend\Db\Sql\Predicate\PredicateInterface;
 
 class Not implements PredicateInterface
 {
+
     /**
+     *
      * @var string
      */
     protected $specification = 'NOT (%1$s)';
@@ -44,7 +46,8 @@ class Not implements PredicateInterface
     }
 
     /**
-     * @param null $expression
+     *
+     * @param null $expression            
      */
     public function setExpression($expression)
     {
@@ -52,6 +55,7 @@ class Not implements PredicateInterface
     }
 
     /**
+     *
      * @return null
      */
     public function getExpression()
@@ -60,7 +64,8 @@ class Not implements PredicateInterface
     }
 
     /**
-     * @param  string $specification
+     *
+     * @param string $specification            
      * @return self
      */
     public function setSpecification($specification)
@@ -70,6 +75,7 @@ class Not implements PredicateInterface
     }
 
     /**
+     *
      * @return string
      */
     public function getSpecification()
@@ -78,13 +84,22 @@ class Not implements PredicateInterface
     }
 
     /**
+     *
      * @return array
      */
     public function getExpressionData()
     {
-        return array(
-            array($this->specification, array($this->expression), array(self::TYPE_VALUE))
-        );
+        return [
+            [
+                $this->specification,
+                [
+                    $this->expression
+                ],
+                [
+                    self::TYPE_VALUE
+                ]
+            ]
+        ];
     }
 }
 
