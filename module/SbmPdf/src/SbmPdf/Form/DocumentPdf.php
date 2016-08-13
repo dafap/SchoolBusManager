@@ -415,10 +415,10 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         ]);
         $this->add([
             'name' => 'docheader_subtitle',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-docheader_subtitle',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-45c wysiwyg'
             ],
             'options' => [
                 'label' => 'Sous-titre du document pdf',
@@ -539,7 +539,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-docfooter_string',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-45c wysiwyg'
             ],
             'options' => [
                 'label' => 'Texte du pied de document',
@@ -696,7 +696,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-pageheader_string',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-45c wysiwyg'
             ],
             'options' => [
                 'label' => 'Texte d\'en-tête de page',
@@ -1827,9 +1827,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 'required' => false,
                 'filters' => [
                     [
-                        'name' => 'StripTags'
-                    ],
-                    [
                         'name' => 'StringTrim'
                     ]
                 ]
@@ -1937,9 +1934,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 'required' => false,
                 'filters' => [
                     [
-                        'name' => 'StripTags'
-                    ],
-                    [
                         'name' => 'StringTrim'
                     ]
                 ]
@@ -2041,9 +2035,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 'name' => 'pageheader_string',
                 'required' => false,
                 'filters' => [
-                    [
-                        'name' => 'StripTags'
-                    ],
                     [
                         'name' => 'StringTrim'
                     ]

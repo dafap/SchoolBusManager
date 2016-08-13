@@ -92,20 +92,7 @@ $this->headScript()
     ->appendFile($this->basePath('js/pdf-document.js'));
 $this->inlineScript()->captureStart();
 ?>
-tinymce.init({
-    selector: "textarea.wysiwyg",
-    language: "fr_FR",
-    menubar : false,
-    statusbar: false,
-    plugins: "advlist autolink autoresize charmap code hr insertdatetime nonbreaking searchreplace spellchecker table textcolor wordcount",
-    autoresize_min_height: 300,
-    autoresize_max_height: 400,
-    insertdatetime_formats: ["%d/%m/%Y", "%H:%M"],
-    spellchecker_languages: "+Français=fr"
- });
- $("#accordion").accordion();
- js_document_edit.voirRecordSource();
- js_document_edit.voirBouton($("#documentpdf-disposition").val());
+js_document_edit.init();
 <?php
 $this->inlineScript()->captureEnd();
 // =============================================================================================
