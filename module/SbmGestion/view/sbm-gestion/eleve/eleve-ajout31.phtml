@@ -20,58 +20,15 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
+ * @date 13 août 2016
  * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basePath('/js/gestion-eleve.js'));
-$this->headScript()->captureStart();
-?>
-$(document).ready(function($) {
-$("#eleve-anneeComplete").click(function(){
-    js_edit.montreDebutFin($(this).is(":checked"));
-});
-$("#eleve-derogation").click(function(){
-    js_edit.montreMotifDerogation($(this).is(":checked"));
-});
-$("input[type='text'][name^='distanceR']").dblclick(function(){
-    $(this).css("cursor", "wait");
-    var myid = '#'+$(this).attr('id');
-    var name = $(this).attr('name');
-    var n = 1;
-    if (name.indexOf('1') == -1) {
-        n = 2;
-    }
-    var id = '#eleve-responsable'+n+'Id';
-    var responsableid = $(id).val();
-    var etablissementid = $("#eleve-etablissementId").val();
-    var args = 'etablissementId:'+etablissementid+'/responsableId:'+responsableid;
-    $.ajax({
-			url : '/sbmajaxeleve/donnedistance/'+args,
-			type: 'GET',
-			dataType: 'json',
-			success : function(data){
-			    if (data.success) {
-			      $(myid).val(data.distance);
-			      $(myid).css('cursor', 'auto');
-			    } else {
-			        alert(data.cr);
-			    }
-            },
-			error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-					$(myid).css('cursor','auto');
-			}
-	});
-});
-});
-<?php 
-$this->headScript()->captureEnd();
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout31.js'));
 $this->inlineScript()->captureStart();
 ?>
-js_edit.montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-js_edit.montreMotifDerogation($("#eleve-derogation").is(":checked"));
+js_ajout31.init();
 <?php 
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
