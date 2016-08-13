@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2016
- * @version 2016-1.7.0
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -49,7 +49,7 @@ montreMer($("#semaine-mer").is(":checked"));
 montreSam($("#semaine-sam").is(":checked"));
 <?php 
 $this->inlineScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport', array('action'=> 'circuit-liste', 'page' => $this->page));
 $hiddens = array();
 $actions = array(

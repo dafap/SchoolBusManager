@@ -18,8 +18,8 @@
  * @filesource etablissement-service-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()
@@ -51,7 +51,7 @@ $(document).ready(function($) {
 });
 <?php
 $this->headScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport', array(
     'action' => $this->origine,
     'page' => $this->page

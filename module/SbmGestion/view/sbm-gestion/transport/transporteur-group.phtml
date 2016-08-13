@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/transporteur-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juill. 2016
+ * @date 11 août 2016
  * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -39,7 +39,7 @@ $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
 )), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
-$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
