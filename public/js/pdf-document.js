@@ -5,7 +5,7 @@
  * @filesource pdf-document.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
+ * @date 13 août 2016
  * @version 2016-2.1.10
  */
 var js_document_edit = (function() {
