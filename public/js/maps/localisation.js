@@ -10,16 +10,17 @@
  * @date 11 août 2016
  * @version 2016-2.1.10
  */
-var marker;
-var tMarkers = new Array();
+
 /**
  * @param titre
  *            contenu de l'infobulle fermée du marqueur à déplacer
  * @param description
  *            contenu de l'infobulle ouverte du marqueur à déplacer
- * 
+ * @param tMarker
+ *            tableau des points à placer (ensemble des autres données)
  */
-function initialiser(titre, description) {
+function initialiser(titre, description, tMarkers) {
+	var marker;
 	var latlng = new google.maps.LatLng(CENTRE_LAT, CENTRE_LNG);
 	// initialisation des paramètres de la carte
 	var options = {

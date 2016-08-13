@@ -16,14 +16,7 @@
 $this->headScript()->appendFile('https://maps.google.com/maps/api/js?sensor=false');
 $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->appendFile('/js/maps/localisation.js');
-$this->headScript()->captureStart();
-?>
-const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
-const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
-const INI_ZOOM = <?php echo $this->config['zoom'];?>;
-<?php 
-$this->headScript()->captureEnd();
-// lancement du script (sera affiché dans le layout à la fin de la page
+// préparation du script 
 $i = 0;
 $tMarkers = "[\n";
 foreach ($this->ptStations as $pt) {
@@ -46,10 +39,14 @@ foreach ($this->ptStations as $pt) {
     $tMarkers .= '{"lat":' . $pt->getLatitude() . ',"lng":' . $pt->getLongitude() . ',"color":"' . $color . '","text":"S","title":"' . $e->nom . '","info":"' . implode('<br>', $d) . "\"},\n";
 }
 $tMarkers .= ']';
+// lancement du script (sera affiché dans le layout à la fin de la page)
 $this->inlineScript()->captureStart(); 
 ?>
-tMarkers = <?php echo $tMarkers;?>;
-initialiser("point d'arrêt", "<?php echo $this->description;?>");
+tMarkers = ;
+const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
+const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
+const INI_ZOOM = <?php echo $this->config['zoom'];?>;
+initialiser("point d'arrêt", "<?php echo $this->description;?>", <?php echo $tMarkers;?>);
 <?php 
 $this->inlineScript()->captureEnd(); 
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
