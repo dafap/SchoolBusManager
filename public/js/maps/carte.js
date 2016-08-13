@@ -10,8 +10,8 @@
  * @date 11 août 2016
  * @version 2016-2.1.10
  */
-var tMarkers = new Array();
-function initialiser() {
+//var tMarkers = new Array();
+function initialiser(tMarkers) {
     // initialisation des paramètres de la carte
     var options = {
         'center': new google.maps.LatLng(CENTRE_LAT, CENTRE_LNG),
