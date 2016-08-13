@@ -10,8 +10,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2014
- * @version 2014-1
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Hydrator;
 
@@ -19,25 +19,27 @@ use SbmCommun\Model\Db\ObjectData\Scolarite as ObjectData;
 
 class Scolarites extends AbstractHydrator
 {
-    public function extract($object)
+
+    /**
+     * (non-PHPdoc)
+     * 
+     * @see \SbmCommun\Model\Hydrator\AbstractHydrator::calculate()
+     */
+    protected function calculate($object)
     {
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(sprintf('%s : On attend un SbmCommun\Model\Db\ObjectData\Scolarite et on a reçu un %s', __METHOD__, gettype($object)));
         }
-        return parent::extract($object);
-    }
-    
-    protected function calculate()
-    {
-        $calculate_fields = $this->object->getCalculateFields();
+        $calculate_fields = $object->getCalculateFields();
         $now = new \DateTime('now');
         foreach ($calculate_fields as $value) {
             if ($value == 'dateModification') {
-                $this->object->dateModification = $now->format('Y-m-d H:i:s');
+                $object->dateModification = $now->format('Y-m-d H:i:s');
             } elseif ($value == 'dateInscription') {
-                $this->object->dateInscription = $now->format('Y-m-d H:i:s');
+                $object->dateInscription = $now->format('Y-m-d H:i:s');
             }
         }
+        return $object;
     }
 }
  
