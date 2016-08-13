@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juin 2016
- * @version 2016-2.1.5
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmParent\Controller;
 
@@ -281,15 +281,16 @@ class ConfigController extends AbstractActionController
             $args = $responsable->getArrayCopy();
             $point = new Point($args['x'], $args['y']);
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-            $form = new LatLngForm([], [], $configCarte['valide']);
-            $form->setData([
-                'lat' => $pt->getLatitude(),
-                'lng' => $pt->getLongitude()
-            ]);
-            if (! $form->isValid()) {
+            $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+            if (! $pt->isValid()) {
                 // essayer de localiser par l'adresse avant de présenter la carte
                 $array = $this->config['cartographie_manager']->get('SbmCarto\Geocoder')->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
                 $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+                $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+                if (!$pt->isValid()){
+                    $pt->setLatitude($configCarte['centre']['lat']);
+                    $pt->setLongitude($configCarte['centre']['lng']);
+                }
             }
         } else {
             $args = $prg;
