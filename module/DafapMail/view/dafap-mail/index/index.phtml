@@ -13,8 +13,8 @@ use Zend\View\Helper\HeadScript;
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2015
- * @version 2015-1
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 $this->headScript()->appendFile($this->basePath('js/jquery.min.js'));
 $this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
@@ -32,7 +32,7 @@ $this->inlineScript()->captureStart();
 ?>
 var bodyWrapper = $("#body-wrapper");
 var label = $('<label class="sbm-label required" for="mail-body">Message</label>');
-var textArea = $('<textarea name="body" id="mail-body" />');
+var textArea = $('<textarea name="body" id="mail-body"></textarea>');
 bodyWrapper.append(label);
 bodyWrapper.append(textArea);
 <?php
