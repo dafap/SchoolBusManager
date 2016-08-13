@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juill. 2016
+ * @date 12 août 2016
  * @version 2016-2.1.10
  */
 use SbmCommun\Model\DateLib;
@@ -44,10 +44,10 @@ if (count($this->affectations)) {
             'station2' => $affectation['station2']
         );
     }
+    unset($affectation);
 }
-unset($affectation);
-$disableAccordR1 = isset($structAffectations[1]);
-$disableAccordR2 = isset($structAffectations[2]);
+$disableAccordR1 = isset($structAffectations[1]) ? 'true' : 'false';
+$disableAccordR2 = isset($structAffectations[2]) ? 'true' : 'false';
 // urls utilisées
 $url_ici = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-edit',
@@ -62,152 +62,12 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve.js'));
 $this->headScript()->captureStart();
 ?>
-function initAccord() {
-<?php
-// cette fonction pour bloquer ou non les checkbox accordR1 et accordR2 au chargement de la page
-if ($disableAccordR1) {
-    echo '$("#eleve-accordR1").attr("disabled", true);' . PHP_EOL;
-    echo '$("input[name=accordR1][type=hidden]").val(1);' . PHP_EOL;
-} else {
-    echo '$("#eleve-accordR1").removeAttr("disabled");' . PHP_EOL;
-    echo '$("input[name=accordR1][type=hidden]").val(0);' . PHP_EOL;
-}
-if ($disableAccordR2) {
-    echo '$("#eleve-accordR2").attr("disabled", true);' . PHP_EOL;
-    echo '$("input[name=accordR2][type=hidden]").val(1);' . PHP_EOL;
-} else {
-    echo '$("#eleve-accordR2").removeAttr("disabled");' . PHP_EOL;
-    echo '$("input[name=accordR2][type=hidden]").val(0);' . PHP_EOL;
-}
-?>
-}
-function montreDebutFin(ancomplet) {
-    if (ancomplet) {
-        $("#wrapper-dateDebut").hide();
-        $("#wrapper-dateFin").hide();
-    } else {
-        $("#wrapper-dateDebut").show();
-        $("#wrapper-dateFin").show();
-    }
-}
-function montreMotifDerogation(derogation) {
-    if (derogation) {
-        $("#wrapper-motifDerogation").show();
-    } else {
-        $("#wrapper-motifDerogation").hide();
-    }
-}
-function montreOngletGa(voir) {
-    if (voir) {
-        $("#tabs li").eq(1).show();
-    } else {
-        $("#tabs li").eq(1).hide();
-    }
-}
-// pour les fonctions suivantes r prend la valeur 'r1' ou 'r2'
-function montreDemande(r) {
-    if ($("#demande"+r+"radio0").is(":checked")) {
-        $("#block-demande"+r).hide();
-        $("#block-affectations"+r).hide();
-    } else {
-        $("#block-demande"+r).show();
-        $("#block-affectations"+r).show();
-    }
-}
-function montreMotifRefus(accord, subvention, r) {
-    if (accord) {
-        if (subvention) {
-            $("#wrapper-motifRefus"+r).show();
-        } else {
-            $("#wrapper-motifRefus"+r).hide();
-        }
-    } else {
-        $("#wrapper-motifRefus"+r).show();
-    }
-}
-function montreBlockAffectation(accord, r) {
-    if (accord) {
-        $("#block-affectations"+r).show();
-    } else {
-        $("#block-affectations"+r).hide();
-    }
-}
-function montreResponsable(r,data) {
-    var oresponsable = $.parseJSON(data);
-    $("#"+r+"-ligne1").html(oresponsable.titre+' '+oresponsable.nom+ ' '+oresponsable.prenom);
-    $("#"+r+"-ligne2").html(oresponsable.adresseL1+' '+oresponsable.adresseL2);
-    $("#"+r+"-ligne3").html(oresponsable.codePostal+' '+oresponsable.commune);
-    if (!!oresponsable.email) {
-      var responsable;
-      responsable = oresponsable.titre + ' ' + oresponsable.nom + ' ' + oresponsable.prenom;
-      var html;
-      html = 'email: '+ oresponsable.email;
-      html += '<div id="email'+r+'" style="display: inline; margin-left: 5px;">'; 
-      html += '<input type="hidden" name="email' + r + '" value="' + oresponsable.email + '">'; 
-	  html += '<input type="hidden" name="responsable' + r + '" value="' + responsable + '">'; 
-	  html += '<input type="hidden" name="group" value="<?php echo $url_ici;?>">'; 
-	  html += '<input type="submit" name="ecrire' + r + '" class="fam-email" title="Envoyer un email" value="" formaction="/gestion/eleve/responsable-mail">'; 
-	  html += '</div>';
-      $("#"+r+"-ligne4").html(html);    
-    }
-    $("#"+r+"-ligne5").html('Tél. '+oresponsable.telephoneF+' '+oresponsable.telephoneP+ ' '+oresponsable.telephoneT);
-}
-function majPaiement(gratuit) {
-  var libelle;
-  switch (gratuit) {
-    case '0':
-      libelle = 'Famille';
-      break;
-    case '1':
-      libelle = 'Gratuit';
-      break;
-    case '2':
-      libelle = 'Organisme';
-      break;
-  }
-  $("#inner-paiement").empty();
-  $("#inner-paiement").append(libelle);
-}
-function majBlockaffectations(trajet) {
-    $('html', 'body').css('cursor','auto');  
-    var args1='eleveId:<?php echo $this->eleveId;?>/identite:<?php echo urlencode($this->identite)?>/trajet:'+trajet;
-    $.ajax({
-			url : '/sbmajaxeleve/blockaffectations/'+args1,
-			type: 'GET',
-			dataType: 'html',
-			success : function(data){
-			    var myid = '#block-affectationsr'+trajet;
-			    $(myid).empty();
-			    $(myid).append(data);
-			    $('html', 'body').css('cursor','auto');
-            },
-			error : function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status + " " + thrownError);
-				$('html', 'body').css('cursor','auto');
-			}
-	});
-	var args2='eleveId:<?php echo $this->eleveId;?>/trajet:'+trajet;
-	var args3="input[name=accordR"+trajet+"][type=hidden]";
-	$.ajax({
-	        url : '/sbmajaxeleve/enableaccordbutton/'+args2,
-	        dataType: 'json',
-	        success : function(dataJson){
-	            var myid = "#eleve-accordR"+trajet;
-	            if (dataJson.enable) {
-	                $(myid).removeAttr('disabled');
-	                $(args3).val(0);
-	            } else {
-	                $(myid).attr('disabled','disabled');
-	                $(args3).val(1);
-	            }
-	        },
-	        error : function(xhr, ajaxOptions, throxnError){
-	            alert(xhr.status + " " + thrownError);
-	        }
-	});
-}
+const ELEVE_ID = <?php echo $this->eleveId;?>;
+const IDENTITE = "<?php echo urlencode($this->identite)?>";
+const URL_ICI = "<?php echo $url_ici;?>";
 $(document).ready(function($) {
 $("#duplicatamoins").click(function(){
     $.ajax({
@@ -225,19 +85,19 @@ $("#duplicatamoins").click(function(){
     });
 });
 $("#eleve-anneeComplete").click(function(){
-    montreDebutFin($(this).is(":checked"));
+    js_edit.montreDebutFin($(this).is(":checked"));
 });
 $("#eleve-derogation").click(function(){
-    montreMotifDerogation($(this).is(":checked"));
+    js_edit.montreMotifDerogation($(this).is(":checked"));
 });
 $("#eleve-ga").click(function(){
-    montreOngletGa($(this).is(":checked"));
+    js_edit.montreOngletGa($(this).is(":checked"));
 });
 $("#fiche-inner input[name=demandeR1]").click(function(){
-    montreDemande('r1');
+    js_edit.montreDemande('r1');
 });
 $("#fiche-inner input[name=demandeR2]").click(function(){
-    montreDemande('r2');
+    js_edit.montreDemande('r2');
 });
 $("#eleve-accordR1").click(function(){
     var action = ($(this).is(':checked'))?'check':'uncheck';
@@ -245,8 +105,8 @@ $("#eleve-accordR1").click(function(){
     $.ajax({
         url:'/sbmajaxeleve/'+action+'accordR1/eleveId:<?php echo $this->eleveId;?>',
         success:function(data){
-            montreMotifRefus(action=='check',subvention,'r1');
-            montreBlockAffectation(action=='check','r1');
+            js_edit.montreMotifRefus(action=='check',subvention,'r1');
+            js_edit.montreBlockAffectation(action=='check','r1');
         },
         error:function(xhr,ajaxOptions,thrownError){
             alert(xhr.status+' '+thrownError);
@@ -256,7 +116,7 @@ $("#eleve-accordR1").click(function(){
 $("#eleve-subventionR1").click(function(){
     var accord = $("#eleve-accordR1").is(':checked');
     var subvention = $(this).is(':checked');
-    montreMotifRefus(accord,subvention,'r1');
+    js_edit.montreMotifRefus(accord,subvention,'r1');
 });
 $("#eleve-accordR2").click(function(){
     var action = ($(this).is(':checked'))?'check':'uncheck';
@@ -264,8 +124,8 @@ $("#eleve-accordR2").click(function(){
     $.ajax({
         url:'/sbmajaxeleve/'+action+'accordR2/eleveId:<?php echo $this->eleveId;?>',
         success:function(data){
-            montreMotifRefus(action=='check',subvention,'r2');
-            montreBlockAffectation(action=='check','r2');
+            js_edit.montreMotifRefus(action=='check',subvention,'r2');
+            js_edit.montreBlockAffectation(action=='check','r2');
         },
         error:function(xhr,ajaxOptions,thrownError){
             alert(xhr.status+' '+thrownError);
@@ -275,7 +135,7 @@ $("#eleve-accordR2").click(function(){
 $("#eleve-subventionR2").click(function(){
     var accord = $("#eleve-accordR2").is(':checked');
     var subvention = $(this).is(':checked');
-    montreMotifRefus(accord,subvention,'r2');
+    js_edit.montreMotifRefus(accord,subvention,'r2');
 });
 $("input[type='text'][name^='distanceR']").dblclick(function(){
     $(this).css("cursor", "wait");
@@ -307,7 +167,7 @@ $("#eleve-responsable1Id").change(function(){
     var responsableid = $(this).val();
     $.ajax({
 			url : '/sbmajaxeleve/getresponsable/responsableId:'+responsableid,
-			success : function(data){montreResponsable('r1',data);},
+			success : function(data){js_edit.montreResponsable('r1',data);},
 			error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
 			}
@@ -317,7 +177,7 @@ $("#eleve-responsable2Id").change(function(){
     var responsableid = $(this).val();
     $.ajax({
 			url : '/sbmajaxeleve/getresponsable/responsableId:'+responsableid,
-			success : function(data){montreResponsable('r2',data);},
+			success : function(data){js_edit.montreResponsable('r2',data);},
 			error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
 			}
@@ -365,35 +225,35 @@ $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
 $("#tabs").tabs();
-montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-montreMotifDerogation($("#eleve-derogation").is(":checked"));
-montreOngletGa($("#eleve-ga").is(":checked"));
-montreMotifRefus($("#eleve-accordR1").is(":checked"),$("#eleve-subventionR1").is(":checked"),'r1');
-montreMotifRefus($("#eleve-accordR2").is(":checked"),$("#eleve-subventionR2").is(":checked"),'r2');
-montreBlockAffectation($("#eleve-accordR1").is(":checked"),'r1');
-montreBlockAffectation($("#eleve-accordR2").is(":checked"),'r2');
-initAccord();
+js_edit.montreDebutFin($("#eleve-anneeComplete").is(":checked"));
+js_edit.montreMotifDerogation($("#eleve-derogation").is(":checked"));
+js_edit.montreOngletGa($("#eleve-ga").is(":checked"));
+js_edit.montreMotifRefus($("#eleve-accordR1").is(":checked"),$("#eleve-subventionR1").is(":checked"),'r1');
+js_edit.montreMotifRefus($("#eleve-accordR2").is(":checked"),$("#eleve-subventionR2").is(":checked"),'r2');
+js_edit.montreBlockAffectation($("#eleve-accordR1").is(":checked"),'r1');
+js_edit.montreBlockAffectation($("#eleve-accordR2").is(":checked"),'r2');
+js_edit.initAccord(<?php echo $disableAccordR1;?>, <?php echo $disableAccordR2;?>);
 $.ajax({
 		url:'/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable1Id").val(),
-		success:function(data){montreResponsable('r1',data);},
+		success:function(data){js_edit.montreResponsable('r1',data);},
 		error:function(xhr, ajaxOptions, thrownError) {
 			alert(xhr.status + " " + thrownError);
 		}
 });
 if ($("#eleve-responsable2Id").val()) {
-$.ajax({
+    $.ajax({
 		url:'/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable2Id").val(),
-		success:function(data){montreResponsable('r2',data);},
+		success:function(data){js_edit.montreResponsable('r2',data);},
 		error:function(xhr, ajaxOptions, thrownError) {
 			alert(xhr.status + " " + thrownError);
 		}
-});
-montreDemande('r1');
-montreDemande('r2');
+    });
+    js_edit.montreDemande('r1');
+    js_edit.montreDemande('r2');
 }
 <?php
 $this->inlineScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 // ============= fin du Javascript et JQuery =================================
 
 $hiddens = array(

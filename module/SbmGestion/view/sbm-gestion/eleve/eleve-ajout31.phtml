@@ -20,35 +20,20 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juill. 2016
+ * @date 11 août 2016
  * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve.js'));
 $this->headScript()->captureStart();
 ?>
-function montreDebutFin(ancomplet) {
-    if (ancomplet) {
-        $("#wrapper-dateDebut").hide();
-        $("#wrapper-dateFin").hide();
-    } else {
-        $("#wrapper-dateDebut").show();
-        $("#wrapper-dateFin").show();
-    }
-}
-function montreMotifDerogation(derogation) {
-    if (derogation) {
-        $("#wrapper-motifDerogation").show();
-    } else {
-        $("#wrapper-motifDerogation").hide();
-    }
-}
 $(document).ready(function($) {
 $("#eleve-anneeComplete").click(function(){
-    montreDebutFin($(this).is(":checked"));
+    js_edit.montreDebutFin($(this).is(":checked"));
 });
 $("#eleve-derogation").click(function(){
-    montreMotifDerogation($(this).is(":checked"));
+    js_edit.montreMotifDerogation($(this).is(":checked"));
 });
 $("input[type='text'][name^='distanceR']").dblclick(function(){
     $(this).css("cursor", "wait");
@@ -85,11 +70,11 @@ $("input[type='text'][name^='distanceR']").dblclick(function(){
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
-montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-montreMotifDerogation($("#eleve-derogation").is(":checked"));
+js_edit.montreDebutFin($("#eleve-anneeComplete").is(":checked"));
+js_edit.montreMotifDerogation($("#eleve-derogation").is(":checked"));
 <?php 
 $this->inlineScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 //======================= fin js =================================================
 $url_map = $this->url('sbmgestion/eleve', array(
     'action' => 'localisation',

@@ -9,8 +9,8 @@
  * @filesource formaffectation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2015
- * @version 2015-1
+ * @date 12 août 2016
+ * @version 2015-2.1.10
  */
 //$this->form->prepare();
 ?>
@@ -72,7 +72,7 @@ $(function() {
 		}
 		$.post(urlform, data, function(itemJson) {		
 			$("#winpopup").dialog('close');
-			majBlockaffectations(trajet);
+			js_edit.majBlockAffectations(trajet);
 			//alert(itemJson.cr);						
         }, 'json');
         return false;
