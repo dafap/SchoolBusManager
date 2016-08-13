@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmFront\Controller;
 
@@ -27,7 +27,6 @@ use SbmFront\Form;
 use SbmFront\Model\Responsable\Exception as CreateResponsableException;
 use DafapMail\Model\Template as MailTemplate;
 use DafapMail\Model\DafapMail\Model;
-use SbmCommun\Form\LatLng as LatLngForm;
 use SbmCartographie\Model\Point;
 
 class LoginController extends AbstractActionController
@@ -176,12 +175,8 @@ class LoginController extends AbstractActionController
                         $point = new Point($responsable->x, $responsable->y);
                         $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
                         $configCarte = StdLib::getParam('parent', $this->config['config_cartes']);
-                        $form = new LatLngForm([], [], $configCarte['valide']);
-                        $form->setData([
-                            'lat' => $pt->getLatitude(),
-                            'lng' => $pt->getLongitude()
-                        ]);
-                        if (! $form->isValid()) {
+                        $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+                        if (! $pt->isValid()) {
                             return $this->redirect()->toRoute('sbmparentconfig', array(
                                 'action' => 'localisation'
                             ));
