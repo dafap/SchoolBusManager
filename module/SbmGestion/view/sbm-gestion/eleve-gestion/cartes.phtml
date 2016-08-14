@@ -15,8 +15,8 @@
  * @filesource cartes.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 14 août 2016
+ * @version 2016-2.1.10
  */
 use SbmCommun\Model\DateLib;
 
@@ -40,23 +40,27 @@ $this->headScript()
     ->appendFile($this->basePath('/js/jquery.min.js'))
     ->captureStart();
 ?>
-function montreDate() {
-  if ($("#selectionradio1").is(':checked')) {
-    $("#quelle-date").show();
-  } else {
-    $("#quelle-date").hide();
+js_carte = (function(){
+  $(document).ready(function($) {
+    $("#selection").click(function() {
+      js_carte.montreDate();
+    });
+  });
+  return {
+    "montreDate": function() {
+      if ($("#selectionradio1").is(':checked')) {
+        $("#quelle-date").show();
+      } else {
+        $("#quelle-date").hide();
+      }
+    }
   }
-}
-$(document).ready(function($) {
-$("#selection").click(function() {
-  montreDate();
-});
-});    
+})();    
 <?php
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
-montreDate();
+js_carte.montreDate();
 <?php $this->inlineScript()->captureEnd();?>
 <div id="fiche-wrapper">
 	<h1>Edition des cartes</h1>
