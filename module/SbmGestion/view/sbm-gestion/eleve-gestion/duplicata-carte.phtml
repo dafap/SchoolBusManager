@@ -11,13 +11,11 @@
  * @filesource duplicata-carte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2015
- * @version 2015-1
+ * @date 14 août 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $this->headScript()->captureStart();
 ?>
 $(document).ready(function($) {
@@ -69,8 +67,7 @@ $actions = array(
 	</div>
 	<div id="fiche-footer">
 		<p class="sbm-description">
-			Indiquez la position de la carte à tirer dans la planche
-			d'étiquettes.<br> Vous pouvez exceptionnellement éditer un duplicata
+			Vous pouvez exceptionnellement éditer un duplicata
 			à titre gratuit en cochant la case <em>gratuité</em>. Sinon, le coût
 			d'un duplicata sera ajouté à la somme due par la famille.
 		</p>
