@@ -2,7 +2,7 @@
  * Scripts dela page de sbm-gestion/eleve/eleve-ajout31.phtml
  * 
  * @project sbm
- * @filesource gestion-eleve.js
+ * @filesource ajout31.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 13 août 2016

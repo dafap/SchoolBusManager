@@ -1062,6 +1062,12 @@ label.sbm-form-auto:before {
 	white-space: pre;
 	line-height: 2;
 }
+/*---------------- Bloc bouton -------------------------------*/
+/* utilisation pour écarter les boutons dans la div           */
+div.bloc-bouton input {
+	margin-top: 30px;
+	margin-left: 15px;
+}
 /*---------------- Tableau de bord ---------------------------*/
 div#tableau-de-bord table.float-left {
 	margin-left: 5px;

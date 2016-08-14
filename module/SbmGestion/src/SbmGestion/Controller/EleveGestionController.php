@@ -222,13 +222,15 @@ class EleveGestionController extends AbstractActionController
         $ptElv = $d2etab->getProjection()->xyzVersgRGF93($point);
         $point = new Point($eleve['xeta'], $eleve['yeta']);
         $ptEta = $d2etab->getProjection()->xyzVersgRGF93($point);
+        $configCarte = StdLib::getParam('parent', $this->config['cartographie_manager']->get('cartes'));
         return new ViewModel([
             'decision' => $formDecision->prepare(),
             'op' => $args['op'],
             'page' => $page,
             'eleve' => $eleve,
             'ptElv' => $ptElv,
-            'ptEta' => $ptEta
+            'ptEta' => $ptEta,
+            'config' => $configCarte
         ]);
     }
 

@@ -2,7 +2,7 @@
  * Ensemble des scripts des pages de sbm-gestion/eleve/eleve-edit.phtml
  * 
  * @project sbm
- * @filesource gestion-eleve.js
+ * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 13 août 2016
