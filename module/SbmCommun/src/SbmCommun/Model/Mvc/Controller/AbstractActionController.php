@@ -3,16 +3,16 @@
  * Extension de la classe Zend\Mvc\Controller\AbstractActionController pour le projet School Bus Manager
  *
  * @todo: Il faudra supprimer les méthodes getFromSession() et setToSession() pour les remplacer par 
- *   DafapSession\Model\Session::get($param, $default, $ns) et
- *   DafapSession\Model\Session::set($param, $value, $ns)
+ *   SbmBase\Model\Session::get($param, $default, $ns) et
+ *   SbmBase\Model\Session::set($param, $value, $ns)
  *
  * @project sbm
  * @package SbmCommun/Model/Mvc/Controller
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -21,8 +21,8 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use Zend\Db\Sql\Ddl\Column\Boolean;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\CriteresForm;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 

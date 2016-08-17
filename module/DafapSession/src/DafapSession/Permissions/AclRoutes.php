@@ -13,8 +13,8 @@
  * @filesource AclRoutes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace DafapSession\Permissions;
 
@@ -24,7 +24,7 @@ use Zend\Permissions\Acl\Acl;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\Router\RouteMatch as BaseRouteMatch;
 use Zend\Mvc\Router\Http\RouteMatch;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class AclRoutes implements FactoryInterface
 {

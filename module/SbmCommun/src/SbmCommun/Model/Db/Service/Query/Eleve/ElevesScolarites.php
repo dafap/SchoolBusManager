@@ -8,14 +8,13 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 août 2016
- * @version 2016-2.1.10
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
@@ -23,6 +22,7 @@ use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Console\Prompt\Select;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Exception;
 

@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmFront\Controller;
 
@@ -18,16 +18,16 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Math\Rand;
 use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
-use DafapSession\Model\Session;
-use SbmCommun\Model\DateLib;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\DateLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmFront\Form;
-use SbmFront\Model\Responsable\Exception as CreateResponsableException;
+use SbmCartographie\Model\Point;
 use DafapMail\Model\Template as MailTemplate;
 use DafapMail\Model\DafapMail\Model;
-use SbmCartographie\Model\Point;
+use SbmFront\Form;
+use SbmFront\Model\Responsable\Exception as CreateResponsableException;
 
 class LoginController extends AbstractActionController
 {

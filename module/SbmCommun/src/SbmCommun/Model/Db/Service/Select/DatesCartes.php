@@ -8,8 +8,8 @@
  * @filesource DatesCartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juil. 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -17,8 +17,8 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use DafapSession\Model\Session;
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\DateLib;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Exception;
 

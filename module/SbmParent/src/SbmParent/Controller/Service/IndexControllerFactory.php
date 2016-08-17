@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmParent\Controller\Service;
 
@@ -18,7 +18,7 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmParent\Controller\IndexController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Service as ServicesCommun;
 use SbmFront\Model\Responsable\Responsable;
 

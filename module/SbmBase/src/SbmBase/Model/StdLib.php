@@ -2,18 +2,15 @@
 /**
  * Classe qui contient des méthodes générales au projet
  *
- *
  * @project sbm
- * @package module/SbmCommun/src/SbmCommun/Model
+ * @package module/SbmBase/src/SbmBase/Model
  * @filesource StdLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 janv. 2014
- * @version 2014-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-namespace SbmCommun\Model;
-
-use ZFToolTest\Diagnostics\TestAsset\ReturnThisCheck;
+namespace SbmBase\Model;
 
 abstract class StdLib
 {
@@ -219,12 +216,7 @@ abstract class StdLib
 
     /**
      * Renvoie un tableau associatif à partir d'une chaine qui décrit le tableau de la façon suivante :
-     * clé1 => valeur1, clé2 => valeur2, .
-     *
-     *
-     *
-     *
-     * ..
+     * clé1 => valeur1, clé2 => valeur2, etc.
      * Attention :
      * clé1, clé2, clé3 ... sont numériques, booléen ou string
      * valeur1, valeur2, valeur3 ... sont numériques ou string

@@ -28,11 +28,10 @@
         "php": ">=5.5",
         "zendframework/zendframework": "~2.5",
         "tecnickcom/tcpdf": "*",
-        "zf-commons/zfc-base": "*",
-        "drewm/mailchimp-api": "^2.1"
+        "drewm/mailchimp-api": "^2.1",
+        "zendframework/zftool": "dev-master"
     },
     "require-dev": {
-        "zendframework/zftool": "dev-master",
         "zendframework/zend-developer-tools": "dev-master"
     },
     "minimum-stability": "stable",
@@ -55,7 +54,22 @@
     },
     "autoload": {
         "classmap": [
-            "vendor/tecnickcom/tcpdf"
+            "vendor/tecnickcom/tcpdf",
+            "module/DafapMail",
+            "module/DafapSession",
+            "module/SbmAdmin",
+            "module/SbmAjax",
+            "module/SbmBase",
+            "module/SbmCartographie",
+            "module/SbmCommun",
+            "module/SbmFront",
+            "module/SbmGestion",
+            "module/SbmInstallation",
+            "module/SbmMailChimp",
+            "module/SbmPaiement",
+            "module/SbmParent",
+            "module/SbmPdf",
+            "module/SbmPortail"
         ]
     }
 }

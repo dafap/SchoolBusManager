@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 août 2016
- * @version 2016-2.1.10
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
@@ -17,7 +17,8 @@ use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\LatLng;
@@ -31,15 +32,13 @@ use SbmCommun\Form\Station as FormStation;
 use SbmCommun\Form\Transporteur as FormTransporteur;
 use SbmCommun\Form\CriteresForm;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
-use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Model\Strategy\Semaine;
+use SbmCommun\Model\Mvc\Controller\EditResponse;
+use SbmCartographie\Model\Point;
 use SbmGestion\Form\EtablissementServiceSuppr as FormEtablissementServiceSuppr;
 use SbmGestion\Form\SbmGestion\Form;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
-use SbmCartographie\Model\Point;
-use Zend\Db\Sql\Zend\Db\Sql;
-use SbmCommun\Model\Mvc\Controller\EditResponse;
 
 class TransportController extends AbstractActionController
 {

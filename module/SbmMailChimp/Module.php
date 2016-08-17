@@ -2,19 +2,19 @@
 /**
  * Gestion des listes de diffusion par l'API de MailChimp, version 3
  *
- * Ce module utilise la bibliothèque `DrewM\MailChimp` et le module `ZfcBase`
+ * Ce module utilise la bibliothèque `DrewM\MailChimp` et le module `SbmBase`
  * 
  * @project sbm
  * @package SbmMailChimp
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2016
- * @version 2016-2.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmMailChimp;
 
-use ZfcBase\Module\AbstractModule;
+use SbmBase\Module\AbstractModule;
 
 class Module extends AbstractModule
 {

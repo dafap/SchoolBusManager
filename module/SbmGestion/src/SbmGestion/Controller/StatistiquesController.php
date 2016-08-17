@@ -8,18 +8,18 @@
  * @filesource StatistiquesController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 nov. 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver;
-use DafapSession\Model\Session;
 use Zend\Filter\Null;
+use SbmBase\Model\Session;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 
 class StatistiquesController extends AbstractActionController
 {

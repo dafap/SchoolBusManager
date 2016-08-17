@@ -7,9 +7,9 @@
  */
 return array(
     'modules' => array(
+        'SbmBase',
         'DafapSession',
         'AtPhpSettings',
-        'ZfcBase',
         'SbmFront',
         'SbmPortail',
         'DafapMail',
@@ -22,15 +22,15 @@ return array(
         'SbmPdf',
         'SbmCartographie',
         'SbmMailChimp',
-        'SbmAjax'
+        'SbmAjax',
     ),
     'module_listener_options' => array(
         'module_paths' => array(
             './module',
-            './vendor'
+            './vendor',
         ),
         'config_glob_paths' => array(
-            'config/autoload/{,*.}{global,local}.php'
-        )
-    )
+            'config/autoload/{,*.}{global,local}.php',
+        ),
+    ),
 );

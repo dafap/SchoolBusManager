@@ -9,14 +9,14 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2016
- * @version 2016-2.0.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCartographie\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
 use Zend\Http\PhpEnvironment\Response;
 

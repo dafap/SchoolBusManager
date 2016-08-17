@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2016
- * @version 2016-2.1.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmMailChimp\Controller\Service;
 
@@ -20,7 +20,7 @@ use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Role\GenericRole;
 use Zend\Permissions\Acl\Resource\GenericResource;
 use SbmMailChimp\Controller\IndexController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class IndexControllerFactory implements FactoryInterface
 {

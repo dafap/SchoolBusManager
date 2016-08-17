@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmParent\Controller;
 
@@ -18,7 +18,7 @@ use Zend\View\Model\ViewModel;
 use SbmCartographie\Model\Point;
 use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form;
 use SbmCommun\Form\LatLng as LatLngForm;
 use SbmCommun\Filter\SansAccent;

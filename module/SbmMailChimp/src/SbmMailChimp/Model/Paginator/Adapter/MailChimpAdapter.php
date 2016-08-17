@@ -10,14 +10,14 @@
  * @filesource MailChimpAdapter.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2016
- * @version 2016-2.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmMailChimp\Model\Paginator\Adapter;
 
 use Zend\Paginator\Adapter\AdapterInterface;
 use DrewM\MailChimp\MailChimp;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class MailChimpAdapter implements AdapterInterface
 {

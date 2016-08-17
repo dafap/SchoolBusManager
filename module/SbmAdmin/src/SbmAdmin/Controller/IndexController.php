@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmAdmin\Controller;
 
@@ -21,15 +21,15 @@ use Zend\Session\Container as SessionContainer;
 use Zend\Db\Sql\Where;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Form\CriteresForm;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\SecteurScolaire as FormSecteurScolaire;
 use SbmCommun\Form\ButtonForm;
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 use SbmAdmin\Form\User;
 use SbmAdmin\Form\Export as ExportForm;
 use SbmAdmin\Form\UserRelation;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
 use SbmAdmin\Model\Db\Service\Libelle\Liste;

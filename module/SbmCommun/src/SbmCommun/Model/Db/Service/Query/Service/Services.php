@@ -7,16 +7,16 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use DafapSession\Model\Session;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Exception;
 

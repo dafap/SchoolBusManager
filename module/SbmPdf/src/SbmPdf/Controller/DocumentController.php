@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPdf\Controller;
 
@@ -19,8 +19,8 @@ use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Sql;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmParent\Model\Responsable;

@@ -9,8 +9,8 @@
  * @filesource MenuRapports.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Model\View\Helper;
 
@@ -18,7 +18,7 @@ use Zend\View\Helper\AbstractHelper;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Where;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 
 class MenuRapports extends AbstractHelper implements FactoryInterface
 {

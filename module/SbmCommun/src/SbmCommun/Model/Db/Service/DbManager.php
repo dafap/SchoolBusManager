@@ -9,8 +9,8 @@
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2016
- * @version 2016-2.1.10
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -19,10 +19,10 @@ use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Metadata\Object\TableObject;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Metadata\Metadata;
-use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Exception;
-use DafapSession\Model\Session;
 
 class DbManager extends ServiceManager implements FactoryInterface
 {

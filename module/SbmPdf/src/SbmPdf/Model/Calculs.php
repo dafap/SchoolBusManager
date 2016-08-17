@@ -43,13 +43,13 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPdf\Model;
 
-use SbmCommun\Model\StdLib;
-use DafapSession\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\Session;
 
 class Calculs
 {

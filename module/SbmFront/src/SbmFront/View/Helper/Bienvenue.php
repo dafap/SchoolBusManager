@@ -7,16 +7,16 @@
  * @filesource Bienvenue.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 09 août 2015
- * @version 2015-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmFront\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\Helper\Url;
 use Zend\Session\Container;
+use SbmBase\Model\Session;
 use DafapSession\Authentication\AuthenticationService;
-use DafapSession\Model\Session;
 
 class Bienvenue extends AbstractHelper
 {

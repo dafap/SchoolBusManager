@@ -11,15 +11,15 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2015
- * @version 2015-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPaiement\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use Zend\View\Model\Zend\View\Model;
 use SbmFront\Model\Responsable\Responsable;
 

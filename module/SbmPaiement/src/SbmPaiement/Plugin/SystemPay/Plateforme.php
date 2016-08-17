@@ -17,8 +17,8 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2016
- * @version 2016-3
+ * @date 17 août 2016
+ * @version 2016-3.1.0
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -30,7 +30,7 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
 use Zend\Log\Logger;
 use Zend\Db\Sql\Where;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmPaiement\Plugin\AbstractPlateforme;
 use SbmPaiement\Plugin\Exception;
 

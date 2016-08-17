@@ -8,15 +8,15 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 janv. 2016
- * @version 2016-1.7.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\ObjectData\Responsable as ObjectDataResponsable;
 use SbmCommun\Model\Db\ObjectData\Exception as ExceptionObjectData;
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 
 class Responsables extends AbstractSbmTable
 {

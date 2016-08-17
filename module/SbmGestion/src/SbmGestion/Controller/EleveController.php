@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
@@ -20,19 +20,19 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate;
-use DafapSession\Model\Session;
-use SbmCartographie\Model\Point;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Db\DbLib;
-use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\LatLng as LatLngForm;
-use SbmGestion\Form\Eleve\EditForm as FormEleve;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
+use SbmCartographie\Model\Point;
 use DafapMail\Model\Template as MailTemplate;
 use DafapMail\Form\Mail as MailForm;
+use SbmGestion\Form\Eleve\EditForm as FormEleve;
 
 class EleveController extends AbstractActionController
 {
@@ -1084,6 +1084,11 @@ class EleveController extends AbstractActionController
             // préparer le Point dans le système gRGF93
             $point = new Point($eleve['x'], $eleve['y']);
             $pt = $d2etab->getProjection()->XYZversgRGF93($point);
+            $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+            if (! $pt->isValid()) {
+                $pt->setLatitude($configCarte['centre']['lat']);
+                $pt->setLongitude($configCarte['centre']['lng']);
+            }
             // préparer le tableau de données pour initialiser le formulaire
             $data = [
                 'eleveId' => $args['eleveId'],
@@ -1189,6 +1194,7 @@ class EleveController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $oData = $form->getData();
+                // die(var_dump($args, $oData->getArrayCopy()));
                 if ($tableResponsables->saveRecord($oData)) {
                     // on s'assure de rendre cette commune visible
                     $this->config['db_manager']->get('Sbm\Db\table\Communes')->setVisible($oData->communeId);
@@ -1263,6 +1269,7 @@ class EleveController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $oData = $form->getData();
+                // die(var_dump($args, $oData->getArrayCopy()));
                 if ($tableResponsables->saveRecord($oData)) {
                     // on s'assure de rendre cette commune visible
                     $this->config['db_manager']->get('Sbm\Db\table\Communes')->setVisible($oData->communeId);
@@ -1518,6 +1525,11 @@ class EleveController extends AbstractActionController
             // essaie de positionner la marker à partir de l'adresse
             $array = $this->config['cartographie_manager']->get('SbmCarto\Geocoder')->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+            if (! $pt->isValid()) {
+                $pt->setLatitude($configCarte['centre']['lat']);
+                $pt->setLongitude($configCarte['centre']['lng']);
+            }
             $form->setData([
                 'responsableId' => $args['responsableId'],
                 'lat' => $pt->getLatitude(),

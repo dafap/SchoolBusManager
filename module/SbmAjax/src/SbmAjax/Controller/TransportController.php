@@ -10,14 +10,14 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmAjax\Controller;
  
 use Zend\View\Model\ViewModel;
 use Zend\Json\Json;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 
 class TransportController extends AbstractActionController
 {

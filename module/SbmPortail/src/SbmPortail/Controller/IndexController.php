@@ -9,18 +9,18 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPortail\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
-use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use Zend\Db\Sql\Where;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 
 class IndexController extends AbstractActionController
 {

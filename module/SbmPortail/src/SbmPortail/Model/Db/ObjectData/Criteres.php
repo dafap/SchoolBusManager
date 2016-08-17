@@ -7,13 +7,13 @@
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juillet 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPortail\Model\Db\ObjectData;
 
 use Zend\Db\Sql\Where;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\ObjectData\Criteres as SbmCommunCriteres;
 
 class Criteres extends SbmCommunCriteres

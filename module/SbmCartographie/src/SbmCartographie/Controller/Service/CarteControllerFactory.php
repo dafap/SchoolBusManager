@@ -9,8 +9,8 @@
  * @filesource CarteControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCartographie\Controller\Service;
 
@@ -19,7 +19,7 @@ use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 use SbmCartographie\Controller\CarteController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class CarteControllerFactory implements FactoryInterface
 {

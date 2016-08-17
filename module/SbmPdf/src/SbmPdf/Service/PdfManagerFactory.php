@@ -10,8 +10,8 @@
  * @filesource PdfManagerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPdf\Service;
 
@@ -19,7 +19,7 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\Config;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class PdfManagerFactory implements FactoryInterface
 {

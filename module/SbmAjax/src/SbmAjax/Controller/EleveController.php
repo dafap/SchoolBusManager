@@ -9,14 +9,14 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2016
- * @version 2016-2.1.5
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmAjax\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Json\Json;
-use DafapSession\Model\Session;
+use SmBase\Model\Session;
 use SbmCartographie\Model\Point;
 use SbmCartographie\Model\SbmCartographie\Model;
 

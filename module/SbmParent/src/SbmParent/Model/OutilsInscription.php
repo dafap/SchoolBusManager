@@ -7,15 +7,15 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmParent\Model;
 
-use DafapSession\Model\Session;
-use SbmCommun\Model\Db\Service\DbManager;
-use SbmCommun\Model\StdLib;
 use DateTime;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmCommun\Model\Db\Service\DbManager;
 use SbmParent\Model\Db\Service\Query\Eleves;
 
 class OutilsInscription

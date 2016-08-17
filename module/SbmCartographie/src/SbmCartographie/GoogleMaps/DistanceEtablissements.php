@@ -180,8 +180,8 @@
  * @filesource DistanceEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -189,7 +189,7 @@ use SbmCartographie\Model\Point;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\Db\Sql\Where;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 
 class DistanceEtablissements

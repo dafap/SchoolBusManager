@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPdf\Model;
 
@@ -23,10 +23,10 @@ use Zend\Stdlib\ArrayObject;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\View\Model\ViewModel;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\DateLib;
 use SbmPdf\Model\Db\Sql\Select;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
-use SbmCommun\Model\DateLib;
 
 class Tcpdf extends \TCPDF
 {

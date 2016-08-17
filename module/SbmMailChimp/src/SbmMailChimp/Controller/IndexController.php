@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2016
- * @version 2016-2.1.7
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmMailChimp\Controller;
 
@@ -18,7 +18,7 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DrewM\MailChimp\MailChimp;
 use Zend\Http\Response;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmMailChimp\Form;
 use SbmMailChimp\Model\Db\Service\Users;

@@ -8,13 +8,13 @@
  * @filesource CommandSql.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 janv. 2014
- * @version 2014-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db;
 
 use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Ddl;

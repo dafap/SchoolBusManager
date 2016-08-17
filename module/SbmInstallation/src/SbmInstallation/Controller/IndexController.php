@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmInstallation\Controller;
 
@@ -24,7 +24,7 @@ use SbmInstallation\Model\DumpTables;
 use SbmCommun\Form\ButtonForm;
 use DrewM\MailChimp;
 use Zend\Stdlib\Glob;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmInstallation\Form\UploadImage;
 
 class IndexController extends AbstractActionController

@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmParent\Controller;
 
@@ -16,17 +16,16 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\PredicateSet;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Strategy\Semaine;
-use SbmParent\Form;
-use SbmParent\Model\Db\Service\Query;
 use SbmFront\Model\Responsable\Exception as CreateResponsableException;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
+use SbmParent\Form;
+use SbmParent\Model\Db\Service\Query;
 use SbmParent\Model\OutilsInscription;
-use SbmParent\Model\SbmParent\Model;
 
 class IndexController extends AbstractActionController
 {

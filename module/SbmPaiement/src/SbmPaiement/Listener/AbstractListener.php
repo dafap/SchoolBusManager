@@ -9,8 +9,8 @@
  * @filesource AbstractListener.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPaiement\Listener;
 
@@ -18,7 +18,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Log\Writer\Stream;
 use Zend\Log\Filter\Priority;
 use Zend\Log\Logger;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\DbManager;
 
 abstract class AbstractListener

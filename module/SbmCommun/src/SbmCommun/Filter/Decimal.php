@@ -10,14 +10,14 @@
  * @filesource Decimal.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Filter;
 
 use Zend\Filter\AbstractFilter;
 use Zend\Filter\FilterInterface;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class Decimal extends AbstractFilter implements FilterInterface
 {

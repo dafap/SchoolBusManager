@@ -8,15 +8,15 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2016
- * @version 2016-2.1.9
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use DafapSession\Model\Session;
 use Zend\Http\PhpEnvironment\Response;
+use SbmBase\Model\Session;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 
 class IndexController extends AbstractActionController
 {

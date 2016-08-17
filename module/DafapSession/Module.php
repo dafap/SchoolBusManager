@@ -20,12 +20,11 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace DafapSession;
 
-use ZfcBase\Module\AbstractModule;
 use Zend\EventManager\EventInterface;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\SessionManager;
@@ -33,6 +32,7 @@ use Zend\Session\Container;
 use Zend\Validator\AbstractValidator;
 use Zend\I18n\Translator\Resources;
 use Zend\I18n\Translator\Translator;
+use SbmBase\Module\AbstractModule;
 
 class Module extends AbstractModule
 {

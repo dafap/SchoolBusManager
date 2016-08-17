@@ -10,12 +10,12 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2016
- * @version 2015-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmFront\Model\Responsable;
 
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 
 class Responsable
 {

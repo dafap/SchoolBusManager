@@ -6,14 +6,14 @@
  * Par défaut, le namespace SBM_DG_SESSION est utilisé.
  * 
  * @project sbm
- * @package DafapSession
+ * @package SbmBase\Model
  * @filesource Session.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 févr. 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-namespace DafapSession\Model;
+namespace SbmBase\Model;
 
 use Zend\Session\Container;
 

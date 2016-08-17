@@ -9,17 +9,17 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPaiement;
 
-use ZfcBase\Module\AbstractModule;
+use SbmBase\Module\AbstractModule;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\Mvc\MvcEvent;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class Module extends AbstractModule implements AutoloaderProviderInterface, ConfigProviderInterface
 {

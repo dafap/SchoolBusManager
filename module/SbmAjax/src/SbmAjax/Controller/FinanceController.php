@@ -9,15 +9,15 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmAjax\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Json\Json;
 use Zend\Db\Sql\Where;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 
 class FinanceController extends AbstractActionController
 {

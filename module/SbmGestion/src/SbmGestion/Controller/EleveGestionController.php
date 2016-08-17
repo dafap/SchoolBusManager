@@ -9,22 +9,22 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2016
- * @version 2016-2.1.10
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
-use SbmCartographie\Model\Point;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\LatLng;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
+use SbmCartographie\Model\Point;
 use SbmGestion\Form\AffectationDecision;
-use DafapSession\Model\Session;
 
 class EleveGestionController extends AbstractActionController
 {

@@ -8,30 +8,30 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use Zend\Db\Sql\Where;
+use Zend\Paginator\Adapter\DbSelect;
+use Zend\Http\PhpEnvironment\Response;
+use Zend\View\View;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\DateLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
+use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
+use SbmCommun\Form\SbmCommun\Form;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\Organisme as FormOrganisme;
 use SbmCommun\Form\Paiement as FormPaiement;
 use SbmCommun\Form\Tarif as FormTarif;
 use SbmCommun\Form\CriteresForm;
-use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
-use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
-use Zend\Paginator\Adapter\DbSelect;
-use Zend\Http\PhpEnvironment\Response;
-use Zend\View\View;
 use SbmGestion\Form\FinancePaiementSuppr;
-use SbmCommun\Form\SbmCommun\Form;
-use SbmCommun\Model\StdLib;
-use SbmCommun\Model\DateLib;
-use DafapSession\Model\Session;
 
 class FinanceController extends AbstractActionController
 {
@@ -407,9 +407,9 @@ class FinanceController extends AbstractActionController
         $r = $this->editData($this->config['db_manager'], $params, function ($post) use($sessionNS) {
             if (array_key_exists('responsable', $post)) {
                 $responsable = $post['responsable'];
-                \DafapSession\Model\Session::set('responsable', $responsable, $sessionNS);
+                \SbmBase\Model\Session::set('responsable', $responsable, $sessionNS);
             } else {
-                $responsable = \DafapSession\Model\Session::get('responsable', '', $sessionNS);
+                $responsable = \SbmBase\Model\Session::get('responsable', '', $sessionNS);
             }
             return array(
                 'paiementId' => $post['paiementId'],

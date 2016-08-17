@@ -19,7 +19,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 use SbmCommun\Model\Strategy\Color;
 use SbmPdf\Model\TcpdfFonts;
 use SbmPdf\Model\Tcpdf;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class DocumentPdf extends Form implements InputFilterProviderInterface
 {

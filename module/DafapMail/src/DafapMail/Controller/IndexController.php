@@ -11,16 +11,16 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2016
- * @version 2016-2.1.6
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace DafapMail\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DafapMail\Model\Template as MailTemplate;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 
 class IndexController extends AbstractActionController
 {
