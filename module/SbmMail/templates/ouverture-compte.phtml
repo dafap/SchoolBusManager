@@ -1,0 +1,32 @@
+<?php
+/**
+ * Modèle de courrier pour l'envoi du lien lors de la création d'un compte
+ *
+ * @project sbm
+ * @package SbmMail/template
+ * @filesource ouverture-compte.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 août 2016
+ * @version 2016-2.2.0
+ */
+?>
+<p>Bonjour <?php echo $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
+<p>Vous avez demandé l'inscription de vos enfants au service des
+	transports de la <?php echo $this->client['name'];?>.</p>
+
+<p>
+	A partir de mainteanant, vous pouvez suivre l'évolution du traitement
+	de votre demande et contrôler les informations qui vous concernent en
+	vous connectant au site de la communauté de communes par le lien
+	suivant :<br>
+    <?php echo $this->url_confirme;?></p>
+
+<p>Le circuits sur lesquels vos enfants sont affectés et les horaires
+	seront publiés durant la dernière semaine d'août.</p>
+
+<p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
+<div style="text-align: center;">
+	<b><?php echo $this->client['name'];?></b> <br><?php echo implode(' - ', $this->client['adresse']);?> - <?php echo $this->client['code_postal'] . ' ' . $this->client['commune'];?>
+	<br>Tél. <?php echo $this->client['telephone'];?> - Email: <?php echo $this->client['email'];?>
+</div>

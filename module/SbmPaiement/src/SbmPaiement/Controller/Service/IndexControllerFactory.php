@@ -33,7 +33,7 @@ class IndexControllerFactory implements FactoryInterface
             'form_manager' => $sm->get('Sbm\FormManager'),
             'plugin_plateforme' => $sm->get('SbmPaiement\Plugin\Plateforme'),
             'responsable' => $sm->get(Responsable::class),
-            'user' => $sm->get('Dafap\Authenticate')
+            'user' => $sm->get('SbmAuthentification\Authentication')
             ->by()
             ->getIdentity(),
             'paginator_count_per_page' => StdLib::getParamR([

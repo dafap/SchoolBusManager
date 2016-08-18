@@ -40,7 +40,7 @@ class ConfigController extends AbstractActionController
         ));
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('dafapmail');
+            ->toRoute('SbmMail');
     }
 
     public function modifCompteAction()

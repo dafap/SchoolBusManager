@@ -3,17 +3,17 @@
  * Test de création du service de configuration des mails dans SBM
  *
  * @project sbm
- * @package ModulesTests/DafapMailTest/Model/Service
+ * @package ModulesTests/SbmMailTest/Model/Service
  * @filesource ConfigServiceFactoryTest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 26 juil. 2016
  * @version 2016-2.1.10
  */
-namespace ModulesTests\DafapMailTest\Model\Service;
+namespace ModulesTests\SbmMailTest\Model\Service;
 
 use PHPUnit_Framework_TestCase;
-use DafapMail\Model\Service\ConfigServiceFactory;
+use SbmMail\Model\Service\ConfigServiceFactory;
 
 class ConfigServiceFactoryTest extends PHPUnit_Framework_TestCase
 {

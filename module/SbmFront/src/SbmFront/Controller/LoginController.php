@@ -24,8 +24,8 @@ use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCartographie\Model\Point;
-use DafapMail\Model\Template as MailTemplate;
-use DafapMail\Model\DafapMail\Model;
+use SbmMail\Model\Template as MailTemplate;
+use SbmMail\Model\SbmMail\Model;
 use SbmFront\Form;
 use SbmFront\Model\Responsable\Exception as CreateResponsableException;
 

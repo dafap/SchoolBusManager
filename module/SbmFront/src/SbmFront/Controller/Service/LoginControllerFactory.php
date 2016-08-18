@@ -31,7 +31,7 @@ class LoginControllerFactory implements FactoryInterface
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
-            'authenticate' => $sm->get('Dafap\Authenticate'),
+            'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'responsable' => $sm->get(Responsable::class),
             'distance_etablissements' => $cm->get('SbmCarto\DistanceEtablissements'),
             'config_cartes' => $cm->get('cartes'),

@@ -38,7 +38,7 @@ class PdfManagerFactory implements FactoryInterface
         $pdf_manager = new PdfManager(new Config($serviceLocator->get('config')['pdf_manager']));
         $pdf_manager->setService('Sbm\DbManager', $serviceLocator->get('Sbm\DbManager'))
             ->setService('ViewRenderer', $serviceLocator->get('ViewRenderer'))
-            ->setService('Dafap\Authenticate', $serviceLocator->get('Dafap\Authenticate'))
+            ->setService('SbmAuthentification\Authentication', $serviceLocator->get('SbmAuthentification\Authentication'))
             ->setService('routes', $config_application['router']['routes'])
             ->setService('controllers', $controllers);
         return $pdf_manager;

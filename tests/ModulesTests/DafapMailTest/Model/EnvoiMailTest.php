@@ -10,14 +10,14 @@
  * @date 26 juil. 2016
  * @version 2016-2.1.10
  */
-namespace ModulesTests\DafapMailTest\Model;
+namespace ModulesTests\SbmMailTest\Model;
 
 use PHPUnit_Framework_TestCase;
 use Zend\EventManager\Test\EventListenerIntrospectionTrait;
 use Zend\EventManager\EventManager;
 use Zend\ServiceManager\ServiceManager;
-use DafapMail\Model\Service\EnvoiMailFactory;
-use DafapMail\Model\EnvoiMail;
+use SbmMail\Model\Service\EnvoiMailFactory;
+use SbmMail\Model\EnvoiMail;
 
 class EnvoiMailTest extends PHPUnit_Framework_TestCase
 {
@@ -28,13 +28,13 @@ class EnvoiMailTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $config_application = include __DIR__ . '\..\..\..\..\config\autoload\sbm.local.php';
-        $config_module = include __DIR__ . '\..\..\..\..\module\DafapMail\config\module.config.php';
+        $config_module = include __DIR__ . '\..\..\..\..\module\SbmMail\config\module.config.php';
         $this->config_mail = array_merge_recursive($config_application['sbm']['mail'], $config_module['sbm']['mail']);
     }
     
     public function testConfigMailStructure()
     {
-        $this->assertArrayHasKey('transport', $this->config_mail, 'La clé transport n\'a pas été trouvée dans la config de DafapMail.');
+        $this->assertArrayHasKey('transport', $this->config_mail, 'La clé transport n\'a pas été trouvée dans la config de SbmMail.');
         if (array_key_exists('transport', $this->config_mail)) {
             $this->assertInternalType('array', $this->config_mail['transport'], 'transport : Un tableau est attendu.');
             $this->assertArrayHasKey('mode', $this->config_mail['transport'], 'Le mode de transport n\'est pas definie.');
@@ -46,7 +46,7 @@ class EnvoiMailTest extends PHPUnit_Framework_TestCase
             }
             $this->assertArrayHasKey('transportSsl', $this->config_mail['transport'], 'transportSsl n\'est pas definie.');            
         }
-        $this->assertArrayHasKey('message', $this->config_mail, 'La clé message n\'a pas été trouvée dans la config de DafapMail.');
+        $this->assertArrayHasKey('message', $this->config_mail, 'La clé message n\'a pas été trouvée dans la config de SbmMail.');
         if (array_key_exists('message', $this->config_mail)) {
             $this->assertArrayHasKey('from', $this->config_mail['message'], 'Manque le from dans message [email, name]');
             $this->assertArrayHasKey('replyTo', $this->config_mail['message'], 'Manque le replyTo dans message [email, name]');
@@ -56,7 +56,7 @@ class EnvoiMailTest extends PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('html_encoding', $this->config_mail['message'], 'Manque le html_encoding dans message (8bit)');
             $this->assertArrayHasKey('message_encoding', $this->config_mail['message'], 'Manque le message_encoding dans message (utf-8)');
         }
-        $this->assertArrayHasKey('destinataires', $this->config_mail, 'La clé destinataires n\'a pas été trouvée dans la config de DafapMail.');
+        $this->assertArrayHasKey('destinataires', $this->config_mail, 'La clé destinataires n\'a pas été trouvée dans la config de SbmMail.');
     }
     
     /*
@@ -69,7 +69,7 @@ class EnvoiMailTest extends PHPUnit_Framework_TestCase
     {
         $events = new EventManager();
         $serviceLocator = new ServiceManager();
-        $serviceLocator->setService('DafapMail\Config', $this->config_mail);
+        $serviceLocator->setService('SbmMail\Config', $this->config_mail);
         $envoiMailFactory = new EnvoiMailFactory();
         $envoiMail = $envoiMailFactory->createService($serviceLocator);
         $envoiMail->attach($events);

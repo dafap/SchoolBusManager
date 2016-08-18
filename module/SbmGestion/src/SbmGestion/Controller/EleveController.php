@@ -30,8 +30,8 @@ use SbmCommun\Form\LatLng as LatLngForm;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
 use SbmCartographie\Model\Point;
-use DafapMail\Model\Template as MailTemplate;
-use DafapMail\Form\Mail as MailForm;
+use SbmMail\Model\Template as MailTemplate;
+use SbmMail\Form\Mail as MailForm;
 use SbmGestion\Form\Eleve\EditForm as FormEleve;
 
 class EleveController extends AbstractActionController
@@ -1735,7 +1735,7 @@ class EleveController extends AbstractActionController
                 $destinataire
             ]
         ]);
-        $view->setTemplate('dafap-mail/index/send.phtml');
+        $view->setTemplate('sbm-mail/index/send.phtml');
         return $view;
     }
 

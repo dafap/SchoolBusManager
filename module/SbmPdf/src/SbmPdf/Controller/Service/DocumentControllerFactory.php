@@ -28,7 +28,7 @@ class DocumentControllerFactory implements FactoryInterface
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'pdf_manager' => $sm->get('Sbm\PdfManager'),
-            'authenticate' => $sm->get('Dafap\Authenticate'),
+            'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'responsable' => $sm->get(Responsable::class),
         ];
         return new DocumentController($config_controller);

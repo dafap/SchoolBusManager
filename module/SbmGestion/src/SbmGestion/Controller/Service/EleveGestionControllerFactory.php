@@ -31,7 +31,7 @@ class EleveGestionControllerFactory implements FactoryInterface
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
-            'authenticate' => $sm->get('Dafap\Authenticate'),
+            'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'mail_config' => StdLib::getParamR([
                 'sbm',
                 'mail'

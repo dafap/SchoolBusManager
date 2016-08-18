@@ -37,7 +37,7 @@ class CarteControllerFactory implements FactoryInterface
             'db_manager' => $sm->get('Sbm\DbManager'),
             'projection' => new $projection($nzone),
             'config_cartes' => $config_cartes,
-            'user' => $sm->get('Dafap\Authenticate')
+            'user' => $sm->get('SbmAuthentification\Authentication')
                 ->by()
                 ->getIdentity()
         ]);

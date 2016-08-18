@@ -222,7 +222,7 @@ if (! defined('TCPDF_CONSTANTES')) {
     
     /**
      * Indiquer la langue utilisée.
-     * Elle doit correspondre à un fichier dans src/DafapTcpdf/Model/lang de nom PDF_LANG . '.php'
+     * Elle doit correspondre à un fichier dans src/SbmPdf/Model/lang de nom PDF_LANG . '.php'
      */
     define('PDF_LANG', 'fra');
 }

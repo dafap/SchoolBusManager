@@ -8,11 +8,11 @@
 return array(
     'modules' => array(
         'SbmBase',
-        'DafapSession',
+        'SbmAuthentification',
         'AtPhpSettings',
         'SbmFront',
         'SbmPortail',
-        'DafapMail',
+        'SbmMail',
         'SbmGestion',
         'SbmAdmin',
         'SbmParent',

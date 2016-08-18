@@ -27,7 +27,7 @@ class IndexControllerFactory implements FactoryInterface
         $config_controller = [
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
-            'authenticate' => $sm->get('Dafap\Authenticate')
+            'authenticate' => $sm->get('SbmAuthentification\Authentication')
         ];
         return new IndexController($config_controller);
     }

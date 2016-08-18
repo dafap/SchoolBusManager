@@ -45,7 +45,7 @@ class Module extends AbstractModule implements BootstrapListenerInterface
         $sm = $e->getApplication()->getServiceManager();
         $db_manager = $sm->get('Sbm\DbManager');
         $tCalendar = $db_manager->get('Sbm\Db\System\Calendar');
-        if ($sm->get('Dafap\Authenticate')
+        if ($sm->get('SbmAuthentification\Authentication')
             ->by()
             ->hasIdentity()) {            
             for ($millesime = Session::get('millesime', false); ! $millesime; $millesime = Session::get('millesime', false)) {

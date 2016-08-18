@@ -24,7 +24,7 @@ class ResponsableFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         //die(var_dump($serviceLocator));
-        $authenticate_by = $serviceLocator->get('Dafap\Authenticate')->by();
+        $authenticate_by = $serviceLocator->get('SbmAuthentification\Authentication')->by();
         $vue_responsable = $serviceLocator->get('Sbm\DbManager')
             ->get('Sbm\Db\Vue\Responsables');
         

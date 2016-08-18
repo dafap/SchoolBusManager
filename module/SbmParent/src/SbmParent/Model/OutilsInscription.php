@@ -52,7 +52,7 @@ class OutilsInscription
 
     /**
      * userId de la personne authentifiée.
-     * Correspond à $sm->get('Dafap\Authenticate')->by('email')->getUserId()
+     * Correspond à $sm->get('SbmAuthentification\Authentication')->by('email')->getUserId()
      *
      * @var int
      */

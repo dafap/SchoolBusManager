@@ -31,7 +31,7 @@ class ResponsableManager implements FactoryInterface
     {
         $this->responsable_manager = new ServiceManager();
         $this->responsable_manager->setFactory(Responsable::class, ResponsableFactory::class);
-        $this->responsable_manager->setService('Dafap\Authenticate', $serviceLocator->get('Dafap\Authenticate'));
+        $this->responsable_manager->setService('SbmAuthentification\Authentication', $serviceLocator->get('SbmAuthentification\Authentication'));
         $this->responsable_manager->setService('Sbm\DbManager', $serviceLocator->get('Sbm\DbManager'));
         return $this;
     }

@@ -29,7 +29,7 @@ class IndexControllerFactory implements FactoryInterface
     {
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
-        $authenticate = $sm->get('Dafap\Authenticate');
+        $authenticate = $sm->get('SbmAuthentification\Authentication');
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'client' => StdLib::getParamR([

@@ -16,7 +16,7 @@ use Zend\View\Helper\AbstractHelper;
 use Zend\View\Helper\Url;
 use Zend\Session\Container;
 use SbmBase\Model\Session;
-use DafapSession\Authentication\AuthenticationService;
+use SbmAuthentification\Authentication\AuthenticationService;
 
 class Bienvenue extends AbstractHelper
 {

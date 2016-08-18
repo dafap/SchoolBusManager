@@ -1417,7 +1417,7 @@ class Tcpdf extends \TCPDF
                     date('Y-m-d'),
                     date('H:i:s'),
                     Session::get('millesime'),
-                    $this->pdf_manager->get('Dafap\Authenticate')
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
                         ->by()
                         ->getUserId()
                 ], $recordSource);
@@ -1711,7 +1711,7 @@ class Tcpdf extends \TCPDF
                     date('Y-m-d'),
                     date('H:i:s'),
                     Session::get('millesime'),
-                    $this->pdf_manager->get('Dafap\Authenticate')
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
                         ->by()
                         ->getUserId()
                 ], $sql);

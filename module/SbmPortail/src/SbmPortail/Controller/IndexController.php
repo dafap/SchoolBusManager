@@ -537,6 +537,6 @@ class IndexController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmportail');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('dafapmail');
+            ->toRoute('SbmMail');
     }
 }

@@ -21,8 +21,8 @@ namespace SbmCommun\Model\Hydrator;
 use SbmCommun\Model\Db\ObjectData\Responsable as ObjectData;
 use SbmCommun\Filter\SansAccent;
 use Zend\Authentication\Storage\Session;
-use DafapSession\Authentication\AuthenticationService;
-use DafapSession\Authentication\AuthenticationServiceFactory;
+use SbmAuthentification\Authentication\AuthenticationService;
+use SbmAuthentification\Authentication\AuthenticationServiceFactory;
 
 class Responsables extends AbstractHydrator
 {

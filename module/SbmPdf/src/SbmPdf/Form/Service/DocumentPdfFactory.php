@@ -29,7 +29,7 @@ class DocumentPdfFactory implements FactoryInterface
             throw new Exception(sprintf($message, gettype($pdfManager)));
         }
         $db_manager = $serviceLocator->get('Sbm\DbManager');
-        $auth_userId = $serviceLocator->get('Dafap\Authenticate')->by()->getUserId();
+        $auth_userId = $serviceLocator->get('SbmAuthentification\Authentication')->by()->getUserId();
         $pdf = $serviceLocator->get(Tcpdf::class);
         return new DocumentPdf($db_manager, $auth_userId, $this->getTemplateMethodList($pdf));
     }

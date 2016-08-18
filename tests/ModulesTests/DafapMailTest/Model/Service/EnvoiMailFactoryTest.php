@@ -1,21 +1,21 @@
 <?php
 /**
- * Test de création du service EnvoiMail de DafapMail
+ * Test de création du service EnvoiMail de SbmMail
  * 
  * @project sbm
- * @package ModulesTests/DafapMailTest/Model/Service
+ * @package ModulesTests/SbmMailTest/Model/Service
  * @filesource EnvoiMailFactoryTest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 26 juil. 2016
  * @version 2016-2.1.10
  */
-namespace ModulesTests\DafapMailTest\Model\Service;
+namespace ModulesTests\SbmMailTest\Model\Service;
 
 use PHPUnit_Framework_TestCase;
 use Zend\ServiceManager\ServiceManager;
-use DafapMail\Model\Service\EnvoiMailFactory;
-use DafapMail\Model\EnvoiMail;
+use SbmMail\Model\Service\EnvoiMailFactory;
+use SbmMail\Model\EnvoiMail;
 
 class EnvoiMailFactoryTest extends PHPUnit_Framework_TestCase
 {
@@ -24,7 +24,7 @@ class EnvoiMailFactoryTest extends PHPUnit_Framework_TestCase
     {
         $message = __METHOD__ . ' - EnvoiMailFactory ne renvoie pas un objet de type EnvoiMail.';
         $serviceLocator = new ServiceManager();
-        $serviceLocator->setService('DafapMail\Config', [
+        $serviceLocator->setService('SbmMail\Config', [
             'transport' => [],
             'message' => [],
             'destinataires' => []

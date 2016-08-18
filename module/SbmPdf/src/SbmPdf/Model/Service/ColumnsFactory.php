@@ -28,7 +28,7 @@ class ColumnsFactory implements FactoryInterface
             throw new Exception(sprintf($message, gettype($pdfManager)));
         }
         $db_manager = $serviceLocator->get('Sbm\DbManager');
-        $auth_userId = $serviceLocator->get('Dafap\Authenticate')->by()->getUserId();
+        $auth_userId = $serviceLocator->get('SbmAuthentification\Authentication')->by()->getUserId();
         return new Columns($db_manager, $auth_userId);        
     }
 }
