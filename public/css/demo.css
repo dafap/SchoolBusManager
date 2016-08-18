@@ -716,6 +716,14 @@ div#fiche-inner div.row-inner input.cancel {
 	margin-top: 0;
 	margin-bottom: 0.5em;
 }
+#fiche-inner #eleve #tabs-1 div.edit-tab-col1,
+#fiche-inner #eleve #tabs-2 div.edit-tab-col1 {
+	max-width: 415px;
+}
+#fiche-inner #eleve #tabs-1 div.edit-tab-col2,
+#fiche-inner #eleve #tabs-2 div.edit-tab-col2 {
+	max-width: 670px;
+}
 #fiche-inner #tabs-3 div.eleve-tabs-3-col-1-label {
 	display: inline-block;
 	width : 150px;

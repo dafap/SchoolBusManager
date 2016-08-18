@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 18 août 2016
  * @version 2016-2.2.0
  */
 use SbmBase\Model\DateLib;
@@ -156,7 +156,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				</ul>
 				<div id="tabs-1" class="sbm-tabs-container"><?php // Responsable 1?>
 				    <div id="tabs-1-r1" class="clearfix">
-						<div class="float-left">
+						<div class="float-left edit-tab-col1">
 							<div id="wrapper-responsable1Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable1Id'));?></div>
 							<div id="wrapper-responsable1" class="wrapper-responsable">
 								<div id="r1-ligne1"></div>
@@ -180,7 +180,7 @@ echo $this->formHidden($this->form->get('csrf'));
 
 							</div>
 						</div>
-						<div class="float-left left-10px">
+						<div class="float-left left-10px edit-tab-col2">
 							<div id="block-affectationsr1" class="block-affectations">
 								<h3>
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
@@ -199,7 +199,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				</div>
 				<div id="tabs-2" class="sbm-tabs-container">
 					<div id="tabs-2-r2" class="clearfix">
-						<div class="float-left">
+						<div class="float-left edit-tab-col1">
 							<div id="wrapper-responsable2Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable2Id'));?></div>
 							<div id="wrapper-responsable2" class="wrapper-responsable">
 								<div id="r2-ligne1"></div>
@@ -222,7 +222,7 @@ echo $this->formHidden($this->form->get('csrf'));
 								</div>
 							</div>
 						</div>
-						<div class="float-left-10px">
+						<div class="float-left left-10px edit-tab-col2">
 							<div id="block-affectationsr2" class="block-affectations">
 								<h3>
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
