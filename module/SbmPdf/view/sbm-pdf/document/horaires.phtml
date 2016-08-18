@@ -11,8 +11,8 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 18 août 2016
+ * @version 2016-2.2.0
  */
 ?>
 <style>
@@ -38,7 +38,7 @@ table.horaires td.centre {
 <?php 
 // faut-il une colonne remarque à l'aller ?
 $voirRemarque1 = false;
-foreach ($this->allerRetour['aller'] as $row) {
+foreach ((array) $this->allerRetour['aller'] as $row) {
     $voirRemarque1 = ! empty($row['commentaire1']);
     if ($voirRemarque1) break;
 }
@@ -54,7 +54,7 @@ if ($voirRemarque1) {
     <tr><th colspan="7"><b>Matin</b></th></tr>
     <?php echo $th1;?>
 <?php $i = 1; $effectif = 0; ?>      
-<?php foreach ($this->allerRetour['aller'] as $row):?> 
+<?php foreach ((array) $this->allerRetour['aller'] as $row):?> 
     <tr>
 		<td class="centre" width="5%"><?php echo $i++;?></td>
 		<td width="8.5%"><?php echo $row["horaire"];?></td>
@@ -73,7 +73,7 @@ if ($voirRemarque1) {
 <?php 
 // faut-il une colonne remarque au retour ?
 $voirRemarque2 = false;
-foreach ($this->allerRetour['retour'] as $row) {
+foreach ((array) $this->allerRetour['retour'] as $row) {
     $voirRemarque2 = ! empty($row['commentaire2']);
     if ($voirRemarque2) break;
 }
@@ -89,7 +89,7 @@ if ($voirRemarque2) {
     <tr><th colspan="7"><b>Mercredi midi &amp; soir</b></th></tr>
     <?php echo $th2;?>
 <?php $i = 1; $effectif = 0; ?>      
-<?php foreach ($this->allerRetour['retour'] as $row):?> 
+<?php foreach ((array) $this->allerRetour['retour'] as $row):?> 
     <tr>
 		<td class="centre" width="5%"><?php echo $i++;?></td>
 		<td width="8.5%"><?php echo $row["horaire"];?></td>
