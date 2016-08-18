@@ -5,8 +5,8 @@
  * @filesource ajout.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 août 2016
- * @version 2016-2.1.10
+ * @date 18 août 2016
+ * @version 2016-2.2.0
  */
 
 var js_ajout = (function() {
