@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 18 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
@@ -465,6 +465,8 @@ class EleveGestionController extends AbstractActionController
                 'dateDebut' => $dateDebut,
                 'page' => $this->params('page', 1)
             ]);
+        } else {
+            die();
         }
     }
 
@@ -555,6 +557,8 @@ class EleveGestionController extends AbstractActionController
                 'eleveid' => $args['eleveId'],
                 'origine' => $args['origine']
             ]);
+        } else {
+            die();
         }
     }
 }
