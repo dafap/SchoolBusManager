@@ -204,6 +204,8 @@ class EleveController extends AbstractActionController
             unset($args['origine']);
         }
         if (array_key_exists('cancel', $args)) {
+            $this->removeInSession('post', $this->getSessionNamespace('ajout', 1));
+            $this->removeInSession('responsableId', $this->getSessionNamespace('ajout', 1));
             $this->flashMessenger()->addInfoMessage('Saisie abandonnée.');
             try {
                 return $this->redirectToOrigin()->back();
@@ -256,9 +258,11 @@ class EleveController extends AbstractActionController
             }
         }
         if ($form instanceof \SbmGestion\Form\Eleve\AddElevePhase1) {
-            $form->setData([
-                'responsable1Id' => $responsableId
-            ]);
+            if (empty($args['responsable1Id'])) {
+                $form->setData([
+                    'responsable1Id' => $responsableId
+                ]);
+            }
         }
         return new ViewModel([
             'page' => $page,

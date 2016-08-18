@@ -10,18 +10,22 @@
  */
 
 var js_ajout = (function() {
+	function montreResponsable2(voir) {
+	    if (voir) {
+	    	$("#wrapper-responsable2Id").show();
+		} else {
+			$("#wrapper-responsable2Id").hide();
+		}
+	}
 	$(document).ready(function($) {
 		$("#eleve-ga").click(function() {
-			js_ajout.montreResponsable2($(this).is(":checked"));
+			montreResponsable2($(this).is(":checked"));
 		});
 	});
 	return {
-		"montreResponsable2" : function(voir) {
-			if (voir) {
-				$("#wrapper-responsable2Id").show();
-			} else {
-				$("#wrapper-responsable2Id").hide();
-			}
+		"montreGa" : function(){
+			montreResponsable2($("#eleve-ga").is(":checked"));
 		}
+		
 	};
 })();
