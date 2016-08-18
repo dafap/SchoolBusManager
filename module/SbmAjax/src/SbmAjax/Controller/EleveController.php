@@ -16,7 +16,7 @@ namespace SbmAjax\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Json\Json;
-use SmBase\Model\Session;
+use SbmBase\Model\Session;
 use SbmCartographie\Model\Point;
 use SbmCartographie\Model\SbmCartographie\Model;
 
