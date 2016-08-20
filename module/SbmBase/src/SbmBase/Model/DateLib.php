@@ -7,7 +7,7 @@
  * @filesource DateLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 20 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmBase\Model;
@@ -53,8 +53,8 @@ class DateLib
         } else {
             if ($date = DateTime::createFromFormat('Y-m-d H:i:s', $d)) {
                 return $date->format('d/m/Y H:i:s');
-            } elseif ($date = DateTime::createFromFormat('Y-m-d', $d)) {
-                return $date->format('d/m/Y H:i:s');
+            } elseif ($date = DateTime::createFromFormat('Y-m-d|', $d)) {
+                 return $date->format('d/m/Y H:i:s');
             } else {
                 throw new Exception("La donnée $d a un format incorrect (an-mois-jour heure:minute:seconde attendu).");
             }
@@ -97,7 +97,7 @@ class DateLib
         } else {
             if ($date = DateTime::createFromFormat('d/m/Y H:i:s', $d)) {
                 return $date->format('Y-m-d H:i:s');
-            } elseif ($date = DateTime::createFromFormat('d/m/Y', $d)) {
+            } elseif ($date = DateTime::createFromFormat('d/m/Y|', $d)) {
                 return $date->format('Y-m-d H:i:s');
             } else {
                 throw new Exception("La donnée $d a un format incorrect (jour/mois/an heure:minute:seconde attendu).");
@@ -124,12 +124,12 @@ class DateLib
     }
     
     /**
-     * Renvoie la date-heure actuele au format (jour-mois-an heure:min:s)
+     * Renvoie la date-heure actuele au format (jour/mois/an heure:min:s)
      */
     public static function now()
     {
         $date = new DateTime();
-        return $date->format('d-m-Y H:i:s');
+        return $date->format('d/m/Y H:i:s');
     }
     
     /**
@@ -138,7 +138,7 @@ class DateLib
     public static function today()
     {
         $date = new DateTime();
-        return $date->format('d-m-Y');
+        return $date->format('d/m/Y');
     }
 }
  
