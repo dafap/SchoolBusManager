@@ -3,7 +3,7 @@
  * Test de la classe SbmCommun\Model\StdLib
  *
  * @project sbm
- * @package package_name
+ * @package ModulesTests/SbmBaseTest/Model
  * @filesource StdLibTest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
