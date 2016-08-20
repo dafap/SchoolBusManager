@@ -10,7 +10,7 @@
  * @date 20 août 2016
  * @version 2016-2.2.0
  */
-namespace SbmBaseTest\Model;
+namespace ModulesTests\SbmBaseTest\Model;
 
 use PHPUnit\Framework\TestCase;
 use SbmBase\Model\StdLib;
