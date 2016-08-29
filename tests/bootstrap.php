@@ -8,24 +8,15 @@
  * @project sbm
  * @package tests
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 juill. 2016
- * @version 2016-2.1.10
+ * @date 29 août 2016
+ * @version 2016-2.2.0
  */
 
-use ModulesTests\ServiceManagerGrabber;
-use Zend\Mvc\Application;
+use ModulesTests\Bootstrap;
 
 error_reporting(E_ALL | E_STRICT);
 
-$cwd = __DIR__;
-chdir(dirname(__DIR__));
-
-// Assume we use composer
-$loader = require_once  './vendor/autoload.php';
-$loader->add("ModulesTests\\", $cwd);
-$loader->register();
-$config = require_once './config/application.config.php';
-
-Application::init($config);
-ServiceManagerGrabber::setServiceConfig($config);
+include_once __DIR__ . DIRECTORY_SEPARATOR . 'ModulesTests/Bootstrap.php';
+Bootstrap::chroot();
+Bootstrap::init();
 ob_start();

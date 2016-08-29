@@ -13,7 +13,7 @@
 namespace ModulesTests\SbmCommunTest\Model\Db\Service;
 
 use PHPUnit_Framework_TestCase;
-use ModulesTests\ServiceManagerGrabber;
+use ModulesTests\Bootstrap;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\Config;
@@ -25,8 +25,7 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $serviceManagerGrabber = new ServiceManagerGrabber();
-        $this->serviceManager = $serviceManagerGrabber->getServiceManager();
+        $this->serviceManager = Bootstrap::getServiceManager();
     }
 
     /**

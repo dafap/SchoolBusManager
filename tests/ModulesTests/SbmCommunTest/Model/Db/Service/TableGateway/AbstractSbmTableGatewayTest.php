@@ -14,7 +14,7 @@ namespace ModulesTests\SbmCommunTest\Model\Db\Service\TableGateway;
 
 use PHPUnit_Framework_TestCase;
 use SbmCommun\Model\Db\Service\TableGateway\Exception;
-use ModulesTests\ServiceManagerGrabber;
+use ModulesTests\Bootstrap;
 use ModulesTests\SbmCommunTest\Model\TestAsset;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -25,8 +25,7 @@ class AbstractSbmTableGatewayTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $serviceManagerGrabber = new ServiceManagerGrabber();
-        $this->serviceManager = $serviceManagerGrabber->getServiceManager();
+        $this->serviceManager = Bootstrap::getServiceManager();
     }
 
     public function testCreateServiceWithBadDbManager()

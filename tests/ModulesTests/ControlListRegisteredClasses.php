@@ -16,6 +16,7 @@ namespace ModulesTests;
 
 use Zend\File\ClassFileLocator;
 use Zend\File\PhpClassFile;
+use ModulesTests\Bootstrap;
 
 class ControlListRegisteredClasses
 {
@@ -31,8 +32,7 @@ class ControlListRegisteredClasses
 
     public function __construct()
     {
-        $serviceManagerGrabber = new ServiceManagerGrabber();
-        $this->service_manager = $serviceManagerGrabber->getServiceManager();
+        $this->service_manager = Bootstrap::getServiceManager();
     }
     
     public function setSkip(array $array)
