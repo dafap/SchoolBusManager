@@ -7,15 +7,16 @@
  * @filesource UploadImage.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2016
- * @version 2016-2.1.4
+ * @date 20 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmInstallation\Form;
 
 use Zend\Form\Form;
 use Zend\Form\Element;
 use Zend\InputFilter\InputFilterProviderInterface;
-// use Zend\InputFilter;
+use SbmBase\Model\StdLib;
+
 class UploadImage extends Form implements InputFilterProviderInterface
 {
 
@@ -79,7 +80,7 @@ class UploadImage extends Form implements InputFilterProviderInterface
 
     public function getInputFilterSpecification()
     {
-        $tmpuploads = $this->getOption('tmpuploads') . DIRECTORY_SEPARATOR . 'avatar';
+        $tmpuploads = StdLib::concatPath($this->getOption('tmpuploads'), 'avatar');
         return [
             'image-file' => [
                 'type' => 'Zend\InputFilter\FileInput',

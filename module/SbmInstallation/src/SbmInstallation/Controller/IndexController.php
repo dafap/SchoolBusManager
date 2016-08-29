@@ -9,22 +9,22 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 20 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmInstallation\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Stdlib\Glob;
+use DrewM\MailChimp;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmCommun\Form\ButtonForm;
 use SbmInstallation\Model\CreateTables;
 use SbmInstallation\Model\Exception;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
 use SbmInstallation\Model\DumpTables;
-use SbmCommun\Form\ButtonForm;
-use DrewM\MailChimp;
-use Zend\Stdlib\Glob;
-use SbmBase\Model\StdLib;
 use SbmInstallation\Form\UploadImage;
 
 class IndexController extends AbstractActionController
@@ -54,7 +54,7 @@ class IndexController extends AbstractActionController
         }
         $config_paiement = $this->config['config_paiement'];
         $fileNamePaiement = strtolower($config_paiement['plateforme']) . '_error.log';
-        $filePaiement = $config_paiement['path_filelog'] . DIRECTORY_SEPARATOR . $fileNamePaiement;
+        $filePaiement = StdLib::concatPath($config_paiement['path_filelog'], $fileNamePaiement);
         $fileErrors = $this->config['error_log'];
         if (array_key_exists('fichier', $args)) {
             switch ($args['fichier']) {
@@ -235,7 +235,8 @@ class IndexController extends AbstractActionController
                 'administrer',
                 $fname
             ], $config, false)) {
-                $infos = getimagesize($config['path']['system'] . DIRECTORY_SEPARATOR . $fname);
+                //$infos = getimagesize($config['path']['system'] . DIRECTORY_SEPARATOR . $fname);
+                $infos = getimagesize(StdLib::concatPath($config['path']['system'], $fname));
                 $file_names[$fname] = [
                     'administrer' => $config['administrer'][$fname],
                     'width' => $infos[0],
@@ -276,7 +277,8 @@ class IndexController extends AbstractActionController
                     $data = $form->getData();
                     // Form is valid, save the form!
                     $source = $data['image-file']['tmp_name'];
-                    $dest = $this->config['img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
+                    $dest = StdLib::concatPath($this->config['img']['path']['system'], $data['image-file']['name']);
+                    //$dest = $this->config['img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
                     copy($source, $dest);
                     unlink($source);
                     $this->removeInSession('post', $this->getSessionNamespace());
