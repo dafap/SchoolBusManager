@@ -9,7 +9,7 @@
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 19 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db\Service;
@@ -104,8 +104,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      */
     public function getCanonicName($tableName, $type = 'table')
     {
-        $t = empty($this->prefix) ? '' : $this->prefix . '_';
-        return $t . substr($type, 0, 1) . "_$tableName";
+        return StdLib::entityName($tableName, $type, $this->prefix);
     }
 
     /**
