@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 20 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmPdf\Model;
@@ -707,7 +707,8 @@ class Tcpdf extends \TCPDF
             } elseif ($imgtype == 'svg') {
                 $this->ImageSVG($k_path_logo, '', '', $headerdata['logo_width']);
             } else {
-                $file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
+                //$file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
+                $file = StdLib::concatPath(SBM_BASE_PATH, $k_path_logo);
                 $this->Image($file, '', '', $headerdata['logo_width']);
             }
             $imgy = $this->getImageRBY();
