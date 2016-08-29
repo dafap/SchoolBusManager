@@ -7,7 +7,7 @@
  * @filesource StdLibTest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 août 2016
+ * @date 29 août 2016
  * @version 2016-2.2.0
  */
 namespace ModulesTests\SbmBaseTest\Model;
@@ -18,6 +18,17 @@ use SbmBase\Model\Exception;
 
 class StdLibTest extends TestCase
 {
+    public function testFindParentPath() {
+        $dir = __DIR__;
+        do {
+            $dir = dirname($dir);
+            $parts = explode(DIRECTORY_SEPARATOR, $dir);
+            $name = end($parts);
+        } while ($name != 'tests');
+        $base_path = dirname($dir);
+        $this->assertEquals($base_path . DIRECTORY_SEPARATOR . 'module', StdLib::findParentPath(__DIR__, 'module'));
+        $this->assertEquals($base_path . DIRECTORY_SEPARATOR . 'config/autoload', StdLib::findParentPath(__DIR__, 'config/autoload'));
+    }
 
     public function testEntityName()
     {

@@ -7,7 +7,7 @@
  * @filesource StdLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 août 2016
+ * @date 29 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmBase\Model;
@@ -156,6 +156,28 @@ abstract class StdLib
         } else {
             return self::getParam($index, $array, $default);
         }
+    }
+    
+    /**
+     * Renvoie le path absolu correspondant à $path dans la branche de l'arborescence 
+     * de fichiers antérieure à $dir. Renvoie false si le $path n'est pas trouvé.
+     * 
+     * @param string $dir
+     * @param string $path
+     * 
+     * @return boolean|string
+     */
+    public static function findParentPath($dir, $path)
+    {
+        $previousDir = '.';
+        while (! is_dir($dir . DIRECTORY_SEPARATOR . $path)) {
+            $dir = dirname($dir);
+            if ($previousDir === $dir) {
+                return false;
+            }
+            $previousDir = $dir;
+        }
+        return $dir . DIRECTORY_SEPARATOR . $path;
     }
 
     /**
