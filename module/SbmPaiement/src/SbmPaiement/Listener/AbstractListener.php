@@ -9,7 +9,7 @@
  * @filesource AbstractListener.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 20 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmPaiement\Listener;
@@ -63,7 +63,7 @@ abstract class AbstractListener
         $this->db_manager = $db_manager;
         $this->plateforme = $plateforme;
         $this->config_plateforme = $config_plateforme;
-        $this->log_file = realpath(__DIR__ . '/../../../../../data/logs') . DIRECTORY_SEPARATOR . $plateforme . '_error.log';
+        $this->log_file = StdLib::concatPath(realpath(__DIR__ . '/../../../../../data/logs'), $plateforme . '_error.log');
     }
     
     /**
