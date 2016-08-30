@@ -8,15 +8,19 @@
  * @filesource AbstractModule.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 30 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmBase\Module;
 
-use Zend\ModuleManager\Feature\LocatorRegisteredInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
+use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\LocatorRegisteredInterface;
 
-abstract class AbstractModule implements LocatorRegisteredInterface, AutoloaderProviderInterface
+abstract class AbstractModule implements 
+    AutoloaderProviderInterface,
+    ConfigProviderInterface,
+    LocatorRegisteredInterface 
 {
 
     /**
