@@ -8,7 +8,7 @@
  * @filesource AbstractModule.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 30 août 2016
  * @version 2016-2.2.0
  */
 namespace SbmBase;
