@@ -14,12 +14,17 @@
 namespace SbmBase;
 
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
+use Zend\ModuleManager\Feature\BootstrapListenerInterface;
+use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use SbmBase\Model\StdLib;
 
-class Module implements AutoloaderProviderInterface
+class Module implements 
+    AutoloaderProviderInterface, 
+    BootstrapListenerInterface, 
+    ServiceProviderInterface
 {
 
     public function getAutoloaderConfig()
@@ -73,7 +78,7 @@ class Module implements AutoloaderProviderInterface
     {
         $this->bootstrapSession($e);
     }
-    
+
     /**
      * Mise en place des sessions
      *
@@ -112,7 +117,7 @@ class Module implements AutoloaderProviderInterface
             }
             
             $validators = $config['sbm_session']['validators'];
-            $chain = $session->getValidatorChain();            
+            $chain = $session->getValidatorChain();
             foreach ($validators as $validator) {
                 switch ($validator) {
                     case 'Zend\Session\Validator\HttpUserAgent':
@@ -123,7 +128,7 @@ class Module implements AutoloaderProviderInterface
                         break;
                     default:
                         $validator = new $validator();
-                }                
+                }
                 $chain->attach('session.validate', array(
                     $validator,
                     'isValid'
