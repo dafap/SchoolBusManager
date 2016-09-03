@@ -11,7 +11,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 1 septembre 2016
  * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -25,6 +25,7 @@ use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Form\CriteresForm;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
+use SbmCommun\Model\Exception;
 
 /**
  * Quelques méthodes utiles
@@ -47,6 +48,24 @@ abstract class AbstractActionController extends ZendAbstractActionController
     public function __construct($config = [])
     {
         $this->config = $config;
+    }
+    
+    /**
+     * Renvoie la valeur associée à la clé $param de la propriété $config
+     * 
+     * @param string $param
+     * 
+     * @throws Exception
+     * 
+     * @return mixed
+     */
+    public function __get($param)
+    {
+        if (array_key_exists($param, $this->config)) {
+            return $this->config[$param];
+        }
+        $message = sprintf('Le paramètre %s n\'est pas une propriété définie par le ControllerFactory.', $param);
+        throw new Exception($message);
     }
 
     /**
