@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2015
- * @version 2015-1.6.7
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Form;
 
@@ -2131,6 +2131,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     '1' => 'Parent',
                     '2' => 'Transporteur',
                     '3' => 'Etablissement scolaire',
+                    '250' => 'Secrétariat',
                     '253' => 'Gestionnaire',
                     '254' => 'Administrateur'
                 ),

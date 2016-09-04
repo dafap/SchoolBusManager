@@ -45,17 +45,17 @@ class CarteController extends AbstractActionController
                 return $this->redirect()->toRoute('home');
             }
         }
-        $tEtablissements = $this->config['db_manager']->get('Sbm\Db\Vue\Etablissements');
+        $tEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
         $ptEtablissements = array();
         foreach ($tEtablissements->fetchAll() as $etablissement) {
             $pt = new Point($etablissement->x, $etablissement->y);
             $pt->setAttribute('etablissement', $etablissement);
-            $ptEtablissements[] = $this->config['projection']->xyzVersgRGF93($pt);
+            $ptEtablissements[] = $this->projection->xyzVersgRGF93($pt);
         }
         
         return new ViewModel(array(
             'ptEtablissements' => $ptEtablissements,
-            'config' => StdLib::getParam('etablissements', $this->config['config_cartes'])
+            'config' => StdLib::getParam('etablissements', $this->config_cartes)
         ));
     }
 
@@ -76,18 +76,18 @@ class CarteController extends AbstractActionController
                 return $this->redirect()->toRoute('home');
             }
         }
-        $tStations = $this->config['db_manager']->get('Sbm\Db\Vue\Stations');
+        $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
         $ptStations = array();
         foreach ($tStations->fetchAll() as $station) {
             $pt = new Point($station->x, $station->y);
             $pt->setAttribute('station', $station);
-            $ptStations[] = $this->config['projection']->xyzVersgRGF93($pt);
+            $ptStations[] = $this->projection->xyzVersgRGF93($pt);
         }
         
         return new ViewModel(array(
             'ptStations' => $ptStations,
             // on utilise la même configuration (centre, zoom) que pour les établissements
-            'config' => StdLib::getParam('etablissements', $this->config['config_cartes'])
+            'config' => StdLib::getParam('etablissements', $this->config_cartes)
         ));
     }
 } 

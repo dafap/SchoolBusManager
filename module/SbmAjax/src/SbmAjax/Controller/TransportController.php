@@ -10,7 +10,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 4 sept. 2016
  * @version 2016-2.2.0
  */
 namespace SbmAjax\Controller;
@@ -33,7 +33,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $circuitId = $this->params('circuitId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Circuits')
             ->setSelection($circuitId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -56,7 +56,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $circuitId = $this->params('circuitId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Circuits')
             ->setSelection($circuitId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -80,7 +80,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $classeId = $this->params('classeId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\classes')
             ->setSelection($classeId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -103,7 +103,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $classeId = $this->params('classeId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\classes')
             ->setSelection($classeId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -127,7 +127,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $communeId = $this->params('communeId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Communes')
             ->setSelection($communeId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -150,7 +150,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $communeId = $this->params('communeId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Communes')
             ->setSelection($communeId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -174,7 +174,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $etablissementId = $this->params('etablissementId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Etablissements')
             ->setSelection($etablissementId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -197,7 +197,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $etablissementId = $this->params('etablissementId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Etablissements')
             ->setSelection($etablissementId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -221,7 +221,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $etablissementId = $this->params('etablissementId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Etablissements')
             ->setVisible($etablissementId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -244,7 +244,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $etablissementId = $this->params('etablissementId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Etablissements')
             ->setVisible($etablissementId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -268,7 +268,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $etablissementId = $this->params('etablissementId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Etablissements')
             ->setDesservie($etablissementId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -291,7 +291,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $etablissementId = $this->params('etablissementId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Etablissements')
             ->setDesservie($etablissementId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -315,7 +315,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $serviceId = $this->params('serviceId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Services')
             ->setSelection($serviceId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -338,7 +338,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $serviceId = $this->params('serviceId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Services')
             ->setSelection($serviceId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -362,7 +362,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $stationId = $this->params('stationId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Stations')
             ->setSelection($stationId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -385,7 +385,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $stationId = $this->params('stationId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Stations')
             ->setSelection($stationId, 0);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -401,7 +401,7 @@ class TransportController extends AbstractActionController
     public function getcircuitstationsAction()
     {
         $millesime = Session::get('millesime');
-        $queryStations = $this->config['db_manager']->get('Sbm\Db\Select\Stations');
+        $queryStations = $this->db_manager->get('Sbm\Db\Select\Stations');
         $stations = $queryStations->surcircuit($this->params('serviceId'), $millesime);
         return $this->getResponse()->setContent(Json::encode(array(
             'data' => array_flip($stations), // échange key/value pour conserver le tri
@@ -419,7 +419,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $transporteurId = $this->params('transporteurId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Transporteurs')
             ->setSelection($transporteurId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -442,7 +442,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $transporteurId = $this->params('transporteurId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Transporteurs')
             ->setSelection($transporteurId, 0);
             return $this->getResponse()->setContent(Json::encode(array(

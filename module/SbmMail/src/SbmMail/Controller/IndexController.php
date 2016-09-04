@@ -11,7 +11,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
+ * @date 4 sept. 2016
  * @version 2016-2.2.0
  */
 namespace SbmMail\Controller;
@@ -50,8 +50,8 @@ class IndexController extends AbstractActionController
                 ));
             }
         }
-        $user = $this->config['user'];
-        $form = $this->config['form_manager']->get('SbmMail\MailForm');
+        $user = $this->user;
+        $form = $this->form_manager->get('SbmMail\MailForm');
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -68,7 +68,7 @@ class IndexController extends AbstractActionController
                 }
                 // envoie l'email
                 $params = array(
-                    'bcc' => StdLib::getParam('destinataires', $this->config['mail_config']),
+                    'bcc' => StdLib::getParam('destinataires', $this->mail_config),
                     'cc' => array(
                         array(
                             'email' => $user['email'],
@@ -111,12 +111,12 @@ class IndexController extends AbstractActionController
      */
     public function lastDayChangesAction()
     {
-        $tCalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         try {
             $millesime = $tCalendar->getCurrentMillesime();
-            $history = $this->config['db_manager']->get('Sbm\Db\Query\History');
-            $services = $this->config['db_manager']->get('Sbm\Db\Table\Services');
-            $transporteurs = $this->config['db_manager']->get('Sbm\Db\Table\Transporteurs');
+            $history = $this->db_manager->get('Sbm\Db\Query\History');
+            $services = $this->db_manager->get('Sbm\Db\Table\Services');
+            $transporteurs = $this->db_manager->get('Sbm\Db\Table\Transporteurs');
             $destinataires = array();
             $changes = $history->getLastDayChanges('affectations', $millesime);
             if ($changes instanceof \Traversable) {
@@ -136,18 +136,14 @@ class IndexController extends AbstractActionController
                 $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
                 $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', [
                     'file_name' => $logo_bas_de_mail,
-                    'path' => StdLib::getParamR([
-                        'img',
-                        'path'
-                    ], $this->config),
+                    'path' => StdLib::getParam('path', $this->img),
                     'img_attributes' => StdLib::getParamR([
-                        'img',
                         'administrer',
                         $logo_bas_de_mail
-                    ], $this->config),
-                    'client' => StdLib::getParam('client', $this->config)
+                    ], $this->img),
+                    'client' => $this->client
                 ]);
-                $qtransporteurs = $this->config['db_manager']->get('Sbm\Db\Query\Transporteurs');
+                $qtransporteurs = $this->db_manager->get('Sbm\Db\Query\Transporteurs');
                 $controle = array();
                 foreach ($destinataires as $transporteurId => $circuits) {
                     $odata = $transporteurs->getRecord($transporteurId);

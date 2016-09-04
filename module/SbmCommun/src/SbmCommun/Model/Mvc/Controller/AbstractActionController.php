@@ -170,7 +170,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
                 $where = $criteresObject[2]($where, $args);
             }
-            $call_pdf = $this->config['RenderPdfService'];
+            $call_pdf = $this->RenderPdfService;
             
             if ($docaffectationId = $this->params('id', false)) {
                 // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
@@ -515,9 +515,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
      */
     protected function getPaginatorCountPerPage($paginateurId, $default)
     {
-        if (array_key_exists('paginator_count_per_page', $this->config)) {
-            return (int) StdLib::getParam($paginateurId, $this->config['paginator_count_per_page'], $default);
-        } else {
+        try {
+            return (int) StdLib::getParam($paginateurId, $this->paginator_count_per_page, $default);
+        } catch (Exception $e) {
             return $default;
         }
     }

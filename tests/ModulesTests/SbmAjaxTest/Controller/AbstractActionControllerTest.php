@@ -72,4 +72,17 @@ class AbstractActionControllerTest extends TestCase
         $args = $this->controller->params('rm');
         $this->assertEquals($expected, $args);
     }
+    
+    /**
+     * Test du comportement de __get dans le cas où il lance une exception
+     */
+    public function testUnvalideGet()
+    {
+        try {
+            $tmp = $this->controller->fantome;
+            $this->assertTrue(false, 'Aurait du lancer une exception.');
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(\SbmAjax\Controller\Exception::class, $e, $e->getMessage());
+        }
+    }
 }

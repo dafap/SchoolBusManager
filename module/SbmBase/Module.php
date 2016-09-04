@@ -100,8 +100,11 @@ class Module implements
         if (! isset($container->init)) {
             $serviceManager = $e->getApplication()->getServiceManager();
             $request = $serviceManager->get('Request');
-            
-            $session->regenerateId(true);
+            try {
+                $session->regenerateId(true);
+            } catch (\Exception $e) {
+                // try catch nécessaire pour les tests unitaires avec AbstractControllerTestCase
+            }            
             $container->init = 1;
             if ($request instanceof \Zend\Http\PhpEnvironment\Request) {
                 $container->remoteAddr = $request->getServer()->get('REMOTE_ADDR');
