@@ -31,7 +31,7 @@ class PdfController extends AbstractActionController
     public function pdfListeAction()
     {
         $getTemplateList = function () {
-            $form = $this->pdf_manager->get('FormDocumentPdf');            
+            $form = $this->pdf_manager->get('FormDocumentPdf');
             $element = $form->get('page_templateId');
             return $element->getValueOptions();
         };
@@ -68,6 +68,8 @@ class PdfController extends AbstractActionController
                     'value_options' => $getTemplateList()
                 ]
             ]
+        ], null, [
+            'page_templateId'
         ]);
         if ($args instanceof Response)
             return $args;

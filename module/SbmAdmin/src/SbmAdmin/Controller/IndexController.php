@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
+ * @date 7 sept. 2016
  * @version 2016-2.2.0
  */
 namespace SbmAdmin\Controller;
@@ -51,7 +51,9 @@ class IndexController extends AbstractActionController
         $args = $this->initListe('libelles', function ($config, $form) {
             $form->setValueOptions('nature', $config['db_manager']->get('Sbm\Db\Select\Libelles')
                 ->nature());
-        });
+        }, [
+            'nature'
+        ]);
         if ($args instanceof Response)
             return $args;
         
@@ -256,7 +258,10 @@ class IndexController extends AbstractActionController
                 ->clgPu())
                 ->setValueOptions('communeId', $config['db_manager']->get('Sbm\Db\Select\Communes')
                 ->membres());
-        });
+        }, [
+            'etablissementId',
+            'communeId'
+        ]);
         if ($args instanceof Response)
             return $args;
         

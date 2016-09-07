@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
+ * @date 7 sept. 2016
  * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
@@ -99,11 +99,14 @@ class FinanceController extends AbstractActionController
     public function paiementListeAction()
     {
         /*
-         * On commence par un PostRedirectGet pour régler les passages de paramètres provenant de $_POST ou d'une redirection.
-         * En effet, lorsqu'on lance une redirection pour revenir sur dans la liste après une action (ajouter, supprimer, modifier)
-         * les paramètres ne peuvent être passés que dans la route. C'est pas bien commode puisqu'ils sont alors vu dans la barre d'adresse.
-         * Pour éviter cela, on passe les paramètres pas methode post mais la redirection ne le permet pas. On utilise alors le prg.
-         * Cela règle en même temps le problème du F5 sur une page contenant un formulaire (voulez-vous renvoyer les données du formulaire ?).
+         * On commence par un PostRedirectGet pour régler les passages de paramètres provenant
+         * de $_POST ou d'une redirection. En effet, lorsqu'on lance une redirection pour revenir
+         * sur dans la liste après une action (ajouter, supprimer, modifier) les paramètres ne
+         * peuvent être passés que dans la route. C'est pas bien commode puisqu'ils sont alors vus
+         * dans la barre d'adresse. Pour éviter cela, on passe les paramètres pas methode post mais
+         * la redirection ne le permet pas. On utilise alors le prg. Cela règle en même temps le
+         * problème du F5 sur une page contenant un formulaire (voulez-vous renvoyer les données
+         * du formulaire ?).
          */
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -177,7 +180,10 @@ class FinanceController extends AbstractActionController
                 $criteres_form->setData($criteres_obj->getArrayCopy());
             }
             return new ViewModel(array(
-                'paginator' => $tablePaiements->paginator($criteres_obj->getWhere(), $order),
+                'paginator' => $tablePaiements->paginator($criteres_obj->getWhere([
+                    'codeCaisse',
+                    'codeModeDePaiement'
+                ]), $order),
                 'count_per_page' => $nb_paiements,
                 'criteres_form' => $criteres_form,
                 'h2' => false,
@@ -758,7 +764,11 @@ class FinanceController extends AbstractActionController
             $form->setValueOptions('rythme', $table->getRythmes());
             $form->setValueOptions('grille', $table->getGrilles());
             $form->setValueOptions('mode', $table->getModes());
-        });
+        }, [
+            'rythme',
+            'grille',
+            'mode'
+        ]);
         if ($args instanceof Response)
             return $args;
         return new ViewModel(array(
