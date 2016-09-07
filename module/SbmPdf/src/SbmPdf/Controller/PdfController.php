@@ -9,7 +9,7 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 7 sept. 2016
  * @version 2016-2.2.0
  */
 namespace SbmPdf\Controller;
@@ -30,7 +30,45 @@ class PdfController extends AbstractActionController
      */
     public function pdfListeAction()
     {
-        $args = $this->initListe('pdf');
+        $getTemplateList = function () {
+            $form = $this->pdf_manager->get('FormDocumentPdf');            
+            $element = $form->get('page_templateId');
+            return $element->getValueOptions();
+        };
+        $args = $this->initListe([
+            [
+                'name' => 'documentId',
+                'type' => 'text',
+                'attributes' => [
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Id'
+                ]
+            ],
+            [
+                'name' => 'name',
+                'type' => 'text',
+                'attributes' => [
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom'
+                ]
+            ],
+            [
+                'name' => 'page_templateId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Modèle',
+                    'empty_option' => 'Tous',
+                    'value_options' => $getTemplateList()
+                ]
+            ]
+        ]);
         if ($args instanceof Response)
             return $args;
         
@@ -605,7 +643,7 @@ class PdfController extends AbstractActionController
         ];
         $r = $this->addData($this->db_manager, $params, function ($post) {
             return $post;
-        }, function ($post) use($pdf_manager, $form){
+        }, function ($post) use($pdf_manager, $form) {
             $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                 ->setRecordSource($post['documentId']);
             $form->setValueOptions('tbody', $columns->getListeForSelect());
