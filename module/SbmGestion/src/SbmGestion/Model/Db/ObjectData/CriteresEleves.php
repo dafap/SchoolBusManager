@@ -299,11 +299,11 @@ class CriteresEleves extends SbmCommunCriteres
                     $where->nest()
                         ->nest()
                         ->literal('demandeR1 = 2')
-                        ->literal('accordR1 = 0')
+                        //->literal('accordR1 = 0')
                         ->literal('subventionR1 = 1')
                         ->unnest()->OR->nest()
                         ->literal('demandeR2 = 2')
-                        ->literal('accordR2 = 0')
+                        //->literal('accordR2 = 0')
                         ->literal('subventionR2 = 1')
                         ->unnest()
                         ->unnest();
@@ -441,7 +441,8 @@ class CriteresEleves extends SbmCommunCriteres
                     break;
                 case 3:
                     // subvention
-                    $filtre['expression'][] = '((demandeR1 = 2 AND accordR1 = 0 AND subventionR1 = 1) OR (demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 1))';
+                    //$filtre['expression'][] = '((demandeR1 = 2 AND accordR1 = 0 AND subventionR1 = 1) OR (demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 1))';
+                    $filtre['expression'][] = '((demandeR1 = 2 AND AND subventionR1 = 1) OR (demandeR2 = 2 AND subventionR2 = 1))';
                     break;
                 case 4:
                     // refus total
