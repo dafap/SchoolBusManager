@@ -7,7 +7,7 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
+ * @date 21 sept. 2016
  * @version 2016-2.2.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
@@ -133,11 +133,11 @@ class CriteresEleves extends SbmCommunCriteres
                     $where->nest()
                         ->nest()
                         ->literal('demandeR1 = 2')
-                        ->literal('accordR1 = 0')
+                        //->literal('accordR1 = 0')
                         ->literal('subventionR1 = 1')
                         ->unnest()->OR->nest()
                         ->literal('demandeR2 = 2')
-                        ->literal('accordR2 = 0')
+                        //->literal('accordR2 = 0')
                         ->literal('subventionR2 = 1')
                         ->unnest()
                         ->unnest();

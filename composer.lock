@@ -178,16 +178,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.5.2",
+            "version": "1.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "da8529775f14f4fdae33f916eb0cf65f6afbddbc"
+                "reference": "ea74994a3dc7f8d2f65a06009348f2d63c81e61f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/da8529775f14f4fdae33f916eb0cf65f6afbddbc",
-                "reference": "da8529775f14f4fdae33f916eb0cf65f6afbddbc",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/ea74994a3dc7f8d2f65a06009348f2d63c81e61f",
+                "reference": "ea74994a3dc7f8d2f65a06009348f2d63c81e61f",
                 "shasum": ""
             },
             "require": {
@@ -216,7 +216,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2016-09-06 16:07:05"
+            "time": "2016-09-16 13:37:59"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -859,22 +859,30 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
+                "reference": "5277094ed527a1c4477177d102fe4c53551953e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/5277094ed527a1c4477177d102fe4c53551953e0",
+                "reference": "5277094ed527a1c4477177d102fe4c53551953e0",
                 "shasum": ""
             },
+            "require": {
+                "php": ">=5.3.0"
+            },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
             "autoload": {
-                "psr-0": {
-                    "Psr\\Log\\": ""
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -888,12 +896,13 @@
                 }
             ],
             "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
             "keywords": [
                 "log",
                 "psr",
                 "psr-3"
             ],
-            "time": "2012-12-21 11:40:51"
+            "time": "2016-09-19 16:02:08"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -2219,17 +2228,17 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "1.3.5",
+            "version": "1.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "ccc575ceedc8c64360379cbe6bf225bfaa34c121"
+                "reference": "edaed184da6c5469f2bec96436d8110914163aaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.3.5-f9c2c1.zip",
-                "reference": "ccc575ceedc8c64360379cbe6bf225bfaa34c121",
-                "shasum": "77549f13ede6dc68e84dc0ea3580bf77afced2bb"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.3.6-8a81c6.zip",
+                "reference": "edaed184da6c5469f2bec96436d8110914163aaa",
+                "shasum": "271c9bbd2085c77a33645c134b0079b87ce07402"
             },
             "require": {
                 "php": "^5.4 || ^7.0",
@@ -2239,7 +2248,7 @@
                 "psr/http-message-implementation": "~1.0.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.6",
+                "phpunit/phpunit": "^4.6 || ^5.5",
                 "squizlabs/php_codesniffer": "^2.3.1"
             },
             "type": "library",
@@ -2298,7 +2307,7 @@
                 "issues": "https://github.com/zendframework/zend-diactoros/issues",
                 "source": "https://github.com/zendframework/zend-diactoros"
             },
-            "time": "2016-03-17 18:02:05"
+            "time": "2016-09-07 17:57:29"
         },
         {
             "name": "zendframework/zend-dom",
@@ -2637,17 +2646,17 @@
         },
         {
             "name": "zendframework/zend-form",
-            "version": "2.9.0",
+            "version": "2.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-form.git",
-                "reference": "784dfff4d171f736c38e63e80ba32d5814bee63d"
+                "reference": "9ada2ce1cfc0610771b68351f118b55775162b44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-form-2.9.0-eaf528.zip",
-                "reference": "784dfff4d171f736c38e63e80ba32d5814bee63d",
-                "shasum": "ab700ff04a3b699f5651a91218d9d267e5a5f3c0"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-form-2.9.1-51328a.zip",
+                "reference": "9ada2ce1cfc0610771b68351f118b55775162b44",
+                "shasum": "a1eefe9850e1746e7705386cdb68f1114f455801"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -2661,7 +2670,7 @@
                 "phpunit/phpunit": "^4.8",
                 "zendframework/zend-cache": "^2.6.1",
                 "zendframework/zend-captcha": "^2.5.4",
-                "zendframework/zend-code": "^2.6",
+                "zendframework/zend-code": "^2.6 || ^3.0",
                 "zendframework/zend-escaper": "^2.5",
                 "zendframework/zend-eventmanager": "^2.6.2 || ^3.0",
                 "zendframework/zend-filter": "^2.6",
@@ -2736,7 +2745,7 @@
                 "form",
                 "zf2"
             ],
-            "time": "2016-06-07 18:22:51"
+            "time": "2016-09-14 17:47:35"
         },
         {
             "name": "zendframework/zend-http",
@@ -5189,13 +5198,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "4d8a2e4a56b9620fb986657e0e701e1e65bfc7a5"
+                "reference": "6c4854eed280ff46d43f2f3ed609d1d7c2ed3ee2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-dev-master-3aa6cd.zip",
-                "reference": "4d8a2e4a56b9620fb986657e0e701e1e65bfc7a5",
-                "shasum": "84dc45d338f8eb1f256d3a6fdedca15b5826b378"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-dev-master-5df337.zip",
+                "reference": "6c4854eed280ff46d43f2f3ed609d1d7c2ed3ee2",
+                "shasum": "fb68cca736cdbd79ebb54eb36a49b50e9a851c87"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -5283,7 +5292,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2016-06-27 20:52:58"
+            "time": "2016-09-08 13:55:36"
         }
     ],
     "aliases": [],
