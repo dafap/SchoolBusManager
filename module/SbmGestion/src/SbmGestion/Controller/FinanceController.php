@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 sept. 2016
- * @version 2016-2.2.0
+ * @date 10 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmGestion\Controller;
 
@@ -125,13 +125,21 @@ class FinanceController extends AbstractActionController
             }
         } else {
             // suite à un post,
-            // l'appel provient du formulaire de criteres ou de la liste des responsables ou de la sortie d'un paiement-ajout ou d'un paiement-edit
+            // l'appel provient du formulaire de criteres ou de la liste des responsables 
+            // ou de la sortie d'un paiement-ajout ou d'un paiement-edit 
+            // ou d'un eleve-edit
             // séparer les criteres et le post en session
             $is_post = true;
             if (array_key_exists('op', $prg)) {
-                // arrive de la liste des responsables
-                $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
-                $args = array_merge($args, $prg);
+                // arrive de la liste des responsables ou d'une fiche élève
+                if ($prg['op'] == 'eleve-edit') {
+                    // pour compatibilité des appels depuis la fiche élève
+                    $args = $prg;
+                    $args['url1_retour'] = $args['origine'];
+                } else {
+                    $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+                    $args = array_merge($args, $prg);
+                }
             } else {
                 // vient du formulaire des critères ou de la sortie d'un paiement-ajout ou d'un paiement-edit
                 $args = $prg;
@@ -156,7 +164,6 @@ class FinanceController extends AbstractActionController
         $order = 'datePaiement DESC';
         // configuration du paginator
         $nb_paiements = $this->getPaginatorCountPerPage('nb_paiements', 15);
-        
         if ($responsableId == - 1) {
             // pas de $responsableId - gestion de tous les paiements
             $criteres_form = new CriteresForm('paiements');
@@ -195,7 +202,8 @@ class FinanceController extends AbstractActionController
             ));
         } else {
             // gestion des paiements du $responsableId.
-            // L'appel peut provenir de la liste des responsables, de la fiche d'un responsable ou de la liste des paiements.
+            // L'appel peut provenir de la liste des responsables, de la fiche d'un responsable, 
+            // de la fiche d'un eleve ou de la liste des paiements.
             // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
             $millesime = Session::get('millesime');
             $as = sprintf('%d-%d', $millesime, $millesime + 1);

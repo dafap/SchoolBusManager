@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 10 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmGestion\Controller;
 
@@ -503,7 +503,7 @@ class EleveController extends AbstractActionController
             $prg = $this->prg();
             if ($prg instanceof Response) {
                 return $prg;
-            } elseif ($prg === false) {
+            } elseif ($prg === false || (isset($prg['op']) && $prg['op'] == 'retour')) {
                 $args = $this->getFromSession('post', false);
                 if ($args === false) {
                     $this->flashMessenger()->addErrorMessage('Action interdite');
@@ -691,6 +691,10 @@ class EleveController extends AbstractActionController
         }
         // historique des responsables
         $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable1Id);
+        $args_paiement = [
+            'responsableId' => $odata0->responsable1Id,
+            'responsable' => sprintf('%s %s %s', $r->titre, $r->nom, $r->prenom)
+        ];
         $historique['responsable1']['dateCreation'] = $r->dateCreation;
         $historique['responsable1']['dateModification'] = $r->dateModification;
         $historique['responsable1']['dateDemenagement'] = $r->dateDemenagement;
@@ -712,6 +716,7 @@ class EleveController extends AbstractActionController
             'identite' => $identite, // nécessaire pour la compatibilité des appels
             'data' => $invariants,
             'historique' => $historique,
+            'args_paiement' => $args_paiement,
             'affectations' => $affectations
         ]);
     }

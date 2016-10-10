@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 10 oct. 2016
+ * @version 2016-2.2.1
  */
 use SbmBase\Model\DateLib;
 
@@ -57,7 +57,9 @@ $url_map = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-localisation',
     'page' => $this->page
 ));
-
+$url_euro = $this->url('sbmgestion/finance', [
+    'action' => 'paiement-liste'
+]);
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -77,7 +79,8 @@ $js = 'window.document.getElementById(\'op\').value=%s;';
 $hiddens = array(
     'eleveId' => $this->eleveId,
     'eleve' => $this->identite,
-    'origine' => $url_ici
+    'origine' => $url_ici,
+    'responsableId' => $this->args_paiement['responsableId']
 );
 $actions = array(
     'cancel' => array(
@@ -90,7 +93,13 @@ $actions = array(
         'formaction' => $url_map,
         'title' => 'localiser cet élève sur la carte',
         'onclick' => sprintf($js, "'localiser'")
-    )
+    ),
+    'payer' => [
+        'class' => 'fam-money-euro',
+        'formaction' => $url_euro,
+        'title' => 'paiements de ' . $this->args_paiement['responsable'],
+        'onclick' => sprintf($js, "'eleve-edit'")
+    ]
 );
 ?>
 <div id="winpopup"></div>
@@ -189,10 +198,10 @@ echo $this->formHidden($this->form->get('csrf'));
 										data-href="/op:add"></i>
 								</h3>
 								<?php
-								if (isset($structAffectations[1])) {
-								    echo $this->affectations(1, $structAffectations[1]);
-								}
-								?>
+        if (isset($structAffectations[1])) {
+            echo $this->affectations(1, $structAffectations[1]);
+        }
+        ?>
                             </div>
 						</div>
 					</div>
@@ -231,10 +240,10 @@ echo $this->formHidden($this->form->get('csrf'));
 										data-href="/op:add"></i>
 								</h3>
 								<?php
-								if (isset($structAffectations[2])) {
-								    echo $this->affectations(2, $structAffectations[2]);
-								}
-								?>
+        if (isset($structAffectations[2])) {
+            echo $this->affectations(2, $structAffectations[2]);
+        }
+        ?>
                             </div>
 						</div>
 					</div>
