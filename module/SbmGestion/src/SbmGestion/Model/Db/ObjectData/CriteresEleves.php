@@ -7,8 +7,8 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 sept. 2016
- * @version 2016-2.2.0
+ * @date 10 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -172,6 +172,9 @@ class CriteresEleves extends SbmCommunCriteres
         }
         if (! empty($this->data['selection'])) {
             $where->literal('ele.selection = 1');
+        }
+        if (! empty($this->data['ga'])) {
+            $where->isNotNull('ele.responsable2Id');
         }
         if (! empty($this->data['nonaffecte'])) {
             $where->isNull('aff.eleveId');
@@ -343,6 +346,10 @@ class CriteresEleves extends SbmCommunCriteres
             $where->literal('selection = 1');
             $pageheader_string[] = 'élèves sélectionnés';
         }
+        if (! empty($this->data['ga'])) {
+            $where->isNotNull('responsable2Id');
+            $pageheader_string[] = 'élèves en garde alternée';
+        }
         if (! empty($this->data['nonaffecte'])) {
             $where->isNull('eleveIdAffectation');
             $pageheader_string[] = 'élèves sans affectation';
@@ -449,6 +456,9 @@ class CriteresEleves extends SbmCommunCriteres
                     $filtre['expression'][] = '((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 0) OR (demandeR1 = 2 AND accordR1 = 0 AND subventionR1 = 0 AND demandeR2 = 0) OR (demandeR1 = 2 and accordR1 = 0 AND subventionR1 = 0 AND demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 0))';
                     break;
             }
+        }
+        if (! empty($this->data['ga'])) {
+            $filtre['expression'][] = 'responsable2Id IS NOT NULL';
         }
         if (! empty($this->data['nonaffecte'])) {
             $filtre['expression'][] = 'eleveIdAffectation IS NULL';

@@ -7,8 +7,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2015
- * @version 2015-1
+ * @date 10 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -224,6 +224,25 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'ga',
+            'attributes' => array(
+                'type' => 'checkbox',
+                'useHiddenElement' => false,
+                'options' => array(
+                    'checkedValue' => false,
+                    'uncheckedValue' => true
+                ),
+                'class' => 'sbm-checkbox'
+            ),
+            'options' => array(
+                'label' => 'Garde alternée',
+                'error_attributes' => array(
+                    'class' => 'sbm-error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'distancezero',
             'attributes' => array(
                 'type' => 'checkbox',
@@ -333,6 +352,11 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
             ),
             'derogation' => array(
                 'name' => 'derogation',
+                'required' => false
+            ),
+
+            'ga' => array(
+                'name' => 'ga',
                 'required' => false
             ),
             'selection' => array(
