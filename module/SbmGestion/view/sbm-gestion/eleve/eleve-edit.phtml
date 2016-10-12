@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
+ * @date 12 oct. 2016
  * @version 2016-2.2.1
  */
 use SbmBase\Model\DateLib;
@@ -65,8 +65,15 @@ $this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custo
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/edit.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
+$this->headScript()->captureStart();
+?>
+multicheckbox_actions.init("eleve", "wrapper-joursTransport");
+<?php
+$this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
+
 const ELEVE_ID = <?php echo $this->eleveId;?>;
 const IDENTITE = "<?php echo urlencode($this->identite)?>";
 const URL_ICI = "<?php echo $url_ici;?>";
@@ -78,7 +85,7 @@ $js = 'window.document.getElementById(\'op\').value=%s;';
 
 $hiddens = array(
     'eleveId' => $this->eleveId,
-    'eleve' => $this->identite,
+    'eleveName' => $this->identite,
     'origine' => $url_ici,
     'responsableId' => $this->args_paiement['responsableId']
 );

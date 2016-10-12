@@ -14,8 +14,10 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile($this->basePath('/js/gestion-circuit.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->inlineScript()->captureStart();
 ?>
+multicheckbox_actions.init("circuit", "circuit-edit-semaine");
 js_actions.init();
 <?php 
 $this->inlineScript()->captureEnd();

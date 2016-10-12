@@ -7,8 +7,8 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2015
- * @version 2015-1
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -179,7 +179,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\MultiCheckbox',
             'name' => 'joursTransport',
             'attributes' => array(
-                'id' => 'eleve_joursTransport',
+                // pas de id car l'id n'est placé que sur la première option du multicheckbox
                 'class' => 'sbm-multicheckbox'
             ),
             'options' => array(

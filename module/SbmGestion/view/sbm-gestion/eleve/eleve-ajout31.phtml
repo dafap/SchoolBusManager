@@ -20,14 +20,16 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 août 2016
- * @version 2016-2.1.10
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout31.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->inlineScript()->captureStart();
 ?>
+multicheckbox_actions.init("eleve", "wrapper-joursTransport");
 js_ajout31.init();
 <?php 
 $this->inlineScript()->captureEnd();
@@ -43,7 +45,7 @@ $url_ici = $this->url('sbmgestion/eleve', array(
 ));
 $hiddens = array(
     'eleveId' => $this->data['eleveId'],
-    'eleve' => $this->info,
+    'eleveName' => $this->info,
     'origine' => $url_ici
 );
 $actions = array(
