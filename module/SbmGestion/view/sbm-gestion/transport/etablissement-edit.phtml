@@ -8,10 +8,17 @@
  * @filesource view/sbm-gestion/transport/etablissement-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
+$this->inlineScript()->captureStart();
+?>
+multicheckbox_actions.init("etablissement-edit-jOuverture");
+<?php 
+$this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport', array('action'=> 'etablissement-liste', 'page' => $this->page));
 $hiddens = array();

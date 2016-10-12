@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -17,7 +17,7 @@ $this->headScript()->appendFile($this->basePath('/js/gestion-circuit.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->inlineScript()->captureStart();
 ?>
-multicheckbox_actions.init("circuit", "circuit-ajout-semaine");
+multicheckbox_actions.init("circuit-ajout-semaine");
 js_actions.init();
 <?php 
 $this->inlineScript()->captureEnd();
