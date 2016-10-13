@@ -671,6 +671,17 @@ div#fiche-inner div.row-inner input.cancel {
 #fiche-inner #eleve #commun-col2 label {
 	width: 107px;
 }
+#fiche-inner #eleve #commun-col2 span {
+	background: #eee;
+	color: gray;
+	font-size: 80%;
+}
+#fiche-inner #eleve #commun-col2 span.etablissement-precedent {
+	margin-left: 112px;
+}
+#fiche-inner #eleve #commun-col2 span.classe-precedente {
+	margin-left: 20px;
+}
 #fiche-inner #eleve #commun-col2-periode label {
 	width: inherit;
 	margin-right: 3px;

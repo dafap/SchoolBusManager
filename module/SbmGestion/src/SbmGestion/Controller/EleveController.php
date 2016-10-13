@@ -717,7 +717,8 @@ class EleveController extends AbstractActionController
             'data' => $invariants,
             'historique' => $historique,
             'args_paiement' => $args_paiement,
-            'affectations' => $affectations
+            'affectations' => $affectations,
+            'scolarite_precedente' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
         ]);
     }
 

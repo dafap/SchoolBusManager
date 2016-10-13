@@ -132,8 +132,14 @@ echo $this->formHidden($this->form->get('csrf'));
 					<div id="wrapper-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport'));?></div>
 				</div>
 				<div id="commun-col2" class="float-left left-10px">
-					<div id="wrapper-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
-					<div id="wrapper-classeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('classeId'));?></div>
+					<div id="wrapper-etablissementId" class="row-inner edit">
+					<?php echo $this->formRow($this->form->get('etablissementId'));?>
+					<br><span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
+					</div>
+					<div id="wrapper-classeId" class="row-inner edit">
+					<?php echo $this->formRow($this->form->get('classeId'));?>
+					<span class='classe-precedente'><?php echo $this->scolarite_precedente['classe']; ?></span>
+					</div>
 					<div id="commun-col2-periode" class="clearfix">
 						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
 						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
