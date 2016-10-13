@@ -410,7 +410,7 @@ div.menu ul.menubar ul li input {
 }
 /*--------------- Pagination ----------------------------*/
 /* la pagination est dans un clearfix pour que ça marche */
-div.pagination {
+div.clearfix div.pagination {
 	float: right;
 	margin-top: 10px;
 	margin-bottom: 10px;
@@ -419,28 +419,37 @@ div.pagination {
 	font-size: 110%;
 	font-weight: bold;
 }
-div.pagination .disabled {
+div.clearfix div.pagination .disabled {
 	display: none;
 }
-div.pagination span.nbItems, 
-div.pagination span.current {
+div.clearfix div.pagination span.nbItems, 
+div.clearfix div.pagination span.current {
 	color: orange;
 	margin-left: 3px;
 	margin-right: 3px;
 }
-div.pagination span.current {
+div.clearfix div.pagination span.current {
 	border: 1px solid orange;
 }
-div.pagination a.page {
+div.clearfix div.pagination a.page {
 	margin-left: 3px;
 	margin-right: 3px;
 	text-decoration: none;
 	color: #1c94c4
 }
-div.pagination a.page:hover {
+div.clearfix div.pagination a.page:hover {
 	color: #156486;
 }
-/*--------------- Menu général --------------*/
+/*------------ Selection (à coté du paginateur) ---------*/
+div.pagination-wrapper div.selection {
+	float: left;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 20px;
+	color: #176f94;
+	font-size: 110%;
+}
+/*-------------------- Menu général ---------------------*/
 #menugeneral-inner ul {
 	list-style-type: none;
     padding: 0px;

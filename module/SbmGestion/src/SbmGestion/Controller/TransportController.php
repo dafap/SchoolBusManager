@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 13 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmGestion\Controller;
 
@@ -77,15 +77,10 @@ class TransportController extends AbstractActionController
             return $args;
         
         $args['where']->equalTo('millesime', $this->getFromSession('millesime'));
-        $auth = $this->authenticate
-            ->by('email');
+        $auth = $this->authenticate->by('email');
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Vue\Circuits')
-                ->paginator($args['where']),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byCircuit(),
+            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator($args['where']),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
             'criteres_form' => $args['form'],
@@ -103,10 +98,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormCircuit();
-        $form->setValueOptions('serviceId', $this->db_manager
-            ->get('Sbm\Db\Select\Services'))
-            ->setValueOptions('stationId', $this->db_manager
-            ->get('Sbm\Db\Select\Stations')
+        $form->setValueOptions('serviceId', $this->db_manager->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
             ->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
@@ -223,10 +216,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormCircuit();
-        $form->setValueOptions('serviceId', $this->db_manager
-            ->get('Sbm\Db\Select\Services'))
-            ->setValueOptions('stationId', $this->db_manager
-            ->get('Sbm\Db\Select\Stations')
+        $form->setValueOptions('serviceId', $this->db_manager->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
             ->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
         $params = array(
@@ -270,6 +261,93 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * Décoche toutes les fiches marquées sélectionnées
+     */
+    public function circuitSelectionAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/transport', [
+                'action' => 'circuit-liste',
+                'page' => $this->params('page', 1)
+            ]);
+        }
+        $form = new ButtonForm([], [
+            'confirmer' => [
+                'class' => 'confirm',
+                'value' => 'Confirmer',
+                'title' => 'Désélectionner toutes les arrêts des circuits.'
+            ],
+            'cancel' => [
+                'class' => 'confirm',
+                'value' => 'Abandonner'
+            ]
+        ], 'Confirmation', true);
+        $tcircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+        if (array_key_exists('confirmer', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $tcircuits->clearSelection();
+                $this->flashMessenger()->addSuccessMessage('Toutes les arrêts sont désélectionnées.');
+                return $this->redirect()->toRoute('sbmgestion/transport', [
+                    'action' => 'circuit-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+            }
+        }
+        $where = new Where();
+        $where->equalTo('selection', 1);
+        $view = new ViewModel([
+            'form' => $form,
+            'nbSelection' => $tcircuits->fetchAll($where)->count()
+        ]);
+        $view->setTemplate('sbm-gestion/transport/all-selection.phtml');
+        return $view;
+    }
+
+    public function circuitModifHorairesAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/transport', [
+                'action' => 'circuit-liste',
+                'page' => $currentPage
+            ]);
+        }
+        $form = new \SbmGestion\Form\ModifHoraires();
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $modifHoraires = new \SbmGestion\Model\ModifHoraires($form->getData(), $this->db_manager->get('Sbm\Db\Table\Circuits'));
+                if ($modifHoraires->run()) {
+                    $this->flashMessenger()->addSuccessMessage('Les horaires ont été modifiés.');
+                } else {
+                    $this->flashMessenger()->addErrorMessage('Une erreur est survenue lors de la modification des horaires.');
+                }
+                return $this->redirect()->toRoute('sbmgestion/transport', [
+                    'action' => 'circuit-liste',
+                    'page' => $currentPage
+                ]);
+            }
+        } else {
+            $form->initData();
+        }
+        return new ViewModel([
+            'form' => $form,
+            'page' => $currentPage
+        ]);
+    }
+
+    /**
      * Reçoit la paramètre circuitId en post
      * Renvoie la liste des élèves inscrits pour un circuit donné
      *
@@ -295,13 +373,9 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage
             ));
         }
-        $circuit = $this->db_manager
-            ->get('Sbm\Db\Vue\Circuits')
-            ->getRecord($circuitId);
+        $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
         return new ViewModel(array(
-            'data' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false), array(
+            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false), array(
                 'nom',
                 'prenom'
             )),
@@ -321,9 +395,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $dernierMillesime = $this->db_manager
-            ->get('Sbm\Db\System\Calendar')
-            ->getDernierMillesime();
+        $dernierMillesime = $this->db_manager->get('Sbm\Db\System\Calendar')->getDernierMillesime();
         if ($dernierMillesime != Session::get('millesime')) {
             $this->flashMessenger()->addInfoMessage('La génération des circuits d\'une nouvelle année ne peut se faire que si cette année est active.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
@@ -432,12 +504,8 @@ class TransportController extends AbstractActionController
             return $args;
         
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Vue\Classes')
-                ->paginator($args['where']),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byClasse(),
+            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Classes')->paginator($args['where']),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byClasse(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_classes', 15),
             'criteres_form' => $args['form']
@@ -454,8 +522,7 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->db_manager
-            ->get('Sbm\Db\Select\Classes'));
+        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->db_manager->get('Sbm\Db\Select\Classes'));
         $params = array(
             'data' => array(
                 'table' => 'classes',
@@ -569,8 +636,7 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->db_manager
-            ->get('Sbm\Db\Select\Classes'));
+        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->db_manager->get('Sbm\Db\Select\Classes'));
         $params = array(
             'data' => array(
                 'table' => 'classes',
@@ -634,16 +700,12 @@ class TransportController extends AbstractActionController
             ));
         }
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->paginator($this->getFromSession('millesime'), FiltreEleve::byClasse($classeId), array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byClasse($classeId), array(
                 'nom',
                 'prenom'
             )),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'classe' => $this->db_manager
-                ->get('Sbm\Db\Table\Classes')
-                ->getRecord($classeId),
+            'classe' => $this->db_manager->get('Sbm\Db\Table\Classes')->getRecord($classeId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'classeId' => $classeId
@@ -713,12 +775,8 @@ class TransportController extends AbstractActionController
             return $args;
             // die(var_dump($args['form']));
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Table\Communes')
-                ->paginator($args['where']),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byCommune(),
+            'paginator' => $this->db_manager->get('Sbm\Db\Table\Communes')->paginator($args['where']),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCommune(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_communes', 20),
             'criteres_form' => $args['form']
@@ -912,16 +970,12 @@ class TransportController extends AbstractActionController
             ));
         }
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->paginator($this->getFromSession('millesime'), FiltreEleve::byCommune($communeId), array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byCommune($communeId), array(
                 'nom',
                 'prenom'
             )),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'commune' => $this->db_manager
-                ->get('Sbm\Db\Table\Communes')
-                ->getRecord($communeId),
+            'commune' => $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord($communeId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'communeId' => $communeId
@@ -1006,12 +1060,8 @@ class TransportController extends AbstractActionController
             return $args;
         
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Vue\Etablissements')
-                ->paginator($args['where']),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byEtablissement(),
+            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->paginator($args['where']),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_etablissements', 10),
             'criteres_form' => $args['form'],
@@ -1032,11 +1082,9 @@ class TransportController extends AbstractActionController
         $form->modifFormForEdit()
             ->setValueOptions('jOuverture', Semaine::getJours())
             ->setValueOptions('niveau', Niveau::getNiveaux())
-            ->setValueOptions('rattacheA', $this->db_manager
-            ->get('Sbm\Db\Select\Etablissements')
+            ->setValueOptions('rattacheA', $this->db_manager->get('Sbm\Db\Select\Etablissements')
             ->visibles())
-            ->setValueOptions('communeId', $this->db_manager
-            ->get('Sbm\Db\Select\Communes')
+            ->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->desservies());
         $params = array(
             'data' => array(
@@ -1153,11 +1201,9 @@ class TransportController extends AbstractActionController
         $form = new FormEtablissement();
         $form->setValueOptions('jOuverture', Semaine::getJours())
             ->setValueOptions('niveau', Niveau::getNiveaux())
-            ->setValueOptions('rattacheA', $this->db_manager
-            ->get('Sbm\Db\Select\Etablissements')
+            ->setValueOptions('rattacheA', $this->db_manager->get('Sbm\Db\Select\Etablissements')
             ->visibles())
-            ->setValueOptions('communeId', $this->db_manager
-            ->get('Sbm\Db\Select\Communes')
+            ->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->desservies());
         $params = array(
             'data' => array(
@@ -1226,16 +1272,12 @@ class TransportController extends AbstractActionController
             ));
         }
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->paginator($this->getFromSession('millesime'), FiltreEleve::byEtablissement($etablissementId), array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byEtablissement($etablissementId), array(
                 'nom',
                 'prenom'
             )),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'etablissement' => $this->db_manager
-                ->get('Sbm\Db\Vue\Etablissements')
-                ->getRecord($etablissementId),
+            'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'etablissementId' => $etablissementId
@@ -1427,9 +1469,7 @@ class TransportController extends AbstractActionController
         }
         $etablissement = $tEtablissements->getRecord($etablissementId);
         $description = '<b>' . $etablissement->nom . "</b>\n";
-        $commune = $this->db_manager
-            ->get('Sbm\Db\table\Communes')
-            ->getRecord($etablissement->communeId);
+        $commune = $this->db_manager->get('Sbm\Db\table\Communes')->getRecord($etablissement->communeId);
         if ($etablissement->x == 0.0 && $etablissement->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
             $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode($etablissement->adresse1, $etablissement->codePostal, $commune->nom);
@@ -1449,7 +1489,7 @@ class TransportController extends AbstractActionController
             'etablissementId' => $etablissementId,
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
-        ));        
+        ));
         $tEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
         $ptEtablissements = array();
         foreach ($tEtablissements->fetchAll() as $autreEtablissement) {
@@ -1524,14 +1564,10 @@ class TransportController extends AbstractActionController
         $where = new Where();
         $where->equalTo('etablissementId', $etablissementId)->equalTo('cir_millesime', Session::get('millesime'));
         return new ViewModel(array(
-            'etablissement' => $this->db_manager
-                ->get('Sbm\Db\Vue\Etablissements')
-                ->getRecord($etablissementId),
+            'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
             'paginator' => $table->paginator($where),
             'count_per_page' => 15,
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byServiceGivenEtablissement($etablissementId),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement($etablissementId),
             'page' => $currentPage,
             'etablissementId' => $etablissementId
         ));
@@ -1579,16 +1615,12 @@ class TransportController extends AbstractActionController
         }
         $table = $this->db_manager->get('Sbm\Db\Vue\EtablissementsServices');
         return new ViewModel(array(
-            'service' => $this->db_manager
-                ->get('Sbm\Db\Vue\Services')
-                ->getRecord($serviceId),
+            'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
             'data' => $table->fetchAll(array(
                 'serviceId' => $serviceId,
                 'cir_millesime' => Session::get('millesime')
             )),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byEtablissementGivenService($serviceId),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissementGivenService($serviceId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'serviceId' => $serviceId
@@ -1631,18 +1663,12 @@ class TransportController extends AbstractActionController
         $form = new FormEtablissementService($origine == 'etablissement-service' ? 'service' : 'etablissement');
         if ($origine == 'etablissement-service') {
             $service = null;
-            $etablissement = $this->db_manager
-                ->get('Sbm\Db\Vue\Etablissements')
-                ->getRecord($etablissementId);
-            $form->setValueOptions('serviceId', $this->db_manager
-                ->get('Sbm\Db\Select\Services'));
+            $etablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId);
+            $form->setValueOptions('serviceId', $this->db_manager->get('Sbm\Db\Select\Services'));
         } else {
             $etablissement = null;
-            $service = $this->db_manager
-                ->get('Sbm\Db\Vue\Services')
-                ->getRecord($serviceId);
-            $form->setValueOptions('etablissementId', $this->db_manager
-                ->get('Sbm\Db\Select\Etablissements')
+            $service = $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId);
+            $form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis());
         }
         $table = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices');
@@ -1665,8 +1691,7 @@ class TransportController extends AbstractActionController
             ));
         }
         if (! empty($serviceId)) {
-            $form->setValueOptions('stationId', $this->db_manager
-                ->get('Sbm\Db\Select\Stations')
+            $form->setValueOptions('stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->surcircuit($serviceId, Session::get('millesime')));
         }
         return new ViewModel(array(
@@ -1746,12 +1771,8 @@ class TransportController extends AbstractActionController
             'etablissementId' => $etablissementId,
             'serviceId' => $serviceId,
             'origine' => $origine,
-            'etablissement' => $this->db_manager
-                ->get('Sbm\Db\Vue\Etablissements')
-                ->getRecord($etablissementId),
-            'service' => $this->db_manager
-                ->get('Sbm\Db\Vue\Services')
-                ->getRecord($serviceId),
+            'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
+            'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
             'form' => $form->prepare()
         ));
     }
@@ -1790,19 +1811,13 @@ class TransportController extends AbstractActionController
         }
         $viewModel = new ViewModel(array(
             'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByEtablissementService($this->getFromSession('millesime'), $etablissementId, $serviceId, array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByEtablissementService($this->getFromSession('millesime'), $etablissementId, $serviceId, array(
                 'nom',
                 'prenom'
             )),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'etablissement' => $this->db_manager
-                ->get('Sbm\Db\Vue\Etablissements')
-                ->getRecord($etablissementId),
-            'service' => $this->db_manager
-                ->get('Sbm\Db\Vue\Services')
-                ->getRecord($serviceId),
+            'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
+            'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'etablissementId' => $etablissementId,
@@ -1834,15 +1849,11 @@ class TransportController extends AbstractActionController
             return $args;
         
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Vue\Services')
-                ->paginator($args['where']),
+            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator($args['where']),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
             'criteres_form' => $args['form'],
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byService()
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService()
         ));
     }
 
@@ -1856,8 +1867,7 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormService();
-        $form->modifFormForEdit()->setValueOptions('transporteurId', $this->db_manager
-            ->get('Sbm\Db\Select\Transporteurs'));
+        $form->modifFormForEdit()->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
         $params = array(
             'data' => array(
                 'table' => 'services',
@@ -1972,8 +1982,7 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormService();
-        $form->setValueOptions('transporteurId', $this->db_manager
-            ->get('Sbm\Db\Select\Transporteurs'));
+        $form->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
         $params = array(
             'data' => array(
                 'table' => 'services',
@@ -2045,16 +2054,12 @@ class TransportController extends AbstractActionController
         
         return new ViewModel(array(
             'h1' => 'Groupe des élèves inscrits sur un service',
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->paginator($this->getFromSession('millesime'), FiltreEleve::byService($serviceId), array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byService($serviceId), array(
                 'nom',
                 'prenom'
             )),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'service' => $this->db_manager
-                ->get('Sbm\Db\Vue\Services')
-                ->getRecord($serviceId),
+            'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'serviceId' => $serviceId,
@@ -2152,12 +2157,8 @@ class TransportController extends AbstractActionController
             return $args;
         
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Vue\Stations')
-                ->paginator($args['where']),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byStation(),
+            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Stations')->paginator($args['where']),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_stations', 10),
             'criteres_form' => $args['form'],
@@ -2180,12 +2181,8 @@ class TransportController extends AbstractActionController
         }
         
         return new ViewModel(array(
-            'data' => $this->db_manager
-                ->get('Sbm\Db\Circuit\Liste')
-                ->stationsNonDesservies(),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byStation(),
+            'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->stationsNonDesservies(),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation(),
             'page' => $currentPage
         ));
     }
@@ -2226,8 +2223,7 @@ class TransportController extends AbstractActionController
             }
         }
         $form = new FormStation();
-        $form->setValueOptions('communeId', $this->db_manager
-            ->get('Sbm\Db\Select\Communes')
+        $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->desservies());
         $params = array(
             'data' => array(
@@ -2348,7 +2344,7 @@ class TransportController extends AbstractActionController
             }
         }
     }
-    
+
     /**
      * Montre la carte des stations.
      * Un clic dans la carte permet de placer la nouvelle station.
@@ -2407,8 +2403,7 @@ class TransportController extends AbstractActionController
         ), $configCarte['valide']);
         if ($isPost1 || $isPost2) {
             $form = new FormStation();
-            $form->setValueOptions('communeId', $this->db_manager
-                ->get('Sbm\Db\Select\Communes')
+            $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->desservies())
                 ->setMaxLength($this->db_manager->getMaxLengthArray('stations', 'table'));
             
@@ -2429,8 +2424,7 @@ class TransportController extends AbstractActionController
                 $geocode = $this->cartographie_manager->get('SbmCarto\Geocoder');
                 $lieu = $geocode->reverseGeocoding($args['lat'], $args['lng']);
                 $form->setData(array(
-                    'communeId' => $this->db_manager
-                        ->get('Sbm\Db\Table\Communes')
+                    'communeId' => $this->db_manager->get('Sbm\Db\Table\Communes')
                         ->getCommuneId($lieu['commune']),
                     'nom' => implode(' ', array(
                         $lieu['numero'],
@@ -2515,16 +2509,12 @@ class TransportController extends AbstractActionController
         }
         
         return new ViewModel(array(
-            'data' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->query($this->getFromSession('millesime'), FiltreEleve::byStation($stationId), array(
+            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byStation($stationId), array(
                 'nom',
                 'prenom'
             )),
             // 'paginator' => $table_eleves->paginator(),
-            'station' => $this->db_manager
-                ->get('Sbm\Db\Vue\Stations')
-                ->getRecord($stationId),
+            'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord($stationId),
             'page' => $currentPage,
             'stationId' => $stationId,
             'origine' => StdLib::getParam('origine', $args)
@@ -2557,9 +2547,7 @@ class TransportController extends AbstractActionController
         $stationId = StdLib::getParam('stationId', $args, - 1);
         if ($stationId == - 1) {
             $circuitId = StdLib::getParam('circuitId', $args, - 1);
-            $circuit = $this->db_manager
-                ->get('Sbm\Db\Table\Circuits')
-                ->getRecord($circuitId);
+            $circuit = $this->db_manager->get('Sbm\Db\Table\Circuits')->getRecord($circuitId);
             if (! empty($circuit)) {
                 $stationId = $circuit->stationId;
             }
@@ -2573,16 +2561,10 @@ class TransportController extends AbstractActionController
         }
         
         return new ViewModel(array(
-            'data' => $this->db_manager
-                ->get('Sbm\Db\Circuit\Liste')
-                ->byStation($stationId),
+            'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->byStation($stationId),
             // 'paginator' => $table_eleves->paginator(),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byServiceGivenStation($stationId),
-            'station' => $this->db_manager
-                ->get('Sbm\Db\Vue\Stations')
-                ->getRecord($stationId),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenStation($stationId),
+            'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord($stationId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'stationId' => $stationId
@@ -2611,17 +2593,13 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage
             ));
         }
-        $circuit = $this->db_manager
-            ->get('Sbm\Db\Vue\Circuits')
-            ->getRecord(array(
+        $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord(array(
             'stationId' => $stationId,
             'serviceId' => $serviceId,
             'millesime' => $millesime
         ));
         $view = new ViewModel(array(
-            'data' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->query($millesime, FiltreEleve::byCircuit($serviceId, $stationId, false), array(
+            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($millesime, FiltreEleve::byCircuit($serviceId, $stationId, false), array(
                 'nom',
                 'prenom'
             )),
@@ -2799,9 +2777,7 @@ class TransportController extends AbstractActionController
             }
         }
         $station = $tStations->getRecord($stationId);
-        $commune = $this->db_manager
-            ->get('Sbm\Db\table\Communes')
-            ->getRecord($station->communeId);
+        $commune = $this->db_manager->get('Sbm\Db\table\Communes')->getRecord($station->communeId);
         $description = '<b>' . $station->nom . '</b></br>' . $commune->codePostal . ' ' . $commune->nom;
         if ($station->x == 0.0 && $station->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
@@ -2855,12 +2831,8 @@ class TransportController extends AbstractActionController
             return $args;
         
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Vue\Transporteurs')
-                ->paginator($args['where']),
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->byTransporteur(),
+            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Transporteurs')->paginator($args['where']),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_transporteurs', 15),
             'criteres_form' => $args['form']
@@ -2877,8 +2849,7 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormTransporteur();
-        $form->setValueOptions('communeId', $this->db_manager
-            ->get('Sbm\Db\Select\Communes')
+        $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->visibles());
         $params = array(
             'data' => array(
@@ -2993,8 +2964,7 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new Formtransporteur();
-        $form->setValueOptions('communeId', $this->db_manager
-            ->get('Sbm\Db\Select\Communes')
+        $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->visibles());
         $params = array(
             'data' => array(
@@ -3060,17 +3030,13 @@ class TransportController extends AbstractActionController
         }
         
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Liste')
-                ->paginatorByTransporteur($this->getFromSession('millesime'), FiltreEleve::byTransporteur($transporteurId), array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByTransporteur($this->getFromSession('millesime'), FiltreEleve::byTransporteur($transporteurId), array(
                 'serviceId',
                 'nom',
                 'prenom'
             )),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'transporteur' => $this->db_manager
-                ->get('Sbm\Db\Table\Transporteurs')
-                ->getRecord($transporteurId),
+            'transporteur' => $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord($transporteurId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'transporteurId' => $transporteurId
@@ -3111,18 +3077,12 @@ class TransportController extends AbstractActionController
         $where = new Where();
         $where->equalTo('transporteurId', $transporteurId);
         return new ViewModel(array(
-            'paginator' => $this->db_manager
-                ->get('Sbm\Db\Table\Services')
-                ->paginator($where, array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator($where, array(
                 'serviceId'
             )),
             'count_per_page' => 15,
-            't_nb_inscrits' => $this->db_manager
-                ->get('Sbm\Db\Eleve\Effectif')
-                ->transporteurByService($transporteurId),
-            'transporteur' => $this->db_manager
-                ->get('Sbm\Db\Table\Transporteurs')
-                ->getRecord($transporteurId),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService($transporteurId),
+            'transporteur' => $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord($transporteurId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'transporteurId' => $transporteurId

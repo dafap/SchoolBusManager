@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
+ * @date 13 oct. 2016
  * @version 2016-2.2.1
  */
 namespace SbmGestion\Controller;
@@ -135,7 +135,7 @@ class EleveController extends AbstractActionController
             'confirmer' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer',
-                'title' => 'Déseletionner toutes les fiches élèves.'
+                'title' => 'Désélectionner toutes les fiches élèves.'
             ],
             'cancel' => [
                 'class' => 'confirm',

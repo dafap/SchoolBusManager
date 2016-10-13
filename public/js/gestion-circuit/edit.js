@@ -2,11 +2,11 @@
  * scripts des pages de sbm-gestion/transport/circuit-ajout.phtml et circuit-edit.phtml
  * 
  * @project sbm
- * @filesource gestion-circuit.js
+ * @filesource gestion-circuit/edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2016
- * @version 2016-2.1.10
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 var js_actions = (function(){
 	function montreMer(visible) {
