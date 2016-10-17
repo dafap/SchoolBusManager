@@ -10,14 +10,15 @@
  * @filesource ResponsableManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-1
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmFront\Model\Responsable\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
+use SbmFront\Model\Responsable\Responsable;
 
 class ResponsableManager implements FactoryInterface
 {
@@ -38,6 +39,8 @@ class ResponsableManager implements FactoryInterface
     
     /**
      * Renvoie l'instance du responsable
+     * 
+     * @return \SbmFront\Model\Responsable\Responsable
      */
     public function get()
     {
