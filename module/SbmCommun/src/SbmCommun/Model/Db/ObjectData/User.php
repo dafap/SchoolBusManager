@@ -15,7 +15,7 @@ namespace SbmCommun\Model\Db\ObjectData;
 
 use Zend\Math\Rand;
 use SbmBase\Model\DateLib;
-use SbmBase\Model\Mdp;
+use SbmAuthentification\Model\Mdp;
 
 class User extends AbstractObjectData
 {
