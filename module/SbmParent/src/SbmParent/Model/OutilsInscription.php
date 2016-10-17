@@ -7,8 +7,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmParent\Model;
 
@@ -99,10 +99,10 @@ class OutilsInscription
     }
 
     /**
-     * On est propriétaire d'un responsable s'il n'a pas de compte 
+     * On est propriétaire d'un responsable s'il n'a pas de compte
      * ou s'il a un compte non confirmé ou non activé.
-     * 
-     * @param int $responsableId
+     *
+     * @param int $responsableId            
      * @return boolean
      */
     public function isOwner($responsableId)
@@ -200,10 +200,10 @@ class OutilsInscription
     /**
      * Enregistre la scolarité et renvoie un indicateur précisant si on doit
      * recalculer les distances.
-     * Le recalcul des distances est nécessaire (true)
-     * si l'établissement a changé,
-     * si c'est un nouvel enregistrement
-     * ou si district = 0
+     * Le recalcul des distances est nécessaire (true) si l'une des condition est remplie :<ul>
+     * <li>l'établissement a changé,</li>
+     * <li>c'est un nouvel enregistrement</li>
+     * <li>district = 0</li></ul>
      *
      * @param array $data
      *            tableau de données contenant la scolarité
@@ -261,7 +261,7 @@ class OutilsInscription
     }
 
     /**
-     * Reprend les affectations de l'année antérieurepour un responsable donné
+     * Reprend les affectations de l'année antérieure pour un responsable donné
      * et les enregistre pour cette année.
      *
      * @param \Zend\Db\ResultSet\HydratingResultSet $affectations
@@ -289,7 +289,7 @@ class OutilsInscription
     /**
      * Indique si le responsable a le même domicile depuis le début de l'année scolaire précédente
      *
-     * @param int $responsableId            
+     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $responsable            
      *
      * @return <b>boolean</b>
      */

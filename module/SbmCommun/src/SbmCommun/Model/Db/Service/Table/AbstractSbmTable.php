@@ -10,7 +10,7 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
+ * @date 17 oct. 2016
  * @version 2016-2.2.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -311,7 +311,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *            Si c'est un tableau, ce doit être un tableau associatif
      *            
      * @throws Exception
-     * @return \Bdts\Model\ObjectData\ObjectDataInterface null
+     * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface null
      */
     public function getRecord($id)
     {
