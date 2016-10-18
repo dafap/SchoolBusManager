@@ -11,8 +11,8 @@
  * @filesource UserFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmAdmin\Form\Service;
 
@@ -31,9 +31,9 @@ class UserFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $db = $serviceLocator->get('Sbm\DbManager');
-        $canonic_name = $db->getCanonicName('users', 'table');
-        $db_adapter = $db->getDbAdapter();
+        $db_manager = $serviceLocator->get('Sbm\DbManager');
+        $canonic_name = $db_manager->getCanonicName('users', 'table');
+        $db_adapter = $db_manager->getDbAdapter();
         return new User($canonic_name, $db_adapter);
     }
 } 
