@@ -59,6 +59,13 @@ class OutilsInscription
     private $userId;
 
     /**
+     * indique s'il faut supprimer la dérogation (changement de domicile ou d'établissement)
+     *
+     * @var boolean
+     */
+    private $suppr_derogation;
+
+    /**
      *
      * @param DbManager $db_manager            
      * @param int $responsableId
@@ -75,6 +82,7 @@ class OutilsInscription
         $this->responsableId = $responsableId;
         $this->userId = $userId;
         $this->eleveId = $eleveId;
+        $this->suppr_derogation = false;
     }
 
     /**
@@ -240,8 +248,14 @@ class OutilsInscription
     }
 
     /**
-     * Enregistre les affectations de l'année précédente si le domicile et l'établissement
-     * n'ont pas changé.
+     * Cette méthode renvoie un booléen indiquant qu'il faut recalculer les droits si
+     * si un domicile ou l'établissement ont changé.
+     * 
+     * Si le domicile et l'établissement n'ont pas changé 
+     * alors enregistre les affectations de l'année précédente
+     * sinon supprime la dérogation (s'il y en a une).
+     *
+     * @return boolean
      */
     public function repriseAffectations()
     {
@@ -258,6 +272,10 @@ class OutilsInscription
                 $this->repriseAffectationsPour($affectations, $eleve->responsable2Id, 2);
             }
         }
+        if ($this->suppr_derogation) {
+            $this->supprDerogation();
+        }
+        return $this->suppr_derogation;
     }
 
     /**
@@ -283,6 +301,8 @@ class OutilsInscription
                     $tAffectations->saveRecord($oaffectation);
                 }
             }
+        } else {
+            $this->suppr_derogation = true;
         }
     }
 
@@ -318,5 +338,16 @@ class OutilsInscription
     private function memeEtablissement()
     {
         return $this->db_manager->get(Eleves::class)->memeEtablissement($this->eleveId);
+    }
+
+    /**
+     * Cette méthode doit être lancée à la fin de la méthode repriseAffectations()
+     *
+     * @return \SbmParent\Model\boolean
+     */
+    private function supprDerogation()
+    {
+        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $tScolarites->setDerogation($this->millesime, $this->eleveId, 0);
     }
 }

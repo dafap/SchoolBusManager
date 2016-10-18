@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmParent\Controller;
 
@@ -129,8 +129,13 @@ class IndexController extends AbstractActionController
                 }
                 // Enregistrement de l'élève
                 $eleveId = $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
+                // Ajout des dates de début et de fin de l'année scolaire
+                $data = $form->getData();
+                $as = Session::get('as');
+                $data['dateDebut'] = $as['dateDebut'];
+                $data['dateFin'] = $as['dateFin'];
                 // Enregistre la scolarité
-                if ($outils->saveScolarite($form->getData(), $eleveId)) {
+                if ($outils->saveScolarite($data, $eleveId)) {
                     $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
                     $majDistances->majDistancesDistrict($eleveId);
                 }
@@ -611,13 +616,20 @@ class IndexController extends AbstractActionController
                     }
                     // Enregistrement de l'élève
                     $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
+                    // Ajout des dates de début et de fin de l'année scolaire
+                    $data = $form->getData();
+                    $as = Session::get('as');
+                    $data['dateDebut'] = $as['dateDebut'];
+                    $data['dateFin'] = $as['dateFin'];
                     // Enregistrement de sa scolarité
-                    if ($outils->saveScolarite($form->getData(), $eleveId)) {
+                    $change_etablissement = $outils->saveScolarite($data, $eleveId);
+                    // affectations si l'adresse et la scolarité n'ont pas changé
+                    $change_derogation = $outils->repriseAffectations();
+                    // mise à jour des droits
+                    if ($change_derogation || $change_etablissement) {
                         $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
                         $majDistances->majDistancesDistrict($eleveId);
                     }
-                    // affectation si l'adresse et la scolarité n'ont pas changé
-                    $outils->repriseAffectations();
                     // compte-rendu et nettoyage de la session
                     Session::remove('responsable2', $this->getSessionNamespace());
                     Session::remove('post', $this->getSessionNamespace());
@@ -633,6 +645,12 @@ class IndexController extends AbstractActionController
             } else {
                 // initialisation des formulaires
                 $data = $this->db_manager->get(Query\Eleves::class)->getEleve($eleveId);
+                if (!$data) {
+                    // n'était pas inscrit l'année précédente
+                    $data = $this->db_manager->get('Sbm\Db\Table\Eleves')
+                        ->getRecord($eleveId)
+                        ->getArrayCopy();
+                }
                 unset($data['classeId']);
                 $hasGa = ! is_null($data['responsable2Id']);
                 $data['ga'] = $hasGa ? 1 : 0;
@@ -672,6 +690,7 @@ class IndexController extends AbstractActionController
                 } else {
                     $responsable2 = null;
                 }
+                
                 $form->setData($data);
                 Session::set('responsable2', $responsable2, $this->getSessionNamespace());
             }

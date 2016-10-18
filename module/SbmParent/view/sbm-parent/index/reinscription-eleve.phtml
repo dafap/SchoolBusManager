@@ -18,7 +18,7 @@
  * @filesource reinscription-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
+ * @date 18 oct. 2016
  * @version 2016-2.2.1
  */
 if ($this->phase == 1) {
@@ -218,6 +218,7 @@ $(function() {
     echo $this->formHidden($this->form->get('prenom'));
     echo $this->formHidden($this->form->get('dateN'));
     echo $this->formHidden($this->form->get('derogation'));
+    echo $this->formHidden($this->form->get('motifDerogation'));
     echo $this->formHidden($this->form->get('phase'));
     $formatDateN = \SbmBase\Model\DateLib::formatDateFromMysql($this->form->get('dateN')->getValue());
     ?>
