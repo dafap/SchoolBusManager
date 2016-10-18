@@ -7,7 +7,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
+ * @date 18 oct. 2016
  * @version 2016-2.2.1
  */
 namespace SbmParent\Controller;
@@ -83,7 +83,7 @@ class IndexController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
@@ -176,7 +176,7 @@ class IndexController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
@@ -418,7 +418,7 @@ class IndexController extends AbstractActionController
     {
         try {
             $responsable = $this->responsable->get();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
@@ -495,11 +495,15 @@ class IndexController extends AbstractActionController
             $serviceId = $circuits[$i]->serviceId; // on gardera le dernier trouvé
         }
         // ajout de l'arrêt à l'établissement
-        $stationId = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->getRecord([
-            'etablissementId' => $args['etablissementId'],
-            'serviceId' => $serviceId
-        ])->stationId;
-        $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'), $serviceId, $stationId);
+        try {
+            $stationId = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->getRecord([
+                'etablissementId' => $args['etablissementId'],
+                'serviceId' => $serviceId
+            ])->stationId;
+            $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'), $serviceId, $stationId);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+        }
+       
         return new ViewModel([
             'enfant' => $args['enfant'],
             'circuits' => $circuits,
@@ -513,7 +517,7 @@ class IndexController extends AbstractActionController
         try {
             $auth_responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
