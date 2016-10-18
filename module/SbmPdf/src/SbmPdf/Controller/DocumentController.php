@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmPdf\Controller;
 
@@ -56,7 +56,7 @@ class DocumentController extends AbstractActionController
         $args = (array) $prg;
         $millesime = Session::get('millesime');
         // on doit être authentifié
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
@@ -68,14 +68,14 @@ class DocumentController extends AbstractActionController
         switch ($this->categorie) {
             case 1: // parent
                 try {
-                    $responsable = $this->config['responsable'];
+                    $responsable = $this->responsable->get();
                 } catch (Exception $e) {
                     return $this->redirect()->toRoute('login', [
                         'action' => 'logout'
                     ]);
                 }
                 try {
-                    $affectations = $this->config['db_manager']->get('Sbm\Db\Table\Affectations')->fetchAll([
+                    $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll([
                         'responsableId' => $responsable->responsableId,
                         'millesime' => $millesime
                     ]);
@@ -99,8 +99,8 @@ class DocumentController extends AbstractActionController
                 break;
             case 2: // transporteur
                 try {
-                    $transporteurId = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
-                    $oservices = $this->config['db_manager']->get('Sbm\Db\Table\Services')->fetchAll([
+                    $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+                    $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll([
                         'transporteurId' => $transporteurId
                     ]);
                     $services = [];
@@ -116,8 +116,8 @@ class DocumentController extends AbstractActionController
                 break;
             case 3: // établissement
                 try {
-                    $etablissementId = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
-                    $oservices = $this->config['db_manager']->get('Sbm\Db\Table\EtablissementsServices')->fetchAll([
+                    $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
+                    $oservices = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->fetchAll([
                         'etablissementId' => $etablissementId
                     ]);
                     $services = [];
@@ -137,7 +137,7 @@ class DocumentController extends AbstractActionController
             case 255: // sadmin
                 try {
                     $services = [];
-                    $oservices = $this->config['db_manager']->get('Sbm\Db\Table\Services')->fetchAll();
+                    $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll();
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
@@ -166,8 +166,8 @@ class DocumentController extends AbstractActionController
             asort($services);
         }
         // ici, $services contient les 'serviceId' dont on veut obtenir les horaires (tableau indexé ordonné)
-        $qCircuits = $this->config['db_manager']->get('Sbm\Db\Query\Circuits');
-        $qListe = $this->config['db_manager']->get('Sbm\Db\Eleve\Liste');
+        $qCircuits = $this->db_manager->get('Sbm\Db\Query\Circuits');
+        $qListe = $this->db_manager->get('Sbm\Db\Eleve\Liste');
         $ahoraires = []; // c'est un tableau
         foreach ($services as $serviceId) {
             $ahoraires[$serviceId] = [
@@ -179,7 +179,7 @@ class DocumentController extends AbstractActionController
                 })
             ];
         }
-        $this->config['pdf_manager']->get(Tcpdf::class)
+        $this->pdf_manager->get(Tcpdf::class)
             ->setParams([
             'documentId' => 'Horaires détaillés',
             'layout' => 'sbm-pdf/document/horaires.phtml'
