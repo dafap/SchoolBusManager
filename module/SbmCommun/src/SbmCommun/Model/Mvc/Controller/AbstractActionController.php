@@ -283,8 +283,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * Le formulaire, le nom de la table, son type et son alias sont passés dans le paramètre $params
      * Le paramètre $renvoyer permet de retourner des données de POST
      *
-     * @param
-     *            $db
+     * @param $db_manager
      * @param array $params
      *            Tableau associatif dont les clés principales sont 'form' et 'data'.
      *            La clé 'form' contient l'objet formulaire ;
