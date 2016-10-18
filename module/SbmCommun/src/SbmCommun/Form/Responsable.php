@@ -9,8 +9,8 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmCommun\Form;
 
@@ -21,16 +21,17 @@ use Zend\InputFilter\InputFilterProviderInterface;
 
 class Responsable extends AbstractSbmForm implements InputFilterProviderInterface
 {
+
     /**
      * Indicateur
-     * 
+     *
      * @var bool
      */
     private $verrouille;
 
     /**
      * Constructeur
-     * 
+     *
      * @param boolean $option
      *            indique si l'identité doit être verrouillée en lecture seule
      */
@@ -60,32 +61,39 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             'name' => 'nature',
             'type' => 'hidden'
         ));
-        $this->add(array(
-            'name' => 'titre',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'responsable-titre',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Identité du responsable',
-                'label_attributes' => array(
-                    'class' => 'sbm-label responsable-titre'
+        if ($this->verrouille) {
+            $this->add([
+                'name' => 'titre',
+                'type' => 'hidden'
+            ]);
+        } else {
+            $this->add(array(
+                'name' => 'titre',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => array(
+                    'id' => 'responsable-titre',
+                    'class' => 'sbm-width-15c'
                 ),
-                'value_options' => array(
-                    'M.' => 'Monsieur',
-                    'Mme' => 'Madame',
-                    'Mlle' => 'Mademoiselle',
-                    'Dr' => 'Docteur',
-                    'Me' => 'Maître',
-                    'Pr' => 'Professeur'
-                ),
-                'empty_option' => 'Choisissez la civilité',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
+                'options' => array(
+                    'label' => 'Identité du responsable',
+                    'label_attributes' => array(
+                        'class' => 'sbm-label responsable-titre'
+                    ),
+                    'value_options' => array(
+                        'M.' => 'Monsieur',
+                        'Mme' => 'Madame',
+                        'Mlle' => 'Mademoiselle',
+                        'Dr' => 'Docteur',
+                        'Me' => 'Maître',
+                        'Pr' => 'Professeur'
+                    ),
+                    'empty_option' => 'Choisissez la civilité',
+                    'error_attributes' => array(
+                        'class' => 'sbm-error'
+                    )
                 )
-            )
-        ));
+            ));
+        }
         $this->add(array(
             'name' => 'nom',
             'type' => 'SbmCommun\Form\Element\NomPropre',
@@ -561,7 +569,6 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
     private function verrouilleIdentity()
     {
         foreach (array(
-            'titre' => 'disabled',
             'nom' => 'readonly',
             'prenom' => 'readonly',
             'email' => 'readonly'
@@ -570,7 +577,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             $e->setAttribute($attr, $attr);
         }
     }
-    
+
     public function isValid()
     {
         $result = parent::isValid();
@@ -578,7 +585,9 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
         if (empty($this->data['telephoneF']) && empty($this->data['telephoneP']) && empty($this->data['telephoneT'])) {
             $result = false;
             $element = $this->get('telephoneT');
-            $element->setMessages(array('Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'));
+            $element->setMessages(array(
+                'Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'
+            ));
         }
         return $result;
     }

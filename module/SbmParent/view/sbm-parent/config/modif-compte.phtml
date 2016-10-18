@@ -9,14 +9,20 @@
  * @filesource modif-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2015
- * @version 2015-1
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $hiddens = array();
 $actions = array();
 ?>
+<div id="winpopup">
+	<div id="winpopup-content"
+		style="margin-left: 30px; margin-right: 30px;"></div>
+</div>
 <div class="flashMessenger float-right">
 <?php
 echo $this->flashMessenger()->render('success');
@@ -90,5 +96,13 @@ echo $this->formHidden($this->form->get('csrf'));
     </div>
 	<div id="fiche-footer"></div>
 </div>
+<div id="help-r2-content" class="invisible">
+			<p>Il s'agit de personnes vivant en couple à la même adresse, responsables des enfants qui vont être inscrits.</p>
+			<p>Si les deux personnes ont le même nom, indiquez seulement le prénom de la deuxième.</p>
+			<p></p>
+			<h3>Attention !</h3>
+			<p>Il ne s'agit pas de responsables d'enfants en garde alternée. Pour ces cas particuliers, l'information sera demandée
+			au moment de l'inscription des enfants.</p>
+		</div>
 <?php
 $this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');

@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmParent\Controller;
 
@@ -73,12 +73,12 @@ class ConfigController extends AbstractActionController
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(Form\Responsable::class);
         if ($hasEnfantInscrit) {
-            $form->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+            $form->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         } else {
             $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
             $form->setValueOptions('communeId', $value_options)
                 ->setValueOptions('ancienCommuneId', $value_options)
-                ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+                ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
             unset($value_options);
         }
         $form->bind($tableResponsables->getObjData());
@@ -86,7 +86,7 @@ class ConfigController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             if ($form->isValid()) {
                 // controle le csrf et contrôle les datas
-                $tableResponsables->saveRecord($form->getData());
+                $tableResponsables->saveResponsable($form->getData(), true);
                 $responsable->refresh();
                 $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
                 return $this->redirect()->toRoute('login', array(
@@ -139,8 +139,9 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(ModifAdresse::class);
-        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
-        $form->setValueOptions('communeId', $value_options)->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
+            ->membres())
+            ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         unset($value_options);
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
@@ -231,7 +232,7 @@ class ConfigController extends AbstractActionController
         $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
-            ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+            ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         unset($value_options);
         
         $form->bind($tableResponsables->getObjData());
@@ -254,6 +255,7 @@ class ConfigController extends AbstractActionController
         return new ViewModel(array(
             'form' => $form->prepare(),
             'responsableId' => $responsableId,
+            'identity' => $identity,
             'demenagement' => false
         ));
     }
@@ -284,7 +286,7 @@ class ConfigController extends AbstractActionController
                 $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
                 $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
                 $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
-                if (!$pt->isValid()){
+                if (! $pt->isValid()) {
                     $pt->setLatitude($configCarte['centre']['lat']);
                     $pt->setLongitude($configCarte['centre']['lng']);
                 }
