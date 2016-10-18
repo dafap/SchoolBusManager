@@ -9,15 +9,15 @@
  * @filesource LoginControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmFront\Controller\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmFront\Controller\LoginController;
-use SbmFront\Model\Responsable\Responsable;
+use SbmFront\Model\Responsable\Service\ResponsableManager as Responsable;
 use SbmBase\Model\StdLib;
 
 class LoginControllerFactory implements FactoryInterface

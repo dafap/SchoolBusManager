@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmPaiement\Controller\Service;
 
@@ -18,7 +18,7 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmPaiement\Controller\IndexController;
 use SbmBase\Model\StdLib;
-use SbmFront\Model\Responsable\Responsable;
+use SbmFront\Model\Responsable\Service\ResponsableManager as Responsable;
 
 class IndexControllerFactory implements FactoryInterface
 {
