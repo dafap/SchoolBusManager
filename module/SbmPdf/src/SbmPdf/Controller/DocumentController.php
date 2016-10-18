@@ -69,7 +69,7 @@ class DocumentController extends AbstractActionController
             case 1: // parent
                 try {
                     $responsable = $this->responsable->get();
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return $this->redirect()->toRoute('login', [
                         'action' => 'logout'
                     ]);

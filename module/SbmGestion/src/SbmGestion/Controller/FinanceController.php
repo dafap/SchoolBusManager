@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
+ * @date 18 oct. 2016
  * @version 2016-2.2.1
  */
 namespace SbmGestion\Controller;
@@ -1166,7 +1166,7 @@ class FinanceController extends AbstractActionController
                     'data' => $vueorganismes->getRecord($id)
                 );
             });
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer cet organisme car il est utilisé.');
             return $this->redirect()->toRoute('sbmgestion/finance', array(
                 'action' => 'organisme-liste',

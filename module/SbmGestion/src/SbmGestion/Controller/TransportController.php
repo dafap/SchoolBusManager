@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
+ * @date 18 oct. 2016
  * @version 2016-2.2.1
  */
 namespace SbmGestion\Controller;
@@ -2922,7 +2922,7 @@ class TransportController extends AbstractActionController
                     'data' => $vuetransporteurs->getRecord($id)
                 );
             });
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce transporteur car il a un service.');
             return $this->redirect()->toRoute('sbmgestion/transport', array(
                 'action' => 'transporteur-liste',

@@ -30,7 +30,7 @@ class IndexController extends AbstractActionController
     {
         try {
             $responsable = $this->responsable->get();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'logout'
             ));
