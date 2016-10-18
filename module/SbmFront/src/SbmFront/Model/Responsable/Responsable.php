@@ -140,5 +140,13 @@ class Responsable
         }
         return false;
     }
+    
+    /**
+     * Supprime le responsable en session
+     */
+    public function clear()
+    {
+        Session::remove('responsable', self::SESSION_RESPONSABLE_NAMESPACE);
+    }
 }
  
