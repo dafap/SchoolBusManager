@@ -232,7 +232,9 @@ class LoginController extends AbstractActionController
      */
     public function logoutAction()
     {
-        $this->responsable->get()->clear();
+        try {
+            $this->responsable->get()->clear();
+        } catch (\Exception $e) {}
         $auth = $this->authenticate->by();
         $auth->clearIdentity();
         Session::remove('millesime');
