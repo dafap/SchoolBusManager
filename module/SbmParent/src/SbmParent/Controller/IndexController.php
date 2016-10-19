@@ -55,7 +55,7 @@ class IndexController extends AbstractActionController
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         return new ViewModel([
             'etatSite' => $tCalendar->etatDuSite(),
-            'permanences' => $tCalendar->getPermanences(),
+            'permanences' => $tCalendar->getPermanences($responsable->commune),
             'inscrits' => $query->getElevesInscrits($responsable->responsableId),
             'preinscrits' => $query->getElevesPreinscrits($responsable->responsableId),
             'montant' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant('inscription'),
