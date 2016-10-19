@@ -7,8 +7,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version CCDA-2016-2.2.1
+ * @date 19 août 2016
+ * @version 2016-2.2.1
  */
 use SbmBase\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -394,7 +394,7 @@ echo $this->flashMessenger()->render('default');
                 break;
         }
         ?>
-        <?php if ($montantTotal > 0):?>
+        <?php if ($montantTotal > 0) : ?>
 		<p class="sbm-description">
 			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?php echo $msg;?>
 		</p>

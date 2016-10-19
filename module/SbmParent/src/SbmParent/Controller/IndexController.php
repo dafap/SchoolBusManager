@@ -10,8 +10,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version CCDA-2016-2.2.1
+ * @date 19 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmParent\Controller;
 
