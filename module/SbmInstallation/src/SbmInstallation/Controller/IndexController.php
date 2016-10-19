@@ -9,22 +9,22 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmInstallation\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Stdlib\Glob;
+use DrewM\MailChimp;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmCommun\Form\ButtonForm;
 use SbmInstallation\Model\CreateTables;
 use SbmInstallation\Model\Exception;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
 use SbmInstallation\Model\DumpTables;
-use SbmCommun\Form\ButtonForm;
-use DrewM\MailChimp;
-use Zend\Stdlib\Glob;
-use SbmCommun\Model\StdLib;
 use SbmInstallation\Form\UploadImage;
 
 class IndexController extends AbstractActionController
@@ -52,10 +52,10 @@ class IndexController extends AbstractActionController
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbminstall');
         }
-        $config_paiement = $this->config['config_paiement'];
+        $config_paiement = $this->config_paiement;
         $fileNamePaiement = strtolower($config_paiement['plateforme']) . '_error.log';
-        $filePaiement = $config_paiement['path_filelog'] . DIRECTORY_SEPARATOR . $fileNamePaiement;
-        $fileErrors = $this->config['error_log'];
+        $filePaiement = StdLib::concatPath($config_paiement['path_filelog'], $fileNamePaiement);
+        $fileErrors = $this->error_log;
         if (array_key_exists('fichier', $args)) {
             switch ($args['fichier']) {
                 case 'paiement':
@@ -183,7 +183,7 @@ class IndexController extends AbstractActionController
                 $onscreen = $request->getPost('onscreen', false);
                 $tables = array_merge($tables, $systems);
                 
-                $oDumpTable = new DumpTables($this->config['db_manager']);
+                $oDumpTable = new DumpTables($this->db_manager);
                 $oDumpTable->init($tables, $onscreen);
                 $description = $oDumpTable->copy();
                 
@@ -227,7 +227,7 @@ class IndexController extends AbstractActionController
             return $prg;
         }
         $args = (array) $prg;
-        $config = $this->config['img'];
+        $config = $this->img;
         $files = scandir($config['path']['system']);
         $file_names = [];
         foreach ($files as $fname) {
@@ -235,7 +235,8 @@ class IndexController extends AbstractActionController
                 'administrer',
                 $fname
             ], $config, false)) {
-                $infos = getimagesize($config['path']['system'] . DIRECTORY_SEPARATOR . $fname);
+                //$infos = getimagesize($config['path']['system'] . DIRECTORY_SEPARATOR . $fname);
+                $infos = getimagesize(StdLib::concatPath($config['path']['system'], $fname));
                 $file_names[$fname] = [
                     'administrer' => $config['administrer'][$fname],
                     'width' => $infos[0],
@@ -254,7 +255,7 @@ class IndexController extends AbstractActionController
 
     public function uploadImageAction()
     {
-        $tmpuploads = $this->config['img']['path']['tmpuploads'];
+        $tmpuploads = $this->img['path']['tmpuploads'];
         $form = new UploadImage('upload-form', [
             'tmpuploads' => $tmpuploads
         ]);
@@ -276,7 +277,8 @@ class IndexController extends AbstractActionController
                     $data = $form->getData();
                     // Form is valid, save the form!
                     $source = $data['image-file']['tmp_name'];
-                    $dest = $this->config['img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
+                    $dest = StdLib::concatPath($this->img['path']['system'], $data['image-file']['name']);
+                    //$dest = $this->img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
                     copy($source, $dest);
                     unlink($source);
                     $this->removeInSession('post', $this->getSessionNamespace());
@@ -299,7 +301,7 @@ class IndexController extends AbstractActionController
             }
         } else {
             $args = $this->getFromSession('post', [], $this->getSessionNamespace());
-            $config = $this->config['img'];
+            $config = $this->img;
             $form->setAttribute('action', $this->url()
                 ->fromRoute('sbminstall', [
                 'action' => 'upload-image'
@@ -328,7 +330,7 @@ class IndexController extends AbstractActionController
      */
     private function getDbAdapter()
     {
-        return $this->config['db_manager']->getDbAdapter();
+        return $this->db_manager->getDbAdapter();
     }
 
     /**
@@ -341,18 +343,7 @@ class IndexController extends AbstractActionController
      */
     private function getDbConfig()
     {
-        return $this->config['db_config'];
-    }
-
-    /**
-     * Renvoie un tableau décrivant la structure des tables et des vues définies dans SbmInstallation/db_design.
-     * (voir SbmInstallation/db_design/README.txt)
-     *
-     * @return array
-     */
-    private function getDbDesign()
-    {
-        return $this->config['db_design'];
+        return $this->db_config;
     }
 
     /**
@@ -382,7 +373,7 @@ class IndexController extends AbstractActionController
                 'Sbm\\Db\\' . ucfirst($filter) . '\\'
             ];
         }
-        $config_db_manager = $this->config['db_manager']->getDbManagerConfig();
+        $config_db_manager = $this->db_manager->getDbManagerConfig();
         $result = [];
         foreach (array_keys($config_db_manager['factories']) as $alias) {
             foreach ($filters as $f) {
@@ -430,7 +421,7 @@ class IndexController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbminstall');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('dafapmail');
+            ->toRoute('SbmMail');
     }
 
     public function localisationAction()

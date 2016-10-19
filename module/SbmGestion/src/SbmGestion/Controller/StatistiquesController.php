@@ -8,18 +8,18 @@
  * @filesource StatistiquesController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 nov. 2015
- * @version 2015-1
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver;
-use DafapSession\Model\Session;
 use Zend\Filter\Null;
+use SbmBase\Model\Session;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 
 class StatistiquesController extends AbstractActionController
 {
@@ -37,7 +37,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasse()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasse()
         ));
     }
 
@@ -50,7 +50,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommune()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommune()
         ));
     }
     
@@ -63,7 +63,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuit()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuit()
         ));
     }
     
@@ -76,7 +76,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissement()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissement()
         ));
     }
     
@@ -89,7 +89,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuitCommune()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuitCommune()
         ));
     }
     
@@ -102,7 +102,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommuneCircuit()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommuneCircuit()
         ));
     }
     
@@ -115,7 +115,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasseEtablissement()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasseEtablissement()
         ));
     }
     
@@ -128,7 +128,7 @@ class StatistiquesController extends AbstractActionController
     {
         return new ViewModel(array(
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissementClasse()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissementClasse()
         ));
     }
     
@@ -166,11 +166,11 @@ class StatistiquesController extends AbstractActionController
         ;
         $view = new ViewModel([
             'millesime' => Session::get('millesime'),
-            'statistiques' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->{$method}()
+            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->{$method}()
             ]);
         $view->setTemplate("sbm-gestion/statistiques/$action.phtml");
         // die($renderer->render($view));
-        $call_pdf = $this->config['RenderPdfService'];
+        $call_pdf = $this->RenderPdfService;
         $call_pdf->setParam('documentId', $documentId)->setParam('html', $renderer->render($view));
         $call_pdf->renderPdf();
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");

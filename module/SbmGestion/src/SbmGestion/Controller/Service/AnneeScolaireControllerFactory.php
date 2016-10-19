@@ -9,15 +9,15 @@
  * @filesource AnneeScolaireControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmGestion\Controller\AnneeScolaireController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class AnneeScolaireControllerFactory implements FactoryInterface
 {
@@ -30,7 +30,7 @@ class AnneeScolaireControllerFactory implements FactoryInterface
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
-            'authenticate' => $sm->get('Dafap\Authenticate'),
+            'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'mail_config' => StdLib::getParamR([
                 'sbm',
                 'mail'

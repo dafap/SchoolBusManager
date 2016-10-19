@@ -8,30 +8,15 @@
  * @filesource eleve-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juillet 2014
- * @version 2014-1
+ * @date 18 août 2016
+ * @version 2016-2.2.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->captureStart();
-?>
-function montreResponsable2(voir) {
-    if (voir) {
-        $("#wrapper-responsable2Id").show();
-    } else {
-        $("#wrapper-responsable2Id").hide();
-    }
-}
-$(document).ready(function($) {
-$("#eleve-ga").click(function(){
-    montreResponsable2($(this).is(":checked"));
-});
-});
-<?php 
-$this->headScript()->captureEnd();
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout.js'));
 $this->inlineScript()->captureStart();
 ?>
-montreResponsable2(0);
+js_ajout.montreGa();
 <?php 
 $this->inlineScript()->captureEnd();
 //================= Fin JS =======================================================

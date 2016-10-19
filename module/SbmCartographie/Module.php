@@ -8,12 +8,12 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCartographie;
 
-use ZfcBase\Module\AbstractModule;
+use SbmBase\Module\AbstractModule;
 
 class Module extends AbstractModule
 {

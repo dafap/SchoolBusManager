@@ -14,8 +14,8 @@
  * @filesource AbstractPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2016
- * @version 2016-2
+ * @date 20 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPaiement\Plugin;
 
@@ -28,8 +28,8 @@ use Zend\Log\Writer\Stream;
 use Zend\Log\Filter\Priority;
 use Zend\Log\Logger;
 use Zend\Stdlib\Parameters;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Validator\PlageIp;
 
 abstract class AbstractPlateforme implements FactoryInterface, EventManagerAwareInterface, PlateformeInterface
@@ -210,7 +210,7 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
             throw new Exception('Mauvaise configuration de la plateforme de paiement dans le fichier de configuration.');
         }
         $this->config = StdLib::getParam(strtolower($this->plateforme), $config_paiement);
-        $this->filelog = StdLib::getParam('path_filelog', $config_paiement) . DIRECTORY_SEPARATOR . strtolower($this->plateforme) . '_error.log';
+        $this->filelog = StdLib::concatPath(StdLib::getParam('path_filelog', $config_paiement), strtolower($this->plateforme) . '_error.log');
         // initialisation particulière de la classe dérivée
         $this->init();        
         

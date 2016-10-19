@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmFront\Controller;
 
@@ -18,17 +18,16 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Math\Rand;
 use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
-use DafapSession\Model\Session;
-use SbmCommun\Model\DateLib;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\DateLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmCartographie\Model\Point;
+use SbmMail\Model\Template as MailTemplate;
+use SbmMail\Model\SbmMail\Model;
 use SbmFront\Form;
 use SbmFront\Model\Responsable\Exception as CreateResponsableException;
-use DafapMail\Model\Template as MailTemplate;
-use DafapMail\Model\DafapMail\Model;
-use SbmCommun\Form\LatLng as LatLngForm;
-use SbmCartographie\Model\Point;
 
 class LoginController extends AbstractActionController
 {
@@ -49,12 +48,12 @@ class LoginController extends AbstractActionController
         $args = $prg;
         if (\array_key_exists('signin', $args)) {
             // login demandé
-            $form = $this->config['form_manager']->get(Form\Login::class);
+            $form = $this->form_manager->get(Form\Login::class);
             $form->setData($args);
             if ($form->isValid()) {
                 // isValid() vérifie l'existence de l'email
                 $data = $form->getData();
-                $auth = $this->config['authenticate']->by('email');
+                $auth = $this->authenticate->by('email');
                 $auth->getAdapter()
                     ->setIdentity($data)
                     ->setCredential($data);
@@ -86,9 +85,9 @@ class LoginController extends AbstractActionController
      */
     public function confirmAction()
     {
-        $tableUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
-        $form = $this->config['form_manager']->get(Form\MdpFirst::class);
-        $auth = $this->config['authenticate']->by('token');
+        $tableUsers = $this->db_manager->get('Sbm\Db\Table\Users');
+        $form = $this->form_manager->get(Form\MdpFirst::class);
+        $auth = $this->authenticate->by('token');
         
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -143,7 +142,7 @@ class LoginController extends AbstractActionController
      */
     public function annulerAction()
     {
-        $tableUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+        $tableUsers = $this->db_manager->get('Sbm\Db\Table\Users');
         if ($tableUsers->deleteRecordByToken($this->params('id'))) {
             $this->flashMessenger()->addInfoMessage('Le compte a été supprimé. Merci.');
         } else {
@@ -161,27 +160,23 @@ class LoginController extends AbstractActionController
      */
     public function homePageAction()
     {
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if ($auth->hasIdentity()) {
             switch ($auth->getCategorieId()) {
                 case 1:
                     try {
                         try {
-                            $responsable = $this->config['responsable']->get();
+                            $responsable = $this->responsable->get();
                         } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
                             throw $e->getPrevious();
                         }
-                        $d2etab = $this->config['distance_etablissements'];
+                        $d2etab = $this->distance_etablissements;
                         // contrôle de position géographique
                         $point = new Point($responsable->x, $responsable->y);
                         $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-                        $configCarte = StdLib::getParam('parent', $this->config['config_cartes']);
-                        $form = new LatLngForm([], [], $configCarte['valide']);
-                        $form->setData([
-                            'lat' => $pt->getLatitude(),
-                            'lng' => $pt->getLongitude()
-                        ]);
-                        if (! $form->isValid()) {
+                        $configCarte = StdLib::getParam('parent', $this->config_cartes);
+                        $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+                        if (! $pt->isValid()) {
                             return $this->redirect()->toRoute('sbmparentconfig', array(
                                 'action' => 'localisation'
                             ));
@@ -237,7 +232,10 @@ class LoginController extends AbstractActionController
      */
     public function logoutAction()
     {
-        $auth = $this->config['authenticate']->by();
+        try {
+            $this->responsable->get()->clear();
+        } catch (\Exception $e) {}
+        $auth = $this->authenticate->by();
         $auth->clearIdentity();
         Session::remove('millesime');
         return $this->redirect()->toRoute('home');
@@ -260,13 +258,13 @@ class LoginController extends AbstractActionController
             $this->flashMessenger()->addErrorMessage('Demande abandonnée.');
             return $this->redirect()->toRoute('home');
         }
-        $form = $this->config['form_manager']->get(Form\MdpDemande::class);
+        $form = $this->form_manager->get(Form\MdpDemande::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('login', array(
             'action' => 'mdp-demande'
         )));
         if (\array_key_exists('submit', $args) && \array_key_exists('email', $args)) {
-            $tUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+            $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
             $form->bind($tUsers->getObjData());
             $form->setData($args);
             if ($form->isValid()) {
@@ -349,13 +347,13 @@ class LoginController extends AbstractActionController
             return $prg;
         }
         $args = (array) $prg;
-        $form = $this->config['form_manager']->get(Form\MdpChange::class);
+        $form = $this->form_manager->get(Form\MdpChange::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('login', array(
             'action' => 'mdp-change'
         )));
         if (\array_key_exists('submit', $args) && \array_key_exists('mdp_old', $args) && \array_key_exists('mdp_new', $args)) {
-            $auth = $this->config['authenticate']->by('email');
+            $auth = $this->authenticate->by('email');
             $identity = $auth->getIdentity();
             $auth->getAdapter()
                 ->setIdentity($identity['email'])
@@ -367,7 +365,7 @@ class LoginController extends AbstractActionController
                     return $this->homePageAction();
                 }
                 // ici, on change le mot de passe
-                $tUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+                $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
                 $form->setData($args);
                 if ($form->isValid()) {
                     $mdp = $form->getData()['mdp_new'];
@@ -412,10 +410,10 @@ class LoginController extends AbstractActionController
             return $prg;
         }
         $args = (array) $prg;
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         $identity = $auth->getIdentity();
         $email_old = $identity['email'];
-        $form = $this->config['form_manager']->get(Form\EmailChange::class);
+        $form = $this->form_manager->get(Form\EmailChange::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('login', array(
             'action' => 'email-change'
@@ -435,7 +433,7 @@ class LoginController extends AbstractActionController
                 if ($form->isValid()) {
                     // données validées
                     $email_new = $form->getData()['email_new'];
-                    $tUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+                    $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
                     $oData = $tUsers->getObjData()
                         ->exchangeArray(array(
                         'userId' => $identity['userId'],
@@ -449,7 +447,7 @@ class LoginController extends AbstractActionController
                         ->completeToModif();
                     $tUsers->saveRecord($oData);
                     // modifie l'email dans la table des responsables si nécessaire
-                    $tResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
+                    $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
                     $tResponsables->changeEmail($email_old, $email_new);
                     $auth->refreshIdentity();
                     // retour
@@ -486,9 +484,9 @@ class LoginController extends AbstractActionController
             $this->flashMessenger()->addErrorMessage('Création abandonnée.');
             return $this->redirect()->toRoute('home');
         }
-        $form = $this->config['form_manager']->get(Form\CreerCompte::class);
+        $form = $this->form_manager->get(Form\CreerCompte::class);
         if (\array_key_exists('submit', $args)) {
-            $table_users = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+            $table_users = $this->db_manager->get('Sbm\Db\Table\Users');
             $form->bind($table_users->getObjData());
             $form->setData($args);
             if ($form->isValid()) {
@@ -567,7 +565,7 @@ class LoginController extends AbstractActionController
      */
     public function modifCompteAction()
     {
-        $auth = $this->config['authenticate']->by();
+        $auth = $this->authenticate->by();
         if ($auth->hasIdentity()) {
             $prg = $this->prg();
             if ($prg instanceof Response) {
@@ -579,8 +577,8 @@ class LoginController extends AbstractActionController
                 return $this->homePageAction();
             }
             $identity = $auth->getIdentity();
-            $table_users = $this->config['db_manager']->get('Sbm\Db\Table\Users');
-            $form = $this->config['form_manager']->get(Form\ModifCompte::class);
+            $table_users = $this->db_manager->get('Sbm\Db\Table\Users');
+            $form = $this->form_manager->get(Form\ModifCompte::class);
             $form->bind($table_users->getObjData());
             if (\array_key_exists('submit', $args)) {
                 $form->setData($args);
@@ -615,10 +613,10 @@ class LoginController extends AbstractActionController
      */
     public function synchroCompteAction()
     {
-        $auth = $this->config['authenticate']->by();
+        $auth = $this->authenticate->by();
         if ($auth->hasIdentity()) {
             try {
-                $responsable = $this->config['responsable']->get();
+                $responsable = $this->responsable->get();
             } catch (CreateResponsableException $e) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
                 return $this->redirect()->toRoute('login', array(
@@ -628,7 +626,7 @@ class LoginController extends AbstractActionController
             $identity = $auth->getIdentity();
             $responsableArray = $responsable->getArrayCopy();
             $responsableArray['userId'] = $identity['userId'];
-            $table_users = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+            $table_users = $this->db_manager->get('Sbm\Db\Table\Users');
             $oUser = $table_users->getObjData()
                 ->exchangeArray($responsableArray)
                 ->completeToModif();

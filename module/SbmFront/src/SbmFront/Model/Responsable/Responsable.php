@@ -10,12 +10,12 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2016
- * @version 2015-2
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmFront\Model\Responsable;
 
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 
 class Responsable
 {
@@ -23,15 +23,21 @@ class Responsable
     const SESSION_RESPONSABLE_NAMESPACE = 'sbmparent_responsable';
 
     /**
-     * 
+     *
      * @var \Zend\Authentication\AuthenticationService
      */
     private $authenticate_by;
+
     /**
-     * 
+     *
      * @var \SbmCommun\Model\Db\Service\Table\Vue\Responsables
      */
     private $vue_responsable;
+
+    /**
+     * 
+     * @var array
+     */
     private $responsable;
 
     /**
@@ -43,16 +49,16 @@ class Responsable
      * S'il n'existe pas de responsable correspondant à cet utilisateur, une exception est
      * lancée. Il faudra la traiter en demandant la création du responsable.
      *
-     * @param \Zend\Authentication\AuthenticationService $authenticate_by    
-     * @param \SbmCommun\Model\Db\Service\Table\Vue $vue_responsable
-     *         
+     * @param \Zend\Authentication\AuthenticationService $authenticate_by            
+     * @param \SbmCommun\Model\Db\Service\Table\Vue $vue_responsable            
+     *
      * @throws Exception
      */
     public function __construct($authenticate_by, $vue_responsable)
     {
         $this->authenticate_by = $authenticate_by;
         $this->vue_responsable = $vue_responsable;
-        $this->responsable = Session::get('responsable', array(), self::SESSION_RESPONSABLE_NAMESPACE);
+        $this->responsable = Session::get('responsable', [], self::SESSION_RESPONSABLE_NAMESPACE);
         $this->init();
     }
 
@@ -111,7 +117,7 @@ class Responsable
         if ($this->invalid($email)) {
             $r = $this->vue_responsable->getRecordByEmail($email);
             if (empty($r)) {
-                $this->responsable = array();
+                $this->responsable = [];
                 throw new Exception('Responsable à créer');
             } else {
                 $this->responsable = $r->getArrayCopy();
@@ -133,6 +139,14 @@ class Responsable
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Supprime le responsable en session
+     */
+    public function clear()
+    {
+        Session::remove('responsable', self::SESSION_RESPONSABLE_NAMESPACE);
     }
 }
  

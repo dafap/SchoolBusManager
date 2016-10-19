@@ -9,8 +9,8 @@
  * @filesource ProjectionFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCartographie\Model\Service;
 
@@ -18,7 +18,7 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 use SbmCartographie\Model\Projection;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class ProjectionFactory implements FactoryInterface
 {

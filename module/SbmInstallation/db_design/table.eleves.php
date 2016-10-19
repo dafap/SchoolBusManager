@@ -9,8 +9,8 @@
  * @filesource table.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2016
- * @version 2016-2.1.5
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 return array(
     'name' => 'eleves',
@@ -39,7 +39,7 @@ return array(
             'y2' => 'decimal(18,10) DEFAULT NULL',
             'geopt2' => 'GEOMETRY',
             'responsableFId' => 'int(11) DEFAULT NULL',
-            'note' => 'text',
+            'note' => 'text NULL',
             'id_ccda' => 'int(11)' // gid CCDA
         ),
         'primary_key' => array(

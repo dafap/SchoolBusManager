@@ -9,8 +9,8 @@
  * @filesource AdminController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmAjax\Controller;
 
@@ -31,7 +31,7 @@ class AdminController extends AbstractActionController
     {
         try {
             $userId = $this->params('userId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Users')
             ->setSelection($userId, 1);
             return $this->getResponse()->setContent(Json::encode(array(
@@ -54,7 +54,7 @@ class AdminController extends AbstractActionController
     {
         try {
             $userId = $this->params('userId');
-            $this->config['db_manager']
+            $this->db_manager
             ->get('Sbm\Db\Table\Users')
             ->setSelection($userId, 0);
             return $this->getResponse()->setContent(Json::encode(array(

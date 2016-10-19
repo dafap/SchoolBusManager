@@ -9,15 +9,15 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmInstallation\Controller\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmInstallation\Controller\IndexController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -29,7 +29,6 @@ class IndexControllerFactory implements FactoryInterface
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'db_config' => StdLib::getParam('db', $config_application),
-            'db_design' => StdLib::getParam('db_design', $config_application),
             'config_paiement' => StdLib::getParamR([
                 'sbm',
                 'paiement'

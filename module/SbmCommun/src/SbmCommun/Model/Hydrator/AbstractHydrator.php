@@ -1,17 +1,20 @@
 <?php
 /**
- * Classe abstraite pour redéfinir l'hydrator qui permet de tenir à jour la modification d'un ObjectDataInterface dans une table de la base de donnée.
+ * Classe abstraite pour redéfinir l'hydrator qui permet de tenir à jour 
+ * la modification d'un ObjectDataInterface dans une table de la base de donnée.
  *
- * Cette classe abstraite redéfinit la méthode extract d'un Zend\Stdlib\Hydrator\ArraySerializable afin de prendre en compte les champs calculés.
- * Pour chaque table comprenant des champs calculés, une classe dérivée doit définir la méthode calculate()
+ * Cette classe abstraite surcharge Zend\Stdlib\Hydrator\ArraySerializable::extract() 
+ * afin de prendre en compte les champs calculés.
+ * Pour chaque table comprenant des champs calculés, une classe dérivée doit définir 
+ * la méthode calculate()
  * 
  * @project sbm
- * @package package_name
+ * @package SbmCommun/Model/Hydrator
  * @filesource AbstractHydrator.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Hydrator;
  
@@ -22,31 +25,24 @@ use Zend\Hydrator\ArraySerializable;
 
 abstract class AbstractHydrator extends ArraySerializable
 {
+    /**
+     * Copie de l'objet qui sera modifiée par calculate() avant extraction
+     * 
+     * @var object qui implemente la methode getArrayCopy()
+     */
     protected  $object;
     
     public function extract($object)
     {
-        $this->object = $object;
-        $this->calculate();
-        $data = $object->getArrayCopy();
-        $filter = $this->getFilter();
-    
-        foreach ($data as $name => $value) {
-            if (! $filter->filter($name)) {
-                unset($data[$name]);
-                continue;
-            }
-            $extractedName = $this->extractName($name, $object);
-            // replace the original key with extracted, if differ
-            if ($extractedName !== $name) {
-                unset($data[$name]);
-                $name = $extractedName;
-            }
-            $data[$name] = $this->extractValue($name, $value, $object);
-        }
-    
-        return $data;
+        return parent::extract($this->calculate($object));
     }
     
-    protected abstract function calculate();
+    /**
+     * L'objet doit implémenter la méthode getArrayCopy()
+     * 
+     * @param object $object
+     * 
+     * @return object
+     */
+    protected abstract function calculate($object);
 }

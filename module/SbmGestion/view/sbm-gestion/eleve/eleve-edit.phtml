@@ -8,10 +8,10 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 nov. 2015
- * @version 2015-1.6.6
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 
 function formatDate($date, $withTime = true)
 {
@@ -44,10 +44,10 @@ if (count($this->affectations)) {
             'station2' => $affectation['station2']
         );
     }
+    unset($affectation);
 }
-unset($affectation);
-$disableAccordR1 = isset($structAffectations[1]);
-$disableAccordR2 = isset($structAffectations[2]);
+$disableAccordR1 = isset($structAffectations[1]) ? 'true' : 'false';
+$disableAccordR2 = isset($structAffectations[2]) ? 'true' : 'false';
 // urls utilisées
 $url_ici = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-edit',
@@ -57,349 +57,37 @@ $url_map = $this->url('sbmgestion/eleve', array(
     'action' => 'eleve-localisation',
     'page' => $this->page
 ));
-
+$url_euro = $this->url('sbmgestion/finance', [
+    'action' => 'paiement-liste'
+]);
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/edit.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->headScript()->captureStart();
 ?>
-function initAccord() {
-<?php
-// cette fonction pour bloquer ou non les checkbox accordR1 et accordR2 au chargement de la page
-if ($disableAccordR1) {
-    echo '$("#eleve-accordR1").attr("disabled", true);' . PHP_EOL;
-    echo '$("input[name=accordR1][type=hidden]").val(1);' . PHP_EOL;
-} else {
-    echo '$("#eleve-accordR1").removeAttr("disabled");' . PHP_EOL;
-    echo '$("input[name=accordR1][type=hidden]").val(0);' . PHP_EOL;
-}
-if ($disableAccordR2) {
-    echo '$("#eleve-accordR2").attr("disabled", true);' . PHP_EOL;
-    echo '$("input[name=accordR2][type=hidden]").val(1);' . PHP_EOL;
-} else {
-    echo '$("#eleve-accordR2").removeAttr("disabled");' . PHP_EOL;
-    echo '$("input[name=accordR2][type=hidden]").val(0);' . PHP_EOL;
-}
-?>
-}
-function montreDebutFin(ancomplet) {
-    if (ancomplet) {
-        $("#wrapper-dateDebut").hide();
-        $("#wrapper-dateFin").hide();
-    } else {
-        $("#wrapper-dateDebut").show();
-        $("#wrapper-dateFin").show();
-    }
-}
-function montreMotifDerogation(derogation) {
-    if (derogation) {
-        $("#wrapper-motifDerogation").show();
-    } else {
-        $("#wrapper-motifDerogation").hide();
-    }
-}
-function montreOngletGa(voir) {
-    if (voir) {
-        $("#tabs li").eq(1).show();
-    } else {
-        $("#tabs li").eq(1).hide();
-    }
-}
-// pour les fonctions suivantes r prend la valeur 'r1' ou 'r2'
-function montreDemande(r) {
-    if ($("#demande"+r+"radio0").is(":checked")) {
-        $("#block-demande"+r).hide();
-        $("#block-affectations"+r).hide();
-    } else {
-        $("#block-demande"+r).show();
-        $("#block-affectations"+r).show();
-    }
-}
-function montreMotifRefus(accord, subvention, r) {
-    if (accord) {
-        if (subvention) {
-            $("#wrapper-motifRefus"+r).show();
-        } else {
-            $("#wrapper-motifRefus"+r).hide();
-        }
-    } else {
-        $("#wrapper-motifRefus"+r).show();
-    }
-}
-function montreBlockAffectation(accord, r) {
-    if (accord) {
-        $("#block-affectations"+r).show();
-    } else {
-        $("#block-affectations"+r).hide();
-    }
-}
-function montreResponsable(r,data) {
-    var oresponsable = $.parseJSON(data);
-    $("#"+r+"-ligne1").html(oresponsable.titre+' '+oresponsable.nom+ ' '+oresponsable.prenom);
-    $("#"+r+"-ligne2").html(oresponsable.adresseL1+' '+oresponsable.adresseL2);
-    $("#"+r+"-ligne3").html(oresponsable.codePostal+' '+oresponsable.commune);
-    if (!!oresponsable.email) {
-      var responsable;
-      responsable = oresponsable.titre + ' ' + oresponsable.nom + ' ' + oresponsable.prenom;
-      var html;
-      html = 'email: '+ oresponsable.email;
-      html += '<div id="email'+r+'" style="display: inline; margin-left: 5px;">'; 
-      html += '<input type="hidden" name="email' + r + '" value="' + oresponsable.email + '">'; 
-	  html += '<input type="hidden" name="responsable' + r + '" value="' + responsable + '">'; 
-	  html += '<input type="hidden" name="group" value="<?php echo $url_ici;?>">'; 
-	  html += '<input type="submit" name="ecrire' + r + '" class="fam-email" title="Envoyer un email" value="" formaction="/gestion/eleve/responsable-mail">'; 
-	  html += '</div>';
-      $("#"+r+"-ligne4").html(html);    
-    }
-    $("#"+r+"-ligne5").html('Tél. '+oresponsable.telephoneF+' '+oresponsable.telephoneP+ ' '+oresponsable.telephoneT);
-}
-function majPaiement(gratuit) {
-  var libelle;
-  switch (gratuit) {
-    case '0':
-      libelle = 'Famille';
-      break;
-    case '1':
-      libelle = 'Gratuit';
-      break;
-    case '2':
-      libelle = 'Organisme';
-      break;
-  }
-  $("#inner-paiement").empty();
-  $("#inner-paiement").append(libelle);
-}
-function majBlockaffectations(trajet) {
-    $('html', 'body').css('cursor','auto');  
-    var args1='eleveId:<?php echo $this->eleveId;?>/identite:<?php echo urlencode($this->identite)?>/trajet:'+trajet;
-    $.ajax({
-			url : '/sbmajaxeleve/blockaffectations/'+args1,
-			type: 'GET',
-			dataType: 'html',
-			success : function(data){
-			    var myid = '#block-affectationsr'+trajet;
-			    $(myid).empty();
-			    $(myid).append(data);
-			    $('html', 'body').css('cursor','auto');
-            },
-			error : function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status + " " + thrownError);
-				$('html', 'body').css('cursor','auto');
-			}
-	});
-	var args2='eleveId:<?php echo $this->eleveId;?>/trajet:'+trajet;
-	var args3="input[name=accordR"+trajet+"][type=hidden]";
-	$.ajax({
-	        url : '/sbmajaxeleve/enableaccordbutton/'+args2,
-	        dataType: 'json',
-	        success : function(dataJson){
-	            var myid = "#eleve-accordR"+trajet;
-	            if (dataJson.enable) {
-	                $(myid).removeAttr('disabled');
-	                $(args3).val(0);
-	            } else {
-	                $(myid).attr('disabled','disabled');
-	                $(args3).val(1);
-	            }
-	        },
-	        error : function(xhr, ajaxOptions, throxnError){
-	            alert(xhr.status + " " + thrownError);
-	        }
-	});
-}
-$(document).ready(function($) {
-$("#duplicatamoins").click(function(){
-    $.ajax({
-        url:'/sbmajaxeleve/decrementeduplicata/eleveId:<?php echo $this->eleveId;?>',
-	    dataType: 'json',
-        success:function(data){
-            var myid="#nbduplicata";
-            var duplicata=data.duplicata;
-            $(myid).empty();
-			$(myid).append(duplicata.toString());
-        },
-        error:function(xhr,ajaxOptions,thrownError){
-            alert(xhr.status+' '+thrownError);
-        }
-    });
-});
-$("#eleve-anneeComplete").click(function(){
-    montreDebutFin($(this).is(":checked"));
-});
-$("#eleve-derogation").click(function(){
-    montreMotifDerogation($(this).is(":checked"));
-});
-$("#eleve-ga").click(function(){
-    montreOngletGa($(this).is(":checked"));
-});
-$("#fiche-inner input[name=demandeR1]").click(function(){
-    montreDemande('r1');
-});
-$("#fiche-inner input[name=demandeR2]").click(function(){
-    montreDemande('r2');
-});
-$("#eleve-accordR1").click(function(){
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    var subvention = $("#eleve-subventionR1").is(':checked');
-    $.ajax({
-        url:'/sbmajaxeleve/'+action+'accordR1/eleveId:<?php echo $this->eleveId;?>',
-        success:function(data){
-            montreMotifRefus(action=='check',subvention,'r1');
-            montreBlockAffectation(action=='check','r1');
-        },
-        error:function(xhr,ajaxOptions,thrownError){
-            alert(xhr.status+' '+thrownError);
-        }
-    });
-});
-$("#eleve-subventionR1").click(function(){
-    var accord = $("#eleve-accordR1").is(':checked');
-    var subvention = $(this).is(':checked');
-    montreMotifRefus(accord,subvention,'r1');
-});
-$("#eleve-accordR2").click(function(){
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    var subvention = $("#eleve-subventionR2").is(':checked');
-    $.ajax({
-        url:'/sbmajaxeleve/'+action+'accordR2/eleveId:<?php echo $this->eleveId;?>',
-        success:function(data){
-            montreMotifRefus(action=='check',subvention,'r2');
-            montreBlockAffectation(action=='check','r2');
-        },
-        error:function(xhr,ajaxOptions,thrownError){
-            alert(xhr.status+' '+thrownError);
-        }
-    });
-});
-$("#eleve-subventionR2").click(function(){
-    var accord = $("#eleve-accordR2").is(':checked');
-    var subvention = $(this).is(':checked');
-    montreMotifRefus(accord,subvention,'r2');
-});
-$("input[type='text'][name^='distanceR']").dblclick(function(){
-    $(this).css("cursor", "wait");
-    var myid = '#'+$(this).attr('id');
-    var name = $(this).attr('name');
-    var n = 1;
-    if (name.indexOf('1') == -1) {
-        n = 2;
-    }
-    var id = '#eleve-responsable'+n+'Id';
-    var responsableid = $(id).val();
-    var etablissementid = $("#eleve-etablissementId").val();
-    var args = 'etablissementId:'+etablissementid+'/responsableId:'+responsableid;
-    $.ajax({
-			url : '/sbmajaxeleve/donnedistance/'+args,
-			type: 'GET',
-			dataType: 'json',
-			success : function(data){
-			    $(myid).val(data.distance);
-			    $(myid).css('cursor', 'auto');
-            },
-			error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-					$(myid).css('cursor','auto');
-			}
-	});
-});
-$("#eleve-responsable1Id").change(function(){
-    var responsableid = $(this).val();
-    $.ajax({
-			url : '/sbmajaxeleve/getresponsable/responsableId:'+responsableid,
-			success : function(data){montreResponsable('r1',data);},
-			error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-			}
-	});
-});
-$("#eleve-responsable2Id").change(function(){
-    var responsableid = $(this).val();
-    $.ajax({
-			url : '/sbmajaxeleve/getresponsable/responsableId:'+responsableid,
-			success : function(data){montreResponsable('r2',data);},
-			error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-			}
-	});
-});
-$("#tabs").on('click', "i[data-button=btnaffectation]", function(){
-    var trajet = $(this).attr('data-trajet');
-    var respid ='#eleve-responsable'+trajet+'Id';
-    var href = '/sbmajaxeleve/formaffectation/eleveId:<?php echo $this->eleveId;?>/trajet:'+trajet+$(this).attr('data-href')+'/responsableId:';
-    href = href.concat($(respid).val());
-    $("#winpopup").dialog({
-            draggable:true,
-            modal: true,
-            autoOpen: false,
-            height:400,
-            width:600,
-            resizable: false,
-            title:$(this).attr('title')//,
-            //position:'center'
-        });
-        $("#winpopup").load(href);
-        $("#winpopup").dialog("open");
-         
-        return false;
-});
-$("#eleve-btnpaiement").click(function(){
-    var href = '/sbmajaxeleve/formpaiement/eleveId:<?php echo $this->eleveId;?>';
-    $("#winpopup").dialog({
-            draggable:true,
-            modal:true,
-            autoOpen:false,
-            height:400,
-            width:600,
-            resizable:false,
-            title:'Destinataire de la facture'    
-    });
-    $("#winpopup").load(href);
-    $("#winpopup").dialog("open");
-    
-    return false;
-});
-});
+multicheckbox_actions.init("wrapper-joursTransport");
 <?php
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
-$("#tabs").tabs();
-montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-montreMotifDerogation($("#eleve-derogation").is(":checked"));
-montreOngletGa($("#eleve-ga").is(":checked"));
-montreMotifRefus($("#eleve-accordR1").is(":checked"),$("#eleve-subventionR1").is(":checked"),'r1');
-montreMotifRefus($("#eleve-accordR2").is(":checked"),$("#eleve-subventionR2").is(":checked"),'r2');
-montreBlockAffectation($("#eleve-accordR1").is(":checked"),'r1');
-montreBlockAffectation($("#eleve-accordR2").is(":checked"),'r2');
-initAccord();
-$.ajax({
-		url:'/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable1Id").val(),
-		success:function(data){montreResponsable('r1',data);},
-		error:function(xhr, ajaxOptions, thrownError) {
-			alert(xhr.status + " " + thrownError);
-		}
-});
-if ($("#eleve-responsable2Id").val()) {
-$.ajax({
-		url:'/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable2Id").val(),
-		success:function(data){montreResponsable('r2',data);},
-		error:function(xhr, ajaxOptions, thrownError) {
-			alert(xhr.status + " " + thrownError);
-		}
-});
-montreDemande('r1');
-montreDemande('r2');
-}
+
+const ELEVE_ID = <?php echo $this->eleveId;?>;
+const IDENTITE = "<?php echo urlencode($this->identite)?>";
+const URL_ICI = "<?php echo $url_ici;?>";
+js_edit.init(<?php echo $disableAccordR1;?>, <?php echo $disableAccordR2;?>);
 <?php
 $this->inlineScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 // ============= fin du Javascript et JQuery =================================
 
 $hiddens = array(
     'eleveId' => $this->eleveId,
-    'eleve' => $this->identite,
-    'origine' => $url_ici
+    'eleveName' => $this->identite,
+    'origine' => $url_ici,
+    'responsableId' => $this->args_paiement['responsableId']
 );
 $actions = array(
     'cancel' => array(
@@ -412,7 +100,13 @@ $actions = array(
         'formaction' => $url_map,
         'title' => 'localiser cet élève sur la carte',
         'onclick' => sprintf($js, "'localiser'")
-    )
+    ),
+    'payer' => [
+        'class' => 'fam-money-euro',
+        'formaction' => $url_euro,
+        'title' => 'paiements de ' . $this->args_paiement['responsable'],
+        'onclick' => sprintf($js, "'eleve-edit'")
+    ]
 );
 ?>
 <div id="winpopup"></div>
@@ -438,8 +132,14 @@ echo $this->formHidden($this->form->get('csrf'));
 					<div id="wrapper-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport'));?></div>
 				</div>
 				<div id="commun-col2" class="float-left left-10px">
-					<div id="wrapper-etablissementId" class="row-inner edit"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
-					<div id="wrapper-classeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('classeId'));?></div>
+					<div id="wrapper-etablissementId" class="row-inner edit">
+					<?php echo $this->formRow($this->form->get('etablissementId'));?>
+					<br><span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
+					</div>
+					<div id="wrapper-classeId" class="row-inner edit">
+					<?php echo $this->formRow($this->form->get('classeId'));?>
+					<span class='classe-precedente'><?php echo $this->scolarite_precedente['classe']; ?></span>
+					</div>
 					<div id="commun-col2-periode" class="clearfix">
 						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
 						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
@@ -478,7 +178,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				</ul>
 				<div id="tabs-1" class="sbm-tabs-container"><?php // Responsable 1?>
 				    <div id="tabs-1-r1" class="clearfix">
-						<div class="float-left">
+						<div class="float-left edit-tab-col1">
 							<div id="wrapper-responsable1Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable1Id'));?></div>
 							<div id="wrapper-responsable1" class="wrapper-responsable">
 								<div id="r1-ligne1"></div>
@@ -502,7 +202,7 @@ echo $this->formHidden($this->form->get('csrf'));
 
 							</div>
 						</div>
-						<div class="float-left left-10px">
+						<div class="float-left left-10px edit-tab-col2">
 							<div id="block-affectationsr1" class="block-affectations">
 								<h3>
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
@@ -511,17 +211,17 @@ echo $this->formHidden($this->form->get('csrf'));
 										data-href="/op:add"></i>
 								</h3>
 								<?php
-								if (isset($structAffectations[1])) {
-								    echo $this->affectations(1, $structAffectations[1]);
-								}
-								?>
+        if (isset($structAffectations[1])) {
+            echo $this->affectations(1, $structAffectations[1]);
+        }
+        ?>
                             </div>
 						</div>
 					</div>
 				</div>
 				<div id="tabs-2" class="sbm-tabs-container">
 					<div id="tabs-2-r2" class="clearfix">
-						<div class="float-left">
+						<div class="float-left edit-tab-col1">
 							<div id="wrapper-responsable2Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable2Id'));?></div>
 							<div id="wrapper-responsable2" class="wrapper-responsable">
 								<div id="r2-ligne1"></div>
@@ -544,7 +244,7 @@ echo $this->formHidden($this->form->get('csrf'));
 								</div>
 							</div>
 						</div>
-						<div class="float-left-10px">
+						<div class="float-left left-10px edit-tab-col2">
 							<div id="block-affectationsr2" class="block-affectations">
 								<h3>
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
@@ -553,10 +253,10 @@ echo $this->formHidden($this->form->get('csrf'));
 										data-href="/op:add"></i>
 								</h3>
 								<?php
-								if (isset($structAffectations[2])) {
-								    echo $this->affectations(2, $structAffectations[2]);
-								}
-								?>
+        if (isset($structAffectations[2])) {
+            echo $this->affectations(2, $structAffectations[2]);
+        }
+        ?>
                             </div>
 						</div>
 					</div>
@@ -580,7 +280,7 @@ echo $this->formHidden($this->form->get('csrf'));
 								<div class="eleve-tabs-3-col-2-label">Date de déménagement</div><?php echo formatDate($this->historique['responsable1']['dateDemenagement'], false);?></div>
 						</div>
 				        <?php if (array_key_exists('responsable2', $this->historique)):?>
-				        <div id="" tabs-3-col3" class="float-left left-10px">
+				        <div id="tabs-3-col3" class="float-left left-10px">
 							<h3>Responsable 2</h3>
 							<div id="#responsable2-dateCreation">
 								<div class="eleve-tabs-3-col-3-label">Date de création</div><?php echo formatDate($this->historique['responsable2']['dateCreation']);?></div>

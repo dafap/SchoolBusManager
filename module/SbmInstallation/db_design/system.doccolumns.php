@@ -7,8 +7,8 @@
  * @filesource system.doccolumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2014
- * @version 2014-1
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 
 return array(
@@ -38,7 +38,7 @@ return array(
             'tfoot_stretch' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // de 0 à 4
             'tfoot_precision' => 'tinyint(3) NOT NULL DEFAULT "-1"', // précision pour les colonnes numériques. -1 pour ne pas appliquer la précision
             'tfoot_completion' => 'tinyint(3) NOT NULL DEFAULT "0"', // complétion à gauche par des espaces ou zéros. Indique le nombre de chiffres à obtenir. 0 <=> pas de complétion
-            'filter' => 'text NOT NULL',
+            'filter' => 'text NULL',
             'width' => 'int(11) NOT NULL DEFAULT "0"', // laisser à 0 pour que Tcpdf calcule la valeur nécessaire
             'truncate' => 'tinyint(1) NOT NULL DEFAULT "0"', // couper à la taille de la colonne (oui 1/non 0)
             'nl' => 'tinyint(1) NOT NULL DEFAULT "0"', // saut de page après un changement de valeur dans cette colonne (oui 1/non 0)

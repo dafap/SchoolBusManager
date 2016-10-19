@@ -7,15 +7,15 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2016
- * @version 2016-2
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmParent\Model;
 
-use DafapSession\Model\Session;
-use SbmCommun\Model\Db\Service\DbManager;
-use SbmCommun\Model\StdLib;
 use DateTime;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmCommun\Model\Db\Service\DbManager;
 use SbmParent\Model\Db\Service\Query\Eleves;
 
 class OutilsInscription
@@ -52,11 +52,18 @@ class OutilsInscription
 
     /**
      * userId de la personne authentifiée.
-     * Correspond à $sm->get('Dafap\Authenticate')->by('email')->getUserId()
+     * Correspond à $sm->get('SbmAuthentification\Authentication')->by('email')->getUserId()
      *
      * @var int
      */
     private $userId;
+
+    /**
+     * indique s'il faut supprimer la dérogation (changement de domicile ou d'établissement)
+     *
+     * @var boolean
+     */
+    private $suppr_derogation;
 
     /**
      *
@@ -75,6 +82,7 @@ class OutilsInscription
         $this->responsableId = $responsableId;
         $this->userId = $userId;
         $this->eleveId = $eleveId;
+        $this->suppr_derogation = false;
     }
 
     /**
@@ -99,10 +107,10 @@ class OutilsInscription
     }
 
     /**
-     * On est propriétaire d'un responsable s'il n'a pas de compte 
+     * On est propriétaire d'un responsable s'il n'a pas de compte
      * ou s'il a un compte non confirmé ou non activé.
-     * 
-     * @param int $responsableId
+     *
+     * @param int $responsableId            
      * @return boolean
      */
     public function isOwner($responsableId)
@@ -200,10 +208,10 @@ class OutilsInscription
     /**
      * Enregistre la scolarité et renvoie un indicateur précisant si on doit
      * recalculer les distances.
-     * Le recalcul des distances est nécessaire (true)
-     * si l'établissement a changé,
-     * si c'est un nouvel enregistrement
-     * ou si district = 0
+     * Le recalcul des distances est nécessaire (true) si l'une des condition est remplie :<ul>
+     * <li>l'établissement a changé,</li>
+     * <li>c'est un nouvel enregistrement</li>
+     * <li>district = 0</li></ul>
      *
      * @param array $data
      *            tableau de données contenant la scolarité
@@ -240,8 +248,14 @@ class OutilsInscription
     }
 
     /**
-     * Enregistre les affectations de l'année précédente si le domicile et l'établissement
-     * n'ont pas changé.
+     * Cette méthode renvoie un booléen indiquant qu'il faut recalculer les droits si
+     * si un domicile ou l'établissement ont changé.
+     * 
+     * Si le domicile et l'établissement n'ont pas changé 
+     * alors enregistre les affectations de l'année précédente
+     * sinon supprime la dérogation (s'il y en a une).
+     *
+     * @return boolean
      */
     public function repriseAffectations()
     {
@@ -258,10 +272,14 @@ class OutilsInscription
                 $this->repriseAffectationsPour($affectations, $eleve->responsable2Id, 2);
             }
         }
+        if ($this->suppr_derogation) {
+            $this->supprDerogation();
+        }
+        return $this->suppr_derogation;
     }
 
     /**
-     * Reprend les affectations de l'année antérieurepour un responsable donné
+     * Reprend les affectations de l'année antérieure pour un responsable donné
      * et les enregistre pour cette année.
      *
      * @param \Zend\Db\ResultSet\HydratingResultSet $affectations
@@ -283,13 +301,15 @@ class OutilsInscription
                     $tAffectations->saveRecord($oaffectation);
                 }
             }
+        } else {
+            $this->suppr_derogation = true;
         }
     }
 
     /**
      * Indique si le responsable a le même domicile depuis le début de l'année scolaire précédente
      *
-     * @param int $responsableId            
+     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $responsable            
      *
      * @return <b>boolean</b>
      */
@@ -318,5 +338,16 @@ class OutilsInscription
     private function memeEtablissement()
     {
         return $this->db_manager->get(Eleves::class)->memeEtablissement($this->eleveId);
+    }
+
+    /**
+     * Cette méthode doit être lancée à la fin de la méthode repriseAffectations()
+     *
+     * @return \SbmParent\Model\boolean
+     */
+    private function supprDerogation()
+    {
+        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $tScolarites->setDerogation($this->millesime, $this->eleveId, 0);
     }
 }

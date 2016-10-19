@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 20 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPdf\Model;
 
@@ -23,10 +23,10 @@ use Zend\Stdlib\ArrayObject;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\View\Model\ViewModel;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\DateLib;
 use SbmPdf\Model\Db\Sql\Select;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
-use SbmCommun\Model\DateLib;
 
 class Tcpdf extends \TCPDF
 {
@@ -707,7 +707,8 @@ class Tcpdf extends \TCPDF
             } elseif ($imgtype == 'svg') {
                 $this->ImageSVG($k_path_logo, '', '', $headerdata['logo_width']);
             } else {
-                $file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
+                //$file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
+                $file = StdLib::concatPath(SBM_BASE_PATH, $k_path_logo);
                 $this->Image($file, '', '', $headerdata['logo_width']);
             }
             $imgy = $this->getImageRBY();
@@ -1417,7 +1418,7 @@ class Tcpdf extends \TCPDF
                     date('Y-m-d'),
                     date('H:i:s'),
                     Session::get('millesime'),
-                    $this->pdf_manager->get('Dafap\Authenticate')
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
                         ->by()
                         ->getUserId()
                 ], $recordSource);
@@ -1711,7 +1712,7 @@ class Tcpdf extends \TCPDF
                     date('Y-m-d'),
                     date('H:i:s'),
                     Session::get('millesime'),
-                    $this->pdf_manager->get('Dafap\Authenticate')
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
                         ->by()
                         ->getUserId()
                 ], $sql);

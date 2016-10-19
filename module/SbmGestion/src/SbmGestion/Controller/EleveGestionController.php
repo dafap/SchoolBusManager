@@ -9,22 +9,22 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2016
- * @version 2016-2.1.9
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
-use SbmCartographie\Model\Point;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\LatLng;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
+use SbmCartographie\Model\Point;
 use SbmGestion\Form\AffectationDecision;
-use DafapSession\Model\Session;
 
 class EleveGestionController extends AbstractActionController
 {
@@ -86,7 +86,7 @@ class EleveGestionController extends AbstractActionController
         $form->setData([
             'choix' => $choix
         ]);
-        $query = $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites');
+        $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         return new ViewModel([
             'criteres_form' => $form,
             'paginator' => $choix == 'inscrit' ? $query->paginatorInscritsNonAffectes() : $query->paginatorPreinscritsNonAffectes(),
@@ -152,8 +152,8 @@ class EleveGestionController extends AbstractActionController
             'page' => $page
         ]));
         if ($args['op'] == 2) {
-            $values_options1 = $this->config['db_manager']->get('Sbm\Db\Select\Stations')->ouvertes();
-            $values_options2 = $this->config['db_manager']->get('Sbm\Db\Select\Services');
+            $values_options1 = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
+            $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services');
             $formDecision->setValueOptions('station1Id', $values_options1)
                 ->setValueOptions('station2Id', $values_options1)
                 ->setValueOptions('service1Id', $values_options2)
@@ -167,7 +167,7 @@ class EleveGestionController extends AbstractActionController
                     $refus = $args['accordR' . $args['trajet']] == 0;
                     if ($refus) {
                         // enregistrer la décision
-                        $table = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites');
+                        $table = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                         $oData = $table->getObjData();
                         $oData->exchangeArray($decision);
                         $table->saveRecord($oData);
@@ -180,8 +180,8 @@ class EleveGestionController extends AbstractActionController
                         // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase 2. Pour le moment, mettre la décision en session
                         $this->setToSession('decision', $decision);
                         $formDecision = new AffectationDecision($args['trajet'], 2);
-                        $values_options1 = $this->config['db_manager']->get('Sbm\Db\Select\Stations')->ouvertes();
-                        $values_options2 = $this->config['db_manager']->get('Sbm\Db\Select\Services');
+                        $values_options1 = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
+                        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services');
                         $formDecision->setValueOptions('station1Id', $values_options1)
                             ->setValueOptions('station2Id', $values_options1)
                             ->setValueOptions('service1Id', $values_options2)
@@ -190,13 +190,13 @@ class EleveGestionController extends AbstractActionController
                     }
                 } else {
                     // on crée l'affectation
-                    $table = $this->config['db_manager']->get('Sbm\Db\Table\Affectations');
+                    $table = $this->db_manager->get('Sbm\Db\Table\Affectations');
                     $oData = $table->getObjData();
                     $oData->exchangeArray($formDecision->getData());
                     $table->saveRecord($oData);
                     // on enregistre la décision qui est en session
                     $decision = $this->getFromSession('decision');
-                    $table = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites');
+                    $table = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                     $oData = $table->getObjData();
                     $oData->exchangeArray($decision);
                     $table->saveRecord($oData);
@@ -212,30 +212,32 @@ class EleveGestionController extends AbstractActionController
             }
         }
         
-        $eleve = $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites')
+        $eleve = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
             ->getEleveAdresse($args['eleveId'], $args['trajet'])
             ->current();
         $formDecision->setData(array_merge($eleve, $args));
         
-        $d2etab = $this->config['cartographie_manager']->get('SbmCarto\DistanceEtablissements');
+        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
         $point = new Point($eleve['x'], $eleve['y']);
         $ptElv = $d2etab->getProjection()->xyzVersgRGF93($point);
         $point = new Point($eleve['xeta'], $eleve['yeta']);
         $ptEta = $d2etab->getProjection()->xyzVersgRGF93($point);
+        $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
         return new ViewModel([
             'decision' => $formDecision->prepare(),
             'op' => $args['op'],
             'page' => $page,
             'eleve' => $eleve,
             'ptElv' => $ptElv,
-            'ptEta' => $ptEta
+            'ptEta' => $ptEta,
+            'config' => $configCarte
         ]);
     }
 
     public function gaLocalisationListeAction()
     {
         return new ViewModel([
-            'data' => $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites')->getDemandeGaDistanceR2Zero(),
+            'data' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getDemandeGaDistanceR2Zero(),
             'page' => $this->params('page', 1)
         ]);
     }
@@ -267,11 +269,11 @@ class EleveGestionController extends AbstractActionController
                 ]);
             }
         }
-        $d2etab = $this->config['cartographie_manager']->get('SbmCarto\DistanceEtablissements');
+        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
         $responsableId = $args['responsableId'];
-        $tResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
+        $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent', $this->config['cartographie_manager']->get('cartes'));
+        $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
         $form = new LatLng([
             'responsableId' => [
                 'id' => 'responsableId'
@@ -307,7 +309,7 @@ class EleveGestionController extends AbstractActionController
                 $tResponsables->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');
                 // Met à jour les fiches des enfants dans scolarites
-                $majDistances = $this->config['cartographie_manager']->get('Sbm\MajDistances')->pour($responsableId);
+                $majDistances = $this->cartographie_manager->get('Sbm\MajDistances')->pour($responsableId);
                 return $this->redirect()->toRoute('sbmgestion/gestioneleve', [
                     'action' => 'ga-localisation-liste',
                     'page' => $this->params('page', 1)
@@ -315,10 +317,10 @@ class EleveGestionController extends AbstractActionController
             }
         }
         $responsable = $tResponsables->getRecord($responsableId);
-        $commune = $this->config['db_manager']->get('Sbm\Db\table\Communes')->getRecord($responsable->communeId);
+        $commune = $this->db_manager->get('Sbm\Db\table\Communes')->getRecord($responsable->communeId);
         if ($responsable->x == 0.0 && $responsable->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
-            $array = $this->config['cartographie_manager']->get('SbmCarto\Geocoder')->geocode($responsable->adresseL2 ?  : $responsable->adresseL1, $responsable->codePostal, $commune->nom);
+            $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode($responsable->adresseL2 ?  : $responsable->adresseL1, $responsable->codePostal, $commune->nom);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
             $description = $array['adresse'];
         } else {
@@ -335,8 +337,11 @@ class EleveGestionController extends AbstractActionController
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
         ]);
+        $point = new Point($args['x1'], $args['y1']);
+        $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+        $pt->setAttribute('description', $args['description']);
         return new ViewModel([
-            // 'pt' => $pt,
+            'ptR1' => $pt,
             'form' => $form->prepare(),
             'description' => $description,
             'responsable' => [
@@ -366,7 +371,7 @@ class EleveGestionController extends AbstractActionController
             ]);
         }
         $millesime = Session::get('millesime');
-        $tCalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
         $form1 = new ButtonForm([], [
             'nouvelle' => [
@@ -375,15 +380,15 @@ class EleveGestionController extends AbstractActionController
             ]
         ]);
         $form2 = new \SbmGestion\Form\SelectionCartes();
-        $form2->setValueOptions('dateReprise', $this->config['db_manager']->get('Sbm\Db\Select\DatesCartes'))
+        $form2->setValueOptions('dateReprise', $this->db_manager->get('Sbm\Db\Select\DatesCartes'))
             ->setData([
             'selection' => 'nouvelle',
             'critere' => 'tous',
             'document' => 'Liste de contrôle des cartes'
         ]);
         if (array_key_exists('nouvelle', $args)) {
-            $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->prepareDateCarteForNewEdition($millesime, $dateDebut);
-            $form2->setValueOptions('dateReprise', $this->config['db_manager']->get('Sbm\Db\Select\DatesCartes'));
+            $this->db_manager->get('Sbm\Db\Table\Scolarites')->prepareDateCarteForNewEdition($millesime, $dateDebut);
+            $form2->setValueOptions('dateReprise', $this->db_manager->get('Sbm\Db\Select\DatesCartes'));
         } elseif (array_key_exists('submit', $args)) {
             $form2->setData($args);
             if ($form2->isValid()) {
@@ -413,7 +418,7 @@ class EleveGestionController extends AbstractActionController
                 }
                 switch ($args['selection']) {
                     case 'nouvelle':
-                        $lastDateCarte = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->getLastDateCarte();
+                        $lastDateCarte = $this->db_manager->get('Sbm\Db\Table\Scolarites')->getLastDateCarte();
                         $expression[] = "dateCarte = '$lastDateCarte'";
                         $where->equalTo('dateCarte', $lastDateCarte);
                         break;
@@ -430,7 +435,7 @@ class EleveGestionController extends AbstractActionController
                         $where->equalTo('millesime', $millesime)->literal('selection = 1');
                         break;
                 }
-                $call_pdf = $this->config['RenderPdfService'];
+                $call_pdf = $this->RenderPdfService;
                 $call_pdf->setParam('documentId', $args['document'])
                     ->setParam('where', $where)
                     ->setParam('criteres', $criteres)
@@ -445,7 +450,7 @@ class EleveGestionController extends AbstractActionController
             }
         }
         if ($vue) {
-            $lastDateCarte = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->getLastDateCarte();
+            $lastDateCarte = $this->db_manager->get('Sbm\Db\Table\Scolarites')->getLastDateCarte();
             if ($lastDateCarte < $dateDebut) {
                 $e = $form2->get('selection');
                 $e->unsetValueOption('nouvelle')->unsetValueOption('reprise');
@@ -460,6 +465,8 @@ class EleveGestionController extends AbstractActionController
                 'dateDebut' => $dateDebut,
                 'page' => $this->params('page', 1)
             ]);
+        } else {
+            die();
         }
     }
 
@@ -486,8 +493,8 @@ class EleveGestionController extends AbstractActionController
         }
         $millesime = Session::get('millesime');
         $vue = true;
-        $documentId = $this->config['db_manager']->get('Sbm\Db\System\Documents')->getDocumentId('Duplicata carte');
-        $configLabel = $this->config['db_manager']->get('Sbm\Db\System\DocLabels')->getConfig($documentId);
+        $documentId = $this->db_manager->get('Sbm\Db\System\Documents')->getDocumentId('Duplicata carte');
+        $configLabel = $this->db_manager->get('Sbm\Db\System\DocLabels')->getConfig($documentId);
         $form = new \SbmGestion\Form\PlancheEtiquettesForm('duplicata', [
             'nbcols' => $configLabel['cols_number'],
             'nbrows' => $configLabel['rows_number']
@@ -526,7 +533,7 @@ class EleveGestionController extends AbstractActionController
                 ], explode('-', $args['planche']));
                 $where = new Where();
                 $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
-                $call_pdf = $this->config['RenderPdfService'];
+                $call_pdf = $this->RenderPdfService;
                 $call_pdf->setParam('documentId', 'Duplicata carte')
                     ->setParam('where', $where)
                     ->setParam('criteres', [])
@@ -538,7 +545,7 @@ class EleveGestionController extends AbstractActionController
                     ->setParam('duplicata', true)
                     ->renderPdf();
                 if (empty($args['gratuit'])) {
-                    $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->addDuplicata($millesime, $args['eleveId']);
+                    $this->db_manager->get('Sbm\Db\Table\Scolarites')->addDuplicata($millesime, $args['eleveId']);
                 }
                 $this->flashMessenger()->addSuccessMessage("Edition d'un duplicata.");
                 $vue = false; // la http response est lancée par renderPdf()
@@ -550,6 +557,8 @@ class EleveGestionController extends AbstractActionController
                 'eleveid' => $args['eleveId'],
                 'origine' => $args['origine']
             ]);
+        } else {
+            die();
         }
     }
 }

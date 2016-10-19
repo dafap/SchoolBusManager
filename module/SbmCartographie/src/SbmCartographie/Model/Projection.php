@@ -9,14 +9,14 @@
  * @filesource Projection.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCartographie\Model;
 
 use SbmCartographie\ConvertSystemGeodetic\Projection\AbstractProjection;
 use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class Projection extends AbstractProjection implements ProjectionInterface
 {

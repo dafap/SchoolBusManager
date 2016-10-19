@@ -9,8 +9,8 @@
  * @filesource ga-localisation-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2015
- * @version 2015-1
+ * @date 13 août 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -51,20 +51,32 @@ echo $this->flashMessenger()->render('default');
 					<th></th>
 				</tr>
 <?php foreach ($this->data as $row): ?>
-<?php     
-$hiddens = array(
+<?php
+
+        $hiddens = array(
             'eleveId' => $row['eleveId'],
-            'responsableId' => $row['responsable2Id']
+            'responsableId' => $row['responsable2Id'],
+            'x1' => $row['x1'],
+            'y1' => $row['y1'],
+            'description' => implode('<br>', [
+                $row['responsable1'],
+                $row['adresseR1L1'],
+                $row['adresseR1L2'],
+                $row['communeR1']
+            ])
         );
-/*$url_distByAddr = $this->url('sbmgestion/gestioneleve', array(
-            'action' => 'ga-localisation-byaddr',
-            'page' => $this->page
-        ));*/
-$url_distByMap = $this->url('sbmgestion/gestioneleve', array(
+        /*
+         * $url_distByAddr = $this->url('sbmgestion/gestioneleve', array(
+         * 'action' => 'ga-localisation-byaddr',
+         * 'page' => $this->page
+         * ));
+         */
+        $url_distByMap = $this->url('sbmgestion/gestioneleve', array(
             'action' => 'ga-localisation-bymap',
             'page' => $this->page
-        ));;
-$buttons = array(
+        ));
+        ;
+        $buttons = array(
             /*'addresse' => array(
                 'class' => 'fam-book-addresses',
                 'formaction' => $url_distByAddr,

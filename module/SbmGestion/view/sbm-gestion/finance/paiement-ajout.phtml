@@ -13,106 +13,26 @@
  * @filesource paiement-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 10 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->captureStart();
-?>
-var montantDuplicatas;
-var nbPreinscrits;
-function chargeListe() {
-    var valeur = $("#responsableId").val() | 0;
-	$.ajax({
-	    url : '/sbmajaxfinance/listepreinscrits/responsableId:'+valeur,
-	    dataType: 'json',
-	    success : function(dataJson){
-	        var montantDu = parseFloat(montantDuplicatas);
-	        
-	        
-	        $("#tbody-preinscrits").empty();
-	        $("#tbody-preinscrits").append("<tr><th>Nom</th><th>Prénom</th><th>Montant</th><th></th></tr>");
-	        if (dataJson.success) {
-	            montantDuplicatas = dataJson.duplicatas;
-	            nbPreinscrits = 0;
-	            $.each(dataJson.data, function(k, d) {
-	                nbPreinscrits++;
-	                var nom = d['nom'];
-	                var prenom = d['prenom'];
-	                var montant = d['montant'];
-	                montantDu += parseFloat(montant);
-	                var checkbox = "<input type=\"checkbox\" name=\"eleveId[]\" value=\""+d['eleveId']+"\" checked>";
-	                $('#tbody-preinscrits').append("<tr><td>"+nom+"</td><td>"+prenom+"</td><td>"+montant+"</td><td>"+checkbox+"</td></tr>");
-	            });
-	        }
-	        echoSommeDue(montantDu);
-	        $("#paiement-montant").val(parseFloat(montantDu).toFixed(2));
-	    },
-	    error : function(xhr, ajaxOptions, thrownError) {
-		    alert(xhr.status + " " + thrownError);
-		}
-    });
-}
-function totalAPayer() {
-    var total = montantDuplicatas;
-    $("#tbody-preinscrits > tr:not(:first)").each(function(i) {
-        var element = $("td:nth-child(4) > input[type=checkbox]")[i];
-        if ($(element).is(':checked')) {
-            var cellMontant = $(element).parent().parent().find("td:nth-child(3)")[0];
-            total=total+parseFloat($(cellMontant).text());
-        }
-    });
-    echoSommeDue(total);
-    return total;  
-}
-function echoSommeDue(montant) {
-    var texte = '<p class="left-10px">Somme due : '+parseFloat(montant).toFixed(2)+' €</p>';
-    $("#somme-due").empty();
-    $("#somme-due").append(texte);
-}
-$(document).ready(function() {
-  $("#responsableId").change(function() {
-      chargeListe();
-  }).trigger('change');
-  $("#tbody-preinscrits").on('click', "input[type=checkbox]", function() {
-      $("#paiement-montant").val(parseFloat(totalAPayer()).toFixed(2));
-  });
-  $("#paiement").submit(function(){
-      var btn = $(document.activeElement);
-      if ($(btn).length && $(btn).is("[name]") && $(btn).attr("name")=="cancel") {
-          return true;
-      }
-      var sommeDue=totalAPayer();
-      var montant=$("#paiement-montant").val() | 0;
-      if (nbPreinscrits>0 && montant>0 && sommeDue==0) {
-          return confirm("Vous n'avez pas coché d'enfant ; ce paiement ne validera pas les préinscriptions. Confirmez-vous ?");
-      } 
-      if (montant!=sommeDue) {
-          return confirm("Le montant indiqué ne correspond pas à la somme due. Confirmez-vous ?");
-      }
-      return true;
-  });
-});
-<?php 
-$this->headScript()->captureEnd();
+$this->headScript()->appendFile($this->basePath('/js/gestion-paiement.js'));
 $this->inlineScript()->captureStart();
 ?>
-montantDuplicatas = 0.0;
-nbPreinscrits = 0;
-chargeListe();
+js_paiement_ajout.init();
 <?php 
 $this->inlineScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-liste',
-    'page' => $this->page
+    'action' => 'paiement-ajout'
 ));
 $hiddens = array(
     'op' => $this->hidden_responsableId ? '' : 'retour'
 );
 $actions = array(
-    'retour' => array(
+    'cancel' => array(
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',

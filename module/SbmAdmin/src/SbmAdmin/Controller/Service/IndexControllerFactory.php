@@ -9,15 +9,15 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmAdmin\Controller\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmAdmin\Controller\IndexController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -30,7 +30,7 @@ class IndexControllerFactory implements FactoryInterface
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
-            'authenticate' => $sm->get('Dafap\Authenticate'),
+            'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'paginator_count_per_page' => StdLib::getParamR([
                 'paginator',
                 'count_per_page'

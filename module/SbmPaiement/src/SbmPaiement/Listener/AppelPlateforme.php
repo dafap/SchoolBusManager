@@ -22,8 +22,8 @@
  * @filesource AppelPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 20 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPaiement\Listener;
 
@@ -33,6 +33,7 @@ use Zend\EventManager\ListenerAggregateInterface;
 use Zend\Log\Logger;
 use Zend\Http\Client;
 use Zend\Http\Client\Adapter\Curl;
+use SbmBase\Model\StdLib;
 
 class AppelPlateforme implements ListenerAggregateInterface
 {
@@ -79,7 +80,7 @@ class AppelPlateforme implements ListenerAggregateInterface
     {
         $params = $e->getParams();
         // où sont mes certificats ?
-        $cacert = realpath(__DIR__ . '/../../../config') . DIRECTORY_SEPARATOR . 'cacert.pem';
+        $cacert = StdLib::concatPath(realpath(__DIR__ . '/../../../config'), 'cacert.pem');
         // ouvre l'objet de la plateforme
         $objectPlateforme = $e->getTarget();
         

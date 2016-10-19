@@ -10,8 +10,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun;
 
@@ -19,10 +19,10 @@ use Zend\Mvc\MvcEvent;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\EventManager\EventInterface;
-use ZfcBase\Module\AbstractModule;
 use Zend\View\Helper\Doctype;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
+use SbmBase\Module\AbstractModule;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Strategy\Semaine;
 
 class Module extends AbstractModule implements BootstrapListenerInterface
@@ -45,7 +45,7 @@ class Module extends AbstractModule implements BootstrapListenerInterface
         $sm = $e->getApplication()->getServiceManager();
         $db_manager = $sm->get('Sbm\DbManager');
         $tCalendar = $db_manager->get('Sbm\Db\System\Calendar');
-        if ($sm->get('Dafap\Authenticate')
+        if ($sm->get('SbmAuthentification\Authentication')
             ->by()
             ->hasIdentity()) {            
             for ($millesime = Session::get('millesime', false); ! $millesime; $millesime = Session::get('millesime', false)) {

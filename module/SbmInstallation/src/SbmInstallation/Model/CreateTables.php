@@ -8,8 +8,8 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-2 (23 oct. 2014)
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmInstallation\Model;
 
@@ -17,7 +17,7 @@ use Zend\Debug\Debug;
 use SbmInstallation\Model\Exception;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Sql;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\CommandSql;
 use SbmCommun;
 

@@ -11,15 +11,15 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2015
- * @version 2015-2
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmPaiement\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use Zend\View\Model\Zend\View\Model;
 use SbmFront\Model\Responsable\Responsable;
 
@@ -29,8 +29,8 @@ class IndexController extends AbstractActionController
     public function formulaireAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
-        } catch (Exception $e) {
+            $responsable = $this->responsable->get();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'logout'
             ));
@@ -45,7 +45,7 @@ class IndexController extends AbstractActionController
         $args = (array) $prg;
         
         // préparation des données
-        $preinscrits = $this->config['db_manager']
+        $preinscrits = $this->db_manager
             ->get('Sbm\Db\Query\ElevesScolarites')
             ->getElevesPreinscrits($responsable->responsableId);
         $elevesIds = array();
@@ -57,7 +57,7 @@ class IndexController extends AbstractActionController
             }
         }
         // vérification du montant
-        $montantUnitaire = $this->config['db_manager']
+        $montantUnitaire = $this->db_manager
             ->get('Sbm\Db\Table\Tarifs')
             ->getMontant('inscription');
         if ($args['montant'] != $montantUnitaire * count($elevesIds)) {
@@ -78,12 +78,12 @@ class IndexController extends AbstractActionController
             'prenom' => $responsable->prenom,
             'eleveIds' => $elevesIds
         );
-        $objectPlateforme = $this->config['plugin_plateforme'];
+        $objectPlateforme = $this->plugin_plateforme;
         $args = $objectPlateforme->prepareAppel($params);
         
         // enregistrement de l'appel à paiement
         $id = $objectPlateforme->getUniqueId($args);
-        $tAppels = $this->config['db_manager']->get('Sbm\Db\Table\Appels');
+        $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
         $odata = $tAppels->getObjData();
         foreach ($elevesIds as $eleveId) {
             $odata->exchangeArray(array(
@@ -113,7 +113,7 @@ class IndexController extends AbstractActionController
 
     public function listeAction()
     {
-        $table = $this->config['db_manager']->get('SbmPaiement\Plugin\Table');
+        $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
         $args = $this->initListe($table->criteres());
         if ($args instanceof Response)
             return $args;
@@ -131,7 +131,7 @@ class IndexController extends AbstractActionController
 
     public function pdfAction()
     {
-        $table = $this->config['db_manager']->get('SbmPaiement\Plugin\Table');
+        $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
         $criteresObject = array(
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             null,
@@ -173,7 +173,7 @@ class IndexController extends AbstractActionController
                 $this->setToSession('notificationId', $notificationId);
             }
         }
-        $table = $this->config['db_manager']->get('SbmPaiement\Plugin\Table');
+        $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
         return new ViewModel(array(
             'notification' => $table->getRecord($notificationId),
             'page' => $this->params('page', 1)
@@ -182,7 +182,7 @@ class IndexController extends AbstractActionController
 
     public function notificationAction()
     {
-        $plugin = $this->config['plugin_plateforme'];
+        $plugin = $this->plugin_plateforme;
         $message = $plugin->notification($this->getRequest()
             ->getPost(), $this->getRequest()
             ->getServer()

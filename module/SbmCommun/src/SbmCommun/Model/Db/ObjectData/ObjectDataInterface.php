@@ -7,8 +7,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource ObjectDataInterface.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 31 juill. 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -46,11 +46,11 @@ interface ObjectDataInterface
     public function getId();
 
     /**
-     * Renvoie le nom du champ Id de l'objet
+     * Renvoie le(s) nom(s) du(des) champ(s) Id de l'objet
      * 
      * @abstract
      *
-     * @return string
+     * @return string|array
      */
     public function getIdFieldName();
 

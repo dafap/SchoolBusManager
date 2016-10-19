@@ -9,8 +9,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2016
- * @version 2016-2.1.1
+ * @date 18 août 2016
+ * @version 2016-2.2.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('login', [
@@ -81,9 +81,13 @@ if ($url_creer) {
         'title' => 'Créer une nouvelle liste de diffusion'
     ];
 }
-$this->source->setItemCountPerPage(20);
-$this->source->setCurrentPageNumber($this->page);
-$data = $this->source->getCurrentItems();
+if ($this->source->count()) {
+    $this->source->setItemCountPerPage(20);
+    $this->source->setCurrentPageNumber($this->page);
+    $data = $this->source->getCurrentItems();
+} else {
+    $data = [];
+}
 ?>
 <h1>Gestion des listes de diffusion par MailChimp</h1>
 <div id="liste-wrapper">
@@ -174,6 +178,12 @@ if ($this->message) {
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix">
+		<?php 
+		if ($this->source->count()) {
+		    echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); 
+		}
+		?>
+		</div>
 	</div>
 </div>

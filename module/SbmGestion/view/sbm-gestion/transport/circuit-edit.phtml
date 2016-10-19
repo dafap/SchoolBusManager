@@ -8,48 +8,20 @@
  * @filesource view/sbm-gestion/transport/circuit-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2016
- * @version 2016-1.7.0
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->captureStart();
-?>
-function montreMer(visible) {
-    if (visible) {
-        $("#circuit-edit-m2").show();
-        $("#circuit-edit-s2").show();
-    } else {
-        $("#circuit-edit-m2").hide();
-        $("#circuit-edit-s2").hide();
-    }
-}
-function montreSam(visible) {
-    if (visible) {
-        $("#circuit-edit-m3").show();
-        $("#circuit-edit-s3").show();
-    } else {
-        $("#circuit-edit-m3").hide();
-        $("#circuit-edit-s3").hide();
-    }
-}
-$(document).ready(function($) {
-$("#semaine-mer").click(function(){
-    montreMer($(this).is(":checked"));
-});
-$("#semaine-sam").click(function(){
-    montreSam($(this).is(":checked"));
-});
-});
-<?php 
-$this->headScript()->captureEnd();
+$this->headScript()->appendFile($this->basePath('/js/gestion-circuit/edit.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->inlineScript()->captureStart();
 ?>
-montreMer($("#semaine-mer").is(":checked"));
-montreSam($("#semaine-sam").is(":checked"));
+multicheckbox_actions.init("circuit-edit-semaine");
+js_actions.init();
 <?php 
 $this->inlineScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport', array('action'=> 'circuit-liste', 'page' => $this->page));
 $hiddens = array();
 $actions = array(
@@ -87,16 +59,16 @@ echo $this->formHidden($this->form->get('csrf'));
         <div class="clearfix">
             <div id="horaire-matin" class="row-inner float-left cols-2">
                 <fieldset><legend>Horaires aller</legend>
-                <div id="circuit-edit-m1" class="row-inner"><?php echo $this->formRow($this->form->get('m1')); ?></div>
-                <div id="circuit-edit-m2" class="row-inner"><?php echo $this->formRow($this->form->get('m2')); ?></div>
-                <div id="circuit-edit-m3" class="row-inner"><?php echo $this->formRow($this->form->get('m3')); ?></div>
+                <div id="circuit-m1" class="row-inner"><?php echo $this->formRow($this->form->get('m1')); ?></div>
+                <div id="circuit-m2" class="row-inner"><?php echo $this->formRow($this->form->get('m2')); ?></div>
+                <div id="circuit-m3" class="row-inner"><?php echo $this->formRow($this->form->get('m3')); ?></div>
                 </fieldset>
             </div>
             <div id="horaires-soir" class="row-inner edit float-left cols-2">
                 <fieldset><legend>Horaires retour</legend>
-                <div id="circuit-edit-s1" class="row-inner"><?php echo $this->formRow($this->form->get('s1')); ?></div>
-                <div id="circuit-edit-s2" class="row-inner"><?php echo $this->formRow($this->form->get('s2')); ?></div>
-                <div id="circuit-edit-s3" class="row-inner"><?php echo $this->formRow($this->form->get('s3')); ?></div>
+                <div id="circuit-s1" class="row-inner"><?php echo $this->formRow($this->form->get('s1')); ?></div>
+                <div id="circuit-s2" class="row-inner"><?php echo $this->formRow($this->form->get('s2')); ?></div>
+                <div id="circuit-s3" class="row-inner"><?php echo $this->formRow($this->form->get('s3')); ?></div>
                 </fieldset>
             </div>
         </div>
@@ -117,15 +89,3 @@ echo $this->formHidden($this->form->get('csrf'));
     </div> <?php // fiche-inner ?>
 	<div id="fiche-footer"></div>
 </div>
-<?php $this->inlineScript()->captureStart(); ?>
-/**
- * Copie le commentaire1 dans le commentaire2
- */
-$(function() {
-	$("#comment-copy").click(
-			function() {
-				$("#circuit-commentaire2").append(
-						$("#circuit-commentaire1").val());
-			});
-});
-<?php $this->inlineScript()->captureEnd(); ?>

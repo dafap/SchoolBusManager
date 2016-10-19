@@ -9,8 +9,8 @@
  * @filesource formpaiement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2015
- * @version 2015-1
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 // style css utilisés dans le formulaire
 $this->headStyle()->captureStart();
@@ -62,7 +62,7 @@ $(function() {
     };
     $.post(urlform, data, function(itemJson) {		
 			$("#winpopup").dialog('close');
-			majPaiement(gratuit);						
+			js_edit.majPaiement(gratuit);						
         }, 'json');
     return false;
   });

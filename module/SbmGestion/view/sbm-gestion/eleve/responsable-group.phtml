@@ -8,10 +8,10 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -63,7 +63,7 @@ $menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', [
 ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
-$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
@@ -229,6 +229,5 @@ echo $this->flashMessenger()->render('default');
 		<?php endif;?>
     <?php endforeach; ?>
     </div>
-</div>
-<div id="liste-footer"></div>
+	<div id="liste-footer"></div>
 </div>

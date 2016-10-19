@@ -410,7 +410,7 @@ div.menu ul.menubar ul li input {
 }
 /*--------------- Pagination ----------------------------*/
 /* la pagination est dans un clearfix pour que ça marche */
-div.pagination {
+div.clearfix div.pagination {
 	float: right;
 	margin-top: 10px;
 	margin-bottom: 10px;
@@ -419,28 +419,37 @@ div.pagination {
 	font-size: 110%;
 	font-weight: bold;
 }
-div.pagination .disabled {
+div.clearfix div.pagination .disabled {
 	display: none;
 }
-div.pagination span.nbItems, 
-div.pagination span.current {
+div.clearfix div.pagination span.nbItems, 
+div.clearfix div.pagination span.current {
 	color: orange;
 	margin-left: 3px;
 	margin-right: 3px;
 }
-div.pagination span.current {
+div.clearfix div.pagination span.current {
 	border: 1px solid orange;
 }
-div.pagination a.page {
+div.clearfix div.pagination a.page {
 	margin-left: 3px;
 	margin-right: 3px;
 	text-decoration: none;
 	color: #1c94c4
 }
-div.pagination a.page:hover {
+div.clearfix div.pagination a.page:hover {
 	color: #156486;
 }
-/*--------------- Menu général --------------*/
+/*------------ Selection (à coté du paginateur) ---------*/
+div.pagination-wrapper div.selection {
+	float: left;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 20px;
+	color: #176f94;
+	font-size: 110%;
+}
+/*-------------------- Menu général ---------------------*/
 #menugeneral-inner ul {
 	list-style-type: none;
     padding: 0px;
@@ -662,6 +671,17 @@ div#fiche-inner div.row-inner input.cancel {
 #fiche-inner #eleve #commun-col2 label {
 	width: 107px;
 }
+#fiche-inner #eleve #commun-col2 span {
+	background: #eee;
+	color: gray;
+	font-size: 80%;
+}
+#fiche-inner #eleve #commun-col2 span.etablissement-precedent {
+	margin-left: 112px;
+}
+#fiche-inner #eleve #commun-col2 span.classe-precedente {
+	margin-left: 20px;
+}
 #fiche-inner #eleve #commun-col2-periode label {
 	width: inherit;
 	margin-right: 3px;
@@ -715,6 +735,14 @@ div#fiche-inner div.row-inner input.cancel {
 	display: block;
 	float: left;
 	left: 20px;
+}
+#fiche-inner #eleve #tabs-1 div.edit-tab-col1,
+#fiche-inner #eleve #tabs-2 div.edit-tab-col1 {
+	max-width: 415px;
+}
+#fiche-inner #eleve #tabs-1 div.edit-tab-col2,
+#fiche-inner #eleve #tabs-2 div.edit-tab-col2 {
+	max-width: 670px;
 }
 #fiche-inner #eleve .block-affectations h3 {
 	margin-top: 0;
@@ -1066,6 +1094,12 @@ label.sbm-form-auto:before {
 	white-space: pre;
 	line-height: 2;
 }
+/*---------------- Bloc bouton -------------------------------*/
+/* utilisation pour écarter les boutons dans la div           */
+div.bloc-bouton input {
+	margin-top: 30px;
+	margin-left: 15px;
+} 
 /*---------------- Tableau de bord ---------------------------*/
 div#tableau-de-bord table.float-left {
 	margin-left: 5px;

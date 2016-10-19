@@ -8,15 +8,15 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use SbmCommun\Model\Db\ObjectData\Exception as ObjectDataException;
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Update;
 use Zend\Db\Sql\Where;
@@ -160,6 +160,25 @@ class Scolarites extends AbstractSbmTable
     }
 
     /**
+     * Affecte le champ derogation
+     * 
+     * @param int $millesime            
+     * @param int $eleveId            
+     * @param int $derogation
+     *            0 ou 1
+     */
+    public function setDerogation($millesime, $eleveId, $derogation)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'millesime' => $millesime,
+            'eleveId' => $eleveId,
+            'derogation' => $derogation
+        ));
+        parent::saveRecord($oData);
+    }
+
+    /**
      * Renvoie la date de dernière édition des cartes
      */
     public function getLastDateCarte()
@@ -222,29 +241,33 @@ class Scolarites extends AbstractSbmTable
         }
         parent::saveRecord($oData);
     }
-    
+
     /**
      * Renvoie vrai si la table ne contient pas de données pour ce millésime.
-     * 
-     * @param int $millesime
-     * 
+     *
+     * @param int $millesime            
+     *
      * @return boolean
      */
     public function isEmptyMillesime($millesime)
     {
-        $resultset = $this->fetchAll(array('millesime' => $millesime));
-        return $resultset->count()==0;
+        $resultset = $this->fetchAll(array(
+            'millesime' => $millesime
+        ));
+        return $resultset->count() == 0;
     }
-    
+
     /**
      * Supprime tous les enregistrements concernant le millesime indiqué.
-     * 
-     * @param unknown $millesime
-     * 
+     *
+     * @param unknown $millesime            
+     *
      * @return \Zend\Db\TableGateway\int
      */
     public function viderMillesime($millesime)
     {
-        return $this->table_gateway->delete(array('millesime' => $millesime));
+        return $this->table_gateway->delete(array(
+            'millesime' => $millesime
+        ));
     }
 }

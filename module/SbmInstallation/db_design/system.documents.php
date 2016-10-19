@@ -8,8 +8,8 @@
  * @filesource system.documents.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 août 2014
- * @version 2014-1
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 
 // $k_path_images = str_replace('\\', '/', dirname(__FILE__).'/../../../public/img/');
@@ -46,7 +46,7 @@ return array(
             'title' => 'varchar(255) NOT NULL DEFAULT ""',
             'subject' => 'varchar(255) NOT NULL DEFAULT ""',
             'keywords' => 'varchar(255) NOT NULL DEFAULT ""',
-            'docheader_subtitle' => 'text', // ne fait pas partie des propriétés d'un pdf mais complète la page d'entête du rapport (si présente)
+            'docheader_subtitle' => 'text NULL', // ne fait pas partie des propriétés d'un pdf mais complète la page d'entête du rapport (si présente)
             'docheader_page_distincte' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 la suite sur la même page ; 1 la suite sur une nouvelle page
             'docheader_margin' => 'int(11) NOT NULL DEFAULT "20"', // marge du bloc docheader si page_distincte == 0
             'docheader_pageheader' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pageheader sur la première page ; 1 si oui
@@ -54,7 +54,7 @@ return array(
             'docheader_templateId' => 'int(11) NOT NULL DEFAULT "1"',
             // pied de document (si docfooter == 1)
             'docfooter_title' => 'varchar(255) NOT NULL DEFAULT ""',
-            'docfooter_string' => 'text',
+            'docfooter_string' => 'text NULL',
             'docfooter_page_distincte' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 la suite sur la même page ; 1 la suite sur une nouvelle page
             'docfooter_insecable'  => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 le footer peut être scindé ; 1 tout le footer sur la même page
             'docfooter_margin' => 'int(11) NOT NULL DEFAULT "20"', // marge du bloc docfooter si page_distincte == 0
@@ -64,7 +64,7 @@ return array(
             // entête de page (si pageheader == 1)
             'pageheader_templateId' => 'int(11) NOT NULL DEFAULT "1"',
             'pageheader_title' => 'varchar(255) NOT NULL DEFAULT ""',
-            'pageheader_string' => 'text',
+            'pageheader_string' => 'text NULL',
             'pageheader_logo_visible' => 'tinyint(1) NOT NULL DEFAULT "1"', // si 0 on envoie l'image blank
             'pageheader_logo' => 'varchar(255) NOT NULL DEFAULT "sbm-logo.gif"',
             'pageheader_logo_width' => 'int(11) NOT NULL DEFAULT "15"', 
@@ -77,7 +77,7 @@ return array(
             // pied de page (si pagefooter == 1)
             'pagefooter_templateId' => 'int(11) NOT NULL DEFAULT "1"',
             'pagefooter_margin' => 'int(11) NOT NULL DEFAULT "10"',
-            'pagefooter_string' => 'text',
+            'pagefooter_string' => 'text NULL',
             'pagefooter_font_family' => 'varchar(64) NOT NULL DEFAULT "helvetica"',
             'pagefooter_font_style' => 'char(2) NOT NULL DEFAULT ""',
             'pagefooter_font_size' => 'int(11) NOT NULL DEFAULT "11"',           

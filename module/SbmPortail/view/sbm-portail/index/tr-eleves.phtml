@@ -7,16 +7,16 @@
  * @filesource tr-eleves.phtml.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
 // (ne pas mettre de guillemet dans la chaine)
-$js_op = 'javascript:window.document.getElementById(\'op%s%s\').value=\'%s\';';
+$js_op = 'window.document.getElementById(\'op%s%s\').value=\'%s\';';
 
 // le paginateur
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);

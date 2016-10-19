@@ -10,8 +10,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 oct. 2014
- * @version 2014-1
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Hydrator;
 
@@ -20,31 +20,30 @@ use SbmCommun\Filter\SansAccent;
 
 class Eleves extends AbstractHydrator
 {
-
-    public function extract($object)
+    /**
+     * (non-PHPdoc)
+     * @see \SbmCommun\Model\Hydrator\AbstractHydrator::calculate()
+     */
+    protected function calculate($object)
     {
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(sprintf('%s : On attend un SbmCommun\Model\Db\ObjectData\Eleve et on a reçu un %s', __METHOD__, gettype($object)));
         }
-        return parent::extract($object);
-    }
-
-    protected function calculate()
-    {
-        $calculate_fields = $this->object->getCalculateFields();
+        $calculate_fields = $object->getCalculateFields();
         $now = new \DateTime('now');
         foreach ($calculate_fields as $value) {
             if (substr($value, - 2) == 'SA') {
                 $sa = new SansAccent();
                 $index = substr($value, 0, strlen($value) - 2);
                 try {
-                    $this->object->$value = $sa->filter($this->object->$index);
+                    $object->$value = $sa->filter($object->$index);
                 } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {}
             } elseif ($value == 'dateModification') {
-                $this->object->dateModification = $now->format('Y-m-d H:i:s');
+                $object->dateModification = $now->format('Y-m-d H:i:s');
             } elseif ($value == 'dateCreation') {
-                $this->object->dateCreation = $now->format('Y-m-d H:i:s');
+                $object->dateCreation = $now->format('Y-m-d H:i:s');
             }
         }
+        return $object;
     }
 }

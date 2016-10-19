@@ -20,76 +20,20 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2015
- * @version 2015-1
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->captureStart();
-?>
-function montreDebutFin(ancomplet) {
-    if (ancomplet) {
-        $("#wrapper-dateDebut").hide();
-        $("#wrapper-dateFin").hide();
-    } else {
-        $("#wrapper-dateDebut").show();
-        $("#wrapper-dateFin").show();
-    }
-}
-function montreMotifDerogation(derogation) {
-    if (derogation) {
-        $("#wrapper-motifDerogation").show();
-    } else {
-        $("#wrapper-motifDerogation").hide();
-    }
-}
-$(document).ready(function($) {
-$("#eleve-anneeComplete").click(function(){
-    montreDebutFin($(this).is(":checked"));
-});
-$("#eleve-derogation").click(function(){
-    montreMotifDerogation($(this).is(":checked"));
-});
-$("input[type='text'][name^='distanceR']").dblclick(function(){
-    $(this).css("cursor", "wait");
-    var myid = '#'+$(this).attr('id');
-    var name = $(this).attr('name');
-    var n = 1;
-    if (name.indexOf('1') == -1) {
-        n = 2;
-    }
-    var id = '#eleve-responsable'+n+'Id';
-    var responsableid = $(id).val();
-    var etablissementid = $("#eleve-etablissementId").val();
-    var args = 'etablissementId:'+etablissementid+'/responsableId:'+responsableid;
-    $.ajax({
-			url : '/sbmajaxeleve/donnedistance/'+args,
-			type: 'GET',
-			dataType: 'json',
-			success : function(data){
-			    if (data.success) {
-			      $(myid).val(data.distance);
-			      $(myid).css('cursor', 'auto');
-			    } else {
-			        alert(data.cr);
-			    }
-            },
-			error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-					$(myid).css('cursor','auto');
-			}
-	});
-});
-});
-<?php 
-$this->headScript()->captureEnd();
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout31.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->inlineScript()->captureStart();
 ?>
-montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-montreMotifDerogation($("#eleve-derogation").is(":checked"));
+multicheckbox_actions.init("wrapper-joursTransport");
+js_ajout31.init();
 <?php 
 $this->inlineScript()->captureEnd();
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 //======================= fin js =================================================
 $url_map = $this->url('sbmgestion/eleve', array(
     'action' => 'localisation',
@@ -101,7 +45,7 @@ $url_ici = $this->url('sbmgestion/eleve', array(
 ));
 $hiddens = array(
     'eleveId' => $this->data['eleveId'],
-    'eleve' => $this->info,
+    'eleveName' => $this->info,
     'origine' => $url_ici
 );
 $actions = array(
@@ -144,8 +88,8 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
 						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
 						<div id="wrapper-dateFin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateFin'));?></div>
-					</div id="commun-col2-derogation" class="clearfix">
-					<div>
+					</div>
+					<div id="commun-col2-derogation" class="clearfix">
 						<div id="wrapper-derogation" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('derogation'));?></div>
 						<div id="wrapper-motifDerogation"
 							class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('motifDerogation'));?></div>

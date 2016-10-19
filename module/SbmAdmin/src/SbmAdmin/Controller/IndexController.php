@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2016
- * @version 2016-2
+ * @date 7 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmAdmin\Controller;
 
@@ -21,15 +21,15 @@ use Zend\Session\Container as SessionContainer;
 use Zend\Db\Sql\Where;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Form\CriteresForm;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\SecteurScolaire as FormSecteurScolaire;
 use SbmCommun\Form\ButtonForm;
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 use SbmAdmin\Form\User;
 use SbmAdmin\Form\Export as ExportForm;
 use SbmAdmin\Form\UserRelation;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
 use SbmAdmin\Model\Db\Service\Libelle\Liste;
@@ -51,12 +51,14 @@ class IndexController extends AbstractActionController
         $args = $this->initListe('libelles', function ($config, $form) {
             $form->setValueOptions('nature', $config['db_manager']->get('Sbm\Db\Select\Libelles')
                 ->nature());
-        });
+        }, [
+            'nature'
+        ]);
         if ($args instanceof Response)
             return $args;
         
         return new ViewModel([
-            'paginator' => $this->config['db_manager']->get('Sbm\Db\System\Libelles')->paginator($args['where'], [
+            'paginator' => $this->db_manager->get('Sbm\Db\System\Libelles')->paginator($args['where'], [
                 'nature',
                 'code'
             ]),
@@ -69,7 +71,7 @@ class IndexController extends AbstractActionController
     public function libelleAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = $this->config['form_manager']->get(FormLibelle::class);
+        $form = $this->form_manager->get(FormLibelle::class);
         $params = [
             'data' => [
                 'table' => 'libelles',
@@ -78,7 +80,7 @@ class IndexController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->config['db_manager'], $params);
+        $r = $this->addData($this->db_manager, $params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -103,7 +105,7 @@ class IndexController extends AbstractActionController
     public function libelleEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = $this->config['form_manager']->get(FormLibelle::class);
+        $form = $this->form_manager->get(FormLibelle::class);
         
         $params = [
             'data' => [
@@ -115,7 +117,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
         
-        $r = $this->editData($this->config['db_manager'], $params);
+        $r = $this->editData($this->db_manager, $params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -162,7 +164,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
         
-        $r = $this->supprData($this->config['db_manager'], $params, function ($id, $tableLibelles) {
+        $r = $this->supprData($this->db_manager, $params, function ($id, $tableLibelles) {
             return [
                 'id' => implode('|', $id),
                 'data' => $tableLibelles->getRecord($id)
@@ -216,7 +218,7 @@ class IndexController extends AbstractActionController
             ]);
         }
         return new ViewModel([
-            'data' => $this->config['db_manager']->get(Liste::class)->forNature($nature),
+            'data' => $this->db_manager->get(Liste::class)->forNature($nature),
             'page' => $currentPage,
             'nature' => $nature,
             'code' => $code
@@ -256,12 +258,15 @@ class IndexController extends AbstractActionController
                 ->clgPu())
                 ->setValueOptions('communeId', $config['db_manager']->get('Sbm\Db\Select\Communes')
                 ->membres());
-        });
+        }, [
+            'etablissementId',
+            'communeId'
+        ]);
         if ($args instanceof Response)
             return $args;
         
         return new ViewModel([
-            'paginator' => $this->config['db_manager']->get('Sbm\Db\Query\SecteursScolairesClgPu')->paginator($args['where'], [
+            'paginator' => $this->db_manager->get('Sbm\Db\Query\SecteursScolairesClgPu')->paginator($args['where'], [
                 'communeetab',
                 'etablissement',
                 'commune'
@@ -275,10 +280,10 @@ class IndexController extends AbstractActionController
     public function secteurScolaireAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = $this->config['form_manager']->get(FormSecteurScolaire::class);
-        $form->setValueOptions('etablissementId', $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')
+        $form = $this->form_manager->get(FormSecteurScolaire::class);
+        $form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
             ->desservis())
-            ->setValueOptions('communeId', $this->config['db_manager']->get('Sbm\Db\Select\Communes')
+            ->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->desservies());
         $params = [
             'data' => [
@@ -288,7 +293,7 @@ class IndexController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->config['db_manager'], $params);
+        $r = $this->addData($this->db_manager, $params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -335,9 +340,9 @@ class IndexController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $oRequete = $this->config['db_manager']->get('Sbm\Db\Query\SecteursScolairesClgPu');
+        $oRequete = $this->db_manager->get('Sbm\Db\Query\SecteursScolairesClgPu');
         try {
-            $r = $this->supprData($this->config['db_manager'], $params, function ($id, $tableClasses) use($oRequete) {
+            $r = $this->supprData($this->db_manager, $params, function ($id, $tableClasses) use($oRequete) {
                 return [
                     'id' => $id,
                     'data' => $oRequete->getRecord($id)
@@ -397,14 +402,16 @@ class IndexController extends AbstractActionController
      */
     public function userListeAction()
     {
-        $args = $this->initListe('users', null, null, [
+        $args = $this->initListe('users', null, [
+            'categorieId'
+        ], [
             'active' => 'Literal:active=0'
         ]);
         if ($args instanceof Response)
             return $args;
         
         return new ViewModel([
-            'paginator' => $this->config['db_manager']->get('Sbm\Db\Table\Users')->paginator($args['where'], [
+            'paginator' => $this->db_manager->get('Sbm\Db\Table\Users')->paginator($args['where'], [
                 'categorieId Desc',
                 'nom',
                 'prenom'
@@ -452,15 +459,16 @@ class IndexController extends AbstractActionController
                 ]);
             }
         }
-        $form = $this->config['form_manager']->get(User::class);
-        $tUser = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+        $form = $this->form_manager->get(User::class);
+        $tUser = $this->db_manager->get('Sbm\Db\Table\Users');
         $form->setData([
             'userId' => null
         ])->bind($tUser->getObjData());
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
-                $tUser->saveRecord($form->getData()->completeToCreate());
+                $tUser->saveRecord($form->getData()
+                    ->completeToCreate());
                 $this->flashMessenger()->addSuccessMessage('Compte créé');
                 return $this->redirect()->toRoute('sbmadmin', [
                     'action' => 'user-liste',
@@ -498,8 +506,8 @@ class IndexController extends AbstractActionController
                 $this->setToSession('post', $args);
             }
         }
-        $form = $this->config['form_manager']->get(User::class);
-        $tUser = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+        $form = $this->form_manager->get(User::class);
+        $tUser = $this->db_manager->get('Sbm\Db\Table\Users');
         $form->bind($tUser->getObjData());
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -544,7 +552,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
         
-        $r = $this->supprData($this->config['db_manager'], $params, function ($id, $tUsers) {
+        $r = $this->supprData($this->db_manage, $params, function ($id, $tUsers) {
             return [
                 'id' => $id,
                 'data' => $tUsers->getRecord($id)
@@ -565,7 +573,7 @@ class IndexController extends AbstractActionController
                     break;
                 default:
                     $data = StdLib::getParam('data', $r->getResult());
-                    $autorise = ($this->config['db_manager']->get('Sbm\Db\Table\Responsables')->getRecordByEmail($data->email) === false);
+                    $autorise = ($this->db_manager->get('Sbm\Db\Table\Responsables')->getRecordByEmail($data->email) === false);
                     return new ViewModel([
                         'autorise' => $autorise,
                         'form' => $form->prepare(),
@@ -615,21 +623,21 @@ class IndexController extends AbstractActionController
             }
         }
         // récupère la fiche de l'user
-        $user = $this->config['db_manager']->get('Sbm\Db\Table\Users')->getRecord($args['userId']);
+        $user = $this->db_manager->get('Sbm\Db\Table\Users')->getRecord($args['userId']);
         switch ($user->categorieId) {
             case 2:
-                $tUsersTransporteurs = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs');
+                $tUsersTransporteurs = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs');
                 if ($tUsersTransporteurs->hasTransporteur($args['userId'])) {
                     $transporteurId = $tUsersTransporteurs->getTransporteurId($args['userId']);
                     $viewmodel = new ViewModel([
                         'user' => $user,
-                        'transporteur' => $this->config['db_manager']->get('Sbm\Db\Vue\Transporteurs')->getRecord($transporteurId),
+                        'transporteur' => $this->db_manager->get('Sbm\Db\Vue\Transporteurs')->getRecord($transporteurId),
                         'form' => false,
                         'page' => $this->params('page', 1)
                     ]);
                 } else {
-                    $form = $this->config['form_manager']->get(UserRelation::class)->getForm('transporteur');
-                    $form->setValueOptions('transporteurId', $this->config['db_manager']->get('Sbm\Db\Select\Transporteurs'))
+                    $form = $this->form_manager->get(UserRelation::class)->getForm('transporteur');
+                    $form->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
                         ->bind($tUsersTransporteurs->getObjData());
                     if (array_key_exists('submit', $args)) {
                         $form->setData($args);
@@ -654,18 +662,18 @@ class IndexController extends AbstractActionController
                 $viewmodel->setTemplate('sbm-admin/index/user-transporteur');
                 break;
             case 3:
-                $tUsersEtablissements = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements');
+                $tUsersEtablissements = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements');
                 if ($tUsersEtablissements->hasEtablissement($args['userId'])) {
                     $etablissementId = $tUsersEtablissements->getEtablissementId($args['userId']);
                     $viewmodel = new ViewModel([
                         'user' => $user,
-                        'etablissement' => $this->config['db_manager']->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
+                        'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
                         'form' => false,
                         'page' => $this->params('page', 1)
                     ]);
                 } else {
-                    $form = $this->config['form_manager']->get(UserRelation::class)->getForm('etablissement');
-                    $form->setValueOptions('etablissementId', $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')
+                    $form = $this->form_manager->get(UserRelation::class)->getForm('etablissement');
+                    $form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
                         ->desservis())
                         ->bind($tUsersEtablissements->getObjData());
                     if (array_key_exists('submit', $args)) {
@@ -694,7 +702,7 @@ class IndexController extends AbstractActionController
                 // récupère la fiche d'un responsable par son email (ancien comportement)
                 $viewmodel = new ViewModel([
                     'user' => $user,
-                    'responsable' => $this->config['db_manager']->get('Sbm\Db\Vue\Responsables')->getRecordByEmail($user->email),
+                    'responsable' => $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecordByEmail($user->email),
                     'page' => $this->params('page', 1)
                 ]);
                 break;
@@ -715,7 +723,7 @@ class IndexController extends AbstractActionController
                 'page' => $this->params('page', 1)
             ]);
         }
-        $tUsersTransporteurs = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs');
+        $tUsersTransporteurs = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs');
         $tUsersTransporteurs->deleteRecord([
             'userId' => $args['userId'],
             'transporteurId' => $args['transporteurId']
@@ -761,11 +769,11 @@ class IndexController extends AbstractActionController
             'page' => $currentPage
         ]));
         if ($confirme) {
-            $identity = $this->config['authenticate']->by()->getIdentity();
-            $nettoyage = $this->config['db_manager']->get(Users::class);
+            $identity = $this->authenticate->by()->getIdentity();
+            $nettoyage = $this->db_manager->get(Users::class);
             $nettoyage->deleteParentsNonConfirmes();
-            $creation = $this->config['db_manager']->get(Responsables::class);
-            $tUsers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+            $creation = $this->db_manager->get(Responsables::class);
+            $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
             $oUser = $tUsers->getObjdata();
             $message = sprintf('Compte créé le %s par %s %s', DateLib::today(), $identity['nom'], $identity['prenom']);
             $compteur = 0;
@@ -812,7 +820,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->config['form_manager']->get(ExportForm::class)->getForm('eleve');
+        $form = $this->form_manager->get(ExportForm::class)->getForm('eleve');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [
@@ -823,12 +831,12 @@ class IndexController extends AbstractActionController
                 if ($form->isValid()) {
                     $where = $form->whereEleve();
                     if ($prg['lot']) {
-                        $resultset = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->getLocalisation($where, [
+                        $resultset = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getLocalisation($where, [
                             'nom_eleve',
                             'prenom_eleve'
                         ]);
                     } else {
-                        $resultset = $this->config['db_manager']->get('Sbm\Db\Query\ElevesResponsables')->getLocalisation($where, [
+                        $resultset = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->getLocalisation($where, [
                             'nom_eleve',
                             'prenom_eleve'
                         ]);
@@ -855,7 +863,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->config['form_manager']->get(ExportForm::class)->getForm('etablissement');
+        $form = $this->form_manager->get(ExportForm::class)->getForm('etablissement');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [
@@ -865,7 +873,7 @@ class IndexController extends AbstractActionController
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereEtablissement();
-                    $resultset = $this->config['db_manager']->get('Sbm\Db\Query\Etablissements')->getLocalisation($where, [
+                    $resultset = $this->db_manager->get('Sbm\Db\Query\Etablissements')->getLocalisation($where, [
                         'commune',
                         'nom'
                     ]);
@@ -891,7 +899,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->config['form_manager']->get(ExportForm::class)->getForm('responsable');
+        $form = $this->form_manager->get(ExportForm::class)->getForm('responsable');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [
@@ -901,7 +909,7 @@ class IndexController extends AbstractActionController
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereResponsable();
-                    $resultset = $this->config['db_manager']->get('Sbm\Db\Vue\Responsables')->fetchAll($where, [
+                    $resultset = $this->db_manager->get('Sbm\Db\Vue\Responsables')->fetchAll($where, [
                         'commune',
                         'nom'
                     ]);
@@ -927,7 +935,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->config['form_manager']->get(ExportForm::class)->getForm('station');
+        $form = $this->form_manager->get(ExportForm::class)->getForm('station');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [
@@ -937,7 +945,7 @@ class IndexController extends AbstractActionController
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereStation();
-                    $resultset = $this->config['db_manager']->get('Sbm\Db\Query\Stations')->getLocalisation($where, [
+                    $resultset = $this->db_manager->get('Sbm\Db\Query\Stations')->getLocalisation($where, [
                         'commune',
                         'nom'
                     ]);
@@ -995,7 +1003,7 @@ class IndexController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmadmin');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('dafapmail');
+            ->toRoute('SbmMail');
     }
 
     public function localisationAction()

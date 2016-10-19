@@ -1,0 +1,25 @@
+{
+    "name": "sbm-base",
+    "description": "Un ensemble de classes abstraites ou génériques servant à de nombreux modules du projet.",
+    "type": "library",
+    "keywords": [
+        "zf2", "sbm"
+    ],
+    "homepage": "https://github.com/dafap/SchoolBusManager",
+    "authors": [
+        {
+            "name": "Alain Pomirol",
+            "email": "sbm@dafap.fr"
+        }
+    ],
+    "require": {
+        "zendframework/zend-mvc": "^2.7",
+        "zendframework/zend-modulemanager": "^2.7",
+        "zendframework/zend-session": "^2.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "SbmBase\\": "module/SbmBase/src/"
+        }
+    }
+}

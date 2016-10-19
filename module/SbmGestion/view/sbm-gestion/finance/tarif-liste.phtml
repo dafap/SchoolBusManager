@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Liste des tarifs
  *
@@ -9,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mai 2014
- * @version 2014-1
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -24,6 +23,19 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxfinance/'+action+'selectiontarif/tarifId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -95,20 +107,7 @@ echo $this->flashMessenger()->render('default');
 				</tr>
         <?php foreach($tarifs as $test => $tarif): ?>
         <?php
-            // selection
-            $modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxfinance/'+action+'selectiontarif/tarifId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-            
+            // construction des JS pour selection            
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $tarif->tarifId);
             $jsCallback .= sprintf("$modele\n", $tarif->tarifId, $this->page, $tarif->tarifId);
             ?>

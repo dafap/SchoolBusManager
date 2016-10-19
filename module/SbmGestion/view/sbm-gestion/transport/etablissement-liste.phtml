@@ -8,10 +8,10 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
 
 function renderCheckbox($view, $name, $id, $value)
@@ -26,6 +26,40 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modèles de jsCallback pour selection, visible et desservie
+$modele = <<<EOT
+$("#chk%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'selectionetablissement/etablissementId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+$("#vis%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'visibleetablissement/etablissementId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+$("#des%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'desservietablissement/etablissementId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -128,40 +162,7 @@ echo $this->flashMessenger()->render('default');
             $nbInscrits = StdLib::getParamR(array($etablissement->etablissementId, 'transportes'), $this->t_nb_inscrits, 0);
             $nbInscrits .= ' / ';
             $nbInscrits .= StdLib::getParamR(array($etablissement->etablissementId, 'demandes'), $this->t_nb_inscrits, 0);
-            // selection
-            $modele = <<<EOT
-$("#chk%s").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectionetablissement/etablissementId:%s',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-$("#vis%s").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'visibleetablissement/etablissementId:%s',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-$("#des%s").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'desservietablissement/etablissementId:%s',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });        
-EOT;
-            
+            // construction des JS pour selection, visible et desservie            
             $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $etablissement->etablissementId);
             $jsTrigger .= sprintf("$('#vis%s').trigger('change');\n", $etablissement->etablissementId);
             $jsTrigger .= sprintf("$('#des%s').trigger('change');\n", $etablissement->etablissementId);

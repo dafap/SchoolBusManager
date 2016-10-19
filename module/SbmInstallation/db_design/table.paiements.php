@@ -8,8 +8,8 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 janv. 2015
- * @version 2015-1
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 
 /**
@@ -51,7 +51,7 @@ return array(
             'banque' => 'varchar(30) NOT NULL DEFAULT ""',
             'titulaire' => 'varchar(30) NOT NULL DEFAULT ""',
             'reference' => 'varchar(30) NOT NULL DEFAULT ""',
-            'note' => 'text'
+            'note' => 'text NULL'
         ),
         'primary_key' => array(
             'paiementId'

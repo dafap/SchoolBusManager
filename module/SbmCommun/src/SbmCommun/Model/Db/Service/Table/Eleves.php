@@ -8,8 +8,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 janv. 2016
- * @version 2016-1.7.1
+ * @date 13 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -131,19 +131,6 @@ class Eleves extends AbstractSbmTable
             'selection' => $selection
         ));
         parent::saveRecord($oData);
-    }
-
-    /**
-     * Remie à zéro de la sélection des élèves.
-     * Plus aucun élève ne sera sélectionné.
-     *
-     * @return int
-     */
-    public function clearSelection()
-    {
-        return $this->getTableGateway()->update(array(
-            'selection' => 0
-        ));
     }
 
     /**

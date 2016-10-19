@@ -8,10 +8,10 @@
  * @filesource view/sbm-gestion/transport/classe-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -25,6 +25,20 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'selectionclasse/classeId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -85,20 +99,7 @@ echo $this->flashMessenger()->render('default');
             
 $nbInscrits = StdLib::getParamR(array($classe->classeId, 'transportes'), $this->t_nb_inscrits, 0) . ' / ';
 $nbInscrits.= StdLib::getParamR(array($classe->classeId, 'demandes'), $this->t_nb_inscrits, 0);
-            // selection
-            $modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectionclasse/classeId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-            
+            // construction des JS pour selection            
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $classe->classeId);
             $jsCallback .= sprintf("$modele\n", $classe->classeId, $classe->classeId);
             ?>

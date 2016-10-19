@@ -13,12 +13,12 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2014
- * @version 2014-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmParent;
 
-use ZfcBase\Module\AbstractModule;
+use SbmBase\Module\AbstractModule;
 
 class Module extends AbstractModule
 {

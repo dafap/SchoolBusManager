@@ -9,8 +9,8 @@
  * @filesource DocumentPdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 16 juin 2016
- * @version 2016-2.1.6
+ * @date 13 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmPdf\Form;
 
@@ -19,7 +19,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 use SbmCommun\Model\Strategy\Color;
 use SbmPdf\Model\TcpdfFonts;
 use SbmPdf\Model\Tcpdf;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 class DocumentPdf extends Form implements InputFilterProviderInterface
 {
@@ -415,10 +415,10 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         ]);
         $this->add([
             'name' => 'docheader_subtitle',
-            'type' => 'text',
+            'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-docheader_subtitle',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-45c wysiwyg'
             ],
             'options' => [
                 'label' => 'Sous-titre du document pdf',
@@ -539,7 +539,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-docfooter_string',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-45c wysiwyg'
             ],
             'options' => [
                 'label' => 'Texte du pied de document',
@@ -696,7 +696,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-pageheader_string',
-                'class' => 'sbm-width-45c'
+                'class' => 'sbm-width-45c wysiwyg'
             ],
             'options' => [
                 'label' => 'Texte d\'en-tête de page',
@@ -1827,9 +1827,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 'required' => false,
                 'filters' => [
                     [
-                        'name' => 'StripTags'
-                    ],
-                    [
                         'name' => 'StringTrim'
                     ]
                 ]
@@ -1937,9 +1934,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 'required' => false,
                 'filters' => [
                     [
-                        'name' => 'StripTags'
-                    ],
-                    [
                         'name' => 'StringTrim'
                     ]
                 ]
@@ -2041,9 +2035,6 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 'name' => 'pageheader_string',
                 'required' => false,
                 'filters' => [
-                    [
-                        'name' => 'StripTags'
-                    ],
                     [
                         'name' => 'StringTrim'
                     ]

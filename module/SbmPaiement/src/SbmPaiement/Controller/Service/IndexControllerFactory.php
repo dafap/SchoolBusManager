@@ -9,16 +9,16 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmPaiement\Controller\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmPaiement\Controller\IndexController;
-use SbmCommun\Model\StdLib;
-use SbmFront\Model\Responsable\Responsable;
+use SbmBase\Model\StdLib;
+use SbmFront\Model\Responsable\Service\ResponsableManager as Responsable;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -33,7 +33,7 @@ class IndexControllerFactory implements FactoryInterface
             'form_manager' => $sm->get('Sbm\FormManager'),
             'plugin_plateforme' => $sm->get('SbmPaiement\Plugin\Plateforme'),
             'responsable' => $sm->get(Responsable::class),
-            'user' => $sm->get('Dafap\Authenticate')
+            'user' => $sm->get('SbmAuthentification\Authentication')
             ->by()
             ->getIdentity(),
             'paginator_count_per_page' => StdLib::getParamR([

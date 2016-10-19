@@ -9,8 +9,8 @@
  * @filesource LocalisationAdresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2015
- * @version 2015-1
+ * @date 12 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -65,14 +65,14 @@ class LocalisationAdresse extends AbstractSbmForm implements InputFilterProvider
             'type' => 'hidden',
             'name' => 'lat',
             'attributes' => array(
-                'id' => 'eleve-lat'
+                'id' => 'lat'
             )
         ));
         $this->add(array(
             'type' => 'hidden',
             'name' => 'lng',
             'attributes' => array(
-                'id' => 'eleve-lng'
+                'id' => 'lng'
             )
         ));
         $this->add(array(

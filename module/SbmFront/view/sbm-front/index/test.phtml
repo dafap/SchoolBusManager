@@ -30,9 +30,16 @@ echo '</div>';
 <h1>Page des tests</h1>
 <h3>Menu :</h3>
 <div class="menu clearfix">
-<ul class="menubar">
-<li class="onglet">Impressions
+	<ul class="menubar">
+		<li class="onglet">Impressions
 <?php echo $this->navigation($this->monMenu)->menu()?>
 </li>
-</ul></div>
+	</ul>
+</div>
 <p>Suite du contenu de la page ...</p>
+<?php
+    $this->form->prepare();
+    echo $this->form()->openTag($this->form);
+    echo $this->formCollection($this->form);
+    echo $this->form()->closeTag();
+?>

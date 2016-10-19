@@ -7,8 +7,8 @@
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2015
- * @version 2015-1
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
  
 function formatDate($date)
@@ -28,6 +28,19 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxfinance/'+action+'selectionnotification/id:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -88,20 +101,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
             <?php $montant = $fmt->formatCurrency($notification->vads_amount/100, 'EUR'); ?>
             <?php $date_trans = formatDate($notification->vads_trans_date); ?>
             <?php 
-            // selection
-            $modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxfinance/'+action+'selectionnotification/id:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-            
+            // construction des JS pour selection            
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $notification->systempayId);
             $jsCallback .= sprintf("$modele\n", $notification->systempayId, $notification->systempayId);
             ?>

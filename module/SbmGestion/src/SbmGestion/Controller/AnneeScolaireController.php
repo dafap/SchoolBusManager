@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
@@ -33,10 +33,10 @@ class AnneeScolaireController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $simulation_vide = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->isEmptyMillesime(self::SIMULATION) && $this->config['db_manager']->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(self::SIMULATION);
+        $simulation_vide = $this->db_manager->get('Sbm\Db\Table\Scolarites')->isEmptyMillesime(self::SIMULATION) && $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(self::SIMULATION);
         
         return new ViewModel([
-            'anneesScolaires' => $this->config['db_manager']->get('Sbm\Db\System\Calendar')->getAnneesScolaires(),
+            'anneesScolaires' => $this->db_manager->get('Sbm\Db\System\Calendar')->getAnneesScolaires(),
             'millesimeActif' => $this->getFromSession('millesime', false),
             'simulation_millesime' => self::SIMULATION,
             'simulation_vide' => $simulation_vide
@@ -61,10 +61,10 @@ class AnneeScolaireController extends AbstractActionController
             return $this->redirect()->toRoute('sbmgestion/anneescolaire');
         }
         
-        $table_calendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
+        $table_calendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         
-        $form = $this->config['form_manager']->get(FormCalendar::class);
-        $form->setMaxLength($this->config['db_manager']->getMaxLengthArray('calendar', 'system'));
+        $form = $this->form_manager->get(FormCalendar::class);
+        $form->setMaxLength($this->db_manager->getMaxLengthArray('calendar', 'system'));
         $form->bind($table_calendar->getObjData());
         
         $request = $this->getRequest();
@@ -109,8 +109,8 @@ class AnneeScolaireController extends AbstractActionController
             return $this->redirect()->toRoute('sbmgestion/anneescolaire');
         }
         $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
-        $table_calendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
-        $auth = $this->config['authenticate']->by('email');
+        $table_calendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+        $auth = $this->authenticate->by('email');
         return new ViewModel([
             'as_libelle' => $as_libelle,
             'millesime' => $millesime,
@@ -128,7 +128,7 @@ class AnneeScolaireController extends AbstractActionController
         if (! array_key_exists('millesime', $prg) || ! array_key_exists('ouvert', $prg)) {
             return $this->redirect()->toRoute('sbmgestion/anneescolaire');
         }
-        $tCalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         if ($tCalendar->changeEtat($prg['millesime'], $prg['ouvert'])) {
             $this->flashMessenger()->addSuccessMessage('L\'état de cette année scolaire a été modifié.');
         } else {
@@ -149,13 +149,13 @@ class AnneeScolaireController extends AbstractActionController
         $config = include __DIR__ . '/../Model/Modele.inc.php';
         $config = $config['annee-scolaire'];
         
-        $table_calendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
+        $table_calendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $millesime = $table_calendar->getDernierMillesime();
         if ($table_calendar->isValidMillesime($millesime)) {
             $millesime ++;
             $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
             
-            $data = $this->config['db_manager']->get('Sbm\Db\SysObjectData\Calendar');
+            $data = $this->db_manager->get('Sbm\Db\SysObjectData\Calendar');
             foreach ($config['modele'] as $element) {
                 $data->exchangeArray([
                     'calendarId' => null,
@@ -203,7 +203,7 @@ class AnneeScolaireController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->config['form_manager']->get(Simulation::class);
+        $form = $this->form_manager->get(Simulation::class);
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 $this->flashMessenger()->addInfoMessage('Aucun changement');
@@ -213,7 +213,7 @@ class AnneeScolaireController extends AbstractActionController
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $millesime = $prg['millesime'];
-                    $this->config['db_manager']->get('Sbm\Db\Simulation\Prepare')
+                    $this->db_manager->get('Sbm\Db\Simulation\Prepare')
                         ->duplicateCircuits($millesime, self::SIMULATION)
                         ->duplicateEleves($millesime, self::SIMULATION);
                     $this->flashMessenger()->addSuccessMessage("La simulation a été préparée à partir de l'année $millesime.");
@@ -226,11 +226,11 @@ class AnneeScolaireController extends AbstractActionController
         $where2 = new Where();
         $where2->isNull('suivantId');
         return new ViewModel([
-            'repris' => $this->config['db_manager']->get('Sbm\Db\Vue\Classes')->fetchAll($where1, [
+            'repris' => $this->db_manager->get('Sbm\Db\Vue\Classes')->fetchAll($where1, [
                 'niveau',
                 'nom'
             ]),
-            'non_repris' => $this->config['db_manager']->get('Sbm\Db\Vue\Classes')->fetchAll($where2, [
+            'non_repris' => $this->db_manager->get('Sbm\Db\Vue\Classes')->fetchAll($where2, [
                 'niveau',
                 'nom'
             ]),
@@ -258,9 +258,9 @@ class AnneeScolaireController extends AbstractActionController
         ]);
         if ($prg !== false) {
             if (array_key_exists('supproui', $prg)) {
-                $this->config['db_manager']->get('Sbm\Db\Table\Affectations')->viderMillesime(self::SIMULATION);
-                $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->viderMillesime(self::SIMULATION);
-                $this->config['db_manager']->get('Sbm\Db\Table\Circuits')->viderMillesime(self::SIMULATION);
+                $this->db_manager->get('Sbm\Db\Table\Affectations')->viderMillesime(self::SIMULATION);
+                $this->db_manager->get('Sbm\Db\Table\Scolarites')->viderMillesime(self::SIMULATION);
+                $this->db_manager->get('Sbm\Db\Table\Circuits')->viderMillesime(self::SIMULATION);
                 $this->flashMessenger()->addSuccessMessage('La simulation a été effacée.');
             }
             return $this->redirect()->toRoute('sbmgestion/anneescolaire');

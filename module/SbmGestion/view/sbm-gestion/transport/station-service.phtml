@@ -7,10 +7,10 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_rapports = $this->url('sbmgestion/transport', array(
@@ -26,7 +26,7 @@ $url_group = $this->url('sbmgestion/transport', array(
     'page' => $this->page
 ));
 // ne pas utiliser de guillement dans la chaine $js
-$js_retour = 'javascript:window.document.getElementById(\'op\').value=\'retour\';';
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 
 $hiddens = array(
     'stationId' => $this->stationId

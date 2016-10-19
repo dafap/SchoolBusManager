@@ -8,13 +8,13 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 jan. 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
 

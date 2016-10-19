@@ -142,7 +142,7 @@ return array(
         'invokables' => [],
         'factories' => [
             SbmFront\Form\Login::class => SbmFront\Form\Service\LoginFactory::class,
-            Responsable::class => ResponsableManager::class,           
+            ResponsableManager::class => ResponsableManager::class,           
         ]
     ],
     'router' => array(

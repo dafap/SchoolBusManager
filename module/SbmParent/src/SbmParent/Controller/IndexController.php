@@ -10,8 +10,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2016
- * @version 2016-2.1.2-ccda
+ * @date 18 oct. 2016
+ * @version CCDA-2016-2.2.1
  */
 namespace SbmParent\Controller;
 
@@ -19,17 +19,16 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\PredicateSet;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmCommun\Model\StdLib;
 use SbmCommun\Model\Strategy\Semaine;
-use SbmParent\Form;
-use SbmParent\Model\Db\Service\Query;
 use SbmFront\Model\Responsable\Exception as CreateResponsableException;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
+use SbmParent\Form;
+use SbmParent\Model\Db\Service\Query;
 use SbmParent\Model\OutilsInscription;
-use SbmParent\Model\SbmParent\Model;
 
 class IndexController extends AbstractActionController
 {
@@ -37,9 +36,9 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
+            $responsable = $this->responsable->get();
         } catch (\Exception $e) {
-            if ($this->config['authenticate']->by()->hasIdentity() && (($e instanceof CreateResponsableException) || ($e->getPrevious() instanceof CreateResponsableException))) {
+            if ($this->authenticate->by()->hasIdentity() && (($e instanceof CreateResponsableException) || ($e->getPrevious() instanceof CreateResponsableException))) {
                 // il faut créer un responsable associé car la demande vient d'un gestionnaire ou autre administrateur
                 $this->flashMessenger()->addErrorMessage('Il faut compléter la fiche du responsable');
                 $retour = $this->url()->fromRoute('sbmparent');
@@ -54,21 +53,21 @@ class IndexController extends AbstractActionController
                 ]);
             }
         }
-        $query = $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites');
-        $paiements = $this->config['db_manager']->get('Sbm\Db\Vue\Paiements');
-        $tCalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
+        $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
+        $paiements = $this->db_manager->get('Sbm\Db\Vue\Paiements');
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         return new ViewModel([
             'etatSite' => $tCalendar->etatDuSite(),
             'permanences' => $tCalendar->getPermanences($responsable->commune),
             'inscrits' => $query->getElevesInscrits($responsable->responsableId),
             'preinscrits' => $query->getElevesPreinscrits($responsable->responsableId),
-            'montant' => $this->config['db_manager']->get('Sbm\Db\Table\Tarifs')->getMontant('inscription'),
+            'montant' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant('inscription'),
             'paiements' => $paiements->fetchAll([
                 'responsableId' => $responsable->responsableId
             ]),
-            'affectations' => $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations'),
-            'client' => $this->config['client'],
-            'accueil' => $this->config['accueil'],
+            'affectations' => $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations'),
+            'client' => $this->client,
+            'accueil' => $this->accueil,
             'adresse' => array_filter([
                 $responsable->adresseL1,
                 $responsable->adresseL2,
@@ -85,9 +84,9 @@ class IndexController extends AbstractActionController
     public function inscriptionEleveAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
-            $authUserId = $this->config['authenticate']->by()->getUserId();
-        } catch (Exception $e) {
+            $responsable = $this->responsable->get();
+            $authUserId = $this->authenticate->by()->getUserId();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
@@ -101,21 +100,21 @@ class IndexController extends AbstractActionController
             return $this->redirect()->toRoute('sbmparent');
         }
         $isPost = array_key_exists('submit', $args);
-        $outils = new OutilsInscription($this->config['db_manager'], $responsable->responsableId, $authUserId);
-        $form = $this->config['form_manager']->get(Form\Enfant::class);
+        $outils = new OutilsInscription($this->db_manager, $responsable->responsableId, $authUserId);
+        $form = $this->form_manager->get(Form\Enfant::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmparent', [
             'action' => 'inscription-eleve'
         ]));
-        $form->setValueOptions('etablissementId', $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')
+        $form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
             ->visibles())
-            ->setValueOptions('classeId', $this->config['db_manager']->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setData([
             'responsable1Id' => $responsable->responsableId
         ]);
         // Le formulaire de garde alterné est prévu complet pour une saisie
-        $formga = $this->config['form_manager']->get(Form\Responsable2Complet::class);
+        $formga = $this->form_manager->get(Form\Responsable2Complet::class);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             $hasGa = StdLib::getParam('ga', $args, false);
@@ -133,9 +132,14 @@ class IndexController extends AbstractActionController
                 }
                 // Enregistrement de l'élève
                 $eleveId = $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
+                // Ajout des dates de début et de fin de l'année scolaire
+                $data = $form->getData();
+                $as = Session::get('as');
+                $data['dateDebut'] = $as['dateDebut'];
+                $data['dateFin'] = $as['dateFin'];
                 // Enregistre la scolarité
-                if ($outils->saveScolarite($form->getData(), $eleveId)) {
-                    $majDistances = $this->config['local_manager']->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
+                if ($outils->saveScolarite($data, $eleveId)) {
+                    $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
                     $majDistances->majDistancesDistrict($eleveId);
                 }
                 if ($args['fa']) {
@@ -147,7 +151,7 @@ class IndexController extends AbstractActionController
                 return $this->redirect()->toRoute('sbmparent');
             }
         }
-        $formga->setValueOptions('r2communeId', $this->config['db_manager']->get('Sbm\Db\Select\Communes')
+        $formga->setValueOptions('r2communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->visibles());
         return new ViewModel([
             'form' => $form->prepare(),
@@ -173,9 +177,9 @@ class IndexController extends AbstractActionController
     public function editEleveAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
-            $authUserId = $this->config['authenticate']->by()->getUserId();
-        } catch (Exception $e) {
+            $responsable = $this->responsable->get();
+            $authUserId = $this->authenticate->by()->getUserId();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
@@ -208,15 +212,15 @@ class IndexController extends AbstractActionController
         }
         $isPost = array_key_exists('submit', $args);
         $eleveId = $args['id'];
-        $outils = new OutilsInscription($this->config['db_manager'], $responsable->responsableId, $authUserId, $eleveId);
-        $form = $this->config['form_manager']->get(Form\Enfant::class);
+        $outils = new OutilsInscription($this->db_manager, $responsable->responsableId, $authUserId, $eleveId);
+        $form = $this->form_manager->get(Form\Enfant::class);
         $form->setAttribute('action', $this->url()
             ->fromRoute('sbmparent', [
             'action' => 'edit-eleve'
         ]));
-        $form->setValueOptions('etablissementId', $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')
+        $form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
             ->visibles())
-            ->setValueOptions('classeId', $this->config['db_manager']->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours());
         // pour la garde alternée, on doit déterminer si le formulaire sera complet ou non
         // afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout de même
@@ -230,7 +234,7 @@ class IndexController extends AbstractActionController
             // s'il n'y a pas de garde alternée, on prévoit le formulaire complet pour le cas
             // où l'utilisateur déciderait d'en rajouter une.
         }
-        $formga = $this->config['form_manager']->get($formgaComplet ? Form\Responsable2Complet::class : Form\Responsable2Restreint::class);
+        $formga = $this->form_manager->get($formgaComplet ? Form\Responsable2Complet::class : Form\Responsable2Restreint::class);
         
         if ($isPost) {
             $form->setData($args);
@@ -254,7 +258,7 @@ class IndexController extends AbstractActionController
                 $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
                 // Enregistrement de sa scolarité
                 if ($outils->saveScolarite($form->getData())) {
-                    $majDistances = $this->config['local_manager']->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
+                    $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
                     $majDistances->majDistancesDistrict($eleveId);
                 }
                 Session::remove('responsable2', $this->getSessionNamespace());
@@ -264,18 +268,18 @@ class IndexController extends AbstractActionController
             }
             $responsable2 = Session::get('responsable2', null, $this->getSessionNamespace());
         } else {
-            $data = $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites')->getEleve($eleveId);
+            $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve($eleveId);
             $hasGa = ! is_null($data['responsable2Id']);
             $data['ga'] = $hasGa ? 1 : 0;
             $form->setData($data);
             if ($hasGa) {
                 try {
-                    $responsable2 = $this->config['db_manager']->get('Sbm\Db\Vue\Responsables')
+                    $responsable2 = $this->db_manager->get('Sbm\Db\Vue\Responsables')
                         ->getRecord($data['responsable2Id'])
                         ->getArrayCopy();
                     $owner = $outils->isOwner($data['responsable2Id']);
                     if ($owner) {
-                        $formga->setValueOptions('r2communeId', $this->config['db_manager']->get('Sbm\Db\Select\Communes')
+                        $formga->setValueOptions('r2communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
                             ->visibles());
                         $formga->setData(array_merge($data, $responsable2));
                     } else {
@@ -292,7 +296,7 @@ class IndexController extends AbstractActionController
             Session::set('responsable2', $responsable2, $this->getSessionNamespace());
         }
         try {
-            $formga->setValueOptions('r2communeId', $this->config['db_manager']->get('Sbm\Db\Select\Communes')
+            $formga->setValueOptions('r2communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->visibles());
         } catch (\Zend\Form\Exception\InvalidElementException $e) {}
         return new ViewModel([
@@ -321,7 +325,7 @@ class IndexController extends AbstractActionController
         $args = (array) $prg;
         if (array_key_exists('id', $args) && array_key_exists('attente', $args)) {
             // effectuer le changement
-            $tscolarite = $this->config['db_manager']->get('Sbm\Db\Table\Scolarites');
+            $tscolarite = $this->db_manager->get('Sbm\Db\Table\Scolarites');
             $scolarite = $tscolarite->getRecord([
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $args['id']
@@ -379,16 +383,16 @@ class IndexController extends AbstractActionController
         if (array_key_exists('supproui', $args)) {
             $where = new Where();
             $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['id']);
-            $this->config['db_manager']->get('Sbm\Db\Table\Affectations')->deleteRecord($where);
-            $this->config['db_manager']->get('Sbm\Db\Table\Scolarites')->deleteRecord($where);
+            $this->db_manager->get('Sbm\Db\Table\Affectations')->deleteRecord($where);
+            $this->db_manager->get('Sbm\Db\Table\Scolarites')->deleteRecord($where);
             $this->flashMessenger()->addSuccessMessage('Suppression effectuée.');
             return $this->redirect()->toRoute('sbmparent');
         }
         
         return new ViewModel([
             'form' => $form->prepare(),
-            'eleve' => $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites')->getEleve($args['id']),
-            'affectations' => $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->getCorrespondances($args['id'])
+            'eleve' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve($args['id']),
+            'affectations' => $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getCorrespondances($args['id'])
         ]);
     }
 
@@ -416,8 +420,8 @@ class IndexController extends AbstractActionController
     public function payerAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
-        } catch (Exception $e) {
+            $responsable = $this->responsable->get();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
@@ -430,7 +434,7 @@ class IndexController extends AbstractActionController
         }
         $args = (array) $prg;
         // args = array('montant' => ..., 'payer' => ...)
-        $preinscrits = $this->config['db_manager']->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits($responsable->responsableId);
+        $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits($responsable->responsableId);
         $elevesIds = [];
         foreach ($preinscrits as $row) {
             if (! $row['selectionScolarite']) {
@@ -449,7 +453,7 @@ class IndexController extends AbstractActionController
             'eleveIds' => $elevesIds
         ];
         $this->getEventManager()->addIdentifiers('SbmPaiement\AppelPlateforme');
-        $this->getEventManager()->trigger('appelPaiement', $this->config['local_manager']->get('SbmPaiement\Plugin\Plateforme'), $params);
+        $this->getEventManager()->trigger('appelPaiement', $this->local_manager->get('SbmPaiement\Plugin\Plateforme'), $params);
         return $this->redirect()->toUrl('https://paiement.systempay.fr/vads-payment/');
     }
 
@@ -470,9 +474,9 @@ class IndexController extends AbstractActionController
             }
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
-        $tCircuits = $this->config['db_manager']->get('Sbm\Db\Vue\Circuits');
-        $rEffectifs = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byCircuit(true);
-        $rListe = $this->config['db_manager']->get('Sbm\Db\Eleve\Liste');
+        $tCircuits = $this->db_manager->get('Sbm\Db\Vue\Circuits');
+        $rEffectifs = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(true);
+        $rListe = $this->db_manager->get('Sbm\Db\Eleve\Liste');
         $nbInscrits = [];
         $circuits = [];
         $eleves = [];
@@ -494,11 +498,15 @@ class IndexController extends AbstractActionController
             $serviceId = $circuits[$i]->serviceId; // on gardera le dernier trouvé
         }
         // ajout de l'arrêt à l'établissement
-        $stationId = $this->config['db_manager']->get('Sbm\Db\Table\EtablissementsServices')->getRecord([
-            'etablissementId' => $args['etablissementId'],
-            'serviceId' => $serviceId
-        ])->stationId;
-        $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'), $serviceId, $stationId);
+        try {
+            $stationId = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->getRecord([
+                'etablissementId' => $args['etablissementId'],
+                'serviceId' => $serviceId
+            ])->stationId;
+            $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'), $serviceId, $stationId);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+        }
+       
         return new ViewModel([
             'enfant' => $args['enfant'],
             'circuits' => $circuits,
@@ -515,9 +523,9 @@ class IndexController extends AbstractActionController
     public function reinscriptionEleveAction()
     {
         try {
-            $auth_responsable = $this->config['responsable']->get();
-            $authUserId = $this->config['authenticate']->by()->getUserId();
-        } catch (Exception $e) {
+            $auth_responsable = $this->responsable->get();
+            $authUserId = $this->authenticate->by()->getUserId();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
@@ -552,7 +560,7 @@ class IndexController extends AbstractActionController
         }
         $phase = StdLib::getParam('phase', $args, 1);
         if ($phase == 1) {
-            $aReinscrire = $this->config['db_manager']->get(Query\Eleves::class)->aReinscrire($auth_responsable->responsableId);
+            $aReinscrire = $this->db_manager->get(Query\Eleves::class)->aReinscrire($auth_responsable->responsableId);
             if ($aReinscrire->count() == 0) {
                 Session::remove('responsable2', $this->getSessionNamespace());
                 Session::remove('post', $this->getSessionNamespace());
@@ -568,8 +576,8 @@ class IndexController extends AbstractActionController
             $aReinscrire = [];
             $isPost = array_key_exists('submit', $args);
             $eleveId = $args['id'];
-            $outils = new OutilsInscription($this->config['db_manager'], $auth_responsable->responsableId, $authUserId, $eleveId);
-            $form = $this->config['form_manager']->get(Form\Enfant::class);
+            $outils = new OutilsInscription($this->db_manager, $auth_responsable->responsableId, $authUserId, $eleveId);
+            $form = $this->form_manager->get(Form\Enfant::class);
             $form->setAttribute('action', $this->url()
                 ->fromRoute('sbmparent', [
                 'action' => 'reinscription-eleve'
@@ -581,9 +589,9 @@ class IndexController extends AbstractActionController
                     'value' => $phase
                 ]
             ]);
-            $form->setValueOptions('etablissementId', $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')
+            $form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
-                ->setValueOptions('classeId', $this->config['db_manager']->get('Sbm\Db\Select\Classes'))
+                ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
                 ->setValueOptions('joursTransport', Semaine::getJours());
             // pour la garde alternée, on doit déterminer si le formulaire sera complet ou non
             // afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout de même
@@ -597,7 +605,7 @@ class IndexController extends AbstractActionController
                 // s'il n'y a pas de garde alternée, on prévoit le formulaire complet pour le cas
                 // où l'utilisateur déciderait d'en rajouter une.
             }
-            $formga = $this->config['form_manager']->get($formgaComplet ? Form\Responsable2Complet::class : Form\Responsable2Restreint::class);
+            $formga = $this->form_manager->get($formgaComplet ? Form\Responsable2Complet::class : Form\Responsable2Restreint::class);
             
             if ($isPost) {
                 $form->setData($args);
@@ -620,13 +628,20 @@ class IndexController extends AbstractActionController
                     }
                     // Enregistrement de l'élève
                     $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
+                    // Ajout des dates de début et de fin de l'année scolaire
+                    $data = $form->getData();
+                    $as = Session::get('as');
+                    $data['dateDebut'] = $as['dateDebut'];
+                    $data['dateFin'] = $as['dateFin'];
                     // Enregistrement de sa scolarité
-                    if ($outils->saveScolarite($form->getData(), $eleveId)) {
-                        $majDistances = $this->config['local_manager']->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
+                    $change_etablissement = $outils->saveScolarite($data, $eleveId);
+                    // affectations si l'adresse et la scolarité n'ont pas changé
+                    $change_derogation = $outils->repriseAffectations();
+                    // mise à jour des droits
+                    if ($change_derogation || $change_etablissement) {
+                        $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
                         $majDistances->majDistancesDistrict($eleveId);
                     }
-                    // affectation si l'adresse et la scolarité n'ont pas changé
-                    $outils->repriseAffectations();
                     // compte-rendu et nettoyage de la session
                     Session::remove('responsable2', $this->getSessionNamespace());
                     Session::remove('post', $this->getSessionNamespace());
@@ -641,7 +656,13 @@ class IndexController extends AbstractActionController
                 $responsable2 = Session::get('responsable2', null, $this->getSessionNamespace());
             } else {
                 // initialisation des formulaires
-                $data = $this->config['db_manager']->get(Query\Eleves::class)->getEleve($eleveId);
+                $data = $this->db_manager->get(Query\Eleves::class)->getEleve($eleveId);
+                if (!$data) {
+                    // n'était pas inscrit l'année précédente
+                    $data = $this->db_manager->get('Sbm\Db\Table\Eleves')
+                        ->getRecord($eleveId)
+                        ->getArrayCopy();
+                }
                 unset($data['classeId']);
                 unset($data['etablissementId']);
                 $hasGa = ! is_null($data['responsable2Id']);
@@ -663,12 +684,12 @@ class IndexController extends AbstractActionController
                 }
                 if ($hasGa) {
                     try {
-                        $responsable2 = $this->config['db_manager']->get('Sbm\Db\Vue\Responsables')
+                        $responsable2 = $this->db_manager->get('Sbm\Db\Vue\Responsables')
                             ->getRecord($data['responsable2Id'])
                             ->getArrayCopy();
                         $owner = $outils->isOwner($data['responsable2Id']);
                         if ($owner) {
-                            $formga->setValueOptions('r2communeId', $this->config['db_manager']->get('Sbm\Db\Select\Communes')
+                            $formga->setValueOptions('r2communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
                                 ->visibles());
                             $formga->setData(array_merge($data, $responsable2));
                         } else {
@@ -682,11 +703,12 @@ class IndexController extends AbstractActionController
                 } else {
                     $responsable2 = null;
                 }
+                
                 $form->setData($data);
                 Session::set('responsable2', $responsable2, $this->getSessionNamespace());
             }
             try {
-                $formga->setValueOptions('r2communeId', $this->config['db_manager']->get('Sbm\Db\Select\Communes')
+                $formga->setValueOptions('r2communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
                     ->visibles());
             } catch (\Zend\Form\Exception\InvalidElementException $e) {}
         }

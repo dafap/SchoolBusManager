@@ -8,10 +8,10 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 13 oct. 2016
+ * @version 2016-2.2.1
  */
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -23,48 +23,72 @@ function renderCheckbox($view, $name, $id, $value)
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->headScript()->appendFile($this->basePath() . '/js/gestion-circuit/liste.js');
 $jsCallback = '';
 $jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'selectioncircuit/circuitId:%d',
+				success : function(data) {
+                    js_selection.actions();
+				},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $circuits = $this->paginator->getCurrentItems();
-$url_dupliquer = $this->url('sbmgestion/transport', array(
+$url_dupliquer = $this->url('sbmgestion/transport', [
     'action' => 'circuit-dupliquer'
-));
-$url_ajouter = $this->url('sbmgestion/transport', array(
+]);
+$url_ajouter = $this->url('sbmgestion/transport', [
     'action' => 'circuit-ajout',
     'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
+]);
+$url_rapports = $this->url('sbmgestion/transport', [
     'action' => 'circuit-pdf',
     'page' => $this->page
-));
+]);
+$url_deselection = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-selection',
+    'page' => $this->page
+]);
+$url_modifhoraires = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-modif-horaires',
+    'page' => $this->page
+]);
 $url_retour = $this->url('sbmgestion/transport');
-$hiddens = array();
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+$hiddens = [];
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', [
     'action' => 'circuit-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'dupliquer' => array(
+    'dupliquer' => [
         'class' => 'fam-plugin-add',
         'formaction' => $url_dupliquer,
         'title' => 'Générer les circuits pour une nouvelle année scolaire'
-    ),
-    'ajouter' => array(
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvel arrêt sur un circuit'
-    )
-);
-if (!$this->admin) {
+    ]
+];
+if (! $this->admin) {
     unset($actions['dupliquer']);
 }
 ?>
@@ -99,29 +123,16 @@ echo $this->flashMessenger()->render('default');
 				</tr>
         <?php foreach($circuits as $test => $circuit): ?>
         <?php
-            $nbInscrits = StdLib::getParamR(array(
+            $nbInscrits = StdLib::getParamR([
                 $circuit->circuitId,
                 'total'
-            ), $this->t_nb_inscrits, 0);
-            // selection
-            $modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectioncircuit/circuitId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-            
+            ], $this->t_nb_inscrits, 0);
+            // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $circuit->circuitId);
             $jsCallback .= sprintf("$modele\n", $circuit->circuitId, $circuit->circuitId);
             ?>
             <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="serviceid"><?php echo $this->escapeHtml($circuit->serviceId); ?></td>
 					<td class="service"><?php echo $this->escapeHtml($circuit->service); ?></td>
 					<td class="station"><?php echo $this->escapeHtml($circuit->station); ?></td>
@@ -135,38 +146,38 @@ EOT;
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $circuit->circuitId, $circuit->selection)?></td>
 					<td class="boutons">
              <?php
-            $url_edit = $this->url('sbmgestion/transport', array(
+            $url_edit = $this->url('sbmgestion/transport', [
                 'action' => 'circuit-edit',
                 'page' => $this->page
-            ));
-            $url_delete = $this->url('sbmgestion/transport', array(
+            ]);
+            $url_delete = $this->url('sbmgestion/transport', [
                 'action' => 'circuit-suppr',
                 'page' => $this->page
-            ));
-            $url_group = $this->url('sbmgestion/transport', array(
+            ]);
+            $url_group = $this->url('sbmgestion/transport', [
                 'action' => 'circuit-group',
                 'page' => $this->page
-            ));
-            $hiddens = array(
+            ]);
+            $hiddens = [
                 'circuitId' => $circuit->circuitId
-            );
-            $buttons = array(
-                'modifier' => array(
+            ];
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier'
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer'
-                ),
-                'eleves' => array(
+                ],
+                'eleves' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => sprintf('élèves du circuit %s à l\'arrêt %s', $circuit->serviceId, $circuit->station)
-                )
-            );
+                ]
+            ];
             echo $this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);
             ?>
 				</td>
@@ -175,8 +186,30 @@ EOT;
         </tbody>
 		</table>
 	</div>
+	<?php
+$actions_selection = [
+    'modifhoraires' => [
+        'class' => 'fam-clock-edit',
+        'formaction' => $url_modifhoraires,
+        'title' => 'Modifier les horaires'
+    ],
+    'deselection' => [
+        'class' => 'fam-basket-delete',
+        'formaction' => $url_deselection,
+        'title' => 'Tout décocher'
+    ]
+];
+?>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<div class="selection">
+				Pour les fiches sélectionnées :
+				<div class="menu float-right">
+					<?php echo $this->listeZoneActions([], $actions_selection);?>
+				</div>
+			</div>
+		<?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?>
+		</div>
 		<div class="criteres-wrapper">
 	    <?php echo $this->form()->openTag($this->criteres_form);?>
 	    <?php echo $this->formCollection($this->criteres_form, true);?>

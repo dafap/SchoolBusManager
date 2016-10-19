@@ -12,8 +12,8 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmParent\Form;
 
@@ -40,269 +40,277 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
         $this->db_manager = $db_manager;
         parent::__construct('enfant');
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'name' => 'csrf',
             'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
+            'options' => [
+                'csrf_options' => [
                     'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'eleveId'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'responsable1Id'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'type' => 'hidden',
             'name' => 'responsable2Id'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
+            'type' => 'hidden',
+            'name' => 'derogation'
+        ]);
+        $this->add([
+            'type' => 'hidden',
+            'name' => 'motifDerogation'
+        ]);
+        $this->add([
             'type' => 'SbmCommun\Form\Element\NomPropre',
             'name' => 'nom',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'enfant_nom',
                 'autofocus' => 'autofocus',
                 'class' => 'sbmparent-enfant'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Nom',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'SbmCommun\Form\Element\Prenom',
             'name' => 'prenom',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'enfant_prenom',
                 'class' => 'sbmparent-enfant'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Prénom',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\DateSelect',
             'name' => 'dateN',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'enfant_dateN',
                 'class' => 'sbmparent-enfant'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Date de naissance',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                ),
-                //'format' => 'Y-m-d'
+                ],
+                // 'format' => 'Y-m-d'
                 'create_empty_option' => true,
                 'min_year' => date('Y') - 25,
-                'max_year' => date('Y') - 2,
-            )
-        ));
-        $this->add(array(
+                'max_year' => date('Y') - 2
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'etablissementId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'enfant_etablissementId',
                 'class' => 'sbmparent-enfant'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Etablissement scolaire',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
+                ],
                 'empty_option' => 'Etablissement fréquenté l\'année prochaine',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Select',
             'name' => 'classeId',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'enfant_classeId',
                 'class' => 'sbmparent-enfant'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Classe suivie l\'année prochaine',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-label'
-                ),
+                ],
                 'empty_option' => 'Choisissez une classe',
-                'error_attributes' => array(
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\MultiCheckbox',
             'name' => 'joursTransport',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'enfant_joursTransport',
                 'class' => 'sbmparent-enfant'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Demande de transport',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-multi-label'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'ga',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'btnradioga',
                 'class' => 'sbmparent-enfant',
                 'value' => '0'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Garde alternée',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-radio-label'
-                ),
-                'value_options' => array(
-                    array(
+                ],
+                'value_options' => [
+                    [
                         'value' => '1',
                         'label' => 'Oui',
-                        'attributes' => array(
+                        'attributes' => [
                             'id' => 'btnradioga1'
-                        )
-                    ),
-                    array(
+                        ]
+                    ],
+                    [
                         'value' => '0',
                         'label' => 'Non',
-                        'attributes' => array(
+                        'attributes' => [
                             'id' => 'btnradioga0'
-                        )
-                    )
-                )
-            )
-        ));
-        $this->add(array(
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'fa',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'btnradiofa',
                 'class' => 'sbmparent-enfant',
                 'value' => '0'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Famille d\'accueil',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-radio-label'
-                ),
-                'value_options' => array(
-                    array(
+                ],
+                'value_options' => [
+                    [
                         'value' => '1',
                         'label' => 'Oui',
-                        'attributes' => array(
+                        'attributes' => [
                             'id' => 'btnradiofa1'
-                        )
-                    ),
-                    array(
+                        ]
+                    ],
+                    [
                         'value' => '0',
                         'label' => 'Non',
-                        'attributes' => array(
+                        'attributes' => [
                             'id' => 'btnradiofa0'
-                        )
-                    )
-                )
-            )
-        ));
-        $this->add(array(
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Radio',
             'name' => 'demandeR2',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'demandeR2',
                 'class' => 'sbmparent-enfant',
                 'value' => 0
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Demande de transport pour cette adresse',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-radio-label'
-                ),
-                'value_options' => array(
+                ],
+                'value_options' => [
                     '1' => 'Oui',
                     '0' => 'Non'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'Zend\Form\Element\Textarea',
             'name' => 'commentaire',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'enfant_commentaire'
-            ),
-            'options' => array(
+            ],
+            'options' => [
                 'label' => 'Commentaires à transmettre au service transport',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'sbm-commentaire'
-                ),
-                'error_attributes' => array(
+                ],
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
+                ]
+            ]
+        ]);
+        $this->add([
             'type' => 'submit',
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'value' => 'Enregistrer',
                 'id' => 'enfant_submit',
                 'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
+            ]
+        ]);
+        $this->add([
             'type' => 'submit',
             'name' => 'cancel',
-            'attributes' => array(
+            'attributes' => [
                 'value' => 'Abandonner',
                 'id' => 'enfant_cancel',
                 'class' => 'button default cancel'
-            )
-        ));
+            ]
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
+        return [
             
-            'joursTransport' => array(
+            'joursTransport' => [
                 'name' => 'joursTransport',
                 'required' => true
-            ),
-            'demandeR2' => array(
+            ],
+            'demandeR2' => [
                 'name' => 'demandeR2',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
 
     public function isValid()
@@ -317,11 +325,11 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 $ok |= in_array($n, $etablissement->niveau);
             }
             if (! $ok) {
-                $this->setMessages(array(
-                    'classeId' => array(
+                $this->setMessages([
+                    'classeId' => [
                         'incorrect' => 'Cette classe n\'est pas ouverte dans cet établissement.'
-                    )
-                ));
+                    ]
+                ]);
             }
             // vérifie que l'élève n'est pas inscrit
             if (empty($data['eleveId'])) {
@@ -341,11 +349,11 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     $this->setData($data);
                     $ok = parent::isValid();
                     if (! $ok) {
-                        $this->setMessages(array(
-                            'prenom' => array(
+                        $this->setMessages([
+                            'prenom' => [
                                 'existe' => 'Cet enfant est déjà enregistré.'
-                            )
-                        ));
+                            ]
+                        ]);
                     }
                 }
             } else {
@@ -362,11 +370,11 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     ->fetchAll($where)
                     ->count() == 0;
                 if (! $ok) {
-                    $this->setMessages(array(
-                        'prenom' => array(
+                    $this->setMessages([
+                        'prenom' => [
                             'existe' => 'Cet enfant est déjà enregistré.'
-                        )
-                    ));
+                        ]
+                    ]);
                 }
             }
             return $ok;

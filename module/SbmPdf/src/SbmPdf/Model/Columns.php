@@ -7,13 +7,13 @@
  * @filesource Columns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPdf\Model;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\DbManager;
 
 class Columns

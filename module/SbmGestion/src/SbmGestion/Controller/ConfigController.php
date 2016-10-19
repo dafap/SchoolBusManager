@@ -60,7 +60,7 @@ class ConfigController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmgestion');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('dafapmail');
+            ->toRoute('SbmMail');
     }
 
     public function localisationAction()

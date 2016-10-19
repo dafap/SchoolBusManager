@@ -8,11 +8,18 @@
  * @filesource view/sbm-gestion/transport/etablissement-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 12 oct. 2016
+ * @version 2016-2.2.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
+$this->inlineScript()->captureStart();
+?>
+multicheckbox_actions.init("etablissement-edit-jOuverture");
+<?php 
+$this->inlineScript()->captureEnd();
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport', array('action'=> 'etablissement-liste', 'page' => $this->page));
 $hiddens = array();
 $actions = array(
@@ -72,7 +79,7 @@ echo $this->formHidden($this->form->get('csrf'));
       <fieldset class=""><legend>Horaires de l'après-midi</legend>
       <div id="etablissement-edit-hAMidi" class="row-inner edit"><?php echo $this->formRow($this->form->get('hAMidi')); ?></div>
       <div id="etablissement-edit-hSoir" class="row-inner edit"><?php echo $this->formRow($this->form->get('hSoir')); ?></div>
-      </fiedset>
+      </fieldset>
     </div>
   </div>
   <div class="clearfix">
@@ -90,6 +97,7 @@ echo $this->formHidden($this->form->get('csrf'));
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
     </div>
   </div>
+</div>
 </fieldset>
 <?php echo $this->form()->closeTag(); ?>
     </div><?php // fiche-inner ?>

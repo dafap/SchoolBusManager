@@ -7,8 +7,8 @@
  * @filesource RecordSource.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPdf\Model\Validator;
 
@@ -19,7 +19,7 @@ use Zend\Db\Adapter\Adapter as DbAdapter;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\TableIdentifier;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 
 class RecordSource extends AbstractValidator
 {

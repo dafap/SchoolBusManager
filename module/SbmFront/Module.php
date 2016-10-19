@@ -9,20 +9,17 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 févr. 2014
- * @version 2014-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
 namespace SbmFront;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
-use ZfcBase\Module\AbstractModule;
-use Zend\ModuleManager\Feature\LocatorRegisteredInterface;
-use Zend\EventManager\EventInterface;
-use SbmFront\Listener\SendListener;
-use SbmCommun\Model\StdLib;
+use SbmBase\Module\AbstractModule;
+use SbmBase\Model\StdLib;
 
-class Module extends AbstractModule implements LocatorRegisteredInterface
+class Module extends AbstractModule 
 {
 
     public function getDir()

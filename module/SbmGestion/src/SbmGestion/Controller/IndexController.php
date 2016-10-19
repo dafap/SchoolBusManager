@@ -8,15 +8,15 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2016
- * @version 2016-2.1.9
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmGestion\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use DafapSession\Model\Session;
 use Zend\Http\PhpEnvironment\Response;
+use SbmBase\Model\Session;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 
 class IndexController extends AbstractActionController
 {
@@ -36,9 +36,9 @@ class IndexController extends AbstractActionController
             return $prg;
         }
         $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
-        $statEleve = $this->config['db_manager']->get('Sbm\Statistiques\Eleve');
-        $statResponsable = $this->config['db_manager']->get('Sbm\Statistiques\Responsable');
-        $statPaiement = $this->config['db_manager']->get('Sbm\Statistiques\Paiement');
+        $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
+        $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
+        $statPaiement = $this->db_manager->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
         return new ViewModel(array(
             'elevesEnregistres' => current($statEleve->getNbEnregistresByMillesime($millesime))['effectif'],

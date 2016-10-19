@@ -9,8 +9,8 @@
  * @filesource table-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1.6.9
+ * @date 11 août 2016
+ * @version 2016-2.1.10
  */
 $this->headLink()->prependStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -23,7 +23,7 @@ $this->form->setAttribute('action', $this->url('sbmpdf', array(
     'action' => 'table-edit',
     'page' => $this->page
 )));
-$js = 'javascript:window.document.getElementById(\'op\').value=%s;';
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmpdf', array(
     'action' => 'table-liste',
     'page' => $this->page

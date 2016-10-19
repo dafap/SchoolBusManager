@@ -9,10 +9,10 @@
  * @filesource paiement-suppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 janv. 2015
- * @version 2015-1
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
-use SbmCommun\Model\DateLib;
+use SbmBase\Model\DateLib;
 
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
@@ -21,19 +21,19 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 	<p><i>Vous avez demandé la suppression du paiement suivant :</i></p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?php echo 'Responsable : <b>' . $this->escapeHtml($this->responsable); ?></b></li>
-			<li><?php echo 'Montant : <b>' . $fmt->formatCurrency($this->data->montant, 'EUR'); ?></b></li>
-			<li><?php echo 'Caisse : <b>' . $this->escapeHtml($this->libelles->getLibelle('caisse', $this->data->codeCaisse)); ?></b></li>
-			<li><?php echo 'Exercice budgétaire : <b>' . $this->data->exercice; ?></b></li>
-			<li><?php echo 'Année scolaire : <b>' . $this->data->anneeScolaire; ?></b></li>
-			<li><?php echo 'Date du paiement : <b>' . DateLib::formatDateTimeFromMysql($this->data->datePaiement); ?></b></li>
-			<li><?php echo 'Date de valeur : <b>' . DateLib::formatDateFromMysql($this->data->dateValeur); ?></b></li>
-			<li><?php echo 'Date de dépôt : <b>' . DateLib::formatDateTimeFromMysql($this->data->dateDepot); ?></b></li>
-			<li><?php echo 'Mode de paiement : <b>' . $this->escapeHtml($this->libelles->getLibelle('modeDePaiement', $this->data->codeModeDePaiement)); ?></b></li>
+			<li>Responsable : <b><?php echo $this->escapeHtml($this->responsable); ?></b></li>
+			<li>Montant : <b><?php echo $fmt->formatCurrency($this->data->montant, 'EUR'); ?></b></li>
+			<li>Caisse : <b><?php echo $this->escapeHtml($this->libelles->getLibelle('caisse', $this->data->codeCaisse)); ?></b></li>
+			<li>Exercice budgétaire : <b><?php echo $this->data->exercice; ?></b></li>
+			<li>Année scolaire : <b><?php echo $this->data->anneeScolaire; ?></b></li>
+			<li>Date du paiement : <b><?php echo DateLib::formatDateTimeFromMysql($this->data->datePaiement); ?></b></li>
+			<li>Date de valeur : <b><?php echo DateLib::formatDateFromMysql($this->data->dateValeur); ?></b></li>
+			<li>Date de dépôt : <b><?php echo DateLib::formatDateTimeFromMysql($this->data->dateDepot); ?></b></li>
+			<li>Mode de paiement : <b><?php echo $this->escapeHtml($this->libelles->getLibelle('modeDePaiement', $this->data->codeModeDePaiement)); ?></b></li>
 			<?php if ($this->data->codeModeDePaiement == $this->libelles->getCode('modeDePaiement', 'chèque')) :?>
-			<li><?php echo 'Banque : <b>' . $this->escapeHtml($this->data->banque); ?></b></li>
-			<li><?php echo 'Titulaire du compte : <b>' . $this->escapeHtml($this->data->titulaire); ?></b></li>
-			<li><?php echo 'Référence du chèque : <b>' . $this->escapeHtml($this->data->reference); ?></b></li>
+			<li>Banque : <b><?php echo $this->escapeHtml($this->data->banque); ?></b></li>
+			<li>Titulaire du compte : <b><?php echo $this->escapeHtml($this->data->titulaire); ?></b></li>
+			<li>Référence du chèque : <b><?php echo $this->escapeHtml($this->data->reference); ?></b></li>
 			<?php endif; ?>
 		</ul>
 	</div>

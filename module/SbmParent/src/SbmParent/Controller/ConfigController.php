@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juin 2016
- * @version 2016-2.1.5
+ * @date 18 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmParent\Controller;
 
@@ -18,7 +18,7 @@ use Zend\View\Model\ViewModel;
 use SbmCartographie\Model\Point;
 use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form;
 use SbmCommun\Form\LatLng as LatLngForm;
 use SbmCommun\Filter\SansAccent;
@@ -40,14 +40,14 @@ class ConfigController extends AbstractActionController
         ));
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('dafapmail');
+            ->toRoute('SbmMail');
     }
 
     public function modifCompteAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
-        } catch (Exception $e) {
+            $responsable = $this->responsable->get();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'logout'
             ));
@@ -68,18 +68,17 @@ class ConfigController extends AbstractActionController
         }
         // ici on a le tableau d'initialisation du formulaire dans $args
         $responsableId = $args['responsableId'];
-        $hasEnfantInscrit = $this->config['db_manager']->get('Sbm\Db\Query\Responsables')->hasEnfantInscrit($responsableId);
-        $tableResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
-        $db = $this->config['db_manager'];
+        $hasEnfantInscrit = $this->db_manager->get('Sbm\Db\Query\Responsables')->hasEnfantInscrit($responsableId);
+        $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
-        $form = $this->config['form_manager']->get(Form\Responsable::class);
+        $form = $this->form_manager->get(Form\Responsable::class);
         if ($hasEnfantInscrit) {
-            $form->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+            $form->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         } else {
-            $value_options = $this->config['db_manager']->get('Sbm\Db\Select\Communes')->membres();
+            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
             $form->setValueOptions('communeId', $value_options)
                 ->setValueOptions('ancienCommuneId', $value_options)
-                ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+                ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
             unset($value_options);
         }
         $form->bind($tableResponsables->getObjData());
@@ -87,7 +86,7 @@ class ConfigController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             if ($form->isValid()) {
                 // controle le csrf et contrôle les datas
-                $tableResponsables->saveRecord($form->getData());
+                $tableResponsables->saveResponsable($form->getData(), true);
                 $responsable->refresh();
                 $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
                 return $this->redirect()->toRoute('login', array(
@@ -111,8 +110,8 @@ class ConfigController extends AbstractActionController
     public function modifAdresseAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
-        } catch (Exception $e) {
+            $responsable = $this->responsable->get();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'logout'
             ));
@@ -136,13 +135,13 @@ class ConfigController extends AbstractActionController
         }
         // ici on a le tableau d'initialisation du formulaire dans $args
         $responsableId = StdLib::getParam('responsableId', $args, $responsable->responsableId);
-        $hasEnfantInscrit = $this->config['db_manager']->get('Sbm\Db\Query\Responsables')->hasEnfantInscrit($responsableId);
-        $tableResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
-        $db = $this->config['db_manager'];
+        $hasEnfantInscrit = $this->db_manager->get('Sbm\Db\Query\Responsables')->hasEnfantInscrit($responsableId);
+        $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
-        $form = $this->config['form_manager']->get(ModifAdresse::class);
-        $value_options = $this->config['db_manager']->get('Sbm\Db\Select\Communes')->membres();
-        $form->setValueOptions('communeId', $value_options)->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+        $form = $this->form_manager->get(ModifAdresse::class);
+        $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
+            ->membres())
+            ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         unset($value_options);
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
@@ -200,7 +199,7 @@ class ConfigController extends AbstractActionController
      */
     public function createAction()
     {
-        $identity = $this->config['authenticate']->by()->getIdentity();
+        $identity = $this->authenticate->by()->getIdentity();
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -209,7 +208,7 @@ class ConfigController extends AbstractActionController
             $args = $identity;
             // vérification d'existence de ce responsable
             $filterSA = new SansAccent();
-            $vueResponsables = $this->config['db_manager']->get('Sbm\Db\Vue\Responsables');
+            $vueResponsables = $this->db_manager->get('Sbm\Db\Vue\Responsables');
             $rows = $vueResponsables->fetchAll([
                 'nomSA' => $filterSA->filter($args['nom']),
                 'prenomSA' => $filterSA->filter($args['prenom'])
@@ -227,14 +226,13 @@ class ConfigController extends AbstractActionController
         }
         // ici on a le tableau d'initialisation du formulaire dans $args
         $responsableId = null;
-        $tableResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
-        $db = $this->config['db_manager'];
+        $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire avec l'identité verrouillée et on l'adapte
-        $form = $this->config['form_manager']->get(Form\ResponsableVerrouille::class);
-        $value_options = $this->config['db_manager']->get('Sbm\Db\Select\Communes')->membres();
+        $form = $this->form_manager->get(Form\ResponsableVerrouille::class);
+        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
-            ->setMaxLength($db->getMaxLengthArray('responsables', 'table'));
+            ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         unset($value_options);
         
         $form->bind($tableResponsables->getObjData());
@@ -257,6 +255,7 @@ class ConfigController extends AbstractActionController
         return new ViewModel(array(
             'form' => $form->prepare(),
             'responsableId' => $responsableId,
+            'identity' => $identity,
             'demenagement' => false
         ));
     }
@@ -264,15 +263,15 @@ class ConfigController extends AbstractActionController
     public function localisationAction()
     {
         try {
-            $responsable = $this->config['responsable']->get();
-        } catch (Exception $e) {
+            $responsable = $this->responsable->get();
+        } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', array(
                 'action' => 'logout'
             ));
         }
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent', $this->config['cartographie_manager']->get('cartes'));
-        $d2etab = $this->config['cartographie_manager']->get('SbmCarto\DistanceEtablissements');
+        $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
+        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -281,15 +280,16 @@ class ConfigController extends AbstractActionController
             $args = $responsable->getArrayCopy();
             $point = new Point($args['x'], $args['y']);
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-            $form = new LatLngForm([], [], $configCarte['valide']);
-            $form->setData([
-                'lat' => $pt->getLatitude(),
-                'lng' => $pt->getLongitude()
-            ]);
-            if (! $form->isValid()) {
+            $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+            if (! $pt->isValid()) {
                 // essayer de localiser par l'adresse avant de présenter la carte
-                $array = $this->config['cartographie_manager']->get('SbmCarto\Geocoder')->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
+                $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
                 $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+                $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+                if (! $pt->isValid()) {
+                    $pt->setLatitude($configCarte['centre']['lat']);
+                    $pt->setLongitude($configCarte['centre']['lng']);
+                }
             }
         } else {
             $args = $prg;
@@ -340,7 +340,7 @@ class ConfigController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
-                $tableResponsables = $this->config['db_manager']->get('Sbm\Db\Table\Responsables');
+                $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
                 $oData = $tableResponsables->getObjData();
                 $oData->exchangeArray(array(
                     'responsableId' => $responsable->responsableId,
@@ -349,7 +349,7 @@ class ConfigController extends AbstractActionController
                 ));
                 $tableResponsables->saveRecord($oData);
                 $responsable->refresh();
-                $this->config['cartographie_manager']->get('Sbm\MajDistances')->pour($responsable->responsableId);
+                $this->cartographie_manager->get('Sbm\MajDistances')->pour($responsable->responsableId);
                 $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');
                 return $this->redirect()->toRoute('login', array(
                     'action' => 'home-page'

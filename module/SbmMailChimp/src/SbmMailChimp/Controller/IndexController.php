@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2016
- * @version 2016-2.1.7
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmMailChimp\Controller;
 
@@ -18,7 +18,7 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use DrewM\MailChimp\MailChimp;
 use Zend\Http\Response;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmMailChimp\Form;
 use SbmMailChimp\Model\Db\Service\Users;
@@ -43,7 +43,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $method = 'lists';
         $listes = new Paginator(new MailChimpAdapter($mailchimp, $method, 'lists'));
         if (! $listes->count()) {
@@ -53,8 +53,8 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel([
             'source' => $listes,
-            'auth' => $this->config['authenticate']->by('email'),
-            'acl' => $this->config['acl'],
+            'auth' => $this->authenticate->by('email'),
+            'acl' => $this->acl,
             'message' => $message
         ]);
     }
@@ -115,7 +115,7 @@ class IndexController extends AbstractActionController
                 return $this->retourListe('warning', 'La liste n\'a pas été crée.');
             }
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Liste();
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -207,7 +207,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Liste();
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -259,7 +259,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Liste();
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -308,7 +308,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new ButtonForm([
             'id_liste' => $args['id_liste']
         ], [
@@ -374,7 +374,7 @@ class IndexController extends AbstractActionController
             }
             $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         // lecture des infos de la liste
         $liste_info = $mailchimp->get('lists/' . $args['id_liste']);
         if (! array_key_exists('id', $liste_info)) {
@@ -401,8 +401,8 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel([
             'liste_info' => $liste_info,
-            'auth' => $this->config['authenticate']->by('email'),
-            'acl' => $this->config['acl'],
+            'auth' => $this->authenticate->by('email'),
+            'acl' => $this->acl,
             'source' => $source
         ]);
     }
@@ -433,7 +433,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Field();
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -492,7 +492,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Field(false);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -553,7 +553,7 @@ class IndexController extends AbstractActionController
             $id_liste = $prg['id_liste'];
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Field(false);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -620,7 +620,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new ButtonForm([
             'id_liste' => $args['id_liste'],
             'merge_id' => $args['merge_id']
@@ -700,7 +700,7 @@ class IndexController extends AbstractActionController
             // on s'assure que les 2 paramètres sont dans args (cas d'un retour)
             $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         // lecture des infos de la liste
         $liste_info = $mailchimp->get('lists/' . $args['id_liste']);
         if (! array_key_exists('id', $liste_info)) {
@@ -721,8 +721,8 @@ class IndexController extends AbstractActionController
         return new ViewModel([
             'liste_info' => $liste_info,
             'source' => $source,
-            'auth' => $this->config['authenticate']->by('email'),
-            'acl' => $this->config['acl'],
+            'auth' => $this->authenticate->by('email'),
+            'acl' => $this->acl,
             'message' => $message
         ]);
     }
@@ -750,7 +750,7 @@ class IndexController extends AbstractActionController
             $id_liste = $prg['id_liste'];
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Segment();
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -816,7 +816,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $source = $mailchimp->get('lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
         $form = new Form\Segment(StdLib::getParamR([
             'options',
@@ -887,7 +887,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new Form\Segment();
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
@@ -948,7 +948,7 @@ class IndexController extends AbstractActionController
             }
             $args = $prg;
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new ButtonForm([
             'id_liste' => $args['id_liste'],
             'segment_id' => $args['segment_id']
@@ -1031,7 +1031,7 @@ class IndexController extends AbstractActionController
             // on s'assure que les 4 paramètres sont dans args
             $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $method = 'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id'] . '/members';
         $source = new Paginator(new MailChimpAdapter($mailchimp, $method, 'members'));
         if (! $source->count()) {
@@ -1042,8 +1042,8 @@ class IndexController extends AbstractActionController
             'id_liste' => $args['id_liste'],
             'liste_name' => $args['liste_name'],
             'segment_name' => $args['segment_name'],
-            'auth' => $this->config['authenticate']->by('email'),
-            'acl' => $this->config['acl'],
+            'auth' => $this->authenticate->by('email'),
+            'acl' => $this->acl,
             'page' => $this->params('page', 1)
         ]);
     }
@@ -1088,7 +1088,7 @@ class IndexController extends AbstractActionController
             // on s'assure que les 2 paramètres sont dans args
             $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
         }
-        $mailchimp = new MailChimp($this->config['mailchimp_key']);
+        $mailchimp = new MailChimp($this->mailchimp_key);
         $method = 'lists/' . $args['id_liste'] . '/members';
         $source = new Paginator(new MailChimpAdapter($mailchimp, $method, 'members'));
         if (! $source->count()) {
@@ -1101,8 +1101,8 @@ class IndexController extends AbstractActionController
             'id_liste' => $args['id_liste'],
             'liste_name' => $args['liste_name'],
             'message' => $message,
-            'auth' => $this->config['authenticate']->by('email'),
-            'acl' => $this->config['acl'],
+            'auth' => $this->authenticate->by('email'),
+            'acl' => $this->acl,
             'page' => $this->params('page', 1)
         ]);
         $view->setTemplate('sbm-mail-chimp/index/segment-members');
@@ -1138,9 +1138,9 @@ class IndexController extends AbstractActionController
              * retour à la liste des membres
              */
             $id_list = $prg['id_liste'];
-            $mailchimp = new MailChimp($this->config['mailchimp_key']);
+            $mailchimp = new MailChimp($this->mailchimp_key);
             $batch = $mailchimp->new_batch();
-            $query = $this->config['db_manager']->get(Users::class);
+            $query = $this->db_manager->get(Users::class);
             if (getenv('APPLICATION_ENV') == 'development') {
                 $limit = 50;
             } else {
@@ -1189,7 +1189,7 @@ class IndexController extends AbstractActionController
         if (array_key_exists('id_batch', $prg)) {
             $id_batch = $prg['id_batch'];
             // $id_batch = '7a26590b5a';
-            $mailchimp = new MailChimp($this->config['mailchimp_key']);
+            $mailchimp = new MailChimp($this->mailchimp_key);
             $batch = $mailchimp->new_batch($id_batch);
             $cr = $batch->check_status();
         }
@@ -1228,7 +1228,7 @@ class IndexController extends AbstractActionController
             $id_list = $prg['id_liste'];
             $method = "lists/$id_list/members";
             $container = 'members';
-            $mailchimp = new MailChimp($this->config['mailchimp_key']);
+            $mailchimp = new MailChimp($this->mailchimp_key);
             $total_items = StdLib::getParam('total_items', $mailchimp->get($method));
             $method = sprintf('%s?offset=%d&count=%d', $method, 0, $total_items);
             $members = StdLib::getParam('members', $mailchimp->get($method), []);
@@ -1241,7 +1241,7 @@ class IndexController extends AbstractActionController
             $batch = $mailchimp->new_batch();
             $contenu = false;
             // pour chaque email
-            $tusers = $this->config['db_manager']->get('Sbm\Db\Table\Users');
+            $tusers = $this->db_manager->get('Sbm\Db\Table\Users');
             $i = 0;
             foreach ($emails as $email) {
                 try {

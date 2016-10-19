@@ -3,16 +3,16 @@
  * Extension de la classe Zend\Mvc\Controller\AbstractActionController pour le projet School Bus Manager
  *
  * @todo: Il faudra supprimer les méthodes getFromSession() et setToSession() pour les remplacer par 
- *   DafapSession\Model\Session::get($param, $default, $ns) et
- *   DafapSession\Model\Session::set($param, $value, $ns)
+ *   SbmBase\Model\Session::get($param, $default, $ns) et
+ *   SbmBase\Model\Session::set($param, $value, $ns)
  *
  * @project sbm
  * @package SbmCommun/Model/Mvc/Controller
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 1 septembre 2016
+ * @version 2016-2.2.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -21,10 +21,11 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use Zend\Db\Sql\Ddl\Column\Boolean;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\CriteresForm;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
+use SbmCommun\Model\Exception;
 
 /**
  * Quelques méthodes utiles
@@ -47,6 +48,24 @@ abstract class AbstractActionController extends ZendAbstractActionController
     public function __construct($config = [])
     {
         $this->config = $config;
+    }
+    
+    /**
+     * Renvoie la valeur associée à la clé $param de la propriété $config
+     * 
+     * @param string $param
+     * 
+     * @throws Exception
+     * 
+     * @return mixed
+     */
+    public function __get($param)
+    {
+        if (array_key_exists($param, $this->config)) {
+            return $this->config[$param];
+        }
+        $message = sprintf('Le paramètre %s n\'est pas une propriété définie par le ControllerFactory.', $param);
+        throw new Exception($message);
     }
 
     /**
@@ -151,7 +170,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
                 $where = $criteresObject[2]($where, $args);
             }
-            $call_pdf = $this->config['RenderPdfService'];
+            $call_pdf = $this->RenderPdfService;
             
             if ($docaffectationId = $this->params('id', false)) {
                 // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
@@ -264,8 +283,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * Le formulaire, le nom de la table, son type et son alias sont passés dans le paramètre $params
      * Le paramètre $renvoyer permet de retourner des données de POST
      *
-     * @param
-     *            $db
+     * @param $db_manager
      * @param array $params
      *            Tableau associatif dont les clés principales sont 'form' et 'data'.
      *            La clé 'form' contient l'objet formulaire ;
@@ -496,9 +514,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
      */
     protected function getPaginatorCountPerPage($paginateurId, $default)
     {
-        if (array_key_exists('paginator_count_per_page', $this->config)) {
-            return (int) StdLib::getParam($paginateurId, $this->config['paginator_count_per_page'], $default);
-        } else {
+        try {
+            return (int) StdLib::getParam($paginateurId, $this->paginator_count_per_page, $default);
+        } catch (Exception $e) {
             return $default;
         }
     }

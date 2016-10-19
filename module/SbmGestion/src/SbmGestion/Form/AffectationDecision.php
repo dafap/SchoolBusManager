@@ -7,8 +7,8 @@
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 avr. 2015
- * @version 2015-1
+ * @date 14 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmGestion\Form;
 
@@ -126,7 +126,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Secteur scolaire',
                 'label_attributes' => array(
-                    'class' => 'sbm-label sbm-form-auto'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -140,12 +140,11 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'attributes' => array(
                 'id' => 'decision_derogation',
                 'class' => 'sbm-checkbox',
-                'onclick' => 'adaptedecision();'
             ),
             'options' => array(
                 'label' => 'Dérogation',
                 'label_attributes' => array(
-                    'class' => 'sbm-label sbm-form-auto'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -163,10 +162,10 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Motif de la dérogation',
                 'label_attributes' => array(
-                    'class' => 'sbm-label sbm-form-auto'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
-                    'class' => 'sbm-error sbm-form-auto'
+                    'class' => 'sbm-error'
                 )
             )
         ));
@@ -177,12 +176,11 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'attributes' => array(
                 'id' => 'decision_accordR',
                 'class' => 'sbm-checkbox',
-                'onclick' => 'adaptedecision();'
             ),
             'options' => array(
                 'label' => 'Transport accepté',
                 'label_attributes' => array(
-                    'class' => 'sbm-label sbm-form-auto'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'
@@ -200,10 +198,10 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Motif du refus',
                 'label_attributes' => array(
-                    'class' => 'sbm-label sbm-form-auto'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
-                    'class' => 'sbm-error sbm-form-auto'
+                    'class' => 'sbm-error'
                 )
             )
         ));
@@ -218,7 +216,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'options' => array(
                 'label' => 'Subvention attribuée',
                 'label_attributes' => array(
-                    'class' => 'sbm-label sbm-form-auto'
+                    'class' => 'sbm-label'
                 ),
                 'error_attributes' => array(
                     'class' => 'sbm-error'

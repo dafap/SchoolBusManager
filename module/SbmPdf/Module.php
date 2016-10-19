@@ -11,12 +11,12 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 17 août 2016
+ * @version 2016-2.2.0
  */
  namespace SbmPdf;
  
- use ZfcBase\Module\AbstractModule;
+ use SbmBase\Module\AbstractModule;
  use Zend\Mvc\MvcEvent;
  use SbmPdf\Listener\PdfListener;
  

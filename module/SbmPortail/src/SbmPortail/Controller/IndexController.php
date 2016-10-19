@@ -9,25 +9,25 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 4 sept. 2016
+ * @version 2016-2.2.0
  */
 namespace SbmPortail\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
-use DafapSession\Model\Session;
-use SbmCommun\Model\StdLib;
-use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use Zend\Db\Sql\Where;
+use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 
 class IndexController extends AbstractActionController
 {
 
     public function indexAction()
     {
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
@@ -78,9 +78,9 @@ class IndexController extends AbstractActionController
      */
     public function ccdaIndexAction()
     {
-        $statEleve = $this->config['db_manager']->get('Sbm\Statistiques\Eleve');
-        $statResponsable = $this->config['db_manager']->get('Sbm\Statistiques\Responsable');
-        $statPaiement = $this->config['db_manager']->get('Sbm\Statistiques\Paiement');
+        $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
+        $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
+        $statPaiement = $this->db_manager->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
         return new ViewModel([
             'elevesEnregistres' => current($statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
@@ -104,8 +104,8 @@ class IndexController extends AbstractActionController
     public function ccdaCircuitsAction()
     {
         try {
-            $services = $this->config['db_manager']->get('Sbm\Db\Query\Services')->paginatorServicesWithEtablissements();
-            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byService();
+            $services = $this->db_manager->get('Sbm\Db\Query\Services')->paginatorServicesWithEtablissements();
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService();
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $services = [];
             $stats = [];
@@ -126,7 +126,7 @@ class IndexController extends AbstractActionController
      */
     public function etIndexAction()
     {
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
@@ -134,14 +134,14 @@ class IndexController extends AbstractActionController
         }
         $userId = $auth->getUserId();
         try {
-            $etablissementId = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
+            $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
             
-            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byEtablissement();
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement();
             
             $elevesTransportes = StdLib::getParamR([$etablissementId, 'transportes'], $stats,0);
             
-            $services = $this->config['db_manager']->get('Sbm\Db\Query\Services')->getServicesGivenEtablissement($etablissementId);
-            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement($etablissementId);
+            $services = $this->db_manager->get('Sbm\Db\Query\Services')->getServicesGivenEtablissement($etablissementId);
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement($etablissementId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $elevesTransportes = '';
             $services = [];
@@ -162,7 +162,7 @@ class IndexController extends AbstractActionController
      */
     public function trIndexAction()
     {
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
@@ -170,13 +170,13 @@ class IndexController extends AbstractActionController
         }
         $userId = $auth->getUserId();
         try {
-            $transporteurId = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
-            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byTransporteur();
+            $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur();
             $elevesATransporter = StdLib::getParamR([$transporteurId, 'total'], $stats,0);
-            $services = $this->config['db_manager']->get('Sbm\Db\Table\Services')->fetchAll([
+            $services = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll([
                 'transporteurId' => $transporteurId
             ]);
-            $stats = $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->transporteurByService($transporteurId);
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService($transporteurId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $transporteurId = null;
             $elevesATransporter = '';
@@ -194,7 +194,7 @@ class IndexController extends AbstractActionController
 
     public function trElevesAction()
     {
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
@@ -237,11 +237,11 @@ class IndexController extends AbstractActionController
         // formulaire des critères de recherche
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         // initialiser le form pour les select ...
-        $criteres_form->setValueOptions('etablissementId', $this->config['db_manager']->get('Sbm\Db\Select\Etablissements')
+        $criteres_form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
             ->desservis())
-            ->setValueOptions('classeId', $this->config['db_manager']->get('Sbm\Db\Select\Classes'))
-            ->setValueOptions('serviceId', $this->config['db_manager']->get('Sbm\Db\Select\Services'))
-            ->setValueOptions('stationId', $this->config['db_manager']->get('Sbm\Db\Select\Stations')
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('serviceId', $this->db_manager->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
             ->toutes());
         
         // créer un objectData qui contient la méthode getWhere() adhoc
@@ -263,11 +263,11 @@ class IndexController extends AbstractActionController
             case 2:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
                 try {
-                    $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+                    $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
                     $where = $criteres_obj->getWhere()
                         ->nest()
                         ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
-                    $paginator = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
+                    $paginator = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
                         'nom',
                         'prenom'
                     ]);
@@ -285,9 +285,9 @@ class IndexController extends AbstractActionController
                 break;
             case 3:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
-                $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
+                $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
                 $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
-                $paginator = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
+                $paginator = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
                     'nom',
                     'prenom'
                 ]);
@@ -297,7 +297,7 @@ class IndexController extends AbstractActionController
             default:
                 $categorie = 200;
                 $where = $criteres_obj->getWhere();
-                $paginator = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
+                $paginator = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR($where, [
                     'nom',
                     'prenom'
                 ]);
@@ -320,7 +320,7 @@ class IndexController extends AbstractActionController
      */
     public function trPdfAction()
     {
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
@@ -346,14 +346,14 @@ class IndexController extends AbstractActionController
         $expressions = [];
         switch ($auth->getCategorieId()) {
             case 2:
-                $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+                $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
                 $where = $criteres_obj->getWherePdf()
                     ->nest()
                     ->equalTo('transporteur1Id', $right)->or->equalTo('transporteur2Id', $right)->unnest();
                 $documentId = 'List élèves portail transporteur';
                 break;
             case 3:
-                $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
+                $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
                 $where = $criteres_obj->getWherePdf()->equalTo('etablissementId', $right);
                 $documentId = 'List élèves portail etab';
                 break;
@@ -364,7 +364,7 @@ class IndexController extends AbstractActionController
                 $documentId = 'List élèves portail transporteur';
                 break;
         }
-        $call_pdf = $this->config['RenderPdfService'];
+        $call_pdf = $this->RenderPdfService;
         if ($docaffectationId = $this->params('id', false)) {
             // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
             $call_pdf->setParam('docaffectationId', $docaffectationId);
@@ -397,9 +397,9 @@ class IndexController extends AbstractActionController
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))->equalTo('serviceId', $serviceId);
         return new ViewModel([
-            'service' => $this->config['db_manager']->get('Sbm\Db\Table\Services')->getRecord($serviceId),
-            't_nb_inscrits' => $this->config['db_manager']->get('Sbm\Db\Eleve\Effectif')->byCircuit(),
-            'paginator' => $this->config['db_manager']->get('Sbm\Db\Vue\Circuits')->paginator($where, [
+            'service' => $this->db_manager->get('Sbm\Db\Table\Services')->getRecord($serviceId),
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(),
+            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator($where, [
                 'm1'
             ]),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
@@ -427,9 +427,9 @@ class IndexController extends AbstractActionController
             }
         }
         $circuitId = $args['circuitId'];
-        $circuit = $this->config['db_manager']->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
+        $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
         return new ViewModel([
-            'data' => $this->config['db_manager']->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId), [
+            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId), [
                 'nom',
                 'prenom'
             ]),
@@ -457,14 +457,14 @@ class IndexController extends AbstractActionController
 
     public function trExtractionTelephonesAction()
     {
-        $auth = $this->config['authenticate']->by('email');
+        $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
         }
         $userId = $auth->getUserId();
-        $right = $this->config['db_manager']->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+        $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
         $currentPage = $this->params('page', 1);
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
@@ -477,7 +477,7 @@ class IndexController extends AbstractActionController
             ->nest()
             ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId', $right)->unnest();
         
-        $resultset = $this->config['db_manager']->get('Sbm\Db\Query\AffectationsServicesStations')->getTelephonesPortables($where);
+        $resultset = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getTelephonesPortables($where);
         $data = iterator_to_array($resultset);
         if (! empty($data)) {
             $fields = array_keys(current($data));
@@ -537,6 +537,6 @@ class IndexController extends AbstractActionController
         $retour = $this->url()->fromRoute('sbmportail');
         return $this->redirectToOrigin()
             ->setBack($retour)
-            ->toRoute('dafapmail');
+            ->toRoute('SbmMail');
     }
 }

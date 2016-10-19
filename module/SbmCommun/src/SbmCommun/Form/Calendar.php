@@ -7,8 +7,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 17 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmCommun\Form;
 
@@ -68,7 +68,7 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
                 ),
                 'create_empty_option' => true,
                 'min_year' => date('Y') - 20,
-                'max_year' => date('Y') + 1,
+                'max_year' => date('Y') + 2,
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )

@@ -7,13 +7,13 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2015
- * @version 2015-1.6.9
+ * @date 10 oct. 2016
+ * @version 2016-2.2.1
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
 use Zend\Db\Sql\Where;
-use DafapSession\Model\Session;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\ObjectData\Criteres as SbmCommunCriteres;
 
 class CriteresEleves extends SbmCommunCriteres
@@ -133,11 +133,11 @@ class CriteresEleves extends SbmCommunCriteres
                     $where->nest()
                         ->nest()
                         ->literal('demandeR1 = 2')
-                        ->literal('accordR1 = 0')
+                        //->literal('accordR1 = 0')
                         ->literal('subventionR1 = 1')
                         ->unnest()->OR->nest()
                         ->literal('demandeR2 = 2')
-                        ->literal('accordR2 = 0')
+                        //->literal('accordR2 = 0')
                         ->literal('subventionR2 = 1')
                         ->unnest()
                         ->unnest();
@@ -172,6 +172,9 @@ class CriteresEleves extends SbmCommunCriteres
         }
         if (! empty($this->data['selection'])) {
             $where->literal('ele.selection = 1');
+        }
+        if (! empty($this->data['ga'])) {
+            $where->isNotNull('ele.responsable2Id');
         }
         if (! empty($this->data['nonaffecte'])) {
             $where->isNull('aff.eleveId');
@@ -299,11 +302,11 @@ class CriteresEleves extends SbmCommunCriteres
                     $where->nest()
                         ->nest()
                         ->literal('demandeR1 = 2')
-                        ->literal('accordR1 = 0')
+                        //->literal('accordR1 = 0')
                         ->literal('subventionR1 = 1')
                         ->unnest()->OR->nest()
                         ->literal('demandeR2 = 2')
-                        ->literal('accordR2 = 0')
+                        //->literal('accordR2 = 0')
                         ->literal('subventionR2 = 1')
                         ->unnest()
                         ->unnest();
@@ -342,6 +345,10 @@ class CriteresEleves extends SbmCommunCriteres
         if (! empty($this->data['selection'])) {
             $where->literal('selection = 1');
             $pageheader_string[] = 'élèves sélectionnés';
+        }
+        if (! empty($this->data['ga'])) {
+            $where->isNotNull('responsable2Id');
+            $pageheader_string[] = 'élèves en garde alternée';
         }
         if (! empty($this->data['nonaffecte'])) {
             $where->isNull('eleveIdAffectation');
@@ -441,13 +448,17 @@ class CriteresEleves extends SbmCommunCriteres
                     break;
                 case 3:
                     // subvention
-                    $filtre['expression'][] = '((demandeR1 = 2 AND accordR1 = 0 AND subventionR1 = 1) OR (demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 1))';
+                    //$filtre['expression'][] = '((demandeR1 = 2 AND accordR1 = 0 AND subventionR1 = 1) OR (demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 1))';
+                    $filtre['expression'][] = '((demandeR1 = 2 AND AND subventionR1 = 1) OR (demandeR2 = 2 AND subventionR2 = 1))';
                     break;
                 case 4:
                     // refus total
                     $filtre['expression'][] = '((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 0) OR (demandeR1 = 2 AND accordR1 = 0 AND subventionR1 = 0 AND demandeR2 = 0) OR (demandeR1 = 2 and accordR1 = 0 AND subventionR1 = 0 AND demandeR2 = 2 AND accordR2 = 0 AND subventionR2 = 0))';
                     break;
             }
+        }
+        if (! empty($this->data['ga'])) {
+            $filtre['expression'][] = 'responsable2Id IS NOT NULL';
         }
         if (! empty($this->data['nonaffecte'])) {
             $filtre['expression'][] = 'eleveIdAffectation IS NULL';
