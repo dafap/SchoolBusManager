@@ -16,12 +16,7 @@ namespace SbmFront\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use SbmFront\Form\Login;
-use SbmCommun\Model\StdLib;
-use DafapMail\Model\Template as MailTemplate;
-use DafapSession\Model\Session;
-use Zend\Db\Sql\Where;
-use Zend\Navigation\Service\ConstructedNavigationFactory;
+use SbmBase\Model\Session;
 
 class IndexController extends AbstractActionController
 {
