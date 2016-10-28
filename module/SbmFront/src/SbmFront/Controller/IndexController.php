@@ -13,14 +13,11 @@
  * @version 2016-2.2.0
  */
 namespace SbmFront\Controller;
-
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use SbmBase\Model\Session;
-
 class IndexController extends AbstractActionController
 {
-
     public function indexAction()
     {
         $form = $this->login_form;
@@ -38,7 +35,6 @@ class IndexController extends AbstractActionController
             'permanences' => $tCalendar->getPermanences()
         ]);
     }
-
     public function testAction()
     {    
         $result = null;
