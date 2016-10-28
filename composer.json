@@ -1,12 +1,12 @@
 {
     "name": "dafap/sbm",
     "description": "School Bus Manager, software",
-    "version": "1.0.0",
+    "version": "2.2.0",
     "authors": [
         {
             "name": "Dafap",
             "email": "dafap@dafap.fr",
-            "homepage": "http://www.dafap.fr"
+            "homepage": "https://www.dafap.fr"
         }
     ],
     "support": {
@@ -18,14 +18,14 @@
         "framework",
         "zf2"
     ],
-    "homepage": "http://www.dafap.fr/",
+    "homepage": "https://www.dafap.fr/",
     "license": [
         "BSD-3-Clause"
     ],
     "time": "2014-09-01",
     "require": {
         "atukai/at-php-settings": "dev-master",
-        "php": ">=5.5",
+        "php": ">=5.6",
         "zendframework/zendframework": "~2.5",
         "tecnickcom/tcpdf": "*",
         "drewm/mailchimp-api": "^2.1",
