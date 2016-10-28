@@ -10,7 +10,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 28 oct. 2016
- * @version 2016-2
+ * @version 2016-2.2.1
  */
 namespace SbmFront\Controller;
 
@@ -23,7 +23,7 @@ class IndexController extends AbstractActionController
 
     public function indexAction()
     {
-        $form = $this->config['login_form'];
+        $form = $this->login_form;
         $form->setAttribute('action', $this->url()
             ->fromRoute('login', array(
             'action' => 'login'
@@ -31,8 +31,8 @@ class IndexController extends AbstractActionController
         $tCalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
         return new ViewModel([
             'form' => $form->prepare(),
-            'client' => $this->config['client'],
-            'accueil' => $this->config['accueil'],
+            'client' => $this->client,
+            'accueil' => $this->accueil,
             'as' => Session::get('as')['libelle'],
             'etat' => $tCalendar->etatDuSite(),
             'permanences' => $tCalendar->getPermanences()
