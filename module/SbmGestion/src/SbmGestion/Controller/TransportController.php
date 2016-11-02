@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 2 nov. 2016
+ * @version 2016-2.2.2
  */
 namespace SbmGestion\Controller;
 
@@ -1512,6 +1512,7 @@ class TransportController extends AbstractActionController
                 $etablissement->codePostal . ' ' . $commune->nom
             ),
             'ptEtablissements' => $ptEtablissements,
+            'url_api' => $this->cartographie_manager->get('google_api')['js'],
             'config' => $configCarte
         ));
     }
@@ -2810,6 +2811,7 @@ class TransportController extends AbstractActionController
                 $commune->codePostal . ' ' . $commune->nom
             ),
             'ptStations' => $ptStations,
+            'url_api' => $this->cartographie_manager->get('google_api')['js'],
             'config' => $configCarte
         ));
     }
