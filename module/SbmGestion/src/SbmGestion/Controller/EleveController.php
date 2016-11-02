@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
- * @version 2016-2.2.1
+ * @date 1 nov. 2016
+ * @version 2016-2.2.2
  */
 namespace SbmGestion\Controller;
 
@@ -1068,6 +1068,7 @@ class EleveController extends AbstractActionController
             $data = [
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $args['eleveId'],
+                'url_api' => $this->cartographie_manager->get('google_api')['js'],
                 'chez' => null,
                 'adresseL1' => null,
                 'adresseL2' => null,
@@ -1118,6 +1119,7 @@ class EleveController extends AbstractActionController
             'form' => $form->prepare(),
             'eleveId' => $args['eleveId'],
             'eleve' => $eleve,
+            'url_api' => $this->cartographie_manager->get('google_api')['js'],
             'config' => $configCarte
         ]);
     }
@@ -1551,6 +1553,7 @@ class EleveController extends AbstractActionController
             'form' => $form->prepare(),
             'responsableId' => $args['responsableId'],
             'responsable' => $responsable,
+            'url_api' => $this->cartographie_manager->get('google_api')['js'],
             'config' => $configCarte
         ]);
     }

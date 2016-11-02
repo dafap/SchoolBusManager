@@ -9,8 +9,8 @@
  * @filesource responsable-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 1 nov. 2016
+ * @version 2016-2.2.2
  */
 // calcul du contenu de l'infobulle
 $description = array();
@@ -51,7 +51,7 @@ if (! empty($tel)) {
 }
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps
-$this->headScript()->appendFile('https://maps.google.com/maps/api/js?sensor=false');
+$this->headScript()->appendFile($this->url_api);
 $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->appendFile('/js/maps/localisation.js');
 // lancement du script (sera affiché dans le layout à la fin de la page)

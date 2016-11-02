@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 2 nov. 2016
+ * @version 2016-2.2.2
  */
 namespace SbmParent\Controller;
 
@@ -360,7 +360,8 @@ class ConfigController extends AbstractActionController
         return new ViewModel(array(
             'responsable' => $responsable,
             'form' => $form->prepare(),
-            'config' => $configCarte
+            'config' => $configCarte,
+            'url_api' => $this->cartographie_manager->get('google_api')['js']
         ));
     }
 } 
