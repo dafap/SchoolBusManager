@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 1 nov. 2016
+ * @version 2016-2.2.2
  */
 namespace SbmCartographie\Controller;
 
@@ -55,7 +55,8 @@ class CarteController extends AbstractActionController
         
         return new ViewModel(array(
             'ptEtablissements' => $ptEtablissements,
-            'config' => StdLib::getParam('etablissements', $this->config_cartes)
+            'config' => StdLib::getParam('etablissements', $this->config_cartes),
+            'url_api' => $this->url_api
         ));
     }
 
@@ -87,7 +88,8 @@ class CarteController extends AbstractActionController
         return new ViewModel(array(
             'ptStations' => $ptStations,
             // on utilise la même configuration (centre, zoom) que pour les établissements
-            'config' => StdLib::getParam('etablissements', $this->config_cartes)
+            'config' => StdLib::getParam('etablissements', $this->config_cartes),
+            'url_api' => $this->url_api
         ));
     }
 } 
