@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 20 nov 2016
+ * @version 2016-2.2.3
  */
 use SbmBase\Model\Session;
 
@@ -213,7 +213,7 @@ echo $this->flashMessenger()->render('default');
 					<td><?php echo $row['nom']; ?></td>
 					<td><?php echo $row['prenom']; ?></td>
 					<?php if (is_null($row['millesime'])) : ?>
-					<td colspan="4">Non inscrit</td>
+					<td colspan="5">Non inscrit</td>
 					<?php else : ?>
 					<td><?php echo $row['millesime']?></td>
 					<td><?php echo $row['etablissement'] . ' - ' . $row['communeEtablissement'];?></td>
