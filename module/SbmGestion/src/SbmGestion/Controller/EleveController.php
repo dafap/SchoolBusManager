@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 20 nov. 2016
+ * @version 2016-2.2.3
  */
 namespace SbmGestion\Controller;
 
@@ -480,7 +480,8 @@ class EleveController extends AbstractActionController
             'page' => $page,
             'form' => $form->prepare(),
             'info' => $info,
-            'data' => $data
+            'data' => $data,
+            'scolarite_precedente' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
         ]);
     }
 
