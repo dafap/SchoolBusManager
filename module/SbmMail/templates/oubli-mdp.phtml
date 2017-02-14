@@ -7,8 +7,8 @@
  * @filesource oubli-mdp.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 14 févr. 2017
+ * @version 2016-2.3.0
  */
 ?>
 <p>Bonjour <?php echo $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
@@ -19,6 +19,7 @@
 	suivez le lien suivant :<br>
     <?php echo $this->url_confirme;?></p>
 <p>Attention ! Ce lien ne fonctionne qu'une seule fois.</p>
+<p>Si ce lien n'est pas actif dans vote logiciel de courrier, copiez le puis collez le dans la barre d'adresse de votre navigateur.</p>
 <p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
 <div style="text-align: center;">
 	<b><?php echo $this->client['name'];?></b> <br><?php echo implode(' - ', $this->client['adresse']);?> - <?php echo $this->client['code_postal'] . ' ' . $this->client['commune'];?>

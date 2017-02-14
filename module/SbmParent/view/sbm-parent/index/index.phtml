@@ -7,8 +7,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 août 2016
- * @version 2016-2.2.1
+ * @date 14 févr. 2017
+ * @version 2016-2.3.0
  */
 use SbmBase\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -126,7 +126,7 @@ echo $this->flashMessenger()->render('default');
     <p>Vous n'avez pas d'enfant inscrit.</p>
 	<p>Les inscriptions en ligne sont fermées.</p>
 	<p>Pour inscrire un enfant, prenez contact avec le service transport de
-		la Communauté de communes Decazeville-Aubin. Au delà du <?php echo $dateLimite;?> les
+		<?php echo $this->client['name'];?>. Au delà du <?php echo $dateLimite;?> les
 		places seront attribuées à la rentrée en fonction des disponibilités
 		dans les cars.</p>
 	<?php endif;?>
