@@ -277,7 +277,7 @@ echo $this->formHidden($this->form->get('csrf'));
 							<div id="#responsable1-dateModification">
 								<div class="eleve-tabs-3-col-2-label">Date de modification</div><?php echo formatDate($this->historique['responsable1']['dateModification']);?></div>
 							<div id="#responsable1-dateDemenagement">
-								<div class="eleve-tabs-3-col-2-label">Date de déménagement</div><?php echo formatDate($this->historique['responsable1']['dateDemenagement'], false);?></div>
+								<div class="eleve-tabs-3-col-2-label">Date de déménagement</div><?php echo $this->historique['responsable1']['demenagement'] ? formatDate($this->historique['responsable1']['dateDemenagement'], false) : '';?></div>
 						</div>
 				        <?php if (array_key_exists('responsable2', $this->historique)):?>
 				        <div id="tabs-3-col3" class="float-left left-10px">
@@ -287,7 +287,7 @@ echo $this->formHidden($this->form->get('csrf'));
 							<div id="#responsable2-dateModification">
 								<div class="eleve-tabs-3-col-3-label">Date de modification</div><?php echo formatDate($this->historique['responsable2']['dateModification']);?></div>
 							<div id="#responsable2-dateDemenagement">
-								<div class="eleve-tabs-3-col-3-label">Date de déménagement</div><?php echo formatDate($this->historique['responsable2']['dateDemenagement'], false);?></div>
+								<div class="eleve-tabs-3-col-3-label">Date de déménagement</div><?php echo $this->historique['responsable2']['demenagement'] ? formatDate($this->historique['responsable2']['dateDemenagement'], false) : '';?></div>
 						</div>
 				        <?php endif;?>
 				    </div>

@@ -699,12 +699,14 @@ class EleveController extends AbstractActionController
         $historique['responsable1']['dateCreation'] = $r->dateCreation;
         $historique['responsable1']['dateModification'] = $r->dateModification;
         $historique['responsable1']['dateDemenagement'] = $r->dateDemenagement;
+        $historique['responsable1']['demenagement'] = $r->demenagement;
         $tmp = $odata0->responsable2Id;
         if (! empty($tmp)) {
             $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable2Id);
             $historique['responsable2']['dateCreation'] = $r->dateCreation;
             $historique['responsable2']['dateModification'] = $r->dateModification;
             $historique['responsable2']['dateDemenagement'] = $r->dateDemenagement;
+            $historique['responsable2']['demenagement'] = $r->demenagement;
         }
         $affectations = [];
         foreach ($qAffectations->getAffectations($eleveId) as $row) {
