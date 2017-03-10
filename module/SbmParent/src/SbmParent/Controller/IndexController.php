@@ -5,13 +5,18 @@
  * Dans cette version spéciale CCDA, pour la réinscription le champ établissementId est vide, 
  * comme la classe
  *
+ * Version 2.3.1 du 10 mars 2017 : adaptation pour tarif annuel ou 3e trimestre. Dans l'inscription
+ * en ligne on applique toujours le tarif annuel. Voir la classe SbmParent\Model\OutilsInscription
+ * pour plus de détail.
+ *
+ *
  * @project sbm
  * @package SbmParent/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 oct. 2016
- * @version 2016-2.2.1
+ * @date 10 mars 2017
+ * @version 2017-2.3.1
  */
 namespace SbmParent\Controller;
 
@@ -55,13 +60,14 @@ class IndexController extends AbstractActionController
         }
         $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         $paiements = $this->db_manager->get('Sbm\Db\Vue\Paiements');
-        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar'); 
         return new ViewModel([
             'etatSite' => $tCalendar->etatDuSite(),
             'permanences' => $tCalendar->getPermanences($responsable->commune),
             'inscrits' => $query->getElevesInscrits($responsable->responsableId),
             'preinscrits' => $query->getElevesPreinscrits($responsable->responsableId),
-            'montant' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant('inscription'),
+            // ici, tarifs devient un tableau à partir de la version 2.3.1 et remplace montant
+            'tarifs' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifs(),
             'paiements' => $paiements->fetchAll([
                 'responsableId' => $responsable->responsableId
             ]),

@@ -1,14 +1,17 @@
 <?php
 /**
  * Outils pour inscrire, réinscrire ou modifier un élève
+ * 
+ * A partir de la version 2.3.1 (10 mars 2017), prise en compte du 'tarif1' dans l'inscription en ligne 
+ * (à la place de 'inscription') dans la méthode saveScolarite()
  *
  * @project sbm
  * @package SbmParent/Model
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
- * @version 2016-2.2.1
+ * @date 10 mars 2017
+ * @version 2017-2.3.1
  */
 namespace SbmParent\Model;
 
@@ -225,7 +228,7 @@ class OutilsInscription
         if (is_null($eleveId)) {
             $array = [
                 'millesime' => $this->millesime,
-                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('inscription')
+                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('tarif1')
             ];
         } else {
             $array = [
@@ -240,7 +243,7 @@ class OutilsInscription
                 'anneeComplete' => 1,
                 'subventionR1' => 0,
                 'subventionR2' => 0,
-                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('inscription')
+                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('tarif1')
             ];
         }
         $oData->exchangeArray(array_merge($data, $array));
