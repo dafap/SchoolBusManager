@@ -14,8 +14,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 10 mars 2017
+ * @version 2017-2.3.1
  */
 use SbmBase\Model\DateLib;
 
@@ -46,7 +46,6 @@ $("#chk%d").change(function() {
   });
 EOT;
 
-
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 
@@ -55,10 +54,10 @@ $paiements = $this->paginator->getCurrentItems();
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 
 if (! $this->h2) {
-    $url_retour_pour_group = $this->url('sbmgestion/finance', array(
+    $url_retour_pour_group = $this->url('sbmgestion/finance', [
         'action' => 'paiement-liste',
         'page' => $this->page
-    ));
+    ]);
 }
 ?>
 
@@ -74,7 +73,9 @@ echo $this->flashMessenger()->render('default');
 		<h1>Liste des paiements</h1>
 <?php if ($this->h2): ?>
         <h2>Paiements effectués par <?php echo $this->responsable; ?></h2>
-        <?php $totalDu = ($this->nbInscrits + $this->nbPreinscrits - $this->nbGratuits - $this->nbFa) * $this->inscription + $this->nbDuplicata * $this->duplicata; ?>
+        <?php
+    $totalDu = $this->nbTarif1 * $this->tarif1 + $this->nbTarif2 * $this->tarif2 + $this->nbDuplicata * $this->duplicata;
+    ?>
 		<p class="left-10px">Total du : <?php echo $fmt->formatCurrency($totalDu, 'EUR');?>
             <span class="left-95px">Payé : <?php echo $fmt->formatCurrency($this->totalPaye, 'EUR');?></span>
 			<span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($totalDu - $this->totalPaye, 'EUR');?></span>
@@ -83,33 +84,33 @@ echo $this->flashMessenger()->render('default');
 		<div class="menu float-left">
 <?php
 $url_retour = empty($this->url2_retour) ? $this->url1_retour : $this->url2_retour;
-$url_ajouter = $this->url('sbmgestion/finance', array(
+$url_ajouter = $this->url('sbmgestion/finance', [
     'action' => 'paiement-ajout',
     'page' => $this->page
-));
-$url_imprimer = $this->url('sbmgestion/finance', array(
+]);
+$url_imprimer = $this->url('sbmgestion/finance', [
     'action' => 'paiement-depot',
     'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/finance', array(
+]);
+$url_edit = $this->url('sbmgestion/finance', [
     'action' => 'paiement-edit',
     'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/finance', array(
+]);
+$url_delete = $this->url('sbmgestion/finance', [
     'action' => 'paiement-suppr',
     'page' => $this->page
-));
+]);
 if (! $this->h2) {
-    $url_group = $this->url('sbmgestion/finance', array(
+    $url_group = $this->url('sbmgestion/finance', [
         'action' => 'paiement-liste'
-    ));
+    ]);
 }
-$url_detail = $this->url('sbmgestion/finance', array(
+$url_detail = $this->url('sbmgestion/finance', [
     'action' => 'paiement-detail',
     'page' => $this->page
-));
+]);
 
-$hiddens = array(
+$hiddens = [
     'url1_retour' => $this->url1_retour,
     'url2_retour' => $this->url2_retour,
     'h2' => $this->h2,
@@ -120,32 +121,32 @@ $hiddens = array(
      */
     'responsableId' => $this->responsableId,
     'responsable' => $this->escapeHtml($this->responsable)
-);
+];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'onclick' => $js_retour,
         'title' => 'Retour'
-    ),
-    'rapports' => array(
+    ],
+    'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $url_imprimer,
         'title' => 'Bordereaux de remise de valeurs'
-    ),
-    'detail' => array(
+    ],
+    'detail' => [
         'class' => 'fam-group-gear',
         'formaction' => $url_detail,
         'title' => 'Justification des montants encaissés'
-    ),
-    'ajouter' => array(
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau paiement'
-    )
-);
+    ]
+];
 if (! $this->h2) {
     unset($actions['detail']);
 }
@@ -168,12 +169,12 @@ echo $this->listeZoneActions($hiddens, $actions);
 				</tr>
         <?php foreach($paiements as $test => $paiement): ?>
         <?php
-            // construction des JS pour selection            
+            // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $paiement->paiementId);
             $jsCallback .= sprintf("$modele\n", $paiement->paiementId, $paiement->paiementId);
             ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="responsable"><?php echo $r = $this->escapeHtml($paiement->responsable); ?></td>
 					<td class="montant"><?php echo $m = $fmt->formatCurrency($paiement->montant, 'EUR'); ?></td>
 					<td class="caisse"><?php echo $cs = $this->escapeHtml($paiement->caisse); ?></td>
@@ -196,34 +197,34 @@ echo $this->listeZoneActions($hiddens, $actions);
             $hiddens['responsable'] = $this->escapeHtml($paiement->responsable);
             // ne pas utiliser de guillement dans la chaine $js
             $js = 'window.document.getElementById(\'op' . $paiement->paiementId . '\').value=%s;';
-            $buttons = array(
-                'voir' => array(
+            $buttons = [
+                'voir' => [
                     'class' => 'fam-zoom',
                     'title' => $title_voir,
                     'onclick' => $js_voir
-                ),
-                'modifier' => array(
+                ],
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier l\'encaissement de ' . $m . ' de ' . $r,
                     'onclick' => sprintf($js, "'modifier'")
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer le paiement de ' . $m . ' de ' . $r,
                     'onclick' => sprintf($js, "'supprimer'")
-                )
-            );
+                ]
+            ];
             if (! $this->h2) {
                 // ne pas utiliser de guillement dans la chaine $js
                 $js = sprintf($js, "'grouper'") . 'window.document.getElementById(\'url2_retour' . $paiement->paiementId . '\').value=\'' . $url_retour_pour_group . '\';';
-                $buttons['groupe'] = array(
+                $buttons['groupe'] = [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'liste de tous les paiements de ' . $r,
                     'onclick' => $js
-                );
+                ];
             }
             echo $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);
             ?>                           
@@ -234,7 +235,7 @@ echo $this->listeZoneActions($hiddens, $actions);
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
         <?php
         if (! is_null($this->criteres_form)) {

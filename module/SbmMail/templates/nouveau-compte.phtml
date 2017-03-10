@@ -7,8 +7,8 @@
  * @filesource nouveau-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 14 févr. 2017
+ * @version 2016-2.3.0
  */
 
 ?>
@@ -21,12 +21,13 @@ Si vous n'avez pas demandé à ouvrir ce compte, nous vous recommandons de suivr
 <p><b>CONFIRMER LE COMPTE</b><br>
 Pour confirmer cette demande d'ouverture de compte, suivez le lien suivant :<br>
     <?php echo $this->url_confirme;?></p>
-
+<p>Si ce lien n'est pas actif dans vote logiciel de courrier, copiez le puis collez le dans la barre d'adresse de votre navigateur.</p>
 
 <p><b>ANNULER LE COMPTE</b><br>
 Si vous n'avez pas demandé l'ouverture de ce compte avec cette adresse de messagerie et si vous souhaitez annuler cette demande, suivez le lien suivant :<br>
     <?php echo $this->url_annule;?></p>
-
+<p>Si ce lien n'est pas actif dans vote logiciel de courrier, copiez le puis collez le dans la barre d'adresse de votre navigateur.</p>
+    
 <p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
 <div style="text-align: center;">
 	<b><?php echo $this->client['name'];?></b> <br><?php echo implode(' - ', $this->client['adresse']);?> - <?php echo $this->client['code_postal'] . ' ' . $this->client['commune'];?>

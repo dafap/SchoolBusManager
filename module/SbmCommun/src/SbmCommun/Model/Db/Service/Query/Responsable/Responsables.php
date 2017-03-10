@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 10 mars 2017
+ * @version 2017-2.3.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -82,10 +82,10 @@ class Responsables implements FactoryInterface
         $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
-            ->from(array(
+            ->from([
             'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ))
-            ->columns(array(
+        ])
+            ->columns([
             'responsableId' => 'responsableId',
             'selection' => 'selection',
             'dateCreation' => 'dateCreation',
@@ -126,12 +126,12 @@ class Responsables implements FactoryInterface
             'y' => 'y',
             'userId' => 'userId',
             'note' => 'note'
-        ))
-            ->join(array(
+        ])
+            ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ), 'com.communeId=res.communeId', array(
+        ], 'com.communeId=res.communeId', [
             'commune' => 'nom'
-        ));
+        ]);
         return $this;
     }
 
@@ -150,14 +150,14 @@ class Responsables implements FactoryInterface
             ->unnest()
             ->equalTo('millesime', $this->millesime);
         $select = clone $this->select;
-        $select->join(array(
+        $select->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ), 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', array(
+        ], 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [
             'nb' => new Expression('count(ele.eleveId)')
-        ))
-            ->join(array(
+        ])
+            ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'ele.eleveId=sco.eleveId', array())
+        ], 'ele.eleveId=sco.eleveId', [])
             ->where($where);
         if (! is_null($order)) {
             $select->order($order);
@@ -190,6 +190,7 @@ class Responsables implements FactoryInterface
     {
         $select = $this->selectResponsables($where, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
+        // die($this->getSqlString($select));
         return $statement->execute();
     }
 
@@ -222,9 +223,9 @@ class Responsables implements FactoryInterface
             ->equalTo('millesime', $this->millesime);
         $select1 = new Select();
         $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
+            ->columns([
             'eleveId'
-        ))
+        ])
             ->where($where1);
         // inscrits payants
         $where2 = new Where();
@@ -233,9 +234,9 @@ class Responsables implements FactoryInterface
             ->equalTo('millesime', $this->millesime);
         $select2 = new Select();
         $select2->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
+            ->columns([
             'eleveId'
-        ))
+        ])
             ->where($where2);
         // inscrits gratuits
         $where3 = new Where();
@@ -244,9 +245,9 @@ class Responsables implements FactoryInterface
             ->equalTo('millesime', $this->millesime);
         $select3 = new Select();
         $select3->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
+            ->columns([
             'eleveId'
-        ))
+        ])
             ->where($where3);
         // inscrits en famille d'accueil
         $where4 = new Where();
@@ -255,9 +256,9 @@ class Responsables implements FactoryInterface
             ->equalTo('millesime', $this->millesime);
         $select4 = new Select();
         $select4->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
+            ->columns([
             'eleveId'
-        ))
+        ])
             ->where($where4);
         // duplicata
         $where5 = new Where();
@@ -266,43 +267,79 @@ class Responsables implements FactoryInterface
             ->equalTo('millesime', $this->millesime);
         $select5 = new Select();
         $select5->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
+            ->columns([
             'eleveId',
             'duplicata'
-        ))
+        ])
             ->where($where5);
+        // tarif annuel
+        $where6 = new Where();
+        $where6->literal('inscrit = 1')
+            ->literal('gratuit = 0')
+            ->literal('fa = 0')
+            ->equalTo('millesime', $this->millesime)
+            ->literal('anneeComplete = 1');
+        $select6 = new Select();
+        $select6->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->where($where6);
+        // tarif 3e trimestre
+        $where7 = new Where();
+        $where7->literal('inscrit = 1')
+            ->literal('gratuit = 0')
+            ->literal('fa = 0')
+            ->equalTo('millesime', $this->millesime)
+            ->literal('anneeComplete = 0');
+        $select7 = new Select();
+        $select7->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->where($where7);
         // requête principale
         $select = clone $this->select;
-        $select->join(array(
+        $select->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ), 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', array(
+        ], 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [
             'nbEnfants' => new Expression('count(ele.eleveId)')
-        ), $select::JOIN_LEFT)
-            ->join(array(
+        ], $select::JOIN_LEFT)
+            ->join([
             'pre' => $select1
-        ), 'ele.eleveId=pre.eleveId', array(
+        ], 'ele.eleveId=pre.eleveId', [
             'nbPreinscrits' => new Expression('count(pre.eleveId)')
-        ), $select::JOIN_LEFT)
-            ->join(array(
+        ], $select::JOIN_LEFT)
+            ->join([
             'ins' => $select2
-        ), 'ele.eleveId=ins.eleveId', array(
+        ], 'ele.eleveId=ins.eleveId', [
             'nbInscrits' => new Expression('count(ins.eleveId)')
-        ), $select::JOIN_LEFT)
-            ->join(array(
+        ], $select::JOIN_LEFT)
+            ->join([
             'gra' => $select3
-        ), 'ele.eleveId=gra.eleveId', array(
+        ], 'ele.eleveId=gra.eleveId', [
             'nbGratuits' => new Expression('count(gra.eleveId)')
-        ), $select::JOIN_LEFT)
-            ->join(array(
+        ], $select::JOIN_LEFT)
+            ->join([
             'fa' => $select4
-        ), 'ele.eleveId=fa.eleveId', array(
+        ], 'ele.eleveId=fa.eleveId', [
             'nbFa' => new Expression('count(fa.eleveId)')
-        ), $select::JOIN_LEFT)
-            ->join(array(
+        ], $select::JOIN_LEFT)
+            ->join([
             'dup' => $select5
-        ), 'ele.eleveId=dup.eleveId', array(
+        ], 'ele.eleveId=dup.eleveId', [
             'nbDuplicata' => new Expression('sum(dup.duplicata)')
-        ), $select::JOIN_LEFT)
+        ], $select::JOIN_LEFT)
+            ->join([
+            'ta1' => $select6
+        ], 'ele.eleveId=ta1.eleveId', [
+            'nbTarif1' => new Expression('count(ta1.eleveId)')
+        ], $select::JOIN_LEFT)
+            ->join([
+            'ta2' => $select7
+        ], 'ele.eleveId=ta2.eleveId', [
+            'nbTarif2' => new Expression('count(ta2.eleveId)')
+        ], $select::JOIN_LEFT)
             ->group('responsableId')
             ->order($order);
         return $where->count() ? $select->having($where) : $select;
@@ -323,9 +360,9 @@ class Responsables implements FactoryInterface
         $select = $this->sql->select([
             'res' => $this->db_manager->getCanonicName('responsables', 'table')
         ])
-            ->join(array(
+            ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ), 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [])
+        ], 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'sco.eleveId = ele.eleveId', [])
