@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 nov. 2016
- * @version 2016-2.2.3
+ * @date 10 mars 2017
+ * @version 2017-2.3.1
  */
 namespace SbmGestion\Controller;
 
@@ -450,7 +450,13 @@ class EleveController extends AbstractActionController
                 $odata = $form->getData();
                 $odata->millesime = Session::get('millesime');
                 $odata->internet = 0;
-                $odata->tarifId = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('inscription');
+                $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
+                if ($odata->anneeComplete) {
+                    $odata->tarifId = $tTarifs->getTarifId('tarif1');
+                } else {
+                    $odata->tarifId = $tTarifs->getTarifId('tarif2');
+                }
+                // $odata->tarifId = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('inscription');
                 $tableScolarites->saveRecord($odata);
                 $viewModel = $this->eleveEditAction([
                     'eleveId' => $eleveId,
@@ -565,6 +571,9 @@ class EleveController extends AbstractActionController
         $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
+        $aTarifs = $tTarifs->getTarifs();
+        $tarifId1 = $tTarifs->getTarifId('tarif1');
+        $tarifId2 = $tTarifs->getTarifId('tarif2');
         $qAffectations = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations');
         // les invariants
         $invariants = [];
@@ -603,7 +612,7 @@ class EleveController extends AbstractActionController
         }
         $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
-        $historique['scolarite']['inscription'] = $tTarifs->getMontant('inscription');
+        $historique['scolarite']['tarifs'] = json_encode($aTarifs);
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
         $historique['scolarite']['internet'] = $odata1->internet;
         
@@ -658,8 +667,13 @@ class EleveController extends AbstractActionController
                     }
                 }
                 // enregistrement dans la table scolarites
-                $recalcul = $tScolarites->saveRecord($tScolarites->getObjData()
-                    ->exchangeArray($dataValid));
+                $odata = $tScolarites->getObjData()->exchangeArray($dataValid);
+                if ($odata->anneeComplete) {
+                    $odata->tarifId = $tarifId1;
+                } else {
+                    $odata->tarifId = $tarifId2;
+                }
+                $recalcul = $tScolarites->saveRecord($odata);
                 // recalcul des droits et des distances en cas de modification de la destination ou d'une origine
                 if ($recalcul || $changeR1 || $changeR2) {
                     $majDistances = $this->cartographie_manager->get('Sbm\CalculDroitsTransport');

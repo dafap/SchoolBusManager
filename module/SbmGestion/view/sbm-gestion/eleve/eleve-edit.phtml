@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 oct. 2016
- * @version 2016-2.2.1
+ * @date 10 mars 2017
+ * @version 2017-2.3.1
  */
 use SbmBase\Model\DateLib;
 
@@ -32,31 +32,31 @@ function formatDate($date, $withTime = true)
     }
 }
 
-$structAffectations = array();
+$structAffectations = [];
 if (count($this->affectations)) {
     foreach ($this->affectations as $affectation) {
-        $structAffectations[$affectation['trajet']][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = array(
+        $structAffectations[$affectation['trajet']][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
             'service1Id' => $affectation['service1Id'],
             'station1Id' => $affectation['station1Id'],
             'station1' => $affectation['station1'],
             'service2Id' => $affectation['service2Id'],
             'station2Id' => $affectation['station2Id'],
             'station2' => $affectation['station2']
-        );
+        ];
     }
     unset($affectation);
 }
 $disableAccordR1 = isset($structAffectations[1]) ? 'true' : 'false';
 $disableAccordR2 = isset($structAffectations[2]) ? 'true' : 'false';
 // urls utilisées
-$url_ici = $this->url('sbmgestion/eleve', array(
+$url_ici = $this->url('sbmgestion/eleve', [
     'action' => 'eleve-edit',
     'page' => $this->page
-));
-$url_map = $this->url('sbmgestion/eleve', array(
+]);
+$url_map = $this->url('sbmgestion/eleve', [
     'action' => 'eleve-localisation',
     'page' => $this->page
-));
+]);
 $url_euro = $this->url('sbmgestion/finance', [
     'action' => 'paiement-liste'
 ]);
@@ -77,37 +77,38 @@ $this->inlineScript()->captureStart();
 const ELEVE_ID = <?php echo $this->eleveId;?>;
 const IDENTITE = "<?php echo urlencode($this->identite)?>";
 const URL_ICI = "<?php echo $url_ici;?>";
-js_edit.init(<?php echo $disableAccordR1;?>, <?php echo $disableAccordR2;?>);
+
+js_edit.init(<?php echo $disableAccordR1;?>, <?php echo $disableAccordR2;?>, <?php echo $this->historique['scolarite']['tarifs'];?>);
 <?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
 // ============= fin du Javascript et JQuery =================================
 
-$hiddens = array(
+$hiddens = [
     'eleveId' => $this->eleveId,
     'eleveName' => $this->identite,
     'origine' => $url_ici,
     'responsableId' => $this->args_paiement['responsableId']
-);
-$actions = array(
-    'cancel' => array(
+];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_ici, // traitement de cancel pour un redirectToOrigin()->back() proprement
         'title' => 'Retour'
-    ),
-    'localiser' => array(
+    ],
+    'localiser' => [
         'class' => 'fam-map-magnify',
         'formaction' => $url_map,
         'title' => 'localiser cet élève sur la carte',
         'onclick' => sprintf($js, "'localiser'")
-    ),
+    ],
     'payer' => [
         'class' => 'fam-money-euro',
         'formaction' => $url_euro,
         'title' => 'paiements de ' . $this->args_paiement['responsable'],
         'onclick' => sprintf($js, "'eleve-edit'")
     ]
-);
+];
 ?>
 <div id="winpopup"></div>
 <h1>Modification d'un élève</h1>
@@ -304,7 +305,9 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div id="tabs-3-col2" class="float-left left-10px">
 							<h3>Eléments facturés</h3>
 							<div id="#scolarite-tarif">
-								<div class="eleve-tabs-3-col-2-label">Droits d'inscription</div><?php echo $this->historique['scolarite']['inscription'];?></div>
+								<div class="eleve-tabs-3-col-2-label">Droits d'inscription</div>
+								<span id="tabs-3-montant"></span>
+							</div>
 							<div id="#scolarite-duplicata">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
 								<span id="nbduplicata" class="right-10px"><?php echo $this->historique['scolarite']['duplicata'];?></span>
