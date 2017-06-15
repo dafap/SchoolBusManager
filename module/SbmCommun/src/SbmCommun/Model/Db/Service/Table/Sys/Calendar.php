@@ -9,8 +9,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2016
- * @version 2014-2.1.3
+ * @date 01 juin 2017
+ * @version 2017-2.3.2
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -19,6 +19,7 @@ use SbmCommun\Model\Db\Exception;
 use Zend\Db\Sql\Where;
 use DateTime;
 use Zend\Db\Sql\Expression;
+use SbmBase\Model\DateLib;
 
 class Calendar extends AbstractSbmTable
 {
@@ -254,7 +255,7 @@ class Calendar extends AbstractSbmTable
         $resultset = $this->fetchAll($where, 'rang');
         $result = array();
         foreach ($resultset as $row) {
-            $result[] = $row->description;
+            $result[] = $row->description . ' ' . DateLib::formatDateFromMysql($row->echeance);
         }
         return $result;
     }

@@ -5,8 +5,8 @@
  * @filesource gestion-circuit/edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 oct. 2016
- * @version 2016-2.2.1
+ * @date 15 juin 2017
+ * @version 2017-2.3.3
  */
 var js_actions = (function(){
 	function montreMer(visible) {
@@ -27,7 +27,19 @@ var js_actions = (function(){
 	        $("#circuit-s3").hide();
 	    }
 	}
-	$(document).ready(function($) {
+	$(document).ready(function() {
+	    $(document).on("change", "input[name=checkall_box_circuit-ajout-semaine]", function(){
+	        var mercredi = $("#semaine-mer");
+	        var samedi = $("#semaine-sam");
+	        if (!$(this).prop("indeterminate")) {
+			    if (mercredi.length) {
+			        montreMer($(this).is(":checked"));
+			    }
+			    if (samedi.length) {
+			        montreSam($(this).is(":checked"));
+			    }
+			}
+		});
 		$("#semaine-mer").click(function(){
 		    montreMer($(this).is(":checked"));
 		});

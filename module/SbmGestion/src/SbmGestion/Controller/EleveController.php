@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 15 juin 2017
+ * @version 2017-2.3.3
  */
 namespace SbmGestion\Controller;
 
@@ -556,6 +556,17 @@ class EleveController extends AbstractActionController
                 unset($args['origine']);
             }
             $this->setToSession('post', $args);
+        }
+        if (! array_key_exists('eleveId', $args)) {
+            $this->flashMessenger()->addErrorMessage("Pas d'identifiant élève !");
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                return $this->redirect()->toRoute('sbmgestion/eleve', [
+                    'action' => 'eleve-liste',
+                    'page' => $currentPage
+                ]);
+            }
         }
         $eleveId = $args['eleveId'];
         if ($eleveId == - 1) {

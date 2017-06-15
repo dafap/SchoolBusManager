@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2016
- * @version 2016-2.2.2
+ * @date 15 juin 2017
+ * @version 2017-2.3.3
  */
 namespace SbmGestion\Controller;
 
@@ -2476,6 +2476,7 @@ class TransportController extends AbstractActionController
                     'Création d\'une nouvelle station'
                 ),
                 'ptStations' => $ptStations,
+                'url_api' => $this->cartographie_manager->get('google_api')['js'],
                 'config' => $configCarte
             ));
             $view->setTemplate('sbm-gestion/transport/station-localisation.phtml');

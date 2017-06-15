@@ -316,6 +316,7 @@ class DistanceEtablissements
         }
         $url = sprintf($this->google_distancematrix_url, implode('|', $tLatLng), $this->getLatLngString($destination));
         $obj = json_decode(file_get_contents($url));
+        //die(var_dump($obj));
         if ($obj->status == 'OK') {
             $result = array();
             for ($j = 0; $j < count($obj->rows); $j ++) {

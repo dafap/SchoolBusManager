@@ -12,13 +12,18 @@
  *            ... 
  *        </fieldset>
  *    </div>
- * 
+ * Le script rajoute un checkbox à droite de <legend> comme suit :
+ *   <legend><span>...<input type="checkbox" class="checkall_box" name="checkall_box_..."></span></legend>
+ *   où 
+ *   ... suivant <span> est l'étiquette du multicheckbox
+ *   ... dans name="checkall_box_..." est le `id_div` passé en paramètre
+ *   
  * @project sbm
  * @filesource checkallbox.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 oct. 2016
- * @version 2016-2.2.1
+ * @date 15 juin 2017
+ * @version 2017-2.3.3
  */
 var multicheckbox_actions = (function() {
 	var checkboxes_sel = "input.sbm-multicheckbox:enabled";
@@ -56,7 +61,7 @@ var multicheckbox_actions = (function() {
 		var legend = $("#" + id_wrapper + " fieldset legend");
 		$(legend).html('<span>'
 							+ $(legend).text()
-							+ '<input type="checkbox" class="checkall_box"></span>');
+							+ '<input type="checkbox" class="checkall_box" name="checkall_box_' + id_wrapper + '"></span>');
 
 		checkboxes_changed();
 	});
