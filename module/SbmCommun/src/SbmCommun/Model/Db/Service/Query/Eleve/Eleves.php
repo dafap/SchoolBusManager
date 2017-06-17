@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 17 juin 2017
+ * @version 2017-2.3.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -93,6 +93,7 @@ class Eleves implements FactoryInterface
         ])
             ->columns([
             'eleveId' => 'eleveId',
+            'mailchimp' => 'mailchimp',
             'dateCreation' => 'dateCreation',
             'dateModificationEleve' => 'dateModification',
             'nom' => 'nom',

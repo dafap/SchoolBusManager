@@ -32,7 +32,7 @@ $url_admin = $this->url('sbmadmin');
 $url_gestion = $this->url('sbmgestion');
 $url_portail = $this->url('sbmportail');
 $url_parent = $this->url('sbmparent');
-$url_mailchimp = $this->url('sbmmailchimp');
+$url_change_reinscription = $this->url('sbmmailchimp');
 $url_images = $this->url('sbminstall', [
     'action' => 'gestion-images'
 ]);
@@ -80,7 +80,7 @@ echo $this->flashMessenger()->render('default');
 					<li><a href="<?php echo $url_tablealias;?>"><i
 							class="fam-bullet-go"></i>Liste des alias des tables</a></li>
 
-					<li><a href="<?php echo $url_mailchimp;?>"><i class="fam-bullet-go"></i>Gestion
+					<li><a href="<?php echo $url_change_reinscription;?>"><i class="fam-bullet-go"></i>Gestion
 							des listes de diffusion de MailChimp</a></li>
 
 					<li><a href="<?php echo $url_images;?>"><i class="fam-bullet-go"></i>Gestion

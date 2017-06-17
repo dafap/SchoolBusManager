@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juin 2017
+ * @date 16 juin 2017
  * @version 2017-2.3.3
  */
 namespace SbmGestion\Controller;
@@ -999,6 +999,51 @@ class EleveController extends AbstractActionController
             'eleve' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve($args['eleveId']),
             'affectations' => $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getCorrespondances($args['eleveId'])
         ]);
+    }
+
+    public function eleveReinscriptionOuiAction()
+    {
+        return $this->eleveReinscriptionChange(1);
+    }
+
+    public function eleveReinscriptionNonAction()
+    {
+        return $this->eleveReinscriptionChange(0);
+    }
+
+    private function eleveReinscriptionChange($flag)
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                return $this->redirect()->toRoute('sbmgestion/eleve', [
+                    'action' => 'responsable-liste',
+                    'page' => 1
+                ]);
+            }
+        } elseif (array_key_exists('origine', $prg)) {
+            $this->redirectToOrigin()->setBack($prg['origine']);
+            unset($prg['origine']);
+        }
+        if (array_key_exists('eleveId', $prg)) {
+            $eleveId = $prg['eleveId'];
+            $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+            $tEleves->setMailchimp($eleveId, $flag);
+        }
+        try {
+            return $this->redirectToOrigin()->back();
+        } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+            $this->flashMessenger()->addErrorMessage('Action interdite');
+            return $this->redirect()->toRoute('sbmgestion/eleve', [
+                'action' => 'responsable-liste',
+                'page' => 1
+            ]);
+        }
     }
 
     public function eleveLocalisationAction()

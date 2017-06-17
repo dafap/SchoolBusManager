@@ -7,8 +7,8 @@
  * @filesource segment-members.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2016
- * @version 2016-2.1.1
+ * @date 17 juin 2017
+ * @version 2017-2.3.3
  */
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\ArrayAdapter;
@@ -50,7 +50,7 @@ if (empty($segment)) {
     } else {
         $url_populate = false;
     }
-    $actions=[];
+    $actions = [];
     if ($url_populate) {
         $actions['populate'] = [
             
@@ -132,8 +132,9 @@ if ($this->message) {
                 'even',
                 'odd'
             ])->next() . '"><td>' . $member['email_address'] . '</td>';
+            $i = 0;
             foreach ($member['merge_fields'] as $value) {
-                $ligne .= '<td>' . $value . '</td>';
+                $ligne .= ($i ++ < 2 ? '<td>' : '<td class="centre">') . $value . '</td>';
             }
             $ligne .= '<td>' . etat($member['status']) . '</td></tr>';
             echo $ligne;
