@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2017
- * @version 2017-2.3.3
+ * @date 21 juin 2017
+ * @version 2017-2.3.4
  */
 use SbmBase\Model\Session;
 
@@ -153,9 +153,9 @@ echo $this->flashMessenger()->render('default');
             $pictogrammes = [];
             $ga = is_null($row['responsable2Id']);
             if (array_key_exists('mailchimp', $row)) {
-                $nePasRelancer = $row['mailchimp'] == 0 || empty($email);
+                $nePasRelancer = $row['mailchimp'] == 0;
             } else {
-                $nePasRelancer = empty($email);
+                $nePasRelancer = false;
             }
             if ($row['millesime'] == Session::get('millesime')) {
                 $buttons = [

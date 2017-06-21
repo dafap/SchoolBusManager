@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2017
- * @version 2017-2.3.3
+ * @date 21 juin 2017
+ * @version 2017-2.3.4
  */
 namespace SbmGestion\Controller;
 
@@ -1017,6 +1017,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
+            $this->flashMessenger()->addErrorMessage('Echec');
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
@@ -1034,6 +1035,7 @@ class EleveController extends AbstractActionController
             $eleveId = $prg['eleveId'];
             $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
             $tEleves->setMailchimp($eleveId, $flag);
+            $this->flashMessenger()->addSuccessMessage('Changement effectué');
         }
         try {
             return $this->redirectToOrigin()->back();
