@@ -72,7 +72,7 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Entrée des services de la CCDA en consultation
+     * Entrée des services de l'organisateur en consultation
      *
      * @return \Zend\View\Model\ViewModel
      */

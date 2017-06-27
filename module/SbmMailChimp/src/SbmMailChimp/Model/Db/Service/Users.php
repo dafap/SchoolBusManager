@@ -7,8 +7,8 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 17 juin 2017
+ * @version 2017-2.3.3
  */
 namespace SbmMailChimp\Model\Db\Service;
 
@@ -110,7 +110,8 @@ class Users implements FactoryInterface
             's' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'e.eleveId = s.eleveId', [])
             ->where([
-            's.millesime' => $this->millesime
+            's.millesime' => $this->millesime,
+            'e.mailchimp' => 1
         ])
             ->group([
             'r.email'
@@ -147,6 +148,12 @@ class Users implements FactoryInterface
         }
         //die($this->getSqlString($select));
         $statement = $this->sql->prepareStatementForSqlObject($select);
+        // TEST
+        //$result = $statement->execute();
+        //foreach ($result as $member) {
+        //    var_dump($member);
+        //}
+        //die();
         return $statement->execute();
     }
 
@@ -215,6 +222,7 @@ class Users implements FactoryInterface
     {
         $where = new Where();
         $where->equalTo('s3.millesime', $this->millesime - 1)
+            ->literal('e3.mailchimp = 1')
             ->equalTo('c3.niveau', 8)
             ->isNull('c3.suivantId');
         $select = $this->sql->select([
@@ -243,6 +251,7 @@ class Users implements FactoryInterface
     {
         $where = new Where();
         $where->equalTo('s4.millesime', $this->millesime - 1)
+            ->literal('e4.mailchimp = 1')
             ->nest()
             ->notEqualTo('c4.niveau', 8)->or->isNotNull('c4.suivantId')->unnest();
         $select = $this->sql->select([

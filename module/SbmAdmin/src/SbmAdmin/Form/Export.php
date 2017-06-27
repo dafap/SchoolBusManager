@@ -94,7 +94,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                 'id' => 'id_ccda'
             ],
             'options' => [
-                'label' => 'Code CCDA'
+                'label' => 'Code organisateur'
             ]
         ]);
         $this->add([

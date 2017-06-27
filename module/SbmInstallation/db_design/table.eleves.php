@@ -9,8 +9,8 @@
  * @filesource table.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 27 juin 2017
+ * @version 2017-2.3.3
  */
 return array(
     'name' => 'eleves',
@@ -22,6 +22,7 @@ return array(
         'fields' => array(
             'eleveId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'mailchimp' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'dateCreation' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'nom' => 'varchar(30) NOT NULL',

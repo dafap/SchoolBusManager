@@ -8,8 +8,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
- * @version 2016-2.2.1
+ * @date 17 juin 2017
+ * @version 2017-2.3.3
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -129,6 +129,23 @@ class Eleves extends AbstractSbmTable
         $oData->exchangeArray(array(
             'eleveId' => $eleveId,
             'selection' => $selection
+        ));
+        parent::saveRecord($oData);
+    }
+
+    /**
+     * Marque le champ `mailchimp` de la valeur de $mailchimp
+     *
+     * @param int $eleveId
+     * @param bool $mailchimp
+     *            0 ou 1
+     */
+    public function setMailchimp($eleveId, $mailchimp)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(array(
+            'eleveId' => $eleveId,
+            'mailchimp' => $mailchimp
         ));
         parent::saveRecord($oData);
     }

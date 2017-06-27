@@ -8,8 +8,8 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 21 juin 2017
+ * @version 2017-2.3.4
  */
 namespace SbmCommun\Form;
 
@@ -118,7 +118,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'm1',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'circuit-m1',
                 'title' => 'Lundi, mardi, jeudi, vendredi. Format hh:mm',
@@ -140,7 +140,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 's1',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'circuit-s1',
                 'title' => 'Lundi, mardi, jeudi, vendredi. Format hh:mm',
@@ -162,7 +162,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'm2',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'circuit-m2',
                 'title' => 'Format hh:mm',
@@ -184,7 +184,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 's2',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'circuit-s2',
                 'title' => 'Format hh:mm',
@@ -206,7 +206,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 'm3',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'circuit-m3',
                 'title' => 'Format hh:mm',
@@ -228,7 +228,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         ));
         $this->add(array(
             'name' => 's3',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'circuit-s3',
                 'title' => 'Format hh:mm',

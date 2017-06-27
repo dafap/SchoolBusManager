@@ -8,8 +8,8 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 27 juin 2017
+ * @version 2017-2.3.4
  */
 namespace SbmCommun\Form;
 
@@ -114,10 +114,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un opérateur',
-                'value_options' => array(
-                    'CCDA' => 'CCDA',
-                    'CG12' => 'CG12'
-                ),
+                'value_options' => [],
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )

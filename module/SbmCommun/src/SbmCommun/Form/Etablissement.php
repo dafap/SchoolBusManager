@@ -8,8 +8,8 @@
  * @filesource Etablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 21 juin 2017
+ * @version 2017-2.3.4
  */
 namespace SbmCommun\Form;
 
@@ -274,7 +274,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'name' => 'hMatin',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hMatin',
                 'title' => 'Format hh:mm',
@@ -296,7 +296,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'name' => 'hMidi',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hMidi',
                 'title' => 'Format hh:mm',
@@ -318,7 +318,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'name' => 'hAMidi',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hAMidi',
                 'title' => 'Format hh:mm',
@@ -340,7 +340,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'name' => 'hSoir',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hSoir',
                 'title' => 'Format hh:mm',
@@ -362,7 +362,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'name' => 'hGarderieOMatin',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hMatin',
                 'title' => 'Format hh:mm',
@@ -384,7 +384,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'name' => 'hGarderieFSoir',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hMidi',
                 'title' => 'Format hh:mm',
@@ -406,7 +406,7 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
         ));
         $this->add(array(
             'name' => 'hGarderieFMidi',
-            'type' => 'Zend\Form\Element\Time',
+            'type' => 'SbmCommun\Form\Element\Time',
             'attributes' => array(
                 'id' => 'etablissement-hAMidi',
                 'title' => 'Format hh:mm',

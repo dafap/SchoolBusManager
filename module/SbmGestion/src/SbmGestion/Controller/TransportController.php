@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2016
- * @version 2016-2.2.2
+ * @date 27 juin 2017
+ * @version 2017-2.3.4
  */
 namespace SbmGestion\Controller;
 
@@ -1868,7 +1868,13 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormService();
-        $form->modifFormForEdit()->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
+        $form->modifFormForEdit()
+            ->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
+            ->setValueOptions('operateur', [
+            'SBM' => 'Organisateur',
+            'CG' => 'Conseil départemental',
+            'CR' => 'Conseil régional'
+        ]);
         $params = array(
             'data' => array(
                 'table' => 'services',
@@ -1983,7 +1989,12 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormService();
-        $form->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
+        $form->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
+            ->setValueOptions('operateur', [
+            'SBM' => 'Organisateur',
+            'CG' => 'CG',
+            'CR' => 'Conseil régional'
+        ]);
         $params = array(
             'data' => array(
                 'table' => 'services',
@@ -2476,6 +2487,7 @@ class TransportController extends AbstractActionController
                     'Création d\'une nouvelle station'
                 ),
                 'ptStations' => $ptStations,
+                'url_api' => $this->cartographie_manager->get('google_api')['js'],
                 'config' => $configCarte
             ));
             $view->setTemplate('sbm-gestion/transport/station-localisation.phtml');

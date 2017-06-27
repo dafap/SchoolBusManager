@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 nov 2016
- * @version 2016-2.2.3
+ * @date 21 juin 2017
+ * @version 2017-2.3.4
  */
 use SbmBase\Model\Session;
 
@@ -144,12 +144,19 @@ echo $this->flashMessenger()->render('default');
 					<th>Classe</th>
 					<th>Services</th>
 					<th>Garde alternée</th>
+					<th class="centre">Réinscription<br>prévue
+					</th>
 					<th></th>
 				</tr>
 			    <?php foreach ($liste as $row) : ?>
 			    <?php
             $pictogrammes = [];
             $ga = is_null($row['responsable2Id']);
+            if (array_key_exists('mailchimp', $row)) {
+                $nePasRelancer = $row['mailchimp'] == 0;
+            } else {
+                $nePasRelancer = false;
+            }
             if ($row['millesime'] == Session::get('millesime')) {
                 $buttons = [
                     'modifier' => [
@@ -206,6 +213,33 @@ echo $this->flashMessenger()->render('default');
                     $services[$affectation['service2Id']] = $affectation['service2Id'];
                 }
             }
+            // if (! empty($email)) {
+            if ($nePasRelancer) {
+                $url_change_reinscription = $this->url('sbmgestion/eleve', [
+                    'action' => 'eleve-reinscription-oui',
+                    'page' => $this->page
+                ]);
+                $reinscription = '<i class="fam-cancel" title="Cet élève ne doit pas se réinscrire"></i>';
+                $buttons['mailchimp'] = [
+                    'class' => 'fam-car-add',
+                    'formaction' => $url_change_reinscription,
+                    'title' => 'Indiquer que cet élève devrait se réinscrire'
+                ];
+            } else {
+                $url_change_reinscription = $this->url('sbmgestion/eleve', [
+                    'action' => 'eleve-reinscription-non',
+                    'page' => $this->page
+                ]);
+                $reinscription = '<i class="fam-tick" title="Cet élève devrait se réinscrire"></i>';
+                $buttons['mailchimp'] = [
+                    'class' => 'fam-car-delete',
+                    'formaction' => $url_change_reinscription,
+                    'title' => 'Indiquer que cet élève ne doit pas se réinscrire'
+                ];
+            }
+            // } else {
+            // $reinscription = '<i class="fam-cancel" title="Ne reçoit pas de courrier par Mailchimp"></i>';
+            // }
             ?>
 			    <tr
 					class="<?php echo $tr_css . ' ' . $this->cycle(["even", "odd"])->next();?>">
@@ -221,6 +255,7 @@ echo $this->flashMessenger()->render('default');
 					<td><?php echo implode(' / ', $services);?></td>
 					<td><?php echo $this->data['fnc_ga']($key == 'resp1' ? $row['responsable2Id'] : $row['responsable1Id']);?></td>
 					<?php endif;?>
+					<td class="centre"><?php echo $reinscription; ?></td>
 					<td><?php  echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 			    <?php endforeach; ?>
