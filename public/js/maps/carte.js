@@ -2,13 +2,16 @@
  * Présente une carte avec une liste de marqueurs : aucune action sur cette carte.
  * La carte est centrée en CENTRE_LAT, CENTRE_LNG et le eoom est INI_ZOO. 
  * Ces constantes doivent être définies.
+ *
+ * Cette version est mise au point pour un site en https.
+ * (voir ligne 40)
  * 
  * @project sbm
  * @filesource localisation.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 1 nov. 2016
+ * @version 2016-2.2.2-https
  */
 function initialiser(tMarkers) {
     // initialisation des paramètres de la carte
@@ -34,7 +37,7 @@ function initialiser(tMarkers) {
     // define OSM map type pointing at the OpenStreetMap tile server
     oCarte.mapTypes.set("OSM", new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
-            return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+            return "https://a.tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
         },
         tileSize: new google.maps.Size(256,256),
         name: "OpenStreetMap",
