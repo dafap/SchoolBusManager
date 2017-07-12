@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 12 juill. 2017
+ * @version 2017-2.3.5
  */
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -43,74 +43,85 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $stations = $this->paginator->getCurrentItems();
-$url_origine = $this->url('sbmgestion/transport', array(
+$url_origine = $this->url('sbmgestion/transport', [
     'action' => 'station-liste',
     'page' => $this->page
-));
-$url_ajouter = $this->url('sbmgestion/transport', array(
+]);
+$url_ajouter = $this->url('sbmgestion/transport', [
     'action' => 'station-ajout',
     'page' => $this->page
-));
-$url_carte = $this->url('sbmcarte', array(
+]);
+$url_carte = $this->url('sbmcarte', [
     'action' => 'stations'
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
+]);
+$url_rapports = $this->url('sbmgestion/transport', [
     'action' => 'station-pdf',
     'page' => $this->page
-));
-$url_nondesservies = $this->url('sbmgestion/transport', array(
+]);
+$url_nondesservies = $this->url('sbmgestion/transport', [
     'action' => 'stations-non-desservies',
     'page' => $this->page
-));
-$url_localiser = $this->url('sbmgestion/transport', array(
+]);
+$url_localiser = $this->url('sbmgestion/transport', [
     'action' => 'station-localisation',
     'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/transport', array(
+]);
+$url_edit = $this->url('sbmgestion/transport', [
     'action' => 'station-edit',
     'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/transport', array(
+]);
+$url_delete = $this->url('sbmgestion/transport', [
     'action' => 'station-suppr',
     'page' => $this->page
-));
-$url_relation = $this->url('sbmgestion/transport', array(
+]);
+$url_relation = $this->url('sbmgestion/transport', [
     'action' => 'station-service',
     'id' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
+]);
+$url_group = $this->url('sbmgestion/transport', [
     'action' => 'station-group',
     'page' => $this->page
-));
+]);
+$url_suppr_doublon = $this->url('sbmgestion/transport', [
+    'action' => 'station-doublon',
+    'page' => $this->page
+]);
 $url_retour = $this->url('sbmgestion/transport');
-$hiddens = array('back' => $url_origine);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
+$hiddens = [
+    'back' => $url_origine
+];
+$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', [
     'action' => 'station-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'nondesservies' => array(
+    'nondesservies' => [
         'class' => 'fam-link-break',
         'formaction' => $url_nondesservies,
         'title' => 'Non desservies'
-    ),
-    'carte' => array(
+    ],
+    'doublons' => [
+        'class' => 'fam-text-replace',
+        'formaction' => $url_suppr_doublon,
+        'title' => 'Supprimer un doublon'
+    ],
+    'carte' => [
         'class' => 'fam-map-magnify',
         'formaction' => $url_carte,
         'title' => 'Carte des points d\'arrêt'
-    ),    
-    'ajouter' => array(
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvelle station'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des stations</h1>
 <div id="liste-wrapper">
@@ -128,7 +139,7 @@ echo $this->flashMessenger()->render('default');
 		<table class="stations">
 			<tbody>
 				<tr>
-				    <th></th>
+					<th></th>
 					<th>Commune</th>
 					<th>Nom</th>
 					<th>Visible</th>
@@ -141,17 +152,17 @@ echo $this->flashMessenger()->render('default');
             <?php
                 $pt = new Point($station->x, $station->y);
                 $ptOk = $this->projection->isValid($pt, 'etablissements'); // stations et etablissements ont la même config
-                $nbInscrits = StdLib::getParamR(array(
+                $nbInscrits = StdLib::getParamR([
                     $station->stationId,
                     'total'
-                ), $this->t_nb_inscrits, 0);
+                ], $this->t_nb_inscrits, 0);
                 $exces = ! $station->ouverte && ($nbInscrits > 0);
-                // construction des JS pour selection                
+                // construction des JS pour selection
                 $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $station->stationId);
                 $jsCallback .= sprintf("$modele\n", $station->stationId, $station->stationId);
                 ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next(); if ($exces) echo ' exces';?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next(); if ($exces) echo ' exces';?>">
 					<td>
 					<?php if (!$ptOk) : ?>
 					   <i class="fam-error"></i>
@@ -165,37 +176,37 @@ echo $this->flashMessenger()->render('default');
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $station->stationId, $station->selection)?></td>
 					<td class="boutons">
             <?php
-                $hiddens = array(
+                $hiddens = [
                     'stationId' => $station->stationId,
                     'origine' => $url_origine
-                );
-                $buttons = array(
-                    'modifier' => array(
+                ];
+                $buttons = [
+                    'modifier' => [
                         'class' => 'fam-pencil',
                         'formaction' => $url_edit,
                         'title' => 'modifier'
-                    ),
-                    'localiser' => array(
+                    ],
+                    'localiser' => [
                         'class' => $ptOk ? 'fam-map-magnify' : 'fam-map-add',
                         'formaction' => $url_localiser,
                         'title' => $ptOk ? 'position sur la carte' : 'position manquante'
-                    ),
-                    'supprimer' => array(
+                    ],
+                    'supprimer' => [
                         'class' => 'fam-delete',
                         'formaction' => $url_delete,
                         'title' => 'supprimer'
-                    ),
-                    'services' => array(
+                    ],
+                    'services' => [
                         'class' => 'fam-table-relationship',
                         'formaction' => $url_relation,
                         'title' => sprintf('circuits desservant la station %s - %s', $station->nom, $station->commune)
-                    ),
-                    'eleves' => array(
+                    ],
+                    'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves de la station %s - %s', $station->nom, $station->commune)
-                    )
-                );
+                    ]
+                ];
                 echo $this->listeLigneActions($station->stationId, $hiddens, $buttons);
                 ?>
 			        </td>

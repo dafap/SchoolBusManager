@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juin 2017
- * @version 2017-2.3.3
+ * @date 12 juil. 2017
+ * @version 2017-2.3.5
  */
 namespace SbmGestion\Controller;
 
@@ -37,8 +37,9 @@ use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Model\Mvc\Controller\EditResponse;
 use SbmCartographie\Model\Point;
 use SbmGestion\Form\EtablissementServiceSuppr as FormEtablissementServiceSuppr;
-use SbmGestion\Form\SbmGestion\Form;
+use SbmGestion\Form\StationDoublon;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
+use SbmGestion\Model\StationSupprDoublon;
 
 class TransportController extends AbstractActionController
 {
@@ -69,23 +70,23 @@ class TransportController extends AbstractActionController
             $form->setValueOptions('stationId', $config['db_manager']->get('Sbm\Db\Select\Stations')
                 ->ouvertes());
             $form->setValueOptions('serviceId', $config['db_manager']->get('Sbm\Db\Select\Services'));
-        }, array(
+        }, [
             'serviceId',
             'stationId'
-        ));
+        ]);
         if ($args instanceof Response)
             return $args;
         
         $args['where']->equalTo('millesime', $this->getFromSession('millesime'));
         $auth = $this->authenticate->by('email');
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator($args['where']),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
             'criteres_form' => $args['form'],
             'admin' => $auth->getCategorieId() > 253
-        ));
+        ]);
     }
 
     /**
@@ -102,22 +103,22 @@ class TransportController extends AbstractActionController
             ->setValueOptions('stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
             ->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'circuits',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Circuits',
                 'id' => 'circuitId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         try {
             $r = $this->editData($this->db_manager, $params);
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
                 $this->flashMessenger()->addWarningMessage('Impossible ! Cet arrêt est déjà sur ce circuit.');
-                $r = new EditResponse('warning', array());
+                $r = new EditResponse('warning', []);
                 ;
             } else {
                 throw new \Zend\Db\Adapter\Exception\InvalidQueryException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -130,17 +131,17 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'circuit-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'circuitId' => $r->getResult()
-                    ));
+                    ]);
                     break;
             }
         }
@@ -156,31 +157,31 @@ class TransportController extends AbstractActionController
     public function circuitSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm(array(
+        $form = new ButtonForm([
             'id' => null
-        ), array(
-            'supproui' => array(
+        ], [
+            'supproui' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
+            ],
+            'supprnon' => [
                 'class' => 'confirm',
                 'value' => 'Abandonner'
-            )
-        ));
-        $params = array(
-            'data' => array(
+            ]
+        ]);
+        $params = [
+            'data' => [
                 'alias' => 'Sbm\Db\Table\Circuits',
                 'id' => 'circuitId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $vue_circuits = $this->db_manager->get('Sbm\Db\Vue\Circuits');
         $r = $this->supprData($this->db_manager, $params, function ($id, $tableCircuits) use($vue_circuits) {
-            return array(
+            return [
                 'id' => $id,
                 'data' => $vue_circuits->getRecord($id)
-            );
+            ];
         });
         if ($r instanceof Response) {
             return $r;
@@ -189,18 +190,18 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'circuit-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'circuitId' => StdLib::getParam('id', $r->getResult())
-                    ));
+                    ]);
                     break;
             }
         }
@@ -220,14 +221,14 @@ class TransportController extends AbstractActionController
             ->setValueOptions('stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
             ->ouvertes())
             ->setValueOptions('semaine', Semaine::getJours());
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'circuits',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Circuits'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         try {
             $r = $this->addData($this->db_manager, $params);
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
@@ -245,17 +246,17 @@ class TransportController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'circuit-liste',
                     'page' => $currentPage
-                ));
+                ]);
                 break;
             default:
-                return new ViewModel(array(
+                return new ViewModel([
                     'form' => $form->prepare(),
                     'page' => $currentPage,
                     'circuitId' => null
-                ));
+                ]);
                 break;
         }
     }
@@ -360,7 +361,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -368,21 +369,21 @@ class TransportController extends AbstractActionController
         $circuitId = StdLib::getParam('circuitId', $args, - 1);
         if ($circuitId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'circuit-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
-        return new ViewModel(array(
-            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false), array(
+        return new ViewModel([
+            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'circuit' => $circuit,
             'page' => $currentPage,
             'circuitId' => $circuitId
-        ));
+        ]);
     }
 
     /**
@@ -398,10 +399,10 @@ class TransportController extends AbstractActionController
         $dernierMillesime = $this->db_manager->get('Sbm\Db\System\Calendar')->getDernierMillesime();
         if ($dernierMillesime != Session::get('millesime')) {
             $this->flashMessenger()->addInfoMessage('La génération des circuits d\'une nouvelle année ne peut se faire que si cette année est active.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'circuit-liste',
                 'page' => 1
-            ));
+            ]);
         }
         $millesime = $dernierMillesime - 1;
         $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
@@ -410,10 +411,10 @@ class TransportController extends AbstractActionController
         $resultset = $tCircuits->fetchAll($where);
         if ($resultset->count()) {
             $this->flashMessenger()->addErrorMessage('Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'circuit-liste',
                 'page' => 1
-            ));
+            ]);
         }
         unset($where);
         $where = new Where();
@@ -425,10 +426,10 @@ class TransportController extends AbstractActionController
             $tCircuits->saveRecord($row);
         }
         $this->flashMessenger()->addSuccessMessage('Les circuits de la dernière année scolaire sont générés.');
-        return $this->redirect()->toRoute('sbmgestion/transport', array(
+        return $this->redirect()->toRoute('sbmgestion/transport', [
             'action' => 'circuit-liste',
             'page' => 1
-        ));
+        ]);
     }
 
     /**
@@ -439,15 +440,15 @@ class TransportController extends AbstractActionController
     public function circuitPdfAction()
     {
         $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
-        $criteresForm = array(
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'circuits'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-liste'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -457,7 +458,7 @@ class TransportController extends AbstractActionController
     public function circuitGroupPdfAction()
     {
         $db_manager = $this->db_manager;
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) use($db_manager) {
@@ -477,13 +478,13 @@ class TransportController extends AbstractActionController
                     ->unnest();
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -503,13 +504,13 @@ class TransportController extends AbstractActionController
         if ($args instanceof Response)
             return $args;
         
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $this->db_manager->get('Sbm\Db\Vue\Classes')->paginator($args['where']),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byClasse(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_classes', 15),
             'criteres_form' => $args['form']
-        ));
+        ]);
     }
 
     /**
@@ -523,15 +524,15 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->db_manager->get('Sbm\Db\Select\Classes'));
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'classes',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Classes',
                 'id' => 'classeId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         $r = $this->editData($this->db_manager, $params);
         if ($r instanceof Response) {
@@ -541,17 +542,17 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'classe-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'classeId' => $r->getResult()
-                    ));
+                    ]);
                     break;
             }
         }
@@ -567,39 +568,39 @@ class TransportController extends AbstractActionController
     public function classeSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm(array(
+        $form = new ButtonForm([
             'id' => null
-        ), array(
-            'supproui' => array(
+        ], [
+            'supproui' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
+            ],
+            'supprnon' => [
                 'class' => 'confirm',
                 'value' => 'Abandonner'
-            )
-        ));
-        $params = array(
-            'data' => array(
+            ]
+        ]);
+        $params = [
+            'data' => [
                 'alias' => 'Sbm\Db\Table\Classes',
                 'id' => 'classeId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         try {
             $r = $this->supprData($this->db_manager, $params, function ($id, $tableClasses) {
-                return array(
+                return [
                     'id' => $id,
                     'data' => $tableClasses->getRecord($id)
-                );
+                ];
             });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette classe parce que certains élèves y sont inscrits.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'classe-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         
         if ($r instanceof Response) {
@@ -609,18 +610,18 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'classe-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'classeId' => StdLib::getParam('id', $r->getResult())
-                    ));
+                    ]);
                     break;
             }
         }
@@ -637,14 +638,14 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions('suivantId', $this->db_manager->get('Sbm\Db\Select\Classes'));
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'classes',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Classes'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $r = $this->addData($this->db_manager, $params);
         switch ($r) {
             case $r instanceof Response:
@@ -653,17 +654,17 @@ class TransportController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'classe-liste',
                     'page' => $currentPage
-                ));
+                ]);
                 break;
             default:
-                return new ViewModel(array(
+                return new ViewModel([
                     'form' => $form->prepare(),
                     'page' => $currentPage,
                     'classeId' => null
-                ));
+                ]);
                 break;
         }
     }
@@ -681,7 +682,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -694,22 +695,22 @@ class TransportController extends AbstractActionController
         $classeId = StdLib::getParam('classeId', $args, - 1);
         if ($classeId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'classe-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
-        return new ViewModel(array(
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byClasse($classeId), array(
+        return new ViewModel([
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byClasse($classeId), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
             'classe' => $this->db_manager->get('Sbm\Db\Table\Classes')->getRecord($classeId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'classeId' => $classeId
-        ));
+        ]);
     }
 
     /**
@@ -720,15 +721,15 @@ class TransportController extends AbstractActionController
     public function classePdfAction()
     {
         $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
-        $criteresForm = array(
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'classes'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'classe-liste'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -737,7 +738,7 @@ class TransportController extends AbstractActionController
      */
     public function classeGroupPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -746,13 +747,13 @@ class TransportController extends AbstractActionController
                 $where->equalTo('classeId', $classeId);
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'classe-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -774,13 +775,13 @@ class TransportController extends AbstractActionController
         if ($args instanceof Response)
             return $args;
             // die(var_dump($args['form']));
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $this->db_manager->get('Sbm\Db\Table\Communes')->paginator($args['where']),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCommune(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_communes', 20),
             'criteres_form' => $args['form']
-        ));
+        ]);
     }
 
     /**
@@ -794,15 +795,15 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormCommune();
         $form->modifFormForEdit();
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'communes',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Communes',
                 'id' => 'communeId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         $r = $this->editData($this->db_manager, $params);
         if ($r instanceof Response) {
@@ -812,17 +813,17 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'commune-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'communeId' => $r->getResult()
-                    ));
+                    ]);
                     break;
             }
         }
@@ -838,39 +839,39 @@ class TransportController extends AbstractActionController
     public function communeSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm(array(
+        $form = new ButtonForm([
             'id' => null
-        ), array(
-            'supproui' => array(
+        ], [
+            'supproui' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
+            ],
+            'supprnon' => [
                 'class' => 'confirm',
                 'value' => 'Abandonner'
-            )
-        ));
-        $params = array(
-            'data' => array(
+            ]
+        ]);
+        $params = [
+            'data' => [
                 'alias' => 'Sbm\Db\Table\Communes',
                 'id' => 'communeId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         try {
             $r = $this->supprData($this->db_manager, $params, function ($id, $tableCommunes) {
-                return array(
+                return [
                     'id' => $id,
                     'data' => $tableCommunes->getRecord($id)
-                );
+                ];
             });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette commune car un enregistrement l\'utilise.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'commune-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         
         if ($r instanceof Response) {
@@ -880,18 +881,18 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'commune-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'communeId' => StdLib::getParam('id', $r->getResult())
-                    ));
+                    ]);
                     break;
             }
         }
@@ -907,14 +908,14 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormCommune();
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'communes',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Communes'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $r = $this->addData($this->db_manager, $params);
         switch ($r) {
             case $r instanceof Response:
@@ -923,17 +924,17 @@ class TransportController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'commune-liste',
                     'page' => $currentPage
-                ));
+                ]);
                 break;
             default:
-                return new ViewModel(array(
+                return new ViewModel([
                     'form' => $form->prepare(),
                     'page' => $currentPage,
                     'communeId' => null
-                ));
+                ]);
                 break;
         }
     }
@@ -951,7 +952,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -964,22 +965,22 @@ class TransportController extends AbstractActionController
         $communeId = StdLib::getParam('communeId', $args, - 1);
         if ($communeId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'commune-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
-        return new ViewModel(array(
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byCommune($communeId), array(
+        return new ViewModel([
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byCommune($communeId), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
             'commune' => $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord($communeId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'communeId' => $communeId
-        ));
+        ]);
     }
 
     /**
@@ -990,15 +991,15 @@ class TransportController extends AbstractActionController
     public function communePdfAction()
     {
         $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
-        $criteresForm = array(
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'communes'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'commune-liste'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -1007,7 +1008,7 @@ class TransportController extends AbstractActionController
      */
     public function communeGroupPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -1016,13 +1017,13 @@ class TransportController extends AbstractActionController
                 $where->equalTo('communeId', $communeId);
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'commune-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -1053,20 +1054,20 @@ class TransportController extends AbstractActionController
      */
     public function etablissementListeAction()
     {
-        $args = $this->initListe('etablissements', null, array(), array(
+        $args = $this->initListe('etablissements', null, [], [
             'localisation' => 'Literal:' . $this->critereLocalisation()
-        ));
+        ]);
         if ($args instanceof Response)
             return $args;
         
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->paginator($args['where']),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_etablissements', 10),
             'criteres_form' => $args['form'],
             'projection' => $this->cartographie_manager->get('SbmCarto\Projection')
-        ));
+        ]);
     }
 
     /**
@@ -1086,15 +1087,15 @@ class TransportController extends AbstractActionController
             ->visibles())
             ->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->desservies());
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'etablissements',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Etablissements',
                 'id' => 'etablissementId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         $r = $this->editData($this->db_manager, $params);
         if ($r instanceof Response) {
@@ -1104,17 +1105,17 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'etablissement-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'etablissementId' => $r->getResult()
-                    ));
+                    ]);
                     break;
             }
         }
@@ -1130,39 +1131,39 @@ class TransportController extends AbstractActionController
     public function etablissementSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm(array(
+        $form = new ButtonForm([
             'id' => null
-        ), array(
-            'supproui' => array(
+        ], [
+            'supproui' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
+            ],
+            'supprnon' => [
                 'class' => 'confirm',
                 'value' => 'Abandonner'
-            )
-        ));
-        $params = array(
-            'data' => array(
+            ]
+        ]);
+        $params = [
+            'data' => [
                 'alias' => 'Sbm\Db\Table\Etablissements',
                 'id' => 'etablissementId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $vueEtablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
         try {
             $r = $this->supprData($this->db_manager, $params, function ($id, $tableEtablissements) use($vueEtablissement) {
-                return array(
+                return [
                     'id' => $id,
                     'data' => $vueEtablissement->getRecord($id)
-                );
+                ];
             });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer cet établissement car un enregistrement l\'utilise.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'etablissement-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         
         if ($r instanceof Response) {
@@ -1172,18 +1173,18 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'etablissement-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'etablissementId' => StdLib::getParam('id', $r->getResult())
-                    ));
+                    ]);
                     break;
             }
         }
@@ -1205,14 +1206,14 @@ class TransportController extends AbstractActionController
             ->visibles())
             ->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->desservies());
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'etablissements',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Etablissements'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $r = $this->addData($this->db_manager, $params);
         switch ($r) {
             case $r instanceof Response:
@@ -1220,10 +1221,10 @@ class TransportController extends AbstractActionController
                 break;
             case 'error':
             case 'warning':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
-                ));
+                ]);
                 break;
             case 'success':
                 $viewmodel = $this->etablissementLocalisationAction($form->getData()->etablissementId, $currentPage);
@@ -1231,11 +1232,11 @@ class TransportController extends AbstractActionController
                 return $viewmodel;
                 break;
             default:
-                return new ViewModel(array(
+                return new ViewModel([
                     'form' => $form->prepare(),
                     'page' => $currentPage,
                     'etablissementId' => null
-                ));
+                ]);
                 break;
         }
     }
@@ -1253,7 +1254,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -1266,22 +1267,22 @@ class TransportController extends AbstractActionController
         $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
         if ($etablissementId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'etablissement-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
-        return new ViewModel(array(
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byEtablissement($etablissementId), array(
+        return new ViewModel([
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byEtablissement($etablissementId), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
             'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'etablissementId' => $etablissementId
-        ));
+        ]);
     }
 
     /**
@@ -1291,26 +1292,26 @@ class TransportController extends AbstractActionController
      */
     public function etablissementPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
-            array(
-                'expressions' => array(
+            [
+                'expressions' => [
                     'localisation' => 'Literal:' . $this->critereLocalisation()
-                )
-            ),
+                ]
+            ],
             function ($where, $args) {
                 return $where->equalTo('millesime', Session::get('millesime'));
             }
-        );
-        $criteresForm = array(
+        ];
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'etablissements'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-liste'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -1319,7 +1320,7 @@ class TransportController extends AbstractActionController
      */
     public function etablissementGroupPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -1328,13 +1329,13 @@ class TransportController extends AbstractActionController
                 $where->equalTo('etablissementId', $etablissementId);
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -1343,20 +1344,20 @@ class TransportController extends AbstractActionController
      */
     public function etablissementServicePdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $where->equalTo('etablissementId', StdLib::getParam('etablissementId', $args, - 1));
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-service'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -1365,7 +1366,7 @@ class TransportController extends AbstractActionController
      */
     public function etablissementServiceGroupPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -1377,13 +1378,13 @@ class TransportController extends AbstractActionController
                     ->equalTo('serviceId', $serviceId);
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-service-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -1399,24 +1400,24 @@ class TransportController extends AbstractActionController
                 return $prg;
             } elseif ($prg === false) {
                 $this->flashMessenger()->addWarningMessage('Recommencez.');
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
-                ));
+                ]);
             } else {
                 $args = $prg;
                 if (array_key_exists('cancel', $args)) {
                     $this->flashMessenger()->addWarningMessage('Localisation abandonnée.');
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'etablissement-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                 }
                 if (! array_key_exists('etablissementId', $args)) {
                     $this->flashMessenger()->addErrorMessage('Action  interdite');
-                    return $this->redirect()->toRoute('login', array(
+                    return $this->redirect()->toRoute('login', [
                         'action' => 'logout'
-                    ));
+                    ]);
                 }
             }
             $etablissementId = $args['etablissementId'];
@@ -1426,25 +1427,25 @@ class TransportController extends AbstractActionController
         $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
         $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
         $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
-        $form = new LatLng(array(
-            'etablissementId' => array(
+        $form = new LatLng([
+            'etablissementId' => [
                 'id' => 'etablissementId'
-            )
-        ), array(
-            'submit' => array(
+            ]
+        ], [
+            'submit' => [
                 'class' => 'button default submit left-95px',
                 'value' => 'Enregistrer la localisation'
-            ),
-            'cancel' => array(
+            ],
+            'cancel' => [
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
-            )
-        ), $configCarte['valide']);
+            ]
+        ], $configCarte['valide']);
         $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/transport', array(
+            ->fromRoute('sbmgestion/transport', [
             'action' => 'etablissement-localisation',
             'page' => $currentPage
-        )));
+        ]));
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -1453,18 +1454,18 @@ class TransportController extends AbstractActionController
                 $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
                 // enregistre dans la fiche etablissement
                 $oData = $tEtablissements->getObjData();
-                $oData->exchangeArray(array(
+                $oData->exchangeArray([
                     'etablissementId' => $etablissementId,
                     'x' => $point->getX(),
                     'y' => $point->getY()
-                ));
+                ]);
                 $tEtablissements->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage('La localisation de l\'établissement est enregistrée.');
                 $this->flashMessenger()->addWarningMessage('Attention ! Les distances des domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'etablissement-liste',
                     'page' => $currentPage
-                ));
+                ]);
             }
         }
         $etablissement = $tEtablissements->getRecord($etablissementId);
@@ -1478,20 +1479,20 @@ class TransportController extends AbstractActionController
         } else {
             $point = new Point($etablissement->x, $etablissement->y);
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-            $description .= trim(implode("\n", array(
+            $description .= trim(implode("\n", [
                 $etablissement->adresse1,
                 $etablissement->adresse2
-            )), "\n");
+            ]), "\n");
             $description .= "\n" . $etablissement->codePostal . ' ' . $commune->nom;
         }
         $description = str_replace("\n", "", nl2br($description));
-        $form->setData(array(
+        $form->setData([
             'etablissementId' => $etablissementId,
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
-        ));
+        ]);
         $tEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
-        $ptEtablissements = array();
+        $ptEtablissements = [];
         foreach ($tEtablissements->fetchAll() as $autreEtablissement) {
             if ($autreEtablissement->etablissementId != $etablissementId) {
                 $pt = new Point($autreEtablissement->x, $autreEtablissement->y);
@@ -1499,22 +1500,22 @@ class TransportController extends AbstractActionController
                 $ptEtablissements[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
             }
         }
-        return new ViewModel(array(
+        return new ViewModel([
             // 'pt' => $pt,
             'form' => $form->prepare(),
             'description' => $description,
-            'etablissement' => array(
+            'etablissement' => [
                 $etablissement->nom,
-                nl2br(trim(implode("\n", array(
+                nl2br(trim(implode("\n", [
                     $etablissement->adresse1,
                     $etablissement->adresse2
-                )))),
+                ]))),
                 $etablissement->codePostal . ' ' . $commune->nom
-            ),
+            ],
             'ptEtablissements' => $ptEtablissements,
             'url_api' => $this->cartographie_manager->get('google_api')['js'],
             'config' => $configCarte
-        ));
+        ]);
     }
 
     /**
@@ -1556,22 +1557,22 @@ class TransportController extends AbstractActionController
             $cancel = true;
         }
         if ($cancel) {
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'etablissement-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
         $table = $this->db_manager->get('Sbm\Db\Vue\EtablissementsServices');
         $where = new Where();
         $where->equalTo('etablissementId', $etablissementId)->equalTo('cir_millesime', Session::get('millesime'));
-        return new ViewModel(array(
+        return new ViewModel([
             'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
             'paginator' => $table->paginator($where),
             'count_per_page' => 15,
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement($etablissementId),
             'page' => $currentPage,
             'etablissementId' => $etablissementId
-        ));
+        ]);
     }
 
     /**
@@ -1609,23 +1610,23 @@ class TransportController extends AbstractActionController
             $cancel = true;
         }
         if ($cancel) {
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'service-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
         $table = $this->db_manager->get('Sbm\Db\Vue\EtablissementsServices');
-        return new ViewModel(array(
+        return new ViewModel([
             'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
-            'data' => $table->fetchAll(array(
+            'data' => $table->fetchAll([
                 'serviceId' => $serviceId,
                 'cir_millesime' => Session::get('millesime')
-            )),
+            ]),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissementGivenService($serviceId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'serviceId' => $serviceId
-        ));
+        ]);
     }
 
     /**
@@ -1640,7 +1641,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
             if (StdLib::getParam('origine', $args, false) === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
                 return $this->redirect()->toRoute('sbmgestion/transport'); // on n'est pas capable de savoir d'où l'on vient
@@ -1653,10 +1654,10 @@ class TransportController extends AbstractActionController
         $origine = StdLib::getParam('origine', $args, 'index');
         if (! is_null(StdLib::getParam('cancel', $args))) {
             $this->flashMessenger()->addWarningMessage('Abandon de la création d\'une relation entre un service et un établissement.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => $origine,
                 'page' => $currentPage
-            ));
+            ]);
         }
         $etablissementId = StdLib::getParam('etablissementId', $args, null);
         $serviceId = StdLib::getParam('serviceId', $args, null);
@@ -1679,23 +1680,23 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) {
                 $table->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage("Une relation entre un service et un établissement a été crée.");
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => $origine,
                     'page' => $currentPage
-                ));
+                ]);
             }
         } else {
-            $form->setData(array(
+            $form->setData([
                 'etablissementId' => $etablissementId,
                 'serviceId' => $serviceId,
                 'origine' => $origine
-            ));
+            ]);
         }
         if (! empty($serviceId)) {
             $form->setValueOptions('stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->surcircuit($serviceId, Session::get('millesime')));
         }
-        return new ViewModel(array(
+        return new ViewModel([
             'origine' => $origine,
             'form' => $form->prepare(),
             'page' => $currentPage,
@@ -1703,7 +1704,7 @@ class TransportController extends AbstractActionController
             'serviceId' => $serviceId,
             'etablissement' => $etablissement,
             'service' => $service
-        ));
+        ]);
     }
 
     /**
@@ -1720,7 +1721,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = array();
+            $args = [];
         } else {
             $args = $prg;
         }
@@ -1730,52 +1731,52 @@ class TransportController extends AbstractActionController
         $cancel = StdLib::getParam('cancel', $args, false);
         if ($origine == 'index' || $etablissementId === false || $serviceId == false) {
             $this->flashMessenger()->addErrorMessage("Action interdite.");
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'index',
                 'page' => $this->params('page', 1)
-            ));
+            ]);
         } elseif ($cancel) {
             $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => $origine,
                 'page' => $this->params('page', 1)
-            ));
+            ]);
         }
         $form = new FormEtablissementServiceSuppr();
         $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/transport', array(
+            ->fromRoute('sbmgestion/transport', [
             'action' => 'etablissement-service-suppr',
             'page' => $this->params('page', 1)
-        )));
+        ]));
         $table = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices');
         if (array_key_exists('submit', $args)) { // suppression confirmée
             $form->setData($args);
             if ($form->isValid()) {
-                $table->deleteRecord(array(
+                $table->deleteRecord([
                     'etablissementId' => $etablissementId,
                     'serviceId' => $serviceId
-                ));
+                ]);
                 $this->flashMessenger()->addSuccessMessage("L'enregistrement a été supprimé.");
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => $origine,
                     'page' => $this->params('page', 1)
-                ));
+                ]);
             }
         } else {
-            $form->setData(array(
+            $form->setData([
                 'etablissementId' => $etablissementId,
                 'serviceId' => $serviceId,
                 'origine' => $origine
-            ));
+            ]);
         }
-        return new ViewModel(array(
+        return new ViewModel([
             'etablissementId' => $etablissementId,
             'serviceId' => $serviceId,
             'origine' => $origine,
             'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
             'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
             'form' => $form->prepare()
-        ));
+        ]);
     }
 
     /**
@@ -1791,7 +1792,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -1805,17 +1806,17 @@ class TransportController extends AbstractActionController
         $serviceId = StdLib::getParam('serviceId', $args, - 1);
         if ($etablissementId == - 1 || $serviceId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'etablissement-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
-        $viewModel = new ViewModel(array(
+        $viewModel = new ViewModel([
             'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByEtablissementService($this->getFromSession('millesime'), $etablissementId, $serviceId, array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByEtablissementService($this->getFromSession('millesime'), $etablissementId, $serviceId, [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
             'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
             'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
@@ -1824,7 +1825,7 @@ class TransportController extends AbstractActionController
             'etablissementId' => $etablissementId,
             'serviceId' => $serviceId,
             'origine' => StdLib::getParam('origine', $args, 'etablissement-service')
-        ));
+        ]);
         $viewModel->setTemplate('sbm-gestion/transport/service-group.phtml');
         return $viewModel;
     }
@@ -1843,19 +1844,19 @@ class TransportController extends AbstractActionController
     {
         $args = $this->initListe('services', function ($config, $form) {
             $form->setValueOptions('transporteurId', $config['db_manager']->get('Sbm\Db\Select\Transporteurs'));
-        }, array(
+        }, [
             'transporteurId'
-        ));
+        ]);
         if ($args instanceof Response)
             return $args;
         
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator($args['where']),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
             'criteres_form' => $args['form'],
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService()
-        ));
+        ]);
     }
 
     /**
@@ -1868,16 +1869,22 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormService();
-        $form->modifFormForEdit()->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
-        $params = array(
-            'data' => array(
+        $form->modifFormForEdit()
+            ->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
+            ->setValueOptions('operateur', [
+            'SBM' => 'Organisateur',
+            'CG' => 'Conseil départemental',
+            'CR' => 'Conseil régional'
+        ]);
+        $params = [
+            'data' => [
                 'table' => 'services',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Services',
                 'id' => 'serviceId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         $r = $this->editData($this->db_manager, $params);
         if ($r instanceof Response) {
@@ -1887,17 +1894,17 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'service-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'serviceId' => $r->getResult()
-                    ));
+                    ]);
                     break;
             }
         }
@@ -1913,40 +1920,40 @@ class TransportController extends AbstractActionController
     public function serviceSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm(array(
+        $form = new ButtonForm([
             'id' => null,
             'origine' => null
-        ), array(
-            'supproui' => array(
+        ], [
+            'supproui' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
+            ],
+            'supprnon' => [
                 'class' => 'confirm',
                 'value' => 'Abandonner'
-            )
-        ));
-        $params = array(
-            'data' => array(
+            ]
+        ]);
+        $params = [
+            'data' => [
                 'alias' => 'Sbm\Db\Table\Services',
                 'id' => 'serviceId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $vueServices = $this->db_manager->get('Sbm\Db\Vue\Services');
         try {
             $r = $this->supprData($this->db_manager, $params, function ($id, $tableServices) use($vueServices) {
-                return array(
+                return [
                     'id' => $id,
                     'data' => $vueServices->getRecord($id)
-                );
+                ];
             });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce service car un enregistrement l\'utilise.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'service-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         
         if ($r instanceof Response) {
@@ -1956,18 +1963,18 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'service-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'serviceId' => StdLib::getParam('id', $r->getResult())
-                    ));
+                    ]);
                     break;
             }
         }
@@ -1983,15 +1990,20 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormService();
-        $form->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
-        $params = array(
-            'data' => array(
+        $form->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
+            ->setValueOptions('operateur', [
+            'SBM' => 'Organisateur',
+            'CG' => 'CG',
+            'CR' => 'Conseil régional'
+        ]);
+        $params = [
+            'data' => [
                 'table' => 'services',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Services'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $r = $this->addData($this->db_manager, $params);
         switch ($r) {
             case $r instanceof Response:
@@ -2000,17 +2012,17 @@ class TransportController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'service-liste',
                     'page' => $currentPage
-                ));
+                ]);
                 break;
             default:
-                return new ViewModel(array(
+                return new ViewModel([
                     'form' => $form->prepare(),
                     'page' => $currentPage,
                     'serviceId' => null
-                ));
+                ]);
                 break;
         }
     }
@@ -2034,7 +2046,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -2047,25 +2059,25 @@ class TransportController extends AbstractActionController
         $serviceId = StdLib::getParam('serviceId', $args, - 1);
         if ($serviceId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'service-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
         
-        return new ViewModel(array(
+        return new ViewModel([
             'h1' => 'Groupe des élèves inscrits sur un service',
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byService($serviceId), array(
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), FiltreEleve::byService($serviceId), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
             'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord($serviceId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'serviceId' => $serviceId,
             'origine' => StdLib::getParam('origine', $args, 'service-liste')
-        ));
+        ]);
     }
 
     /**
@@ -2076,15 +2088,15 @@ class TransportController extends AbstractActionController
     public function servicePdfAction()
     {
         $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
-        $criteresForm = array(
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'services'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'service-liste'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -2093,20 +2105,20 @@ class TransportController extends AbstractActionController
      */
     public function serviceEtablissementPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $where->equalTo('serviceId', StdLib::getParam('serviceId', $args, - 1));
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'service-etablissement'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -2115,7 +2127,7 @@ class TransportController extends AbstractActionController
      */
     public function serviceGroupPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -2124,13 +2136,13 @@ class TransportController extends AbstractActionController
                 $where->equalTo('millesime', Session::get('millesime'))->equalTo('serviceId', $serviceId);
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'service-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -2149,22 +2161,22 @@ class TransportController extends AbstractActionController
         $args = $this->initListe('stations', function ($config, $form) {
             $form->setValueOptions('communeId', $config['db_manager']->get('Sbm\Db\Select\Communes')
                 ->desservies());
-        }, array(
+        }, [
             'communeId'
-        ), array(
+        ], [
             'localisation' => 'Literal:' . $this->critereLocalisation()
-        ));
+        ]);
         if ($args instanceof Response)
             return $args;
         
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $this->db_manager->get('Sbm\Db\Vue\Stations')->paginator($args['where']),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_stations', 10),
             'criteres_form' => $args['form'],
             'projection' => $this->cartographie_manager->get('SbmCarto\Projection')
-        ));
+        ]);
     }
 
     /**
@@ -2181,11 +2193,11 @@ class TransportController extends AbstractActionController
             return $prg;
         }
         
-        return new ViewModel(array(
+        return new ViewModel([
             'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->stationsNonDesservies(),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation(),
             'page' => $currentPage
-        ));
+        ]);
     }
 
     /**
@@ -2193,17 +2205,17 @@ class TransportController extends AbstractActionController
      */
     public function stationsNonDesserviesPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres'
-        );
-        $criteresForm = array(
+        ];
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'stations-non-desservies'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -2226,15 +2238,15 @@ class TransportController extends AbstractActionController
         $form = new FormStation();
         $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->desservies());
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'stations',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Stations',
                 'id' => 'stationId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         $r = $this->editData($this->db_manager, $params);
         if ($r instanceof Response) {
@@ -2247,18 +2259,18 @@ class TransportController extends AbstractActionController
                     return $this->redirectToOrigin()->back();
                     break;
                 default:
-                    $form->add(array(
+                    $form->add([
                         'name' => 'origine',
                         'type' => 'hidden',
-                        'attributes' => array(
+                        'attributes' => [
                             'value' => StdLib::getParam('origine', $r->getPost())
-                        )
-                    ));
-                    return new ViewModel(array(
+                        ]
+                    ]);
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'stationId' => $r->getResult()
-                    ));
+                    ]);
                     break;
             }
         }
@@ -2279,42 +2291,42 @@ class TransportController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($origine);
             }
         }
-        $form = new ButtonForm(array(
+        $form = new ButtonForm([
             'id' => null
-        ), array(
-            'supproui' => array(
+        ], [
+            'supproui' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
+            ],
+            'supprnon' => [
                 'class' => 'confirm',
                 'value' => 'Abandonner'
-            )
-        ));
-        $params = array(
-            'data' => array(
+            ]
+        ]);
+        $params = [
+            'data' => [
                 'alias' => 'Sbm\Db\Table\Stations',
                 'id' => 'stationId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $vueStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
         try {
             $r = $this->supprData($this->db_manager, $params, function ($id, $tableStations) use($vueStations) {
-                return array(
+                return [
                     'id' => $id,
                     'data' => $vueStations->getRecord($id)
-                );
+                ];
             });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer cette station car un enregistrement l\'utilise.');
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'station-liste',
                     'page' => $currentPage
-                ));
+                ]);
             }
         }
         
@@ -2328,19 +2340,19 @@ class TransportController extends AbstractActionController
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('sbmgestion/transport', array(
+                        return $this->redirect()->toRoute('sbmgestion/transport', [
                             'action' => StdLib::getParam('origine', $r->getPost()),
                             'page' => $currentPage
-                        ));
+                        ]);
                     }
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'stationId' => StdLib::getParam('id', $r->getResult())
-                    ));
+                    ]);
                     break;
             }
         }
@@ -2364,7 +2376,7 @@ class TransportController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             $cancel = true;
-            $args = array();
+            $args = [];
         } else {
             $args = (array) $prg;
             $isPost1 = array_key_exists('phase', $args);
@@ -2375,33 +2387,33 @@ class TransportController extends AbstractActionController
         }
         if ($cancel) {
             $this->flashMessenger()->addWarningMessage("Abandon de la création d'une nouvelle station.");
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'station-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         $table = $this->db_manager->get('Sbm\Db\Table\Stations');
         // même configuration de carte que pour les etablissements
         $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
         $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
-        $formCarte = new LatLng(array(
+        $formCarte = new LatLng([
             'phase' => 1,
-            'lat' => array(
+            'lat' => [
                 'id' => 'lat'
-            ),
-            'lng' => array(
+            ],
+            'lng' => [
                 'id' => 'lng'
-            )
-        ), array(
-            'submit' => array(
+            ]
+        ], [
+            'submit' => [
                 'class' => 'button default submit left-95px',
                 'value' => 'Enregistrer la localisation'
-            ),
-            'cancel' => array(
+            ],
+            'cancel' => [
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
-            )
-        ), $configCarte['valide']);
+            ]
+        ], $configCarte['valide']);
         if ($isPost1 || $isPost2) {
             $form = new FormStation();
             $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
@@ -2413,10 +2425,10 @@ class TransportController extends AbstractActionController
                 $formCarte->setData($args);
                 if (! $formCarte->isValid()) {
                     $this->flashMessenger()->addWarningMessage("La nouvelle station n'est pas dans la zone autorisée.");
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'station-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                 }
                 // transforme les coordonnées
                 $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
@@ -2424,61 +2436,61 @@ class TransportController extends AbstractActionController
                 // initialise le formulaire de la station
                 $geocode = $this->cartographie_manager->get('SbmCarto\Geocoder');
                 $lieu = $geocode->reverseGeocoding($args['lat'], $args['lng']);
-                $form->setData(array(
+                $form->setData([
                     'communeId' => $this->db_manager->get('Sbm\Db\Table\Communes')
                         ->getCommuneId($lieu['commune']),
-                    'nom' => implode(' ', array(
+                    'nom' => implode(' ', [
                         $lieu['numero'],
                         $lieu['rue'],
                         $lieu['lieu-dit']
-                    )),
+                    ]),
                     'x' => $point->getX(),
                     'y' => $point->getY()
-                ));
+                ]);
             } elseif ($isPost2) {
                 $form->setData($args);
                 if ($form->isValid()) {
                     $table->saveRecord($form->getData());
                     $this->flashMessenger()->addSuccessMessage("Un nouvel enregistrement a été ajouté.");
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'station-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                 }
             } else {
                 $defauts = $this->db_manager->getColumnDefaults('stations', 'table');
                 unset($defauts['x'], $defauts['y']);
                 $form->setData($defauts);
             }
-            $view = new ViewModel(array(
+            $view = new ViewModel([
                 'form' => $form->prepare(),
                 'page' => $currentPage,
                 'stationId' => null
-            ));
+            ]);
             $view->setTemplate('sbm-gestion/transport/station-ajout.phtml');
         } else {
             $formCarte->setAttribute('action', $this->url()
-                ->fromRoute('sbmgestion/transport', array(
+                ->fromRoute('sbmgestion/transport', [
                 'action' => 'station-ajout',
                 'page' => $this->params('page', $currentPage)
-            )));
+            ]));
             $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
-            $ptStations = array();
+            $ptStations = [];
             foreach ($tStations->fetchAll() as $station) {
                 $pt = new Point($station->x, $station->y);
                 $pt->setAttribute('station', $station);
                 $ptStations[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
             }
-            $view = new ViewModel(array(
+            $view = new ViewModel([
                 'form' => $formCarte->prepare(),
                 'description' => '<b>Nouvelle station</b>',
-                'station' => array(
+                'station' => [
                     'Création d\'une nouvelle station'
-                ),
+                ],
                 'ptStations' => $ptStations,
                 'url_api' => $this->cartographie_manager->get('google_api')['js'],
                 'config' => $configCarte
-            ));
+            ]);
             $view->setTemplate('sbm-gestion/transport/station-localisation.phtml');
         }
         return $view;
@@ -2496,7 +2508,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -2504,23 +2516,23 @@ class TransportController extends AbstractActionController
         $stationId = StdLib::getParam('stationId', $args, - 1);
         if ($stationId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'station-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         
-        return new ViewModel(array(
-            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byStation($stationId), array(
+        return new ViewModel([
+            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($this->getFromSession('millesime'), FiltreEleve::byStation($stationId), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             // 'paginator' => $table_eleves->paginator(),
             'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord($stationId),
             'page' => $currentPage,
             'stationId' => $stationId,
             'origine' => StdLib::getParam('origine', $args)
-        ));
+        ]);
     }
 
     /**
@@ -2536,7 +2548,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -2556,13 +2568,13 @@ class TransportController extends AbstractActionController
         }
         if ($stationId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'station-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
         
-        return new ViewModel(array(
+        return new ViewModel([
             'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->byStation($stationId),
             // 'paginator' => $table_eleves->paginator(),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenStation($stationId),
@@ -2570,7 +2582,7 @@ class TransportController extends AbstractActionController
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'stationId' => $stationId
-        ));
+        ]);
     }
 
     public function stationServiceGroupAction()
@@ -2580,7 +2592,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -2590,26 +2602,26 @@ class TransportController extends AbstractActionController
         $millesime = $this->getFromSession('millesime');
         if ($stationId == - 1 || ! $serviceId) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => StdLib::getParam('origine', $args, 'station-service'),
                 'page' => $currentPage
-            ));
+            ]);
         }
-        $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord(array(
+        $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord([
             'stationId' => $stationId,
             'serviceId' => $serviceId,
             'millesime' => $millesime
-        ));
-        $view = new ViewModel(array(
-            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($millesime, FiltreEleve::byCircuit($serviceId, $stationId, false), array(
+        ]);
+        $view = new ViewModel([
+            'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($millesime, FiltreEleve::byCircuit($serviceId, $stationId, false), [
                 'nom',
                 'prenom'
-            )),
+            ]),
             'circuit' => $circuit,
             'page' => $currentPage,
             'circuitId' => $circuit->circuitId,
             'origine' => StdLib::getParam('origine', $args, 'station-service')
-        ));
+        ]);
         $view->setTemplate('sbm-gestion/transport/circuit-group.phtml');
         return $view;
     }
@@ -2621,26 +2633,26 @@ class TransportController extends AbstractActionController
      */
     public function stationPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
-            array(
-                'strict' => array(
+            [
+                'strict' => [
                     'communeId'
-                ),
-                'expressions' => array(
+                ],
+                'expressions' => [
                     'localisation' => 'Literal:' . $this->critereLocalisation()
-                )
-            )
-        );
-        $criteresForm = array(
+                ]
+            ]
+        ];
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'stations'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'station-liste'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -2651,21 +2663,21 @@ class TransportController extends AbstractActionController
      */
     public function stationServicePdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
-            array(),
+            [],
             function ($where, $args) {
                 $stationId = StdLib::getParam('stationId', $args);
                 $where = new Where();
                 return $where->equalTo('stationId', $stationId);
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'station-service'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -2674,7 +2686,7 @@ class TransportController extends AbstractActionController
      */
     public function stationGroupPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -2683,13 +2695,13 @@ class TransportController extends AbstractActionController
                 $where->nest()->equalTo('station1Id', $stationId)->OR->equalTo('station2Id', $stationId)->unnest();
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'station-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -2706,24 +2718,24 @@ class TransportController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             $this->flashMessenger()->addWarningMessage('Recommencez.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'station-liste',
                 'page' => $this->params('page', 1)
-            ));
+            ]);
         } else {
             $args = $prg;
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Localisation abandonnée.');
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'station-liste',
                     'page' => $this->params('page', 1)
-                ));
+                ]);
             }
             if (! array_key_exists('stationId', $args)) {
                 $this->flashMessenger()->addErrorMessage('Action  interdite');
-                return $this->redirect()->toRoute('login', array(
+                return $this->redirect()->toRoute('login', [
                     'action' => 'logout'
-                ));
+                ]);
             }
         }
         $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
@@ -2731,31 +2743,31 @@ class TransportController extends AbstractActionController
         $tStations = $this->db_manager->get('Sbm\Db\Table\Stations');
         // même configuration de carte que pour les etablissements
         $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
-        $form = new LatLng(array(
-            'stationId' => array(
+        $form = new LatLng([
+            'stationId' => [
                 'id' => 'stationId'
-            ),
-            'lat' => array(
+            ],
+            'lat' => [
                 'id' => 'lat'
-            ),
-            'lng' => array(
+            ],
+            'lng' => [
                 'id' => 'lng'
-            )
-        ), array(
-            'submit' => array(
+            ]
+        ], [
+            'submit' => [
                 'class' => 'button default submit left-95px',
                 'value' => 'Enregistrer la localisation'
-            ),
-            'cancel' => array(
+            ],
+            'cancel' => [
                 'class' => 'button default cancel left-10px',
                 'value' => 'Abandonner'
-            )
-        ), $configCarte['valide']);
+            ]
+        ], $configCarte['valide']);
         $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/transport', array(
+            ->fromRoute('sbmgestion/transport', [
             'action' => 'station-localisation',
             'page' => $this->params('page', 1)
-        )));
+        ]));
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -2764,18 +2776,18 @@ class TransportController extends AbstractActionController
                 $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
                 // enregistre dans la fiche station
                 $oData = $tStations->getObjData();
-                $oData->exchangeArray(array(
+                $oData->exchangeArray([
                     'stationId' => $stationId,
                     'x' => $point->getX(),
                     'y' => $point->getY()
-                ));
+                ]);
                 $tStations->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage('La localisation de la station est enregistrée.');
                 // $this->flashMessenger()->addWarningMessage('Attention ! Les distances des domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'station-liste',
                     'page' => $this->params('page', 1)
-                ));
+                ]);
             }
         }
         $station = $tStations->getRecord($stationId);
@@ -2789,13 +2801,13 @@ class TransportController extends AbstractActionController
             $point = new Point($station->x, $station->y);
             $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
         }
-        $form->setData(array(
+        $form->setData([
             'stationId' => $stationId,
             'lat' => $pt->getLatitude(),
             'lng' => $pt->getLongitude()
-        ));
+        ]);
         $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
-        $ptStations = array();
+        $ptStations = [];
         foreach ($tStations->fetchAll() as $autreStation) {
             if ($autreStation->stationId != $stationId) {
                 $pt = new Point($autreStation->x, $autreStation->y);
@@ -2803,18 +2815,56 @@ class TransportController extends AbstractActionController
                 $ptStations[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
             }
         }
-        return new ViewModel(array(
+        return new ViewModel([
             // 'pt' => $pt,
             'form' => $form->prepare(),
             'description' => $description,
-            'station' => array(
+            'station' => [
                 $station->nom,
                 $commune->codePostal . ' ' . $commune->nom
-            ),
+            ],
             'ptStations' => $ptStations,
             'url_api' => $this->cartographie_manager->get('google_api')['js'],
             'config' => $configCarte
-        ));
+        ]);
+    }
+
+    /**
+     * Suppression d'une station en double
+     */
+    public function stationDoublonAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $arg = (array) $prg;
+        $stationsDesservies = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
+        $form = new StationDoublon();
+        $form->setValueOptions('stationASupprId', $stationsDesservies)->setValueOptions('stationAGarderId', $stationsDesservies);
+        if (array_key_exists('submit', $arg)) {
+            $form->setData($arg);
+            if ($form->isValid()) {
+                // traitement
+                $supprDoublon = new StationSupprDoublon($this->db_manager, $arg['stationASupprId'], $arg['stationAGarderId']);
+                $cr = $supprDoublon->execute();
+                $this->flashMessenger()->addWarningMessage(implode(' ; ', $cr));
+                return $this->redirect()->toRoute('sbmgestion/transport', [
+                    'action' => 'station-liste',
+                    'page' => $currentPage
+                ]);
+            }
+        } elseif (array_key_exists('cancel', $arg)) {
+            return $this->redirect()->toRoute('sbmgestion/transport', [
+                'action' => 'station-liste',
+                'page' => $currentPage
+            ]);
+        }
+        return new ViewModel([
+            'form' => $form->prepare(),
+            'page' => $currentPage
+        ]);
     }
 
     /**
@@ -2833,13 +2883,13 @@ class TransportController extends AbstractActionController
         if ($args instanceof Response)
             return $args;
         
-        return new ViewModel(array(
+        return new ViewModel([
             'paginator' => $this->db_manager->get('Sbm\Db\Vue\Transporteurs')->paginator($args['where']),
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(),
             'page' => $this->params('page', 1),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_transporteurs', 15),
             'criteres_form' => $args['form']
-        ));
+        ]);
     }
 
     /**
@@ -2854,15 +2904,15 @@ class TransportController extends AbstractActionController
         $form = new FormTransporteur();
         $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->visibles());
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'transporteurs',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Transporteurs',
                 'id' => 'transporteurId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         
         $r = $this->editData($this->db_manager, $params);
         if ($r instanceof Response) {
@@ -2872,17 +2922,17 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'transporteur-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'transporteurId' => $r->getResult()
-                    ));
+                    ]);
                     break;
             }
         }
@@ -2898,39 +2948,39 @@ class TransportController extends AbstractActionController
     public function transporteurSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm(array(
+        $form = new ButtonForm([
             'id' => null
-        ), array(
-            'supproui' => array(
+        ], [
+            'supproui' => [
                 'class' => 'confirm',
                 'value' => 'Confirmer'
-            ),
-            'supprnon' => array(
+            ],
+            'supprnon' => [
                 'class' => 'confirm',
                 'value' => 'Abandonner'
-            )
-        ));
-        $params = array(
-            'data' => array(
+            ]
+        ]);
+        $params = [
+            'data' => [
                 'alias' => 'Sbm\Db\Table\Transporteurs',
                 'id' => 'transporteurId'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $vuetransporteurs = $this->db_manager->get('Sbm\Db\Vue\Transporteurs');
         try {
             $r = $this->supprData($this->db_manager, $params, function ($id, $tabletransporteurs) use($vuetransporteurs) {
-                return array(
+                return [
                     'id' => $id,
                     'data' => $vuetransporteurs->getRecord($id)
-                );
+                ];
             });
         } catch (\Exception $e) {
             $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce transporteur car il a un service.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'transporteur-liste',
                 'page' => $currentPage
-            ));
+            ]);
         }
         
         if ($r instanceof Response) {
@@ -2940,18 +2990,18 @@ class TransportController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/transport', array(
+                    return $this->redirect()->toRoute('sbmgestion/transport', [
                         'action' => 'transporteur-liste',
                         'page' => $currentPage
-                    ));
+                    ]);
                     break;
                 default:
-                    return new ViewModel(array(
+                    return new ViewModel([
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'data' => StdLib::getParam('data', $r->getResult()),
                         'transporteurId' => StdLib::getParam('id', $r->getResult())
-                    ));
+                    ]);
                     break;
             }
         }
@@ -2969,14 +3019,14 @@ class TransportController extends AbstractActionController
         $form = new Formtransporteur();
         $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
             ->visibles());
-        $params = array(
-            'data' => array(
+        $params = [
+            'data' => [
                 'table' => 'transporteurs',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Transporteurs'
-            ),
+            ],
             'form' => $form
-        );
+        ];
         $r = $this->addData($this->db_manager, $params);
         switch ($r) {
             case $r instanceof Response:
@@ -2985,17 +3035,17 @@ class TransportController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
-                return $this->redirect()->toRoute('sbmgestion/transport', array(
+                return $this->redirect()->toRoute('sbmgestion/transport', [
                     'action' => 'transporteur-liste',
                     'page' => $currentPage
-                ));
+                ]);
                 break;
             default:
-                return new ViewModel(array(
+                return new ViewModel([
                     'form' => $form->prepare(),
                     'page' => $currentPage,
                     'transporteurId' => null
-                ));
+                ]);
                 break;
         }
     }
@@ -3011,7 +3061,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -3026,24 +3076,24 @@ class TransportController extends AbstractActionController
         $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
         if ($transporteurId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'transporteur-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
         
-        return new ViewModel(array(
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByTransporteur($this->getFromSession('millesime'), FiltreEleve::byTransporteur($transporteurId), array(
+        return new ViewModel([
+            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByTransporteur($this->getFromSession('millesime'), FiltreEleve::byTransporteur($transporteurId), [
                 'serviceId',
                 'nom',
                 'prenom'
-            )),
+            ]),
             'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
             'transporteur' => $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord($transporteurId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'transporteurId' => $transporteurId
-        ));
+        ]);
     }
 
     /**
@@ -3057,7 +3107,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', array(), $this->getSessionNamespace());
+            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
             $this->setToSession('post', $args, $this->getSessionNamespace());
@@ -3072,24 +3122,24 @@ class TransportController extends AbstractActionController
         $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
         if ($transporteurId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/transport', array(
+            return $this->redirect()->toRoute('sbmgestion/transport', [
                 'action' => 'transporteur-liste',
                 'page' => $pageRetour
-            ));
+            ]);
         }
         $where = new Where();
         $where->equalTo('transporteurId', $transporteurId);
-        return new ViewModel(array(
-            'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator($where, array(
+        return new ViewModel([
+            'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator($where, [
                 'serviceId'
-            )),
+            ]),
             'count_per_page' => 15,
             't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService($transporteurId),
             'transporteur' => $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord($transporteurId),
             'page' => $currentPage,
             'pageRetour' => $pageRetour,
             'transporteurId' => $transporteurId
-        ));
+        ]);
     }
 
     /**
@@ -3100,21 +3150,21 @@ class TransportController extends AbstractActionController
     public function transporteurPdfAction()
     {
         $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
-        $criteresForm = array(
+        $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'transporteurs'
-        );
+        ];
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-liste'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function transporteurGroupPdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -3123,13 +3173,13 @@ class TransportController extends AbstractActionController
                 $where->equalTo('transporteurId', $transporteurId);
                 return $where;
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-group'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
@@ -3140,21 +3190,21 @@ class TransportController extends AbstractActionController
      */
     public function transporteurServicePdfAction()
     {
-        $criteresObject = array(
+        $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
-            array(),
+            [],
             function ($where, $args) {
                 $transporteurId = StdLib::getParam('transporteurId', $args);
                 $where = new Where();
                 return $where->equalTo('transporteurId', $transporteurId);
             }
-        );
+        ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
-        $retour = array(
+        $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-service'
-        );
+        ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 }
