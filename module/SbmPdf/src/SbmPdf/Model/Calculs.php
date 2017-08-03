@@ -103,7 +103,7 @@ class Calculs
     public function range($debut = 0, $fin = null)
     {
         if (! is_int($debut) || (! is_null($fin) && ! is_int($fin))) {
-            throw Exception('Erreur de type dans les arguments de la méthode ' . __METHOD__);
+            throw new Exception('Erreur de type dans les arguments de la méthode ' . __METHOD__);
         }
         if (! ($this->debut == $debut && $this->fin == $fin)) {
             $this->debut = $debut;

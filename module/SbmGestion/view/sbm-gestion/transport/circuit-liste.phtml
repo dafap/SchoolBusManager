@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
- * @version 2016-2.2.1
+ * @date 3 août 2017
+ * @version 2017-2.3.6
  */
 use SbmBase\Model\StdLib;
 
@@ -45,30 +45,40 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $circuits = $this->paginator->getCurrentItems();
-$url_dupliquer = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-dupliquer'
+
+$url_dupliquer = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'circuit-dupliquer'
+    ]);
+$url_vider = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-vider'
 ]);
-$url_ajouter = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-ajout',
-    'page' => $this->page
-]);
-$url_rapports = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-pdf',
-    'page' => $this->page
-]);
-$url_deselection = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-selection',
-    'page' => $this->page
-]);
-$url_modifhoraires = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-modif-horaires',
-    'page' => $this->page
-]);
+$url_ajouter = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'circuit-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'circuit-pdf',
+        'page' => $this->page
+    ]);
+$url_deselection = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'circuit-selection',
+        'page' => $this->page
+    ]);
+$url_modifhoraires = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'circuit-modif-horaires',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/transport');
 $hiddens = [];
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', [
-    'action' => 'circuit-liste'
-]), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'circuit-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 $actions = [
     'retour' => [
@@ -78,9 +88,10 @@ $actions = [
     ],
     'rapports' => $menuImpression['content'],
     'dupliquer' => [
-        'class' => 'fam-plugin-add',
-        'formaction' => $url_dupliquer,
-        'title' => 'Générer les circuits pour une nouvelle année scolaire'
+        'class' => $this->circuitsVides ? 'fam-plugin-add' : 'fam-plugin-delete',
+        'formaction' => $this->circuitsVides ? $url_dupliquer : $url_vider,
+        'title' => ($this->circuitsVides ? 'Générer' : 'Vider') .
+             ' les circuits pour l\'année scolaire ' . $this->as
     ],
     'ajouter' => [
         'class' => 'fam-add',
@@ -123,10 +134,11 @@ echo $this->flashMessenger()->render('default');
 				</tr>
         <?php foreach($circuits as $test => $circuit): ?>
         <?php
-            $nbInscrits = StdLib::getParamR([
-                $circuit->circuitId,
-                'total'
-            ], $this->t_nb_inscrits, 0);
+            $nbInscrits = StdLib::getParamR(
+                [
+                    $circuit->circuitId,
+                    'total'
+                ], $this->t_nb_inscrits, 0);
             // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $circuit->circuitId);
             $jsCallback .= sprintf("$modele\n", $circuit->circuitId, $circuit->circuitId);
@@ -146,18 +158,21 @@ echo $this->flashMessenger()->render('default');
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $circuit->circuitId, $circuit->selection)?></td>
 					<td class="boutons">
              <?php
-            $url_edit = $this->url('sbmgestion/transport', [
-                'action' => 'circuit-edit',
-                'page' => $this->page
-            ]);
-            $url_delete = $this->url('sbmgestion/transport', [
-                'action' => 'circuit-suppr',
-                'page' => $this->page
-            ]);
-            $url_group = $this->url('sbmgestion/transport', [
-                'action' => 'circuit-group',
-                'page' => $this->page
-            ]);
+            $url_edit = $this->url('sbmgestion/transport', 
+                [
+                    'action' => 'circuit-edit',
+                    'page' => $this->page
+                ]);
+            $url_delete = $this->url('sbmgestion/transport', 
+                [
+                    'action' => 'circuit-suppr',
+                    'page' => $this->page
+                ]);
+            $url_group = $this->url('sbmgestion/transport', 
+                [
+                    'action' => 'circuit-group',
+                    'page' => $this->page
+                ]);
             $hiddens = [
                 'circuitId' => $circuit->circuitId
             ];
@@ -175,7 +190,8 @@ echo $this->flashMessenger()->render('default');
                 'eleves' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
-                    'title' => sprintf('élèves du circuit %s à l\'arrêt %s', $circuit->serviceId, $circuit->station)
+                    'title' => sprintf('élèves du circuit %s à l\'arrêt %s', 
+                        $circuit->serviceId, $circuit->station)
                 ]
             ];
             echo $this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);

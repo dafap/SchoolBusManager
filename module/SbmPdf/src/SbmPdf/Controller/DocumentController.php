@@ -43,7 +43,9 @@ class DocumentController extends AbstractActionController
     {}
 
     /**
-     * Reçoit éventuellement en post un
+     * Action pour générer les horaires au format pdf
+     * 
+     * Reçoit éventuellement en post un 'serviceId'
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
@@ -201,5 +203,75 @@ class DocumentController extends AbstractActionController
             $arret['liste'][] = $eleve['nom'] . ' ' . $eleve['prenom'] . ' - ' . $eleve['classe'];
         }
         return $arret;
+    }
+    
+    /**
+     * Action permettant de générer la liste des élèves au format pdf dans le portail de l'organisateur
+     */
+    public function orgPdfAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        $millesime = Session::get('millesime');
+        // on doit être authentifié
+        $auth = $this->authenticate->by('email');
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $identity = $auth->getIdentity();
+        $userId = $auth->getUserId();
+        $currentPage = $this->params('page', 1);
+        
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmPortail\Form\CriteresForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId', 
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('serviceId', 
+            $this->db_manager->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId', 
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->toutes());
+        
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+            $criteres_form->getElementNames());
+        
+        if ($this->sbm_isPost) {
+            $criteres_form->setData($args);
+            if ($criteres_form->isValid()) {
+                $criteres_obj->exchangeArray($criteres_form->getData());
+            }
+        }
+        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas de post ou invalide)
+        if (! $criteres_form->hasValidated() && ! empty($args)) {
+            $criteres_obj->exchangeArray($args);
+            $criteres_form->setData($criteres_obj->getArrayCopy());
+        }
+        
+        $categorie = 200;
+        $where = $criteres_obj->getWhereForEleves();
+        $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritesR(
+            $where, [
+                'nom',
+                'prenom'
+            ]);
+        
+        $this->pdf_manager->get(Tcpdf::class)
+        ->setParams([
+            'documentId' => 'List élèves portail organisateur',
+            'layout' => 'sbm-pdf/document/org-pdf.phtml'
+        ])
+        ->setData(iterator_to_array($data))
+        ->run();
+        
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");        
     }
 }

@@ -7,8 +7,8 @@
  * @filesource Columns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 3 août 2017
+ * @version 2017-2.3.6
  */
 namespace SbmPdf\Model;
 
@@ -57,7 +57,8 @@ class Columns
 
     public function setRecordSource($documentId)
     {
-        $recordSource = $this->db_manager->get('Sbm\Db\System\Documents')->getRecord($documentId)->recordSource;
+        $recordSource = $this->db_manager->get('Sbm\Db\System\Documents')->getRecord(
+            $documentId)->recordSource;
         $this->recordSource = $recordSource;
         if (array_key_exists($recordSource, $this->db_manager->getTableAliasList())) {
             // il s'agit d'une table ou d'une vue enregistrée dans le service manager
@@ -86,10 +87,12 @@ class Columns
     protected function tableListeDesChamps()
     {
         $table = $this->db_manager->get($this->recordSource);
-        $columns = $this->db_manager->getColumns($table->getTableName(), $table->getTableType());
+        $columns = $this->db_manager->getColumns($table->getTableName(), 
+            $table->getTableType());
         $result = [];
         foreach ($columns as $ocolumn) {
-            $result[$ocolumn->getName()] = $ocolumn->getName() . ' (' . $ocolumn->getDataType() . ')';
+            $result[$ocolumn->getName()] = $ocolumn->getName() . ' (' .
+                 $ocolumn->getDataType() . ')';
         }
         return $result;
     }
@@ -97,19 +100,30 @@ class Columns
     protected function sqlListeDesChamps()
     {
         // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-        $sql = str_replace([
-            '%date%',
-            '%heure%',
-            '%millesime%',
-            '%userId%'
-        ], [
-            date('Y-m-d'),
-            date('H:i:s'),
-            Session::get('millesime'),
-            $this->auth_userId
-        ], $this->recordSource);
+        $sql = str_replace(
+            [
+                '%date%',
+                '%heure%',
+                '%millesime%',
+                '%userId%',
+                '%gt%',
+                '%gtOrEq%',
+                '%lt%',
+                '%ltOrEq%'
+            ], 
+            [
+                date('Y-m-d'),
+                date('H:i:s'),
+                Session::get('millesime'),
+                $this->auth_userId,
+                '>',
+                '>=',
+                '<',
+                '<='
+            ], $this->recordSource);
         $result = [];
-        $rowset = $this->db_manager->getDbAdapter()->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $rowset = $this->db_manager->getDbAdapter()->query($sql, 
+            \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
         if ($rowset->count()) {
             $keys = array_keys($rowset->current()->getArrayCopy());
             $result = array_combine($keys, $keys);

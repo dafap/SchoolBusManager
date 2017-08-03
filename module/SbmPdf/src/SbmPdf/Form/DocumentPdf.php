@@ -9,8 +9,8 @@
  * @filesource DocumentPdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 13 août 2016
- * @version 2016-2.1.10
+ * @date 3 août 2017
+ * @version 2017-2.3.6
  */
 namespace SbmPdf\Form;
 
@@ -418,7 +418,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-docheader_subtitle',
-                'class' => 'sbm-width-45c wysiwyg'
+                'class' => 'sbm-width-45c'
             ],
             'options' => [
                 'label' => 'Sous-titre du document pdf',
@@ -539,7 +539,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-docfooter_string',
-                'class' => 'sbm-width-45c wysiwyg'
+                'class' => 'sbm-width-45c'
             ],
             'options' => [
                 'label' => 'Texte du pied de document',
@@ -696,7 +696,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'attributes' => [
                 'id' => 'documentpdf-pageheader_string',
-                'class' => 'sbm-width-45c wysiwyg'
+                'class' => 'sbm-width-45c'
             ],
             'options' => [
                 'label' => 'Texte d\'en-tête de page',

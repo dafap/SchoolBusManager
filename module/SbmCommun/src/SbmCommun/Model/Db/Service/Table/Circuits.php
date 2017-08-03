@@ -8,12 +8,13 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 3 août 2017
+ * @version 2017-2.3.6
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
+use Zend\Db\Sql\Expression;
 
 class Circuits extends AbstractSbmTable
 {
@@ -41,7 +42,7 @@ class Circuits extends AbstractSbmTable
 
     public function getSemaine()
     {
-        return array(
+        return [
             SemaineStrategy::CODE_SEMAINE_LUNDI => 'lun',
             SemaineStrategy::CODE_SEMAINE_MARDI => 'mar',
             SemaineStrategy::CODE_SEMAINE_MERCREDI => 'mer',
@@ -49,47 +50,75 @@ class Circuits extends AbstractSbmTable
             SemaineStrategy::CODE_SEMAINE_VENDREDI => 'ven',
             SemaineStrategy::CODE_SEMAINE_SAMEDI => 'sam',
             SemaineStrategy::CODE_SEMAINE_DIMANCHE => 'dim'
-        );
+        ];
     }
 
     public function setSelection($circuitId, $selection)
     {
         $oData = clone $this->getObjData();
-        $oData->exchangeArray(array(
-            'circuitId' => $circuitId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'circuitId' => $circuitId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 
     public function getCircuit($millesime, $serviceId, $stationId)
     {
-        return $this->getRecord(array('millesime' => $millesime, 'serviceId' => $serviceId, 'stationId' => $stationId));
+        return $this->getRecord(
+            [
+                'millesime' => $millesime,
+                'serviceId' => $serviceId,
+                'stationId' => $stationId
+            ]);
     }
-    
+
     /**
      * Renvoie vrai si la table ne contient pas de données pour ce millésime.
-     * 
-     * @param int $millesime
-     * 
+     *
+     * @param int $millesime            
+     *
      * @return boolean
      */
     public function isEmptyMillesime($millesime)
     {
-        $resultset = $this->fetchAll(array('millesime' => $millesime));
-        return $resultset->count()==0;
+        $resultset = $this->fetchAll([
+            'millesime' => $millesime
+        ]);
+        return $resultset->count() == 0;
     }
-    
+
     /**
      * Supprime tous les enregistrements concernant le millesime indiqué.
-     * 
-     * @param unknown $millesime
-     * 
+     *
+     * @param unknown $millesime            
+     *
      * @return \Zend\Db\TableGateway\int
      */
     public function viderMillesime($millesime)
     {
-        return $this->table_gateway->delete(array('millesime' => $millesime));
+        return $this->table_gateway->delete(
+            [
+                'millesime' => $millesime
+            ]);
+    }
+
+    /**
+     * Renvoie le dernier millesime utilisé dans la table des circuits
+     */
+    public function getDernierMillesime()
+    {
+        $select = $this->getTableGateway()
+            ->getSql()
+            ->select();
+        $select->columns(
+            [
+                'millesime' => new Expression('max(millesime)')
+            ]);
+        $resultset = $this->getTableGateway()->selectWith($select);
+        $row = $resultset->current();
+        return $row->millesime;
     }
 }
 

@@ -4,11 +4,11 @@
  * 
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
- * @filesource ccda-circuits.phtml.php
+ * @filesource org-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juill. 2016
- * @version 2016-2.1.10
+ * @date 2 août 2017
+ * @version 2017-2.3.6
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -80,7 +80,7 @@ echo $this->flashMessenger()->render('default');
             $hiddens = array(
                 'serviceId' => $serviceId,
                 'info' => $serviceId . ' - ' . $service['nom'],
-                'origine' => 'ccda-circuits'
+                'origine' => 'org-circuits'
             );
             $buttons = array(
                 'horaires' => array(

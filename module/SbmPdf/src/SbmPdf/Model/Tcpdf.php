@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 août 2016
- * @version 2016-2.2.0
+ * @date 3 août 2017
+ * @version 2017-2.3.6
  */
 namespace SbmPdf\Model;
 
@@ -145,10 +145,12 @@ class Tcpdf extends \TCPDF
         
         // document pdf
         $this->initConfigDocument();
-        $this->setPageFormat($this->getConfig('document', 'page_format', PDF_PAGE_FORMAT), $this->getConfig('document', 'page_orientation', PDF_PAGE_ORIENTATION));
+        $this->setPageFormat($this->getConfig('document', 'page_format', PDF_PAGE_FORMAT), 
+            $this->getConfig('document', 'page_orientation', PDF_PAGE_ORIENTATION));
         $this->SetCreator($this->getConfig('document', 'creator', PDF_CREATOR));
         $this->SetAuthor($this->getConfig('document', 'author', PDF_AUTHOR));
-        $this->SetTitle($this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE));
+        $this->SetTitle(
+            $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE));
         $this->SetSubject($this->getConfig('document', 'subject', ''));
         $this->SetKeywords($this->getConfig('document', 'keywords', 'SBM, TS'));
         
@@ -159,10 +161,14 @@ class Tcpdf extends \TCPDF
         $this->setPageFooter($this->getConfig('document', 'pagefooter', false));
         
         // page
-        $this->SetMargins($this->getConfig('document', 'page_margin_left', PDF_MARGIN_LEFT), $this->getConfig('document', 'page_margin_top', PDF_MARGIN_TOP), $this->getConfig('document', 'page_margin_right', PDF_MARGIN_RIGHT));
+        $this->SetMargins(
+            $this->getConfig('document', 'page_margin_left', PDF_MARGIN_LEFT), 
+            $this->getConfig('document', 'page_margin_top', PDF_MARGIN_TOP), 
+            $this->getConfig('document', 'page_margin_right', PDF_MARGIN_RIGHT));
         
         // set auto page breaks
-        $this->SetAutoPageBreak(TRUE, $this->getConfig('document', 'page_margin_bottom', PDF_MARGIN_BOTTOM));
+        $this->SetAutoPageBreak(TRUE, 
+            $this->getConfig('document', 'page_margin_bottom', PDF_MARGIN_BOTTOM));
         
         // set image scale factor
         $this->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -174,10 +180,14 @@ class Tcpdf extends \TCPDF
         }
         
         // set default monospaced font
-        $this->SetDefaultMonospacedFont($this->getConfig('document', 'default_font_monospaced', PDF_FONT_MONOSPACED));
+        $this->SetDefaultMonospacedFont(
+            $this->getConfig('document', 'default_font_monospaced', PDF_FONT_MONOSPACED));
         
         // set font
-        $this->SetFont($this->getConfig('document', 'main_font_family', PDF_FONT_NAME_DATA), trim($this->getConfig('document', 'main_font_style', '')), $this->getConfig('document', 'main_font_size', PDF_FONT_SIZE_DATA));
+        $this->SetFont(
+            $this->getConfig('document', 'main_font_family', PDF_FONT_NAME_DATA), 
+            trim($this->getConfig('document', 'main_font_style', '')), 
+            $this->getConfig('document', 'main_font_size', PDF_FONT_SIZE_DATA));
         return $this;
     }
 
@@ -263,13 +273,16 @@ class Tcpdf extends \TCPDF
                 ob_start();
                 var_dump($array);
                 $dump_array = html_entity_decode(strip_tags(ob_get_clean()));
-                $message = sprintf("La clé %s n'existe pas dans le tableau %s.\n%s", $k, $config, $dump_array);
+                $message = sprintf("La clé %s n'existe pas dans le tableau %s.\n%s", $k, 
+                    $config, $dump_array);
                 break;
             } elseif (! is_array($array[$k])) {
                 ob_start();
                 var_dump($array);
                 $dump_array = html_entity_decode(strip_tags(ob_get_clean()));
-                $message = sprintf("La clé %s existe dans le tableau %s mais ne donne pas un tableau.\n%s", $k, $config, $dump_array);
+                $message = sprintf(
+                    "La clé %s existe dans le tableau %s mais ne donne pas un tableau.\n%s", 
+                    $k, $config, $dump_array);
                 break;
             } else {
                 $array = $array[$k];
@@ -301,7 +314,8 @@ class Tcpdf extends \TCPDF
             $this->sectionDocumentFooter();
         }
         
-        $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'), $this->getConfig('document', 'out_mode', 'I'));
+        $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'), 
+            $this->getConfig('document', 'out_mode', 'I'));
     }
 
     /**
@@ -313,7 +327,8 @@ class Tcpdf extends \TCPDF
         $this->setPrintHeader($this->getConfig('document', 'docheader_pageheader', false));
         $this->setPrintFooter($this->getConfig('document', 'docheader_pagefooter', false));
         $this->AddPage();
-        $templateDocHeaderMethod = 'templateDocHeaderMethod' . $this->getConfig('document', 'docheader_templateId', 1);
+        $templateDocHeaderMethod = 'templateDocHeaderMethod' .
+             $this->getConfig('document', 'docheader_templateId', 1);
         if (method_exists($this, $templateDocHeaderMethod)) {
             $this->{$templateDocHeaderMethod}();
         } else {
@@ -340,7 +355,8 @@ class Tcpdf extends \TCPDF
         // gestion du header, du footer et du AddPage
         if ($this->getConfig('document', 'docheader', false)) {
             // il y avait une page d'en-tête
-            if ($this->getConfig('document', 'pageheader', false) != $this->getConfig('document', 'docheader_pageheader', false)) {
+            if ($this->getConfig('document', 'pageheader', false) !=
+                 $this->getConfig('document', 'docheader_pageheader', false)) {
                 // configuration différente de l'en-tête de page : on la chage
                 $this->resetHeaderTemplate();
                 $this->setPrintHeader($this->getConfig('document', 'pageheader', false));
@@ -354,7 +370,8 @@ class Tcpdf extends \TCPDF
             $this->setPrintFooter($this->getConfig('document', 'pagefooter', false));
             $this->AddPage();
         }
-        $templateDocBodyMethod = 'templateDocBodyMethod' . $this->getConfig('document', 'page_templateId', 1);
+        $templateDocBodyMethod = 'templateDocBodyMethod' .
+             $this->getConfig('document', 'page_templateId', 1);
         if (method_exists($this, $templateDocBodyMethod)) {
             $this->{$templateDocBodyMethod}();
         } else {
@@ -380,9 +397,11 @@ class Tcpdf extends \TCPDF
         $this->section_document = self::SECTION_DOCFOOTER;
         // page distincte pour le pied de document
         if ($this->getConfig('document', 'docfooter_page_distincte', false)) {
-            if ($this->getConfig('document', 'pageheader', false) != $this->getConfig('document', 'docfooter_pageheader', false)) {
+            if ($this->getConfig('document', 'pageheader', false) !=
+                 $this->getConfig('document', 'docfooter_pageheader', false)) {
                 $this->resetHeaderTemplate();
-                $this->setPrintHeader($this->getConfig('document', 'docfooter_pageheader', false));
+                $this->setPrintHeader(
+                    $this->getConfig('document', 'docfooter_pageheader', false));
             }
             $this->AddPage();
         } else {
@@ -391,7 +410,8 @@ class Tcpdf extends \TCPDF
         // dans tous les cas, on place le pied de page correctement
         $this->setPrintFooter($this->getConfig('document', 'docfooter_pagefooter', false));
         
-        $templateDocFooterMethod = 'templateDocFooterMethod' . $this->getConfig('document', 'docfooter_templateId', 1);
+        $templateDocFooterMethod = 'templateDocFooterMethod' .
+             $this->getConfig('document', 'docfooter_templateId', 1);
         if (method_exists($this, $templateDocFooterMethod)) {
             $this->{$templateDocFooterMethod}();
         } else {
@@ -407,18 +427,30 @@ class Tcpdf extends \TCPDF
     protected function setPageHeader($has_pageheader)
     {
         $oCalculs = new Calculs($this->data);
-        $pageheader_title = $this->getParam('pageheader_title', $this->getConfig('document', 'pageheader_title', 'Etat'));
+        $pageheader_title = $this->getParam('pageheader_title', 
+            $this->getConfig('document', 'pageheader_title', 'Etat'));
         $title = $oCalculs->getResultat($pageheader_title);
-        $pageheader_string = $this->getParam('pageheader_string', $this->getConfig('document', 'pageheader_string', 'éditée par School Bus Manager'));
+        $pageheader_string = $this->getParam('pageheader_string', 
+            $this->getConfig('document', 'pageheader_string', 
+                'éditée par School Bus Manager'));
         $subtitle = $oCalculs->getResultat($pageheader_string);
         $this->setPrintHeader($has_pageheader);
-        $this->SetHeaderData($this->getConfig('document', 'pageheader_logo', PDF_HEADER_LOGO), $this->getConfig('document', 'pageheader_logo_width', PDF_HEADER_LOGO_WIDTH), $title, $subtitle, $this->convertColor($this->getConfig('document', 'pageheader_text_color', '000000')), $this->convertColor($this->getConfig('document', 'pageheader_line_color', '000000')));
-        $this->setHeaderFont([
-            $this->getConfig('document', 'pageheader_font_family', PDF_FONT_NAME_MAIN),
-            trim($this->getConfig('document', 'pageheader_font_style', '')),
-            $this->getConfig('document', 'pageheader_font_size', PDF_FONT_SIZE_MAIN)
-        ]);
-        $this->SetHeaderMargin($this->getConfig('document', 'pageheader_margin', PDF_MARGIN_HEADER));
+        $this->SetHeaderData(
+            $this->getConfig('document', 'pageheader_logo', PDF_HEADER_LOGO), 
+            $this->getConfig('document', 'pageheader_logo_width', PDF_HEADER_LOGO_WIDTH), 
+            $title, $subtitle, 
+            $this->convertColor(
+                $this->getConfig('document', 'pageheader_text_color', '000000')), 
+            $this->convertColor(
+                $this->getConfig('document', 'pageheader_line_color', '000000')));
+        $this->setHeaderFont(
+            [
+                $this->getConfig('document', 'pageheader_font_family', PDF_FONT_NAME_MAIN),
+                trim($this->getConfig('document', 'pageheader_font_style', '')),
+                $this->getConfig('document', 'pageheader_font_size', PDF_FONT_SIZE_MAIN)
+            ]);
+        $this->SetHeaderMargin(
+            $this->getConfig('document', 'pageheader_margin', PDF_MARGIN_HEADER));
     }
 
     /**
@@ -429,13 +461,19 @@ class Tcpdf extends \TCPDF
     protected function setPageFooter($has_pagefooter)
     {
         $this->setPrintFooter($has_pagefooter);
-        $this->setFooterData($this->convertColor($this->getConfig('document', 'pagefooter_text_color', '000000')), $this->convertColor($this->getConfig('document', 'pagefooter_line_color', '000000')));
-        $this->setFooterFont([
-            $this->getConfig('document', 'pagefooter_font', PDF_FONT_NAME_DATA),
-            trim($this->getConfig('document', 'pagefooter_font_style', '')),
-            $this->getConfig('document', 'pagefooter_font_size', PDF_FONT_SIZE_DATA)
-        ]);
-        $this->setFooterMargin($this->getConfig('document', 'pagefooter_margin', PDF_MARGIN_FOOTER));
+        $this->setFooterData(
+            $this->convertColor(
+                $this->getConfig('document', 'pagefooter_text_color', '000000')), 
+            $this->convertColor(
+                $this->getConfig('document', 'pagefooter_line_color', '000000')));
+        $this->setFooterFont(
+            [
+                $this->getConfig('document', 'pagefooter_font', PDF_FONT_NAME_DATA),
+                trim($this->getConfig('document', 'pagefooter_font_style', '')),
+                $this->getConfig('document', 'pagefooter_font_size', PDF_FONT_SIZE_DATA)
+            ]);
+        $this->setFooterMargin(
+            $this->getConfig('document', 'pagefooter_margin', PDF_MARGIN_FOOTER));
     }
 
     /**
@@ -461,7 +499,8 @@ class Tcpdf extends \TCPDF
         }
         if (! is_numeric($documentId)) {
             // ici, $documentId doit contenir le name du document
-            $table_documents = $this->pdf_manager->get('Sbm\DbManager')->get('Sbm\Db\System\Documents');
+            $table_documents = $this->pdf_manager->get('Sbm\DbManager')->get(
+                'Sbm\Db\System\Documents');
             return $table_documents->getDocumentId($documentId);
         }
         return $documentId;
@@ -513,7 +552,8 @@ class Tcpdf extends \TCPDF
         } elseif ($this->getParam('recordSource', false) !== false) {
             return 'T';
         } else {
-            throw new Exception('La clé `recordSource` du document par défaut n\'est pas définie dans la propriété `params`. Revoir l\'appel de l\'event.');
+            throw new Exception(
+                'La clé `recordSource` du document par défaut n\'est pas définie dans la propriété `params`. Revoir l\'appel de l\'event.');
         }
     }
 
@@ -528,16 +568,22 @@ class Tcpdf extends \TCPDF
      */
     protected function getRecordSourceTable()
     {
-        if ($this->pdf_manager->get('Sbm\DbManager')->has($this->getConfig('document', 'recordSource', ''))) {
-            return $this->pdf_manager->get('Sbm\DbManager')->get($this->getConfig('document', 'recordSource', ''));
-        } elseif ($this->pdf_manager->get('Sbm\DbManager')->has($this->getParam('recordSource', ''))) {
-            return $this->pdf_manager->get('Sbm\DbManager')->get($this->getParam('recordSource', ''));
+        if ($this->pdf_manager->get('Sbm\DbManager')->has(
+            $this->getConfig('document', 'recordSource', ''))) {
+            return $this->pdf_manager->get('Sbm\DbManager')->get(
+                $this->getConfig('document', 'recordSource', ''));
+        } elseif ($this->pdf_manager->get('Sbm\DbManager')->has(
+            $this->getParam('recordSource', ''))) {
+            return $this->pdf_manager->get('Sbm\DbManager')->get(
+                $this->getParam('recordSource', ''));
         } else {
             if (getenv('APPLICATION_ENV') == 'development') {
                 $config_source = $this->getConfig('document', 'recordSource', 'absente');
                 $param_source = $this->getParam('recordSource', 'absente');
                 $msg = __METHOD__;
-                $msg .= sprintf(" - La clé `recordSource` est invalide ou n'est pas précisée pour ce document.\nClé dans la configuration du document : %s\nClé dans les paramètres d'appel: %s", $config_source, $param_source);
+                $msg .= sprintf(
+                    " - La clé `recordSource` est invalide ou n'est pas précisée pour ce document.\nClé dans la configuration du document : %s\nClé dans les paramètres d'appel: %s", 
+                    $config_source, $param_source);
             } else {
                 $msg = 'Mauvaise définition de la source du document.';
             }
@@ -550,9 +596,11 @@ class Tcpdf extends \TCPDF
      */
     protected function initConfigDocument()
     {
-        $table_documents = $this->pdf_manager->get('Sbm\DbManager')->get('Sbm\Db\System\Documents');
+        $table_documents = $this->pdf_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\System\Documents');
         try {
-            $this->config['document'] = $table_documents->getConfig($documentId = $this->getDocumentId());
+            $this->config['document'] = $table_documents->getConfig(
+                $documentId = $this->getDocumentId());
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             if (getenv('APPLICATION_ENV') == 'development') {
                 $msg = __METHOD__ . ' - ' . $e->getMessage();
@@ -622,7 +670,8 @@ class Tcpdf extends \TCPDF
         $this->endPage();
         
         // détermine s'il faut changer de pied de page
-        if ($this->last_page_docheader && $this->section_document == self::SECTION_DOCBODY && $this->PageNo() == $this->last_page_docheader) {
+        if ($this->last_page_docheader && $this->section_document == self::SECTION_DOCBODY &&
+             $this->PageNo() == $this->last_page_docheader) {
             $this->last_page_docheader = 0;
             $this->setPrintFooter($this->config['document']['pagefooter']);
         }
@@ -651,7 +700,8 @@ class Tcpdf extends \TCPDF
     public function Header()
     {
         if ($this->header_xobjid === false) {
-            $templateHeaderMethod = 'templateHeaderMethod' . $this->getConfig('document', 'pageheader_templateId', 1);
+            $templateHeaderMethod = 'templateHeaderMethod' .
+                 $this->getConfig('document', 'pageheader_templateId', 1);
             if (method_exists($this, $templateHeaderMethod)) {
                 $this->{$templateHeaderMethod}();
             } else {
@@ -695,11 +745,15 @@ class Tcpdf extends \TCPDF
         } else {
             $this->x = $this->original_lMargin;
         }
-        if ($this->getConfig('document', 'pageheader_logo_visible', true) && $headerdata['logo'] && ($headerdata['logo'] != $this->getConfig('document', 'image_blank', K_BLANK_IMAGE))) {
+        if ($this->getConfig('document', 'pageheader_logo_visible', true) &&
+             $headerdata['logo'] && ($headerdata['logo'] !=
+             $this->getConfig('document', 'image_blank', K_BLANK_IMAGE))) {
             if (substr($headerdata['logo'], 0, 2) == '//') {
                 $k_path_logo = $headerdata['logo']; // url absolue
             } else {
-                $k_path_logo = rtrim($this->getConfig('document', 'url_path_images', K_PATH_IMAGES), '/') . '/' . ltrim($headerdata['logo'], '/'); // url relative
+                $k_path_logo = rtrim(
+                    $this->getConfig('document', 'url_path_images', K_PATH_IMAGES), '/') .
+                     '/' . ltrim($headerdata['logo'], '/'); // url relative
             }
             $imgtype = \TCPDF_IMAGES::getImageFileType($k_path_logo);
             if (($imgtype == 'eps') or ($imgtype == 'ai')) {
@@ -707,7 +761,7 @@ class Tcpdf extends \TCPDF
             } elseif ($imgtype == 'svg') {
                 $this->ImageSVG($k_path_logo, '', '', $headerdata['logo_width']);
             } else {
-                //$file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
+                // $file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo, '/\\');
                 $file = StdLib::concatPath(SBM_BASE_PATH, $k_path_logo);
                 $this->Image($file, '', '', $headerdata['logo_width']);
             }
@@ -722,7 +776,8 @@ class Tcpdf extends \TCPDF
         } else {
             $header_x = $this->original_lMargin + ($headerdata['logo_width'] * 1.1);
         }
-        $cw = $this->w - $this->original_lMargin - $this->original_rMargin - ($headerdata['logo_width'] * 1.1);
+        $cw = $this->w - $this->original_lMargin - $this->original_rMargin -
+             ($headerdata['logo_width'] * 1.1);
         $this->SetTextColorArray($this->header_text_color);
         // header title
         $this->SetFont($headerfont[0], 'B', $headerfont[2] + 1);
@@ -731,22 +786,25 @@ class Tcpdf extends \TCPDF
         // header string
         $this->SetFont($headerfont[0], $headerfont[1], $headerfont[2]);
         $this->SetX($header_x);
-        $this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false, true, 0, 'T', false);
+        $this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', 
+            true, 0, false, true, 0, 'T', false);
         // print an ending header line
-        $this->SetLineStyle([
-            'width' => 0.85 / $this->k,
-            'cap' => 'butt',
-            'join' => 'miter',
-            'dash' => 0,
-            'color' => $headerdata['line_color']
-        ]);
+        $this->SetLineStyle(
+            [
+                'width' => 0.85 / $this->k,
+                'cap' => 'butt',
+                'join' => 'miter',
+                'dash' => 0,
+                'color' => $headerdata['line_color']
+            ]);
         $this->SetY((2.835 / $this->k) + max($imgy, $this->y));
         if ($this->rtl) {
             $this->SetX($this->original_rMargin);
         } else {
             $this->SetX($this->original_lMargin);
         }
-        $this->Cell(($this->w - $this->original_lMargin - $this->original_rMargin), 0, '', 'T', 0, 'C');
+        $this->Cell(($this->w - $this->original_lMargin - $this->original_rMargin), 0, '', 
+            'T', 0, 'C');
         $this->endTemplate();
     }
 
@@ -762,7 +820,8 @@ class Tcpdf extends \TCPDF
      */
     public function Footer()
     {
-        $templateFooterMethod = 'templateFooterMethod' . $this->getConfig('document', 'pagefooter_templateId', 1);
+        $templateFooterMethod = 'templateFooterMethod' .
+             $this->getConfig('document', 'pagefooter_templateId', 1);
         if (method_exists($this, $templateFooterMethod)) {
             $this->{$templateFooterMethod}();
         } else {
@@ -806,18 +865,20 @@ class Tcpdf extends \TCPDF
         $this->SetTextColorArray($this->footer_text_color);
         // set style for cell border
         $line_width = (0.85 / $this->k);
-        $this->SetLineStyle([
-            'width' => $line_width,
-            'cap' => 'butt',
-            'join' => 'miter',
-            'dash' => 0,
-            'color' => $this->footer_line_color
-        ]);
+        $this->SetLineStyle(
+            [
+                'width' => $line_width,
+                'cap' => 'butt',
+                'join' => 'miter',
+                'dash' => 0,
+                'color' => $this->footer_line_color
+            ]);
         // print document barcode
         $barcode = $this->getBarcode();
         if (! empty($barcode)) {
             $this->Ln($line_width);
-            $barcode_width = round(($this->w - $this->original_lMargin - $this->original_rMargin) / 3);
+            $barcode_width = round(
+                ($this->w - $this->original_lMargin - $this->original_rMargin) / 3);
             $style = [
                 'position' => $this->rtl ? 'R' : 'L',
                 'align' => $this->rtl ? 'R' : 'L',
@@ -834,13 +895,16 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', 
+                (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {
-            $pagenumtxt = $w_page . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages();
+            $pagenumtxt = $w_page . $this->getAliasNumPage() . ' / ' .
+                 $this->getAliasNbPages();
         } else {
-            $pagenumtxt = $w_page . $this->getPageNumGroupAlias() . ' / ' . $this->getPageGroupAlias();
+            $pagenumtxt = $w_page . $this->getPageNumGroupAlias() . ' / ' .
+                 $this->getPageGroupAlias();
         }
         $this->SetY($cur_y);
         // Print page number
@@ -856,7 +920,8 @@ class Tcpdf extends \TCPDF
         if (! empty($txt) && ! empty($this->data[1])) {
             // remplacer les variables de la chaine
             $oCalculs = new Calculs($this->data[1]);
-            $oCalculs->range($this->data['index'][1]['previous'], $this->data['index'][1]['current'] - 1);
+            $oCalculs->range($this->data['index'][1]['previous'], 
+                $this->data['index'][1]['current'] - 1);
             $txt = $oCalculs->getResultat($txt);
             
             // découpe en 2 parties
@@ -929,7 +994,9 @@ class Tcpdf extends \TCPDF
                     hexdec($hex_B)
                 ];
             } else {
-                throw new Exception(sprintf("%s (%s Ligne %d) %s n'est pas le codage HTML d'une couleur.", __METHOD__, __FILE__, __LINE__, $colorInput));
+                throw new Exception(
+                    sprintf("%s (%s Ligne %d) %s n'est pas le codage HTML d'une couleur.", 
+                        __METHOD__, __FILE__, __LINE__, $colorInput));
             }
         } else {
             // convert RGB to hexadecimal
@@ -937,7 +1004,10 @@ class Tcpdf extends \TCPDF
                 ob_start();
                 var_dump($colorInput);
                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
-                throw new Exception(sprintf("%s (%s Ligne %d) L'entrée n'est pas le codage RGB d'une couleur.\n%s", __METHOD__, __FILE__, __LINE__, $dump));
+                throw new Exception(
+                    sprintf(
+                        "%s (%s Ligne %d) L'entrée n'est pas le codage RGB d'une couleur.\n%s", 
+                        __METHOD__, __FILE__, __LINE__, $dump));
             }
             
             foreach ($colorInput as $value) {
@@ -985,9 +1055,13 @@ class Tcpdf extends \TCPDF
         }
         // la police
         $t = $titre . '_font_';
-        $this->SetFont($this->getConfig('document', $t . 'family', PDF_FONT_NAME_MAIN), trim($this->getConfig('document', $t . 'style', 'B')), $this->getConfig('document', $t . 'size', PDF_FONT_SIZE_MAIN));
+        $this->SetFont($this->getConfig('document', $t . 'family', PDF_FONT_NAME_MAIN), 
+            trim($this->getConfig('document', $t . 'style', 'B')), 
+            $this->getConfig('document', $t . 'size', PDF_FONT_SIZE_MAIN));
         // la couleur
-        $this->SetTextColorArray($this->convertColor($this->getConfig('document', $titre . '_text_color', 'black')));
+        $this->SetTextColorArray(
+            $this->convertColor(
+                $this->getConfig('document', $titre . '_text_color', 'black')));
         // le texte
         $this->Cell(0, 20, $text, $border, 1, $align);
         
@@ -1004,26 +1078,42 @@ class Tcpdf extends \TCPDF
      */
     protected function configGraphicSectionTable($section)
     {
-        $this->SetFont($this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), trim($this->getConfig([
-            'doctable',
-            $section
-        ], 'font_style', '')), $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
-        $this->SetLineWidth($this->getConfig([
-            'doctable',
-            $section
-        ], 'line_width', 0.2));
-        $this->SetDrawColorArray($this->convertColor($this->getConfig([
-            'doctable',
-            $section
-        ], 'draw_color', 'black')));
-        $this->SetFillColorArray($this->convertColor($this->getConfig([
-            'doctable',
-            $section
-        ], 'fill_color', 'white')));
-        $this->SetTextColorArray($this->convertColor($this->getConfig([
-            'doctable',
-            $section
-        ], 'text_color', 'black')));
+        $this->SetFont(
+            $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), 
+            trim(
+                $this->getConfig(
+                    [
+                        'doctable',
+                        $section
+                    ], 'font_style', '')), 
+            $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+        $this->SetLineWidth(
+            $this->getConfig(
+                [
+                    'doctable',
+                    $section
+                ], 'line_width', 0.2));
+        $this->SetDrawColorArray(
+            $this->convertColor(
+                $this->getConfig(
+                    [
+                        'doctable',
+                        $section
+                    ], 'draw_color', 'black')));
+        $this->SetFillColorArray(
+            $this->convertColor(
+                $this->getConfig(
+                    [
+                        'doctable',
+                        $section
+                    ], 'fill_color', 'white')));
+        $this->SetTextColorArray(
+            $this->convertColor(
+                $this->getConfig(
+                    [
+                        'doctable',
+                        $section
+                    ], 'text_color', 'black')));
     }
     
     // ============= Les en-tête de document ======================
@@ -1038,28 +1128,41 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docheader_page_distincte', true)) {
             // cas d'une page distincte
             $this->SetY(100, true, true);
-            $this->Titre(1, $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE), 'C');
+            $this->Titre(1, 
+                $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE), 
+                'C');
             $this->SetY(140, true, true);
             $this->SetFont($this->getFontFamily(), 'I');
-            $this->Write(0, trim($this->getConfig('document', 'docheader_subtitle', ''), "\n") . "\n", '', false, 'J');
+            $this->Write(0, 
+                trim($this->getConfig('document', 'docheader_subtitle', ''), "\n") . "\n", 
+                '', false, 'J');
         } else {
             // cas d'une section continue
-            $y = $this->GetY() + $this->getConfig('document', 'docheader_margin', self::DEFAULT_SBM_DOCHEADER_MARGIN);
+            $y = $this->GetY() + $this->getConfig('document', 'docheader_margin', 
+                self::DEFAULT_SBM_DOCHEADER_MARGIN);
             $this->SetY($y);
             $tmp = $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE);
             if (! empty($tmp)) {
-                $this->Titre(1, $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE), 'C');
-                $delta = trim($this->getConfig('document', 'docheader_subtitle', ''), "\n") == '' ? self::SBM_DOCHEADER_DELTA_SMALL : self::SBM_DOCHEADER_DELTA_WIDE;
+                $this->Titre(1, 
+                    $this->getConfig('document', 'title', 
+                        self::DEFAULT_SBM_DOCUMENT_TITLE), 'C');
+                $delta = trim($this->getConfig('document', 'docheader_subtitle', ''), 
+                    "\n") == '' ? self::SBM_DOCHEADER_DELTA_SMALL : self::SBM_DOCHEADER_DELTA_WIDE;
                 $this->SetY($this->GetY() + $delta);
             }
             if (trim($this->getConfig('document', 'docheader_subtitle', ''), "\n") != '') {
-                if ($this->getConfig('document', 'docheader_subtitle', '') == strip_tags($this->getConfig('document', 'docheader_subtitle', ''))) {
+                if ($this->getConfig('document', 'docheader_subtitle', '') ==
+                     strip_tags($this->getConfig('document', 'docheader_subtitle', ''))) {
                     $font_style = $this->getFontStyle();
                     $this->SetFont($this->getFontFamily(), 'I');
-                    $this->Write(0, trim($this->getConfig('document', 'docheader_subtitle', ''), "\n") . "\n", '', false, 'J');
+                    $this->Write(0, 
+                        trim($this->getConfig('document', 'docheader_subtitle', ''), "\n") .
+                             "\n", '', false, 'J');
                     $this->SetFont($this->getFontFamily(), $font_style);
                 } else {
-                    $this->writeHTML($this->getConfig('document', 'docheader_subtitle', ''), true, false, true, false, '');
+                    $this->writeHTML(
+                        $this->getConfig('document', 'docheader_subtitle', ''), true, 
+                        false, true, false, '');
                 }
             }
             /*
@@ -1117,10 +1220,15 @@ class Tcpdf extends \TCPDF
             $this->configGraphicSectionTable('thead');
             foreach ($this->sbm_columns as &$column) {
                 // vérifie si la largeur est suffisante pour écrire le titre
-                $value_width = $this->GetStringWidth($column['thead'], $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), trim($this->getConfig([
-                    'doctable',
-                    'thead'
-                ], 'font_style', '')), $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                $value_width = $this->GetStringWidth($column['thead'], 
+                    $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), 
+                    trim(
+                        $this->getConfig(
+                            [
+                                'doctable',
+                                'thead'
+                            ], 'font_style', '')), 
+                    $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
                 $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
                 if ($value_width > $column['width']) {
                     $column['width'] = $value_width;
@@ -1136,10 +1244,11 @@ class Tcpdf extends \TCPDF
         foreach ($this->sbm_columns as $column) {
             $sum_width += $column['width'];
         }
-        if (($table_width = $this->getConfig([
-            'doctable',
-            'tbody'
-        ], 'width', 'auto')) == 'auto') {
+        if (($table_width = $this->getConfig(
+            [
+                'doctable',
+                'tbody'
+            ], 'width', 'auto')) == 'auto') {
             $ratio = $sum_width > $max_width ? $max_width / $sum_width : 1;
         } else {
             $ratio = $max_width * $table_width / 100 / $sum_width;
@@ -1190,7 +1299,9 @@ class Tcpdf extends \TCPDF
                     $idx_page[$i] = $row[$i];
                 }
                 if ($nl) {
-                    $this->templateDocBodyMethod1Tfoot($this->data['index'][1]['nl']['debut'], $this->data['index'][1]['current'] - 1);
+                    $this->templateDocBodyMethod1Tfoot(
+                        $this->data['index'][1]['nl']['debut'], 
+                        $this->data['index'][1]['current'] - 1);
                     $this->data['index'][1]['nl']['debut'] = $this->data['index'][1]['current'];
                     $this->AddPage();
                     $this->configGraphicSectionTable('thead');
@@ -1204,25 +1315,39 @@ class Tcpdf extends \TCPDF
                     } else {
                         $align = $columns[$j]['tbody_align'] == 'standard' ? 'L' : $columns[$j]['tbody_align'];
                     }
-                    $this->Cell($columns[$j]['width'], $this->getConfig([
-                        'doctable',
-                        'tbody'
-                    ], 'row_height'), StdLib::formatData($row[$j], $columns[$j]['tbody_precision'], $columns[$j]['tbody_completion']), $this->getConfig([
-                        'doctable',
-                        'tbody'
-                    ], 'cell_border'), 0, $align, $fill, $this->getConfig([
-                        'doctable',
-                        'tbody'
-                    ], 'cell_link'), $columns[$j]['tbody_stretch'], $this->getConfig([
-                        'doctable',
-                        'tbody'
-                    ], 'cell_ignore_min_height'), $this->getConfig([
-                        'doctable',
-                        'tbody'
-                    ], 'cell_calign'), $this->getConfig([
-                        'doctable',
-                        'tbody'
-                    ], 'cell_valign'));
+                    $this->Cell($columns[$j]['width'], 
+                        $this->getConfig(
+                            [
+                                'doctable',
+                                'tbody'
+                            ], 'row_height'), 
+                        StdLib::formatData($row[$j], $columns[$j]['tbody_precision'], 
+                            $columns[$j]['tbody_completion']), 
+                        $this->getConfig(
+                            [
+                                'doctable',
+                                'tbody'
+                            ], 'cell_border'), 0, $align, $fill, 
+                        $this->getConfig(
+                            [
+                                'doctable',
+                                'tbody'
+                            ], 'cell_link'), $columns[$j]['tbody_stretch'], 
+                        $this->getConfig(
+                            [
+                                'doctable',
+                                'tbody'
+                            ], 'cell_ignore_min_height'), 
+                        $this->getConfig(
+                            [
+                                'doctable',
+                                'tbody'
+                            ], 'cell_calign'), 
+                        $this->getConfig(
+                            [
+                                'doctable',
+                                'tbody'
+                            ], 'cell_valign'));
                 }
                 $this->data['index'][1]['current'] ++; // il faut mettre cette ligne après l'appel de Cell()
                 $this->Ln();
@@ -1251,25 +1376,39 @@ class Tcpdf extends \TCPDF
                 } else {
                     $align = $column['thead_align'] == 'standard' ? 'L' : $column['thead_align'];
                 }
-                $this->Cell($column['width'], $this->getConfig([
-                    'doctable',
-                    'thead'
-                ], 'row_height'), StdLib::formatData($column['thead'], $column['thead_precision'], $column['thead_completion']), $this->getConfig([
-                    'doctable',
-                    'thead'
-                ], 'cell_border'), 0, $align, 1, $this->getConfig([
-                    'doctable',
-                    'thead'
-                ], 'cell_link'), $column['thead_stretch'], $this->getConfig([
-                    'doctable',
-                    'thead'
-                ], 'cell_ignore_min_height'), $this->getConfig([
-                    'doctable',
-                    'thead'
-                ], 'cell_calign'), $this->getConfig([
-                    'doctable',
-                    'thead'
-                ], 'cell_valign'));
+                $this->Cell($column['width'], 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'thead'
+                        ], 'row_height'), 
+                    StdLib::formatData($column['thead'], $column['thead_precision'], 
+                        $column['thead_completion']), 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'thead'
+                        ], 'cell_border'), 0, $align, 1, 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'thead'
+                        ], 'cell_link'), $column['thead_stretch'], 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'thead'
+                        ], 'cell_ignore_min_height'), 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'thead'
+                        ], 'cell_calign'), 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'thead'
+                        ], 'cell_valign'));
             }
             $this->Ln();
         }
@@ -1297,25 +1436,39 @@ class Tcpdf extends \TCPDF
                 } else {
                     $align = $column['tfoot_align'] == 'standard' ? 'L' : $column['tfoot_align'];
                 }
-                $this->Cell($column['width'], $this->getConfig([
-                    'doctable',
-                    'tfoot'
-                ], 'row_height'), StdLib::formatData($value, $column['tfoot_precision'], $column['tfoot_completion']), $this->getConfig([
-                    'doctable',
-                    'tfoot'
-                ], 'cell_border'), 0, $align, 1, $this->getConfig([
-                    'doctable',
-                    'tfoot'
-                ], 'cell_link'), $column['tfoot_stretch'], $this->getConfig([
-                    'doctable',
-                    'tfoot'
-                ], 'cell_ignore_min_height'), $this->getConfig([
-                    'doctable',
-                    'tfoot'
-                ], 'cell_calign'), $this->getConfig([
-                    'doctable',
-                    'tfoot'
-                ], 'cell_valign'));
+                $this->Cell($column['width'], 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'tfoot'
+                        ], 'row_height'), 
+                    StdLib::formatData($value, $column['tfoot_precision'], 
+                        $column['tfoot_completion']), 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'tfoot'
+                        ], 'cell_border'), 0, $align, 1, 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'tfoot'
+                        ], 'cell_link'), $column['tfoot_stretch'], 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'tfoot'
+                        ], 'cell_ignore_min_height'), 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'tfoot'
+                        ], 'cell_calign'), 
+                    $this->getConfig(
+                        [
+                            'doctable',
+                            'tfoot'
+                        ], 'cell_valign'));
             }
             $this->Ln();
         }
@@ -1323,16 +1476,20 @@ class Tcpdf extends \TCPDF
 
     protected function initConfigDoctable($ordinal_table = 1)
     {
-        $table_doctables = $this->pdf_manager->get('Sbm\DbManager')->get('Sbm\Db\System\DocTables');
+        $table_doctables = $this->pdf_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\System\DocTables');
         try {
-            $this->config['doctable'] = $table_doctables->getConfig($this->getDocumentId(), $ordinal_table);
+            $this->config['doctable'] = $table_doctables->getConfig(
+                $this->getDocumentId(), $ordinal_table);
         } catch (\Exception $e) {
             $this->config['doctable'] = require (__DIR__ . '/default/doctables.inc.php');
         }
         
-        $table_columns = $this->pdf_manager->get('Sbm\DbManager')->get('Sbm\Db\System\DocTables\Columns');
+        $table_columns = $this->pdf_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\System\DocTables\Columns');
         try {
-            $this->config['doctable']['columns'] = $table_columns->getConfig($this->getDocumentId(), $ordinal_table);
+            $this->config['doctable']['columns'] = $table_columns->getConfig(
+                $this->getDocumentId(), $ordinal_table);
         } catch (\Exception $e) {
             // pas d'en-tête, pas de pied, colonnes proportionnelles à la taille du contenu
             $this->config['doctable']['thead']['visible'] = $this->config['doctable']['tfoot']['visible'] = false;
@@ -1373,12 +1530,14 @@ class Tcpdf extends \TCPDF
                 }
                 // prépare les filtres pour le décodage des données (notamment booléennes)
                 foreach ($table_columns as &$column) {
-                    $column['filter'] = preg_replace([
-                        '/^\s+/',
-                        '/\s+$/'
-                    ], '', $column['filter']);
+                    $column['filter'] = preg_replace(
+                        [
+                            '/^\s+/',
+                            '/\s+$/'
+                        ], '', $column['filter']);
                     if (! empty($column['filter']) && is_string($column['filter'])) {
-                        $column['filter'] = StdLib::getArrayFromString(stripslashes($column['filter']));
+                        $column['filter'] = StdLib::getArrayFromString(
+                            stripslashes($column['filter']));
                     } else {
                         $column['filter'] = [];
                     }
@@ -1388,9 +1547,14 @@ class Tcpdf extends \TCPDF
                 foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
                     $ligne = [];
                     foreach ($table_columns as &$column) {
-                        $ligne[] = $value = StdLib::translateData($row->{$column['tbody']}, $column['filter']);
+                        $ligne[] = $value = StdLib::translateData(
+                            $row->{$column['tbody']}, $column['filter']);
                         // adapte la largeur de la colonne si nécessaire
-                        $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                        $value_width = $this->GetStringWidth($value, 
+                            $this->getConfig('document', 'data_font_family', 
+                                PDF_FONT_NAME_DATA), '', 
+                            $this->getConfig('document', 'data_font_size', 
+                                PDF_FONT_SIZE_DATA));
                         $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
                         if ($value_width > $column['width']) {
                             $column['width'] = $value_width;
@@ -1409,19 +1573,29 @@ class Tcpdf extends \TCPDF
                     $columns[] = Select::SQL_STAR;
                 }
                 $recordSource = $this->getConfig('document', 'recordSource', '');
-                $recordSource = str_replace([
-                    '%date%',
-                    '%heure%',
-                    '%millesime%',
-                    '%userId%'
-                ], [
-                    date('Y-m-d'),
-                    date('H:i:s'),
-                    Session::get('millesime'),
-                    $this->pdf_manager->get('SbmAuthentification\Authentication')
-                        ->by()
-                        ->getUserId()
-                ], $recordSource);
+                $recordSource = str_replace(
+                    [
+                        '%date%',
+                        '%heure%',
+                        '%millesime%',
+                        '%userId%',
+                        '%gt%',
+                        '%gtOrEq%',
+                        '%lt%',
+                        '%ltOrEq%'
+                    ], 
+                    [
+                        date('Y-m-d'),
+                        date('H:i:s'),
+                        Session::get('millesime'),
+                        $this->pdf_manager->get('SbmAuthentification\Authentication')
+                            ->by()
+                            ->getUserId(),
+                        '>',
+                        '>=',
+                        '<',
+                        '<='
+                    ], $recordSource);
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 try {
                     $sql = new Sql($dbAdapter);
@@ -1430,7 +1604,8 @@ class Tcpdf extends \TCPDF
                         ->where($this->getWhere())
                         ->order($this->getOrderBy());
                     $sqlString = $select->getSqlString($dbAdapter->getPlatform());
-                    $rowset = $dbAdapter->query($sqlString, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                    $rowset = $dbAdapter->query($sqlString, 
+                        \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
                         // si la description des colonnes est vide, on configure toutes les colonnes de la source
                         if (empty($table_columns)) {
@@ -1449,8 +1624,13 @@ class Tcpdf extends \TCPDF
                             for ($key = 0; $key < count($table_columns); $key ++) {
                                 $ligne[] = $value = $row[$table_columns[$key]['tbody']];
                                 // adapte la largeur de la colonne si nécessaire
-                                $value_width = $this->GetStringWidth($value, $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA), '', $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
-                                $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
+                                $value_width = $this->GetStringWidth($value, 
+                                    $this->getConfig('document', 'data_font_family', 
+                                        PDF_FONT_NAME_DATA), '', 
+                                    $this->getConfig('document', 'data_font_size', 
+                                        PDF_FONT_SIZE_DATA));
+                                $value_width += $this->cell_padding['L'] +
+                                     $this->cell_padding['R'];
                                 if ($value_width > $table_columns[$key]['width']) {
                                     $table_columns[$key]['width'] = $value_width;
                                 }
@@ -1463,7 +1643,7 @@ class Tcpdf extends \TCPDF
                     if (getenv('APPLICATION_ENV') == 'development') {
                         $msg = __METHOD__ . ' - ' . $e->getMessage() . "\n" . $recordSource;
                     } else {
-                        $msg = "Impossible d'exécuter la requête.";
+                        $msg = "Impossible d'exécuter la requête.\n" . $sqlString;
                     }
                     $errcode = $e->getCode();
                     if (! empty($errcode) && ! is_numeric($errcode)) {
@@ -1493,12 +1673,15 @@ class Tcpdf extends \TCPDF
         
         // texte à écrire
         $oCalculs = new Calculs($this->data[1]);
-        $txt = $oCalculs->getResultat(trim($this->getConfig('document', 'docfooter_string', ''), "\n") . "\n");
+        $txt = $oCalculs->getResultat(
+            trim($this->getConfig('document', 'docfooter_string', ''), "\n") . "\n");
         
         // mise en page
         if ($this->getConfig('document', 'docfooter_page_distincte', false)) {
             // cas d'une page distincte
-            $this->SetY($this->GetY() + $this->getConfig('document', 'docfooter_margin', self::DEFAULT_SBM_DOCFOOTER_MARGIN));
+            $this->SetY(
+                $this->GetY() + $this->getConfig('document', 'docfooter_margin', 
+                    self::DEFAULT_SBM_DOCFOOTER_MARGIN));
             $tmp = $this->getConfig('document', 'docfooter_title', '');
             if (! empty($tmp)) {
                 $this->Titre(1, $this->getConfig('document', 'docfooter_title', ''), 'C');
@@ -1516,7 +1699,8 @@ class Tcpdf extends \TCPDF
         } else {
             // cas d'une section continue
             $current_page = $this->PageNo();
-            $delta = $this->getConfig('document', 'docfooter_margin', self::DEFAULT_SBM_DOCFOOTER_MARGIN);
+            $delta = $this->getConfig('document', 'docfooter_margin', 
+                self::DEFAULT_SBM_DOCFOOTER_MARGIN);
             if ($this->getConfig('document', 'docfooter_insecable', true)) {
                 // on réserve la place pour la marge, le titre (si non vide) et 3 lignes (si docfooter_string non vide)
                 $tmp = $this->getConfig('document', 'docfooter_title', '');
@@ -1524,12 +1708,15 @@ class Tcpdf extends \TCPDF
                     $delta += self::SBM_DOCFOOTER_INSECABLE_DELTA_TITLE;
                 }
                 if (! empty($txt)) {
-                    $delta += self::SBM_DOCFOOTER_INSECABLE_DELTA_NBLIGNES * $this->getCellHeight($this->FontSize);
+                    $delta += self::SBM_DOCFOOTER_INSECABLE_DELTA_NBLIGNES *
+                         $this->getCellHeight($this->FontSize);
                 }
             }
             $this->checkPageBreak($delta);
             if ($current_page == $this->PageNo()) {
-                $this->SetY($this->GetY() + $this->getConfig('document', 'docfooter_margin', self::DEFAULT_SBM_DOCFOOTER_MARGIN));
+                $this->SetY(
+                    $this->GetY() + $this->getConfig('document', 'docfooter_margin', 
+                        self::DEFAULT_SBM_DOCFOOTER_MARGIN));
             }
             $tmp = $this->getConfig('document', 'docfooter_title', '');
             if (! empty($tmp)) {
@@ -1617,7 +1804,8 @@ class Tcpdf extends \TCPDF
             return 'Etiquettes';
         }
         
-        $label = new Etiquette($this->pdf_manager->get('Sbm\DbManager'), $this->getDocumentId());
+        $label = new Etiquette($this->pdf_manager->get('Sbm\DbManager'), 
+            $this->getDocumentId());
         // pour le moment, planche entière
         // par la suite, pour commencer à l'étiquette colonne $j, rangée $k :
         // $label->setCurrentColumn($j); // optionnel
@@ -1632,10 +1820,12 @@ class Tcpdf extends \TCPDF
                 $txt = $etiquetteData[$j];
                 $txtLabel = $descripteur[$j]['label'];
                 if (! empty($txtLabel)) {
-                    $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0, $label->alignLab($j), 0, '', $label->stretchLab($j));
+                    $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0, 
+                        $label->alignLab($j), 0, '', $label->stretchLab($j));
                     $this->x += $label->labelSpace($j);
                 }
-                $this->Cell($label->wCell($j), $label->hCell($j), $txt, 0, 0, $label->alignCell($j), 0, '', $label->stretchCell($j));
+                $this->Cell($label->wCell($j), $label->hCell($j), $txt, 0, 0, 
+                    $label->alignCell($j), 0, '', $label->stretchCell($j));
                 list ($this->x, $this->y) = $label->Ln($j);
             }
             if (($xy = $label->NextPosition($j)) == false) {
@@ -1666,10 +1856,11 @@ class Tcpdf extends \TCPDF
         if ($force || empty($this->data)) {
             // prépare les filtres pour le décodage des données (notamment booléennes)
             foreach ($descripteur as &$column) {
-                $column['filter'] = preg_replace([
-                    '/^\s+/',
-                    '/\s+$/'
-                ], '', $column['filter']);
+                $column['filter'] = preg_replace(
+                    [
+                        '/^\s+/',
+                        '/\s+$/'
+                    ], '', $column['filter']);
                 if (! empty($column['filter'])) {
                     $column['filter'] = StdLib::getArrayFromString($column['filter']);
                 } else {
@@ -1685,9 +1876,11 @@ class Tcpdf extends \TCPDF
                 foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
                     $ligne = [];
                     foreach ($descripteur as $column) {
-                        $value = StdLib::translateData($row->{$column['fieldname']}, $column['filter']);
+                        $value = StdLib::translateData($row->{$column['fieldname']}, 
+                            $column['filter']);
                         if ($column['is_date']) {
-                            if (! empty($column['format']) && stripos('h', $column['format']) !== false) {
+                            if (! empty($column['format']) &&
+                                 stripos('h', $column['format']) !== false) {
                                 $value = DateLib::formatDateTimeFromMysql($value);
                             } else {
                                 $value = DateLib::formatDateFromMysql($value);
@@ -1703,28 +1896,39 @@ class Tcpdf extends \TCPDF
                 // c'est une requête Sql. S'il n'y a pas de description des colonnes dans la table doccolumns alors on en crée une par défaut.
                 $sql = $this->getConfig('document', 'recordSource', '');
                 // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-                $sql = str_replace([
-                    '%date%',
-                    '%heure%',
-                    '%millesime%',
-                    '%userId%'
-                ], [
-                    date('Y-m-d'),
-                    date('H:i:s'),
-                    Session::get('millesime'),
-                    $this->pdf_manager->get('SbmAuthentification\Authentication')
-                        ->by()
-                        ->getUserId()
-                ], $sql);
+                $sql = str_replace(
+                    [
+                        '%date%',
+                        '%heure%',
+                        '%millesime%',
+                        '%userId%',
+                        '%gt%',
+                        '%gtOrEq%',
+                        '%lt%',
+                        '%ltOrEq%'
+                    ], 
+                    [
+                        date('Y-m-d'),
+                        date('H:i:s'),
+                        Session::get('millesime'),
+                        $this->pdf_manager->get('SbmAuthentification\Authentication')
+                            ->by()
+                            ->getUserId(),
+                        '>',
+                        '>=',
+                        '<',
+                        '<='
+                    ], $sql);
                 //
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 
                 try {
                     $criteres = $this->getParam('criteres', []);
-                    $strict = $this->getParam('strict', [
-                        'empty' => [],
-                        'not empty' => []
-                    ]);
+                    $strict = $this->getParam('strict', 
+                        [
+                            'empty' => [],
+                            'not empty' => []
+                        ]);
                     $expressions = $this->getParam('expression', []);
                     if (! empty($criteres) || ! empty($expressions)) {
                         $where = [];
@@ -1752,15 +1956,18 @@ class Tcpdf extends \TCPDF
                         }
                         if (! empty($where)) {
                             if (empty($orderBy)) {
-                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where);
+                                $sql = "SELECT * FROM ($sql) tmp WHERE " .
+                                     implode(' AND ', $where);
                             } else {
-                                $sql = "SELECT * FROM ($sql) tmp WHERE " . implode(' AND ', $where) . " ORDER BY " . $orderBy;
+                                $sql = "SELECT * FROM ($sql) tmp WHERE " .
+                                     implode(' AND ', $where) . " ORDER BY " . $orderBy;
                             }
                         } elseif (! empty($orderBy)) {
                             $sql = "SELECT * FROM ($sql) tmp ORDER BY " . $orderBy;
                         }
                     }
-                    $rowset = $dbAdapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                    $rowset = $dbAdapter->query($sql, 
+                        \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
                         foreach ($rowset as $row) {
                             // $row est un ArrayObject
@@ -1769,15 +1976,21 @@ class Tcpdf extends \TCPDF
                                 if (empty($descripteur[$key]['fieldname'])) {
                                     $value = '';
                                 } else {
-                                    $value = StdLib::translateData($row[$descripteur[$key]['fieldname']], $descripteur[$key]['filter']);
+                                    $value = StdLib::translateData(
+                                        $row[$descripteur[$key]['fieldname']], 
+                                        $descripteur[$key]['filter']);
                                     if ($descripteur[$key]['is_date']) {
-                                        if (! empty($descripteur[$key]['format']) && stripos('h', $descripteur[$key]['format']) !== false) {
-                                            $value = DateLib::formatDateTimeFromMysql($value);
+                                        if (! empty($descripteur[$key]['format']) &&
+                                             stripos('h', $descripteur[$key]['format']) !==
+                                             false) {
+                                            $value = DateLib::formatDateTimeFromMysql(
+                                                $value);
                                         } else {
                                             $value = DateLib::formatDateFromMysql($value);
                                         }
                                     } elseif (! empty($descripteur[$key]['format'])) {
-                                        $value = sprintf($descripteur[$key]['format'], $value);
+                                        $value = sprintf($descripteur[$key]['format'], 
+                                            $value);
                                     }
                                 }
                                 $etiquette[] = $value;
@@ -1786,7 +1999,9 @@ class Tcpdf extends \TCPDF
                         }
                     }
                 } catch (\Exception $e) {
-                    $message = sprintf("Impossible d\'exécuter la requête décrite dans ce document.\n%s", $sql);
+                    $message = sprintf(
+                        "Impossible d\'exécuter la requête décrite dans ce document.\n%s", 
+                        $sql);
                     throw new Exception($message, $e->getCode(), $e->getPrevious());
                 }
             }
@@ -1815,7 +2030,8 @@ class Tcpdf extends \TCPDF
             return 'Cartes de transport';
         }
         
-        $label = new Carte($this->pdf_manager->get('Sbm\DbManager'), $this->getDocumentId());
+        $label = new Carte($this->pdf_manager->get('Sbm\DbManager'), 
+            $this->getDocumentId());
         // position par défaut : planche entière
         if ($position = $this->getParam('position', false)) {
             $label->setCurrentColumn($position['column']);
@@ -1858,7 +2074,8 @@ class Tcpdf extends \TCPDF
                     $txt[] = $etiquetteData[$i];
                 }
                 $this->SetX($label->X($i));
-                $this->Cell($label->wCell($i), $label->hCell($i), implode(' ', $txt), 0, 0, $label->alignCell($i), 0, '', $label->stretchCell($i));
+                $this->Cell($label->wCell($i), $label->hCell($i), implode(' ', $txt), 0, 
+                    0, $label->alignCell($i), 0, '', $label->stretchCell($i));
                 unset($txt);
                 list ($x, $y) = $label->Ln($i);
                 $this->SetXY($x, $y);
@@ -1896,9 +2113,10 @@ class Tcpdf extends \TCPDF
                 66
             ]
         ];
-        $this->Rect($x + 56, $y + 17, 23, 29, 'D', [
-            'all' => $border_style
-        ]);
+        $this->Rect($x + 56, $y + 17, 23, 29, 'D', 
+            [
+                'all' => $border_style
+            ]);
     }
     
     // =======================================================================================================
@@ -1949,9 +2167,10 @@ class Tcpdf extends \TCPDF
             $this->Write(0, $part_gauche, '', false, 'L');
             $this->Write(0, $part_droite, '', false, 'R', true);
             // die(var_dump($allerRetour));
-            $layout->setVariables([
-                'allerRetour' => $allerRetour
-            ]);
+            $layout->setVariables(
+                [
+                    'allerRetour' => $allerRetour
+                ]);
             $codeHtml = $viewRender->render($layout);
             // echo($codeHtml);
             $this->writeHTML($codeHtml, true, false, false, false, '');
@@ -1969,18 +2188,20 @@ class Tcpdf extends \TCPDF
         $this->SetTextColorArray($this->footer_text_color);
         // set style for cell border
         $line_width = (0.85 / $this->k);
-        $this->SetLineStyle([
-            'width' => $line_width,
-            'cap' => 'butt',
-            'join' => 'miter',
-            'dash' => 0,
-            'color' => $this->footer_line_color
-        ]);
+        $this->SetLineStyle(
+            [
+                'width' => $line_width,
+                'cap' => 'butt',
+                'join' => 'miter',
+                'dash' => 0,
+                'color' => $this->footer_line_color
+            ]);
         // print document barcode
         $barcode = $this->getBarcode();
         if (! empty($barcode)) {
             $this->Ln($line_width);
-            $barcode_width = round(($this->w - $this->original_lMargin - $this->original_rMargin) / 3);
+            $barcode_width = round(
+                ($this->w - $this->original_lMargin - $this->original_rMargin) / 3);
             $style = [
                 'position' => $this->rtl ? 'R' : 'L',
                 'align' => $this->rtl ? 'R' : 'L',
@@ -1997,13 +2218,16 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', 
+                (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {
-            $pagenumtxt = $w_page . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages();
+            $pagenumtxt = $w_page . $this->getAliasNumPage() . ' / ' .
+                 $this->getAliasNbPages();
         } else {
-            $pagenumtxt = $w_page . $this->getPageNumGroupAlias() . ' / ' . $this->getPageGroupAlias();
+            $pagenumtxt = $w_page . $this->getPageNumGroupAlias() . ' / ' .
+                 $this->getPageGroupAlias();
         }
         $this->SetY($cur_y);
         // Print page number
@@ -2047,15 +2271,15 @@ class Tcpdf extends \TCPDF
             }
         }
     }
-
+    
     // =======================================================================================================
     // Modèle particulier pour les copies d'écran
     //
     /**
      * Doit recevoir un tableau de paramètres dont une clé est html.
      * Cette clé donne le texte html à placer dans le pdf.
-     * 
-     * @param string $param
+     *
+     * @param string $param            
      * @return string
      */
     public function templateDocBodyMethod5($param = null)
@@ -2067,7 +2291,38 @@ class Tcpdf extends \TCPDF
             return 'Copie d\'écran';
         }
         $html = $this->getParam('html', 'Aucune donnée reçue.');
-        //die('<pre>' . htmlentities($html) . '</pre>');
+        // die('<pre>' . htmlentities($html) . '</pre>');
         $this->writeHTML($html, true, false, true, false, '');
+    }
+    
+    // =======================================================================================================
+    // Modèle particulier pour la liste des élèves dans le portail des organisateurs
+    //
+    public function templateDocBodyMethod6($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Liste des élèves pour portail organisateur';
+        }
+        $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec son chemin)
+        if (empty($fichier_phtml)) {
+            throw new Exception("Le modèle de ce document n'a pas été défini.");
+        }
+        $viewRender = $this->pdf_manager->get('ViewRenderer');
+        $layout = new ViewModel();
+        $layout->setTemplate($fichier_phtml);
+        $saut_de_page = false;
+        $data = $this->getData();
+        $layout->setVariables(
+            [
+                'eleves' => $data
+            ]);
+        $codeHtml = $viewRender->render($layout);
+        set_time_limit(300);
+        // echo($codeHtml);
+        $this->writeHTML($codeHtml, true, false, false, false, '');
+        $saut_de_page = true;
     }
 }

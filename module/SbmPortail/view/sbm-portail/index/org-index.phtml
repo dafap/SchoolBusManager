@@ -1,6 +1,6 @@
 <?php
 /**
- * Page d'accueil du portail pour les services de la CCDA
+ * Page d'accueil du portail pour les services de l'organisateur
  *
  * Les variables définies dans cette vue sont :
  * - elevesEnregistres
@@ -21,11 +21,11 @@
  * 
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
- * @filesource ccda-index.phtml
+ * @filesource org-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2015
- * @version 2015-1
+ * @date 2 août 2017
+ * @version 2017-2.3.6
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -33,10 +33,10 @@ $url_horaires = $this->url('sbmdocument', array(
     'action' => 'horaires'
 ));
 $url_eleves = $this->url('sbmportail', array(
-    'action' => 'tr-eleves'
+    'action' => 'org-eleves'
 ));
 $url_circuits = $this->url('sbmportail', array(
-    'action' => 'ccda-circuits'
+    'action' => 'org-circuits'
 ));
 $url_carte_stations = $this->url('sbmportail', array(
     'action' => 'tr-carte-stations'

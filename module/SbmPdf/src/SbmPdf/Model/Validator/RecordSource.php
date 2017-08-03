@@ -7,8 +7,8 @@
  * @filesource RecordSource.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 3 août 2017
+ * @version 2017-2.3.6
  */
 namespace SbmPdf\Model\Validator;
 
@@ -34,14 +34,16 @@ class RecordSource extends AbstractValidator
      * @var array Message templates
      */
     protected $messageTemplates = [
-        self::ERROR_BAD_QUERY => "Ce n'est ni l'identifiant d'une table ou d'une vue, ni une requête Sql\n%msg%"
-    ];
-    
-    protected $messageVariables = [
-        'msg' => 'msg'
+        self::ERROR_BAD_QUERY => "Ce n'est ni l'identifiant d'une table ou d'une vue, ni une requête Sql\n%msg%\n%sql%"
     ];
 
-    protected  $msg;
+    protected $messageVariables = [
+        'msg' => 'msg',
+        'sql' => 'sql'
+    ];
+
+    protected $msg;
+
     /**
      *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
@@ -78,21 +80,33 @@ class RecordSource extends AbstractValidator
         // vérifie qu'il s'agit d'une requête Sql
         try {
             // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-            $value = str_replace([
-                '%date%',
-                '%heure%',
-                '%millesime%',
-                '%userId%'
-            ], [
-                date('Y-m-d'),
-                date('H:i:s'),
-                Session::get('millesime'),
-                $this->auth_userId
-            ], $value);
-            $result = $this->db_manager->getDbAdapter()->query($value, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $value = str_replace(
+                [
+                    '%date%',
+                    '%heure%',
+                    '%millesime%',
+                    '%userId%',
+                    '%gt%',
+                    '%gtOrEq%',
+                    '%lt%',
+                    '%ltOrEq%'
+                ], 
+                [
+                    date('Y-m-d'),
+                    date('H:i:s'),
+                    Session::get('millesime'),
+                    $this->auth_userId,
+                    '>',
+                    '>=',
+                    '<',
+                    '<='
+                ], $value);
+            $result = $this->db_manager->getDbAdapter()->query($value, 
+                \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
             return true;
         } catch (\PDOException $e) {
             $this->msg = $e->getMessage();
+            $this->sql = $value;
             $this->error(self::ERROR_BAD_QUERY);
             return false;
         }
