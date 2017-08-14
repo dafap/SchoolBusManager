@@ -5247,17 +5247,17 @@
         },
         {
             "name": "zendframework/zend-xmlrpc",
-            "version": "2.6.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-xmlrpc.git",
-                "reference": "d3a7a8309da50548ed3a471207704cb8d6d4f6ed"
+                "reference": "aaa143e17f67879df368333c567d03704c9b32a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-xmlrpc-2.6.0-febf15.zip",
-                "reference": "d3a7a8309da50548ed3a471207704cb8d6d4f6ed",
-                "shasum": "5a1bdac248783fdd126806ece1d118ef4a0d2e3b"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-xmlrpc-2.6.1-85377c.zip",
+                "reference": "aaa143e17f67879df368333c567d03704c9b32a5",
+                "shasum": "6350f0538140e4e2e557e335e43d09502dd4176d"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -5324,7 +5324,7 @@
                 "xmlrpc",
                 "zf2"
             ],
-            "time": "2016-06-21T16:38:47+00:00"
+            "time": "2017-08-11T11:36:40+00:00"
         },
         {
             "name": "zendframework/zenddiagnostics",
