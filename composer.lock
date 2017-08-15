@@ -4984,17 +4984,17 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "2.9.2",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "3fbc49f123ca1292edf944bb88eff304591b03db"
+                "reference": "48486693922fdf078ac76b80ca5146db4f4397b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-validator-2.9.2-c6aa0f.zip",
-                "reference": "3fbc49f123ca1292edf944bb88eff304591b03db",
-                "shasum": "91c720a3937f257cd71ecc1eefc37d039e5932bc"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-validator-2.10.0-5a75a2.zip",
+                "reference": "48486693922fdf078ac76b80ca5146db4f4397b9",
+                "shasum": "922f48ad7d37972f7a25732ad75e795f981ef24e"
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
@@ -5012,7 +5012,7 @@
                 "zendframework/zend-i18n": "^2.6",
                 "zendframework/zend-math": "^2.6",
                 "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3",
-                "zendframework/zend-session": "^2.6.2",
+                "zendframework/zend-session": "^2.8",
                 "zendframework/zend-uri": "^2.5"
             },
             "suggest": {
@@ -5022,14 +5022,14 @@
                 "zendframework/zend-i18n-resources": "Translations of validator messages",
                 "zendframework/zend-math": "Zend\\Math component, required by the Csrf validator",
                 "zendframework/zend-servicemanager": "Zend\\ServiceManager component to allow using the ValidatorPluginManager and validator chains",
-                "zendframework/zend-session": "Zend\\Session component, required by the Csrf validator",
+                "zendframework/zend-session": "Zend\\Session component, ^2.8; required by the Csrf validator",
                 "zendframework/zend-uri": "Zend\\Uri component, required by the Uri and Sitemap\\Loc validators"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9-dev",
-                    "dev-develop": "2.10-dev"
+                    "dev-master": "2.10-dev",
+                    "dev-develop": "2.11-dev"
                 },
                 "zf": {
                     "component": "Zend\\Validator",
@@ -5076,7 +5076,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2017-07-20T16:44:59+00:00"
+            "time": "2017-08-14T20:36:46+00:00"
         },
         {
             "name": "zendframework/zend-version",
