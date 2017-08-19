@@ -2337,17 +2337,17 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "0c21b4bdbcf8a998c60cc9e7c075ca9bd4208b91"
+                "reference": "c04d12406114453cfc5bc6ad074cecf81a80a685"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.4.0-4bef18.zip",
-                "reference": "0c21b4bdbcf8a998c60cc9e7c075ca9bd4208b91",
-                "shasum": "4c7e5f5869583c3a2c0647e1bfecd796301eaae8"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.4.1-2a1233.zip",
+                "reference": "c04d12406114453cfc5bc6ad074cecf81a80a685",
+                "shasum": "43d833abd71ff666e4872a0c024cdc96284f41d2"
             },
             "require": {
                 "php": "^5.4 || ^7.0",
@@ -2418,7 +2418,7 @@
                 "issues": "https://github.com/zendframework/zend-diactoros/issues",
                 "source": "https://github.com/zendframework/zend-diactoros"
             },
-            "time": "2017-04-06T16:18:34+00:00"
+            "time": "2017-08-17T21:21:00+00:00"
         },
         {
             "name": "zendframework/zend-dom",
