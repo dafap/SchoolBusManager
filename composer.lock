@@ -49,7 +49,7 @@
                 "php",
                 "zf2"
             ],
-            "time": "2015-09-30 08:27:25"
+            "time": "2015-09-30T08:27:25+00:00"
         },
         {
             "name": "container-interop/container-interop",
@@ -2337,21 +2337,21 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "1.4.1",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "c04d12406114453cfc5bc6ad074cecf81a80a685"
+                "reference": "be03d60498a937104d79b17692624f67d1618ef0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.4.1-2a1233.zip",
-                "reference": "c04d12406114453cfc5bc6ad074cecf81a80a685",
-                "shasum": "43d833abd71ff666e4872a0c024cdc96284f41d2"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.5.0-1db85b.zip",
+                "reference": "be03d60498a937104d79b17692624f67d1618ef0",
+                "shasum": "35a246def0bbbb4bc06dab26031206044abbe537"
             },
             "require": {
-                "php": "^5.4 || ^7.0",
-                "psr/http-message": "~1.0"
+                "php": "^5.6 || ^7.0",
+                "psr/http-message": "^1.0"
             },
             "provide": {
                 "psr/http-message-implementation": "1.0"
@@ -2359,14 +2359,14 @@
             "require-dev": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
-                "phpunit/phpunit": "^4.6 || ^5.5",
-                "zendframework/zend-coding-standard": "~1.0.0"
+                "phpunit/phpunit": "^5.7.16 || ^6.0.8",
+                "zendframework/zend-coding-standard": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4-dev",
-                    "dev-develop": "1.5-dev"
+                    "dev-master": "1.5-dev",
+                    "dev-develop": "1.6-dev"
                 }
             },
             "autoload": {
@@ -2418,7 +2418,7 @@
                 "issues": "https://github.com/zendframework/zend-diactoros/issues",
                 "source": "https://github.com/zendframework/zend-diactoros"
             },
-            "time": "2017-08-17T21:21:00+00:00"
+            "time": "2017-08-22T20:38:56+00:00"
         },
         {
             "name": "zendframework/zend-dom",
@@ -4984,17 +4984,17 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "2.10.0",
+            "version": "2.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "48486693922fdf078ac76b80ca5146db4f4397b9"
+                "reference": "cb633644b16d22e364e02444edad63ee7507f155"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-validator-2.10.0-5a75a2.zip",
-                "reference": "48486693922fdf078ac76b80ca5146db4f4397b9",
-                "shasum": "922f48ad7d37972f7a25732ad75e795f981ef24e"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-validator-2.10.1-7db44f.zip",
+                "reference": "cb633644b16d22e364e02444edad63ee7507f155",
+                "shasum": "2549897364fcdd88dcedda2b7395e5b7c3745778"
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
@@ -5076,7 +5076,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2017-08-14T20:36:46+00:00"
+            "time": "2017-08-22T14:19:23+00:00"
         },
         {
             "name": "zendframework/zend-version",
@@ -5589,7 +5589,7 @@
                 "tool",
                 "zf2"
             ],
-            "time": "2015-10-21 07:40:59"
+            "time": "2015-10-21T07:40:59+00:00"
         }
     ],
     "packages-dev": [
@@ -5693,7 +5693,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2016-09-08 13:55:36"
+            "time": "2016-09-08T13:55:36+00:00"
         }
     ],
     "aliases": [],
