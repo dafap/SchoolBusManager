@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 31 août 2017
+ * @version 2017-2.3.7
  */
 use SbmCartographie\Model\Point;
 
@@ -142,6 +142,8 @@ echo $this->flashMessenger()->render('default');
             // construction du JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $responsable['responsableId']);
             $jsCallback .= sprintf("$modele\n", $responsable['responsableId'], $responsable['responsableId']);
+            // nombre d'inscrits
+            $nbInscrits = $responsable['nbPreinscrits'] + $responsable['nbGratuits'] + $responsable['nbFa'];
             ?>
          <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
@@ -161,7 +163,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="centre codePostal"><?php echo $this->escapeHtml($responsable['codePostal']); ?></td>
 					<td class="commune"><?php echo $cmn =$this->escapehtml($responsable['commune']); ?></td>
 					<td class="centre gris nbEleves"><?php echo $responsable['nbEnfants']; ?></td>
-					<td class="centre nbInscrits"><?php echo $responsable['nbInscrits']; ?></td>
+					<td class="centre nbInscrits"><?php echo $nbInscrits; ?></td>
 					<td class="centre nbPreinscrits"><?php echo $responsable['nbPreinscrits']; ?></td>
 					<td class="centre demenagement"><?php echo $responsable['demenagement'] ? 'D' : ''; ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $responsable['responsableId'], $responsable['selection']); ?></td>

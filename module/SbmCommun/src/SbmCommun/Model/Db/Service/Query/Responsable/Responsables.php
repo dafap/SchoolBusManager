@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 31 août 2017
+ * @version 2017-2.3.7
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -220,6 +220,8 @@ class Responsables implements FactoryInterface
         $where1 = new Where();
         $where1->literal('inscrit = 1')
             ->literal('paiement = 0')
+            ->literal('fa = 0')
+            ->literal('gratuit = 0')
             ->equalTo('millesime', $this->millesime);
         $select1 = new Select();
         $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
