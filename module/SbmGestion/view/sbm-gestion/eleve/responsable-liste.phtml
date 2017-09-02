@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 août 2017
- * @version 2017-2.3.7
+ * @date 2 sept. 2017
+ * @version 2017-2.3.8
  */
 use SbmCartographie\Model\Point;
 
@@ -143,7 +143,7 @@ echo $this->flashMessenger()->render('default');
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $responsable['responsableId']);
             $jsCallback .= sprintf("$modele\n", $responsable['responsableId'], $responsable['responsableId']);
             // nombre d'inscrits
-            $nbInscrits = $responsable['nbPreinscrits'] + $responsable['nbGratuits'] + $responsable['nbFa'];
+            $nbInscrits = $responsable['nbInscrits'] + $responsable['nbGratuits'] + $responsable['nbFa'];
             ?>
          <tr
 					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
