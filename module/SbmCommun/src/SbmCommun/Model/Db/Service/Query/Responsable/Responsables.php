@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 août 2017
- * @version 2017-2.3.7
+ * @date 4 sept. 2017
+ * @version 2017-2.3.9
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -229,10 +229,10 @@ class Responsables implements FactoryInterface
             'eleveId'
         ])
             ->where($where1);
-        // inscrits payants
+        // inscrits payants (direct ou par un organisme)
         $where2 = new Where();
         $where2->literal('inscrit = 1')
-            ->literal('paiement = 1')
+            ->nest()->literal('paiement = 1')->or->literal('gratuit = 2')->unnest()
             ->equalTo('millesime', $this->millesime);
         $select2 = new Select();
         $select2->from($this->db_manager->getCanonicName('scolarites', 'table'))
