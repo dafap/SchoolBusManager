@@ -7,8 +7,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 10 sept. 2017
+ * @version 2017-2.3.10
  */
 use SbmBase\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -88,7 +88,7 @@ echo $this->flashMessenger()->render('default');
 	<p>Vous pourrez inscire vos enfants entre le <?php echo $this->etatSite['dateDebut']->format('d/m/Y');?> et le <?php echo $this->etatSite['dateFin']->format('d/m/Y');?>.</p>
 	<?php elseif ($etat == 1) :?>
 	<p>Vous n'avez pas encore d'enfant inscrit.</p>
-	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez le paiement en ligne ou adressez votre paiment au service transport de la Communauté de communes du Bassin Decazeville-Aubin avant le <?php echo $dateLimite; ?> afin de recevoir votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
+	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez le paiement en ligne ou adressez votre paiment au service transport de <?php echo $this->client['name'];?> avant le <?php echo $dateLimite; ?> afin de recevoir votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
 	<ul>
     <?php foreach ($this->permanences as $row) :?>
         <li><?php echo "Pour les habitants de $row";?></li>
@@ -287,7 +287,7 @@ echo $this->flashMessenger()->render('default');
                 $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']], 'EUR');
                 $montantTotal += $this->tarifs[$row['tarifId']];
             } else {
-                $montantUnitaire = '<span class="exces" title="Prenez contact avec le service des transports de Decazeville Communauté">pas de droit au transport scolaire</span>';
+                $montantUnitaire = '<span class="exces" title="Prenez contact avec le service des transports de ' . $this->client['name'] . '">pas de droit au transport scolaire</span>';
                 $enAttente = true;
             }
             $url_edit = $this->url('sbmparent', [
