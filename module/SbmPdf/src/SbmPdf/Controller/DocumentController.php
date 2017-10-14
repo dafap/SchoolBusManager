@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 04 août 2017
+ * @version 2017-2.3.6
  */
 namespace SbmPdf\Controller;
 

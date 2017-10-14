@@ -9,8 +9,8 @@
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 14 oct. 2017
+ * @version 2017-2.3.12
  */
 namespace SbmAdmin\Form;
 
@@ -94,7 +94,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                 'id' => 'id_ccda'
             ],
             'options' => [
-                'label' => 'Code CCDA'
+                'label' => 'Code organisateur'
             ]
         ]);
         $this->add([

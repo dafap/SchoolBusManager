@@ -34,6 +34,16 @@ echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
 	<div id="data-inner">
-<?php var_dump($this->tables, $this->systems, $this->vues); ?>
-    </div>
+	    <h3>Tables</h3>
+	    <pre>
+<?php var_dump($this->tables); ?>
+        </pre>	    
+        <h3>Systems</h3>
+	    <pre>
+<?php var_dump($this->systems); ?>
+        </pre>	    
+        <h3>Vues</h3>
+	    <pre>
+<?php var_dump($this->vues); ?>
+    </pre></div>
 </div>

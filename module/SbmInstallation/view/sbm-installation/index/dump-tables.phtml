@@ -15,7 +15,6 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $retour = $this->url("sbminstall");
-$hiddens = [];
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
@@ -35,6 +34,9 @@ if (! empty($inner)) {
 ?>
 <h1><?php echo $this->titre; ?></h1>
 <div id="data-wrapper">
+    <div id="data-header">
+    <div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions)?></div>
+    </div>
     <div id="data-inner">
 	<p><?php echo $output; ?></p>
 <?php if (is_null($this->form)) : ?>
@@ -68,4 +70,5 @@ if (! empty($inner)) {
     ?> 
 <?php endif; ?>
     </div>
+    <div id="data-footer"></div>
 </div>
