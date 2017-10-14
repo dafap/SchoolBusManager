@@ -9,8 +9,8 @@
  * @filesource TransportControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 14 oct. 2017
+ * @version 2017-2.3.12
  */
 namespace SbmGestion\Controller\Service;
 
@@ -32,6 +32,10 @@ class TransportControllerFactory implements FactoryInterface
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
+            'operateurs' => StdLib::getParamR([
+                'sbm',
+                'operateurs'
+            ], $config_application),
             'mail_config' => StdLib::getParamR([
                 'sbm',
                 'mail'
