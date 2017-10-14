@@ -8,8 +8,8 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 14 oct. 2017
+ * @version 2017-2.3.12
  */
 namespace SbmCommun\Form;
 
@@ -106,7 +106,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'id' => 'service-operateur',
-                'class' => 'sbm-width-10c'
+                'class' => 'sbm-width-20c'
             ),
             'options' => array(
                 'label' => 'Opérateur',
@@ -114,10 +114,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-label'
                 ),
                 'empty_option' => 'Choisissez un opérateur',
-                'value_options' => array(
-                    'CCDA' => 'CCDA',
-                    'CG12' => 'CG12'
-                ),
+                'value_options' => [],
                 'error_attributes' => array(
                     'class' => 'sbm-error'
                 )
