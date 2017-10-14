@@ -1,0 +1,234 @@
+<?php
+/**
+ * Liste des élèves pour le protail de l'organisateur (secrétariat)
+ * 
+ * La requête est basée sur SbmCommun\Model\Db\Service\Query\Eleve\ElevesSolarites::selectScolaritesR()
+ * 
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/index
+ * @filesource org-eleves.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 3 août 2017
+ * @version 2017-2.3.6
+ */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
+// (ne pas mettre de guillemet dans la chaine)
+$js_op = 'window.document.getElementById(\'op%s%s\').value=\'%s\';';
+
+// le paginateur
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+try {
+    $eleves = $this->paginator->getCurrentItems();
+} catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+    // affichage d'une page d'erreur
+    ?>
+<h1>Liste des élèves</h1>
+<div id="liste-wrapper">
+	<div id="liste-inner">
+		<pre>
+	  <?php echo $e->getMessage();?>
+	</pre>
+	</div>
+	<div id="liste-footer">
+		<div class="criteres-wrapper">
+<?php
+    if (! is_null($this->criteres_form)) {
+        echo $this->form()->openTag($this->criteres_form);
+        echo $this->formCollection($this->criteres_form, true);
+        echo $this->form()->closeTag();
+        return;
+    }
+    ?>
+        </div>
+	</div>
+</div>
+<?php
+    // fin du catch (affichage d'une page d'erreur)
+}
+
+// les url à utiliser
+$url_ici = $this->url('sbmportail', 
+    array(
+        'action' => 'org-eleves',
+        'page' => $this->page
+    ));
+$url_responsable = $this->url('sbmportail', 
+    array(
+        'action' => 'org-responsable',
+        'page' => $this->page
+    ));
+$url_group = $this->url('sbmportail', 
+    array(
+        'action' => 'org-famille',
+        'page' => $this->page
+    ));
+$url_rapports = $this->url('sbmportail', 
+    array(
+        'action' => 'org-pdf',
+        'page' => $this->page
+    ));
+$url_map = $this->url('sbmcarte', 
+    array(
+        'action' => 'eleves',
+        'page' => $this->page
+    ));
+$url_retour = $this->url('sbmportail', array(
+    'action' => 'retour'
+));
+$url_telephones = $this->url('sbmportail', 
+    array(
+        'action' => 'tr-extraction-telephones',
+        'page' => $this->page
+    ));
+
+// le formulaire des actions du haut de page - aide de vue listeZoneActions()
+$hiddens = array();
+$actions = array(
+    'cancel' => array(
+        'class' => 'fam-door-out',
+        'formaction' => $url_ici,
+        'title' => 'Retour'
+    ),
+    'rapports' => array(
+        'class' => 'fam-printer',
+        'formaction' => $url_rapports,
+        'title' => 'Liste à imprimer'
+    )
+);
+?>
+<h1>Liste des élèves</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="eleves">
+			<tbody>
+				<tr>
+					<th>N° carte</th>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Né(e) le</th>
+					<th>Responsables</th>
+					<th>Etablissement scolaire</th>
+					<th>Classe</th>
+					<th>Circuits</th>
+					<th>Arrêts</th>
+					<th>État</th>
+				</tr>
+        <?php foreach($eleves as $test => $eleve): ?>
+        <?php
+            // echo '<pre>';
+            // die(print_r($eleve));
+            // responsables
+            $r = [];
+            $circuits = [];
+            $arrets = [];
+            if ($eleve['responsable1']) {
+                $r[] = htmlspecialchars(
+                    str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES, 
+                    'utf-8', false);
+                $circuitR1 = $eleve['service1IdR1'];
+                if ($eleve['service2IdR1']) {
+                    $circuitR1 .= '<br/>' . $eleve['service2IdR1'];
+                }
+                $arretR1 = $eleve['station1r1'];
+                if ($eleve['station2r1']) {
+                    $arretR1 .= '<br/>' . $eleve['station2r1'];
+                }
+                $circuits[] = $circuitR1;
+                $arrets[] = $arretR1;
+            }
+            if ($eleve['responsable2']) {
+                $r[] = htmlspecialchars(
+                    str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES, 
+                    'utf-8', false);
+                $circuitR2 = $eleve['service1IdR2'];
+                if ($eleve['service2IdR2']) {
+                    $circuitR2 .= '<br/>' . $eleve['service2IdR2'];
+                }
+                $arretR2 = $eleve['station1r2'];
+                if ($eleve['station2r2']) {
+                    $arretR2 .= '<br/>' . $eleve['station2r2'];
+                }
+                $circuits[] = $circuitR2;
+                $arrets[] = $arretR2;
+            }
+            $nbResponsables = count($r);
+            $tr_css = $this->cycle(
+                array(
+                    "even",
+                    "odd"
+                ))->next();
+            if (! $eleve['inscrit']) {
+                $tr_css .= ' barre';
+            }
+            if ($eleve['paiement'] || $eleve['fa'] || $eleve['gratuit'] > 0) {
+                $message = 'Inscrit';
+            } else {
+                $message = 'Préinscrit';
+            }
+            ?>
+                <tr class="<?php echo $tr_css;?>">
+					<td class="numero align-right"
+						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?php echo $eleve['numero']; ?></td>
+					<td class="nom"
+						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?php echo $this->escapeHtml($eleve['nom']); ?></td>
+					<td class="nom"
+						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?php echo $this->escapeHtml($eleve['prenom']); ?></td>
+					<td class="dateN"
+						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
+					<td class="responsables">
+					<?php echo $r[0]; ?></td>
+					<td class="etablissement"
+						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?php echo $this->escapeHtml($eleve['etablissement'] /*. ' - ' . $eleve['communeEtablissement']*/);?></td>
+					<td class="classe"
+						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?php echo $this->escapeHtml($eleve['classe']);?></td>
+					<td><?php echo $circuits[0];?></td>
+					<td><?php echo $arrets[0];?></td>
+					<td class="centre"><?php echo $message;?></td>
+					<?php if ($nbResponsables == 2) :?>
+				</tr>
+				<tr class="<?php echo $tr_css;?>">
+					<td><?php echo $r[1]; ?></td>
+					<td><?php echo $circuits[1];?></td>
+					<td><?php echo $arrets[1];?></td>	
+					<?php endif;?>
+				</tr>         
+        <?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="criteres-wrapper">
+		<?php
+
+if (! is_null($this->criteres_form)) {
+    echo $this->form()->openTag($this->criteres_form);
+    echo $this->formCollection($this->criteres_form, true);
+    echo $this->form()->closeTag();
+}
+?>
+	    </div>
+	</div>
+</div>

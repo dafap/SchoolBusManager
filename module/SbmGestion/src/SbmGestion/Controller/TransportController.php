@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juil. 2017
- * @version 2017-2.3.5
+ * @date 14 oct. 2017
+ * @version 2017-2.3.12
  */
 namespace SbmGestion\Controller;
 
@@ -1871,11 +1871,7 @@ class TransportController extends AbstractActionController
         $form = new FormService();
         $form->modifFormForEdit()
             ->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
-            ->setValueOptions('operateur', [
-            'SBM' => 'Organisateur',
-            'CG' => 'Conseil départemental',
-            'CR' => 'Conseil régional'
-        ]);
+            ->setValueOptions('operateur', $this->operateurs);
         $params = [
             'data' => [
                 'table' => 'services',
@@ -1991,11 +1987,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormService();
         $form->setValueOptions('transporteurId', $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
-            ->setValueOptions('operateur', [
-            'SBM' => 'Organisateur',
-            'CG' => 'CG',
-            'CR' => 'Conseil régional'
-        ]);
+            ->setValueOptions('operateur', $this->operateurs);
         $params = [
             'data' => [
                 'table' => 'services',
