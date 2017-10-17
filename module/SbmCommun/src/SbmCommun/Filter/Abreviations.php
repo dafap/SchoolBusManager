@@ -8,14 +8,13 @@
  * @filesource Abreviations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2014
- * @version 2014-1
+ * @date 17 oct. 2017
+ * @version 2017-2.3.13
  */
 namespace SbmCommun\Filter;
 
 use Zend\Filter\FilterInterface;
 use Zend\Filter\AbstractUnicode;
-use DafapLayout\View\Helper\Exception;
 
 class Abreviations extends AbstractUnicode implements FilterInterface
 {
