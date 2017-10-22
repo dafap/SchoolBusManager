@@ -732,11 +732,13 @@ div#fiche-inner div.row-inner input.cancel {
 	padding-left: 0;
 }
 #fiche-inner #eleve #wrapper-commentaire textarea,
+#fiche-inner #eleve #wrapper-note textarea,
 #fiche-inner #responsable #wrapper-commentaire textarea {	
 	width : 99.5%;
 	border-radius: 4px 4px 4px 4px;
 }
 #fiche-inner #eleve #wrapper-commentaire label,
+#fiche-inner #eleve #wrapper-note label,
 #fiche-inner #responsable #wrapper-commentaire label {
 	display: block;
 	float: left;

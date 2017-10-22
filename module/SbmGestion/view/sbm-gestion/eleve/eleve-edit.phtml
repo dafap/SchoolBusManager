@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 22 oct. 2017
+ * @version 2017-2.3.13
  */
 use SbmBase\Model\DateLib;
 
@@ -49,21 +49,25 @@ if (count($this->affectations)) {
 $disableAccordR1 = isset($structAffectations[1]) ? 'true' : 'false';
 $disableAccordR2 = isset($structAffectations[2]) ? 'true' : 'false';
 // urls utilisées
-$url_ici = $this->url('sbmgestion/eleve', [
-    'action' => 'eleve-edit',
-    'page' => $this->page
-]);
-$url_map = $this->url('sbmgestion/eleve', [
-    'action' => 'eleve-localisation',
-    'page' => $this->page
-]);
+$url_ici = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+$url_map = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-localisation',
+        'page' => $this->page
+    ]);
 $url_euro = $this->url('sbmgestion/finance', [
     'action' => 'paiement-liste'
 ]);
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile(
+    $this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/edit.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->headScript()->captureStart();
@@ -135,7 +139,8 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner edit">
 					<?php echo $this->formRow($this->form->get('etablissementId'));?>
-					<br><span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
+					<br>
+						<span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
 					</div>
 					<div id="wrapper-classeId" class="row-inner edit">
 					<?php echo $this->formRow($this->form->get('classeId'));?>
@@ -317,9 +322,13 @@ echo $this->formHidden($this->form->get('csrf'));
 						</div>
 					</div>
 				</div>
-
 			</div>
-			<div id="wrapper-commentaire" class="row-inner edit top-6px"><?php echo $this->formRow($this->form->get('commentaire'));?></div>
+			<div id="wrapper-commentaire" >
+				<div id="wrapper-notes-annuelles" class="row-inner edit top-6px">
+				<?php echo $this->formRow($this->form->get('commentaire'));?></div>
+				<div id="wrapper-notes-permanentes" class="row-inner edit top-6px">
+				<?php echo $this->formRow($this->form->get('note'));?></div>
+			</div>
 		</fieldset>
 		<div id="eleve-edit-buttons" class="row-inner edit left-95px">
             <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>

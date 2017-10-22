@@ -7,8 +7,8 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 oct. 2016
- * @version 2016-2.2.1
+ * @date 22 oct. 2017
+ * @version 2017-2.3.13
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -561,13 +561,31 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             'type' => 'Zend\Form\Element\Textarea',
             'name' => 'commentaire',
             'attributes' => array(
-                'id' => 'eleve-commentaire'
+                'id' => 'eleve-commentaire',
+                'class' => 'commentaire'
             ),
             'options' => array(
-                'label' => 'Notes',
+                'label' => 'Notes annuelles',
                  'label_attributes' => array(
-                     'class' => 'sbm-label'
+                     'class' => 'sbm-label commentaire'
                  ),
+                'error_attributes' => array(
+                    'class' => 'sbm_error'
+                )
+            )
+        ));
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Textarea',
+            'name' => 'note',
+            'attributes' => array(
+                'id' => 'eleve-note',
+                'class' => 'commentaire'
+            ),
+            'options' => array(
+                'label' => 'Notes permanentes',
+                'label_attributes' => array(
+                    'class' => 'sbm-label commentaire'
+                ),
                 'error_attributes' => array(
                     'class' => 'sbm_error'
                 )
