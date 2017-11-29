@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2017
- * @version 2017-2.3.9
+ * @date 29 nov. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -82,56 +82,60 @@ class Responsables implements FactoryInterface
         $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
-            ->from([
-            'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ])
-            ->columns([
-            'responsableId' => 'responsableId',
-            'selection' => 'selection',
-            'dateCreation' => 'dateCreation',
-            'dateModification' => 'dateModification',
-            'nature' => 'nature',
-            'titre' => 'titre',
-            'nom' => 'nom',
-            'nomSA' => 'nomSA',
-            'prenom' => 'prenom',
-            'prenomSA' => 'prenomSA',
-            'titre2' => 'titre2',
-            'nom2' => 'nom2',
-            'nom2SA' => 'nom2SA',
-            'prenom2' => 'prenom2',
-            'prenom2SA' => 'prenom2SA',
-            'adresseL1' => 'adresseL1',
-            'adresseL2' => 'adresseL2',
-            'codePostal' => 'codePostal',
-            'communeId' => 'communeId',
-            'ancienAdresseL1' => 'ancienAdresseL1',
-            'ancienAdresseL2' => 'ancienAdresseL2',
-            'ancienCodePostal' => 'ancienCodePostal',
-            'ancienCommuneId' => 'ancienCommuneId',
-            'email' => 'email',
-            'telephoneF' => 'telephoneF',
-            'telephoneP' => 'telephoneP',
-            'telephoneT' => 'telephoneT',
-            'etiquette' => 'etiquette',
-            'demenagement' => 'demenagement',
-            'dateDemenagement' => 'dateDemenagement',
-            'facture' => 'facture',
-            'grilleTarif' => 'grilleTarif',
-            'ribTit' => 'ribTit',
-            'ribDom' => 'ribDom',
-            'iban' => 'iban',
-            'bic' => 'bic',
-            'x' => 'x',
-            'y' => 'y',
-            'userId' => 'userId',
-            'note' => 'note'
-        ])
-            ->join([
-            'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'com.communeId=res.communeId', [
-            'commune' => 'nom'
-        ]);
+            ->from(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'responsableId' => 'responsableId',
+                'selection' => 'selection',
+                'dateCreation' => 'dateCreation',
+                'dateModification' => 'dateModification',
+                'nature' => 'nature',
+                'titre' => 'titre',
+                'nom' => 'nom',
+                'nomSA' => 'nomSA',
+                'prenom' => 'prenom',
+                'prenomSA' => 'prenomSA',
+                'titre2' => 'titre2',
+                'nom2' => 'nom2',
+                'nom2SA' => 'nom2SA',
+                'prenom2' => 'prenom2',
+                'prenom2SA' => 'prenom2SA',
+                'adresseL1' => 'adresseL1',
+                'adresseL2' => 'adresseL2',
+                'codePostal' => 'codePostal',
+                'communeId' => 'communeId',
+                'ancienAdresseL1' => 'ancienAdresseL1',
+                'ancienAdresseL2' => 'ancienAdresseL2',
+                'ancienCodePostal' => 'ancienCodePostal',
+                'ancienCommuneId' => 'ancienCommuneId',
+                'email' => 'email',
+                'telephoneF' => 'telephoneF',
+                'telephoneP' => 'telephoneP',
+                'telephoneT' => 'telephoneT',
+                'etiquette' => 'etiquette',
+                'demenagement' => 'demenagement',
+                'dateDemenagement' => 'dateDemenagement',
+                'facture' => 'facture',
+                'grilleTarif' => 'grilleTarif',
+                'ribTit' => 'ribTit',
+                'ribDom' => 'ribDom',
+                'iban' => 'iban',
+                'bic' => 'bic',
+                'x' => 'x',
+                'y' => 'y',
+                'userId' => 'userId',
+                'note' => 'note'
+            ])
+            ->join(
+            [
+                'com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'com.communeId=res.communeId', 
+            [
+                'commune' => 'nom'
+            ]);
         return $this;
     }
 
@@ -150,14 +154,18 @@ class Responsables implements FactoryInterface
             ->unnest()
             ->equalTo('millesime', $this->millesime);
         $select = clone $this->select;
-        $select->join([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [
-            'nb' => new Expression('count(ele.eleveId)')
-        ])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId=sco.eleveId', [])
+        $select->join(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 
+            'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', 
+            [
+                'nb' => new Expression('count(ele.eleveId)')
+            ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'ele.eleveId=sco.eleveId', [])
             ->where($where);
         if (! is_null($order)) {
             $select->order($order);
@@ -204,7 +212,9 @@ class Responsables implements FactoryInterface
      */
     public function paginator($where, $order)
     {
-        return new Paginator(new DbSelect($this->selectResponsables($where, $order), $this->db_manager->getDbAdapter()));
+        return new Paginator(
+            new DbSelect($this->selectResponsables($where, $order), 
+                $this->db_manager->getDbAdapter()));
     }
 
     /**
@@ -229,10 +239,13 @@ class Responsables implements FactoryInterface
             'eleveId'
         ])
             ->where($where1);
-        // inscrits payants (direct ou par un organisme)
+        // inscrits payants (pas fa et direct ou par un organisme)
         $where2 = new Where();
         $where2->literal('inscrit = 1')
-            ->nest()->literal('paiement = 1')->or->literal('gratuit = 2')->unnest()
+            ->literal('fa = 0')
+            ->nest()
+            ->literal('paiement = 1')->or->literal('gratuit = 2')
+            ->unnest()
             ->equalTo('millesime', $this->millesime);
         $select2 = new Select();
         $select2->from($this->db_manager->getCanonicName('scolarites', 'table'))
@@ -302,46 +315,56 @@ class Responsables implements FactoryInterface
             ->where($where7);
         // requête principale
         $select = clone $this->select;
-        $select->join([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [
-            'nbEnfants' => new Expression('count(ele.eleveId)')
-        ], $select::JOIN_LEFT)
+        $select->join(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 
+            'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', 
+            [
+                'nbEnfants' => new Expression('count(ele.eleveId)')
+            ], $select::JOIN_LEFT)
             ->join([
             'pre' => $select1
-        ], 'ele.eleveId=pre.eleveId', [
-            'nbPreinscrits' => new Expression('count(pre.eleveId)')
-        ], $select::JOIN_LEFT)
+        ], 'ele.eleveId=pre.eleveId', 
+            [
+                'nbPreinscrits' => new Expression('count(pre.eleveId)')
+            ], $select::JOIN_LEFT)
             ->join([
             'ins' => $select2
-        ], 'ele.eleveId=ins.eleveId', [
-            'nbInscrits' => new Expression('count(ins.eleveId)')
-        ], $select::JOIN_LEFT)
+        ], 'ele.eleveId=ins.eleveId', 
+            [
+                'nbInscrits' => new Expression('count(ins.eleveId)')
+            ], $select::JOIN_LEFT)
             ->join([
             'gra' => $select3
-        ], 'ele.eleveId=gra.eleveId', [
-            'nbGratuits' => new Expression('count(gra.eleveId)')
-        ], $select::JOIN_LEFT)
+        ], 'ele.eleveId=gra.eleveId', 
+            [
+                'nbGratuits' => new Expression('count(gra.eleveId)')
+            ], $select::JOIN_LEFT)
             ->join([
             'fa' => $select4
-        ], 'ele.eleveId=fa.eleveId', [
-            'nbFa' => new Expression('count(fa.eleveId)')
-        ], $select::JOIN_LEFT)
+        ], 'ele.eleveId=fa.eleveId', 
+            [
+                'nbFa' => new Expression('count(fa.eleveId)')
+            ], $select::JOIN_LEFT)
             ->join([
             'dup' => $select5
-        ], 'ele.eleveId=dup.eleveId', [
-            'nbDuplicata' => new Expression('sum(dup.duplicata)')
-        ], $select::JOIN_LEFT)
+        ], 'ele.eleveId=dup.eleveId', 
+            [
+                'nbDuplicata' => new Expression('sum(dup.duplicata)')
+            ], $select::JOIN_LEFT)
             ->join([
             'ta1' => $select6
-        ], 'ele.eleveId=ta1.eleveId', [
-            'nbTarif1' => new Expression('count(ta1.eleveId)')
-        ], $select::JOIN_LEFT)
+        ], 'ele.eleveId=ta1.eleveId', 
+            [
+                'nbTarif1' => new Expression('count(ta1.eleveId)')
+            ], $select::JOIN_LEFT)
             ->join([
             'ta2' => $select7
-        ], 'ele.eleveId=ta2.eleveId', [
-            'nbTarif2' => new Expression('count(ta2.eleveId)')
-        ], $select::JOIN_LEFT)
+        ], 'ele.eleveId=ta2.eleveId', 
+            [
+                'nbTarif2' => new Expression('count(ta2.eleveId)')
+            ], $select::JOIN_LEFT)
             ->group('responsableId')
             ->order($order);
         return $where->count() ? $select->having($where) : $select;
@@ -359,18 +382,24 @@ class Responsables implements FactoryInterface
         $where->equalTo('res.nomSA', $nomSA)
             ->equalTo('res.prenomSA', $prenomSA)
             ->equalTo('sco.millesime', $this->millesime);
-        $select = $this->sql->select([
-            'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ])
-            ->join([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', [])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'sco.eleveId = ele.eleveId', [])
-            ->columns([
-            'nbEnfants' => new Expression('count(sco.eleveId)')
-        ])
+        $select = $this->sql->select(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->join(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 
+            'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id', 
+            [])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
+            ->columns(
+            [
+                'nbEnfants' => new Expression('count(sco.eleveId)')
+            ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute()->current()['nbEnfants'] > 0;
