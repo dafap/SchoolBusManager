@@ -40,7 +40,7 @@ class CriteresEleves extends SbmCommunCriteres
      *
      * @see \SbmCommun\Model\Db\ObjectData\CriteresEleves::getWhere()
      */
-    public function getWhere($strict = array(), $alias = array())
+    public function getWhere($strict = [], $alias = [])
     {
         $where = new Where();
         $where->equalTo('sco.millesime', Session::get('millesime'));
@@ -198,7 +198,7 @@ class CriteresEleves extends SbmCommunCriteres
 
     public function getWherePdf($descripteur = null)
     {
-        $pageheader_string = array();
+        $pageheader_string = [];
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
@@ -375,18 +375,18 @@ class CriteresEleves extends SbmCommunCriteres
      *
      * @param array $criteres            
      */
-    public function getCriteres($strict = array(), $alias = array())
+    public function getCriteres($strict = [], $alias = [])
     {
-        $filtre = array(
-            'expression' => array(),
+        $filtre = [
+            'expression' => [],
             'criteres' => (array) $this->data,
-            'strict' => array(
-                'empty' => array(
+            'strict' => [
+                'empty' => [
                     'inscrit',
                     'fa',
                     'paiement'
-                ),
-                'not empty' => array(
+                ],
+                'not empty' => [
                     'numero',
                     'etablissementId',
                     'classeId',
@@ -394,9 +394,9 @@ class CriteresEleves extends SbmCommunCriteres
                     'demandeR1',
                     'demandeR2',
                     'selection'
-                )
-            )
-        );
+                ]
+            ]
+        ];
         if (! empty($this->data['etat'])) {
             switch ($this->data['etat']) {
                 case 1:
