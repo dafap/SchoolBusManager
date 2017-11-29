@@ -7,8 +7,8 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
- * @version 2016-2.2.1
+ * @date 29 nov. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -76,12 +76,15 @@ class CriteresEleves extends SbmCommunCriteres
                         ->literal('gratuit = 0');
                     break;
                 case 3:
-                    $where->literal('inscrit = 0')
+                    $where->literal('inscrit = 0')/*
                         ->nest()
-                        ->literal('paiement = 1')->OR->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+                        ->literal('paiement = 1')->OR->literal('fa = 1')->or->literal('gratuit > 0')->unnest()*/;
                     break;
                 case 4:
                     $where->literal('inscrit = 1')->literal('fa=1');
+                    break;
+                case 5:
+                    $where->literal('inscrit = 1');
                     break;
             }
         }
@@ -238,14 +241,18 @@ class CriteresEleves extends SbmCommunCriteres
                     $pageheader_string[] = 'élèves préinscrits';
                     break;
                 case 3:
-                    $where->literal('inscrit = 0')
+                    $where->literal('inscrit = 0')/*
                         ->nest()
-                        ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest();
+                        ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')->unnest()*/;
                     $pageheader_string[] = 'élèves rayés';
                     break;
                 case 4:
                     $where->literal('inscrit = 1')->literal('fa = 1');
                     $pageheader_string[] = 'élèves en famille d\'accueil';
+                    break;
+                case 5:
+                    $where->literal('inscrit = 1');
+                    $pageheader_string[] = 'élèves non rayés';
                     break;
             }
         }
@@ -407,13 +414,16 @@ class CriteresEleves extends SbmCommunCriteres
                 case 3:
                     // rayés
                     $filtre['criteres']['inscrit'] = 0;
-                    $filtre['expression'][] = '(paiement = 1 OR fa = 1 OR gratuit > 0)';
+                    //$filtre['expression'][] = '(paiement = 1 OR fa = 1 OR gratuit > 0)';
                     break;
                 case 4:
                     // famille d'accueil
                     $filtre['criteres']['inscrit'] = 1;
                     $filtre['criteres']['fa'] = 1;
                     break;
+                case 5:
+                    // non rayés
+                    $filtre['criteres']['inscrit'] = 1;
             }
         }
         if (! empty($this->data['demande'])) {
