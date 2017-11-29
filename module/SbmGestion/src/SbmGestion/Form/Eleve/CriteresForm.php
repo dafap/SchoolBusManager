@@ -7,8 +7,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
- * @version 2016-2.2.1
+ * @date 29 nov. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -23,346 +23,372 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
         parent::__construct('criteres');
         $this->setAttribute('method', 'post');
         
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'numero',
-            'attributes' => array(
-                'id' => 'critere-nom',
-                'maxlength' => '11',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Numéro',
-                'label_attributes' => array(
-                    'class' => 'sbm-first'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'nomSA',
-            'attributes' => array(
-                'id' => 'critere-nom',
-                'maxlength' => '45',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'prenomSA',
-            'attributes' => array(
-                'id' => 'critere-prenom',
-                'maxlength' => '45',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Prénom',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'responsable',
-            'attributes' => array(
-                'id' => 'critere-responsable',
-                'maxlength' => '45',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Responsable',
-                'label_attributes' => array(
-                    'class' => 'sbm-new-line'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'etablissementId',
-            'attributes' => array(
-                'id' => 'critere-etablissementId',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Etablissement',
-                'empty_option' => 'Tout',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'classeId',
-            'attributes' => array(
-                'id' => 'critere-classeId',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Classe',
-                'empty_option' => 'Tout',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'etat',
-            'attributes' => array(
-                'id' => 'critere-etat',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Etat',
-                'label_attributes' => array(
-                    'class' => 'sbm-new-line'
-                ),
-                'empty_option' => 'Tout',
-                'value_options' => array(
-                    '1' => 'Incrits',
-                    '2' => 'Préinscrits',
-                    '3' => 'Rayés',
-                    '4' => 'Famille d\'accueil'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'demande',
-            'attributes' => array(
-                'id' => 'critere-demande',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Demandes',
-                'empty_option' => 'Tout',
-                'value_options' => array(
-                    '1' => 'Non traitées',
-                    '2' => 'Partiellement traitées',
-                    '3' => 'Traitées'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'decision',
-            'attributes' => array(
-                'id' => 'critere-decision',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Décisions',
-                'empty_option' => 'Tout',
-                'value_options' => array(
-                    '1' => 'Accord total',
-                    '2' => 'Accord partiel',
-                    '3' => 'Subvention',
-                    '4' => 'Refus'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'derogation',
-            'attributes' => array(
-                'type' => 'checkbox',
-                'useHiddenElement' => false,
-                'options' => array(
-                    'checkedValue' => false,
-                    'uncheckedValue' => true
-                ),
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Dérogation',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'nonaffecte',
-            'attributes' => array(
-                'type' => 'checkbox',
-                'useHiddenElement' => false,
-                'options' => array(
-                    'checkedValue' => false,
-                    'uncheckedValue' => true
-                ),
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Sans affectation',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'ga',
-            'attributes' => array(
-                'type' => 'checkbox',
-                'useHiddenElement' => false,
-                'options' => array(
-                    'checkedValue' => false,
-                    'uncheckedValue' => true
-                ),
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Garde alternée',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'distancezero',
-            'attributes' => array(
-                'type' => 'checkbox',
-                'useHiddenElement' => false,
-                'options' => array(
-                    'checkedValue' => false,
-                    'uncheckedValue' => true
-                ),
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Distances à calculer',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'selection',
-            'attributes' => array(
-                'type' => 'checkbox',
-                'useHiddenElement' => false,
-                'options' => array(
-                    'checkedValue' => false,
-                    'uncheckedValue' => true
-                ),
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Sélectionnés',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'submit',
-            'name' => 'submit',
-            'attributes' => array(
-                'title' => 'Rechercher',
-                'id' => 'criteres-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'fam-find button submit'
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'numero',
+                'attributes' => [
+                    'id' => 'critere-nom',
+                    'maxlength' => '11',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Numéro',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'nomSA',
+                'attributes' => [
+                    'id' => 'critere-nom',
+                    'maxlength' => '45',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'prenomSA',
+                'attributes' => [
+                    'id' => 'critere-prenom',
+                    'maxlength' => '45',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Prénom',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'responsable',
+                'attributes' => [
+                    'id' => 'critere-responsable',
+                    'maxlength' => '45',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Responsable',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'etablissementId',
+                'attributes' => [
+                    'id' => 'critere-etablissementId',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Etablissement',
+                    'empty_option' => 'Tout',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'classeId',
+                'attributes' => [
+                    'id' => 'critere-classeId',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Classe',
+                    'empty_option' => 'Tout',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'etat',
+                'attributes' => [
+                    'id' => 'critere-etat',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Etat',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
+                    'empty_option' => 'Tout',
+                    'value_options' => [
+                        '4' => 'Famille d\'accueil',
+                        'inscription' => [
+                            'label' => 'état de l\'inscription',
+                            'options' => [
+                                '1' => 'Incrits',
+                                '2' => 'Préinscrits'
+                            ]
+                        ],
+                        'état de la fiche' => [
+                            'label' => 'état de la fiche',
+                            'options' => [
+                                '3' => 'Rayés',
+                                '5' => 'Non rayés'
+                            ]
+                        ]
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'demande',
+                'attributes' => [
+                    'id' => 'critere-demande',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Demandes',
+                    'empty_option' => 'Tout',
+                    'value_options' => [
+                        '1' => 'Non traitées',
+                        '2' => 'Partiellement traitées',
+                        '3' => 'Traitées'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'decision',
+                'attributes' => [
+                    'id' => 'critere-decision',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Décisions',
+                    'empty_option' => 'Tout',
+                    'value_options' => [
+                        '1' => 'Accord total',
+                        '2' => 'Accord partiel',
+                        '3' => 'Subvention',
+                        '4' => 'Refus'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'derogation',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Dérogation',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'nonaffecte',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Sans affectation',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'ga',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Garde alternée',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'distancezero',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Distances à calculer',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'selection',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Sélectionnés',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'submit',
+                'name' => 'submit',
+                'attributes' => [
+                    'title' => 'Rechercher',
+                    'id' => 'criteres-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'fam-find button submit'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'numero' => array(
+        return [
+            'numero' => [
                 'name' => 'numero',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'nomSA' => array(
+                    ]
+                ]
+            ],
+            'nomSA' => [
                 'name' => 'nomSA',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'prenomSA' => array(
+                    ]
+                ]
+            ],
+            'prenomSA' => [
                 'name' => 'prenomSA',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'responsable' => array(
+                    ]
+                ]
+            ],
+            'responsable' => [
                 'name' => 'responsable',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'etablissementId' => array(
+                    ]
+                ]
+            ],
+            'etablissementId' => [
                 'name' => 'etablissementId',
                 'required' => false
-            ),
-            'classeId' => array(
+            ],
+            'classeId' => [
                 'name' => 'classeId',
                 'required' => false
-            ),
-            'etat' => array(
+            ],
+            'etat' => [
                 'name' => 'etat',
                 'required' => false
-            ),
-            'demande' => array(
+            ],
+            'demande' => [
                 'name' => 'demande',
                 'required' => false
-            ),
-            'decision' => array(
+            ],
+            'decision' => [
                 'name' => 'decision',
                 'required' => false
-            ),
-            'derogation' => array(
+            ],
+            'derogation' => [
                 'name' => 'derogation',
                 'required' => false
-            ),
-
-            'ga' => array(
+            ],
+            
+            'ga' => [
                 'name' => 'ga',
                 'required' => false
-            ),
-            'selection' => array(
+            ],
+            'selection' => [
                 'name' => 'selection',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
 }
