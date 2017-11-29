@@ -11,8 +11,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 septembre 2016
- * @version 2016-2.2.0
+ * @date 30 nov. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -49,14 +49,14 @@ abstract class AbstractActionController extends ZendAbstractActionController
     {
         $this->config = $config;
     }
-    
+
     /**
      * Renvoie la valeur associée à la clé $param de la propriété $config
-     * 
-     * @param string $param
-     * 
+     *
+     * @param string $param            
+     *
      * @throws Exception
-     * 
+     *
      * @return mixed
      */
     public function __get($param)
@@ -64,7 +64,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
         if (array_key_exists($param, $this->config)) {
             return $this->config[$param];
         }
-        $message = sprintf('Le paramètre %s n\'est pas une propriété définie par le ControllerFactory.', $param);
+        $message = sprintf(
+            'Le paramètre %s n\'est pas une propriété définie par le ControllerFactory.', 
+            $param);
         throw new Exception($message);
     }
 
@@ -120,10 +122,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            identifiant du document à créer
      * @param array $retour
      *            tableau ('route' => ..., 'action' => ...) pour le retour en cas d'échec
+     * @param array $params
+     *            tableau associatif de paramètres à passer
      *            
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
-    public function documentPdf($criteresObject, $criteresForm, $documentId = null, $retour = null)
+    public function documentPdf($criteresObject, $criteresForm, $documentId = null, 
+        $retour = null, $params = [])
     {
         if (is_null($documentId)) {
             $prg = $this->prg();
@@ -132,11 +137,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
             } else {
                 $args = (array) $prg;
                 if (! array_key_exists('documentId', $args)) {
-                    $this->flashMessenger()->addErrorMessage('Le document à imprimer n\'a pas été indiqué.');
-                    return $this->redirect()->toRoute($retour['route'], array(
-                        'action' => $retour['action'],
-                        'page' => $this->params('page', 1)
-                    ));
+                    $this->flashMessenger()->addErrorMessage(
+                        'Le document à imprimer n\'a pas été indiqué.');
+                    return $this->redirect()->toRoute($retour['route'], 
+                        array(
+                            'action' => $retour['action'],
+                            'page' => $this->params('page', 1)
+                        ));
                 }
                 $documentId = $args['documentId'];
             }
@@ -159,7 +166,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
             // on crée la structure de l'objet criteres à partir des champs du formulaire et on la charge
             $criteres_obj = new $criteresObject[0]($form->getElementNames());
-            $criteres = $this->getFromSession('post', array(), str_replace('pdf', 'liste', $this->getSessionNamespace()));
+            $criteres = $this->getFromSession('post', array(), 
+                str_replace('pdf', 'liste', $this->getSessionNamespace()));
             if (! empty($criteres)) {
                 $criteres_obj->exchangeArray($criteres);
             }
@@ -179,10 +187,15 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
             $pageheader_params = $criteres_obj->getPageheaderParams();
             if (array_key_exists('pageheader_title', $pageheader_params)) {
-                $call_pdf->setParam('pageheader_title', $pageheader_params['pageheader_title']);
+                $call_pdf->setParam('pageheader_title', 
+                    $pageheader_params['pageheader_title']);
             }
             if (array_key_exists('pageheader_string', $pageheader_params)) {
-                $call_pdf->setParam('pageheader_string', $pageheader_params['pageheader_string']);
+                $call_pdf->setParam('pageheader_string', 
+                    $pageheader_params['pageheader_string']);
+            }
+            foreach ($params as $key => $value) {
+                $call_pdf->setParam($key, $value);
             }
             
             $call_pdf->renderPdf();
@@ -190,10 +203,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
         } catch (\Exception $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
-            return $this->redirect()->toRoute($retour['route'], array(
-                'action' => $retour['action'],
-                'page' => $this->params('page', 1)
-            ));
+            return $this->redirect()->toRoute($retour['route'], 
+                array(
+                    'action' => $retour['action'],
+                    'page' => $this->params('page', 1)
+                ));
         }
     }
 
@@ -218,7 +232,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
      *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme array('paginator' => ..., 'form' => ..., 'retour' => boolean)
      */
-    protected function initListe($formName, $initForm = null, $strictWhere = array(), $aliasWhere = array())
+    protected function initListe($formName, $initForm = null, $strictWhere = array(), 
+        $aliasWhere = array())
     {
         $retour = false;
         $prg = $this->prg();
@@ -283,7 +298,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * Le formulaire, le nom de la table, son type et son alias sont passés dans le paramètre $params
      * Le paramètre $renvoyer permet de retourner des données de POST
      *
-     * @param $db_manager
+     * @param
+     *            $db_manager
      * @param array $params
      *            Tableau associatif dont les clés principales sont 'form' et 'data'.
      *            La clé 'form' contient l'objet formulaire ;
@@ -313,12 +329,15 @@ abstract class AbstractActionController extends ZendAbstractActionController
             unset($args['cancel']);
         }
         if ($cancel) {
-            $this->flashMessenger()->addWarningMessage("Aucun enregistrement n'a été ajouté.");
+            $this->flashMessenger()->addWarningMessage(
+                "Aucun enregistrement n'a été ajouté.");
             return 'warning';
         }
         $table = $db_manager->get($params['data']['alias']);
         $form = $params['form'];
-        $form->setMaxLength($db_manager->getMaxLengthArray($params['data']['table'], $params['data']['type']));
+        $form->setMaxLength(
+            $db_manager->getMaxLengthArray($params['data']['table'], 
+                $params['data']['type']));
         if (is_callable($initform)) {
             $initform($args);
         }
@@ -327,11 +346,14 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $table->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage("Un nouvel enregistrement a été ajouté.");
+                $this->flashMessenger()->addSuccessMessage(
+                    "Un nouvel enregistrement a été ajouté.");
                 return 'success';
             }
         } else {
-            $form->setData($db_manager->getColumnDefaults($params['data']['table'], $params['data']['type']));
+            $form->setData(
+                $db_manager->getColumnDefaults($params['data']['table'], 
+                    $params['data']['type']));
         }
         if (is_callable($renvoyer)) {
             return $renvoyer($args);
@@ -361,7 +383,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // on aura le droit de rentrer en get que si un args a été sauvegardé en session avec un id de la donnée à modifier
-            $args = $this->getFromSession('post', array(), 'sbm_edit_' . $params['data']['table']);
+            $args = $this->getFromSession('post', array(), 
+                'sbm_edit_' . $params['data']['table']);
             $isPost = false;
             $cancel = false;
         } else {
@@ -387,13 +410,16 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $this->flashMessenger()->addErrorMessage("Action interdite.");
             return new EditResponse('error', $args);
         } elseif ($cancel) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+            $this->flashMessenger()->addWarningMessage(
+                "L'enregistrement n'a pas été modifié.");
             return new EditResponse('warning', $args);
         }
         $table = $db_manager->get($params['data']['alias']);
         
         $form = $params['form'];
-        $form->setMaxLength($db_manager->getMaxLengthArray($params['data']['table'], $params['data']['type']));
+        $form->setMaxLength(
+            $db_manager->getMaxLengthArray($params['data']['table'], 
+                $params['data']['type']));
         if (is_callable($initform)) {
             $initform($args);
         }
@@ -403,7 +429,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $table->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
+                $this->flashMessenger()->addSuccessMessage(
+                    "Les modifications ont été enregistrées.");
                 return new EditResponse('success', $args);
             }
         } else {
@@ -473,7 +500,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $this->flashMessenger()->addErrorMessage("Action interdite.");
             return new EditResponse('error', $args);
         } elseif ($cancel) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
+            $this->flashMessenger()->addWarningMessage(
+                "L'enregistrement n'a pas été supprimé.");
             return new EditResponse('warning', $args);
         } else {
             // pour les primary key composées de plusieurs champs, id est une chaine où les champs sont séparés par des |
@@ -489,9 +517,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
         } else {
             $form = $params['form'];
             if (is_array($id)) {
-                $form->setData(array(
-                    'id' => implode('|', $id)
-                ));
+                $form->setData(
+                    array(
+                        'id' => implode('|', $id)
+                    ));
             } else {
                 $form->setData(array(
                     'id' => $id
@@ -515,7 +544,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
     protected function getPaginatorCountPerPage($paginateurId, $default)
     {
         try {
-            return (int) StdLib::getParam($paginateurId, $this->paginator_count_per_page, $default);
+            return (int) StdLib::getParam($paginateurId, $this->paginator_count_per_page, 
+                $default);
         } catch (Exception $e) {
             return $default;
         }
@@ -579,9 +609,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            
      * @return int|boolean
      */
-    protected function getFromSession($param, $default = null, $sessionNamespace = Session::SBM_DG_SESSION)
+    protected function getFromSession($param, $default = null, 
+        $sessionNamespace = Session::SBM_DG_SESSION)
     {
-        return Session::get($param, $default, preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace));
+        return Session::get($param, $default, 
+            preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace));
     }
 
     /**
@@ -595,9 +627,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            namespace de la session (par défaut valeur fixée par le constante de cette classe SBM_DG_SESSION)
      *            On filtre les caractères afin de ne pas garder de caractères interdits
      */
-    protected function setToSession($param, $value, $sessionNamespace = Session::SBM_DG_SESSION)
+    protected function setToSession($param, $value, 
+        $sessionNamespace = Session::SBM_DG_SESSION)
     {
-        Session::set($param, $value, preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace));
+        Session::set($param, $value, 
+            preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace));
     }
 
     protected function removeInSession($param, $sessionNamespace = Session::SBM_DG_SESSION)
