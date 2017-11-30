@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 30 nov. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmPdf\Model;
 
@@ -1565,6 +1565,7 @@ class Tcpdf extends \TCPDF
                 }
                 $this->config['doctable']['columns'] = $table_columns;
             } else {
+                $t_nb_inscrits = $this->getParam('t_nb_inscrits', []);
                 $columns = [];
                 foreach ($table_columns as $column) {
                     $columns[] = $column['tbody'];
@@ -1622,7 +1623,22 @@ class Tcpdf extends \TCPDF
                             // $row est un ArrayObject
                             $ligne = [];
                             for ($key = 0; $key < count($table_columns); $key ++) {
-                                $ligne[] = $value = $row[$table_columns[$key]['tbody']];
+                                $value = $row[$table_columns[$key]['tbody']];
+                                // traitement des effectifs
+                                if (
+                                    $table_columns[$key]['filter']
+                                    && strpos($table_columns[$key]['filter'], '%valeur%')
+                                ) {
+                                    $filter = $table_columns[$key]['filter'];
+                                    $filter = str_replace('%valeur%', $value, $filter);
+                                    $filter = explode('=>', $filter);
+                                    if ($filter[0] == 't_nb_inscrits') {
+                                        $filter = StdLib::getArrayFromString($filter[1]);
+                                        $value = StdLib::getParamR($filter, $t_nb_inscrits, 0);
+                                    }
+                                }
+                                // reprise du traitement
+                                $ligne[] = $value;
                                 // adapte la largeur de la colonne si nécessaire
                                 $value_width = $this->GetStringWidth($value, 
                                     $this->getConfig('document', 'data_font_family', 
