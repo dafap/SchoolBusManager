@@ -795,7 +795,9 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'classe-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, [
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byClasse()
+        ]);
     }
 
     /**
@@ -1426,7 +1428,9 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, [
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement()
+        ]);
     }
 
     /**
@@ -2899,7 +2903,9 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'station-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,[
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation()
+        ]);
     }
 
     /**
@@ -3455,7 +3461,9 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,[
+            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur()
+        ]);
     }
 
     public function transporteurGroupPdfAction()

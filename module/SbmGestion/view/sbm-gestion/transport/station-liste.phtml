@@ -2,14 +2,24 @@
 /**
  * Liste des stations
  *
+ * Cette vue reçoit une variable $t_nb_inscrits qui est un tableau associatif 
+ * structuré comme indiqué dans l'exemple ci-dessous :
+ * [
+ *     code_station => [
+ *         'r1' => effectif des élèves transportés en demandeR1,
+ *         'r2' => effectif des élèves transportés en demandeR2,
+ *         'total' => effectif des élèves transportés (r1 ou r2)
+ *     ],
+ *     ...
+ * ]
  *
  * @project sbm
  * @package SbmGestion
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juill. 2017
- * @version 2017-2.3.5
+ * @date 30 nov. 2017
+ * @version 2017-2.3.14
  */
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
