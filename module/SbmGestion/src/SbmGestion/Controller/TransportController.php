@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 nov. 2017
+ * @date 3 déc. 2017
  * @version 2017-2.3.14
  */
 namespace SbmGestion\Controller;
@@ -2012,7 +2012,6 @@ class TransportController extends AbstractActionController
                 'serviceId' => $serviceId,
                 'origine' => StdLib::getParam('origine', $args, 'etablissement-service')
             ]);
-        $viewModel->setTemplate('sbm-gestion/transport/service-group.phtml');
         return $viewModel;
     }
 

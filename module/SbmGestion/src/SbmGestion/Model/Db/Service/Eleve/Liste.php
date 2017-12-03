@@ -9,8 +9,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 3 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -325,7 +325,7 @@ class Liste extends AbstractQuery implements FactoryInterface
         ))
             ->join(array(
             'a' => $select1->combine($select2)
-        ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array())
+        ), 'a.millesime=s.millesime And e.eleveId=a.eleveId', array('serviceId'))
             ->join(array(
             'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ), 'r.responsableId=a.responsableId', array(
@@ -338,6 +338,14 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(array(
             'd' => $this->db_manager->getCanonicName('communes', 'table')
         ), 'd.communeId=s.communeId', array(), Select::JOIN_LEFT)
+            ->join(array(
+            'ser' => $this->db_manager->getCanonicName('services', 'table')
+        ), 'ser.serviceId = a.serviceId', [])
+            ->join(array(
+            'tra' => $this->db_manager->getCanonicName('transporteurs', 'table')
+        ), 'tra.transporteurId = ser.transporteurId', array(
+            'transporteur' => 'nom'
+        ))
             ->join(array(
             'sta' => $this->db_manager->getCanonicName('stations', 'table')
         ), 'sta.stationId = a.stationId', array(
