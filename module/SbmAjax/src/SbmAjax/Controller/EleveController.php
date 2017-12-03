@@ -177,6 +177,8 @@ class EleveController extends AbstractActionController
     public function formaffectationAction()
     {
         $trajet = $this->params('trajet', 1);
+        $station1Id = $this->params('station1Id', null);
+        $station2Id = $this->params('station2Id', null);
         $aData = array(
             'millesime' => Session::get('millesime'),
             'eleveId' => $this->params('eleveId', 0),
@@ -185,8 +187,8 @@ class EleveController extends AbstractActionController
             'sens' => '3', // aller-retour
             'correspondance' => $this->params('correspondance', 1),
             'responsableId' => $this->params('responsableId', 0),
-            'station1Id' => $this->params('station1Id', null),
-            'station2Id' => $this->params('station2Id', null),
+            'station1Id' => $station1Id,
+            'station2Id' => $station2Id,
             'service1Id' => $this->params('service1Id', null),
             'service2Id' => $this->params('service2Id', null),
             'op' => $this->params('op', null)
@@ -194,6 +196,8 @@ class EleveController extends AbstractActionController
         
         return new ViewModel(array(
             'trajet' => $trajet,
+            'station1Id' => $station1Id,
+            'station2Id' => $station2Id,
             'form' => $this->getFormAffectationDecision($trajet)->setData($aData),
             'is_xmlhttprequest' => 1
         ));
