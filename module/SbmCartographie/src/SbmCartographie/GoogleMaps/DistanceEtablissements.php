@@ -180,8 +180,8 @@
  * @filesource DistanceEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -255,17 +255,19 @@ class DistanceEtablissements
      */
     public function getLatLngString(Point $point)
     {
-        if (! in_array($point->getUnite(), array(
-            'degré',
-            'grade',
-            'radian'
-        ))) {
+        if (! in_array($point->getUnite(), 
+            array(
+                'degré',
+                'grade',
+                'radian'
+            ))) {
             $p = $this->projection->xyzVersgRGF93($point);
         } else {
             $p = $point;
         }
         $p = $p->to('degré');
-        return sprintf('%s,%s', number_format($p->getLatitude(), 6, '.', ''), number_format($p->getLongitude(), 6, '.', ''));
+        return sprintf('%s,%s', number_format($p->getLatitude(), 6, '.', ''), 
+            number_format($p->getLongitude(), 6, '.', ''));
     }
 
     /**
@@ -277,18 +279,29 @@ class DistanceEtablissements
      */
     public function calculDistance(Point $origine, Point $destination)
     {
-        $url = sprintf($this->google_distancematrix_url, $this->getLatLngString($origine), $this->getLatLngString($destination));
-        $obj = json_decode(file_get_contents($url));
-        if ($obj->status == 'OK') {
-            if ($obj->rows[0]->elements[0]->status == 'OK') {
-                $d = $obj->rows[0]->elements[0]->distance->value;
+        $d = null;
+        $url = sprintf($this->google_distancematrix_url, $this->getLatLngString($origine), 
+            $this->getLatLngString($destination));
+        $obj = json_decode(@file_get_contents($url));
+        if ($obj) {
+            if ($obj->status == 'OK') {
+                
+                if ($obj->rows[0]->elements[0]->status == 'OK') {
+                    $d = $obj->rows[0]->elements[0]->distance->value;
+                } else {
+                    $msg = $obj->rows[0]->elements[0]->status;
+                }
             } else {
-                $d = null;
+                $msg = $obj->status;
             }
         } else {
-            $d = null;
+            $msg = 'NOT_ANSWER';
         }
-        return $d;
+        if ($d) {
+            return $d;
+        } else {
+            throw new ExceptionNotAnswer($msg);
+        }
     }
 
     /**
@@ -305,29 +318,46 @@ class DistanceEtablissements
     public function plusieursOriginesUneDestination(array $origines, Point $destination)
     {
         if (! is_array($origines)) {
-            throw new Exception(__METHOD__ . ' - Le paramètre 1 de cette méthode doit être un tableau. On a reçu ' . gettype($origines));
+            throw new Exception(
+                __METHOD__ .
+                     ' - Le paramètre 1 de cette méthode doit être un tableau. On a reçu ' .
+                     gettype($origines));
         }
         $tLatLng = array();
         foreach ($origines as $origine) {
             if (! $origine instanceof Point) {
-                throw new Exception(__METHOD__ . ' - Le tableau reçu en paramètre 1 doit contenir des SbmCartographie\Model\Point. On a reçu un ' . gettype($origine));
+                throw new Exception(
+                    __METHOD__ .
+                         ' - Le tableau reçu en paramètre 1 doit contenir des SbmCartographie\Model\Point. On a reçu un ' .
+                         gettype($origine));
             }
             $tLatLng[] = $this->getLatLngString($origine);
         }
-        $url = sprintf($this->google_distancematrix_url, implode('|', $tLatLng), $this->getLatLngString($destination));
-        $obj = json_decode(file_get_contents($url));
-        //die(var_dump($obj));
-        if ($obj->status == 'OK') {
-            $result = array();
-            for ($j = 0; $j < count($obj->rows); $j ++) {
-                if ($obj->rows[$j]->elements[0]->status == 'OK') {
-                    $result[] = $obj->rows[$j]->elements[0]->distance->value;
+        $result = [];
+        $url = sprintf($this->google_distancematrix_url, implode('|', $tLatLng), 
+            $this->getLatLngString($destination));
+        $obj = json_decode(@file_get_contents($url));
+        if ($obj) {
+            if ($obj->status == 'OK') {
+                for ($j = 0; $j < count($obj->rows); $j ++) {
+                    if ($obj->rows[$j]->elements[0]->status == 'OK') {
+                        $result[] = $obj->rows[$j]->elements[0]->distance->value;
+                    } else {
+                        $msg = $obj->rows[$j]->elements[0]->status;
+                    }
                 }
+            } else {
+                // $result = array_fill(0, count($origines), 0);
+                $msg = $obj->status;
             }
         } else {
-            $result = array_fill(0, count($origines), 0);
+            $msg = 'NOT_ANSWER';
         }
-        return $result;
+        if ($result) {
+            return $result;
+        } else {
+            throw new ExceptionNotAnswer($msg);
+        }
     }
 
     /**
@@ -344,28 +374,46 @@ class DistanceEtablissements
     public function uneOriginePlusieursDestinations(Point $origine, array $destinations)
     {
         if (! is_array($destinations)) {
-            throw new Exception(__METHOD__ . ' - Le paramètre 2 de cette méthode doit être un tableau. On a reçu ' . gettype($destinations));
+            throw new Exception(
+                __METHOD__ .
+                     ' - Le paramètre 2 de cette méthode doit être un tableau. On a reçu ' .
+                     gettype($destinations));
         }
         $tLatLng = array();
         foreach ($destinations as $destination) {
             if (! $destination instanceof Point) {
-                throw new Exception(__METHOD__ . ' - Le tableau reçu en paramètre 2 doit contenir des SbmCartographie\Model\Point. On a reçu un ' . gettype($destination));
+                throw new Exception(
+                    __METHOD__ .
+                         ' - Le tableau reçu en paramètre 2 doit contenir des SbmCartographie\Model\Point. On a reçu un ' .
+                         gettype($destination));
             }
             $tLatLng[] = $this->getLatLngString($destination);
         }
-        $url = sprintf($this->google_distancematrix_url, $this->getLatLngString($origine), implode('|', $tLatLng));
-        $obj = json_decode(file_get_contents($url));
-        if ($obj->status == 'OK') {
-            $result = array();
-            for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {
-                if ($obj->rows[0]->elements[$j]->status == 'OK') {
-                    $result[] = $obj->rows[0]->elements[$j]->distance->value;
+        $result = [];
+        $url = sprintf($this->google_distancematrix_url, $this->getLatLngString($origine), 
+            implode('|', $tLatLng));
+        $obj = json_decode(@file_get_contents($url));
+        if ($obj) {
+            if ($obj->status == 'OK') {
+                for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {
+                    if ($obj->rows[0]->elements[$j]->status == 'OK') {
+                        $result[] = $obj->rows[0]->elements[$j]->distance->value;
+                    } else {
+                        $msg = $obj->rows[0]->elements[$j]->status;
+                    }
                 }
+            } else {
+                // $result = array_fill(0, count($destinations), 0);
+                $msg = $obj->status;
             }
         } else {
-            $result = array_fill(0, count($destinations), 0);
+            $msg = 'NOT_ANSWER';
         }
-        return $result;
+        if ($result) {
+            return $result;
+        } else {
+            throw new ExceptionNotAnswer($msg);
+        }
     }
 
     /**
@@ -376,17 +424,30 @@ class DistanceEtablissements
      */
     public function calculDistanceByDirections(Point $origine, Point $destination)
     {
-        $url = sprintf($this->google_directions_url, $this->getLatLngString($origine), $this->getLatLngString($destination));
-        $obj = json_decode(file_get_contents($url));
-        if ($obj->status == 'OK') {
-            usort($obj->routes, function ($a, $b) {
-                return intval($a->legs[0]->distance->value) - intval($b->legs[0]->distance->value);
-            });
-            $d = $obj->routes[0]->legs[0]->distance->value;
+        $d = null;
+        $url = sprintf($this->google_directions_url, $this->getLatLngString($origine), 
+            $this->getLatLngString($destination));
+        $obj = json_decode(@file_get_contents($url));
+        if ($obj) {
+            if ($obj->status == 'OK') {
+                usort($obj->routes, 
+                    function ($a, $b) {
+                        return intval($a->legs[0]->distance->value) -
+                             intval($b->legs[0]->distance->value);
+                    });
+                $d = $obj->routes[0]->legs[0]->distance->value;
+            } else {
+                // $d = 0;
+                $msg = $obj->status;
+            }
         } else {
-            $d = 0;
+            $msg = 'NOT_ANSWER';
         }
-        return $d;
+        if ($d) {
+            return $d;
+        } else {
+            throw new ExceptionNotAnswer($msg);
+        }
     }
 
     /**
@@ -431,68 +492,78 @@ class DistanceEtablissements
      */
     public function ecolesPrisesEnCompte($niveau, Point $domicile)
     {
+        $result = [];
         $structure = $this->prepareListeEcolesZone($niveau);
         $position = $this->getLatLngString($domicile);
-        $url = sprintf($this->google_distancematrix_url, $position, implode('|', $structure['tLatLng']));
-        $obj = json_decode(file_get_contents($url));
-        if ($obj->status == 'OK') {
-            $etablissementIdPublic = '00000000';
-            $dMinPriveCommune = $dMinPriveZone = $dMinPublicCommune = $dMinPublicZone = 1e+11; // force la première affectation
-            for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {
-                if ($obj->rows[0]->elements[$j]->status == 'OK') {
-                    $elementDistance = $obj->rows[0]->elements[$j]->distance->value;
-                    $elementEtablissementId = $structure['tEtablissements'][$j]['etablissementId'];
-                    $elementCommuneId = $structure['tEtablissements'][$j]['communeId'];
-                    $elementStatut = $structure['tEtablissements'][$j]['statut'];
-                    if ($elementStatut) {
-                        // école publique
-                        if ($elementDistance < $dMinPublicZone) {
-                            $dMinPublicZone = $elementDistance;
-                            $etablissementIdPublic = $elementEtablissementId;
-                        }
-                        if ($elementDistance < $dMinPublicCommune && $elementCommuneId == $domicile->getAttribute('communeId')) {
-                            $dMinPublicCommune = $elementDistance;
-                            $etablissementIdPublicCommune = $elementEtablissementId;
-                        }
-                    } else {
-                        // école privée
-                        if ($elementDistance < $dMinPriveZone) {
-                            $dMinPriveZone = $elementDistance;
-                            $etablissementIdPrive = $elementEtablissementId;
-                        }
-                        if ($elementDistance < $dMinPriveCommune && $elementCommuneId == $domicile->getAttribute('communeId')) {
-                            $dMinPriveCommune = $elementDistance;
-                            $etablissementIdPriveCommune = $elementEtablissementId;
+        $url = sprintf($this->google_distancematrix_url, $position, 
+            implode('|', $structure['tLatLng']));
+        $obj = json_decode(@file_get_contents($url));
+        if ($obj) {
+            if ($obj->status == 'OK') {
+                $etablissementIdPublic = '00000000';
+                $dMinPriveCommune = $dMinPriveZone = $dMinPublicCommune = $dMinPublicZone = 1e+11; // force la première affectation
+                for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {
+                    if ($obj->rows[0]->elements[$j]->status == 'OK') {
+                        $elementDistance = $obj->rows[0]->elements[$j]->distance->value;
+                        $elementEtablissementId = $structure['tEtablissements'][$j]['etablissementId'];
+                        $elementCommuneId = $structure['tEtablissements'][$j]['communeId'];
+                        $elementStatut = $structure['tEtablissements'][$j]['statut'];
+                        if ($elementStatut) {
+                            // école publique
+                            if ($elementDistance < $dMinPublicZone) {
+                                $dMinPublicZone = $elementDistance;
+                                $etablissementIdPublic = $elementEtablissementId;
+                            }
+                            if ($elementDistance < $dMinPublicCommune &&
+                                 $elementCommuneId == $domicile->getAttribute('communeId')) {
+                                $dMinPublicCommune = $elementDistance;
+                                $etablissementIdPublicCommune = $elementEtablissementId;
+                            }
+                        } else {
+                            // école privée
+                            if ($elementDistance < $dMinPriveZone) {
+                                $dMinPriveZone = $elementDistance;
+                                $etablissementIdPrive = $elementEtablissementId;
+                            }
+                            if ($elementDistance < $dMinPriveCommune &&
+                                 $elementCommuneId == $domicile->getAttribute('communeId')) {
+                                $dMinPriveCommune = $elementDistance;
+                                $etablissementIdPriveCommune = $elementEtablissementId;
+                            }
                         }
                     }
                 }
+                $result[] = [
+                    'etablissementId' => $etablissementIdPublic,
+                    'distance' => $dMinPublicZone
+                ];
+                if (isset($etablissementIdPublicCommune) &&
+                     $etablissementIdPublic != $etablissementIdPublicCommune) {
+                    $result[] = [
+                        'etablissementId' => $etablissementIdPublicCommune,
+                        'distance' => $dMinPublicCommune
+                    ];
+                }
+                if (isset($etablissementIdPrive)) {
+                    $result[] = [
+                        'etablissementId' => $etablissementIdPrive,
+                        'distance' => $dMinPriveZone
+                    ];
+                }
+                if (isset($etablissementIdCommunePrive) &&
+                     $etablissementIdPrive != $etablissementIdPriveCommune) {
+                    $result[] = [
+                        'etablissementId' => $etablissementIdPriveCommune,
+                        'distance' => $dMinPriveCommune
+                    ];
+                }
+                return $result;
+            } else {
+                throw new Exception(
+                    'La requête sur GoogleMaps n\'a pas permis de calculer les distances.');
             }
-            $result = array();
-            $result[] = array(
-                'etablissementId' => $etablissementIdPublic,
-                'distance' => $dMinPublicZone
-            );
-            if (isset($etablissementIdPublicCommune) && $etablissementIdPublic != $etablissementIdPublicCommune) {
-                $result[] = array(
-                    'etablissementId' => $etablissementIdPublicCommune,
-                    'distance' => $dMinPublicCommune
-                );
-            }
-            if (isset($etablissementIdPrive)) {
-                $result[] = array(
-                    'etablissementId' => $etablissementIdPrive,
-                    'distance' => $dMinPriveZone
-                );
-            }
-            if (isset($etablissementIdCommunePrive) && $etablissementIdPrive != $etablissementIdPriveCommune) {
-                $result[] = array(
-                    'etablissementId' => $etablissementIdPriveCommune,
-                    'distance' => $dMinPriveCommune
-                );
-            }
-            return $result;
         } else {
-            throw new Exception('La requête sur GoogleMaps n\'a pas permis de calculer les distances.');
+            throw new ExceptionNotAnswer('GoogleMaps API ne répond pas.');
         }
     }
 
@@ -507,10 +578,13 @@ class DistanceEtablissements
      */
     public function collegesPrisEnCompte(Point $domicile)
     {
-        $tSecteurScolaireClgPu = $this->db_manager->get('Sbm\Db\Table\SecteursScolairesClgPu');
-        $rowset = $tSecteurScolaireClgPu->fetchAll(array(
-            'communeId' => $domicile->getAttribute('communeId')
-        ));
+        $result = [];
+        $tSecteurScolaireClgPu = $this->db_manager->get(
+            'Sbm\Db\Table\SecteursScolairesClgPu');
+        $rowset = $tSecteurScolaireClgPu->fetchAll(
+            array(
+                'communeId' => $domicile->getAttribute('communeId')
+            ));
         $listePublic = array();
         foreach ($rowset as $clg) {
             $listePublic[] = $clg->etablissementId;
@@ -536,41 +610,46 @@ class DistanceEtablissements
             }
         }
         $position = $this->getLatLngString($domicile);
-        $url = sprintf($this->google_distancematrix_url, $position, implode('|', $structure['tLatLng']));
-        $obj = json_decode(file_get_contents($url));
-        if ($obj->status == 'OK') {
-            $result = array();
-            $dMinPrive = 1e+11;
-            for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {
-                if ($obj->rows[0]->elements[$j]->status == 'OK') {
-                    $elementDistance = $obj->rows[0]->elements[$j]->distance->value;
-                    $elementEtablissementId = $structure['tEtablissements'][$j]['etablissementId'];
-                    $elementCommuneId = $structure['tEtablissements'][$j]['communeId'];
-                    $elementStatut = $structure['tEtablissements'][$j]['statut'];
-                    if ($elementStatut) {
-                        // clg public du secteur scolaire
-                        $result[] = array(
-                            'etablissementId' => $elementEtablissementId,
-                            'distance' => $elementDistance
-                        );
-                    } else {
-                        // clg privé : prendre le plus proche
-                        if ($elementDistance < $dMinPrive) {
-                            $dMinPrive = $elementDistance;
-                            $etablissementIdPrive = $elementEtablissementId;
+        $url = sprintf($this->google_distancematrix_url, $position, 
+            implode('|', $structure['tLatLng']));
+        $obj = json_decode(@file_get_contents($url));
+        if ($obj) {
+            if ($obj->status == 'OK') {
+                $dMinPrive = 1e+11;
+                for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {
+                    if ($obj->rows[0]->elements[$j]->status == 'OK') {
+                        $elementDistance = $obj->rows[0]->elements[$j]->distance->value;
+                        $elementEtablissementId = $structure['tEtablissements'][$j]['etablissementId'];
+                        $elementCommuneId = $structure['tEtablissements'][$j]['communeId'];
+                        $elementStatut = $structure['tEtablissements'][$j]['statut'];
+                        if ($elementStatut) {
+                            // clg public du secteur scolaire
+                            $result[] = [
+                                'etablissementId' => $elementEtablissementId,
+                                'distance' => $elementDistance
+                            ];
+                        } else {
+                            // clg privé : prendre le plus proche
+                            if ($elementDistance < $dMinPrive) {
+                                $dMinPrive = $elementDistance;
+                                $etablissementIdPrive = $elementEtablissementId;
+                            }
                         }
                     }
                 }
+                if (isset($etablissementIdPrive)) {
+                    $result[] = [
+                        'etablissementId' => $etablissementIdPrive,
+                        'distance' => $dMinPrive
+                    ];
+                }
+                return $result;
+            } else {
+                throw new Exception(
+                    'La requête sur GoogleMaps n\'a pas permis de calculer les distances.');
             }
-            if (isset($etablissementIdPrive)) {
-                $result[] = array(
-                    'etablissementId' => $etablissementIdPrive,
-                    'distance' => $dMinPrive
-                );
-            }
-            return $result;
         } else {
-            throw new Exception('La requête sur GoogleMaps n\'a pas permis de calculer les distances.');
+            throw new ExceptionNotAnswer('GoogleMaps API ne répond pas.');
         }
     }
 
@@ -590,7 +669,8 @@ class DistanceEtablissements
         $where = new Where();
         if ($college->getAttribute('statut')) {
             // collège public : l'élève est-il du secteur scolaire ?
-            $tSecteurScolaireClgPu = $this->db_manager->get('Sbm\Db\Table\SecteursScolairesClgPu');
+            $tSecteurScolaireClgPu = $this->db_manager->get(
+                'Sbm\Db\Table\SecteursScolairesClgPu');
             $where->equalTo('communeId', $domiciles[0]->getAttribute('communeId'));
             if (count($domiciles) == 2) {
                 $where->OR->equalTo('communeId', $domiciles[1]->getAttribute('communeId'));
@@ -604,7 +684,8 @@ class DistanceEtablissements
             }
             return array(
                 'droit' => $droit,
-                'distances' => $this->plusieursOriginesUneDestination($domiciles, $college)
+                'distances' => $this->plusieursOriginesUneDestination($domiciles, 
+                    $college)
             );
         } else {
             // collège privé : est-il d'une commune de résidence de l'élève ?
@@ -612,7 +693,8 @@ class DistanceEtablissements
             $origines = array();
             $j = 0;
             foreach ($domiciles as $pt) {
-                $estDeLaCommune |= $pt->getAttribute('communeId') == $college->getAttribute('communeId');
+                $estDeLaCommune |= $pt->getAttribute('communeId') ==
+                     $college->getAttribute('communeId');
                 $origines[$j ++] = $this->getLatLngString($pt);
             }
             // quels sont les établissements privés ?
@@ -626,7 +708,8 @@ class DistanceEtablissements
                 // s'il n'y a qu'un établissement c'est fini
                 return array(
                     'droit' => true,
-                    'distances' => $this->plusieursOriginesUneDestination($domiciles, $college)
+                    'distances' => $this->plusieursOriginesUneDestination($domiciles, 
+                        $college)
                 );
             } else {
                 // il y en a plusieurs, recherche du collège privé le plus proche
@@ -639,33 +722,41 @@ class DistanceEtablissements
                     $tLatLng[] = $this->getLatLngString($p);
                     $tEtablissementId[] = $clg->etablissementId;
                 }
-                $url = sprintf($this->google_distancematrix_url, implode('|', $origines), implode('|', $tLatLng));
-                $obj = json_decode(file_get_contents($url));
-                if ($obj->status == 'OK') {
-                    $distances = array();
-                    $i = 0;
-                    foreach ($obj->rows as $row) {
-                        $dmin = 1e+11;
-                        $procheEtablissementId = '';
-                        $j = 0;
-                        foreach ($row->elements as $element) {
-                            if ($element->status == 'OK') {
-                                if ($tEtablissementId[$j] == $college->getAttribute('etablissementId')) {
-                                    $distances[$i] = $element->distance->value;
+                $url = sprintf($this->google_distancematrix_url, implode('|', $origines), 
+                    implode('|', $tLatLng));
+                $obj = json_decode(@file_get_contents($url));
+                if ($obj) {
+                    if ($obj->status == 'OK') {
+                        $distances = array();
+                        $i = 0;
+                        foreach ($obj->rows as $row) {
+                            $dmin = 1e+11;
+                            $procheEtablissementId = '';
+                            $j = 0;
+                            foreach ($row->elements as $element) {
+                                if ($element->status == 'OK') {
+                                    if ($tEtablissementId[$j] ==
+                                         $college->getAttribute('etablissementId')) {
+                                        $distances[$i] = $element->distance->value;
+                                    }
+                                    if ($dmin > $element->distance->value) {
+                                        $dmin = $element->distance->value;
+                                        $procheEtablissementId = $tEtablissementId[$j];
+                                    }
                                 }
-                                if ($dmin > $element->distance->value) {
-                                    $dmin = $element->distance->value;
-                                    $procheEtablissementId = $tEtablissementId[$j];
-                                }
+                                $j ++;
                             }
-                            $j ++;
+                            $droit |= $college->getAttribute('etablissementId') ==
+                                 $procheEtablissementId;
                         }
-                        $droit |= $college->getAttribute('etablissementId') == $procheEtablissementId;
+                        return array(
+                            'droit' => $droit,
+                            'distances' => $this->plusieursOriginesUneDestination(
+                                $domiciles, $college)
+                        );
                     }
-                    return array(
-                        'droit' => $droit,
-                        'distances' => $this->plusieursOriginesUneDestination($domiciles, $college)
-                    );
+                } else {
+                    throw new ExceptionNotAnswer('GoogleMaps API ne répond pas.');
                 }
             }
         }
@@ -701,39 +792,50 @@ class DistanceEtablissements
         }
         // liste des écoles ayant le statut de l'$ecole
         if ($estDeLaCommune) {
-            $structure = $this->prepareListeEcolesZone($niveau, $ecole->getAttribute('statut'), $ecole->getAttribute('communeId'));
+            $structure = $this->prepareListeEcolesZone($niveau, 
+                $ecole->getAttribute('statut'), $ecole->getAttribute('communeId'));
         } else {
-            $structure = $this->prepareListeEcolesZone($niveau, $ecole->getAttribute('statut'));
+            $structure = $this->prepareListeEcolesZone($niveau, 
+                $ecole->getAttribute('statut'));
         }
         // calcul des distances (plusieurs origines, plusieurs destinations)
-        $url = sprintf($this->google_distancematrix_url, implode('|', $origines), implode('|', $structure['tLatLng']));
-        $obj = json_decode(file_get_contents($url));
-        if ($obj->status == 'OK') {
-            $i = 0;
-            foreach ($obj->rows as $row) {
-                $dmin = 1e+11;
-                $procheEtablissementId = '';
-                $j = 0;
-                foreach ($row->elements as $element) {
-                    if ($element->status == 'OK') {
-                        if ($structure['tEtablissements'][$j]['etablissementId'] == $ecole->getAttribute('etablissementId')) {
-                            $distances[$i] = $element->distance->value;
+        $url = sprintf($this->google_distancematrix_url, implode('|', $origines), 
+            implode('|', $structure['tLatLng']));
+        $obj = json_decode(@file_get_contents($url));
+        if ($obj) {
+            if ($obj->status == 'OK') {
+                $i = 0;
+                foreach ($obj->rows as $row) {
+                    $dmin = 1e+11;
+                    $procheEtablissementId = '';
+                    $j = 0;
+                    foreach ($row->elements as $element) {
+                        if ($element->status == 'OK') {
+                            if ($structure['tEtablissements'][$j]['etablissementId'] ==
+                                 $ecole->getAttribute('etablissementId')) {
+                                $distances[$i] = $element->distance->value;
+                            }
+                            if ($dmin > $element->distance->value) {
+                                $dmin = $element->distance->value;
+                                $procheEtablissementId = $structure['tEtablissements'][$j]['etablissementId'];
+                            }
                         }
-                        if ($dmin > $element->distance->value) {
-                            $dmin = $element->distance->value;
-                            $procheEtablissementId = $structure['tEtablissements'][$j]['etablissementId'];
-                        }
+                        $j ++;
                     }
-                    $j ++;
+                    $droit |= $ecole->getAttribute('etablissementId') ==
+                         $procheEtablissementId;
                 }
-                $droit |= $ecole->getAttribute('etablissementId') == $procheEtablissementId;
+                return array(
+                    'droit' => $droit,
+                    'distances' => $this->plusieursOriginesUneDestination($domiciles, 
+                        $ecole)
+                );
+            } else {
+                throw new Exception(
+                    'La requête sur GoogleMaps n\'a pas permis de calculer les distances.');
             }
-            return array(
-                'droit' => $droit,
-                'distances' => $this->plusieursOriginesUneDestination($domiciles, $ecole)
-            );
         } else {
-            throw new Exception('La requête sur GoogleMaps n\'a pas permis de calculer les distances.');
+            throw new ExceptionNotAnswer('GoogleMaps API ne répond pas.');
         }
     }
 }
