@@ -7,9 +7,11 @@
  * @filesource par-etablissement-classe.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 4 déc. 2017
+ * @version 2017-2.3.14
  */
+use SbmBase\Model\StdLib; 
+
 try {
     $url_retour = $this->url('sbmgestion/statistiques');
     $url_rapports = $this->url('sbmgestion/statistiques', [
@@ -94,13 +96,13 @@ if ($url_retour) {
 				<?php for ($i = 0; $i < count($this->statistiques['annee_courante']); $i++):?>
 				<?php
         // année précédente
-        $inscrits_a_p = $this->statistiques['annee_precedente'][$i]['inscrits'] ?  : 0;
+        $inscrits_a_p = StdLib::getParamR(['annee_precedente', $i, 'inscrits'], $this->statistiques, 0);
         $totaux['annee_precedente']['inscrits'] += $inscrits_a_p;
-        $internet_a_p = $this->statistiques['annee_precedente'][$i]['internet'] ?  : 0;
+        $internet_a_p = StdLib::getParamR(['annee_precedente', $i, 'internet'], $this->statistiques, 0);
         $totaux['annee_precedente']['internet'] += $internet_a_p;
-        $papier_a_p = $this->statistiques['annee_precedente'][$i]['papier'] ?  : 0;
+        $papier_a_p = StdLib::getParamR(['annee_precedente', $i, 'papier'], $this->statistiques, 0);
         $totaux['annee_precedente']['papier'] += $papier_a_p;
-        $transportes_a_p = $this->statistiques['annee_precedente'][$i]['transportes'] ?  : 0;
+        $transportes_a_p = StdLib::getParamR(['annee_precedente', $i, 'transportes'], $this->statistiques, 0);
         $totaux['annee_precedente']['transportes'] += $transportes_a_p;
         // année courante
         $inscrits_a_c = $this->statistiques['annee_courante'][$i]['inscrits'] ?  : 0;

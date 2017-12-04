@@ -1,6 +1,8 @@
 <?php
 /**
  * Modèle servant à définir le corps de document de la liste des élèves pour le portail organisateur
+ * 
+ * Utilisation dans Tcpdf::templateDocBodyMethod6() comme layout recevant la propriété `eleves`
  *
  * Attention, ne pas utiliser HeadStyle pour placer les styles horaires 
  * car ils seraient dans la section head du document Html et ne seraient
@@ -11,8 +13,8 @@
  * @filesource org-pdf.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 4 déc. 2017
+ * @version 2017-2.3.14
  */
  
 use SbmBase\Model\DateLib;
@@ -56,7 +58,7 @@ table.eleves td.centre {
 			<th>Arrêts</th>
 			<th>État</th>
 		</tr>
-        <?php foreach($eleves as $test => $eleve): ?>
+        <?php foreach($this->eleves as $test => $eleve): ?>
         <?php
             // echo '<pre>';
             // die(print_r($eleve));
