@@ -9,8 +9,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2016
- * @version 2016-2.2.2
+ * @date 6 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmGestion\Controller;
 
@@ -310,7 +310,10 @@ class EleveGestionController extends AbstractActionController
                 $tResponsables->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');
                 // Met à jour les fiches des enfants dans scolarites
-                $majDistances = $this->cartographie_manager->get('Sbm\MajDistances')->pour($responsableId);
+                $msg = $this->cartographie_manager->get('Sbm\MajDistances')->pour($responsableId);
+                if ($msg) {
+                    $this->flashMessenger()->addWarningMessage($msg);
+                }
                 return $this->redirect()->toRoute('sbmgestion/gestioneleve', [
                     'action' => 'ga-localisation-liste',
                     'page' => $this->params('page', 1)

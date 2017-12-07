@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juin 2017
- * @version 2017-2.3.4
+ * @date 7 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmGestion\Controller;
 
@@ -506,6 +506,7 @@ class EleveController extends AbstractActionController
     public function eleveEditAction($args = null)
     {
         $currentPage = $this->params('page', 1);
+        $millesime = Session::get('millesime');
         if (is_null($args)) {
             $prg = $this->prg();
             if ($prg instanceof Response) {
@@ -597,7 +598,7 @@ class EleveController extends AbstractActionController
         $historique['eleve']['dateModification'] = $odata0->dateModification;
         $invariants['numero'] = $odata0->numero;
         $odata1 = $tScolarites->getRecord([
-            'millesime' => Session::get('millesime'),
+            'millesime' => $millesime,
             'eleveId' => $eleveId
         ]);
         if ($odata1->inscrit) {
@@ -645,7 +646,6 @@ class EleveController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
-                $millesime = Session::get('millesime');
                 $dataValid = array_merge([
                     'millesime' => $millesime
                 ], $form->getData());
@@ -733,9 +733,15 @@ class EleveController extends AbstractActionController
             $historique['responsable2']['dateDemenagement'] = $r->dateDemenagement;
             $historique['responsable2']['demenagement'] = $r->demenagement;
         }
-        $affectations = [];
+        $affectations = [
+            'annee_courante' => null,
+            'annee_precedente' => null
+        ];
         foreach ($qAffectations->getAffectations($eleveId) as $row) {
-            $affectations[] = $row;
+            $affectations['annee_courante'][] = $row;
+        }
+        foreach ($qAffectations->getAffectations($eleveId, null, true) as $row) {
+            $affectations['annee_precedente'][] = $row;
         }
         return new ViewModel([
             'form' => $form->prepare(),
@@ -1113,7 +1119,13 @@ class EleveController extends AbstractActionController
                 $etablissement = $tableEtablissements->getRecord($eleve['etablissementId']);
                 $pointEtablissement = new Point($etablissement->x, $etablissement->y);
                 $ptetab = $d2etab->getProjection()->XYZversgRGF93($pointEtablissement);
-                $d = $d2etab->calculDistance($pt, $ptetab);
+                try {
+                    $d = $d2etab->calculDistance($pt, $ptetab);
+                } catch (Exception $e) {
+                    $d = 99000;
+                    $this->flashMessenger()->addWarningMessage("Google Maps API ne répond pas. Mettre à jour mauellement la distance entre le domicile et l'établissement.");
+                }
+                
                 $oData->distanceR1 = round($d / 1000, 1);
                 // enregistre
                 $tableScolarites->saveRecord($oData);
@@ -1138,7 +1150,13 @@ class EleveController extends AbstractActionController
             $eleveR1 = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->getEleveResponsable1($args['eleveId']);
             $point = new Point($eleveR1['x1'], $eleveR1['y1']);
             $pt = $d2etab->getProjection()->XYZversgRGF93($point);
-            $d = $d2etab->calculDistance($pt, $ptetab);
+            try {
+                $d = $d2etab->calculDistance($pt, $ptetab);
+            } catch (\SbmCartographie\GoogleMaps\ExceptionNotAnswer $e) {
+                $d = 99000;
+                $this->flashMessenger()->addWarningMessage("Google Maps API ne répond pas. Mettre à jour mauellement la distance entre le domicile et l'établissement.");
+            }
+            
             // supprimer les références à l'adresse perso de l'élève
             $data = [
                 'millesime' => Session::get('millesime'),
@@ -1586,7 +1604,10 @@ class EleveController extends AbstractActionController
                 ]);
                 $tableResponsables->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage('La localisation de cette adresse est enregistrée.');
-                $this->cartographie_manager->get('Sbm\MajDistances')->pour($args['responsableId']);
+                $msg = $this->cartographie_manager->get('Sbm\MajDistances')->pour($args['responsableId']);
+                if ($msg) {
+                    $this->flashMessenger()->addWarningMessage($msg);
+                }
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {

@@ -20,8 +20,8 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmCommun\Model\Service;
 
@@ -33,6 +33,7 @@ use SbmCartographie\Model\Point;
 use SbmCartographie\Model\Service\CartographieManager;
 use SbmCartographie\Model\Exception;
 use SbmCartographie\Model\SbmCartographie\Model;
+use SbmCartographie;
 
 class CalculDroits implements FactoryInterface
 {
@@ -97,7 +98,7 @@ class CalculDroits implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        if (!$serviceLocator->has('SbmCarto\DistanceEtablissements')) {
+        if (! $serviceLocator->has('SbmCarto\DistanceEtablissements')) {
             throw new Exception(sprintf('CartographieManager attendu.'));
         }
         $this->millesime = Session::get('millesime');
@@ -171,38 +172,47 @@ class CalculDroits implements FactoryInterface
             $domiciles[0]->setAttribute('communeId', $scolarite->communeId);
         }
         
-        switch ($niveau) {
-            case 8:
-                // lycée
-                $distances = $this->oDistanceEtablissement->plusieursOriginesUneDestination($domiciles, $destination);
-                $j = 1;
-                foreach ($distances as $distance) {
-                    $this->distance['R' . $j ++] = round($distance / 1000, 1);
-                }
-                // dans tous les cas, l'élève est dans le district du lycée
-                return true;
-                break;
-            case 4:
-                // collège
-                $result = $this->oDistanceEtablissement->domicilesCollege($domiciles, $destination);
-                $j = 1;
-                foreach ($result['distances'] as $distance) {
-                    $this->distance['R' . $j ++] = round($distance / 1000, 1);
-                }
-                return $result['droit'];
-                break;
-            default:
-                // école
-                $result = $this->oDistanceEtablissement->domicilesEcole($niveau, $domiciles, $destination);
-                $j = 1;
-                foreach ($result['distances'] as $distance) {
-                    $this->distance['R' . $j ++] = round($distance / 1000, 1);
-                }
-                return $result['droit'];
-                break;
+        try {
+            switch ($niveau) {
+                case 8:
+                    // lycée
+                    $distances = $this->oDistanceEtablissement->plusieursOriginesUneDestination($domiciles, $destination);
+                    $j = 1;
+                    foreach ($distances as $distance) {
+                        $this->distance['R' . $j ++] = round($distance / 1000, 1);
+                    }
+                    // dans tous les cas, l'élève est dans le district du lycée
+                    return true;
+                    break;
+                case 4:
+                    // collège
+                    $result = $this->oDistanceEtablissement->domicilesCollege($domiciles, $destination);
+                    $j = 1;
+                    foreach ($result['distances'] as $distance) {
+                        $this->distance['R' . $j ++] = round($distance / 1000, 1);
+                    }
+                    return $result['droit'];
+                    break;
+                default:
+                    // école
+                    $result = $this->oDistanceEtablissement->domicilesEcole($niveau, $domiciles, $destination);
+                    $j = 1;
+                    foreach ($result['distances'] as $distance) {
+                        $this->distance['R' . $j ++] = round($distance / 1000, 1);
+                    }
+                    return $result['droit'];
+                    break;
+            }
+        } catch (\SbmCartographie\GoogleMaps\ExceptionNotAnswer $e) {
+            // GoogleMaps API ne répond pas : on fait confiance et on met les distances à 99
+            $this->distance = [
+                'R1' => 99.0,
+                'R2' => 99.0
+            ];
+            return true;
+        } catch (\Exception $e) {
+            return false;
         }
-        // inutile mais pour le style
-        return false;
     }
 
     /**

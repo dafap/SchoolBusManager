@@ -9,7 +9,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 déc. 2017
+ * @date 7 déc. 2017
  * @version 2017-2.3.14
  */
 namespace SbmAjax\Controller;
@@ -27,9 +27,9 @@ class EleveController extends AbstractActionController
 
     public function indexAction()
     {
-        return array(
+        return [
             'args' => $this->params('args', null)
-        );
+        ];
     }
 
     /**
@@ -43,14 +43,14 @@ class EleveController extends AbstractActionController
         try {
             $responsableId = $this->params('responsableId');
             $this->db_manager->get('Sbm\Db\Table\Responsables')->setSelection($responsableId, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -65,14 +65,14 @@ class EleveController extends AbstractActionController
         try {
             $responsableId = $this->params('responsableId');
             $this->db_manager->get('Sbm\Db\Table\Responsables')->setSelection($responsableId, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -87,14 +87,14 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->db_manager->get('Sbm\Db\Table\Eleves')->setSelection($eleveId, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -109,14 +109,14 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->db_manager->get('Sbm\Db\Table\Eleves')->setSelection($eleveId, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -133,14 +133,14 @@ class EleveController extends AbstractActionController
             $responsableId = $this->params('responsableId');
             $responsable = $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord($responsableId);
             
-            return $this->getResponse()->setContent(Json::encode(array_merge($responsable->getArrayCopy(), array(
+            return $this->getResponse()->setContent(Json::encode(array_merge($responsable->getArrayCopy(), [
                 'success' => 1
-            ))));
+            ])));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -157,9 +157,9 @@ class EleveController extends AbstractActionController
         $form = new \SbmGestion\Form\AffectationDecision($trajet, 2);
         $form->remove('back');
         $form->setAttribute('action', $this->url()
-            ->fromRoute(self::ROUTE, array(
+            ->fromRoute(self::ROUTE, [
             'action' => 'formaffectationvalidate'
-        )));
+        ]));
         $form->setValueOptions('station1Id', $values_options1)
             ->setValueOptions('station2Id', $values_options1)
             ->setValueOptions('service1Id', $values_options2)
@@ -179,7 +179,7 @@ class EleveController extends AbstractActionController
         $trajet = $this->params('trajet', 1);
         $station1Id = $this->params('station1Id', null);
         $station2Id = $this->params('station2Id', null);
-        $aData = array(
+        $aData = [
             'millesime' => Session::get('millesime'),
             'eleveId' => $this->params('eleveId', 0),
             'trajet' => $trajet,
@@ -192,15 +192,15 @@ class EleveController extends AbstractActionController
             'service1Id' => $this->params('service1Id', null),
             'service2Id' => $this->params('service2Id', null),
             'op' => $this->params('op', null)
-        );
+        ];
         
-        return new ViewModel(array(
+        return new ViewModel([
             'trajet' => $trajet,
             'station1Id' => $station1Id,
             'station2Id' => $station2Id,
             'form' => $this->getFormAffectationDecision($trajet)->setData($aData),
             'is_xmlhttprequest' => 1
-        ));
+        ]);
     }
 
     /**
@@ -218,10 +218,10 @@ class EleveController extends AbstractActionController
             if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
                 $messages = 'Opération abandonnée.';
                 $this->flashMessenger()->addInfoMessage($messages);
-                $response->setContent(Json::encode(array(
+                $response->setContent(Json::encode([
                     'cr' => $messages,
                     'success' => 1
-                )));
+                ]));
             } else {
                 $form = $this->getFormAffectationDecision($request->getPost('trajet'));
                 $form->setData($request->getPost());
@@ -236,10 +236,10 @@ class EleveController extends AbstractActionController
                             }
                         }
                     }
-                    $response->setContent(Json::encode(array(
+                    $response->setContent(Json::encode([
                         'cr' => $messages,
                         'success' => 0
-                    )));
+                    ]));
                 } else {
                     $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
                     $oData = $tAffectations->getObjData();
@@ -268,24 +268,24 @@ class EleveController extends AbstractActionController
                                 $this->flashMessenger()->addWarningMessage('Demande incorrecte.');
                                 break;
                         }
-                        $response->setContent(Json::encode(array(
+                        $response->setContent(Json::encode([
                             'cr' => "$messages",
                             'success' => 1
-                        )));
+                        ]));
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage('Une erreur s\'est produite pendant le traitement de la demande.');
-                        $response->setContent(Json::encode(array(
+                        $response->setContent(Json::encode([
                             'cr' => $e->getMessage(),
                             'success' => 0
-                        )));
+                        ]));
                     }
                 }
             }
         } else {
-            $response->setContent(Json::encode(array(
+            $response->setContent(Json::encode([
                 'cr' => 'Pas de post !',
                 'success' => 0
-            )));
+            ]));
         }
         
         return $response;
@@ -296,9 +296,9 @@ class EleveController extends AbstractActionController
         $form = new \SbmGestion\Form\Eleve\PriseEnChargePaiement();
         
         $form->setAttribute('action', $this->url()
-            ->fromRoute(self::ROUTE, array(
+            ->fromRoute(self::ROUTE, [
             'action' => 'formpaiementvalidate'
-        )));
+        ]));
         $form->setValueOptions('organismeId', $this->db_manager->get('Sbm\Db\Select\Organismes'));
         return $form;
     }
@@ -308,24 +308,24 @@ class EleveController extends AbstractActionController
         $eleveId = $this->params('eleveId', 0);
         if ($eleveId) {
             $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-            $oData = $tScolarites->getRecord(array(
+            $oData = $tScolarites->getRecord([
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $eleveId
-            ));
-            $aData = array(
+            ]);
+            $aData = [
                 'eleveId' => $eleveId,
                 'gratuit' => $oData->gratuit,
                 'organismeId' => $oData->organismeId
-            );
-            return new ViewModel(array(
+            ];
+            return new ViewModel([
                 'form' => $this->getFormPriseEnChargePaiement()->setData($aData),
                 'is_xmlhttprequest' => 1
-            ));
+            ]);
         } else {
-            $response->setContent(Json::encode(array(
+            $response->setContent(Json::encode([
                 'cr' => 'Pas de référence élève !',
                 'success' => 0
-            )));
+            ]));
             return $response;
         }
     }
@@ -339,10 +339,10 @@ class EleveController extends AbstractActionController
             if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
                 $messages = 'Opération abandonnée.';
                 $this->flashMessenger()->addInfoMessage($messages);
-                $response->setContent(Json::encode(array(
+                $response->setContent(Json::encode([
                     'cr' => $messages,
                     'success' => 1
-                )));
+                ]));
             } else {
                 $form = $this->getFormPriseEnChargePaiement()->setData($request->getPost());
                 if (! $form->isValid()) {
@@ -356,19 +356,19 @@ class EleveController extends AbstractActionController
                             }
                         }
                     }
-                    $response->setContent(Json::encode(array(
+                    $response->setContent(Json::encode([
                         'cr' => $messages,
                         'success' => 0
-                    )));
+                    ]));
                 } else {
                     $data = $form->getData();
                     $eleveId = $data['eleveId'];
                     $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                     try {
-                        $oData = $tScolarites->getRecord(array(
+                        $oData = $tScolarites->getRecord([
                             'millesime' => Session::get('millesime'),
                             'eleveId' => $eleveId
-                        ));
+                        ]);
                         $oData->gratuit = $data['gratuit'];
                         if ($data['gratuit'] == 2) {
                             $oData->organismeId = $data['organismeId'];
@@ -378,24 +378,24 @@ class EleveController extends AbstractActionController
                         $tScolarites->updateRecord($oData);
                         $messages = 'La prise en charge du paiement a été modifiée.';
                         $this->flashMessenger()->addSuccessMessage($messages);
-                        $response->setContent(Json::encode(array(
+                        $response->setContent(Json::encode([
                             'cr' => "$messages",
                             'success' => 1
-                        )));
+                        ]));
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage('Une erreur s\'est produite pendant le traitement de la demande.');
-                        $response->setContent(Json::encode(array(
+                        $response->setContent(Json::encode([
                             'cr' => $e->getMessage(),
                             'success' => 0
-                        )));
+                        ]));
                     }
                 }
             }
         } else {
-            $response->setContent(Json::encode(array(
+            $response->setContent(Json::encode([
                 'cr' => 'Pas de post !',
                 'success' => 0
-            )));
+            ]));
         }
         
         return $response;
@@ -426,43 +426,66 @@ class EleveController extends AbstractActionController
                     $distance = round($distance / 1000, 1);
                 }
             }
-            $response->setContent(Json::encode(array(
+            $response->setContent(Json::encode([
                 'distance' => $distance,
                 'success' => 1
-            )));
+            ]));
+        } catch (\SbmCartographie\GoogleMaps\ExceptionNotAnswer $e) {
+            $response->setContent(Json::encode([
+                'distance' => 99,
+                'success' => 1
+            ]));
         } catch (\Exception $e) {
-            $response->setContent(Json::encode(array(
+            $response->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
         return $response;
     }
 
     public function blockaffectationsAction()
     {
+        $query = $this->db_manager->get('Sbm/Db/Query/AffectationsServicesStations');
+        $structure = [            
+            'annee_courante' => null,            
+            'annee_precedente' => null
+        ];
         $eleveId = $this->params('eleveId');
         $trajet = $this->params('trajet');
-        $resultset = $this->db_manager->get('Sbm/Db/Query/AffectationsServicesStations')->getAffectations($eleveId, $trajet);
-        $structure = null;
+        $resultset = $query->getAffectations($eleveId, $trajet, false);
         if ($resultset->count()) {
-            $structure = array();
+            $structure['annee_courante'] = [];
             foreach ($resultset as $affectation) {
-                $structure[$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = array(
+                $structure['annee_courante'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
                     'service1Id' => $affectation['service1Id'],
                     'station1Id' => $affectation['station1Id'],
                     'station1' => $affectation['station1'],
                     'service2Id' => $affectation['service2Id'],
                     'station2Id' => $affectation['station2Id'],
                     'station2' => $affectation['station2']
-                );
+                ];
             }
         }
-        return new ViewModel(array(
+        $resultset = $query->getAffectations($eleveId, $trajet, true);
+        if ($resultset->count()) {
+            $structure['annee_precedente'] = [];
+            foreach ($resultset as $affectation) {
+                $structure['annee_precedente'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
+                    'service1Id' => $affectation['service1Id'],
+                    'station1Id' => $affectation['station1Id'],
+                    'station1' => $affectation['station1'],
+                    'service2Id' => $affectation['service2Id'],
+                    'station2Id' => $affectation['station2Id'],
+                    'station2' => $affectation['station2']
+                ];
+            }
+        }
+        return new ViewModel([
             'identite' => $this->params('identite'),
             'structure' => $structure,
             'trajet' => $trajet
-        ));
+        ]);
     }
 
     public function enableaccordbuttonAction()
@@ -471,10 +494,10 @@ class EleveController extends AbstractActionController
         $trajet = $this->params('trajet');
         $resultset = $this->db_manager->get('Sbm/Db/Query/AffectationsServicesStations')->getAffectations($eleveId, $trajet);
         $enable = $resultset->count() ? 0 : 1;
-        return $this->getResponse()->setContent(Json::encode(array(
+        return $this->getResponse()->setContent(Json::encode([
             'enable' => $enable,
             'success' => 1
-        )));
+        ]));
     }
 
     public function getstationsforselectAction()
@@ -482,10 +505,10 @@ class EleveController extends AbstractActionController
         $serviceId = $this->params('serviceId');
         $queryStations = $this->db_manager->get('Sbm\Db\Select\Stations');
         $stations = $queryStations->surcircuit($serviceId, Session::get('millesime'));
-        return $this->getResponse()->setContent(Json::encode(array(
+        return $this->getResponse()->setContent(Json::encode([
             'data' => $stations,
             'success' => 1
-        )));
+        ]));
     }
 
     /**
@@ -499,14 +522,14 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R1', 1);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -521,14 +544,14 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R1', 0);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -543,14 +566,14 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R2', 1);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -565,14 +588,14 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->setAccord(Session::get('millesime'), $eleveId, 'R2', 0);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 
@@ -581,23 +604,23 @@ class EleveController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-            $odata = $tScolarites->getRecord(array(
+            $odata = $tScolarites->getRecord([
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $eleveId
-            ));
+            ]);
             if ($odata->duplicata > 0) {
                 $odata->duplicata --;
             }
             $tScolarites->saveRecord($odata);
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'duplicata' => $odata->duplicata,
                 'success' => 1
-            )));
+            ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
+            return $this->getResponse()->setContent(Json::encode([
                 'cr' => $e->getMessage(),
                 'success' => 0
-            )));
+            ]));
         }
     }
 }

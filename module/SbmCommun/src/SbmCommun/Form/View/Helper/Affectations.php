@@ -8,16 +8,17 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 déc. 2015
- * @version 2015-1
+ * @date 7 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmCommun\Form\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 
 class Affectations extends AbstractHelper
-{
-
+{ 
+    const TR = '<tr>';
+    const END_TR = '</tr>';
     /**
      * Modèle de ligne du tableau des affectations
      * On trouve dans l'ordre :
@@ -33,18 +34,18 @@ class Affectations extends AbstractHelper
      *
      * @var string
      */
-    private $template = '
-<tr>
+    const TD = '
 	<td class="first">%s</td>
 	<td class="next second">%s</td>
 	<td class="next third">%s</td>
 	<td class="next">%s</td>
 	<td class="next">%s</td>
 	<td class="next">%s</td>
-	<td class="next last">
-        <i class="fam-car" title="Modifier une affectation" data-button="btnaffectation" data-trajet="%s" data-href="/op:edit%s"></i> 
-        <i class="fam-car-delete" title="Supprimer une affectation" data-button="btnaffectation" data-trajet="%s" data-href="/op:delete%s"></i></td>
-</tr>
+';
+    const I = '
+    <td class="next last">
+    <i class="fam-car" title="Modifier une affectation" data-button="btnaffectation" data-trajet="%s" data-href="/op:edit%s"></i>
+    <i class="fam-car-delete" title="Supprimer une affectation" data-button="btnaffectation" data-trajet="%s" data-href="/op:delete%s"></i></td>
 ';
 
     /**
@@ -59,9 +60,9 @@ class Affectations extends AbstractHelper
     public function __invoke($trajet, $structure)
     {
         $render = '';
-        if (isset($structure)) {
-            $render = '<table class="eleve-affectations">';
-            foreach ($structure as $j => $affectationsParJours) {
+        if (isset($structure['annee_courante'])) {
+            $render = '<table class="eleve-affectations annee-courante">';
+            foreach ($structure['annee_courante'] as $j => $affectationsParJours) {
                 // il faut décoder $j
                 $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
                 foreach ($affectationsParJours as $s => $affectationsSens) {
@@ -78,7 +79,28 @@ class Affectations extends AbstractHelper
                         $args .= '/station2Id:' . ($affectation['station2Id'] ?  : 'null');
                         $args .= '/service1Id:' . $affectation['service1Id'];
                         $args .= '/service2Id:' . ($affectation['service2Id'] ?  : 'null');
-                        $render .= sprintf($this->template, $jours, $sens, $affectation['service1Id'], $affectation['station1'], $affectation['station2'], $affectation['service2Id'], $trajet, $args, $trajet, $args);
+                        $render .= sprintf(self::TR . self::TD . self::I . self::END_TR, $jours, $sens, $affectation['service1Id'], $affectation['station1'], $affectation['station2'], $affectation['service2Id'], $trajet, $args, $trajet, $args);
+                    }
+                    unset($affectation);
+                }
+                unset($affectationsSens);
+            }
+            $render .= "\n</table>";
+        }
+        if (isset($structure['annee_precedente'])) {
+            $render .= '<span class="annee-precedente">Année précédente</span>';
+            $render .= '<table class="eleve-affectations annee-precedente">';
+            foreach ($structure['annee_precedente'] as $j => $affectationsParJours) {
+                // il faut décoder $j
+                $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
+                foreach ($affectationsParJours as $s => $affectationsSens) {
+                    $sens = array(
+                        1 => 'Aller',
+                        2 => 'Retour',
+                        3 => 'Aller-retour'
+                    )[$s];
+                    foreach ($affectationsSens as $rang => $affectation) {
+                        $render .= sprintf(self::TR . self::TD . self::END_TR, $jours, $sens, $affectation['service1Id'], $affectation['station1'], $affectation['station2'], $affectation['service2Id']);
                     }
                     unset($affectation);
                 }

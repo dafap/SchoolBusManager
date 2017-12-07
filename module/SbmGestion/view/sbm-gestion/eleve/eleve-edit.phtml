@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 oct. 2017
- * @version 2017-2.3.13
+ * @date 7 déc. 2017
+ * @version 2017-2.3.14
  */
 use SbmBase\Model\DateLib;
 
@@ -32,10 +32,13 @@ function formatDate($date, $withTime = true)
     }
 }
 
-$structAffectations = [];
-if (count($this->affectations)) {
-    foreach ($this->affectations as $affectation) {
-        $structAffectations[$affectation['trajet']][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
+$structAffectations = [
+    'annee_courante' => null,
+    'annee_precedente' => null
+];
+if (count($this->affectations['annee_courante'])) {
+    foreach ($this->affectations['annee_courante'] as $affectation) {
+        $structAffectations[$affectation['trajet']]['annee_courante'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
             'service1Id' => $affectation['service1Id'],
             'station1Id' => $affectation['station1Id'],
             'station1' => $affectation['station1'],
@@ -46,6 +49,21 @@ if (count($this->affectations)) {
     }
     unset($affectation);
 }
+if (count($this->affectations['annee_precedente'])) {
+    foreach ($this->affectations['annee_precedente'] as $affectation) {
+        $structAffectations[$affectation['trajet']]['annee_precedente'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
+            'service1Id' => $affectation['service1Id'],
+            'station1Id' => $affectation['station1Id'],
+            'station1' => $affectation['station1'],
+            'service2Id' => $affectation['service2Id'],
+            'station2Id' => $affectation['station2Id'],
+            'station2' => $affectation['station2']
+        ];
+    }
+    unset($affectation);
+}
+//echo '<pre>';
+//die(print_r($structAffectations));
 $disableAccordR1 = isset($structAffectations[1]) ? 'true' : 'false';
 $disableAccordR2 = isset($structAffectations[2]) ? 'true' : 'false';
 // urls utilisées
@@ -139,12 +157,11 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner edit">
 					<?php echo $this->formRow($this->form->get('etablissementId'));?>
-					<br>
-						<span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
+					<br> <span class='annee-precedente etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
 					</div>
 					<div id="wrapper-classeId" class="row-inner edit">
 					<?php echo $this->formRow($this->form->get('classeId'));?>
-					<span class='classe-precedente'><?php echo $this->scolarite_precedente['classe']; ?></span>
+					<span class='annee-precedente classe-precedente'><?php echo $this->scolarite_precedente['classe']; ?></span>
 					</div>
 					<div id="commun-col2-periode" class="clearfix">
 						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
@@ -323,7 +340,7 @@ echo $this->formHidden($this->form->get('csrf'));
 					</div>
 				</div>
 			</div>
-			<div id="wrapper-commentaire" >
+			<div id="wrapper-commentaire">
 				<div id="wrapper-notes-annuelles" class="row-inner edit top-6px">
 				<?php echo $this->formRow($this->form->get('commentaire'));?></div>
 				<div id="wrapper-notes-permanentes" class="row-inner edit top-6px">

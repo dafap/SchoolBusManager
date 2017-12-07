@@ -671,10 +671,15 @@ div#fiche-inner div.row-inner input.cancel {
 #fiche-inner #eleve #commun-col2 label {
 	width: 107px;
 }
-#fiche-inner #eleve #commun-col2 span {
+#fiche-inner #eleve .annee-precedente {
 	background: #eee;
 	color: gray;
 	font-size: 80%;
+}
+#fiche-inner #eleve span.annee-precedente {
+	color: "#eeeeee";
+	font-weight: bold;
+	margin-top: 3px;
 }
 #fiche-inner #eleve #commun-col2 span.etablissement-precedent {
 	margin-left: 112px;
@@ -767,8 +772,14 @@ table.eleve-affectations {
 	border-radius: 4px 4px 4px 4px;
 	max-width: 695px;
 }
+table.eleve-affectations.annee-precedente {
+	border-color: gray;
+}
 table.eleve-affectations td.next {
 	border-left: 1px solid #fdddcc;
+}
+table.eleve-affectations.annee-precedente td.next {
+	border-left: 1px solid #dddddd;
 }
 table.eleve-affectations td.first {
 	width: 106px;

@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2016
- * @version 2016-2.2.2
+ * @date 6 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmParent\Controller;
 
@@ -349,7 +349,8 @@ class ConfigController extends AbstractActionController
                 ));
                 $tableResponsables->saveRecord($oData);
                 $responsable->refresh();
-                $this->cartographie_manager->get('Sbm\MajDistances')->pour($responsable->responsableId);
+                $msg = $this->cartographie_manager->get('Sbm\MajDistances')->pour($responsable->responsableId);
+                // ne pas afficher l'échec de mise à jour des distances pour les élèves
                 $this->flashMessenger()->addSuccessMessage('La localisation du domicile est enregistrée.');
                 return $this->redirect()->toRoute('login', array(
                     'action' => 'home-page'
