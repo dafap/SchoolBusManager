@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 déc. 2017
+ * @date 8 déc. 2017
  * @version 2017-2.3.14
  */
 use SbmBase\Model\DateLib;
@@ -32,10 +32,7 @@ function formatDate($date, $withTime = true)
     }
 }
 
-$structAffectations = [
-    'annee_courante' => null,
-    'annee_precedente' => null
-];
+$structAffectations = [];
 if (count($this->affectations['annee_courante'])) {
     foreach ($this->affectations['annee_courante'] as $affectation) {
         $structAffectations[$affectation['trajet']]['annee_courante'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
@@ -64,8 +61,8 @@ if (count($this->affectations['annee_precedente'])) {
 }
 //echo '<pre>';
 //die(print_r($structAffectations));
-$disableAccordR1 = isset($structAffectations[1]) ? 'true' : 'false';
-$disableAccordR2 = isset($structAffectations[2]) ? 'true' : 'false';
+$disableAccordR1 = isset($structAffectations[1]['annee_courante']) ? 'true' : 'false';
+$disableAccordR2 = isset($structAffectations[2]['annee_courante']) ? 'true' : 'false';
 // urls utilisées
 $url_ici = $this->url('sbmgestion/eleve', 
     [
@@ -227,7 +224,7 @@ echo $this->formHidden($this->form->get('csrf'));
 						</div>
 						<div class="float-left left-10px edit-tab-col2">
 							<div id="block-affectationsr1" class="block-affectations">
-								<h3>
+								<h3 id="h3-affectationsr1">
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
 										title="Ajouter une affectation pour <?php echo $this->identite;?>"
 										data-button="btnaffectation" data-trajet="1"
@@ -269,11 +266,11 @@ echo $this->formHidden($this->form->get('csrf'));
 						</div>
 						<div class="float-left left-10px edit-tab-col2">
 							<div id="block-affectationsr2" class="block-affectations">
-								<h3>
+								<h3 id="h3-affectationsr2">
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
 										title="Ajouter une affectation pour <?php echo $this->identite;?>"
 										data-button="btnaffectation" data-trajet="2"
-										data-href="/op:add"></i>
+										data-href="/op:add" id="i-affectationsr2"></i>
 								</h3>
 								<?php
         if (isset($structAffectations[2])) {
