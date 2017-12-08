@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 8 déc. 2017
+ * @version 2017-2.3.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -416,8 +416,8 @@ class ElevesScolarites implements FactoryInterface
             ->literal('ele.responsable1Id = r.responsableId')->and->literal(
             'sco.demandeR1 = 2')
             ->literal('sco.accordR1 = 1')
-            ->unnest()->or->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal(
-            'sco.demandeR1 = 2')
+            ->unnest()->or->nest()->literal('ele.responsable2Id = r.responsableId')->and->literal(
+            'sco.demandeR2 = 2')
             ->literal('sco.accordR2 = 1')
             ->unnest()
             ->unnest();
