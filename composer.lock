@@ -1482,16 +1482,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.0.1",
+            "version": "v4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "873417cb9949f07be8852d41e3be5ab6f09e1218"
+                "reference": "a5ee52d155f06ad23b19eb63c31228ff56ad1116"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/873417cb9949f07be8852d41e3be5ab6f09e1218",
-                "reference": "873417cb9949f07be8852d41e3be5ab6f09e1218",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/a5ee52d155f06ad23b19eb63c31228ff56ad1116",
+                "reference": "a5ee52d155f06ad23b19eb63c31228ff56ad1116",
                 "shasum": ""
             },
             "require": {
@@ -1536,7 +1536,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-12-04T18:34:52+00:00"
+            "time": "2017-12-12T08:41:51+00:00"
         },
         {
             "name": "tecnickcom/tcpdf",
@@ -1718,29 +1718,29 @@
         },
         {
             "name": "zendframework/zend-barcode",
-            "version": "2.6.0",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-barcode.git",
-                "reference": "11b992772b47274b52a0dcf7c3780e227b2e3225"
+                "reference": "9f4e92a3e82d3089a38adc04ade7b22a84880b37"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-barcode-2.6.0-ab1783.zip",
-                "reference": "11b992772b47274b52a0dcf7c3780e227b2e3225",
-                "shasum": "cd9219c5e5e3e441a55941f61813ab81a386f792"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-barcode-2.7.0-fdfb9a.zip",
+                "reference": "9f4e92a3e82d3089a38adc04ade7b22a84880b37",
+                "shasum": "1675180f5c727c41fdd11bf8209e539e696b6825"
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0",
-                "zendframework/zend-validator": "^2.6"
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-servicemanager": "^2.7.8 || ^3.3",
+                "zendframework/zend-stdlib": "^2.7.7 || ^3.1",
+                "zendframework/zend-validator": "^2.10.1"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0",
-                "zendframework/zend-config": "^2.6",
-                "zendframework/zendpdf": "*"
+                "phpunit/phpunit": "^5.7.23 || ^6.4.3",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-config": "^2.6 || ^3.1",
+                "zendframework/zendpdf": "^2.0.2"
             },
             "suggest": {
                 "zendframework/zendpdf": "ZendPdf component"
@@ -1748,8 +1748,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev",
-                    "dev-develop": "2.7-dev"
+                    "dev-master": "2.7.x-dev",
+                    "dev-develop": "2.8.x-dev"
                 }
             },
             "autoload": {
@@ -1762,16 +1762,45 @@
                     "ZendTest\\Barcode\\": "test/"
                 }
             },
+            "scripts": {
+                "check": [
+                    "@cs-check",
+                    "@test"
+                ],
+                "cs-check": [
+                    "phpcs"
+                ],
+                "cs-fix": [
+                    "phpcbf"
+                ],
+                "test": [
+                    "phpunit --colors=always"
+                ],
+                "test-coverage": [
+                    "phpunit --colors=always --coverage-clover clover.xml"
+                ],
+                "upload-coverage": [
+                    "coveralls -v"
+                ]
+            },
             "license": [
                 "BSD-3-Clause"
             ],
             "description": "provides a generic way to generate barcodes",
-            "homepage": "https://github.com/zendframework/zend-barcode",
             "keywords": [
                 "barcode",
-                "zf2"
+                "zendframework",
+                "zf"
             ],
-            "time": "2016-02-17T21:15:38+00:00"
+            "support": {
+                "docs": "https://docs.zendframework.com/zend-barcode/",
+                "issues": "https://github.com/zendframework/zend-barcode/issues",
+                "source": "https://github.com/zendframework/zend-barcode",
+                "rss": "https://github.com/zendframework/zend-barcode/releases.atom",
+                "slack": "https://zendframework-slack.herokuapp.com",
+                "forum": "https://discourse.zendframework.com/c/questions/components"
+            },
+            "time": "2017-12-11T15:30:02+00:00"
         },
         {
             "name": "zendframework/zend-cache",
@@ -2181,17 +2210,17 @@
         },
         {
             "name": "zendframework/zend-db",
-            "version": "2.9.0",
+            "version": "2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-db.git",
-                "reference": "3777dfd76d12a9e8dc9ae470707533106237a7c3"
+                "reference": "38279c54f05b09d74982a2ec8eda6954f83f5687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-db-2.9.0-3cef9b.zip",
-                "reference": "3777dfd76d12a9e8dc9ae470707533106237a7c3",
-                "shasum": "8df2a5caa842536106fabd3f53d45aa74d61491b"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-db-2.9.2-6cb054.zip",
+                "reference": "38279c54f05b09d74982a2ec8eda6954f83f5687",
+                "shasum": "43a802fffe4bb745307899de712e1806f87de940"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -2271,7 +2300,7 @@
                 "slack": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2017-12-06T09:52:17+00:00"
+            "time": "2017-12-11T14:57:52+00:00"
         },
         {
             "name": "zendframework/zend-debug",
@@ -2564,17 +2593,17 @@
         },
         {
             "name": "zendframework/zend-eventmanager",
-            "version": "2.6.3",
+            "version": "2.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-eventmanager.git",
-                "reference": "c2ae1535cdfb4f9467dfaec4dfbdd1bc383d4946"
+                "reference": "22817b6165075f9b240ab1c388f0b209023b95e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-eventmanager-2.6.3-bc1b80.zip",
-                "reference": "c2ae1535cdfb4f9467dfaec4dfbdd1bc383d4946",
-                "shasum": "4683752c4583bb2060e7a5901aec0ffaf83fdb12"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-eventmanager-2.6.4-42661e.zip",
+                "reference": "22817b6165075f9b240ab1c388f0b209023b95e9",
+                "shasum": "a5abd4431c20e9b5337a1ec5632092c0c698b76d"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -2613,7 +2642,7 @@
                 "eventmanager",
                 "zf2"
             ],
-            "time": "2016-02-18T20:49:05+00:00"
+            "time": "2017-12-12T17:48:56+00:00"
         },
         {
             "name": "zendframework/zend-feed",
@@ -3958,17 +3987,17 @@
         },
         {
             "name": "zendframework/zend-mvc",
-            "version": "2.7.12",
+            "version": "2.7.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-mvc.git",
-                "reference": "52bd18ceacce29b039bd855158e930e313a1400e"
+                "reference": "c18522d1390462b3e6c393d6a4c736fe435e72ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-mvc-2.7.12-befa78.zip",
-                "reference": "52bd18ceacce29b039bd855158e930e313a1400e",
-                "shasum": "2634e78f0cb386bd62be4ff4260003daea1dfa2f"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-mvc-2.7.13-8a5687.zip",
+                "reference": "c18522d1390462b3e6c393d6a4c736fe435e72ec",
+                "shasum": "d87df3928d7fb1a174c1fc7a074719e44d94954f"
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
@@ -4072,7 +4101,7 @@
                 "mvc",
                 "zf2"
             ],
-            "time": "2017-04-27T15:44:01+00:00"
+            "time": "2017-12-14T22:44:10+00:00"
         },
         {
             "name": "zendframework/zend-navigation",
@@ -5488,32 +5517,32 @@
         },
         {
             "name": "zendframework/zenddiagnostics",
-            "version": "v1.0.9",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDiagnostics.git",
-                "reference": "292653c287a9e9d811417d4cb8a0025a4c1894cf"
+                "reference": "d27aa064c5185c5830e917ffe48284b0995eed13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDiagnostics/zipball/292653c287a9e9d811417d4cb8a0025a4c1894cf",
-                "reference": "292653c287a9e9d811417d4cb8a0025a4c1894cf",
-                "shasum": ""
+                "url": "https://packages.zendframework.com/composer/zendframework-zenddiagnostics-v1.1.0-d2bf23.zip",
+                "reference": "d27aa064c5185c5830e917ffe48284b0995eed13",
+                "shasum": "1b9623442664d1c8110ca9a5906c7e126164f683"
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": "^5.6|^7.0"
             },
             "require-dev": {
-                "doctrine/migrations": "~1.0@dev",
-                "guzzle/http": "3.*",
-                "guzzle/plugin-mock": "3.*",
-                "mikey179/vfsstream": "1.6.*",
-                "phpunit/phpunit": "4.7.*",
-                "predis/predis": "0.8.*",
-                "sensiolabs/security-checker": "1.3.*@dev",
-                "symfony/yaml": "v2.3.11",
-                "videlalvaro/php-amqplib": "2.*",
-                "zendframework/zend-loader": "2.*"
+                "doctrine/migrations": "^1.0",
+                "guzzle/http": "^3.0",
+                "guzzle/plugin-mock": "^3.0",
+                "mikey179/vfsstream": "^1.6",
+                "php-amqplib/php-amqplib": "^2.0",
+                "phpunit/phpunit": "^4.7|^5.0",
+                "predis/predis": "^1.0",
+                "sensiolabs/security-checker": "^1.3",
+                "symfony/yaml": "^2.7|^3.0|^4.0",
+                "zendframework/zend-loader": "^2.0"
             },
             "suggest": {
                 "doctrine/migrations": "Required by Check\\DoctrineMigration",
@@ -5536,7 +5565,6 @@
                     "ZendDiagnosticsTest\\": "tests/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -5547,7 +5575,7 @@
                 "php",
                 "test"
             ],
-            "time": "2016-04-01T10:39:00+00:00"
+            "time": "2017-12-13T08:36:13+00:00"
         },
         {
             "name": "zendframework/zendframework",
