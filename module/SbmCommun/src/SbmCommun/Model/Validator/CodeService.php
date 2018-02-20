@@ -18,8 +18,8 @@
  * @filesource CodeService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2015
- * @version 2015-1
+ * @date 19 fév. 2018
+ * @version 2018-2.3.15
  */
 namespace SbmCommun\Model\Validator;
 
@@ -34,7 +34,7 @@ use Zend\Validator\AbstractValidator;
  */
 class CodeService extends AbstractValidator
 {
-    const PATTERN = '/^[0-9]{3}-(?:[0-9]{1,2}[A-Z]?(?:-R)?|T[A-C])$|^M2[0-9]{2}[A-Z]$/';
+    const PATTERN = '/^[0-9]{3}-(?:[0-9]{1,2}[A-Z]?(?:-R)?|T[A-C])$|^M[1-2][0-9]{2}[A-Z]$/';
     const ERROR = 'codeService';
     
     protected $messageTemplates = array(
