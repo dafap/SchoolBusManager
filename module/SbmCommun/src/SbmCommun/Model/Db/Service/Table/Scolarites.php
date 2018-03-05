@@ -8,8 +8,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
- * @version 2016-2.2.1
+ * @date 5 mars 2018
+ * @version 2018-2.3.19
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -84,7 +84,6 @@ class Scolarites extends AbstractSbmTable
             }
             $obj_data->addCalculateField('dateModification');
         }
-        
         parent::saveRecord($obj_data);
         return $changeEtab;
     }

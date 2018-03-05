@@ -10,8 +10,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 5 mars 2018
+ * @version 2018-2.3.19
  */
 namespace SbmParent\Model;
 
@@ -200,12 +200,7 @@ class OutilsInscription
                 $oData->exchangeArray($data);
             }
         }
-        $tEleves->saveRecord($oData);
-        $eleveId = $oData->eleveId;
-        if (empty($eleveId)) {
-            $eleveId = $tEleves->getTableGateway()->getLastInsertValue();
-        }
-        return $eleveId;
+        return $tEleves->saveRecord($oData); // renvoie eleveId
     }
 
     /**

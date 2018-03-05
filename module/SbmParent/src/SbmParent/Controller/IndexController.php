@@ -15,8 +15,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 5 mars 2018
+ * @version 2018-2.3.19
  */
 namespace SbmParent\Controller;
 
@@ -528,6 +528,7 @@ class IndexController extends AbstractActionController
      */
     public function reinscriptionEleveAction()
     {
+        $sansDateN = true;
         try {
             $auth_responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
@@ -709,7 +710,15 @@ class IndexController extends AbstractActionController
                 } else {
                     $responsable2 = null;
                 }
-                
+                //----------------------------------------------
+                // pour la reprise des élèves du CD12 sans dateN
+                if ($data['dateN'] == '1950-01-01') {
+                    $sansDateN = true;
+                    $data['dateN'] = null;
+                } else {
+                    $sansDateN = false;
+                }
+                //----------------------------------------------
                 $form->setData($data);
                 Session::set('responsable2', $responsable2, $this->getSessionNamespace());
             }
@@ -724,8 +733,9 @@ class IndexController extends AbstractActionController
             'responsable' => $auth_responsable,
             'responsable2' => $responsable2,
             'hasGa' => $hasGa,
-            'form' => $form,
-            'formga' => $formga
+            'form' => $form ? $form->prepare() : $form,
+            'formga' => $formga,
+            'sansDateN' => $sansDateN 
         ]);
     }
 } 

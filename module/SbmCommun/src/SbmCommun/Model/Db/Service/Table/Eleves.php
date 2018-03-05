@@ -8,8 +8,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2017
- * @version 2017-2.3.3
+ * @date 5 mars 2018
+ * @version 2018-2.3.19
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -56,10 +56,12 @@ class Eleves extends AbstractSbmTable
 
     /**
      * (non-PHPdoc)
+     *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
+        $dateNUnchanged = true;
         try {
             $old_data = $this->getRecord($obj_data->getId());
             $is_new = false;
@@ -76,15 +78,19 @@ class Eleves extends AbstractSbmTable
                 }
                 $is_new = ! $old_data;
                 if (! $is_new) {
+                    if ($old_data->dateN == '1950-01-01') {
+                        $old_data->dateN = $obj_data->dateN;
+                        $dateNUnchanged = false;
+                    }
                     $obj_data = $old_data;
                     // remettre les responsables dans l'ordre demandé cette année
                     $obj_data->responsable1Id = $responsable1Id;
                     $obj_data->responsable2Id = $responsable2Id;
                 }
             } catch (ExceptionObjectData $e) {
-                //die($e->getMessage());
+                // die($e->getMessage());
                 $is_new = true;
-            }           
+            }
         }
         if ($is_new) {
             $obj_data->setCalculateFields(array(
@@ -102,23 +108,29 @@ class Eleves extends AbstractSbmTable
             $obj_data->numero = $u;
         } else {
             // on vérifie si des données ont changé
-            if ($obj_data->isUnchanged($old_data))
+            if ($dateNUnchanged && $obj_data->isUnchanged($old_data))
                 return;
-            
-            if ($old_data->nom != $obj_data->nom) {
-                $obj_data->addCalculateField('nomSA');
-            }
-            if ($old_data->prenom != $obj_data->prenom) {
-                $obj_data->addCalculateField('prenomSA');
+            if (! $obj_data->isUnchanged($old_data)) {
+                if ($old_data->nom != $obj_data->nom) {
+                    $obj_data->addCalculateField('nomSA');
+                }
+                if ($old_data->prenom != $obj_data->prenom) {
+                    $obj_data->addCalculateField('prenomSA');
+                }
             }
             $obj_data->addCalculateField('dateModification');
         }
         parent::saveRecord($obj_data);
+        if ($is_new) {
+            return $this->getTableGateway()->getLastInsertValue();
+        } else {
+            return $obj_data->eleveId;
+        }
     }
 
     /**
      * Marque la fiche sélectionnée ou non sélectionnée selon la valeur de $selection
-     * 
+     *
      * @param int $eleveId            
      * @param bool $selection
      *            0 ou 1
@@ -136,7 +148,7 @@ class Eleves extends AbstractSbmTable
     /**
      * Marque le champ `mailchimp` de la valeur de $mailchimp
      *
-     * @param int $eleveId
+     * @param int $eleveId            
      * @param bool $mailchimp
      *            0 ou 1
      */
@@ -151,9 +163,10 @@ class Eleves extends AbstractSbmTable
     }
 
     /**
-     * Vérifie si un numero est occupé. Renvoie vrai s'il est occupé.
-     * 
-     * @param int $n
+     * Vérifie si un numero est occupé.
+     * Renvoie vrai s'il est occupé.
+     *
+     * @param int $n            
      * @return boolean
      */
     private function numeroOccupe($n)
@@ -226,23 +239,23 @@ class Eleves extends AbstractSbmTable
             'prenom'
         ));
     }
-    
+
     /**
      * On cherche un élève connaissant :
-     *  1/ son nom, son prenom et sa date de naissance
-     *  2/ son nom, son prenom et son responsable1Id
-     *  3/ son nom, son prenom et son responsable2Id
+     * 1/ son nom, son prenom et sa date de naissance
+     * 2/ son nom, son prenom et son responsable1Id
+     * 3/ son nom, son prenom et son responsable2Id
      * La recherche s'effectue dans cet ordre s'arrête dès qu'on a trouvé.
-     * 
+     *
      * Renvoie un SbmCommun\Model\Db\ObjectDataInterface ou false s'il n'est pas trouvé.
      * Renvoie false si l'un des paramètres est vide.
-     * 
-     * @param string $nom
-     * @param string $prenom
-     * @param string $dateN
-     * @param int $responsableId
-     * 
-     * @return boolean|\Zend\Db\ResultSet\object
+     *
+     * @param string $nom            
+     * @param string $prenom            
+     * @param string $dateN            
+     * @param int $responsableId            
+     *
+     * @return boolean|\Zend\Db\ResultSet\HydratingResultSet
      */
     private function getByIdentite($nom, $prenom, $dateN, $responsableId)
     {
@@ -254,14 +267,14 @@ class Eleves extends AbstractSbmTable
             'prenom' => $prenom,
             'dateN' => $dateN
         ));
-        if (empty($resultset)) {
+        if ($resultset->count() == 0) {
             $resultset = $this->fetchAll(array(
                 'nom' => $nom,
                 'prenom' => $prenom,
                 'responsable1Id' => $responsableId
             ));
         }
-        if (empty($resultset)) {
+        if ($resultset->count() == 0) {
             $resultset = $this->fetchAll(array(
                 'nom' => $nom,
                 'prenom' => $prenom,
