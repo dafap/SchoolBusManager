@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 5 mars 2018
+ * @version 2018-2.3.19
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -36,6 +36,7 @@ $url_change_reinscription = $this->url('sbmmailchimp');
 $url_images = $this->url('sbminstall', [
     'action' => 'gestion-images'
 ]);
+$url_integration = $this->url('sbminstall', ['action' => 'integration']);
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
 <div id="menugeneral">
@@ -85,6 +86,8 @@ echo $this->flashMessenger()->render('default');
 
 					<li><a href="<?php echo $url_images;?>"><i class="fam-bullet-go"></i>Gestion
 							des images de l'application</a></li>
+							
+				    <li><a href="<?php echo $url_integration;?>"><i class="fam-bullet-go"></i>Création des élèves récupérés du CD12 (fusion des CDC)</a></li>
 				</ul>
 			</fieldset>
 		</div>

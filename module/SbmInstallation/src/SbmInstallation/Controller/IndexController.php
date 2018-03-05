@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 5 mars 2018
+ * @version 2018-2.3.19
  */
 namespace SbmInstallation\Controller;
 
@@ -26,6 +26,13 @@ use SbmInstallation\Model\Exception;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
 use SbmInstallation\Model\DumpTables;
 use SbmInstallation\Form\UploadImage;
+// pour integrationAction()
+use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
+use SbmBase\Model\Session;
+use SbmCommun\Model\Db\ObjectData\Eleve;
+use SbmCommun\Model\Db\ObjectData\Scolarite;
 
 class IndexController extends AbstractActionController
 {
@@ -235,7 +242,7 @@ class IndexController extends AbstractActionController
                 'administrer',
                 $fname
             ], $config, false)) {
-                //$infos = getimagesize($config['path']['system'] . DIRECTORY_SEPARATOR . $fname);
+                // $infos = getimagesize($config['path']['system'] . DIRECTORY_SEPARATOR . $fname);
                 $infos = getimagesize(StdLib::concatPath($config['path']['system'], $fname));
                 $file_names[$fname] = [
                     'administrer' => $config['administrer'][$fname],
@@ -278,7 +285,7 @@ class IndexController extends AbstractActionController
                     // Form is valid, save the form!
                     $source = $data['image-file']['tmp_name'];
                     $dest = StdLib::concatPath($this->img['path']['system'], $data['image-file']['name']);
-                    //$dest = $this->img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
+                    // $dest = $this->img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
                     copy($source, $dest);
                     unlink($source);
                     $this->removeInSession('post', $this->getSessionNamespace());
@@ -294,7 +301,7 @@ class IndexController extends AbstractActionController
                         $tempFile = $form->get('image-file')->getValue();
                     }
                 }
-            } else {                
+            } else {
                 $form = new UploadImage('upload-form');
                 $form->setData($prg);
                 $label = $prg['label'];
@@ -428,5 +435,149 @@ class IndexController extends AbstractActionController
     {
         $this->flashMessenger()->addWarningMessage('La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');
         return $this->redirect()->toRoute('sbminstall');
+    }
+
+    /**
+     * ----------------------------------------------------------------------------------
+     * Intégration des élèves lors de l'extension de la communauté de communes
+     */
+    public function integrationAction()
+    {
+        $this->integrationVideSbmEleves();
+        $this->integrationSbmTEleves();
+        $this->integrationSbmScolarite();
+        // $this->integrationSbmAffectation();
+        
+        return new ViewModel();
+    }
+
+    private function integrationVideSbmEleves()
+    {
+        // recherche du premier eleveId à supprimer
+        $where = new Where();
+        $where->isNotNull('id_ccda');
+        
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $select = $sql->select('sbm_t_eleves')
+            ->columns([
+            'first' => new Expression("MIN(`eleveId`)")
+        ])
+            ->where($where);
+                    
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $first = $statement->execute()->current()['first'];
+        
+        // suppression des scolarites pour eleveId >= $first
+        $where = new Where();
+        $where->greaterThanOrEqualTo('eleveId', $first);
+        
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $delete = $sql->delete('sbm_t_scolarites')->where($where);
+        
+        $statement = $sql->prepareStatementForSqlObject($delete);
+        $statement->execute();
+        
+        // suppression des eleves
+        $where = new Where();
+        $where->isNotNull('id_ccda');
+        
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $delete = $sql->delete('sbm_t_eleves')->where($where);
+        
+        $statement = $sql->prepareStatementForSqlObject($delete);
+        $statement->execute();
+    }
+
+    private function integrationSbmTEleves()
+    {
+        $where = new Where();
+        $where->equalTo('c.desservie', 1);
+        
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $select = $sql->select()
+            ->from([
+            'e' => 'eleves'
+        ])
+            ->columns([
+            'nom',
+            'nomSA',
+            'prenom',
+            'prenomSA',
+            'dateN',
+            'numero',
+            'responsable1Id',
+            'id_ccda' => 'tmp_id'
+        ])
+            ->join([
+            'r' => 'responsables'
+        ], 'r.id_ccda=e.id_ccda', [])
+            ->join([
+            'c' => 'sbm_t_communes'
+        ], 'r.communeId=c.communeId', [])
+            ->where($where);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = iterator_to_array($statement->execute());
+        
+        $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+        $oEleve = new Eleve();
+        foreach ($result as $eleve) {
+            if (is_null($eleve['dateN'])) {
+                $eleve['dateN'] = '1950-01-01';
+            }
+            $eleve['dateCreation'] = null;
+            $oEleve->exchangeArray($eleve);
+            $oEleve->createNumero();
+            $tEleves->saveRecord($oEleve);
+        }
+    }
+
+    private function integrationSbmScolarite()
+    {
+        $millesime = Session::get('millesime');
+        
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $select = $sql->select()
+            ->from([
+            'e' => 'eleves'
+        ])
+            ->columns([
+            'etablissementId' => 'Ecole'
+        ])
+            ->join([
+            'sbme' => 'sbm_t_eleves'
+        ], 'sbme.id_ccda=e.tmp_id', [
+            'eleveId'
+        ])
+            ->join([
+            'c' => 'sbm_t_classes'
+        ], 'e.Classe=c.aliasCG', [
+            'classeId'
+        ]);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = iterator_to_array($statement->execute());
+        
+        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $oScolarite = new Scolarite();
+        foreach ($result as $scolarite) {
+            $scolarite['dateInscription'] = null;
+            $scolarite['dateDebut'] = '2017-09-04';
+            $scolarite['dateFin'] = '2018-07-06';
+            $scolarite['tarifId'] = 1;
+            $scolarite['millesime'] = $millesime;
+            $scolarite['gratuit'] = 1;
+            $scolarite['paiement'] = 0;
+            $scolarite['demandeR1'] = 2;
+            $scolarite['internet'] = 0;
+            $scolarite['commentaire'] = 'Paiement au CD12 - intégré lors de la fusion des CDC.';
+            $oScolarite->exchangeArray($scolarite);
+            $tScolarites->saveRecord($oScolarite);
+        }
+    }
+
+    private function integrationSbmAffectation()
+    {
+        $millesime = Session::get('millesime');
     }
 }
