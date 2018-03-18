@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2018
+ * @date 18 mars 2018
  * @version 2018-2.3.19
  */
 namespace SbmInstallation\Controller;
@@ -33,6 +33,7 @@ use Zend\Db\Sql\Expression;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\ObjectData\Eleve;
 use SbmCommun\Model\Db\ObjectData\Scolarite;
+use SbmCommun\Model\Db\ObjectData\Affectation;
 
 class IndexController extends AbstractActionController
 {
@@ -446,7 +447,7 @@ class IndexController extends AbstractActionController
         $this->integrationVideSbmEleves();
         $this->integrationSbmTEleves();
         $this->integrationSbmScolarite();
-        // $this->integrationSbmAffectation();
+        $this->integrationSbmAffectation();
         
         return new ViewModel();
     }
@@ -463,7 +464,7 @@ class IndexController extends AbstractActionController
             'first' => new Expression("MIN(`eleveId`)")
         ])
             ->where($where);
-                    
+        
         $statement = $sql->prepareStatementForSqlObject($select);
         $first = $statement->execute()->current()['first'];
         
@@ -504,7 +505,6 @@ class IndexController extends AbstractActionController
             'prenom',
             'prenomSA',
             'dateN',
-            'numero',
             'responsable1Id',
             'id_ccda' => 'tmp_id'
         ])
@@ -526,6 +526,7 @@ class IndexController extends AbstractActionController
                 $eleve['dateN'] = '1950-01-01';
             }
             $eleve['dateCreation'] = null;
+            $eleve['numero'] = 0;
             $oEleve->exchangeArray($eleve);
             $oEleve->createNumero();
             $tEleves->saveRecord($oEleve);
@@ -579,5 +580,39 @@ class IndexController extends AbstractActionController
     private function integrationSbmAffectation()
     {
         $millesime = Session::get('millesime');
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $select = $sql->select()
+            ->from([
+            'e' => 'eleves'
+        ])
+            ->columns([
+            'responsableId' => 'responsable1Id',
+            'service1Id' => 'Circuit1',
+            'station1Id' => 'Station1Id',
+            'station2Id' => 'Station2Id',
+            'service2Id' => 'Circuit2'
+        ])
+            ->join([
+            'sbme' => 'sbm_t_eleves'
+        ], 'sbme.id_ccda=e.tmp_id', [
+            'eleveId'
+        ]);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = iterator_to_array($statement->execute());
+        
+        $tAffectations = $this->db_manager->get('Sbm\Db\table\Affectations');
+        $oAffectation = new Affectation();
+        foreach ($result as $affectation) {
+            $affectation['millesime'] = $millesime;
+            $affectation['trajet'] = 1;
+            $affectation['jours'] = 31;
+            $affectation['sens'] = 3;
+            $affectation['correspondance'] = 1;
+            $oAffectation->exchangeArray($affectation);
+            try {
+                $tAffectations->saveRecord($oAffectation);
+            } catch (\Exception $e) {}
+        }
     }
 }
