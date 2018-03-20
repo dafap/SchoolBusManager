@@ -1,6 +1,6 @@
 <?php
 /**
- * Projection configurée dans le fier module.config.phpchi
+ * Projection configurée dans le fichier module.config.php
  *
  * Compatible ZF3
  * 
