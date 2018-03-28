@@ -5,8 +5,8 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 déc. 2017
- * @version 2017-2.3.14
+ * @date 28 mars 2018
+ * @version 2017-2.3.19
  */
 
 var js_edit = (function() {
@@ -24,6 +24,8 @@ var js_edit = (function() {
 				$("input[name=accordR1][type=hidden]").val(0);
 			}
 		} else {
+			var checked = $("#eleve-accordR1").is(":checked");
+			$("input[name=accordR1][type=hidden]").val(checked ? 1 : 0);
 			$("#eleve-accordR1").attr("disabled", true);
 			$("#eleve-subventionR1").attr("disabled", true);
 		}
@@ -37,6 +39,8 @@ var js_edit = (function() {
 				$("input[name=accordR2][type=hidden]").val(0);
 			}
 		} else {
+			var checked = $("#eleve-accordR2").is(":checked");
+			$("input[name=accordR2][type=hidden]").val(checked ? 1 : 0);
 			$("#eleve-accordR2").attr("disabled", true);
 			$("#eleve-subventionR2").attr("disabled", true);
 		}
@@ -81,7 +85,8 @@ var js_edit = (function() {
 		}
 		if ($("#demande" + r + "radio1").is(":checked")) {
 			var accord = $("#eleve-accord" + r.toUpperCase()).is(':checked');
-			var disableAccord = r == 'r1' ? js_edit.disableAccordR1 : js_edit.disableAccordR2;
+			var disableAccord = r == 'r1' ? js_edit.disableAccordR1
+					: js_edit.disableAccordR2;
 			if (disableAccord) {
 				$("#eleve-accord" + r.toUpperCase()).attr("disabled", true);
 			} else {
@@ -157,197 +162,263 @@ var js_edit = (function() {
 		$("#" + r + "-ligne5").html(part_html.join(' '));
 	}
 
-	$(document).ready(
-		function($) {
-			$("#duplicatamoins").click(
-				function() {
-					$.ajax({
-						url : '/sbmajaxeleve/decrementeduplicata/eleveId:' + ELEVE_ID,
-						dataType : 'json',
-						success : function(data) {
-									var myid = "#nbduplicata";
-									var duplicata = data.duplicata;
-									$(myid).empty();
-									$(myid).append(duplicata.toString());
-							},
-						error : function(xhr,ajaxOptions,thrownError) {
-									alert(xhr.status+ ' '+ thrownError);
-							}
-					});
-				});
-				$("#eleve-anneeComplete").click(function() {
+	$(document)
+			.ready(
+					function($) {
+						$("#duplicatamoins")
+								.click(
+										function() {
+											$
+													.ajax({
+														url : '/sbmajaxeleve/decrementeduplicata/eleveId:'
+																+ ELEVE_ID,
+														dataType : 'json',
+														success : function(data) {
+															var myid = "#nbduplicata";
+															var duplicata = data.duplicata;
+															$(myid).empty();
+															$(myid)
+																	.append(
+																			duplicata
+																					.toString());
+														},
+														error : function(xhr,
+																ajaxOptions,
+																thrownError) {
+															alert(xhr.status
+																	+ ' '
+																	+ thrownError);
+														}
+													});
+										});
+						$("#eleve-anneeComplete").click(function() {
 							montreDebutFin($(this).is(":checked"));
 							majMontantInscription($(this).is(":checked"));
-				});
-				$("#eleve-derogation").click(function() {
+						});
+						$("#eleve-derogation").click(function() {
 							montreMotifDerogation($(this).is(":checked"));
-				});
-				$("#eleve-ga").click(function() {
+						});
+						$("#eleve-ga").click(function() {
 							montreOngletGa($(this).is(":checked"));
-				});
-				$("#fiche-inner input[name=demandeR1]").click(
-					function() {
-						montreDemande('r1');
-					});
-				$("#fiche-inner input[name=demandeR2]").click(
-					function() {
-						montreDemande('r2');
-					});
-				$("#eleve-accordR1").click(
-					function() {
-						var action = ($(this).is(':checked')) ? 'check': 'uncheck';
-						var subvention = $("#eleve-subventionR1").is(':checked');
-						$.ajax({
-							url : '/sbmajaxeleve/' 
-								+ action
-								+ 'accordR1/eleveId:'
-								+ ELEVE_ID,
-							success : function(data) {
-									montreMotifRefus(action == 'check', subvention, 'r1');
-									montreBlockAffectation(action == 'check', 'r1');
-								},
-							error : function(xhr,ajaxOptions, thrownError) {
-									alert(xhr.status + ' ' + thrownError);
-								}
 						});
-					});
-				$("#eleve-subventionR1").click(
-					function() {
-						var accord = $("#eleve-accordR1").is(':checked');
-						var subvention = $(this).is(':checked');
-						montreMotifRefus(accord, subvention, 'r1');
-					});
-				$("#eleve-accordR2").click(
-					function() {
-						var action = ($(this).is(':checked')) ? 'check' : 'uncheck';
-						var subvention = $("#eleve-subventionR2").is(':checked');
-						$.ajax({
-							url : '/sbmajaxeleve/' 
-								+ action
-								+ 'accordR2/eleveId:'
-								+ ELEVE_ID,
-							success : function(data) {
-									montreMotifRefus(action == 'check', subvention, 'r2');
-									montreBlockAffectation(action == 'check', 'r2');
-								},
-							error : function(xhr, ajaxOptions, thrownError) {
-									alert(xhr.status + ' '+ thrownError);
-								}
+						$("#fiche-inner input[name=demandeR1]").click(
+								function() {
+									montreDemande('r1');
+								});
+						$("#fiche-inner input[name=demandeR2]").click(
+								function() {
+									montreDemande('r2');
+								});
+						$("#eleve-accordR1")
+								.click(
+										function() {
+											var action = ($(this)
+													.is(':checked')) ? 'check'
+													: 'uncheck';
+											var subvention = $(
+													"#eleve-subventionR1").is(
+													':checked');
+											$.ajax({
+												url : '/sbmajaxeleve/' + action
+														+ 'accordR1/eleveId:'
+														+ ELEVE_ID,
+												success : function(data) {
+													montreMotifRefus(
+															action == 'check',
+															subvention, 'r1');
+													montreBlockAffectation(
+															action == 'check',
+															'r1');
+												},
+												error : function(xhr,
+														ajaxOptions,
+														thrownError) {
+													alert(xhr.status + ' '
+															+ thrownError);
+												}
+											});
+										});
+						$("#eleve-subventionR1").click(function() {
+							var accord = $("#eleve-accordR1").is(':checked');
+							var subvention = $(this).is(':checked');
+							montreMotifRefus(accord, subvention, 'r1');
 						});
-					});
-				$("#eleve-subventionR2").click(
-					function() {
-						var accord = $("#eleve-accordR2").is(':checked');
-						var subvention = $(this).is(':checked');
-						montreMotifRefus(accord, subvention, 'r2');
-					});
-				$("input[type='text'][name^='distanceR']").dblclick(
-					function() {
-						$(this).css("cursor", "wait");
-						var myid = '#' + $(this).attr('id');
-						var name = $(this).attr('name');
-						var n = 1;
-						if (name.indexOf('1') == -1) {
-							n = 2;
-						}
-						var id = '#eleve-responsable' + n + 'Id';
-						var responsableid = $(id).val();
-						var etablissementid = $("#eleve-etablissementId").val();
-						var args = 'etablissementId:'
-									+ etablissementid
-									+ '/responsableId:'
-									+ responsableid;
-						$.ajax({
-							url : '/sbmajaxeleve/donnedistance/' + args,
-							type : 'GET',
-							dataType : 'json',
-							success : function(data) {
-										$(myid).val(data.distance);
-										$(myid).css('cursor', 'auto');
-								},
-							error : function(xhr, ajaxOptions, thrownError) {
-										alert(xhr.status + " " + thrownError);
-										 $(myid).css( 'cursor', 'auto');
-									}
-							});
-					});
-				$("#eleve-responsable1Id").change(
-					function() {
-						var responsableid = $(this).val();
-						$.ajax({
-							url : '/sbmajaxeleve/getresponsable/responsableId:' 
-								+ responsableid,
-							success : function(data) {
-										montreResponsable('r1', data);
-								},
-							error : function(xhr, ajaxOptions, thrownError) {
-										alert(xhr.status + " " + thrownError);
-									}
-							});
-					});
-				$("#eleve-responsable2Id").change(
-					function() {
-						var responsableid = $(this).val();
-						$.ajax({
-							url : '/sbmajaxeleve/getresponsable/responsableId:'
-								+ responsableid,
-							success : function(data) {
-										montreResponsable('r2', data);
-								},
-							error : function(xhr, ajaxOptions, thrownError) {
-										alert(xhr.status + " " + thrownError);
-								}
-							});
-					});
-				$("#tabs").on(
-						'click', 
-						"i[data-button=btnaffectation]",
-						function() {
-							var trajet = $(this).attr('data-trajet');
-							var respid = '#eleve-responsable' + trajet + 'Id';
-							var href = '/sbmajaxeleve/formaffectation/eleveId:'
-									+ ELEVE_ID
-									+ '/trajet:'
-									+ trajet
-									+ $(this).attr('data-href')
-									+ '/responsableId:';
-							href = href.concat($(respid).val());
-							$("#winpopup").dialog({
-									draggable : true,
-									modal : true,
-									autoOpen : false,
-									height : 400,
-									width : 600,
-									resizable : false,
-									title : $(this).attr('title')
-									// ,
-									// position:'center'
-								});
-							$("#winpopup").load(href);
-							$("#winpopup").dialog("open");
+						$("#eleve-accordR2")
+								.click(
+										function() {
+											var action = ($(this)
+													.is(':checked')) ? 'check'
+													: 'uncheck';
+											var subvention = $(
+													"#eleve-subventionR2").is(
+													':checked');
+											$.ajax({
+												url : '/sbmajaxeleve/' + action
+														+ 'accordR2/eleveId:'
+														+ ELEVE_ID,
+												success : function(data) {
+													montreMotifRefus(
+															action == 'check',
+															subvention, 'r2');
+													montreBlockAffectation(
+															action == 'check',
+															'r2');
+												},
+												error : function(xhr,
+														ajaxOptions,
+														thrownError) {
+													alert(xhr.status + ' '
+															+ thrownError);
+												}
+											});
+										});
+						$("#eleve-subventionR2").click(function() {
+							var accord = $("#eleve-accordR2").is(':checked');
+							var subvention = $(this).is(':checked');
+							montreMotifRefus(accord, subvention, 'r2');
+						});
+						$("input[type='text'][name^='distanceR']")
+								.dblclick(
+										function() {
+											$(this).css("cursor", "wait");
+											var myid = '#' + $(this).attr('id');
+											var name = $(this).attr('name');
+											var n = 1;
+											if (name.indexOf('1') == -1) {
+												n = 2;
+											}
+											var id = '#eleve-responsable' + n
+													+ 'Id';
+											var responsableid = $(id).val();
+											var etablissementid = $(
+													"#eleve-etablissementId")
+													.val();
+											var args = 'etablissementId:'
+													+ etablissementid
+													+ '/responsableId:'
+													+ responsableid;
+											$
+													.ajax({
+														url : '/sbmajaxeleve/donnedistance/'
+																+ args,
+														type : 'GET',
+														dataType : 'json',
+														success : function(data) {
+															$(myid)
+																	.val(
+																			data.distance);
+															$(myid).css(
+																	'cursor',
+																	'auto');
+														},
+														error : function(xhr,
+																ajaxOptions,
+																thrownError) {
+															alert(xhr.status
+																	+ " "
+																	+ thrownError);
+															$(myid).css(
+																	'cursor',
+																	'auto');
+														}
+													});
+										});
+						$("#eleve-responsable1Id")
+								.change(
+										function() {
+											var responsableid = $(this).val();
+											$
+													.ajax({
+														url : '/sbmajaxeleve/getresponsable/responsableId:'
+																+ responsableid,
+														success : function(data) {
+															montreResponsable(
+																	'r1', data);
+														},
+														error : function(xhr,
+																ajaxOptions,
+																thrownError) {
+															alert(xhr.status
+																	+ " "
+																	+ thrownError);
+														}
+													});
+										});
+						$("#eleve-responsable2Id")
+								.change(
+										function() {
+											var responsableid = $(this).val();
+											$
+													.ajax({
+														url : '/sbmajaxeleve/getresponsable/responsableId:'
+																+ responsableid,
+														success : function(data) {
+															montreResponsable(
+																	'r2', data);
+														},
+														error : function(xhr,
+																ajaxOptions,
+																thrownError) {
+															alert(xhr.status
+																	+ " "
+																	+ thrownError);
+														}
+													});
+										});
+						$("#tabs")
+								.on(
+										'click',
+										"i[data-button=btnaffectation]",
+										function() {
+											var trajet = $(this).attr(
+													'data-trajet');
+											var respid = '#eleve-responsable'
+													+ trajet + 'Id';
+											var href = '/sbmajaxeleve/formaffectation/eleveId:'
+													+ ELEVE_ID
+													+ '/trajet:'
+													+ trajet
+													+ $(this).attr('data-href')
+													+ '/responsableId:';
+											href = href.concat($(respid).val());
+											$("#winpopup").dialog({
+												draggable : true,
+												modal : true,
+												autoOpen : false,
+												height : 400,
+												width : 600,
+												resizable : false,
+												title : $(this).attr('title')
+											// ,
+											// position:'center'
+											});
+											$("#winpopup").load(href);
+											$("#winpopup").dialog("open");
 
-							return false;
-					});
-				$("#eleve-btnpaiement").click(
-					function() {
-						var href = '/sbmajaxeleve/formpaiement/eleveId:'
-								+ ELEVE_ID;
-						$("#winpopup").dialog(
-								{
-									draggable : true,
-									modal : true,
-									autoOpen : false,
-									height : 400,
-									width : 600,
-									resizable : false,
-									title : 'Destinataire de la facture'
-								});
-						$("#winpopup").load(href);
-						$("#winpopup").dialog("open");
+											return false;
+										});
+						$("#eleve-btnpaiement")
+								.click(
+										function() {
+											var href = '/sbmajaxeleve/formpaiement/eleveId:'
+													+ ELEVE_ID;
+											$("#winpopup")
+													.dialog(
+															{
+																draggable : true,
+																modal : true,
+																autoOpen : false,
+																height : 400,
+																width : 600,
+																resizable : false,
+																title : 'Destinataire de la facture'
+															});
+											$("#winpopup").load(href);
+											$("#winpopup").dialog("open");
 
-						return false;
+											return false;
+										});
 					});
-		});
 	return {
 		"init" : function(disableAccordR1, disableAccordR2, tarifs) {
 			js_edit.disableAccordR1 = disableAccordR1;
@@ -392,10 +463,10 @@ var js_edit = (function() {
 				montreDemande('r2');
 			}
 		},
-		"setDisableAccordR1": function(disableAccordR1) {
+		"setDisableAccordR1" : function(disableAccordR1) {
 			js_edit.disableAccordR1 = disableAccordR1;
 		},
-		"setDisableAccordR2": function(disableAccordR2) {
+		"setDisableAccordR2" : function(disableAccordR2) {
 			js_edit.disableAccordR2 = disableAccordR2;
 		},
 		"majBlockAffectations" : function(trajet) {
