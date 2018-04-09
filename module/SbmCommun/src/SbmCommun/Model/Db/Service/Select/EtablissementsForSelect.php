@@ -10,8 +10,8 @@
  * @filesource EtablissementsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -58,20 +58,22 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function desservis()
     {
-        $select = $this->sql->select($this->db_manager->getCanonicName('etablissements', 'vue'));
+        $select = $this->sql->select(
+            $this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('desservie = true');
-        $select->columns(array(
-            'etablissementId',
+        $select->columns(
+            [
+                'etablissementId',
+                'commune',
+                'nom'
+            ]);
+        $select->order([
             'commune',
             'nom'
-        ));
-        $select->order(array(
-            'commune',
-            'nom'
-        ));
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
         }
@@ -80,20 +82,22 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function visibles()
     {
-        $select = $this->sql->select($this->db_manager->getCanonicName('etablissements', 'vue'));
+        $select = $this->sql->select(
+            $this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('visible = true');
-        $select->columns(array(
-            'etablissementId',
+        $select->columns(
+            [
+                'etablissementId',
+                'commune',
+                'nom'
+            ]);
+        $select->order([
             'commune',
             'nom'
-        ));
-        $select->order(array(
-            'commune',
-            'nom'
-        ));
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
         }
@@ -102,20 +106,22 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function clgPu()
     {
-        $select = $this->sql->select($this->db_manager->getCanonicName('etablissements', 'vue'));
+        $select = $this->sql->select(
+            $this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('statut = 1 AND niveau = 4');
-        $select->columns(array(
-            'etablissementId',
+        $select->columns(
+            [
+                'etablissementId',
+                'commune',
+                'nom'
+            ]);
+        $select->order([
             'commune',
             'nom'
-        ));
-        $select->order(array(
-            'commune',
-            'nom'
-        ));
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
         }

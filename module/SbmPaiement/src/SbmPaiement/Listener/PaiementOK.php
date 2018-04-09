@@ -11,8 +11,8 @@
  * @filesource PaiementOK.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Listener;
 
@@ -36,10 +36,11 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme', 'paiementOK', [
-            $this,
-            'onPaiementOK'
-        ], 1);
+        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme', 
+            'paiementOK', [
+                $this,
+                'onPaiementOK'
+            ], 1);
     }
 
     /**
@@ -75,7 +76,8 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
         $responsableId = $params['paiement']['responsableId'];
         $reference = $params['paiement']['reference'];
         $table_paiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
-        $params['paiement']['paiementId'] = $table_paiements->getPaiementId($responsableId, $datePaiement, $reference);
+        $params['paiement']['paiementId'] = $table_paiements->getPaiementId(
+            $responsableId, $datePaiement, $reference);
         // La référence paiementId doit être définie avant la création de l'objectData
         $objectData_paiement = $this->db_manager->get('Sbm\Db\ObjectData\Paiement');
         $objectData_paiement->exchangeArray($params['paiement']);

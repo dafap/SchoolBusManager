@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
 
@@ -39,7 +39,7 @@ class Statistiques implements FactoryInterface
      * @var \Zend\Db\Adapter\Adapter
      */
     protected $db_manager;
-    
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -62,7 +62,7 @@ class Statistiques implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -100,22 +100,28 @@ class Statistiques implements FactoryInterface
      */
     public function getSumByAsMode($millesime = null)
     {
-        $select = $this->sql->select(array(
-            'p' => $this->db_manager->getCanonicName('paiements', 'table')
-        ));
-        $select->columns(array(
-            'anneeScolaire',
-            'somme' => new Expression('sum(montant)')
-        ))
-            ->join(array(
-            'm' => $this->db_manager->getCanonicName('libelles-modes-de-paiement', 'vue')
-        ), 'm.code=p.codeModeDePaiement', array(
-            'mode' => 'libelle'
-        ))
-            ->group(array(
-            'anneeScolaire',
-            'libelle'
-        ));
+        $select = $this->sql->select(
+            [
+                'p' => $this->db_manager->getCanonicName('paiements', 'table')
+            ]);
+        $select->columns(
+            [
+                'anneeScolaire',
+                'somme' => new Expression('sum(montant)')
+            ])
+            ->join(
+            [
+                'm' => $this->db_manager->getCanonicName('libelles-modes-de-paiement', 
+                    'vue')
+            ], 'm.code=p.codeModeDePaiement', 
+            [
+                'mode' => 'libelle'
+            ])
+            ->group(
+            [
+                'anneeScolaire',
+                'libelle'
+            ]);
         
         if (isset($millesime)) {
             $where = new Where();
@@ -127,8 +133,8 @@ class Statistiques implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
         $result = $statement->execute();
-        $totalASMode = array();
-        $totalAS = array();
+        $totalASMode = [];
+        $totalAS = [];
         $totalGeneral = 0;
         foreach ($result as $row) {
             $totalASMode[$row['anneeScolaire']][$row['mode']] = $row['somme'];
@@ -139,7 +145,11 @@ class Statistiques implements FactoryInterface
             }
             $totalGeneral += $row['somme'];
         }
-        return array('totalGeneral' => $totalGeneral, 'totalAS' => $totalAS, 'totalASMode' => $totalASMode);
+        return [
+            'totalGeneral' => $totalGeneral,
+            'totalAS' => $totalAS,
+            'totalASMode' => $totalASMode
+        ];
     }
 
     public function getSumByExerciceMode($millesime = null)

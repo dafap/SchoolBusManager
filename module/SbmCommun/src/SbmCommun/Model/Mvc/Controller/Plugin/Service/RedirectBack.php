@@ -12,8 +12,8 @@
  * @filesource RedirectBack.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2015
- * @version 2015-1.6.5
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
@@ -40,7 +40,7 @@ class RedirectBack extends Redirect
             unset($container->back[$index]);
         }
     }
-    
+
     /**
      * Prend l'url en haut de la pile, dépile et redirige sur cette url
      */
@@ -71,15 +71,18 @@ class RedirectBack extends Redirect
         if (is_null($url)) {
             $controller = $this->getController();
             if (! $controller || ! method_exists($controller, 'plugin')) {
-                throw new Exception\DomainException('Redirect plugin requires a controller that defines the plugin() method');
+                throw new Exception\DomainException(
+                    'Redirect plugin requires a controller that defines the plugin() method');
             }
             
             $urlPlugin = $controller->plugin('url');
-            $url = $urlPlugin->fromRoute(null, array(), array(), true);
+            $url = $urlPlugin->fromRoute(null, [], [], true);
         }
         $container = $this->getContainer();
         if (! isset($container->back)) {
-            $container->back = array($url);
+            $container->back = [
+                $url
+            ];
         } else {
             $container->back[] = $url;
         }

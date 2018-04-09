@@ -9,8 +9,8 @@
  * @filesource Point.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juin 2015
- * @version 2015-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\Model;
 
@@ -64,7 +64,7 @@ class Point
      *
      * @var array
      */
-    private $attributes = array();
+    private $attributes = [];
 
     /**
      * Unité si nécessaire
@@ -78,7 +78,7 @@ class Point
      *
      * @var array
      */
-    private $plat = array();
+    private $plat = [];
 
     /**
      * Intervalle de validité des latitudes
@@ -86,7 +86,7 @@ class Point
      *
      * @var array index 0 et 1
      */
-    private $latRange = array();
+    private $latRange = [];
 
     /**
      * Intervalle de validité des longitudes
@@ -94,21 +94,21 @@ class Point
      *
      * @var array index 0 et 1
      */
-    private $lngRange = array();
+    private $lngRange = [];
 
     /**
      * Intervalle de validité de x
      *
      * @var array index 0 et 1
      */
-    private $xRange = array();
+    private $xRange = [];
 
     /**
      * Intervalle de validité de y
      *
      * @var array index 0 et 1
      */
-    private $yRange = array();
+    private $yRange = [];
 
     /**
      * Constructeur
@@ -121,23 +121,24 @@ class Point
      */
     public function __construct($x = 0, $y = 0, $z = 0, $unite = '')
     {
-        if (! in_array($unite, array(
-            '',
-            'degré',
-            'grade',
-            'radian'
-        ))) {
+        if (! in_array($unite, 
+            [
+                '',
+                'degré',
+                'grade',
+                'radian'
+            ])) {
             throw new Exception(__CLASS__ . ' - unité incorrecte.');
         }
         $this->x = $x;
         $this->y = $y;
         $this->z = $z;
         $this->unite = $unite;
-        $this->plat = array(
+        $this->plat = [
             'degré' => 180,
             'grade' => 200,
             'radian' => pi()
-        );
+        ];
     }
 
     public function getX()
@@ -330,11 +331,12 @@ class Point
      */
     public function getLongitude($unite = 'degré')
     {
-        if (! in_array($unite, array(
-            'degré',
-            'grade',
-            'radian'
-        ))) {
+        if (! in_array($unite, 
+            [
+                'degré',
+                'grade',
+                'radian'
+            ])) {
             throw new Exception(__METHOD__ . ' - unité incorrecte.');
         }
         if ($unite == $this->unite) {
@@ -354,11 +356,12 @@ class Point
      */
     public function getLatitude($unite = 'degré')
     {
-        if (! in_array($unite, array(
-            'degré',
-            'grade',
-            'radian'
-        ))) {
+        if (! in_array($unite, 
+            [
+                'degré',
+                'grade',
+                'radian'
+            ])) {
             throw new Exception(__METHOD__ . ' - unité incorrecte.');
         }
         if ($unite == $this->unite) {
@@ -377,11 +380,12 @@ class Point
      */
     public function setLongitude($longitude, $unite = 'degré')
     {
-        if (! in_array($unite, array(
-            'degré',
-            'grade',
-            'radian'
-        ))) {
+        if (! in_array($unite, 
+            [
+                'degré',
+                'grade',
+                'radian'
+            ])) {
             throw new Exception(__METHOD__ . ' - unité incorrecte.');
         }
         $this->x = $longitude;
@@ -397,11 +401,12 @@ class Point
      */
     public function setLatitude($latitude, $unite = 'degré')
     {
-        if (! in_array($unite, array(
-            'degré',
-            'grade',
-            'radian'
-        ))) {
+        if (! in_array($unite, 
+            [
+                'degré',
+                'grade',
+                'radian'
+            ])) {
             throw new Exception(__METHOD__ . ' - unité incorrecte.');
         }
         $this->y = $latitude;
@@ -463,13 +468,15 @@ class Point
     {
         if (empty($this->unite)) {
             if (empty($this->xRange) || empty($this->yRange)) {
-                throw new Exception('Les intervalles de validité de x et de y ne sont pas initialisés.');
+                throw new Exception(
+                    'Les intervalles de validité de x et de y ne sont pas initialisés.');
             }
             $ok = ($this->x - $this->xRange[0]) * ($this->x - $this->xRange[1]) <= 0;
             $ok &= ($this->y - $this->yRange[0]) * ($this->y - $this->yRange[1]) <= 0;
         } else {
             if (empty($this->latRange) || empty($this->lngRange)) {
-                throw new Exception('Les intervalles de validité de la latitude et de la longitude ne sont pas initialisés.');
+                throw new Exception(
+                    'Les intervalles de validité de la latitude et de la longitude ne sont pas initialisés.');
             }
             $lat = $this->getLatitude('degré');
             $lng = $this->getLongitude('degré');

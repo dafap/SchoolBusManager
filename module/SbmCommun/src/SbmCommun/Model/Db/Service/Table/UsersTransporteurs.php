@@ -9,8 +9,8 @@
  * @filesource UsersTransporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -25,10 +25,10 @@ class UsersTransporteurs extends AbstractSbmTable
         $this->table_name = 'users-transporteurs';
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\UsersTransporteurs';
-        $this->id_name = array(
+        $this->id_name = [
             'userId',
             'transporteurId'
-        );
+        ];
     }
 
     /**
@@ -40,29 +40,31 @@ class UsersTransporteurs extends AbstractSbmTable
      */
     public function hasTransporteur($userId)
     {
-        $resultset = $this->fetchAll(array(
+        $resultset = $this->fetchAll([
             'userId' => $userId
-        ));
+        ]);
         return $resultset->count() == 1;
     }
 
     /**
      * Renvoie le transporteurId associé à un userId
-     * 
-     * @param int $userId
-     * 
+     *
+     * @param int $userId            
+     *
      * @return int
      * @throws \SbmCommun\Model\Db\Service\Table\Exception
      */
     public function getTransporteurId($userId)
     {
-        $resultset = $this->fetchAll(array(
+        $resultset = $this->fetchAll([
             'userId' => $userId
-        ));
+        ]);
         if ($resultset->count() == 1) {
             return $resultset->current()->transporteurId;
         } else {
-            throw new Exception(sprintf('L\utilisateur n° %d n\'est pas associé à un transporteur.', $userId));
+            throw new Exception(
+                sprintf('L\utilisateur n° %d n\'est pas associé à un transporteur.', 
+                    $userId));
         }
     }
 }

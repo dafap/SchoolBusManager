@@ -8,8 +8,8 @@
  * @filesource Transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -17,6 +17,7 @@ use Zend\Db\Sql\Where;
 
 class Transporteurs extends AbstractSbmTable
 {
+
     /**
      * Initialisation du transporteur
      */
@@ -27,17 +28,18 @@ class Transporteurs extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Transporteurs';
         $this->id_name = 'transporteurId';
     }
-    
+
     public function setSelection($transporteurId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'transporteurId' => $transporteurId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'transporteurId' => $transporteurId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
-    
+
     public function getTransporteurId($email)
     {
         $where = new Where();

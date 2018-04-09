@@ -10,8 +10,8 @@
  * @filesource BordereauRemiseValeurChoix.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form\Finances;
 
@@ -24,61 +24,66 @@ class BordereauRemiseValeurChoix extends AbstractSbmForm
     {
         parent::__construct('bordereau');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'bordereau',
-            'attributes' => array(
-                'id' => 'bordereau'
-            ),
-            'options' => array(
-                'label' => 'Quel bordereau ?',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-105dem'
-                ),
-                'empty_option' => 'Choisissez dans la liste',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'editer-cancel',
-                'autofocus' => 'autofocus',
-                'class' => 'button default cancel'
-            )
-        ));
-        $this->add(array(
-            'name' => 'editer',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Editer le bordereau',
-                'id' => 'editer-submit',
-                'class' => 'button default submit'
-            )
-        ));
-
-        $this->add(array(
-            'name' => 'supprimer',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Supprimer le bordereau',
-                'id' => 'supprimer-submit',
-                'class' => 'button default submit'
-            )
-        ));
-
-        $this->add(array(
-            'name' => 'cloturer',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Clôturer le bordereau',
-                'id' => 'cloturer-submit',
-                'class' => 'button default submit'
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'bordereau',
+                'attributes' => [
+                    'id' => 'bordereau'
+                ],
+                'options' => [
+                    'label' => 'Quel bordereau ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-105dem'
+                    ],
+                    'empty_option' => 'Choisissez dans la liste',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'editer-cancel',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default cancel'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'editer',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Editer le bordereau',
+                    'id' => 'editer-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        
+        $this->add(
+            [
+                'name' => 'supprimer',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Supprimer le bordereau',
+                    'id' => 'supprimer-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        
+        $this->add(
+            [
+                'name' => 'cloturer',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Clôturer le bordereau',
+                    'id' => 'cloturer-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
     }
 }

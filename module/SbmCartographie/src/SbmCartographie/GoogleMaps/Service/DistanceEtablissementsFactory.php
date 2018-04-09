@@ -27,10 +27,12 @@ class DistanceEtablissementsFactory implements FactoryInterface
     {
         $db_manager = $serviceLocator->get('Sbm\DbManager');
         $cartographie = $serviceLocator->get('cartographie');
-        $projection = str_replace('ProjectionInterface', StdLib::getParam('system', $cartographie), ProjectionInterface::class);
+        $projection = str_replace('ProjectionInterface', 
+            StdLib::getParam('system', $cartographie), ProjectionInterface::class);
         $nzone = StdLib::getParam('nzone', $cartographie, 0);
         $google_api = $serviceLocator->get('google_api');
         
-        return new DistanceEtablissements($db_manager, new $projection($nzone), $google_api);
+        return new DistanceEtablissements($db_manager, new $projection($nzone), 
+            $google_api);
     }
 }

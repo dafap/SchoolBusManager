@@ -24,8 +24,8 @@
  * @filesource ListeLigneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 09 août 2015
- * @version 2015-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -88,7 +88,7 @@ class ListeLigneActions extends AbstractHelper
      *            <li><i>_blank</i> : charge la réponse dans un nouveau contexte de navigation.</li>
      *            Cette valeur peut être surchargée par l'attribut <i>formtarget</i> des éléments &lt;button&gt; ou &lt;input&gt;.</li>
      */
-    public function __invoke($id, $hiddens = array(), $buttons = array(), $attributes = array())
+    public function __invoke($id, $hiddens = [], $buttons = [], $attributes = [])
     {
         $result = '<div class="menu">';
         $result .= $this->openForm($id, $attributes);
@@ -110,16 +110,18 @@ class ListeLigneActions extends AbstractHelper
                     $result .= ' class="' . $attributes['class'] . '" value';
                 } elseif (strpos($attributes['class'], 'default') != false) {
                     if (array_key_exists('value', $attributes)) {
-                        $result .= ' class="' . $attributes['class'] . '" value="' . $attributes['value'] . '"';
+                        $result .= ' class="' . $attributes['class'] . '" value="' .
+                             $attributes['value'] . '"';
                     } else {
                         $result .= ' class="' . $attributes['class'] . '" value';
-                    }                    
+                    }
                 } else {
                     if (array_key_exists('value', $attributes)) {
-                        $result .= ' class="default ' . $attributes['class'] . '" value="' . $attributes['value'] . '"';
+                        $result .= ' class="default ' . $attributes['class'] . '" value="' .
+                             $attributes['value'] . '"';
                     } else {
                         $result .= ' class="default ' . $attributes['class'] . '" value';
-                    }                   
+                    }
                 }
             } else {
                 if (array_key_exists('value', $attributes)) {
@@ -170,7 +172,7 @@ class ListeLigneActions extends AbstractHelper
     }
 
     /**
-     * Renvoie dans une chaine les balises &lt;input type="hidden" name="quelque_chose" id=  &gt; indiqués dans le tableau $hiddens.
+     * Renvoie dans une chaine les balises &lt;input type="hidden" name="quelque_chose" id= &gt; indiqués dans le tableau $hiddens.
      * Chaque input a un id qui est la concaténation du name avec l'id de la ligne.
      *
      * @param int|string $id
@@ -199,6 +201,8 @@ class ListeLigneActions extends AbstractHelper
      * Renvoie la balise <form .
      *
      *
+     *
+     *
      * ..>
      *
      * @param int|string $id            
@@ -215,7 +219,8 @@ class ListeLigneActions extends AbstractHelper
         } else {
             $this->form_name = 'ligneactions' . $id;
         }
-        $result = '<form id="' . $this->form_name . '" name="' . $this->form_name . '" method="post"';
+        $result = '<form id="' . $this->form_name . '" name="' . $this->form_name .
+             '" method="post"';
         // ensuite on place les autres attributs s'ils sont précisés.
         // class (classe css)
         if (array_key_exists('class', $attributes)) {

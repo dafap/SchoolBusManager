@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 déc. 2017
- * @version 2017-2.3.14
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 
@@ -59,8 +59,8 @@ if (count($this->affectations['annee_precedente'])) {
     }
     unset($affectation);
 }
-//echo '<pre>';
-//die(print_r($structAffectations));
+// echo '<pre>';
+// die(print_r($structAffectations));
 $disableAccordR1 = isset($structAffectations[1]['annee_courante']) ? 'true' : 'false';
 $disableAccordR2 = isset($structAffectations[2]['annee_courante']) ? 'true' : 'false';
 // urls utilisées

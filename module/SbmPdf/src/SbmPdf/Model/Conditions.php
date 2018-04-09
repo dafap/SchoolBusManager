@@ -22,27 +22,32 @@
  * @filesource Conditions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model;
 
 class Conditions
 {
+
     /**
-     * Nom de la variable dans la condition. Cette variable sera définie dans la méthode value()
+     * Nom de la variable dans la condition.
+     * Cette variable sera définie dans la méthode value()
+     * 
      * @var string
      */
     const VAR_NAME = 'valeur_a_tester_pour_la_condition';
 
     /**
      * Condition formée dans la méthode parse() à partir d'une analyse de la chaine fournie par la méthode setCondition()
+     * 
      * @var string
      */
     private $condition;
 
     /**
      * Liste des mots clés autorisés
+     * 
      * @var array
      */
     private $enable;
@@ -61,7 +66,8 @@ class Conditions
             ob_start();
             var_dump($condition);
             $dump = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception("La condition indiquée devrait être une chaîne. On a reçu :\n$dump");
+            throw new Exception(
+                "La condition indiquée devrait être une chaîne. On a reçu :\n$dump");
         }
         
         $this->enable = [];
@@ -70,9 +76,9 @@ class Conditions
 
     /**
      * Reçoit la valeur à tester et renvoie la valeur de la condition
-     * 
+     *
      * @param mixed $value
-     *      valeur à tester
+     *            valeur à tester
      * @return boolean
      */
     public function value($value)
@@ -84,8 +90,8 @@ class Conditions
     /**
      * Affecte la propriété `condition`
      * par la transformation de la condition reçue pour appliquer les structures et les règles de sécurité
-     * 
-     * @param string $condition
+     *
+     * @param string $condition            
      */
     public function setCondition($condition)
     {
@@ -96,10 +102,10 @@ class Conditions
         // parse l'expression pour appliquer les règles de sécurité
         $this->parse($condition);
     }
-    
+
     /**
      * Renvoie la liste des structures définies comme méthodes dont le nom commence par "struct_"
-     * 
+     *
      * @return array
      */
     private function liste_structures()
@@ -116,8 +122,8 @@ class Conditions
 
     /**
      * Analyse la chaine condition et affecte la propriété condition
-     * 
-     * @param string $condition
+     *
+     * @param string $condition            
      */
     private function parse($condition)
     {
@@ -160,10 +166,13 @@ class Conditions
                                 $this->condition .= '||';
                                 break;
                             default:
-                                if (array_key_exists($element[1], $this->enable) && $this->enable[$element[1]]) {
+                                if (array_key_exists($element[1], $this->enable) &&
+                                     $this->enable[$element[1]]) {
                                     $this->condition .= $element[1];
                                 } else {
-                                    $this->condition .= "'" . str_replace("'", "\'", trim(trim(trim($element[1]), '"'), "'")) . "'";
+                                    $this->condition .= "'" .
+                                         str_replace("'", "\'", 
+                                            trim(trim(trim($element[1]), '"'), "'")) . "'";
                                 }
                         }
                         break;
@@ -302,7 +311,8 @@ class Conditions
         $pattern = '/\?\s*commence\s*par\s+[\'"]?([\w+-]*)[\'"]?/i';
         if (preg_match($pattern, $condition, $matches)) {
             $this->enable['mb_strlen'] = $this->enable['mb_substr'] = true;
-            $replace = '(mb_substr(?, 0, mb_strlen(\'' . $matches[1] . '\')) == \'' . $matches[1] . '\')';
+            $replace = '(mb_substr(?, 0, mb_strlen(\'' . $matches[1] . '\')) == \'' .
+                 $matches[1] . '\')';
             return str_replace($matches[0], $replace, $condition);
         } else {
             return $condition;
@@ -321,7 +331,8 @@ class Conditions
         $pattern = '/\?\s*ne\s*commence\s*pas\s*par\s+[\'"]?([\w+-]*)[\'"]?/i';
         if (preg_match($pattern, $condition, $matches)) {
             $this->enable['mb_strlen'] = $this->enable['mb_substr'] = true;
-            $replace = '(mb_substr(?, 0, mb_strlen(\'' . $matches[1] . '\')) != \'' . $matches[1] . '\')';
+            $replace = '(mb_substr(?, 0, mb_strlen(\'' . $matches[1] . '\')) != \'' .
+                 $matches[1] . '\')';
             return str_replace($matches[0], $replace, $condition);
         } else {
             return $condition;
@@ -340,7 +351,8 @@ class Conditions
         $pattern = '/\?\s*finit\s*par\s+[\'"]?([\w+-]*)[\'"]?/i';
         if (preg_match($pattern, $condition, $matches)) {
             $this->enable['mb_strlen'] = $this->enable['mb_substr'] = true;
-            $replace = '(mb_substr(?, -mb_strlen(\'' . $matches[1] . '\')) == \'' . $matches[1] . '\')';
+            $replace = '(mb_substr(?, -mb_strlen(\'' . $matches[1] . '\')) == \'' .
+                 $matches[1] . '\')';
             return str_replace($matches[0], $replace, $condition);
         } else {
             return $condition;
@@ -359,7 +371,8 @@ class Conditions
         $pattern = '/\?\s*ne\s*finit\s*pas\s*par\s+[\'"]?([\w+-]*)[\'"]?/i';
         if (preg_match($pattern, $condition, $matches)) {
             $this->enable['mb_strlen'] = $this->enable['mb_substr'] = true;
-            $replace = '(mb_substr(?, -mb_strlen(\'' . $matches[1] . '\')) != \'' . $matches[1] . '\')';
+            $replace = '(mb_substr(?, -mb_strlen(\'' . $matches[1] . '\')) != \'' .
+                 $matches[1] . '\')';
             return str_replace($matches[0], $replace, $condition);
         } else {
             return $condition;

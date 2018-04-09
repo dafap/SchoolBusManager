@@ -8,8 +8,8 @@
  * @filesource PdfListener.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Listener;
 
@@ -50,15 +50,16 @@ class PdfListener implements ListenerAggregateInterface
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPdf\Service\RenderPdfService', 'renderPdf', [
-            $this,
-            'onRenderPdf'
-        ], 100);
+        $this->listeners[] = $sharedEvents->attach('SbmPdf\Service\RenderPdfService', 
+            'renderPdf', [
+                $this,
+                'onRenderPdf'
+            ], 100);
     }
 
     /**
      * (non-PHPdoc)
-     * 
+     *
      * @see \Zend\EventManager\ListenerAggregateInterface::detach()
      */
     public function detach(EventManagerInterface $events)

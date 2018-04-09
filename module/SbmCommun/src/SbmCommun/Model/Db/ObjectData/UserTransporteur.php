@@ -9,8 +9,8 @@
  * @filesource UserTransporteur.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -19,9 +19,13 @@ use SbmCommun\Model\Validator\CodeService;
 
 class UserTransporteur extends AbstractObjectData
 {
+
     public function __construct()
     {
         $this->setObjName(__CLASS__);
-        $this->setIdFieldName(array('userId', 'transporteurId'));
+        $this->setIdFieldName([
+            'userId',
+            'transporteurId'
+        ]);
     }
 }

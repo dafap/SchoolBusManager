@@ -7,8 +7,8 @@
  * @filesource table-alias.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 oct. 2017
- * @version 2017-2.3.12
+ * @date 9 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url("sbminstall");
@@ -34,16 +34,21 @@ echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
 	<div id="data-inner">
-	    <h3>Tables</h3>
-	    <pre>
+		<h3>Tables</h3>
+		<pre>
 <?php var_dump($this->tables); ?>
-        </pre>	    
-        <h3>Systems</h3>
-	    <pre>
+        </pre>
+        <h3>Plugin de paiement en ligne</h3>
+        <pre>
+<?php var_dump($this->plugin); ?>
+        </pre>
+		<h3>Systems</h3>
+		<pre>
 <?php var_dump($this->systems); ?>
-        </pre>	    
-        <h3>Vues</h3>
-	    <pre>
+        </pre>
+		<h3>Vues</h3>
+		<pre>
 <?php var_dump($this->vues); ?>
-    </pre></div>
+    </pre>
+	</div>
 </div>

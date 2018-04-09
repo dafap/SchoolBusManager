@@ -9,8 +9,8 @@
  * @filesource EmailChangeFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Form\Service;
 
@@ -20,6 +20,7 @@ use SbmFront\Form\EmailChange;
 
 class EmailChangeFactory implements FactoryInterface
 {
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $db_manager = $serviceLocator->get('Sbm\DbManager');

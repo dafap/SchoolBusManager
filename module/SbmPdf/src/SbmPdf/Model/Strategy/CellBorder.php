@@ -7,8 +7,8 @@
  * @filesource CellBorder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model\Strategy;
 
@@ -18,14 +18,22 @@ class CellBorder implements StrategyInterface
 {
 
     private $reference = [
-        'exclusif' => [0, 1],
-        'combine' => ['L', 'T', 'R', 'B']
+        'exclusif' => [
+            0,
+            1
+        ],
+        'combine' => [
+            'L',
+            'T',
+            'R',
+            'B'
+        ]
     ];
 
     public function extract($param)
     {
         $result = '';
-        if (!empty($param) && is_array($param)) {
+        if (! empty($param) && is_array($param)) {
             if (in_array('-1', $param)) {
                 $result = '0';
             } elseif (in_array('1', $param)) {
@@ -41,7 +49,9 @@ class CellBorder implements StrategyInterface
     {
         $result = [];
         if (empty($value) || $value == '0') {
-            $result = ['-1'];
+            $result = [
+                '-1'
+            ];
         } elseif (is_string($value)) {
             $result = str_split($value);
         } else {

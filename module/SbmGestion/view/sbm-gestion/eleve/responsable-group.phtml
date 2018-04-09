@@ -8,41 +8,48 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juin 2017
- * @version 2017-2.3.4
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\Session;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_retour = $this->url('sbmgestion/eleve', [
-    'action' => 'responsable-liste',
-    'page' => $this->page
-]);
-$url_rapports = $this->url('sbmgestion/eleve', [
-    'action' => 'responsable-group-pdf',
-    'page' => $this->page
-]);
-$url_ajouter = $this->url('sbmgestion/eleve', [
-    'action' => 'eleve-ajout',
-    'page' => $this->page
-]);
-$url_origine = $this->url('sbmgestion/eleve', [
-    'action' => 'responsable-group',
-    'page' => $this->page
-]);
-$url_duplicata = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'duplicata-carte',
-    'page' => $this->page
-]);
-$url_edit = $this->url('sbmgestion/eleve', [
-    'action' => 'eleve-edit',
-    'page' => $this->page
-]);
-$url_raye = $this->url('sbmgestion/eleve', [
-    'action' => 'eleve-rayer',
-    'page' => $this->page
-]);
+$url_retour = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-group-pdf',
+        'page' => $this->page
+    ]);
+$url_ajouter = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-ajout',
+        'page' => $this->page
+    ]);
+$url_origine = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-group',
+        'page' => $this->page
+    ]);
+$url_duplicata = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'duplicata-carte',
+        'page' => $this->page
+    ]);
+$url_edit = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+$url_raye = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-rayer',
+        'page' => $this->page
+    ]);
 $url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
 ]);
@@ -52,15 +59,18 @@ $hiddens = [
 ];
 $email = $this->responsable->email;
 if (! empty($email)) {
-    $hiddens = array_merge($hiddens, [
-        'group' => $url_origine,
-        'responsable' => sprintf('%s %s %s', $this->responsable->titre, $this->responsable->nom, $this->responsable->prenom),
-        'email' => $this->responsable->email
-    ]);
+    $hiddens = array_merge($hiddens, 
+        [
+            'group' => $url_origine,
+            'responsable' => sprintf('%s %s %s', $this->responsable->titre, 
+                $this->responsable->nom, $this->responsable->prenom),
+            'email' => $this->responsable->email
+        ]);
 }
-$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', [
-    'action' => 'responsable-group'
-]), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/eleve', [
+        'action' => 'responsable-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
@@ -178,15 +188,19 @@ echo $this->flashMessenger()->render('default');
                 $inscrit = $row['paiement'] == 1;
                 $inscrit |= $row['fa'] == 1;
                 $inscrit |= $row['gratuit'] > 0;
-                $inscrit |= ($row['demandeR1'] == 2 && $row['accordR1'] == 0 && $row['subventionR1'] == 1);
-                $inscrit |= ($row['demandeR2'] == 2 && $row['accordR2'] == 0 && $row['subventionR2'] == 1);
-                $this->pictogrammes('init')->addPreinscrit($row['inscrit'] == 1 && ! $inscrit);
+                $inscrit |= ($row['demandeR1'] == 2 && $row['accordR1'] == 0 &&
+                     $row['subventionR1'] == 1);
+                $inscrit |= ($row['demandeR2'] == 2 && $row['accordR2'] == 0 &&
+                     $row['subventionR2'] == 1);
+                $this->pictogrammes('init')->addPreinscrit(
+                    $row['inscrit'] == 1 && ! $inscrit);
                 $tr_css = 'noir';
             } else {
-                $url_edit = $this->url('sbmgestion/eleve', [
-                    'action' => 'eleve-inscrire',
-                    'page' => $this->page
-                ]);
+                $url_edit = $this->url('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-inscrire',
+                        'page' => $this->page
+                    ]);
                 $buttons = [
                     'inscrire' => [
                         'class' => 'fam-basket-put',
@@ -215,10 +229,11 @@ echo $this->flashMessenger()->render('default');
             }
             // if (! empty($email)) {
             if ($nePasRelancer) {
-                $url_change_reinscription = $this->url('sbmgestion/eleve', [
-                    'action' => 'eleve-reinscription-oui',
-                    'page' => $this->page
-                ]);
+                $url_change_reinscription = $this->url('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-reinscription-oui',
+                        'page' => $this->page
+                    ]);
                 $reinscription = '<i class="fam-cancel" title="Cet élève ne doit pas se réinscrire"></i>';
                 $buttons['mailchimp'] = [
                     'class' => 'fam-car-add',
@@ -226,10 +241,11 @@ echo $this->flashMessenger()->render('default');
                     'title' => 'Indiquer que cet élève devrait se réinscrire'
                 ];
             } else {
-                $url_change_reinscription = $this->url('sbmgestion/eleve', [
-                    'action' => 'eleve-reinscription-non',
-                    'page' => $this->page
-                ]);
+                $url_change_reinscription = $this->url('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-reinscription-non',
+                        'page' => $this->page
+                    ]);
                 $reinscription = '<i class="fam-tick" title="Cet élève devrait se réinscrire"></i>';
                 $buttons['mailchimp'] = [
                     'class' => 'fam-car-delete',

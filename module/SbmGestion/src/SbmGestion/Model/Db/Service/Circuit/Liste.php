@@ -7,8 +7,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Model\Db\Service\Circuit;
 
@@ -24,6 +24,7 @@ use SbmCommun\Model\Db\Exception;
 
 class Liste implements FactoryInterface
 {
+
     /**
      *
      * @var \SbmCommun\Model\Db\Service\DbManager
@@ -45,7 +46,7 @@ class Liste implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -75,20 +76,23 @@ class Liste implements FactoryInterface
     public function byStation($stationId)
     {
         $select = $this->sql->select();
-        $select->from(array(
-            'c' => $this->db_manager->getCanonicName('circuits', 'table')
-        ))
-            ->where(array(
-            'millesime' => Session::get('millesime')
-        ))
+        $select->from(
+            [
+                'c' => $this->db_manager->getCanonicName('circuits', 'table')
+            ])
+            ->where(
+            [
+                'millesime' => Session::get('millesime')
+            ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns(array())
-            ->join(array(
-            's' => $this->db_manager->getCanonicName('services')
-        ), 's.serviceId=c.serviceId')
-            ->where(array(
+            ->columns([])
+            ->join(
+            [
+                's' => $this->db_manager->getCanonicName('services')
+            ], 's.serviceId=c.serviceId')
+            ->where([
             'stationId' => $stationId
-        ));
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
@@ -102,27 +106,32 @@ class Liste implements FactoryInterface
     {
         $select1 = new Select();
         $select1->from($this->db_manager->getCanonicName('circuits'))
-            ->columns(array(
+            ->columns([
             'stationId'
-        ))
-            ->where(array(
-            'millesime' => Session::get('millesime')
-        ));
+        ])
+            ->where(
+            [
+                'millesime' => Session::get('millesime')
+            ]);
         $select = $this->sql->select();
-        $select->from(array(
-            's' => $this->db_manager->getCanonicName('stations')
-        ))
-            ->join(array(
-            'v' => $this->db_manager->getCanonicName('communes')
-        ), 'v.communeId=s.communeId', array(
-            'commune' => 'nom'
-        ))
-            ->join(array(
+        $select->from(
+            [
+                's' => $this->db_manager->getCanonicName('stations')
+            ])
+            ->join(
+            [
+                'v' => $this->db_manager->getCanonicName('communes')
+            ], 'v.communeId=s.communeId', 
+            [
+                'commune' => 'nom'
+            ])
+            ->join([
             'c' => $select1
-        ), 's.stationId=c.stationId', array(), Select::JOIN_LEFT)
-            ->where(function ($where) {
-            $where->isNull('c.stationId');
-        });
+        ], 's.stationId=c.stationId', [], Select::JOIN_LEFT)
+            ->where(
+            function ($where) {
+                $where->isNull('c.stationId');
+            });
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }

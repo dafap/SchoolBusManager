@@ -17,8 +17,8 @@
  * @filesource view/sbm-gestion/transport/classe-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 nov. 2017
- * @version 2017-2.3.14
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 
@@ -48,37 +48,39 @@ $("#chk%d").change(function() {
   });
 EOT;
 
-
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $classes = $this->paginator->getCurrentItems();
-$url_ajouter = $this->url('sbmgestion/transport', array(
-    'action' => 'classe-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'classe-pdf',
-    'page' => $this->page
-));
+$url_ajouter = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'classe-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'classe-pdf',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/transport');
-$hiddens = array();
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'classe-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'classe-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvelle classe'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des classes</h1>
 <div id="liste-wrapper">
@@ -106,14 +108,22 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($classes as $test => $classe): ?>
         <?php
             
-$nbInscrits = StdLib::getParamR(array($classe->classeId, 'transportes'), $this->t_nb_inscrits, 0) . ' / ';
-$nbInscrits.= StdLib::getParamR(array($classe->classeId, 'demandes'), $this->t_nb_inscrits, 0);
-            // construction des JS pour selection            
+            $nbInscrits = StdLib::getParamR(
+                [
+                    $classe->classeId,
+                    'transportes'
+                ], $this->t_nb_inscrits, 0) . ' / ';
+            $nbInscrits .= StdLib::getParamR(
+                [
+                    $classe->classeId,
+                    'demandes'
+                ], $this->t_nb_inscrits, 0);
+            // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $classe->classeId);
             $jsCallback .= sprintf("$modele\n", $classe->classeId, $classe->classeId);
             ?>
             <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="nom"><?php echo $this->escapeHtml($classe->nom); ?></td>
 					<td class="aliascg invisible"><?php echo $this->escapeHtml($classe->aliasCG); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
@@ -121,38 +131,41 @@ $nbInscrits.= StdLib::getParamR(array($classe->classeId, 'demandes'), $this->t_n
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $classe->classeId, $classe->selection)?></td>
 					<td class="boutons">
             <?php
-            $url_edit = $this->url('sbmgestion/transport', array(
-                'action' => 'classe-edit',
-                'page' => $this->page
-            ));
-            $url_delete = $this->url('sbmgestion/transport', array(
-                'action' => 'classe-suppr',
-                'page' => $this->page
-            ));
-            $url_group = $this->url('sbmgestion/transport', array(
-                'action' => 'classe-group',
-                'id' => $this->page
-            ));
-            $hiddens = array(
+            $url_edit = $this->url('sbmgestion/transport', 
+                [
+                    'action' => 'classe-edit',
+                    'page' => $this->page
+                ]);
+            $url_delete = $this->url('sbmgestion/transport', 
+                [
+                    'action' => 'classe-suppr',
+                    'page' => $this->page
+                ]);
+            $url_group = $this->url('sbmgestion/transport', 
+                [
+                    'action' => 'classe-group',
+                    'id' => $this->page
+                ]);
+            $hiddens = [
                 'classeId' => $classe->classeId
-            );
-            $buttons = array(
-                'modifier' => array(
+            ];
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier'
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer'
-                ),
-                'eleves' => array(
+                ],
+                'eleves' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'élèves inscrits en ' . $classe->nom
-                )
-            );
+                ]
+            ];
             echo $this->listeLigneActions($classe->classeId, $hiddens, $buttons);
             ?>
 				</td>
@@ -162,7 +175,7 @@ $nbInscrits.= StdLib::getParamR(array($classe->classeId, 'demandes'), $this->t_n
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
         <?php echo $this->form()->openTag($this->criteres_form);?>
         <?php echo $this->formCollection($this->criteres_form, true);?>

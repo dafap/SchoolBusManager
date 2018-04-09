@@ -8,17 +8,20 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 déc. 2017
- * @version 2017-2.3.14
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 
 class Affectations extends AbstractHelper
-{ 
+{
+
     const TR = '<tr>';
+
     const END_TR = '</tr>';
+
     /**
      * Modèle de ligne du tableau des affectations
      * On trouve dans l'ordre :
@@ -42,6 +45,7 @@ class Affectations extends AbstractHelper
 	<td class="next">%s</td>
 	<td class="next">%s</td>
 ';
+
     const I = '
     <td class="next last">
     <i class="fam-car" title="Modifier une affectation" data-button="btnaffectation" data-trajet="%s" data-href="/op:edit%s"></i>
@@ -66,11 +70,11 @@ class Affectations extends AbstractHelper
                 // il faut décoder $j
                 $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
                 foreach ($affectationsParJours as $s => $affectationsSens) {
-                    $sens = array(
+                    $sens = [
                         1 => 'Aller',
                         2 => 'Retour',
                         3 => 'Aller-retour'
-                    )[$s];
+                    ][$s];
                     foreach ($affectationsSens as $rang => $affectation) {
                         $args = '/jours:' . $j;
                         $args .= '/sens:' . $s;
@@ -79,7 +83,10 @@ class Affectations extends AbstractHelper
                         $args .= '/station2Id:' . ($affectation['station2Id'] ?  : 'null');
                         $args .= '/service1Id:' . $affectation['service1Id'];
                         $args .= '/service2Id:' . ($affectation['service2Id'] ?  : 'null');
-                        $render .= sprintf(self::TR . self::TD . self::I . self::END_TR, $jours, $sens, $affectation['service1Id'], $affectation['station1'], $affectation['station2'], $affectation['service2Id'], $trajet, $args, $trajet, $args);
+                        $render .= sprintf(self::TR . self::TD . self::I . self::END_TR, 
+                            $jours, $sens, $affectation['service1Id'], 
+                            $affectation['station1'], $affectation['station2'], 
+                            $affectation['service2Id'], $trajet, $args, $trajet, $args);
                     }
                     unset($affectation);
                 }
@@ -94,13 +101,15 @@ class Affectations extends AbstractHelper
                 // il faut décoder $j
                 $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours différents
                 foreach ($affectationsParJours as $s => $affectationsSens) {
-                    $sens = array(
+                    $sens = [
                         1 => 'Aller',
                         2 => 'Retour',
                         3 => 'Aller-retour'
-                    )[$s];
+                    ][$s];
                     foreach ($affectationsSens as $rang => $affectation) {
-                        $render .= sprintf(self::TR . self::TD . self::END_TR, $jours, $sens, $affectation['service1Id'], $affectation['station1'], $affectation['station2'], $affectation['service2Id']);
+                        $render .= sprintf(self::TR . self::TD . self::END_TR, $jours, 
+                            $sens, $affectation['service1Id'], $affectation['station1'], 
+                            $affectation['station2'], $affectation['service2Id']);
                     }
                     unset($affectation);
                 }

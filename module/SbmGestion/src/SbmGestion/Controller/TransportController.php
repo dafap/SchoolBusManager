@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 déc. 2017
- * @version 2017-2.3.14
+ * @date 9 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Controller;
 
@@ -36,6 +36,8 @@ use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Model\Mvc\Controller\EditResponse;
 use SbmCartographie\Model\Point;
+use SbmCartographie\Model\Projection;
+use SbmCartographie\GoogleMaps;
 use SbmGestion\Form\EtablissementServiceSuppr as FormEtablissementServiceSuppr;
 use SbmGestion\Form\StationDoublon;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
@@ -795,9 +797,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'classe-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, [
-            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byClasse()
-        ]);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, 
+            [
+                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
+                    ->byClasse()
+            ]);
     }
 
     /**
@@ -1085,9 +1089,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'commune-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, [
-            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCommune()
-        ]);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, 
+            [
+                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
+                    ->byCommune()
+            ]);
     }
 
     /**
@@ -1126,7 +1132,7 @@ class TransportController extends AbstractActionController
      */
     private function critereLocalisation()
     {
-        $projection = $this->cartographie_manager->get('SbmCarto\Projection');
+        $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
         $pasLocalisaton = 'Not((x Between %d And %d) And (y Between %d And %d))';
@@ -1159,7 +1165,7 @@ class TransportController extends AbstractActionController
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_etablissements', 
                     10),
                 'criteres_form' => $args['form'],
-                'projection' => $this->cartographie_manager->get('SbmCarto\Projection')
+                'projection' => $this->cartographie_manager->get(Projection::class)
             ]);
     }
 
@@ -1428,9 +1434,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, [
-            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement()
-        ]);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, 
+            [
+                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
+                    ->byEtablissement()
+            ]);
     }
 
     /**
@@ -1546,7 +1554,7 @@ class TransportController extends AbstractActionController
         } else {
             $args = [];
         }
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
         $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
         $configCarte = StdLib::getParam('parent', 
             $this->cartographie_manager->get('cartes'));
@@ -1578,7 +1586,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) {
                 // transforme les coordonnées
                 $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
-                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
                 // enregistre dans la fiche etablissement
                 $oData = $tEtablissements->getObjData();
                 $oData->exchangeArray(
@@ -1605,13 +1613,13 @@ class TransportController extends AbstractActionController
             $etablissement->communeId);
         if ($etablissement->x == 0.0 && $etablissement->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
-            $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode(
+            $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
                 $etablissement->adresse1, $etablissement->codePostal, $commune->nom);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
             $description .= $array['adresse'];
         } else {
             $point = new Point($etablissement->x, $etablissement->y);
-            $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+            $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
             $description .= trim(
                 implode("\n", 
                     [
@@ -1633,7 +1641,7 @@ class TransportController extends AbstractActionController
             if ($autreEtablissement->etablissementId != $etablissementId) {
                 $pt = new Point($autreEtablissement->x, $autreEtablissement->y);
                 $pt->setAttribute('etablissement', $autreEtablissement);
-                $ptEtablissements[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
+                $ptEtablissements[] = $oDistanceMatrix->getProjection()->xyzVersgRGF93($pt);
             }
         }
         return new ViewModel(
@@ -2381,7 +2389,7 @@ class TransportController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_stations', 10),
                 'criteres_form' => $args['form'],
-                'projection' => $this->cartographie_manager->get('SbmCarto\Projection')
+                'projection' => $this->cartographie_manager->get(Projection::class)
             ]);
     }
 
@@ -2614,7 +2622,7 @@ class TransportController extends AbstractActionController
         // même configuration de carte que pour les etablissements
         $configCarte = StdLib::getParam('parent', 
             $this->cartographie_manager->get('cartes'));
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
         $formCarte = new LatLng(
             [
                 'phase' => 1,
@@ -2656,9 +2664,9 @@ class TransportController extends AbstractActionController
                 }
                 // transforme les coordonnées
                 $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
-                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
                 // initialise le formulaire de la station
-                $geocode = $this->cartographie_manager->get('SbmCarto\Geocoder');
+                $geocode = $this->cartographie_manager->get(GoogleMaps\Geocoder::class);
                 $lieu = $geocode->reverseGeocoding($args['lat'], $args['lng']);
                 $form->setData(
                     [
@@ -2710,7 +2718,7 @@ class TransportController extends AbstractActionController
             foreach ($tStations->fetchAll() as $station) {
                 $pt = new Point($station->x, $station->y);
                 $pt->setAttribute('station', $station);
-                $ptStations[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
+                $ptStations[] = $oDistanceMatrix->getProjection()->xyzVersgRGF93($pt);
             }
             $view = new ViewModel(
                 [
@@ -2902,9 +2910,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'station-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,[
-            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation()
-        ]);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, 
+            [
+                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
+                    ->byStation()
+            ]);
     }
 
     /**
@@ -2993,7 +3003,7 @@ class TransportController extends AbstractActionController
                     ]);
             }
         }
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
         $stationId = $args['stationId'];
         $tStations = $this->db_manager->get('Sbm\Db\Table\Stations');
         // même configuration de carte que pour les etablissements
@@ -3033,7 +3043,7 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) {
                 // transforme les coordonnées
                 $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
-                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
                 // enregistre dans la fiche station
                 $oData = $tStations->getObjData();
                 $oData->exchangeArray(
@@ -3060,12 +3070,12 @@ class TransportController extends AbstractActionController
              $commune->nom;
         if ($station->x == 0.0 && $station->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
-            $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode(
+            $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
                 $station->nom, $commune->codePostal, $commune->nom);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
         } else {
             $point = new Point($station->x, $station->y);
-            $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+            $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
         }
         $form->setData(
             [
@@ -3079,7 +3089,7 @@ class TransportController extends AbstractActionController
             if ($autreStation->stationId != $stationId) {
                 $pt = new Point($autreStation->x, $autreStation->y);
                 $pt->setAttribute('station', $autreStation);
-                $ptStations[] = $d2etab->getProjection()->xyzVersgRGF93($pt);
+                $ptStations[] = $oDistanceMatrix->getProjection()->xyzVersgRGF93($pt);
             }
         }
         return new ViewModel(
@@ -3460,9 +3470,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,[
-            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur()
-        ]);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, 
+            [
+                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
+                    ->byTransporteur()
+            ]);
     }
 
     public function transporteurGroupPdfAction()

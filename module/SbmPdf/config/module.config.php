@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmPdf\Service;
 use SbmPdf\Model\Service as PdfService;
@@ -27,7 +27,6 @@ use SbmPdf\Model\Service\TcpdfFactory;
 use SbmPdf\Model\Columns;
 use SbmPdf\Model\Tcpdf;
 use SbmPdf\Controller;
-
 
 return [
     'tcpdf' => [],

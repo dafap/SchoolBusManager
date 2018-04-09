@@ -17,8 +17,8 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 nov. 2017
- * @version 2017-2.3.14
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -69,71 +69,80 @@ $("#des%s").change(function() {
   });
 EOT;
 
-
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $etablissements = $this->paginator->getCurrentItems();
 
-$url_ajouter = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-pdf',
-    'page' => $this->page
-));
-$url_carte = $this->url('sbmcarte', array(
-    'action' => 'etablissements'
-));
-$url_edit = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-suppr',
-    'page' => $this->page
-));
-$url_relation = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-service',
-    'id' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-group',
-    'id' => $this->page
-));
-$url_localiser = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-localisation',
-    'page' => $this->page
-));
-$url_retour = $this->url('sbmgestion/transport');
-$hiddens = array(
-    'back' => $this->url('sbmgestion/transport', array(
-        'action' => 'etablissement-liste',
+$url_ajouter = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-ajout',
         'page' => $this->page
-    ))
-);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+    ]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-pdf',
+        'page' => $this->page
+    ]);
+$url_carte = $this->url('sbmcarte', [
+    'action' => 'etablissements'
+]);
+$url_edit = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-suppr',
+        'page' => $this->page
+    ]);
+$url_relation = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-service',
+        'id' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-group',
+        'id' => $this->page
+    ]);
+$url_localiser = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-localisation',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmgestion/transport');
+$hiddens = [
+    'back' => $this->url('sbmgestion/transport', 
+        [
+            'action' => 'etablissement-liste',
+            'page' => $this->page
+        ])
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', 
+        [
+            'action' => 'etablissement-liste'
+        ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'carte' => array(
+    'carte' => [
         'class' => 'fam-map-magnify',
         'formaction' => $url_carte,
         'title' => 'Carte des établissements'
-    ),
-    'ajouter' => array(
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvel établissement scolaire'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des établissements</h1>
 <div id="liste-wrapper">
@@ -151,7 +160,7 @@ echo $this->flashMessenger()->render('default');
 		<table class="etablissements">
 			<tbody>
 				<tr>
-				    <th></th>
+					<th></th>
 					<th>Code</th>
 					<th>Nom</th>
 					<th>Commune</th>
@@ -168,17 +177,28 @@ echo $this->flashMessenger()->render('default');
         <?php
             $pt = new Point($etablissement->x, $etablissement->y);
             $ptOk = $this->projection->isValid($pt, 'etablissements');
-            $nbInscrits = StdLib::getParamR(array($etablissement->etablissementId, 'transportes'), $this->t_nb_inscrits, 0);
+            $nbInscrits = StdLib::getParamR(
+                [
+                    $etablissement->etablissementId,
+                    'transportes'
+                ], $this->t_nb_inscrits, 0);
             $nbInscrits .= ' / ';
-            $nbInscrits .= StdLib::getParamR(array($etablissement->etablissementId, 'demandes'), $this->t_nb_inscrits, 0);
-            // construction des JS pour selection, visible et desservie            
-            $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $etablissement->etablissementId);
-            $jsTrigger .= sprintf("$('#vis%s').trigger('change');\n", $etablissement->etablissementId);
-            $jsTrigger .= sprintf("$('#des%s').trigger('change');\n", $etablissement->etablissementId);
+            $nbInscrits .= StdLib::getParamR(
+                [
+                    $etablissement->etablissementId,
+                    'demandes'
+                ], $this->t_nb_inscrits, 0);
+            // construction des JS pour selection, visible et desservie
+            $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", 
+                $etablissement->etablissementId);
+            $jsTrigger .= sprintf("$('#vis%s').trigger('change');\n", 
+                $etablissement->etablissementId);
+            $jsTrigger .= sprintf("$('#des%s').trigger('change');\n", 
+                $etablissement->etablissementId);
             $jsCallback .= str_replace('%s', $etablissement->etablissementId, "$modele\n"); // , $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId);
             ?>
             <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td>
 					<?php if (!$ptOk) : ?>
 					   <i class="fam-error"></i>
@@ -196,37 +216,38 @@ echo $this->flashMessenger()->render('default');
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $etablissement->etablissementId, $etablissement->selection)?></td>
 					<td class="boutons">
             <?php
-            $hiddens = array(
-                'etablissementId' => $etablissement->etablissementId,
-            );
-            $buttons = array(
-                'modifier' => array(
+            $hiddens = [
+                'etablissementId' => $etablissement->etablissementId
+            ];
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier'
-                ),
-                'localiser' => array(
+                ],
+                'localiser' => [
                     'class' => $ptOk ? 'fam-map-magnify' : 'fam-map-add',
                     'formaction' => $url_localiser,
                     'title' => $ptOk ? 'position sur la carte' : 'position manquante'
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer'
-                ),
-                'services' => array(
+                ],
+                'services' => [
                     'class' => 'fam-table-relationship',
                     'formaction' => $url_relation,
                     'title' => 'circuits desservant cet établissement'
-                ),
-                'eleves' => array(
+                ],
+                'eleves' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'élèves inscrits dans cet établissement scolaire'
-                )
-            );
-            echo $this->listeLigneActions($etablissement->etablissementId, $hiddens, $buttons);
+                ]
+            ];
+            echo $this->listeLigneActions($etablissement->etablissementId, $hiddens, 
+                $buttons);
             ?>
 				</td>
 				</tr>         
@@ -235,7 +256,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
 	    <?php echo $this->form()->openTag($this->criteres_form);?>
 	    <?php echo $this->formCollection($this->criteres_form, true);?>

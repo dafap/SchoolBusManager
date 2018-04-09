@@ -9,8 +9,8 @@
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -145,11 +145,12 @@ class DbManager extends ServiceManager implements FactoryInterface
     public function getMaxLengthArray($tableName, $type)
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists([
-            $type,
-            $tableName,
-            'columns'
-        ], $this->table_descriptor)) {
+        if (! StdLib::array_keys_exists(
+            [
+                $type,
+                $tableName,
+                'columns'
+            ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
         
@@ -199,11 +200,12 @@ class DbManager extends ServiceManager implements FactoryInterface
     public function getColumnDefaults($tableName, $type)
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists([
-            $type,
-            $tableName,
-            'columns'
-        ], $this->table_descriptor)) {
+        if (! StdLib::array_keys_exists(
+            [
+                $type,
+                $tableName,
+                'columns'
+            ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
         
@@ -232,11 +234,12 @@ class DbManager extends ServiceManager implements FactoryInterface
     public function getAreNullableColumns($tableName, $type)
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists([
-            $type,
-            $tableName,
-            'columns'
-        ], $this->table_descriptor)) {
+        if (! StdLib::array_keys_exists(
+            [
+                $type,
+                $tableName,
+                'columns'
+            ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
         $result = [];
@@ -295,10 +298,11 @@ class DbManager extends ServiceManager implements FactoryInterface
             if ($type == 's')
                 continue;
             $type = $type == 't' ? 'table' : ($type == 'v' ? 'données complètes' : 'table système');
-            $result[$nom_reel] = implode(' ', [
-                $nom,
-                '(' . $type . ')'
-            ]);
+            $result[$nom_reel] = implode(' ', 
+                [
+                    $nom,
+                    '(' . $type . ')'
+                ]);
         }
         asort($result);
         return $result;
@@ -367,7 +371,10 @@ class DbManager extends ServiceManager implements FactoryInterface
     private function structureTable($tableName, $type = 'table')
     {
         if (! $this->existsTable($tableName, $type)) {
-            throw new Exception(sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", $type == 'vue' ? 'vue' : $type == 'table' ? 'table' : 'table système', $tableName), 3778);
+            throw new Exception(
+                sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", 
+                    $type == 'vue' ? 'vue' : $type == 'table' ? 'table' : 'table système', 
+                    $tableName), 3778);
         }
         $result = [];
         foreach ($this->getColumns($tableName, $type) as $column) {
@@ -380,7 +387,8 @@ class DbManager extends ServiceManager implements FactoryInterface
             $result[$column->getName()]['numeric_scale'] = $column->getNumericScale();
             $result[$column->getName()]['is_unsigned'] = $column->getNumericUnsigned();
             $result[$column->getName()]['ordinal_position'] = $column->getOrdinalPosition();
-            $result[$column->getName()]['auto_increment'] = $column->getErrata('auto_increment');
+            $result[$column->getName()]['auto_increment'] = $column->getErrata(
+                'auto_increment');
         }
         $this->table_descriptor[$type][$tableName]['columns'] = $result;
         // si c'est une table, recherche de sa clé primaire
@@ -418,19 +426,22 @@ class DbManager extends ServiceManager implements FactoryInterface
     {
         if ($type == 'table') {
             // initialise self::table_descriptor si nécessaire
-            if (! StdLib::array_keys_exists([
-                $type,
-                $tableName,
-                'columns'
-            ], $this->table_descriptor)) {
+            if (! StdLib::array_keys_exists(
+                [
+                    $type,
+                    $tableName,
+                    'columns'
+                ], $this->table_descriptor)) {
                 $this->structureTable($tableName, $type);
             }
-            if (StdLib::array_keys_exists([
-                $type,
-                $tableName,
-                'primary_key'
-            ], $this->table_descriptor)) {
-                return ! is_null($this->table_descriptor[$type][$tableName]['primary_key']);
+            if (StdLib::array_keys_exists(
+                [
+                    $type,
+                    $tableName,
+                    'primary_key'
+                ], $this->table_descriptor)) {
+                return ! is_null(
+                    $this->table_descriptor[$type][$tableName]['primary_key']);
             } else {
                 return false;
             }
@@ -471,7 +482,9 @@ class DbManager extends ServiceManager implements FactoryInterface
     private function validColumn($columnName, $tableName, $type = 'table', $method = __METHOD__)
     {
         if (! $this->isColumn($columnName, $tableName, $type)) {
-            throw new Exception(sprintf("$method\nLa colonne %s n'existe pas dans la %s %s.", $columnName, $type == 'vue' ?  : 'table', $this->getCanonicName($tableName, $type)));
+            throw new Exception(
+                sprintf("$method\nLa colonne %s n'existe pas dans la %s %s.", $columnName, 
+                    $type == 'vue' ?  : 'table', $this->getCanonicName($tableName, $type)));
         }
     }
 
@@ -511,14 +524,16 @@ class DbManager extends ServiceManager implements FactoryInterface
     public function isColumn($columnName, $tableName, $type = 'table')
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists([
-            $type,
-            $tableName,
-            'columns'
-        ], $this->table_descriptor)) {
+        if (! StdLib::array_keys_exists(
+            [
+                $type,
+                $tableName,
+                'columns'
+            ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
-        return array_key_exists($columnName, $this->table_descriptor[$type][$tableName]['columns']);
+        return array_key_exists($columnName, 
+            $this->table_descriptor[$type][$tableName]['columns']);
     }
 
     /**
@@ -537,13 +552,15 @@ class DbManager extends ServiceManager implements FactoryInterface
     public function isDateTimeColumn($columnName, $tableName, $type = 'table')
     {
         $this->validColumn($columnName, $tableName, $type, __METHOD__);
-        return in_array($this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], [
-            'date',
-            'datetime',
-            'timestamp',
-            'time',
-            'year'
-        ]);
+        return in_array(
+            $this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], 
+            [
+                'date',
+                'datetime',
+                'timestamp',
+                'time',
+                'year'
+            ]);
     }
 
     /**
@@ -562,20 +579,22 @@ class DbManager extends ServiceManager implements FactoryInterface
     public function isNumericColumn($columnName, $tableName, $type = 'table')
     {
         $this->validColumn($columnName, $tableName, $type, __METHOD__);
-        return in_array($this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], [
-            'integer',
-            'int',
-            'smallint',
-            'tinyint',
-            'mediumint',
-            'bigint',
-            'decimal',
-            'numeric',
-            'float',
-            'double',
-            'real',
-            'bit'
-        ]);
+        return in_array(
+            $this->table_descriptor[$type][$tableName]['columns'][$columnName]['data_type'], 
+            [
+                'integer',
+                'int',
+                'smallint',
+                'tinyint',
+                'mediumint',
+                'bigint',
+                'decimal',
+                'numeric',
+                'float',
+                'double',
+                'real',
+                'bit'
+            ]);
     }
 
     /**

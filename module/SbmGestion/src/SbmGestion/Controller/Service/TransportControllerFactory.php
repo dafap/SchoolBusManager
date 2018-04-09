@@ -9,8 +9,8 @@
  * @filesource TransportControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 oct. 2017
- * @version 2017-2.3.12
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Controller\Service;
 
@@ -32,18 +32,21 @@ class TransportControllerFactory implements FactoryInterface
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
-            'operateurs' => StdLib::getParamR([
-                'sbm',
-                'operateurs'
-            ], $config_application),
-            'mail_config' => StdLib::getParamR([
-                'sbm',
-                'mail'
-            ], $config_application),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application)
+            'operateurs' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'operateurs'
+                ], $config_application),
+            'mail_config' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mail'
+                ], $config_application),
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application)
         ];
         return new TransportController($config_controller);
     }

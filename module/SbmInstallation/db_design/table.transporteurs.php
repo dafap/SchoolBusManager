@@ -8,17 +8,17 @@
  * @filesource table.transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 févr. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'transporteurs',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'transporteurId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'nom' => 'varchar(30) NOT NULL',
@@ -36,37 +36,37 @@ return array(
             'rib_domiciliation' => 'varchar(24) NOT NULL DEFAULT ""',
             'rib_bic' => 'varchar(11) NOT NULL DEFAULT ""',
             'rib_iban' => 'varchar(34) NOT NULL DEFAULT ""'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'transporteurId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'communeId',
-                'references' => array(
+                'references' => [
                     'table' => 'communes',
-                    'fields' => array(
+                    'fields' => [
                         'communeId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         
-        // 'keys' => array(
-        // 'noms' => array('fields' => array('nom',),),
-        // 'membres_alpha' => array('fields' => array('membre',),),
-        // 'desservies_alpha' => array('fields' => array('desservie',),),
-        // ),
+        // 'keys' => [
+        // 'noms' => ['fields' => ['nom',],],
+        // 'membres_alpha' => ['fields' => ['membre',],],
+        // 'desservies_alpha' => ['fields' => ['desservie',],],
+        // ],
         'engine' => 'InnoDB',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     
     // 'data' => include __DIR__ . '/data/data.transporteurs.php'
-    // 'data' => array('after' => 'communes','include' => __DIR__ . '/data/data.transporteurs.php')
+    // 'data' => ['after' => 'communes','include' => __DIR__ . '/data/data.transporteurs.php']
     'data' => __DIR__ . '/data/data.transporteurs.php'
-);
+];

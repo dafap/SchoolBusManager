@@ -10,8 +10,8 @@
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData\Sys;
 
@@ -19,6 +19,7 @@ use SbmCommun\Model\Db\ObjectData\AbstractObjectData;
 
 class DocLabel extends AbstractObjectData
 {
+
     public function __construct()
     {
         $this->setObjName(__CLASS__);

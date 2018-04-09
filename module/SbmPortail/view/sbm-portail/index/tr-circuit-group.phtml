@@ -7,26 +7,26 @@
  * @filesource tr-circuit-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmportail', array(
-    'action' => empty($this->origine) ? 'tr-circuits' : $this->origine,
-    'page' => $this->page
-));
-$hiddens = array(
+$url_retour = $this->url('sbmportail', 
+    [
+        'action' => empty($this->origine) ? 'tr-circuits' : $this->origine,
+        'page' => $this->page
+    ]);
+$hiddens = [
     'circuitId' => $this->circuit->circuitId,
     'serviceId' => $this->serviceId
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Groupe des élèves inscrits sur un point d'arrêt d'un circuit</h1>
 <div id="liste-wrapper">
@@ -60,7 +60,10 @@ $actions = array(
 				</tr>
 			<?php
 foreach ($this->data as $row) {
-    echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
+    echo '<tr class="' . $this->cycle([
+        "even",
+        "odd"
+    ])->next() . '">';
     foreach ($row as $item) {
         echo '<td>' . $item . '</td>';
     }
@@ -75,4 +78,4 @@ foreach ($this->data as $row) {
 			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
 		</p>
 	</div>
-</div> 
+</div>

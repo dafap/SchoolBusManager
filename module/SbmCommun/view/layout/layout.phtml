@@ -1,4 +1,15 @@
 <?php
+/**
+ * Layout
+ *
+ * @project sbm
+ * @package SbmCommun/view/layout
+ * @filesource layout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
+ */
 $appl_name = $this->translate($this->getParameter('appl_name', $this->parameter));
 echo $this->doctype();
 ?>
@@ -13,7 +24,7 @@ echo $this->doctype();
 
         <?php
         
-echo $this->headMeta()
+        echo $this->headMeta()
             ->appendName('viewport', 'width=device-width, initial-scale=1.0')
             ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')?>
 
@@ -49,7 +60,7 @@ echo $this->headMeta()
                 <?php foreach ($this->flashMessages as $key => $messages):?>
                     <?php foreach ($messages as $message):?>
                         <div class="alert alert-<?php echo $key;?>">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
+			<button type="button" class="close" data-dismiss="alert">×</button>
                             <?php echo $message;?>
                         </div>
                     <?php endforeach;?>

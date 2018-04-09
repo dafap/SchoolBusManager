@@ -7,8 +7,8 @@
  * @filesource segment-members.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2017
- * @version 2017-2.3.3
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\ArrayAdapter;
@@ -36,17 +36,20 @@ if (empty($segment)) {
     $h1 = "Liste des membres d'une liste de diffusion";
     $h3 = 'Liste : ' . $this->liste_name;
     $url_retour = $this->url('sbmmailchimp');
-    if ($this->acl->hasResource('populate') && $this->acl->isAllowed($categorieId, 'populate')) {
-        $url_populate = $this->url('sbmmailchimp', [
-            'action' => 'populate'
-        ]);
+    if ($this->acl->hasResource('populate') &&
+         $this->acl->isAllowed($categorieId, 'populate')) {
+        $url_populate = $this->url('sbmmailchimp', 
+            [
+                'action' => 'populate'
+            ]);
     } else {
         $url_populate = false;
     }
     if ($this->acl->hasResource('clean') && $this->acl->isAllowed($categorieId, 'clean')) {
-        $url_clean = $this->url('sbmmailchimp', [
-            'action' => 'clean'
-        ]);
+        $url_clean = $this->url('sbmmailchimp', 
+            [
+                'action' => 'clean'
+            ]);
     } else {
         $url_populate = false;
     }
@@ -69,18 +72,20 @@ if (empty($segment)) {
 } else {
     $h1 = "Liste des membres d'un segment";
     $h3 = "Segment : $segment<br>Liste : " . $this->liste_name;
-    $url_retour = $this->url('sbmmailchimp', [
-        'action' => 'segments-liste'
-    ]);
+    $url_retour = $this->url('sbmmailchimp', 
+        [
+            'action' => 'segments-liste'
+        ]);
     $actions = [];
 }
-$actions = array_merge([
-    'retour' => [
-        'class' => 'fam-door-out',
-        'formaction' => $url_retour,
-        'title' => 'Retour'
-    ]
-], $actions);
+$actions = array_merge(
+    [
+        'retour' => [
+            'class' => 'fam-door-out',
+            'formaction' => $url_retour,
+            'title' => 'Retour'
+        ]
+    ], $actions);
 
 // $this->source est un paginator utilisant l'adapter MailChimpAdapter
 $this->source->setItemCountPerPage(20);
@@ -128,10 +133,11 @@ if ($this->message) {
                 </tr>
         <?php
         foreach ($data as $member) {
-            $ligne = '<tr class="' . $this->cycle([
-                'even',
-                'odd'
-            ])->next() . '"><td>' . $member['email_address'] . '</td>';
+            $ligne = '<tr class="' . $this->cycle(
+                [
+                    'even',
+                    'odd'
+                ])->next() . '"><td>' . $member['email_address'] . '</td>';
             $i = 0;
             foreach ($member['merge_fields'] as $value) {
                 $ligne .= ($i ++ < 2 ? '<td>' : '<td class="centre">') . $value . '</td>';

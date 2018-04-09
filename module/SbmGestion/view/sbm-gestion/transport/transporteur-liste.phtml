@@ -18,8 +18,8 @@
  * @filesource view/sbm-gestion/transport/transporteur-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 nov. 2017
- * @version 2017-2.3.14
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 
@@ -53,49 +53,56 @@ $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $transporteurs = $this->paginator->getCurrentItems();
 
-$url_ajouter = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-pdf',
-    'page' => $this->page
-));
+$url_ajouter = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'transporteur-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'transporteur-pdf',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/transport');
-$url_edit = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-suppr',
-    'page' => $this->page
-));
-$url_relation = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-service',
-    'id' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-group',
-    'id' => $this->page
-));
-$hiddens = array();
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$url_edit = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'transporteur-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'transporteur-suppr',
+        'page' => $this->page
+    ]);
+$url_relation = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'transporteur-service',
+        'id' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'transporteur-group',
+        'id' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'transporteur-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau transporteur'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des transporteurs</h1>
 <div id="liste-wrapper">
@@ -125,48 +132,51 @@ echo $this->flashMessenger()->render('default');
 				</tr>
             <?php foreach($transporteurs as $test => $transporteur): ?>
             <?php
-                // construction des JS pour selection                
-                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $transporteur->transporteurId);
-                $jsCallback .= sprintf("$modele\n", $transporteur->transporteurId, $transporteur->transporteurId);
+                // construction des JS pour selection
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", 
+                    $transporteur->transporteurId);
+                $jsCallback .= sprintf("$modele\n", $transporteur->transporteurId, 
+                    $transporteur->transporteurId);
                 ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="nom"><?php echo $this->escapeHtml($transporteur->nom); ?></td>
 					<td class="commune"><?php echo $this->escapeHtml($transporteur->commune); ?></td>
 					<td class="codepostal"><?php echo $this->escapeHtml($transporteur->codePostal); ?></td>
 					<td class="telephone"><?php echo $this->escapeHtml($transporteur->telephone); ?></td>
 					<td class="fax"><?php echo $this->escapeHtml($transporteur->fax); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($transporteur->email); ?></td>
-					<td class="nbinscrits"><?php echo StdLib::getParamR(array($transporteur->transporteurId, 'total'), $this->t_nb_inscrits, 0); ?></td>
+					<td class="nbinscrits"><?php echo StdLib::getParamR([$transporteur->transporteurId, 'total'], $this->t_nb_inscrits, 0); ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $transporteur->transporteurId, $transporteur->selection)?></td>
 					<td class="boutons">
             <?php
-                $hiddens = array(
+                $hiddens = [
                     'transporteurId' => $transporteur->transporteurId
-                );
-                $buttons = array(
-                    'modifier' => array(
+                ];
+                $buttons = [
+                    'modifier' => [
                         'class' => 'fam-pencil',
                         'formaction' => $url_edit,
                         'title' => 'modifier'
-                    ),
-                    'supprimer' => array(
+                    ],
+                    'supprimer' => [
                         'class' => 'fam-delete',
                         'formaction' => $url_delete,
                         'title' => 'supprimer'
-                    ),
-                    'services' => array(
+                    ],
+                    'services' => [
                         'class' => 'fam-table-relationship',
                         'formaction' => $url_relation,
                         'title' => 'circuits attribués à ' . $transporteur->nom
-                    ),
-                    'eleves' => array(
+                    ],
+                    'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => 'élèves pris en chage par ' . $transporteur->nom
-                    )
-                );
-                echo $this->listeLigneActions($transporteur->transporteurId, $hiddens, $buttons);
+                    ]
+                ];
+                echo $this->listeLigneActions($transporteur->transporteurId, $hiddens, 
+                    $buttons);
                 ?>
 					</td>
 				</tr>         
@@ -175,7 +185,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
 	    <?php echo $this->form()->openTag($this->criteres_form);?>
 	    <?php echo $this->formCollection($this->criteres_form, true);?>

@@ -9,59 +9,63 @@
  * @filesource affectation-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_retour = $this->url('sbmpdf', array(
-    'action' => 'pdf-liste',
-    'page' => $this->page
-));
-$url_ajout = $this->url('sbmpdf', array(
-    'action' => 'affectation-ajout',
-    'page' => $this->page
-));
-$url_edit = $this->url('sbmpdf', array(
-    'action' => 'affectation-edit',
-    'page' => $this->page
-));
-$url_suppr = $this->url('sbmpdf', array(
-    'action' => 'affectation-suppr',
-    'page' => $this->page
-));
+$url_retour = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-liste',
+        'page' => $this->page
+    ]);
+$url_ajout = $this->url('sbmpdf', 
+    [
+        'action' => 'affectation-ajout',
+        'page' => $this->page
+    ]);
+$url_edit = $this->url('sbmpdf', 
+    [
+        'action' => 'affectation-edit',
+        'page' => $this->page
+    ]);
+$url_suppr = $this->url('sbmpdf', 
+    [
+        'action' => 'affectation-suppr',
+        'page' => $this->page
+    ]);
 
-$hiddens = array(
+$hiddens = [
     'documentId' => $this->document['documentId'],
     'name' => $this->document['name'],
-    'recordSource' => $this->document['recordSource'],
-);
+    'recordSource' => $this->document['recordSource']
+];
 
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Liste des documents'
-    ),
-    'ajouter' => array(
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajout,
         'title' => 'Nouvelle affectation dans un menu'
-    )
-);
+    ]
+];
 
-$buttons = array(
-    'modifier' => array(
+$buttons = [
+    'modifier' => [
         'class' => 'fam-pencil',
         'formaction' => $url_edit,
         'title' => 'modifier l\'affectation ou le libellé du menu'
-    ),
-    'supprimer' => array(
+    ],
+    'supprimer' => [
         'class' => 'fam-delete',
         'formaction' => $url_suppr,
         'title' => 'supprimer cette affectation'
-    )
-);
+    ]
+];
 if (strlen($this->document['recordSource']) > 450) {
     $sourceDocument = substr($this->document['recordSource'], 0, 450) . '...';
 } else {
@@ -97,14 +101,15 @@ echo $this->flashMessenger()->render('default');
 				</tr>
             <?php foreach($data as $row): ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="route"><?php echo $this->escapeHtml($row['route']); ?></td>
 					<td class="libelle"><?php echo $this->escapeHtml($row['libelle']); ?></td>
 					<td class="libelle align-right"><?php echo $row['ordinal_position']; ?></td>
 					<td class="boutons">
             <?php
                 $hiddens['docaffectationId'] = $row['docaffectationId'];
-                echo $this->listeLigneActions($row['docaffectationId'], $hiddens, $buttons);
+                echo $this->listeLigneActions($row['docaffectationId'], $hiddens, 
+                    $buttons);
                 ?>
 				    </td>
 				</tr>

@@ -14,8 +14,8 @@
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -39,7 +39,7 @@ class StationsForSelect implements FactoryInterface
     private $table_name;
 
     private $sql;
-    
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof DbManager)) {
@@ -50,14 +50,14 @@ class StationsForSelect implements FactoryInterface
         $this->table_name = $this->db_manager->getCanonicName('stations', 'vue');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
         $libelle = new Literal('concat(commune, " - ", nom)');
-        $this->columns = array(
+        $this->columns = [
             'stationId',
             'libelle' => $libelle
-        );
-        $this->order = array(
+        ];
+        $this->order = [
             'commune',
             'nom'
-        );
+        ];
         return $this;
     }
 
@@ -65,17 +65,16 @@ class StationsForSelect implements FactoryInterface
     {
         $where = new Where();
         $select = $this->sql->select($this->table_name);
-        $select->columns($this->columns)
-        ->order($this->order);
+        $select->columns($this->columns)->order($this->order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['stationId']] = $row['libelle'];
         }
         return $array;
     }
-    
+
     public function ouvertes()
     {
         $where = new Where();
@@ -86,7 +85,7 @@ class StationsForSelect implements FactoryInterface
             ->order($this->order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['stationId']] = $row['libelle'];
         }
@@ -103,7 +102,7 @@ class StationsForSelect implements FactoryInterface
             ->order($this->order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['stationId']] = $row['libelle'];
         }
@@ -115,20 +114,22 @@ class StationsForSelect implements FactoryInterface
         $where = new Where();
         $where->equalTo('serviceId', $serviceId)->equalTo('millesime', $millesime);
         $select = $this->sql->select();
-        $select->from(array('sta' => $this->table_name))
+        $select->from([
+            'sta' => $this->table_name
+        ])
             ->columns($this->columns)
-            ->join(array(
-            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
-        ), 'sta.stationId=cir.stationId', array())
+            ->join(
+            [
+                'cir' => $this->db_manager->getCanonicName('circuits', 'table')
+            ], 'sta.stationId=cir.stationId', [])
             ->where($where)
-            ->order($this->order);        
+            ->order($this->order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['stationId']] = $row['libelle'];
         }
         return $array;
     }
-
 }

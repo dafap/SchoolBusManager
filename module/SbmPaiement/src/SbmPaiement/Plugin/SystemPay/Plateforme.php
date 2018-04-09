@@ -17,8 +17,8 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-3.1.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -48,11 +48,14 @@ class Plateforme extends AbstractPlateforme
      */
     protected function init()
     {
-        $this->setConfig(array_merge($this->getPlateformeConfig(), include __DIR__ . '/config/systempay.config.php'));
-        $this->certificat = $this->getParam([
-            'certificat',
-            $this->getParam('vads_ctx_mode')
-        ]);
+        $this->setConfig(
+            array_merge($this->getPlateformeConfig(), 
+                include __DIR__ . '/config/systempay.config.php'));
+        $this->certificat = $this->getParam(
+            [
+                'certificat',
+                $this->getParam('vads_ctx_mode')
+            ]);
     }
 
     /**
@@ -64,7 +67,7 @@ class Plateforme extends AbstractPlateforme
     {
         $data = $data->toArray();
         $signature = $this->getSignature($data);
-        if (!array_key_exists('signature', $data) || $signature != $data['signature']) {
+        if (! array_key_exists('signature', $data) || $signature != $data['signature']) {
             $this->error_no = 1001;
             $this->error_msg = 'Erreur de signature : ' . $signature;
             return false;
@@ -79,9 +82,12 @@ class Plateforme extends AbstractPlateforme
                     if (isset($data['vads_extra_result'])) {
                         $champs = include 'config/vads.inc.php';
                         if (isset($champs[$data['vads_extra_result']])) {
-                            $this->error_msg = sprintf('Erreur de la requête dans le champ %s', $champs[$data['vads_extra_result']]);
+                            $this->error_msg = sprintf(
+                                'Erreur de la requête dans le champ %s', 
+                                $champs[$data['vads_extra_result']]);
                         } else {
-                            $this->error_msg = sprintf('Erreur %s dans la requête', $data['vads_extra_result']);
+                            $this->error_msg = sprintf('Erreur %s dans la requête', 
+                                $data['vads_extra_result']);
                         }
                     } else {
                         $this->error_msg = 'Erreur de format de la requête.';
@@ -122,7 +128,8 @@ class Plateforme extends AbstractPlateforme
             $this->error_no = 2006;
             return false;
         }
-        if (empty($this->data['vads_payment_certificate']) || strlen($this->data['vads_payment_certificate']) != 40) {
+        if (empty($this->data['vads_payment_certificate']) ||
+             strlen($this->data['vads_payment_certificate']) != 40) {
             $this->error_msg = 'Certificat de paiement invalide';
             $this->error_no = 2007;
             return false;
@@ -152,7 +159,9 @@ class Plateforme extends AbstractPlateforme
                 $this->error_msg = 'Duplicate Entry';
                 $this->error_no = 23000;
             } else {
-                throw new Exception('Erreur lors de l\'enregistrement de la notification de paiement.', $e->getCode(), $e);
+                throw new Exception(
+                    'Erreur lors de l\'enregistrement de la notification de paiement.', 
+                    $e->getCode(), $e);
             }
         }
         return true;
@@ -162,8 +171,9 @@ class Plateforme extends AbstractPlateforme
      * Modifié le 18 mai 2015 en raison de l'absence des champs vads_nb_products et vads_product_refN dans la réponse.
      * Utilisation de la table `appels` pour retrouver les élèves concernés.
      * ATTENTION ! this->data est Zend\Stdlib\Parameters
-     * 
+     *
      * (non-PHPdoc)
+     * 
      * @see \SbmPaiement\Plugin\AbstractPlateforme::prepareData()
      */
     protected function prepareData()
@@ -171,8 +181,10 @@ class Plateforme extends AbstractPlateforme
         $this->paiement = [
             'type' => $this->data['vads_operation_type'],
             'paiement' => [
-                'datePaiement' => \DateTime::createFromFormat('YmdHis', $this->data['vads_trans_date'])->format('Y-m-d H:i:s'),
-                'dateValeur' => \DateTime::createFromFormat('YmdHis', $this->data['vads_effective_creation_date'])->format('Y-m-d H:i:s'),
+                'datePaiement' => \DateTime::createFromFormat('YmdHis', 
+                    $this->data['vads_trans_date'])->format('Y-m-d H:i:s'),
+                'dateValeur' => \DateTime::createFromFormat('YmdHis', 
+                    $this->data['vads_effective_creation_date'])->format('Y-m-d H:i:s'),
                 'responsableId' => $this->data['vads_cust_id'],
                 'anneeScolaire' => $this->getAnneeScolaire(),
                 'exercice' => $this->getExercice(),
@@ -190,20 +202,22 @@ class Plateforme extends AbstractPlateforme
         /**
          * Abandon de cette partie en raison de l'absence de ces champs dans la notification
          *
-        $nb_ref = $this->data['vads_nb_products'];
-        for ($i = 0; $i < $nb_ref; $i ++) {
-            $this->scolarite['eleveIds'][] = $this->data['vads_product_ref' . $i];
-        }
-        */
+         * $nb_ref = $this->data['vads_nb_products'];
+         * for ($i = 0; $i < $nb_ref; $i ++) {
+         * $this->scolarite['eleveIds'][] = $this->data['vads_product_ref' . $i];
+         * }
+         */
         // pour DEBUG
-        /*if (is_array($this->data)) {
-            $msg = 'this->data est un array';
-        } elseif (is_object($this->data)) {
-            $msg = 'this->data est ' . get_class($this->data);
-        } else {
-            $msg = gettype($this->data);
-        }
-        $this->logError(Logger::INFO, $msg, $this->data);*/
+        /*
+         * if (is_array($this->data)) {
+         * $msg = 'this->data est un array';
+         * } elseif (is_object($this->data)) {
+         * $msg = 'this->data est ' . get_class($this->data);
+         * } else {
+         * $msg = gettype($this->data);
+         * }
+         * $this->logError(Logger::INFO, $msg, $this->data);
+         */
         
         $tAppels = $this->getDbManager()->get('Sbm\Db\Table\Appels');
         $where = new Where();
@@ -269,14 +283,15 @@ class Plateforme extends AbstractPlateforme
     /**
      * En fonction de la description technique du paquet à envoyer à la plate-forme de paiement
      * (voir Guide d'implementation du formulaire de paiement Systempay 2.2 - doc version 3.0)
-     * 
-     * A noter que contrairement à ce que dit la documentation, les champs vads_nb_products et 
-     * vads_product_refN ne sont pas renvoyés dans le réponse. Aussi, une table des appels à 
+     *
+     * A noter que contrairement à ce que dit la documentation, les champs vads_nb_products et
+     * vads_product_refN ne sont pas renvoyés dans le réponse. Aussi, une table des appels à
      * la plateforme enregistrera les rérérences des élèves concernés, pour pouvoir être traités
-     * au retour de la notification. Une clé unique de paiement doit être constituée et renvoyée 
+     * au retour de la notification. Une clé unique de paiement doit être constituée et renvoyée
      * par la méthode getUniqueId()
-     * 
+     *
      * (non-PHPdoc)
+     * 
      * @see \SbmPaiement\Plugin\PlateformeInterface::prepareAppel()
      */
     public function prepareAppel($params)
@@ -298,17 +313,18 @@ class Plateforme extends AbstractPlateforme
             'vads_cust_id' => $params['responsableId'],
             'vads_cust_first_name' => $params['prenom'],
             'vads_cust_last_name' => $params['nom'],
-            'vads_order_id' => sprintf('TS%04d-%s-%011d-%d', $this->getMillesime(), date('Ymd'), $params['responsableId'], count($params['eleveIds'])),
+            'vads_order_id' => sprintf('TS%04d-%s-%011d-%d', $this->getMillesime(), 
+                date('Ymd'), $params['responsableId'], count($params['eleveIds'])),
             'vads_theme_config' => $this->getParam('vads_theme_config'),
             'vads_url_success' => $this->getParam('vads_url_success'),
             'vads_url_refused' => $this->getParam('vads_url_refused'),
             'vads_url_cancel' => $this->getParam('vads_url_cancel'),
             'vads_url_error' => $this->getParam('vads_url_error'),
             'vads_url_check' => $this->getParam('vads_url_check'),
-            //'vads_redirect_success_timeout' => $this->getParam('vads_redirect_success_timeout'),
-            //'vads_redirect_success_message' => $this->getParam('vads_redirect_success_message'),
-            //'vads_redirect_error_timeout' => $this->getParam('vads_redirect_error_timeout'),
-            //'vads_redirect_error_message' => $this->getParam('vads_redirect_error_message'),
+            // 'vads_redirect_success_timeout' => $this->getParam('vads_redirect_success_timeout'),
+            // 'vads_redirect_success_message' => $this->getParam('vads_redirect_success_message'),
+            // 'vads_redirect_error_timeout' => $this->getParam('vads_redirect_error_timeout'),
+            // 'vads_redirect_error_message' => $this->getParam('vads_redirect_error_message'),
             'vads_nb_products' => sprintf('%d', count($params['eleveIds']))
         ];
         for ($i = 0; $i < count($params['eleveIds']); $i ++) {
@@ -323,18 +339,18 @@ class Plateforme extends AbstractPlateforme
         
         return $result;
     }
-    
+
     /**
      * En fonction de la documentation, renvoie une clé unique de demande de transaction.
-     * Ici, vads_trans_id est unique sur la journée. On concatène donc à la date pour 
+     * Ici, vads_trans_id est unique sur la journée. On concatène donc à la date pour
      * obtenir une clé unique.
-     * 
-     * @param array $vadsPaquet
+     *
+     * @param array $vadsPaquet            
      * @return string
      */
-    public function getUniqueId(array $vadsPaquet) 
+    public function getUniqueId(array $vadsPaquet)
     {
-        return $vadsPaquet['vads_trans_id'].$vadsPaquet['vads_trans_date'];
+        return $vadsPaquet['vads_trans_id'] . $vadsPaquet['vads_trans_date'];
     }
 
     private function getVadsPaymentConfig($params)
@@ -342,7 +358,8 @@ class Plateforme extends AbstractPlateforme
         if ($params['count'] == 1) {
             return 'SINGLE';
         } else {
-            return sprintf('MULTI:first=%d;count=%d;period=%d', $params['first'] * 100, $params['count'], $params['period']);
+            return sprintf('MULTI:first=%d;count=%d;period=%d', $params['first'] * 100, 
+                $params['count'], $params['period']);
         }
     }
 }

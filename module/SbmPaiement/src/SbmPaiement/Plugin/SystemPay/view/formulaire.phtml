@@ -9,8 +9,8 @@
  * @filesource formulaire.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2015
- * @version 2015-1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -19,13 +19,12 @@ $this->inlineScript()->captureStart();
 document.getElementById('plugin-formulaire').submit();
 <?php $this->inlineScript()->captureEnd();?>
 <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
-            <div class="widget widget-white text-center">
-                <i class="fam-arrow-refresh" style="font-size: 50px"></i>
-                <h3>Redirection vers la page de paiement en cours...</h3>
+	<div class="col-sm-8 col-sm-offset-2">
+		<div class="widget widget-white text-center">
+			<i class="fam-arrow-refresh" style="font-size: 50px"></i>
+			<h3>Redirection vers la page de paiement en cours...</h3>
                 <?php echo $this->form($this->form);?>
             </div>
-        </div>
-    </div>
+	</div>
+</div>
 
- 

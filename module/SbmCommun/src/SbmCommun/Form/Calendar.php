@@ -7,8 +7,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
- * @version 2016-2.2.1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
@@ -16,159 +16,170 @@ use Zend\InputFilter\InputFilterProviderInterface;
 
 class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
 {
+
     public function __construct()
     {
         parent::__construct('calendar');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'calendarId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'millesime',
-            'type' => 'hidden'
-        ));
+        $this->add(
+            [
+                'name' => 'calendarId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'millesime',
+                'type' => 'hidden'
+            ]);
         
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'description',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'calendar-description',
-                'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
-                'label' => 'Description',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'dateDebut',
-            'type' => 'Zend\Form\Element\DateSelect',
-            'attributes' => array(
-                'id' => 'calendar-dateDebut',
-            ),
-            'options' => array(
-                'label' => 'Date de début',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'create_empty_option' => true,
-                'min_year' => date('Y') - 20,
-                'max_year' => date('Y') + 2,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'dateFin',
-            'type' => 'Zend\Form\Element\DateSelect',
-            'attributes' => array(
-                'id' => 'calendar-dateFin',
-            ),
-            'options' => array(
-                'label' => 'Date de fin',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'create_empty_option' => true,
-                'min_year' => date('Y') - 20,
-                'max_year' => date('Y') + 2,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'echeance',
-            'type' => 'Zend\Form\Element\DateSelect',
-            'attributes' => array(
-                'id' => 'calendar-echeance',
-            ),
-            'options' => array(
-                'label' => 'Echéance',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'create_empty_option' => true,
-                'min_year' => date('Y') - 20,
-                'max_year' => date('Y') + 2,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'exercice',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'calendar-exercice',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Exercice budgétaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'calendar-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button default submit left-95px'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'calendar-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'description',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'calendar-description',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Description',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'dateDebut',
+                'type' => 'Zend\Form\Element\DateSelect',
+                'attributes' => [
+                    'id' => 'calendar-dateDebut'
+                ],
+                'options' => [
+                    'label' => 'Date de début',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'create_empty_option' => true,
+                    'min_year' => date('Y') - 20,
+                    'max_year' => date('Y') + 2,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'dateFin',
+                'type' => 'Zend\Form\Element\DateSelect',
+                'attributes' => [
+                    'id' => 'calendar-dateFin'
+                ],
+                'options' => [
+                    'label' => 'Date de fin',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'create_empty_option' => true,
+                    'min_year' => date('Y') - 20,
+                    'max_year' => date('Y') + 2,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'echeance',
+                'type' => 'Zend\Form\Element\DateSelect',
+                'attributes' => [
+                    'id' => 'calendar-echeance'
+                ],
+                'options' => [
+                    'label' => 'Echéance',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'create_empty_option' => true,
+                    'min_year' => date('Y') - 20,
+                    'max_year' => date('Y') + 2,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'exercice',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'calendar-exercice',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Exercice budgétaire',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'calendar-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default submit left-95px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'calendar-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
-    
+
     public function getInputFilterSpecification()
     {
-        return array(
-            'description' => array(
+        return [
+            'description' => [
                 'name' => 'description',
                 'required' => true
-            ),
-            'dateDebut' => array(
+            ],
+            'dateDebut' => [
                 'name' => 'dateDebut',
                 'required' => true
-            ),
-            'dateFin' => array(
+            ],
+            'dateFin' => [
                 'name' => 'dateFin',
                 'required' => true
-            ),
-            'echeance' => array(
+            ],
+            'echeance' => [
                 'name' => 'echeance',
                 'required' => true
-            )
-        );
+            ]
+        ];
     }
 }

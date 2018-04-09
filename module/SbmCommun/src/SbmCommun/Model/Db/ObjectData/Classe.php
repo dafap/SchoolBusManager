@@ -8,14 +8,15 @@
  * @filesource Classe.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 févr. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
 class Classe extends AbstractObjectData
 {
-    public function __construct() 
+
+    public function __construct()
     {
         $this->setObjName(__CLASS__);
         $this->setIdFieldName('classeId');

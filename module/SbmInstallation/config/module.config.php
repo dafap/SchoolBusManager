@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmInstallation\Controller;
 use SbmInstallation\Model\Service;
@@ -55,14 +55,14 @@ return [
                 'favicon.ico',
                 'sbm-logo.gif'
             ],
-            'administrer' => [ 
+            'administrer' => [
                 /**
                  * liste des images à administrer
                  * - label : explication de la nature de l'image
-                 * - taille : prend les valeurs 
-                 *      real  (taille réelle de l'image ; width et height sont ignorés),
-                 *      fixe  (taille fixe ; width et height sont en pt)
-                 *      scale (taille proportionnelle ; sera ramenée à la taille indiquée en pt)
+                 * - taille : prend les valeurs
+                 * real (taille réelle de l'image ; width et height sont ignorés),
+                 * fixe (taille fixe ; width et height sont en pt)
+                 * scale (taille proportionnelle ; sera ramenée à la taille indiquée en pt)
                  */
                 'bandeau-ccda-1.jpg' => [
                     'label' => 'Bandeau de haut de page du site',

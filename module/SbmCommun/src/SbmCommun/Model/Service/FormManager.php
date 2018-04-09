@@ -9,8 +9,8 @@
  * @filesource FormManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Service;
 
@@ -24,7 +24,8 @@ class FormManager implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $form_manager = new ServiceManager(new Config($serviceLocator->get('config')['form_manager']));
+        $form_manager = new ServiceManager(
+            new Config($serviceLocator->get('config')['form_manager']));
         $form_manager->setService('Sbm\DbManager', $serviceLocator->get('Sbm\DbManager'));
         return $form_manager;
     }

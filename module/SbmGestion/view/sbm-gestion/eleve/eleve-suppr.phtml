@@ -8,8 +8,8 @@
  * @filesource eleve-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juillet 2015
- * @version 2015-1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <h1>Suppression d'une inscription</h1>
@@ -30,8 +30,10 @@
 	        <?php endif; ?>
         </ul>
 	</div>
-	<p>Pour supprimer définitivement la fiche de cet élève, cliquez sur le bouton "Supprimer".</p>
-	<p>Pour supprimer l'inscription tout en gardant sa trace dans l'historique, cliquez sur le bouton "Rayer"</p>
+	<p>Pour supprimer définitivement la fiche de cet élève, cliquez sur le
+		bouton "Supprimer".</p>
+	<p>Pour supprimer l'inscription tout en gardant sa trace dans
+		l'historique, cliquez sur le bouton "Rayer"</p>
 <?php
 echo $this->form()->openTag($form);
 echo $this->formCollection($form);

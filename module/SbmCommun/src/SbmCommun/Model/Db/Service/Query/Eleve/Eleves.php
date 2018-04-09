@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2017
- * @version 2017-2.3.3
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -76,75 +76,87 @@ class Eleves implements FactoryInterface
         $predicate = new Where();
         $predicate->literal('sc2.eleveId=sco.eleveId');
         $select2 = new Select();
-        $select2->from([
-            'sc2' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ])
-            ->columns([
-            'dernierMillesime' => new Literal('max(millesime)')
-        ])
+        $select2->from(
+            [
+                'sc2' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
+            ->columns(
+            [
+                'dernierMillesime' => new Literal('max(millesime)')
+            ])
             ->where($predicate);
         $where = new Where();
         $where->equalTo('res.responsableId', $responsableId)
             ->nest()
             ->isNull('millesime')->or->equalTo('millesime', $select2)->unnest();
         $select = $this->sql->select()
-            ->from([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ])
-            ->columns([
-            'eleveId' => 'eleveId',
-            'mailchimp' => 'mailchimp',
-            'dateCreation' => 'dateCreation',
-            'dateModificationEleve' => 'dateModification',
-            'nom' => 'nom',
-            'nomSA' => 'nomSA',
-            'prenom' => 'prenom',
-            'prenomSA' => 'prenomSA',
-            'dateN' => 'dateN',
-            'numero' => 'numero',
-            'responsable1Id' => 'responsable1Id',
-            'x1' => 'x1',
-            'y1' => 'y1',
-            'responsable2Id' => 'responsable2Id',
-            'x2' => 'x2',
-            'y2' => 'y2',
-            'responsableFId' => 'responsableFId',
-            'selectionEleve' => 'selection',
-            'noteEleve' => 'note'
-        ])
-            ->join([
-            'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'res.responsableId = ele.' . $lequel, [])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId = sco.eleveId', [
-            'millesime',
-            'paiement',
-            'inscrit',
-            'fa',
-            'gratuit',
-            'demandeR1',
-            'demandeR2',
-            'accordR1',
-            'accordR2',
-            'subventionR1',
-            'subventionR2'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-        ], 'sco.etablissementId = eta.etablissementId', [
-            'etablissement' => 'nom'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = cometa.communeId', [
-            'communeEtablissement' => 'nom'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'cla' => $this->db_manager->getCanonicName('classes', 'table')
-        ], 'cla.classeId = sco.classeId', [
-            'classe' => 'nom'
-        ], Select::JOIN_LEFT)
+            ->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns(
+            [
+                'eleveId' => 'eleveId',
+                'mailchimp' => 'mailchimp',
+                'dateCreation' => 'dateCreation',
+                'dateModificationEleve' => 'dateModification',
+                'nom' => 'nom',
+                'nomSA' => 'nomSA',
+                'prenom' => 'prenom',
+                'prenomSA' => 'prenomSA',
+                'dateN' => 'dateN',
+                'numero' => 'numero',
+                'responsable1Id' => 'responsable1Id',
+                'x1' => 'x1',
+                'y1' => 'y1',
+                'responsable2Id' => 'responsable2Id',
+                'x2' => 'x2',
+                'y2' => 'y2',
+                'responsableFId' => 'responsableFId',
+                'selectionEleve' => 'selection',
+                'noteEleve' => 'note'
+            ])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'res.responsableId = ele.' . $lequel, [])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'ele.eleveId = sco.eleveId', 
+            [
+                'millesime',
+                'paiement',
+                'inscrit',
+                'fa',
+                'gratuit',
+                'demandeR1',
+                'demandeR2',
+                'accordR1',
+                'accordR2',
+                'subventionR1',
+                'subventionR2'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId = eta.etablissementId', 
+            [
+                'etablissement' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'cometa' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'eta.communeId = cometa.communeId', 
+            [
+                'communeEtablissement' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'cla' => $this->db_manager->getCanonicName('classes', 'table')
+            ], 'cla.classeId = sco.classeId', [
+                'classe' => 'nom'
+            ], Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();

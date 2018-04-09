@@ -7,21 +7,21 @@
  * @filesource table.systempay.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 avr. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'systempay',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure'=> array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'systempayId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'vads_ctx_mode' => 'varchar(10) NOT NULL',
-            'vads_operation_type' => 'varchar(6) NOT NULL',       
+            'vads_operation_type' => 'varchar(6) NOT NULL',
             'vads_trans_date' => 'char(14) NOT NULL',
             'vads_trans_id' => 'char(6) NOT NULL',
             'vads_trans_status' => 'varchar(32) NOT NULL',
@@ -32,7 +32,7 @@ return array(
             'vads_cust_email' => 'char(150)',
             'vads_cust_id' => 'int(11) NOT NULL',
             'vads_cust_last_name' => 'varchar(30) NOT NULL',
-            'vads_cust_name' => 'varchar(30) NOT NULL',                       
+            'vads_cust_name' => 'varchar(30) NOT NULL',
             'vads_order_id' => 'varchar(32) NOT NULL',
             'ref_eleveIds' => 'varchar(255)',
             'vads_payment_certificate' => 'varchar(40) NOT NULL DEFAULT ""',
@@ -51,27 +51,29 @@ return array(
             'vads_expiry_year' => 'char(4)',
             'vads_bank_code' => 'char(5)',
             'vads_bank_product' => 'varchar(3)'
-        ),
-        'primary_key' => array('systempayId',),
-        'keys' => array(
-            'SYSTEMPAY_date_id' => array(
+        ],
+        'primary_key' => [
+            'systempayId'
+        ],
+        'keys' => [
+            'SYSTEMPAY_date_id' => [
                 'unique' => true,
-                'fields' => array(
+                'fields' => [
                     'vads_trans_date',
                     'vads_trans_id'
-                )
-            ),
-            'SYSTEMPAY_cust_id' => array(
-                'fields' => array(
+                ]
+            ],
+            'SYSTEMPAY_cust_id' => [
+                'fields' => [
                     'vads_cust_id'
-                )
-            )
-        ),
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci',
-    ),
+        'collate' => 'utf8_unicode_ci'
+    ],
     'data' => __DIR__ . '/data/data.systempay.php'
-);
+];
 
  

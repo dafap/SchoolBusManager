@@ -14,39 +14,39 @@
  */
 return array(
     array(
-        'userId' => 178, 
-        'transporteurId' => 1, 
+        'userId' => 178,
+        'transporteurId' => 1
     ),
     array(
-        'userId' => 179, 
-        'transporteurId' => 1, 
+        'userId' => 179,
+        'transporteurId' => 1
     ),
     array(
-        'userId' => 463, 
-        'transporteurId' => 1, 
+        'userId' => 463,
+        'transporteurId' => 1
     ),
     array(
-        'userId' => 466, 
-        'transporteurId' => 1, 
+        'userId' => 466,
+        'transporteurId' => 1
     ),
     array(
-        'userId' => 180, 
-        'transporteurId' => 2, 
+        'userId' => 180,
+        'transporteurId' => 2
     ),
     array(
-        'userId' => 183, 
-        'transporteurId' => 2, 
+        'userId' => 183,
+        'transporteurId' => 2
     ),
     array(
-        'userId' => 181, 
-        'transporteurId' => 3, 
+        'userId' => 181,
+        'transporteurId' => 3
     ),
     array(
-        'userId' => 184, 
-        'transporteurId' => 3, 
+        'userId' => 184,
+        'transporteurId' => 3
     ),
     array(
-        'userId' => 182, 
-        'transporteurId' => 4, 
-    ),
+        'userId' => 182,
+        'transporteurId' => 4
+    )
 );

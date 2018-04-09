@@ -14,8 +14,8 @@
  * @filesource Template.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMail\Model;
 
@@ -38,10 +38,12 @@ class Template
      * @var string
      */
     private $template;
-    
+
     /**
-     * Tableau de variables ['key' => 'value', ...] pour le layout
-     * 
+     * Tableau de variables ['key' => 'value', .
+     *
+     * ..] pour le layout
+     *
      * @var array
      */
     private $vars;
@@ -53,9 +55,9 @@ class Template
         $this->renderer = new PhpRenderer();
         $resolver = new Resolver\AggregateResolver();
         $this->renderer->setResolver($resolver);
-        $templates = array(
+        $templates = [
             'layout' => __DIR__ . "/../../../templates/$layout.phtml"
-        );
+        ];
         if (! empty($template)) {
             $templates[$template] = __DIR__ . "/../../../templates/$template.phtml";
         }
@@ -66,9 +68,9 @@ class Template
 
     /**
      * Renvoie du code html
-     * 
+     *
      * @param array $data
-     *            tableau des variables à passer au 'template' 
+     *            tableau des variables à passer au 'template'
      *            ou array('body' => contenu) si le 'template' est null
      * @return \Zend\View\Renderer\string
      */
@@ -81,9 +83,9 @@ class Template
             $model->setTemplate($this->template);
             $content = $this->renderer->render($model);
         }
-        $model = new ViewModel(array(
+        $model = new ViewModel([
             'content' => $content
-        ));
+        ]);
         $model->setTemplate('layout');
         foreach ($this->vars as $key => $value) {
             $model->setVariable($key, $value);

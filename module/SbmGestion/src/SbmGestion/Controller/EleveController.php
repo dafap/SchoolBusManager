@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 déc. 2017
- * @version 2017-2.3.14
+ * @date 9 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Controller;
 
@@ -30,6 +30,8 @@ use SbmCommun\Form\LatLng as LatLngForm;
 use SbmCommun\Form\Responsable as FormResponsable;
 use SbmCommun\Form\SbmCommun\Form;
 use SbmCartographie\Model\Point;
+use SbmCartographie\Model\Projection;
+use SbmCartographie\GoogleMaps;
 use SbmMail\Model\Template as MailTemplate;
 use SbmMail\Form\Mail as MailForm;
 use SbmGestion\Form\Eleve\EditForm as FormEleve;
@@ -87,11 +89,13 @@ class EleveController extends AbstractActionController
         // formulaire des critères de recherche
         $criteres_form = new \SbmGestion\Form\Eleve\CriteresForm();
         // initialiser le form pour les select ...
-        $criteres_form->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
-            ->desservis())
+        $criteres_form->setValueOptions('etablissementId', 
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
             ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'));
         // créer un objectData qui contient la méthode getWhere() adhoc
-        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves($criteres_form->getElementNames());
+        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves(
+            $criteres_form->getElementNames());
         
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
@@ -104,15 +108,18 @@ class EleveController extends AbstractActionController
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
-        return new ViewModel([
-            'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2($criteres_obj->getWhere(), [
-                'nom',
-                'prenom'
-            ]),
-            'page' => $this->params('page', 1),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
-            'criteres_form' => $criteres_form
-        ]);
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
+                    $criteres_obj->getWhere(), 
+                    [
+                        'nom',
+                        'prenom'
+                    ]),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
+                'criteres_form' => $criteres_form
+            ]);
     }
 
     /**
@@ -126,40 +133,45 @@ class EleveController extends AbstractActionController
         }
         $args = (array) $prg;
         if (array_key_exists('cancel', $args)) {
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'eleve-liste',
-                'page' => $this->params('page', 1)
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         }
-        $form = new ButtonForm([], [
-            'confirmer' => [
-                'class' => 'confirm',
-                'value' => 'Confirmer',
-                'title' => 'Désélectionner toutes les fiches élèves.'
-            ],
-            'cancel' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ], 'Confirmation', true);
+        $form = new ButtonForm([], 
+            [
+                'confirmer' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer',
+                    'title' => 'Désélectionner toutes les fiches élèves.'
+                ],
+                'cancel' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ], 'Confirmation', true);
         $televes = $this->db_manager->get('Sbm\Db\Table\Eleves');
         if (array_key_exists('confirmer', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
                 $televes->clearSelection();
-                $this->flashMessenger()->addSuccessMessage('Toutes les fiches sont désélectionnées.');
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-liste',
-                    'page' => $this->params('page', 1)
-                ]);
+                $this->flashMessenger()->addSuccessMessage(
+                    'Toutes les fiches sont désélectionnées.');
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
             }
         }
         $where = new Where();
         $where->equalTo('selection', 1);
-        return new ViewModel([
-            'form' => $form,
-            'nbSelection' => $televes->fetchAll($where)->count()
-        ]);
+        return new ViewModel(
+            [
+                'form' => $form,
+                'nbSelection' => $televes->fetchAll($where)->count()
+            ]);
     }
 
     /**
@@ -184,7 +196,8 @@ class EleveController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // entrée lors d'un retour éventuel par F5 ou back en 22
-            $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 1));
+            $prg = $this->getFromSession('post', false, 
+                $this->getSessionNamespace('ajout', 1));
         }
         $args = (array) $prg;
         if (array_key_exists('ajouter', $args)) {
@@ -193,11 +206,12 @@ class EleveController extends AbstractActionController
             } else {
                 $responsableId = 0;
             }
-            $this->setToSession('responsableId', $responsableId, $this->getSessionNamespace('ajout', 1));
+            $this->setToSession('responsableId', $responsableId, 
+                $this->getSessionNamespace('ajout', 1));
         } else {
-            $responsableId = $this->getFromSession('responsableId', 0, $this->getSessionNamespace('ajout', 1));
+            $responsableId = $this->getFromSession('responsableId', 0, 
+                $this->getSessionNamespace('ajout', 1));
         }
-        // var_dump($responsableId);
         if (array_key_exists('origine', $args)) {
             $this->redirectToOrigin()->setBack($args['origine']);
             // par la suite, on ne s'occupe plus de 'origine' mais on ressort par un redirectToOrigin()->back()
@@ -205,15 +219,17 @@ class EleveController extends AbstractActionController
         }
         if (array_key_exists('cancel', $args)) {
             $this->removeInSession('post', $this->getSessionNamespace('ajout', 1));
-            $this->removeInSession('responsableId', $this->getSessionNamespace('ajout', 1));
+            $this->removeInSession('responsableId', 
+                $this->getSessionNamespace('ajout', 1));
             $this->flashMessenger()->addInfoMessage('Saisie abandonnée.');
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-liste',
-                    'page' => $page
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-liste',
+                        'page' => $page
+                    ]);
             }
         } elseif (array_key_exists('submit', $args)) {
             $ispost = true;
@@ -226,16 +242,19 @@ class EleveController extends AbstractActionController
         
         $form = new \SbmGestion\Form\Eleve\AddElevePhase1();
         $value_options = $this->db_manager->get('Sbm\Db\Select\Responsables');
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/eleve', [
-            'action' => 'eleve-ajout',
-            'page' => $page
-        ]))
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'eleve-ajout',
+                    'page' => $page
+                ]))
             ->setValueOptions('responsable1Id', $value_options)
             ->setValueOptions('responsable2Id', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('eleves', 'table'))
-            ->bind($this->db_manager->get('Sbm\Db\Table\Eleves')
-            ->getObjData());
+            ->bind(
+            $this->db_manager->get('Sbm\Db\Table\Eleves')
+                ->getObjData());
         $resultset = null;
         $odata = null;
         if ($ispost) {
@@ -248,8 +267,13 @@ class EleveController extends AbstractActionController
                 $where->equalTo('ele.nomSA', $filtreSA->filter($odata->nom))
                     ->equalTo('ele.prenomSA', $filtreSA->filter($odata->prenom))
                     ->nest()
-                    ->equalTo('dateN', $odata->dateN)->or->equalTo('responsable1Id', $odata->responsable1Id)->or->equalTo('responsable2Id', $odata->responsable1Id)->or->equalTo('responsable1Id', StdLib::getParam('responsable2Id', $args, - 1))->or->equalTo('responsable2Id', StdLib::getParam('responsable2Id', $args, - 1))->unnest();
-                $resultset = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withR2($where);
+                    ->equalTo('dateN', $odata->dateN)->or->equalTo('responsable1Id', 
+                    $odata->responsable1Id)->or->equalTo('responsable2Id', 
+                    $odata->responsable1Id)->or->equalTo('responsable1Id', 
+                    StdLib::getParam('responsable2Id', $args, - 1))->or->equalTo(
+                    'responsable2Id', StdLib::getParam('responsable2Id', $args, - 1))->unnest();
+                $resultset = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withR2(
+                    $where);
                 if ($resultset->count() == 0) {
                     // pas d'homonyme. On crée cet élève (22)
                     return $this->eleveAjout22Action($odata);
@@ -259,20 +283,22 @@ class EleveController extends AbstractActionController
         }
         if ($form instanceof \SbmGestion\Form\Eleve\AddElevePhase1) {
             if (empty($args['responsable1Id'])) {
-                $form->setData([
-                    'responsable1Id' => $responsableId
-                ]);
+                $form->setData(
+                    [
+                        'responsable1Id' => $responsableId
+                    ]);
             }
         }
-        return new ViewModel([
-            'page' => $page,
-            // form est le formulaire si les données ne sont pas validées (ou pas de données)
-            'form' => is_null($form) ? $form : $form->prepare(),
-            // liste est null ou est un resultset à parcourir pour montrer la liste
-            'eleves' => $resultset,
-            // data = null ou contient les données validées à passer à nouveau en post
-            'data' => $odata
-        ]);
+        return new ViewModel(
+            [
+                'page' => $page,
+                // form est le formulaire si les données ne sont pas validées (ou pas de données)
+                'form' => is_null($form) ? $form : $form->prepare(),
+                // liste est null ou est un resultset à parcourir pour montrer la liste
+                'eleves' => $resultset,
+                // data = null ou contient les données validées à passer à nouveau en post
+                'data' => $odata
+            ]);
     }
 
     /**
@@ -294,16 +320,18 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || ! array_key_exists('eleveId', $prg)) {
-            $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 2));
+            $prg = $this->getFromSession('post', false, 
+                $this->getSessionNamespace('ajout', 2));
             if ($prg === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite.');
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'eleve-liste',
-                        'page' => $page
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'eleve-liste',
+                            'page' => $page
+                        ]);
                 }
             }
         } else {
@@ -356,10 +384,11 @@ class EleveController extends AbstractActionController
                 return $prg;
             } elseif ($prg === false) {
                 // retour vers le point d'entrée d'un F5 ou d'un back
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-ajout',
-                    'page' => $page
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-ajout',
+                        'page' => $page
+                    ]);
             } else {
                 $odata = $tEleves->getObjData();
                 $odata->exchangeArray($prg);
@@ -368,7 +397,8 @@ class EleveController extends AbstractActionController
         // ici, $odata contient les données à insérer dans la table eleves
         $tEleves->saveRecord($odata);
         $eleveId = $tEleves->getTableGateway()->getLastInsertValue();
-        $viewmodel = $this->eleveAjout31Action($eleveId, $odata->nom . ' ' . $odata->prenom);
+        $viewmodel = $this->eleveAjout31Action($eleveId, 
+            $odata->nom . ' ' . $odata->prenom);
         $viewmodel->setTemplate('sbm-gestion/eleve/eleve-ajout31.phtml');
         return $viewmodel;
     }
@@ -398,10 +428,11 @@ class EleveController extends AbstractActionController
             } elseif ($prg === false) {
                 // Cela pourrait être F5 ou back du navigateur. Il faut savoir si la fiche a été créée.
                 // On reviendra donc toujours à eleveAjout21Action() pour vérifier.
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-ajout21',
-                    'page' => $page
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-ajout21',
+                        'page' => $page
+                    ]);
             } else {
                 // c'est le traitement du retour par POST du formulaire après prg
                 $args = $prg;
@@ -410,10 +441,11 @@ class EleveController extends AbstractActionController
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('sbmgestion/eleve', [
-                            'action' => 'eleve-liste',
-                            'page' => $page
-                        ]);
+                        return $this->redirect()->toRoute('sbmgestion/eleve', 
+                            [
+                                'action' => 'eleve-liste',
+                                'page' => $page
+                            ]);
                     }
                 }
                 // on récupère eleveId et info
@@ -421,10 +453,11 @@ class EleveController extends AbstractActionController
                 $info = StdLib::getParam('info', $args, '');
                 if (! $eleveId) {
                     // on a perdu la donnée essentielle : il faut tout recommencer
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'eleve-ajout',
-                        'page' => $page
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'eleve-ajout',
+                            'page' => $page
+                        ]);
                 }
                 $ispost = array_key_exists('submit', $args);
             }
@@ -434,13 +467,16 @@ class EleveController extends AbstractActionController
         $form = new \SbmGestion\Form\Eleve\AddElevePhase2();
         
         $value_options = $this->db_manager->get('Sbm\Db\Select\Responsables');
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/eleve', [
-            'action' => 'eleve-ajout31',
-            'page' => $page
-        ]))
-            ->setValueOptions('etablissementId', $this->db_manager->get('Sbm\Db\Select\Etablissements')
-            ->desservis())
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'eleve-ajout31',
+                    'page' => $page
+                ]))
+            ->setValueOptions('etablissementId', 
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
             ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->bind($tableScolarites->getObjData());
@@ -458,11 +494,12 @@ class EleveController extends AbstractActionController
                 }
                 // $odata->tarifId = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('inscription');
                 $tableScolarites->saveRecord($odata);
-                $viewModel = $this->eleveEditAction([
-                    'eleveId' => $eleveId,
-                    'info' => $info,
-                    'op' => 'ajouter'
-                ]);
+                $viewModel = $this->eleveEditAction(
+                    [
+                        'eleveId' => $eleveId,
+                        'info' => $info,
+                        'op' => 'ajouter'
+                    ]);
                 $viewModel->setTemplate('sbm-gestion/eleve/eleve-edit.phtml');
                 return $viewModel;
             }
@@ -473,22 +510,25 @@ class EleveController extends AbstractActionController
         $data = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')
             ->withR2($where)
             ->current();
-        $form->setData([
-            'eleveId' => $eleveId,
-            'responsable1Id' => $data['responsable1Id'],
-            'responsable2Id' => isset($data['responsable2Id']) ? $data['responsable2Id'] : '',
-            'dateDebut' => Session::get('as')['dateDebut'],
-            'dateFin' => Session::get('as')['dateFin'],
-            'demandeR1' => 1,
-            'demandeR2' => 0
-        ]);
-        return new ViewModel([
-            'page' => $page,
-            'form' => $form->prepare(),
-            'info' => $info,
-            'data' => $data,
-            'scolarite_precedente' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
-        ]);
+        $form->setData(
+            [
+                'eleveId' => $eleveId,
+                'responsable1Id' => $data['responsable1Id'],
+                'responsable2Id' => isset($data['responsable2Id']) ? $data['responsable2Id'] : '',
+                'dateDebut' => Session::get('as')['dateDebut'],
+                'dateFin' => Session::get('as')['dateFin'],
+                'demandeR1' => 1,
+                'demandeR2' => 0
+            ]);
+        return new ViewModel(
+            [
+                'page' => $page,
+                'form' => $form->prepare(),
+                'info' => $info,
+                'data' => $data,
+                'scolarite_precedente' => $this->db_manager->get(
+                    'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
+            ]);
     }
 
     /**
@@ -518,23 +558,26 @@ class EleveController extends AbstractActionController
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('login', [
-                            'action' => 'logout'
-                        ]);
+                        return $this->redirect()->toRoute('login', 
+                            [
+                                'action' => 'logout'
+                            ]);
                     }
                 }
             } else {
                 $args = $prg;
                 // !!! important !!! traiter 'cancel' avant 'origine'
                 if (array_key_exists('cancel', $args)) {
-                    $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+                    $this->flashMessenger()->addWarningMessage(
+                        "L'enregistrement n'a pas été modifié.");
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('sbmgestion/eleve', [
-                            'action' => 'eleve-liste',
-                            'page' => $currentPage
-                        ]);
+                        return $this->redirect()->toRoute('sbmgestion/eleve', 
+                            [
+                                'action' => 'eleve-liste',
+                                'page' => $currentPage
+                            ]);
                     }
                 }
                 
@@ -563,10 +606,11 @@ class EleveController extends AbstractActionController
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-liste',
-                    'page' => $currentPage
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-liste',
+                        'page' => $currentPage
+                    ]);
             }
         }
         $eleveId = $args['eleveId'];
@@ -574,10 +618,11 @@ class EleveController extends AbstractActionController
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-liste',
-                    'page' => $currentPage
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-liste',
+                        'page' => $currentPage
+                    ]);
             }
         }
         $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
@@ -586,7 +631,8 @@ class EleveController extends AbstractActionController
         $aTarifs = $tTarifs->getTarifs();
         $tarifId1 = $tTarifs->getTarifId('tarif1');
         $tarifId2 = $tTarifs->getTarifId('tarif2');
-        $qAffectations = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations');
+        $qAffectations = $this->db_manager->get(
+            'Sbm\Db\Query\AffectationsServicesStations');
         // les invariants
         $invariants = [];
         $historique = [];
@@ -597,16 +643,19 @@ class EleveController extends AbstractActionController
         $historique['eleve']['dateCreation'] = $odata0->dateCreation;
         $historique['eleve']['dateModification'] = $odata0->dateModification;
         $invariants['numero'] = $odata0->numero;
-        $odata1 = $tScolarites->getRecord([
-            'millesime' => $millesime,
-            'eleveId' => $eleveId
-        ]);
+        $odata1 = $tScolarites->getRecord(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId
+            ]);
         if ($odata1->inscrit) {
             $inscrit = $odata1->paiement;
             $inscrit |= $odata1->fa;
             $inscrit |= $odata1->gratuit > 0;
-            $inscrit |= ($odata1->demandeR1 == 2 && $odata1->accordR1 == 0 && $odata1->subventionR1 == 1);
-            $inscrit |= ($odata1->demandeR2 == 2 && $odata1->accordR2 == 0 && $odata1->subventionR2 == 1);
+            $inscrit |= ($odata1->demandeR1 == 2 && $odata1->accordR1 == 0 &&
+                 $odata1->subventionR1 == 1);
+            $inscrit |= ($odata1->demandeR2 == 2 && $odata1->accordR2 == 0 &&
+                 $odata1->subventionR2 == 1);
             $invariants['etat'] = $inscrit ? 'Inscrit' : 'Préinscrit';
         } else {
             $invariants['etat'] = 'Rayé';
@@ -632,11 +681,13 @@ class EleveController extends AbstractActionController
         $etabSelect = $this->db_manager->get('Sbm\Db\Select\Etablissements')->desservis();
         $clasSelect = $this->db_manager->get('Sbm\Db\Select\Classes');
         $form = new FormEleve();
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/eleve', [
-            'action' => 'eleve-edit',
-            'page' => $currentPage
-        ]))
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'eleve-edit',
+                    'page' => $currentPage
+                ]))
             ->setValueOptions('responsable1Id', $respSelect)
             ->setValueOptions('responsable2Id', $respSelect)
             ->setValueOptions('etablissementId', $etabSelect)
@@ -646,9 +697,10 @@ class EleveController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
-                $dataValid = array_merge([
-                    'millesime' => $millesime
-                ], $form->getData());
+                $dataValid = array_merge(
+                    [
+                        'millesime' => $millesime
+                    ], $form->getData());
                 // changeR1 et changeR2 indiquent s'il faut mette à jour en cascade le changement de responsable dans la table affectations
                 if (! $dataValid['ga'] && ! empty($dataValid['responsable2Id'])) {
                     $dataValid['responsable2Id'] = '';
@@ -656,25 +708,30 @@ class EleveController extends AbstractActionController
                 $changeR1 = $dataValid['responsable1Id'] != $odata0->responsable1Id;
                 $changeR2 = false;
                 if (! is_null($odata0->responsable2Id)) {
-                    $changeR2 = empty($dataValid['responsable2Id']) || $dataValid['responsable2Id'] != $odata0->responsable2Id;
+                    $changeR2 = empty($dataValid['responsable2Id']) ||
+                         $dataValid['responsable2Id'] != $odata0->responsable2Id;
                 }
                 // enregistrement dans la table eleves
-                $tEleves->saveRecord($tEleves->getObjData()
-                    ->exchangeArray($dataValid));
+                $tEleves->saveRecord(
+                    $tEleves->getObjData()
+                        ->exchangeArray($dataValid));
                 // maj en cascade dans la table affectations
                 $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
                 if ($changeR1) {
                     // maj du responsableId
-                    $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable1Id, $dataValid['responsable1Id']);
+                    $tAffectations->updateResponsableId($millesime, $eleveId, 
+                        $odata0->responsable1Id, $dataValid['responsable1Id']);
                 }
                 if ($changeR2) {
                     if (empty($dataValid['responsable2Id'])) {
                         // suppression des affectations relatives à cet élève pour ce millesime
-                        $tAffectations->deleteResponsableId($millesime, $eleveId, $odata0->responsable2Id);
+                        $tAffectations->deleteResponsableId($millesime, $eleveId, 
+                            $odata0->responsable2Id);
                         $dataValid['demandeR2'] = 0;
                     } else {
                         // maj du responsableId
-                        $tAffectations->updateResponsableId($millesime, $eleveId, $odata0->responsable2Id, $dataValid['responsable2Id']);
+                        $tAffectations->updateResponsableId($millesime, $eleveId, 
+                            $odata0->responsable2Id, $dataValid['responsable2Id']);
                     }
                 }
                 // enregistrement dans la table scolarites
@@ -687,21 +744,30 @@ class EleveController extends AbstractActionController
                 $recalcul = $tScolarites->saveRecord($odata);
                 // recalcul des droits et des distances en cas de modification de la destination ou d'une origine
                 if ($recalcul || $changeR1 || $changeR2) {
-                    $majDistances = $this->cartographie_manager->get('Sbm\CalculDroitsTransport');
+                    $majDistances = $this->cartographie_manager->get(
+                        'Sbm\CalculDroitsTransport');
                     if ($odata1->district) {
                         $majDistances->majDistancesDistrictSansPerte($eleveId);
+                        // $this->flashMessenger()->addInfoMessage('majDistancesDistrictSansPerte');
                     } else {
-                        $majDistances->majDistancesDistrict($eleveId);
+                        try {
+                            $majDistances->majDistancesDistrict($eleveId);
+                        } catch (Exception $e) {
+                            die($e->getMessage());
+                        }                       
+                        // $this->flashMessenger()->addInfoMessage('majDistancesDistrict');
                     }
                 }
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
+                $this->flashMessenger()->addSuccessMessage(
+                    "Les modifications ont été enregistrées.");
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'eleve-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'eleve-liste',
+                            'page' => $currentPage
+                        ]);
                 }
             } else {
                 $identite = $args['nom'] . ' ' . $args['prenom'];
@@ -716,7 +782,8 @@ class EleveController extends AbstractActionController
             $form->setData(array_merge($odata0->getArrayCopy(), $adata1));
         }
         // historique des responsables
-        $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable1Id);
+        $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+            $odata0->responsable1Id);
         $args_paiement = [
             'responsableId' => $odata0->responsable1Id,
             'responsable' => sprintf('%s %s %s', $r->titre, $r->nom, $r->prenom)
@@ -727,7 +794,8 @@ class EleveController extends AbstractActionController
         $historique['responsable1']['demenagement'] = $r->demenagement;
         $tmp = $odata0->responsable2Id;
         if (! empty($tmp)) {
-            $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($odata0->responsable2Id);
+            $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+                $odata0->responsable2Id);
             $historique['responsable2']['dateCreation'] = $r->dateCreation;
             $historique['responsable2']['dateModification'] = $r->dateModification;
             $historique['responsable2']['dateDemenagement'] = $r->dateDemenagement;
@@ -743,17 +811,19 @@ class EleveController extends AbstractActionController
         foreach ($qAffectations->getAffectations($eleveId, null, true) as $row) {
             $affectations['annee_precedente'][] = $row;
         }
-        return new ViewModel([
-            'form' => $form->prepare(),
-            'page' => $currentPage, // nécessaire pour la compatibilité des appels
-            'eleveId' => $eleveId, // nécessaire pour la compatibilité des appels
-            'identite' => $identite, // nécessaire pour la compatibilité des appels
-            'data' => $invariants,
-            'historique' => $historique,
-            'args_paiement' => $args_paiement,
-            'affectations' => $affectations,
-            'scolarite_precedente' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
-        ]);
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'page' => $currentPage, // nécessaire pour la compatibilité des appels
+                'eleveId' => $eleveId, // nécessaire pour la compatibilité des appels
+                'identite' => $identite, // nécessaire pour la compatibilité des appels
+                'data' => $invariants,
+                'historique' => $historique,
+                'args_paiement' => $args_paiement,
+                'affectations' => $affectations,
+                'scolarite_precedente' => $this->db_manager->get(
+                    'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
+            ]);
     }
 
     public function eleveInscrireAction()
@@ -762,7 +832,8 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $prg = $this->getFromSession('post', false, $this->getSessionNamespace('ajout', 2));
+            $prg = $this->getFromSession('post', false, 
+                $this->getSessionNamespace('ajout', 2));
             if ($prg == false) {
                 try {
                     return $this->redirectToOrigin()->back();
@@ -776,10 +847,11 @@ class EleveController extends AbstractActionController
             unset($prg['origine']);
         }
         $this->setToSession('post', $prg, $this->getSessionNamespace('ajout', 2));
-        return $this->redirect()->toRoute('sbmgestion/eleve', [
-            'action' => 'eleve-ajout21',
-            'page' => $this->params('page', 1)
-        ]);
+        return $this->redirect()->toRoute('sbmgestion/eleve', 
+            [
+                'action' => 'eleve-ajout21',
+                'page' => $this->params('page', 1)
+            ]);
     }
 
     public function eleveRayerAction()
@@ -811,10 +883,11 @@ class EleveController extends AbstractActionController
             }
         }
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-        $scolarite = $tScolarites->getRecord([
-            'millesime' => Session::get('millesime'),
-            'eleveId' => $prg['eleveId']
-        ]);
+        $scolarite = $tScolarites->getRecord(
+            [
+                'millesime' => Session::get('millesime'),
+                'eleveId' => $prg['eleveId']
+            ]);
         $scolarite->inscrit = 1 - $scolarite->inscrit;
         $tScolarites->saveRecord($scolarite);
         $msg = $scolarite->inscrit ? 'La fiche de cet élève a été activée.' : 'Cet élève a été rayé.';
@@ -836,9 +909,10 @@ class EleveController extends AbstractActionController
             $args = $this->getFromSession('post', false);
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'logout'
-                ]);
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'logout'
+                    ]);
             }
         } else {
             $args = $prg;
@@ -848,14 +922,16 @@ class EleveController extends AbstractActionController
                 $this->setToSession('post', $args);
             }
             if (array_key_exists('cancel', $args)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+                $this->flashMessenger()->addWarningMessage(
+                    "L'enregistrement n'a pas été modifié.");
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'eleve-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'eleve-liste',
+                            'page' => $currentPage
+                        ]);
                 }
             }
         }
@@ -865,16 +941,19 @@ class EleveController extends AbstractActionController
         foreach ($tResponsableIds as $responsableId) {
             if ($or)
                 $where->OR;
-            $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId);
+            $where->equalTo('responsable1Id', $responsableId)->OR->equalTo(
+                'responsable2Id', $responsableId);
             $or = true;
         }
-        $viewmodel = new ViewModel([
-            'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2($where),
-            'page' => $this->params('page', 1),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
-            'criteres_form' => null,
-            'groupe' => $args['op']
-        ]);
+        $viewmodel = new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
+                    $where),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
+                'criteres_form' => null,
+                'groupe' => $args['op']
+            ]);
         $viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
         return $viewmodel;
     }
@@ -914,7 +993,8 @@ class EleveController extends AbstractActionController
                 foreach ($tResponsableIds as $responsableId) {
                     if ($or)
                         $where->OR;
-                    $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId);
+                    $where->equalTo('responsable1Id', $responsableId)->OR->equalTo(
+                        'responsable2Id', $responsableId);
                     $or = true;
                 }
                 return $where;
@@ -939,19 +1019,21 @@ class EleveController extends AbstractActionController
             $args = $this->getFromSession('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite.');
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-liste',
-                    'page' => $this->params('page', 1)
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
             }
         } else {
             $args = $prg;
             if (array_key_exists('cancel', $args) || ! array_key_exists('eleveId', $args)) {
                 $this->flashMessenger()->addWarningMessage('Abandon de la suppression.');
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-liste',
-                    'page' => $this->params('page', 1)
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
             }
             $rayer = array_key_exists('rayer', $args);
             $supprimer = array_key_exists('confirmer', $args);
@@ -960,33 +1042,36 @@ class EleveController extends AbstractActionController
         }
         $form = new ButtonForm([
             'eleveId' => $args['eleveId']
-        ], [
-            'confirmer' => [
-                'class' => 'confirm',
-                'value' => 'Supprimer',
-                'title' => 'Cette action est irréversible.'
-            ],
-            'rayer' => [
-                'class' => 'confirm',
-                'value' => 'Rayer',
-                'title' => 'L\'élève ne sera plus inscrit mais restera enregistré dans la base.'
-            ],
-            'cancel' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ]);
+        ], 
+            [
+                'confirmer' => [
+                    'class' => 'confirm',
+                    'value' => 'Supprimer',
+                    'title' => 'Cette action est irréversible.'
+                ],
+                'rayer' => [
+                    'class' => 'confirm',
+                    'value' => 'Rayer',
+                    'title' => 'L\'élève ne sera plus inscrit mais restera enregistré dans la base.'
+                ],
+                'cancel' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
         $millesime = Session::get('millesime');
         if ($rayer) {
             $where = new Where();
             $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
             $this->db_manager->get('Sbm\Db\Table\Affectations')->deleteRecord($where);
-            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setInscrit($millesime, $args['eleveId'], 0);
+            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setInscrit($millesime, 
+                $args['eleveId'], 0);
             $this->flashMessenger()->addSuccessMessage('L\'élève a été rayée.');
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'eleve-liste',
-                'page' => $this->params('page', 1)
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         } elseif ($supprimer) {
             $where = new Where();
             $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
@@ -994,17 +1079,22 @@ class EleveController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->deleteRecord($where);
             $this->db_manager->get('Sbm\Db\Table\Eleves')->deleteRecord($args['eleveId']);
             $this->flashMessenger()->addSuccessMessage('L\'inscription a été supprimée.');
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'eleve-liste',
-                'page' => $this->params('page', 1)
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         }
-        return new ViewModel([
-            'form' => $form->prepare(),
-            'page' => $this->params('page', 1),
-            'eleve' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve($args['eleveId']),
-            'affectations' => $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getCorrespondances($args['eleveId'])
-        ]);
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'page' => $this->params('page', 1),
+                'eleve' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve(
+                    $args['eleveId']),
+                'affectations' => $this->db_manager->get(
+                    'Sbm\Db\Query\AffectationsServicesStations')->getCorrespondances(
+                    $args['eleveId'])
+            ]);
     }
 
     public function eleveReinscriptionOuiAction()
@@ -1028,10 +1118,11 @@ class EleveController extends AbstractActionController
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'responsable-liste',
-                    'page' => 1
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'responsable-liste',
+                        'page' => 1
+                    ]);
             }
         } elseif (array_key_exists('origine', $prg)) {
             $this->redirectToOrigin()->setBack($prg['origine']);
@@ -1047,10 +1138,11 @@ class EleveController extends AbstractActionController
             return $this->redirectToOrigin()->back();
         } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
             $this->flashMessenger()->addErrorMessage('Action interdite');
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'responsable-liste',
-                'page' => 1
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'responsable-liste',
+                    'page' => 1
+                ]);
         }
     }
 
@@ -1063,9 +1155,10 @@ class EleveController extends AbstractActionController
             $args = $this->getFromSession('post', false);
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'logout'
-                ]);
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'logout'
+                    ]);
             }
         } else {
             $args = $prg;
@@ -1076,37 +1169,45 @@ class EleveController extends AbstractActionController
                 $this->setToSession('post', $args);
             }
             if (array_key_exists('cancel', $args)) {
-                $this->flashMessenger()->addWarningMessage('La localisation de cet élève n\'a pas été enregistrée.');
+                $this->flashMessenger()->addWarningMessage(
+                    'La localisation de cet élève n\'a pas été enregistrée.');
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'eleve-edit'
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'eleve-edit'
+                        ]);
                 }
             }
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
+        $configCarte = StdLib::getParam('parent', 
+            $this->cartographie_manager->get('cartes'));
         // ici, il faut un formulaire permettant de saisir l'adresse particulière d'un élève. Le tout est enregistré dans scolarites
         $form = new \SbmGestion\Form\Eleve\LocalisationAdresse($configCarte['valide']);
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/eleve', [
-            'action' => 'eleve-localisation'
-        ]))
-            ->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
-            ->desservies());
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'eleve-localisation'
+                ]))
+            ->setValueOptions('communeId', 
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->desservies());
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         // chercher l'élève dans la table
-        $eleve = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve($args['eleveId']);
+        $eleve = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve(
+            $args['eleveId']);
         // traitement de la réponse
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
             if ($form->isValid()) {
                 // détermine le point. Il est reçu en gRGF93 et sera enregistré en XYZ
-                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
                 // enregistre les coordonnées dans la table
                 $tableScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                 $oData = $tableScolarites->getObjData();
@@ -1115,27 +1216,33 @@ class EleveController extends AbstractActionController
                 $oData->x = $point->getX();
                 $oData->y = $point->getY();
                 // calcul de la distance à l'établissement
-                $tableEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
-                $etablissement = $tableEtablissements->getRecord($eleve['etablissementId']);
+                $tableEtablissements = $this->db_manager->get(
+                    'Sbm\Db\Table\Etablissements');
+                $etablissement = $tableEtablissements->getRecord(
+                    $eleve['etablissementId']);
                 $pointEtablissement = new Point($etablissement->x, $etablissement->y);
-                $ptetab = $d2etab->getProjection()->XYZversgRGF93($pointEtablissement);
+                $ptetab = $oDistanceMatrix->getProjection()->XYZversgRGF93(
+                    $pointEtablissement);
                 try {
-                    $d = $d2etab->calculDistance($pt, $ptetab);
+                    $d = $oDistanceMatrix->calculDistance($pt, $ptetab);
                 } catch (Exception $e) {
                     $d = 99000;
-                    $this->flashMessenger()->addWarningMessage("Google Maps API ne répond pas. Mettre à jour mauellement la distance entre le domicile et l'établissement.");
+                    $this->flashMessenger()->addWarningMessage(
+                        "Google Maps API ne répond pas. Mettre à jour manuellement la distance entre le domicile et l'établissement.");
                 }
                 
                 $oData->distanceR1 = round($d / 1000, 1);
                 // enregistre
                 $tableScolarites->saveRecord($oData);
-                $this->flashMessenger()->addSuccessMessage('Cette adresse est enregistrée avec sa localisation.');
+                $this->flashMessenger()->addSuccessMessage(
+                    'Cette adresse est enregistrée avec sa localisation.');
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'eleve-edit'
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'eleve-edit'
+                        ]);
                 }
             }
             // reprendre les données pour charger le formulaire
@@ -1145,16 +1252,19 @@ class EleveController extends AbstractActionController
             $tableEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
             $etablissement = $tableEtablissements->getRecord($eleve['etablissementId']);
             $pointEtablissement = new Point($etablissement->x, $etablissement->y);
-            $ptetab = $d2etab->getProjection()->XYZversgRGF93($pointEtablissement);
+            $ptetab = $oDistanceMatrix->getProjection()->XYZversgRGF93(
+                $pointEtablissement);
             // recherche le responsable1 pour calculer la distance
-            $eleveR1 = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->getEleveResponsable1($args['eleveId']);
+            $eleveR1 = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->getEleveResponsable1(
+                $args['eleveId']);
             $point = new Point($eleveR1['x1'], $eleveR1['y1']);
-            $pt = $d2etab->getProjection()->XYZversgRGF93($point);
+            $pt = $oDistanceMatrix->getProjection()->XYZversgRGF93($point);
             try {
-                $d = $d2etab->calculDistance($pt, $ptetab);
-            } catch (\SbmCartographie\GoogleMaps\ExceptionNotAnswer $e) {
+                $d = $oDistanceMatrix->calculDistance($pt, $ptetab);
+            } catch (GoogleMaps\ExceptionNoAnswer $e) {
                 $d = 99000;
-                $this->flashMessenger()->addWarningMessage("Google Maps API ne répond pas. Mettre à jour mauellement la distance entre le domicile et l'établissement.");
+                $this->flashMessenger()->addWarningMessage(
+                    "Google Maps API ne répond pas. Mettre à jour mauellement la distance entre le domicile et l'établissement.");
             }
             
             // supprimer les références à l'adresse perso de l'élève
@@ -1180,15 +1290,17 @@ class EleveController extends AbstractActionController
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
-                    'action' => 'eleve-edit'
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'eleve-edit'
+                    ]);
             }
         } else {
             // préparer le Point dans le système gRGF93
             $point = new Point($eleve['x'], $eleve['y']);
-            $pt = $d2etab->getProjection()->XYZversgRGF93($point);
-            $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
+            $pt = $oDistanceMatrix->getProjection()->XYZversgRGF93($point);
+            $pt->setLatLngRange($configCarte['valide']['lat'], 
+                $configCarte['valide']['lng']);
             if (! $pt->isValid()) {
                 $pt->setLatitude($configCarte['centre']['lat']);
                 $pt->setLongitude($configCarte['centre']['lng']);
@@ -1207,14 +1319,15 @@ class EleveController extends AbstractActionController
         }
         // charger le formulaire
         $form->setData($data);
-        return new ViewModel([
-            'point' => $pt,
-            'form' => $form->prepare(),
-            'eleveId' => $args['eleveId'],
-            'eleve' => $eleve,
-            'url_api' => $this->cartographie_manager->get('google_api')['js'],
-            'config' => $configCarte
-        ]);
+        return new ViewModel(
+            [
+                'point' => $pt,
+                'form' => $form->prepare(),
+                'eleveId' => $args['eleveId'],
+                'eleve' => $eleve,
+                'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                'config' => $configCarte
+            ]);
     }
 
     /**
@@ -1227,35 +1340,41 @@ class EleveController extends AbstractActionController
      */
     public function responsableListeAction()
     {
-        $projection = $this->cartographie_manager->get('SbmCarto\Projection');
+        $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
         $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
         
-        $args = $this->initListe('responsables', null, [
-            'nbEnfants',
-            'nbInscrits',
-            'nbPreinscrits'
-        ], [
-            'nomSA' => 'res.nomSA',
-            'selection' => 'res.selection',
-            'inscrits' => 'Literal:count(ins.eleveId) > 0',
-            'preinscrits' => 'Literal:count(pre.eleveId) > 0',
-            'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
-        ]);
+        $args = $this->initListe('responsables', null, 
+            [
+                'nbEnfants',
+                'nbInscrits',
+                'nbPreinscrits'
+            ], 
+            [
+                'nomSA' => 'res.nomSA',
+                'selection' => 'res.selection',
+                'inscrits' => 'Literal:count(ins.eleveId) > 0',
+                'preinscrits' => 'Literal:count(pre.eleveId) > 0',
+                'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], 
+                    $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
+            ]);
         if ($args instanceof Response)
             return $args;
         
-        return new ViewModel([
-            'paginator' => $this->db_manager->get('Sbm\Db\Query\Responsables')->paginator($args['where'], [
-                'nom',
-                'prenom'
-            ]),
-            'page' => $this->params('page', 1),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_responsables', 10),
-            'criteres_form' => $args['form'],
-            'projection' => $this->cartographie_manager->get('SbmCarto\Projection')
-        ]);
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Query\Responsables')->paginator(
+                    $args['where'], 
+                    [
+                        'nom',
+                        'prenom'
+                    ]),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_responsables', 10),
+                'criteres_form' => $args['form'],
+                'projection' => $this->cartographie_manager->get(Projection::class)
+            ]);
     }
 
     public function responsableAjoutAction()
@@ -1267,20 +1386,23 @@ class EleveController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'responsable-liste',
-                'page' => $currentPage
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'responsable-liste',
+                    'page' => $currentPage
+                ]);
         }
         // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
         $args = $prg;
         // si $args contient la clé 'cancel' c'est un abandon de l'action
-        if (\array_key_exists('cancel', $args)) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été enregistré.");
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'responsable-liste',
-                'page' => $currentPage
-            ]);
+        if (array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addWarningMessage(
+                "L'enregistrement n'a pas été enregistré.");
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'responsable-liste',
+                    'page' => $currentPage
+                ]);
         }
         // on ouvre la table des responsables
         $responsableId = null;
@@ -1299,10 +1421,10 @@ class EleveController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $oData = $form->getData();
-                // die(var_dump($args, $oData->getArrayCopy()));
                 if ($tableResponsables->saveRecord($oData)) {
                     // on s'assure de rendre cette commune visible
-                    $this->db_manager->get('Sbm\Db\table\Communes')->setVisible($oData->communeId);
+                    $this->db_manager->get('Sbm\Db\table\Communes')->setVisible(
+                        $oData->communeId);
                 }
                 $this->flashMessenger()->addSuccessMessage("La fiche a été enregistrée.");
                 /*
@@ -1311,17 +1433,20 @@ class EleveController extends AbstractActionController
                  * 'page' => $currentPage
                  * ));
                  */
-                $viewmodel = $this->responsableLocalisationAction($tableResponsables->getLastResponsableId(), $currentPage);
-                $viewmodel->setTemplate('sbm-gestion/eleve/responsable-localisation.phtml');
+                $viewmodel = $this->responsableLocalisationAction(
+                    $tableResponsables->getLastResponsableId(), $currentPage);
+                $viewmodel->setTemplate(
+                    'sbm-gestion/eleve/responsable-localisation.phtml');
                 return $viewmodel;
             }
         }
-        return new ViewModel([
-            'form' => $form->prepare(),
-            'page' => $currentPage,
-            'responsableId' => $responsableId,
-            'demenagement' => false
-        ]);
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'page' => $currentPage,
+                'responsableId' => $responsableId,
+                'demenagement' => false
+            ]);
     }
 
     public function responsableEditAction()
@@ -1335,21 +1460,24 @@ class EleveController extends AbstractActionController
             $args = $this->getFromSession('post', false);
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'logout'
-                ]);
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'logout'
+                    ]);
             }
         } else {
             $args = $prg;
             if (array_key_exists('cancel', $args)) {
-                $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
+                $this->flashMessenger()->addWarningMessage(
+                    "L'enregistrement n'a pas été modifié.");
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'responsable-liste',
-                        'page' => $this->params('page', 1)
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'responsable-liste',
+                            'page' => $this->params('page', 1)
+                        ]);
                 }
             } elseif (array_key_exists('origine', $args)) {
                 $this->redirectToOrigin()->setBack($args['origine']);
@@ -1370,23 +1498,25 @@ class EleveController extends AbstractActionController
         
         $form->bind($tableResponsables->getObjData());
         
-        if (\array_key_exists('submit', $args)) {
+        if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
                 $oData = $form->getData();
-                // die(var_dump($args, $oData->getArrayCopy()));
                 if ($tableResponsables->saveRecord($oData)) {
                     // on s'assure de rendre cette commune visible
-                    $this->db_manager->get('Sbm\Db\table\Communes')->setVisible($oData->communeId);
+                    $this->db_manager->get('Sbm\Db\table\Communes')->setVisible(
+                        $oData->communeId);
                 }
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
+                $this->flashMessenger()->addSuccessMessage(
+                    "Les modifications ont été enregistrées.");
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'responsable-liste',
-                        'page' => $this->params('page', 1)
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'responsable-liste',
+                            'page' => $this->params('page', 1)
+                        ]);
                 }
             }
             $demenagement = $args['demenagement'] ?  : false;
@@ -1395,15 +1525,17 @@ class EleveController extends AbstractActionController
             $array_data = $tableResponsables->getRecord($responsableId)->getArrayCopy();
             $form->setData($array_data);
             $demenagement = $array_data['demenagement'];
-            $identite = $array_data['titre'] . ' ' . $array_data['nom'] . ' ' . $array_data['prenom'];
+            $identite = $array_data['titre'] . ' ' . $array_data['nom'] . ' ' .
+                 $array_data['prenom'];
         }
-        return new ViewModel([
-            'form' => $form->prepare(),
-            'page' => $this->params('page', 1),
-            'responsableId' => $responsableId,
-            'identite' => $identite,
-            'demenagement' => $demenagement
-        ]);
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'page' => $this->params('page', 1),
+                'responsableId' => $responsableId,
+                'identite' => $identite,
+                'demenagement' => $demenagement
+            ]);
     }
 
     public function responsableGroupAction()
@@ -1421,10 +1553,11 @@ class EleveController extends AbstractActionController
         $responsableId = StdLib::getParam('responsableId', $args, - 1);
         if ($responsableId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmadmin', [
-                'action' => 'libelle-liste',
-                'page' => $currentPage
-            ]);
+            return $this->redirect()->toRoute('sbmadmin', 
+                [
+                    'action' => 'libelle-liste',
+                    'page' => $currentPage
+                ]);
         }
         $tableEleves = $this->db_manager->get('Sbm\Db\Query\Eleves');
         $controller = $this;
@@ -1433,22 +1566,27 @@ class EleveController extends AbstractActionController
         $data['eleves']['resp2'] = $tableEleves->duResponsable2($responsableId);
         $data['eleves']['fact'] = $tableEleves->duResponsableFinancier($responsableId);
         $data['fnc_affectations'] = function ($eleveId) use($controller, $responsableId) {
-            return $controller->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getServices($eleveId, $responsableId);
+            return $controller->db_manager->get(
+                'Sbm\Db\Query\AffectationsServicesStations')->getServices($eleveId, 
+                $responsableId);
         };
         $data['fnc_ga'] = function ($responsableId) use($controller) {
             if (is_null($responsableId)) {
                 return '';
             } else {
-                $oresponsable = $controller->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($responsableId);
+                $oresponsable = $controller->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+                    $responsableId);
                 return sprintf('%s %s', $oresponsable->nomSA, $oresponsable->prenomSA);
             }
         };
-        return new ViewModel([
-            'data' => $data,
-            'responsable' => $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord($responsableId),
-            'page' => $currentPage,
-            'responsableId' => $responsableId
-        ]);
+        return new ViewModel(
+            [
+                'data' => $data,
+                'responsable' => $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord(
+                    $responsableId),
+                'page' => $currentPage,
+                'responsableId' => $responsableId
+            ]);
     }
 
     public function responsableSupprAction()
@@ -1456,16 +1594,17 @@ class EleveController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm([
             'id' => null
-        ], [
-            'supproui' => [
-                'class' => 'confirm',
-                'value' => 'Confirmer'
-            ],
-            'supprnon' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ]);
+        ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
         $params = [
             'data' => [
                 'alias' => 'Sbm\Db\Table\Responsables',
@@ -1475,18 +1614,21 @@ class EleveController extends AbstractActionController
         ];
         $vueResponsables = $this->db_manager->get('Sbm\Db\Vue\Responsables');
         try {
-            $r = $this->supprData($this->db_manager, $params, function ($id, $tableResponsables) use($vueResponsables) {
-                return [
-                    'id' => $id,
-                    'data' => $vueResponsables->getRecord($id)
-                ];
-            });
+            $r = $this->supprData($this->db_manager, $params, 
+                function ($id, $tableResponsables) use($vueResponsables) {
+                    return [
+                        'id' => $id,
+                        'data' => $vueResponsables->getRecord($id)
+                    ];
+                });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
-            $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce responsable car il a des enregistrements (élèves ou paiements) en liaison.');
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'responsable-liste',
-                'page' => $currentPage
-            ]);
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer ce responsable car il a des enregistrements (élèves ou paiements) en liaison.');
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'responsable-liste',
+                    'page' => $currentPage
+                ]);
         }
         if ($r instanceof Response) {
             return $r;
@@ -1495,19 +1637,23 @@ class EleveController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'responsable-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'responsable-liste',
+                            'page' => $currentPage
+                        ]);
                     break;
                 default:
-                    return new ViewModel([
-                        'form' => $form->prepare(),
-                        'page' => $currentPage,
-                        'data' => StdLib::getParam('data', $r->getResult()),
-                        'responsableId' => StdLib::getParam('id', $r->getResult()),
-                        'data_dependantes' => $this->db_manager->get('Sbm\Db\Table\Eleves')->duResponsable(StdLib::getParam('id', $r->getResult()))
-                    ]);
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'responsableId' => StdLib::getParam('id', $r->getResult()),
+                            'data_dependantes' => $this->db_manager->get(
+                                'Sbm\Db\Table\Eleves')->duResponsable(
+                                StdLib::getParam('id', $r->getResult()))
+                        ]);
                     break;
             }
         }
@@ -1523,9 +1669,10 @@ class EleveController extends AbstractActionController
                 $args = $this->getFromSession('post', false);
                 if ($args === false) {
                     $this->flashMessenger()->addErrorMessage('Action interdite');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'logout'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'logout'
+                        ]);
                 }
             } else {
                 $args = $prg;
@@ -1544,14 +1691,16 @@ class EleveController extends AbstractActionController
                     $this->setToSession('post', $args);
                 }
                 if (array_key_exists('cancel', $args)) {
-                    $this->flashMessenger()->addWarningMessage('La localisation de cette adresse n\'a pas été enregistrée.');
+                    $this->flashMessenger()->addWarningMessage(
+                        'La localisation de cette adresse n\'a pas été enregistrée.');
                     try {
                         return $this->redirectToOrigin()->back();
                     } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                        return $this->redirect()->toRoute('sbmgestion/eleve', [
-                            'action' => 'responsable-liste',
-                            'page' => $currentPage
-                        ]);
+                        return $this->redirect()->toRoute('sbmgestion/eleve', 
+                            [
+                                'action' => 'responsable-liste',
+                                'page' => $currentPage
+                            ]);
                     }
                 }
             }
@@ -1562,101 +1711,118 @@ class EleveController extends AbstractActionController
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent', $this->cartographie_manager->get('cartes'));
-        $form = new LatLngForm([
-            'responsableId' => [
-                'id' => 'responsableId'
-            ]
-        ], [
-            'submit' => [
-                'class' => 'button default submit left-95px',
-                'value' => 'Enregistrer la localisation'
-            ],
-            'cancel' => [
-                'class' => 'button default cancel left-10px',
-                'value' => 'Abandonner'
-            ]
-        ], $configCarte['valide']);
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/eleve', [
-            'action' => 'responsable-localisation'
-        ]));
+        $configCarte = StdLib::getParam('parent', 
+            $this->cartographie_manager->get('cartes'));
+        $form = new LatLngForm(
+            [
+                'responsableId' => [
+                    'id' => 'responsableId'
+                ]
+            ], 
+            [
+                'submit' => [
+                    'class' => 'button default submit left-95px',
+                    'value' => 'Enregistrer la localisation'
+                ],
+                'cancel' => [
+                    'class' => 'button default cancel left-10px',
+                    'value' => 'Abandonner'
+                ]
+            ], $configCarte['valide']);
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/eleve', 
+                [
+                    'action' => 'responsable-localisation'
+                ]));
         
         // traitement de la réponse
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         if (array_key_exists('submit', $args)) {
-            $form->setData([
-                'responsableId' => $args['responsableId'],
-                'lat' => $args['lat'],
-                'lng' => $args['lng']
-            ]);
+            $form->setData(
+                [
+                    'responsableId' => $args['responsableId'],
+                    'lat' => $args['lat'],
+                    'lng' => $args['lng']
+                ]);
             if ($form->isValid()) {
                 // détermine le point. Il est reçu en gRGF93 et sera enregistré en XYZ
                 $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
-                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
                 // enregistre les coordonnées dans la table
                 $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
                 $oData = $tableResponsables->getObjData();
-                $oData->exchangeArray([
-                    'responsableId' => $args['responsableId'],
-                    'x' => $point->getX(),
-                    'y' => $point->getY()
-                ]);
+                $oData->exchangeArray(
+                    [
+                        'responsableId' => $args['responsableId'],
+                        'x' => $point->getX(),
+                        'y' => $point->getY()
+                    ]);
                 $tableResponsables->saveRecord($oData);
-                $this->flashMessenger()->addSuccessMessage('La localisation de cette adresse est enregistrée.');
-                $msg = $this->cartographie_manager->get('Sbm\MajDistances')->pour($args['responsableId']);
+                $this->flashMessenger()->addSuccessMessage(
+                    'La localisation de cette adresse est enregistrée.');
+                $msg = $this->cartographie_manager->get('Sbm\MajDistances')->pour(
+                    $args['responsableId']);
                 if ($msg) {
                     $this->flashMessenger()->addWarningMessage($msg);
                 }
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('sbmgestion/eleve', [
-                        'action' => 'responsable-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/eleve', 
+                        [
+                            'action' => 'responsable-liste',
+                            'page' => $currentPage
+                        ]);
                 }
             }
         }
         // chercher le responsable dans la table
-        $responsable = $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord($args['responsableId']);
+        $responsable = $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord(
+            $args['responsableId']);
         // préparer le Point dans le système gRGF93
         $point = new Point($responsable->x, $responsable->y);
-        $pt = $d2etab->getProjection()->XYZversgRGF93($point);
+        $pt = $oDistanceMatrix->getProjection()->XYZversgRGF93($point);
         // charger le formulaire
-        $form->setData([
-            'responsableId' => $args['responsableId'],
-            'lat' => $pt->getLatitude(),
-            'lng' => $pt->getLongitude()
-        ]);
-        if (! $form->isValid()) {
-            // essaie de positionner la marker à partir de l'adresse
-            $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode($responsable->adresseL1, $responsable->codePostal, $responsable->commune);
-            $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
-            $pt->setLatLngRange($configCarte['valide']['lat'], $configCarte['valide']['lng']);
-            if (! $pt->isValid()) {
-                $pt->setLatitude($configCarte['centre']['lat']);
-                $pt->setLongitude($configCarte['centre']['lng']);
-            }
-            $form->setData([
+        $form->setData(
+            [
                 'responsableId' => $args['responsableId'],
                 'lat' => $pt->getLatitude(),
                 'lng' => $pt->getLongitude()
             ]);
+        if (! $form->isValid()) {
+            // essaie de positionner la marker à partir de l'adresse
+            $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                $responsable->adresseL1, $responsable->codePostal, $responsable->commune);
+            $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            $pt->setLatLngRange($configCarte['valide']['lat'], 
+                $configCarte['valide']['lng']);
+            if (! $pt->isValid()) {
+                $pt->setLatitude($configCarte['centre']['lat']);
+                $pt->setLongitude($configCarte['centre']['lng']);
+            }
+            $form->setData(
+                [
+                    'responsableId' => $args['responsableId'],
+                    'lat' => $pt->getLatitude(),
+                    'lng' => $pt->getLongitude()
+                ]);
         }
-        return new ViewModel([
-            'point' => $pt,
-            'form' => $form->prepare(),
-            'responsableId' => $args['responsableId'],
-            'responsable' => $responsable,
-            'url_api' => $this->cartographie_manager->get('google_api')['js'],
-            'config' => $configCarte
-        ]);
+        return new ViewModel(
+            [
+                'point' => $pt,
+                'form' => $form->prepare(),
+                'responsableId' => $args['responsableId'],
+                'responsable' => $responsable,
+                'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                'config' => $configCarte
+            ]);
     }
 
     public function responsablePdfAction()
     {
-        $projection = $this->cartographie_manager->get('SbmCarto\Projection');
+        $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
         $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
@@ -1673,7 +1839,8 @@ class EleveController extends AbstractActionController
                     'nbEnfants' => 'Expression:nbEleves = ?',
                     'inscrits' => 'Literal:0',
                     'preinscrit' => 'Literal:0',
-                    'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
+                    'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], 
+                        $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
                 ]
             ]
         ];
@@ -1729,7 +1896,8 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $destinataire = $this->getFromSession('destinataire', [], $this->getSessionNamespace());
+            $destinataire = $this->getFromSession('destinataire', [], 
+                $this->getSessionNamespace());
             $args = [];
         } else {
             $args = $prg;
@@ -1742,24 +1910,30 @@ class EleveController extends AbstractActionController
                     'email' => $args['email'],
                     'responsable' => StdLib::getParam('responsable', $args)
                 ];
-                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                $this->setToSession('destinataire', $destinataire, 
+                    $this->getSessionNamespace());
                 unset($args['email'], $args['responsable']);
-            } elseif (array_key_exists('ecrirer1', $args) && array_key_exists('emailr1', $args)) {
+            } elseif (array_key_exists('ecrirer1', $args) &&
+                 array_key_exists('emailr1', $args)) {
                 $destinataire = [
                     'email' => $args['emailr1'],
                     'responsable' => StdLib::getParam('responsabler1', $args)
                 ];
-                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                $this->setToSession('destinataire', $destinataire, 
+                    $this->getSessionNamespace());
                 unset($args['emailr1'], $args['responsabler1']);
-            } elseif (array_key_exists('ecrirer2', $args) && array_key_exists('emailr2', $args)) {
+            } elseif (array_key_exists('ecrirer2', $args) &&
+                 array_key_exists('emailr2', $args)) {
                 $destinataire = [
                     'email' => $args['emailr2'],
                     'responsable' => StdLib::getParam('responsabler2', $args)
                 ];
-                $this->setToSession('destinataire', $destinataire, $this->getSessionNamespace());
+                $this->setToSession('destinataire', $destinataire, 
+                    $this->getSessionNamespace());
                 unset($args['emailr2'], $args['responsabler2']);
             } else {
-                $destinataire = $this->getFromSession('destinataire', [], $this->getSessionNamespace());
+                $destinataire = $this->getFromSession('destinataire', [], 
+                    $this->getSessionNamespace());
             }
         }
         if (empty($destinataire) || array_key_exists('cancel', $args)) {
@@ -1768,9 +1942,10 @@ class EleveController extends AbstractActionController
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                 $this->redirectToOrigin()->reset();
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'home-page'
-                ]);
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'home-page'
+                    ]);
             }
         }
         $form = new MailForm();
@@ -1790,19 +1965,22 @@ class EleveController extends AbstractActionController
                 $auth = $this->authenticate->by();
                 $user = $auth->getIdentity();
                 $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
-                $mailTemplate = new MailTemplate(null, 'layout', [
-                    'file_name' => $logo_bas_de_mail,
-                    'path' => StdLib::getParamR([
-                        'img',
-                        'path'
-                    ], $this->config),
-                    'img_attributes' => StdLib::getParamR([
-                        'img',
-                        'administrer',
-                        $logo_bas_de_mail
-                    ], $this->config),
-                    'client' => StdLib::getParam('client', $this->config)
-                ]);
+                $mailTemplate = new MailTemplate(null, 'layout', 
+                    [
+                        'file_name' => $logo_bas_de_mail,
+                        'path' => StdLib::getParamR(
+                            [
+                                'img',
+                                'path'
+                            ], $this->config),
+                        'img_attributes' => StdLib::getParamR(
+                            [
+                                'img',
+                                'administrer',
+                                $logo_bas_de_mail
+                            ], $this->config),
+                        'client' => StdLib::getParam('client', $this->config)
+                    ]);
                 $params = [
                     'to' => [
                         [
@@ -1818,32 +1996,36 @@ class EleveController extends AbstractActionController
                     ],
                     'subject' => $data['subject'],
                     'body' => [
-                        'html' => $mailTemplate->render([
-                            'body' => $body
-                        ])
+                        'html' => $mailTemplate->render(
+                            [
+                                'body' => $body
+                            ])
                     ]
                 ];
                 // envoi du mail
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
                 $this->getEventManager()->trigger('sendMail', null, $params);
-                $this->flashMessenger()->addInfoMessage('Le message a été envoyé et une copie vous est adressée dans votre messagerie.');
+                $this->flashMessenger()->addInfoMessage(
+                    'Le message a été envoyé et une copie vous est adressée dans votre messagerie.');
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
                     $this->redirectToOrigin()->reset();
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
             }
         }
         
-        $view = new ViewModel([
-            'form' => $form->prepare(),
-            'destinataires' => [
-                $destinataire
-            ]
-        ]);
+        $view = new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'destinataires' => [
+                    $destinataire
+                ]
+            ]);
         $view->setTemplate('sbm-mail/index/send.phtml');
         return $view;
     }
@@ -1859,21 +2041,25 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            return $this->redirect()->toRoute('sbmgestion/eleve', [
-                'action' => 'responsable-liste',
-                'page' => $this->params('page', 1)
-            ]);
-        } else {
-            $args = $prg;
-            if (array_key_exists('logernon', $args) || ! array_key_exists('responsableId', $args)) {
-                return $this->redirect()->toRoute('sbmgestion/eleve', [
+            return $this->redirect()->toRoute('sbmgestion/eleve', 
+                [
                     'action' => 'responsable-liste',
                     'page' => $this->params('page', 1)
                 ]);
+        } else {
+            $args = $prg;
+            if (array_key_exists('logernon', $args) ||
+                 ! array_key_exists('responsableId', $args)) {
+                return $this->redirect()->toRoute('sbmgestion/eleve', 
+                    [
+                        'action' => 'responsable-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
             }
         }
         $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
-        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($args['responsableId']);
+        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+            $args['responsableId']);
         $email = $responsable->email;
         if (empty($email)) {
             $msg = 'Pour créer un compte il faut que ce responsable ait une adresse email.';
@@ -1885,20 +2071,22 @@ class EleveController extends AbstractActionController
                 $form = null;
             } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                 $msg = '';
-                $form = new ButtonForm([
-                    'responsableId' => null
-                ], [
-                    'logeroui' => [
-                        'class' => 'confirm',
-                        'value' => 'Confirmer',
-                        'class' => 'button default'
-                    ],
-                    'logernon' => [
-                        'class' => 'confirm',
-                        'value' => 'Abandonner',
-                        'class' => 'button default'
-                    ]
-                ]);
+                $form = new ButtonForm(
+                    [
+                        'responsableId' => null
+                    ], 
+                    [
+                        'logeroui' => [
+                            'class' => 'confirm',
+                            'value' => 'Confirmer',
+                            'class' => 'button default'
+                        ],
+                        'logernon' => [
+                            'class' => 'confirm',
+                            'value' => 'Abandonner',
+                            'class' => 'button default'
+                        ]
+                    ]);
                 if (array_key_exists('logeroui', $args)) {
                     $form->setData($args);
                     if ($form->isValid()) {
@@ -1913,19 +2101,22 @@ class EleveController extends AbstractActionController
                         
                         // envoie un email
                         $logo_bas_de_mail = 'bas-de-mail-transport-scolaire.png';
-                        $mailTemplate = new MailTemplate('ouverture-compte', 'layout', [
-                            'file_name' => $logo_bas_de_mail,
-                            'path' => StdLib::getParamR([
-                                'img',
-                                'path'
-                            ], $this->config),
-                            'img_attributes' => StdLib::getParamR([
-                                'img',
-                                'administrer',
-                                $logo_bas_de_mail
-                            ], $this->config),
-                            'client' => StdLib::getParam('client', $this->config)
-                        ]);
+                        $mailTemplate = new MailTemplate('ouverture-compte', 'layout', 
+                            [
+                                'file_name' => $logo_bas_de_mail,
+                                'path' => StdLib::getParamR(
+                                    [
+                                        'img',
+                                        'path'
+                                    ], $this->config),
+                                'img_attributes' => StdLib::getParamR(
+                                    [
+                                        'img',
+                                        'administrer',
+                                        $logo_bas_de_mail
+                                    ], $this->config),
+                                'client' => StdLib::getParam('client', $this->config)
+                            ]);
                         $params = [
                             'to' => [
                                 [
@@ -1935,41 +2126,49 @@ class EleveController extends AbstractActionController
                             ],
                             'subject' => 'Ouverture d\'un compte',
                             'body' => [
-                                'html' => $mailTemplate->render([
-                                    'titre' => $odata->titre,
-                                    'nom' => $odata->nom,
-                                    'prenom' => $odata->prenom,
-                                    'url_confirme' => $this->url()
-                                        ->fromRoute('login', [
-                                        'action' => 'confirm',
-                                        'id' => $odata->token
-                                    ], [
-                                        'force_canonical' => true
-                                    ]),
-                                    'client' => StdLib::getParam('client', $this->config)
-                                ])
+                                'html' => $mailTemplate->render(
+                                    [
+                                        'titre' => $odata->titre,
+                                        'nom' => $odata->nom,
+                                        'prenom' => $odata->prenom,
+                                        'url_confirme' => $this->url()
+                                            ->fromRoute('login', 
+                                            [
+                                                'action' => 'confirm',
+                                                'id' => $odata->token
+                                            ], 
+                                            [
+                                                'force_canonical' => true
+                                            ]),
+                                        'client' => StdLib::getParam('client', 
+                                            $this->config)
+                                    ])
                             ]
                         ];
                         $this->getEventManager()->addIdentifiers('SbmMail\Send');
                         $this->getEventManager()->trigger('sendMail', null, $params);
-                        $this->flashMessenger()->addInfoMessage('Un mail a été envoyé à l\'adresse indiquée pour donner les instructions d\'accès.');
+                        $this->flashMessenger()->addInfoMessage(
+                            'Un mail a été envoyé à l\'adresse indiquée pour donner les instructions d\'accès.');
                         
-                        return $this->redirect()->toRoute('sbmgestion/eleve', [
-                            'action' => 'responsable-liste',
-                            'page' => $this->params('page', 1)
-                        ]);
+                        return $this->redirect()->toRoute('sbmgestion/eleve', 
+                            [
+                                'action' => 'responsable-liste',
+                                'page' => $this->params('page', 1)
+                            ]);
                     }
                 }
-                $form->setData([
-                    'responsableId' => $args['responsableId']
-                ]);
+                $form->setData(
+                    [
+                        'responsableId' => $args['responsableId']
+                    ]);
             }
         }
-        return new ViewModel([
-            'form' => is_null($form) ? null : $form->prepare(),
-            'info' => $args['info'],
-            'msg' => $msg,
-            'page' => $this->params('page', 1)
-        ]);
+        return new ViewModel(
+            [
+                'form' => is_null($form) ? null : $form->prepare(),
+                'info' => $args['info'],
+                'msg' => $msg,
+                'page' => $this->params('page', 1)
+            ]);
     }
 }

@@ -9,8 +9,8 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2016
- * @version 2016-2
+ * @date 9 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmInstallation\Model;
 
@@ -21,8 +21,9 @@ use SbmCommun\Model\Strategy\TarifAttributs;
 
 class DumpTables
 {
+
     private $db_manager;
-    
+
     private $template_head = <<<EOT
 <?php
 /**
@@ -36,39 +37,39 @@ class DumpTables
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date %s
- * @version 2014-1
+ * @version 2018-2.4.0
  */
 return array(
 EOT;
-    
+
     private $tables = [];
-    
+
     private $onScreen;
-    
+
     private $screen = '';
-    
+
     public function __construct(DbManager $db_manager)
     {
         $this->db_manager = $db_manager;
     }
-    
+
     /**
      * Initialisation :
      * On lui passe un tableau d'alias de tables dans le ServiceManager
-     * 
-     * @param array $tables
+     *
+     * @param array $tables            
      * @param bool $onScreen
-     *      si true, la méthode copy renverra une chaine au format html pour affichage du résultat sur l'écran
+     *            si true, la méthode copy renverra une chaine au format html pour affichage du résultat sur l'écran
      */
     public function init($tables, $onScreen = false)
     {
         $this->tables = $tables;
         $this->onScreen = $onScreen;
     }
-    
+
     /**
      * Effectue la copy dans les fichiers et renvoie le buffer d'écran si la propriété onScreen est vraie (sinon, une chaine vide)
-     * 
+     *
      * @return string
      */
     public function copy()
@@ -99,7 +100,9 @@ EOT;
             
             // ouverture du fichier
             $fp = fopen($path . $file_name, 'w');
-            $this->fputs($fp, sprintf($this->template_head, $template_head_1, $table_name, $file_name, $aujourdhui));
+            $this->fputs($fp, 
+                sprintf($this->template_head, $template_head_1, $table_name, $file_name, 
+                    $aujourdhui));
             // lecture de la table
             foreach ($table->fetchAll() as $row) {
                 $ligne = "\n    array(";
@@ -113,7 +116,7 @@ EOT;
                     } elseif (is_null($column)) {
                         $val = 'null';
                     } elseif (is_bool($column)) {
-                        $val = $column ? 'true' : 'false'; 
+                        $val = $column ? 'true' : 'false';
                     } elseif (is_array($column)) {
                         switch ($key) {
                             case 'niveau':
@@ -130,21 +133,26 @@ EOT;
                                 ob_start();
                                 var_dump($column);
                                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
-                                throw new Exception(__METHOD__ . " - Codage inconnu pour $key\n$dump");
-                            break;
+                                throw new Exception(
+                                    __METHOD__ . " - Codage inconnu pour $key\n$dump");
+                                break;
                         }
-                    } elseif ($table->getTableName() == 'tarifs' && $table->getTableType() == 'table') {
+                    } elseif ($table->getTableName() == 'tarifs' &&
+                         $table->getTableType() == 'table') {
                         switch ($key) {
                             case 'mode':
-                                $strategie = new TarifAttributs($table->getModes(), "$column est un mode invalide.");
+                                $strategie = new TarifAttributs($table->getModes(), 
+                                    "$column est un mode invalide.");
                                 $val = $strategie->extract($column);
                                 break;
                             case 'rythme':
-                                $strategie = new TarifAttributs($table->getRythmes(), "$column est un rythme invalide.");
+                                $strategie = new TarifAttributs($table->getRythmes(), 
+                                    "$column est un rythme invalide.");
                                 $val = $strategie->extract($column);
                                 break;
                             case 'grille':
-                                $strategie = new TarifAttributs($table->getGrilles(), "$column est une grille invalide.");
+                                $strategie = new TarifAttributs($table->getGrilles(), 
+                                    "$column est une grille invalide.");
                                 $val = $strategie->extract($column);
                                 break;
                             default:
@@ -152,12 +160,12 @@ EOT;
                                 break;
                         }
                     } else {
-                        if (substr($key, -5) == 'color' && substr($column, 0, 1) == '#') {
+                        if (substr($key, - 5) == 'color' && substr($column, 0, 1) == '#') {
                             $column = substr($column, 1);
                         }
                         $val = "'" . addslashes($column) . "'";
                     }
-                
+                    
                     $ligne .= "\n        '$key' => $val, ";
                 }
                 $ligne .= "\n    ),";
@@ -168,13 +176,15 @@ EOT;
             fclose($fp);
         }
         
-        if ($this->onScreen) $this->screen .= '</pre>';
+        if ($this->onScreen)
+            $this->screen .= '</pre>';
         return $this->screen;
     }
-    
+
     private function fputs($fp, $txt)
     {
         fputs($fp, $txt);
-        if ($this->onScreen) $this->screen .= $txt;
+        if ($this->onScreen)
+            $this->screen .= $txt;
     }
 }

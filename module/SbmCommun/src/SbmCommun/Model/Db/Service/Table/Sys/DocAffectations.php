@@ -8,8 +8,8 @@
  * @filesource DocAffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -35,9 +35,11 @@ class DocAffectations extends AbstractSbmTable
         $where = "documentId = $documentId";
         $resultset = $this->fetchAll($where, 'route');
         if (! $resultset->count()) {
-            throw new Exception(sprintf(_("Could not find rows '%s' in table %s"), $where, $this->table_name));
+            throw new Exception(
+                sprintf(_("Could not find rows '%s' in table %s"), $where, 
+                    $this->table_name));
         }
-        $result = array();
+        $result = [];
         foreach ($resultset as $row) {
             $result[] = $row->getArrayCopy();
         }

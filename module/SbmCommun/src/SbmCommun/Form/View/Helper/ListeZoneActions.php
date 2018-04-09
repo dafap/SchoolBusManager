@@ -25,8 +25,8 @@
  * @filesource ListeZoneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 09 août 2015
- * @version 2015-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -44,7 +44,7 @@ class ListeZoneActions extends AbstractHelper
      * @param array $hiddens
      *            Tableau indexé array(name => value, ...). S'il n'y a pas de valeur mettre <b>null</b>.
      * @param array $buttons
-     *            Tableau indexé array(name => array(), ...)
+     *            Tableau indexé array(name => [], ...)
      * @param array $attributes
      *            Ce sont les attributs du formulaires. En voici la liste (HTML5):<br><ul>
      *            <li><b>accept-charset</b> : Une liste des ensembles de caractères que le serveur accepte.
@@ -89,7 +89,7 @@ class ListeZoneActions extends AbstractHelper
      *            <li><i>_blank</i> : charge la réponse dans un nouveau contexte de navigation.</li>
      *            Cette valeur peut être surchargée par l'attribut <i>formtarget</i> des éléments &lt;button&gt; ou &lt;input&gt;.</li>
      */
-    public function __invoke($hiddens = array(), $buttons = array(), $attributes = array())
+    public function __invoke($hiddens = [], $buttons = [], $attributes = [])
     {
         $result = $this->openForm($attributes);
         if (! array_key_exists('op', $hiddens)) {
@@ -119,7 +119,8 @@ class ListeZoneActions extends AbstractHelper
             if (array_key_exists('label', $attributes) && $attributes['label']) {
                 $result .= $this->getMenuOnglet($attributes);
             } else {
-                $result .= '<li class="onglet">' . $this->getButton($name, $attributes) . "</li>\n";
+                $result .= '<li class="onglet">' . $this->getButton($name, $attributes) .
+                     "</li>\n";
             }
         }
         if (! empty($result)) {
@@ -144,12 +145,14 @@ class ListeZoneActions extends AbstractHelper
     private function getMenuOnglet($attributes)
     {
         $result = '<li';
-        if (array_key_exists('menu', $attributes) && empty($attributes['menu'] && array_key_exists('title', $attributes))) {
+        if (array_key_exists('menu', $attributes) &&
+             empty($attributes['menu'] && array_key_exists('title', $attributes))) {
             $result .= ' title="' . $attributes['title'] . '"';
         }
         if (array_key_exists('class', $attributes)) {
             $class = $attributes['class'];
-            if (strpos($class, 'onglet') === false && array_key_exists('menu', $attributes)) {
+            if (strpos($class, 'onglet') === false && array_key_exists('menu', 
+                $attributes)) {
                 $class .= ' onglet';
             }
         } else {
@@ -163,7 +166,7 @@ class ListeZoneActions extends AbstractHelper
             } else {
                 $result .= ' class="' . $class . '">';
             }
-        } 
+        }
         if (array_key_exists('menu', $attributes) && is_array($attributes['menu'])) {
             $result .= $this->getNavigation($attributes['menu']);
         }
@@ -203,13 +206,15 @@ class ListeZoneActions extends AbstractHelper
                 $result .= ' class="' . $attributes['class'] . '" value';
             } elseif (strpos($attributes['class'], 'default') != false) {
                 if (array_key_exists('value', $attributes)) {
-                    $result .= ' class="' . $attributes['class'] . '" value="' . $attributes['value'] . '"';
+                    $result .= ' class="' . $attributes['class'] . '" value="' .
+                         $attributes['value'] . '"';
                 } else {
                     $result .= ' class="' . $attributes['class'] . '" value';
                 }
             } else {
                 if (array_key_exists('value', $attributes)) {
-                    $result .= ' class="default ' . $attributes['class'] . '" value="' . $attributes['value'] . '"';
+                    $result .= ' class="default ' . $attributes['class'] . '" value="' .
+                         $attributes['value'] . '"';
                 } else {
                     $result .= ' class="default ' . $attributes['class'] . '" value';
                 }
@@ -270,19 +275,22 @@ class ListeZoneActions extends AbstractHelper
                 $result = '<ul class="menubar">';
             }
             $result .= '<li class="onglet">' . $this->getItem($attributes) . "</li>\n";
-            $result .= '<li class="onglet"><input type="submit" name="' . $name . '" id="' . $name . '"';
+            $result .= '<li class="onglet"><input type="submit" name="' . $name . '" id="' .
+                 $name . '"';
             if (array_key_exists('class', $attributes)) {
                 if (strpos($attributes['class'], 'fam-') !== false) {
                     $result .= ' class="' . $attributes['class'] . '" value';
                 } elseif (strpos($attributes['class'], 'default') != false) {
                     if (array_key_exists('value', $attributes)) {
-                        $result .= ' class="' . $attributes['class'] . '" value="' . $attributes['value'] . '"';
+                        $result .= ' class="' . $attributes['class'] . '" value="' .
+                             $attributes['value'] . '"';
                     } else {
                         $result .= ' class="' . $attributes['class'] . '" value';
                     }
                 } else {
                     if (array_key_exists('value', $attributes)) {
-                        $result .= ' class="default ' . $attributes['class'] . '" value="' . $attributes['value'] . '"';
+                        $result .= ' class="default ' . $attributes['class'] . '" value="' .
+                             $attributes['value'] . '"';
                     } else {
                         $result .= ' class="default ' . $attributes['class'] . '" value';
                     }
@@ -381,6 +389,8 @@ class ListeZoneActions extends AbstractHelper
      *
      *
      *
+     *
+     *
      * ..>
      *
      * @param array $attributes            
@@ -396,7 +406,8 @@ class ListeZoneActions extends AbstractHelper
         } else {
             $this->form_name = 'zoneactions';
         }
-        $result = '<form id="' . $this->form_name . '" name="' . $this->form_name . '" method="post"';
+        $result = '<form id="' . $this->form_name . '" name="' . $this->form_name .
+             '" method="post"';
         // ensuite on place les autres attributs s'ils sont précisés.
         // class (classe css)
         if (array_key_exists('class', $attributes)) {

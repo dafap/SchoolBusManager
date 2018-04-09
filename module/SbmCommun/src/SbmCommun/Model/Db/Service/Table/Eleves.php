@@ -8,8 +8,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2018
- * @version 2018-2.3.19
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -30,15 +30,17 @@ class Eleves extends AbstractSbmTable
      */
     public function getRecordByGid($gid)
     {
-        $array_where = array(
+        $array_where = [
             'id_ccda = ?' => $gid
-        );
+        ];
         $condition_msg = "id_ccda = $gid";
         
         $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();
         if (! $row) {
-            throw new Exception(sprintf(_("Could not find row '%s' in table %s"), $condition_msg, $this->table_name));
+            throw new Exception(
+                sprintf(_("Could not find row '%s' in table %s"), $condition_msg, 
+                    $this->table_name));
         }
         return $row;
     }
@@ -74,7 +76,8 @@ class Eleves extends AbstractSbmTable
                 $responsable2Id = $obj_data->responsable2Id;
                 $old_data = $this->getByIdentite($nom, $prenom, $dateN, $responsable1Id);
                 if (! $old_data) {
-                    $old_data = $this->getByIdentite($nom, $prenom, $dateN, $responsable2Id);
+                    $old_data = $this->getByIdentite($nom, $prenom, $dateN, 
+                        $responsable2Id);
                 }
                 $is_new = ! $old_data;
                 if (! $is_new) {
@@ -93,11 +96,12 @@ class Eleves extends AbstractSbmTable
             }
         }
         if ($is_new) {
-            $obj_data->setCalculateFields(array(
-                'nomSA',
-                'prenomSA',
-                'dateCreation'
-            ));
+            $obj_data->setCalculateFields(
+                [
+                    'nomSA',
+                    'prenomSA',
+                    'dateCreation'
+                ]);
             for ($u = $obj_data->createNumero(), $i = 0; $this->numeroOccupe($u); $i ++) {
                 $u ++;
                 $u += 2 * $i;
@@ -138,10 +142,11 @@ class Eleves extends AbstractSbmTable
     public function setSelection($eleveId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'eleveId' => $eleveId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'eleveId' => $eleveId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 
@@ -155,10 +160,11 @@ class Eleves extends AbstractSbmTable
     public function setMailchimp($eleveId, $mailchimp)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'eleveId' => $eleveId,
-            'mailchimp' => $mailchimp
-        ));
+        $oData->exchangeArray(
+            [
+                'eleveId' => $eleveId,
+                'mailchimp' => $mailchimp
+            ]);
         parent::saveRecord($oData);
     }
 
@@ -185,11 +191,13 @@ class Eleves extends AbstractSbmTable
     public function duResponsable($responsableId)
     {
         $where = new Where();
-        $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', $responsableId)->OR->equalTo('responsableFId', $responsableId);
-        return $this->fetchAll($where, array(
-            'nom',
-            'prenom'
-        ));
+        $where->equalTo('responsable1Id', $responsableId)->OR->equalTo('responsable2Id', 
+            $responsableId)->OR->equalTo('responsableFId', $responsableId);
+        return $this->fetchAll($where, 
+            [
+                'nom',
+                'prenom'
+            ]);
     }
 
     /**
@@ -202,10 +210,11 @@ class Eleves extends AbstractSbmTable
     {
         $where = new Where();
         $where->equalTo('responsable1Id', $responsableId);
-        return $this->fetchAll($where, array(
-            'nom',
-            'prenom'
-        ));
+        return $this->fetchAll($where, 
+            [
+                'nom',
+                'prenom'
+            ]);
     }
 
     /**
@@ -218,10 +227,11 @@ class Eleves extends AbstractSbmTable
     {
         $where = new Where();
         $where->equalTo('responsable2Id', $responsableId);
-        return $this->fetchAll($where, array(
-            'nom',
-            'prenom'
-        ));
+        return $this->fetchAll($where, 
+            [
+                'nom',
+                'prenom'
+            ]);
     }
 
     /**
@@ -234,10 +244,11 @@ class Eleves extends AbstractSbmTable
     {
         $where = new Where();
         $where->equalTo('responsableFId', $responsableId);
-        return $this->fetchAll($where, array(
-            'nom',
-            'prenom'
-        ));
+        return $this->fetchAll($where, 
+            [
+                'nom',
+                'prenom'
+            ]);
     }
 
     /**
@@ -262,24 +273,27 @@ class Eleves extends AbstractSbmTable
         if (empty($nom) || empty($prenom) || (empty($dateN) && empty($responsableId))) {
             return false;
         }
-        $resultset = $this->fetchAll(array(
-            'nom' => $nom,
-            'prenom' => $prenom,
-            'dateN' => $dateN
-        ));
-        if ($resultset->count() == 0) {
-            $resultset = $this->fetchAll(array(
+        $resultset = $this->fetchAll(
+            [
                 'nom' => $nom,
                 'prenom' => $prenom,
-                'responsable1Id' => $responsableId
-            ));
+                'dateN' => $dateN
+            ]);
+        if ($resultset->count() == 0) {
+            $resultset = $this->fetchAll(
+                [
+                    'nom' => $nom,
+                    'prenom' => $prenom,
+                    'responsable1Id' => $responsableId
+                ]);
         }
         if ($resultset->count() == 0) {
-            $resultset = $this->fetchAll(array(
-                'nom' => $nom,
-                'prenom' => $prenom,
-                'responsable2Id' => $responsableId
-            ));
+            $resultset = $this->fetchAll(
+                [
+                    'nom' => $nom,
+                    'prenom' => $prenom,
+                    'responsable2Id' => $responsableId
+                ]);
         }
         return $resultset->current();
     }

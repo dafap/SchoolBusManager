@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmParent\Controller\Service;
 
@@ -32,30 +32,35 @@ class IndexControllerFactory implements FactoryInterface
         $local_sm = new ServiceManager();
         $local_sm->setService('Sbm\DbManager', $sm->get('Sbm\DbManager'))
             ->setService('Sbm\CartographieManager', $sm->get('Sbm\CartographieManager'))
-            ->setFactory('SbmPaiement\Plugin\Plateforme', StdLib::getParamR([
-            'service_manager',
-            'factories',
-            'SbmPaiement\Plugin\Plateforme'
-        ], $config_application));
+            ->setFactory('SbmPaiement\Plugin\Plateforme', 
+            StdLib::getParamR(
+                [
+                    'service_manager',
+                    'factories',
+                    'SbmPaiement\Plugin\Plateforme'
+                ], $config_application));
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'responsable' => $sm->get(Responsable::class),
             'local_manager' => $local_sm,
-            'client' => StdLib::getParamR([
-                'sbm',
-                'client'
-            ], $config_application),
-            'accueil' => StdLib::getParamR([
-                'sbm',
-                'layout',
-                'accueil'
-            ], $config_application),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application)
+            'client' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'client'
+                ], $config_application),
+            'accueil' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'layout',
+                    'accueil'
+                ], $config_application),
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application)
         ];
         return new IndexController($config_controller);
     }

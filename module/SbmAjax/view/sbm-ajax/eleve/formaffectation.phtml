@@ -9,8 +9,8 @@
  * @filesource formaffectation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 déc. 2017
- * @version 2017-2.3.14
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 
 /*
@@ -60,38 +60,42 @@ var is_xmlhttprequest = <?php echo $this->is_xmlhttprequest; ?>;
 var urlform = '<?php echo $this->form->getAttribute('action'); ?>';
 var btnclick;
 var affectation = (function() {
-  function setStationsValueOptions(valeur, station1Id, station2Id) {
+  function setStationsValueOptions(valeur, station1Id, station2Id) 
+  {
       $.ajax({
-	            url : '/sbmajaxeleve/getstationsforselect/serviceId:'+valeur,
-	            dataType: 'json',
-	            success : function(dataJson){
-	                $("#affectation-station1Id").empty();
-	                $("#affectation-station2Id").empty();
-	                if (dataJson.success) {
-	                    //alert(station1Id, station2Id);
-	                    $.each(dataJson.data, function(k, d) {
-	                        if (station1Id == k) {
-	                            $('#affectation-station1Id').append('<option value="' + k + '" selected>' + d + '</option>'); 
-	                        } else { 
-	                            $('#affectation-station1Id').append('<option value="' + k + '">' + d + '</option>'); 
-	                        } if (station2Id == k) { 
-	                            $('#affectation-station2Id').append('<option value="' + k + '" selected>' + d + '</option>'); 
-	                        } else { 
-	                            $('#affectation-station2Id').append('<option value="' + k + '">' + d + '</option>');
-	                        }
-	                    });
-	                }
-	            },
-	            error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-	    });
-  }
-  
+	        url : '/sbmajaxeleve/getstationsforselect/serviceId:'+valeur,
+	        dataType: 'json',
+	        success : function(dataJson)
+	        {
+	            $("#affectation-station1Id").empty();
+	            $("#affectation-station2Id").empty();
+	            if (dataJson.success) {
+	                $.each(dataJson.data, function(k, d) 
+	                {
+	                    if (station1Id == k) {
+	                        $('#affectation-station1Id').append('<option value="' + k + '" selected>' + d + '</option>'); 
+	                    } else { 
+	                        $('#affectation-station1Id').append('<option value="' + k + '">' + d + '</option>'); 
+	                    } 
+	                    if (station2Id == k) { 
+	                        $('#affectation-station2Id').append('<option value="' + k + '" selected>' + d + '</option>');
+	                    } else {
+	                        $('#affectation-station2Id').append('<option value="' + k + '">' + d + '</option>');
+	                    }
+	                });
+	            }
+	        },
+	        error : function(xhr, ajaxOptions, thrownError) 
+	        {
+		        alert(xhr.status + " " + thrownError);
+		    }
+	  });
+  }  
   $("#formaffectation<?php echo $this->trajet;?> input[name=cancel]").click(function(){btnclick='cancel';});
   $("#formaffectation<?php echo $this->trajet;?> input[name=submit]").click(function(){btnclick='submit';});
   $("form#decision").submit(
-    function() {
+    function() 
+    {
 	    // if not call by ajax submit to showformAction
 	    if (is_xmlhttprequest == 0)
             return true;
@@ -123,12 +127,14 @@ var affectation = (function() {
         }, 'json');
         return false;
 	});
-	$("#affectation-service1Id").on('change',function() {
+	$("#affectation-service1Id").on('change',function() 
+	{
 	    var valeur = $(this).val();
 	    setStationsValueOptions(valeur, null, null);
 	});
 	return {
-	    "init" : function(station1Id, station2Id) {
+	    "init" : function(station1Id, station2Id) 
+	    {
 	        var valeur = $("#affectation-service1Id option:selected").val();
 	        if (valeur) {
 	            setStationsValueOptions(valeur, station1Id, station2Id);

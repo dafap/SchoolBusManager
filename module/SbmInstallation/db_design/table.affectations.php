@@ -9,17 +9,17 @@
  * @filesource table.staffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 oct. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'affectations',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'millesime' => 'int(4) NOT NULL DEFAULT "0"',
             'eleveId' => 'int(11) NOT NULL DEFAULT "0"',
             'trajet' => 'tinyint(1) NOT NULL DEFAULT "1"', // 1 pour le responsable 1, 2 pour le responsable 2
@@ -32,75 +32,79 @@ return array(
             'service1Id' => 'varchar(11) NOT NULL',
             'station2Id' => 'int(11) DEFAULT NULL', // point de correspondance
             'service2Id' => 'varchar(11) DEFAULT NULL'
-        ), // service suivant
-        'primary_key' => array(
+        ], // service suivant
+        'primary_key' => [
             'millesime',
             'eleveId',
             'trajet',
             'jours',
             'sens',
             'correspondance'
-        ),
-        'foreign key' => array(
-            array(
-                'key' => array('millesime','eleveId'),
-                'references' => array(
+        ],
+        'foreign key' => [
+            [
+                'key' => [
+                    'millesime',
+                    'eleveId'
+                ],
+                'references' => [
                     'table' => 'scolarites',
-                    'fields' => array(
-                        'millesime','eleveId'
-                    ),
-                    'on' => array(
+                    'fields' => [
+                        'millesime',
+                        'eleveId'
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'responsableId',
-                'references' => array(
+                'references' => [
                     'table' => 'responsables',
-                    'fields' => array(
+                    'fields' => [
                         'responsableId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'station1Id',
-                'references' => array(
+                'references' => [
                     'table' => 'stations',
-                    'fields' => array(
+                    'fields' => [
                         'stationId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'service1Id',
-                'references' => array(
+                'references' => [
                     'table' => 'services',
-                    'fields' => array(
+                    'fields' => [
                         'serviceId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDB',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
-    'triggers' => array(
-        'affectations_bi_history' => array(
+    ],
+    'triggers' => [
+        'affectations_bi_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'INSERT',
             'definition' => <<<EOT
@@ -108,8 +112,8 @@ INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
 VALUES ('%table(affectations)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'sens', 'correspondance'), CONCAT_WS('|', NEW.millesime, NEW.eleveId, NEW.trajet, NEW.jours, NEW.sens, NEW.correspondance), NOW(), CONCAT_WS('|', NEW.selection, NEW.responsableId, NEW.station1Id, NEW.service1Id, NEW.station2Id, NEW.service2Id))
 EOT
 
-        ),
-        'affectations_bu_history' => array(
+        ],
+        'affectations_bu_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
@@ -117,8 +121,8 @@ INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
 VALUES ('%table(affectations)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'sens', 'correspondance'), CONCAT_WS('|', OLD.millesime, OLD.eleveId, OLD.trajet, OLD.jours, OLD.sens, OLD.correspondance), NOW(), CONCAT_WS('|', OLD.selection, OLD.responsableId, OLD.station1Id, OLD.service1Id, OLD.station2Id, OLD.service2Id))
 EOT
 
-        ),
-        'affectations_bd_history' => array(
+        ],
+        'affectations_bd_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'DELETE',
             'definition' => <<<EOT
@@ -126,10 +130,10 @@ INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
 VALUES ('%table(affectations)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'sens', 'correspondance'), CONCAT_WS('|', OLD.millesime, OLD.eleveId, OLD.trajet, OLD.jours, OLD.sens, OLD.correspondance), NOW(), CONCAT_WS('|', OLD.selection, OLD.responsableId, OLD.station1Id, OLD.service1Id, OLD.station2Id, OLD.service2Id))
 EOT
 
-        )
-    ),
+        ]
+    ],
     
     // 'data' => include __DIR__ . '/data/data.affectations.php'
-    //'data' => array('after' => array('eleves','responsables','stations','services'),'include' => __DIR__ . '/data/data.affectations.php')
+    // 'data' => ['after' => ['eleves','responsables','stations','services'],'include' => __DIR__ . '/data/data.affectations.php']
     'data' => __DIR__ . '/data/data.affectations.php'
-); 
+]; 

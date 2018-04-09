@@ -3,7 +3,7 @@
  * Formulaire permettant de positionner la première étiquette sur une planche d'étiquettes
  *
  * Ce formulaire est composé de boutons radios et de boutons submit
- * Il reçoit en paramètres un tableau array('nbcols' => nbcols, 'nbrows' => nbrows)
+ * Il reçoit en paramètres un tableau ['nbcols' => nbcols, 'nbrows' => nbrows)
  * où nbcols est le nombre de colonnes dans la planche d'étiquettes et nbrows est le nombre de lignes
  * 
  * @project sbm
@@ -11,8 +11,8 @@
  * @filesource PlancheEtiquettesForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2016
- * @version 2016-2.1.5
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form;
 
@@ -38,26 +38,28 @@ class PlancheEtiquettesForm extends Form
 
     protected $messageSeparatorString = '</li><li>';
 
-    public function __construct($name = null, $options = array())
+    public function __construct($name = null, $options = [])
     {
         if (! array_key_exists('nbcols', $options)) {
-            throw new Exception('Appel incorrect: le nombre de colonnes de la planche d\'étiquettes n\'a pas été indiqué.');
+            throw new Exception(
+                'Appel incorrect: le nombre de colonnes de la planche d\'étiquettes n\'a pas été indiqué.');
         }
         $this->nbcols = $options['nbcols'];
         if (! array_key_exists('nbrows', $options)) {
-            throw new Exception('Appel incorrect: le nombre de rangées de la planche d\'étiquettes n\'a pas été indiqué.');
+            throw new Exception(
+                'Appel incorrect: le nombre de rangées de la planche d\'étiquettes n\'a pas été indiqué.');
         }
         $this->nbrows = $options['nbrows'];
-        $value_options = array();
+        $value_options = [];
         for ($row = 1; $row <= $this->nbrows; $row ++) {
             for ($col = 1; $col <= $this->nbcols; $col ++) {
                 $id = "$row-$col";
-                $value_options[$id] = array(
+                $value_options[$id] = [
                     'value' => $id,
-                    'attributes' => array(
+                    'attributes' => [
                         'id' => $id
-                    )
-                );
+                    ]
+                ];
             }
         }
         parent::__construct($name, $options);
@@ -65,48 +67,52 @@ class PlancheEtiquettesForm extends Form
         $this->setAttribute('target', '_blank');
         if (count($value_options) > 1) {
             $this->has_radio = true;
-            $this->add(array(
-                'type' => 'Zend\Form\Element\Radio',
-                'name' => 'planche',
-                'attributes' => array(
-                    'id' => 'planche'
-                ),
-                'options' => array(
-                    'label' => 'Indiquez la position de l\'étiquette dans la planche',
-                    'value_options' => $value_options,
-                    'error_attributes' => array(
-                        'class' => 'sbm-error'
-                    )
-                )
-            ));
+            $this->add(
+                [
+                    'type' => 'Zend\Form\Element\Radio',
+                    'name' => 'planche',
+                    'attributes' => [
+                        'id' => 'planche'
+                    ],
+                    'options' => [
+                        'label' => 'Indiquez la position de l\'étiquette dans la planche',
+                        'value_options' => $value_options,
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]);
         } else {
             $this->has_radio = false;
-            $this->add([
-                'type' => 'hidden',
-                'name' => 'planche',
+            $this->add(
+                [
+                    'type' => 'hidden',
+                    'name' => 'planche',
+                    'attributes' => [
+                        'value' => '1-1'
+                    ]
+                ]);
+        }
+        $this->add(
+            [
+                'type' => 'submit',
+                'name' => 'submit',
                 'attributes' => [
-                    'value' => '1-1'
+                    'value' => 'Lancer l\'édition',
+                    'class' => 'button default submit left-95px'
                 ]
             ]);
-        }
-        $this->add(array(
-            'type' => 'submit',
-            'name' => 'submit',
-            'attributes' => array(
-                'value' => 'Lancer l\'édition',
-                'class' => 'button default submit left-95px'
-            )
-        ));
-        $this->add(array(
-            'type' => 'submit',
-            'name' => 'cancel',
-            'attributes' => array(
-                'id' => 'btcancel',
-                'autofocus' => 'autofocus',
-                'value' => 'Abandonner',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'submit',
+                'name' => 'cancel',
+                'attributes' => [
+                    'id' => 'btcancel',
+                    'autofocus' => 'autofocus',
+                    'value' => 'Abandonner',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function isValid()
@@ -117,9 +123,10 @@ class PlancheEtiquettesForm extends Form
             $planche = $this->get('planche');
             $message = $planche->getMessages();
             if (! empty($message)) {
-                $planche->setMessages(array(
-                    'Choisissez une position dans le cadre ci-dessus.'
-                ));
+                $planche->setMessages(
+                    [
+                        'Choisissez une position dans le cadre ci-dessus.'
+                    ]);
             }
         }
         return $isValid;
@@ -159,7 +166,9 @@ class PlancheEtiquettesForm extends Form
                     $end_row = "</tr>\n";
                 }
                 $render .= '    <td>';
-                $render .= sprintf('<input %s%s', $viewHelperRadio->createAttributesString($inputAttributes), $viewHelperRadio->getInlineClosingBracket());
+                $render .= sprintf('<input %s%s', 
+                    $viewHelperRadio->createAttributesString($inputAttributes), 
+                    $viewHelperRadio->getInlineClosingBracket());
                 $render .= "</td>\n";
             }
             $render .= "</table>\n";

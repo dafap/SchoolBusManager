@@ -100,7 +100,7 @@ return array(
                 'libelle' => 'Vacances de printemps',
                 'description' => 'Vacances de printemps %as%',
                 'exercice' => 0
-            ),
+            )
         )
     )
 ); 

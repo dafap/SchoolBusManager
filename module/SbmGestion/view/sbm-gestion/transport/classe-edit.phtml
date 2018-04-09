@@ -8,24 +8,25 @@
  * @filesource view/sbm-gestion/transport/classe-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => 'classe-liste',
-    'page' => $this->page
-));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'classe-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Modification d'une classe</h1>
 <div id="fiche-wrapper">

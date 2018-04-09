@@ -9,8 +9,8 @@
  * @filesource ProjectionInterface.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -18,6 +18,8 @@ use SbmCartographie\Model\Point;
 
 interface ProjectionInterface
 {
+
     public function gRGF93versXYZ(Point $p);
+
     public function xyzVersgRGF93(Point $p);
 }

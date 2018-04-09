@@ -7,8 +7,8 @@
  * @filesource modif-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 févr. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <h1>Modification de compte</h1>
@@ -30,7 +30,10 @@ echo $this->formHidden($this->form->get('csrf'));
 <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
 </div>
 		<div class="sbm-description">
-			<p>Pour modifier votre email, choississez <b><i>Changer mon email</i></b> dans le menu Bienvenue.</p>
+			<p>
+				Pour modifier votre email, choississez <b><i>Changer mon email</i></b>
+				dans le menu Bienvenue.
+			</p>
 		</div>
 	</fieldset>
 <?php echo $this->form()->closeTag(); ?>

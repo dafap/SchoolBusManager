@@ -8,8 +8,8 @@
  * @filesource Classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Vue;
 
@@ -17,6 +17,7 @@ use SbmCommun\Model\Db\Service\Table\Classes as TableClasses;
 
 class Classes extends TableClasses
 {
+
     /**
      * Initialisation du circuit
      */

@@ -13,8 +13,8 @@
  * @filesource paiement-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
- * @version 2016-2.2.1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -22,23 +22,24 @@ $this->headScript()->appendFile($this->basePath('/js/gestion-paiement.js'));
 $this->inlineScript()->captureStart();
 ?>
 js_paiement_ajout.init();
-<?php 
+<?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-ajout'
-));
-$hiddens = array(
+$url_retour = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'paiement-ajout'
+    ]);
+$hiddens = [
     'op' => $this->hidden_responsableId ? '' : 'retour'
-);
-$actions = array(
-    'cancel' => array(
+];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Enregistrement d'un nouveau paiement</h1>
 <?php if ($this->hidden_responsableId):?>
@@ -46,7 +47,7 @@ $actions = array(
 <?php endif;?>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
-	    <div id="somme-due"></div>
+		<div id="somme-due"></div>
 		<div class="menu clearfix">
         <?php echo $this->listeZoneActions($hiddens, $actions);?>
         </div>
@@ -58,16 +59,18 @@ echo $this->formHidden($this->form->get('paiementId'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>
         <div class="float-left left-10px">
-	       <fieldset class="sbm-page1">
+			<fieldset class="sbm-page1">
 <?php if ($this->hidden_responsableId) : ?>
 <?php echo $this->formHidden($this->form->get('responsableId')); ?>
 <?php else : ?>
-                <div id="paiement-edit-responsableId" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsableId')); ?></div>
+                <div id="paiement-edit-responsableId"
+					class="row-inner edit"><?php echo $this->formRow($this->form->get('responsableId')); ?></div>
 <?php endif; ?>
 
-                <div id="paiement-edit-code-caisse" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeCaisse')); ?></div>
-		        <div id="paiement-edit-montant" class="row-inner edit"><?php echo $this->formRow($this->form->get('montant')); ?></div>
-		        <div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
+                <div id="paiement-edit-code-caisse"
+					class="row-inner edit"><?php echo $this->formRow($this->form->get('codeCaisse')); ?></div>
+				<div id="paiement-edit-montant" class="row-inner edit"><?php echo $this->formRow($this->form->get('montant')); ?></div>
+				<div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
 				<div id="paiement-edit-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice')); ?></div>
 				<div id="paiement-edit-annee-scolaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('anneeScolaire')); ?></div>
 				<div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
@@ -81,15 +84,20 @@ echo $this->formHidden($this->form->get('csrf'));
 			</fieldset>
 		</div>
 		<div class="float-left left-10px">
-		    <fieldset class="sbm-page1">
-		         <h3>Liste des enfants préinscrits de ce responsable</h3>
-		         <table>
-		             <tbody id="tbody-preinscrits">
-		                 <tr><th>Nom</th><th>Prénom</th><th></th></tr>
-		             </tbody>
-		         </table>
-		         <p class="sbm-description">Cochez les enfants concernés par ce paiement.</p>
-		    </fieldset>
+			<fieldset class="sbm-page1">
+				<h3>Liste des enfants préinscrits de ce responsable</h3>
+				<table>
+					<tbody id="tbody-preinscrits">
+						<tr>
+							<th>Nom</th>
+							<th>Prénom</th>
+							<th></th>
+						</tr>
+					</tbody>
+				</table>
+				<p class="sbm-description">Cochez les enfants concernés par ce
+					paiement.</p>
+			</fieldset>
 		</div>
 <?php echo $this->form()->closeTag(); ?>
     </div><?php // fiche-inner ?>

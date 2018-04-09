@@ -9,12 +9,12 @@
  * @filesource at-php-settings.global.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 if (getenv('APPLICATION_ENV') == 'development') {
-    $config = array(
-        'php_settings' => array(
+    $config = [
+        'php_settings' => [
             'display_startup_errors' => true,
             'display_errors' => true,
             'error_log' => realpath(__DIR__ . '/../../data') . '/logs/sbm_error.log',
@@ -22,26 +22,26 @@ if (getenv('APPLICATION_ENV') == 'development') {
             'max_execution_time' => 60,
             'date.timezone' => 'Europe/Paris',
             
-            'controllers' => array(
-                'SbmPaiement\Controller\Index' => array(
+            'controllers' => [
+                'SbmPaiement\Controller\Index' => [
                     'date.timezone' => 'UTC'
-                ),
-                'SbmGestion\Controller\Index' => array(
+                ],
+                'SbmGestion\Controller\Index' => [
                     'memory_limit' => '32M'
-                )
-            ),
+                ]
+            ],
             
-            'routes' => array(
-                'home' => array(
+            'routes' => [
+                'home' => [
                     'memory_limit' => '128M',
                     'max_execution_time' => '120'
-                )
-            )
-        )
-    );
+                ]
+            ]
+        ]
+    ];
 } else { // config du PHP en production
-    $config = array(
-        'php_settings' => array(
+    $config = [
+        'php_settings' => [
             'display_startup_errors' => false,
             'display_errors' => false,
             'error_log' => realpath(__DIR__ . '/../../data') . '/logs/sbm_error.log',
@@ -49,20 +49,20 @@ if (getenv('APPLICATION_ENV') == 'development') {
             'max_execution_time' => 30,
             'date.timezone' => 'Europe/Paris',
             
-            'controllers' => array(
-                'SbmGestion\Controller\Index' => array(
+            'controllers' => [
+                'SbmGestion\Controller\Index' => [
                     'memory_limit' => '32M'
-                )
-            ),
+                ]
+            ],
             
-            'routes' => array(
-                'home' => array(
+            'routes' => [
+                'home' => [
                     'memory_limit' => '32M',
                     'max_execution_time' => '60'
-                )
-            )
-        )
-    );
+                ]
+            ]
+        ]
+    ];
 }
 
 return $config;

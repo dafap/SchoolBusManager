@@ -7,8 +7,8 @@
  * @filesource paiement-depot.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 
@@ -50,10 +50,10 @@ echo $this->flashMessenger()->render('default');
 			<legend>Préparer un nouveau bordereau</legend>
 			<p>Si vous souhaitez préparer un nouveau bordereau, remplissez ce
 				formulaire.</p>
-			<div class="row-inner" ><?php echo $this->formRow($this->form2->get('codeModeDePaiement'))?></div>
-			<div class="row-inner" ><?php echo $this->formRow($this->form2->get('codeCaisse'))?></div>
-			<div class="row-inner" ><?php echo $this->formRow($this->form2->get('exercice'))?></div>
-			<div class="row-inner" ><?php echo $this->formRow($this->form2->get('anneeScolaire'))?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form2->get('codeModeDePaiement'))?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form2->get('codeCaisse'))?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form2->get('exercice'))?></div>
+			<div class="row-inner"><?php echo $this->formRow($this->form2->get('anneeScolaire'))?></div>
 			<div class="row-inner"><?php echo $this->formSubmit($this->form2->get('preparer')) . $this->formSubmit($this->form2->get('cancel')); ?></div>
 			<p class="sbm-description">
 				Lorsqu'un bordereau en cours existe déjà avec le mode de paiement

@@ -8,8 +8,8 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -64,9 +64,12 @@ class Tarifs extends AbstractSbmTable
      */
     protected function setStrategies()
     {
-        $this->hydrator->addStrategy('rythme', new TarifAttributsStrategy($this->rythmes, $this->rythme_inconnu));
-        $this->hydrator->addStrategy('grille', new TarifAttributsStrategy($this->grilles, $this->grille_inconnu));
-        $this->hydrator->addStrategy('mode', new TarifAttributsStrategy($this->modes, $this->mode_inconnu));
+        $this->hydrator->addStrategy('rythme', 
+            new TarifAttributsStrategy($this->rythmes, $this->rythme_inconnu));
+        $this->hydrator->addStrategy('grille', 
+            new TarifAttributsStrategy($this->grilles, $this->grille_inconnu));
+        $this->hydrator->addStrategy('mode', 
+            new TarifAttributsStrategy($this->modes, $this->mode_inconnu));
     }
     
     // --------------- nomenclatures ------------------------
@@ -141,10 +144,11 @@ class Tarifs extends AbstractSbmTable
         $row = $resultset->current();
         return $row->tarifId;
     }
-    
+
     /**
-     * Renvoie un tableau indexé [tarifId => montant, ...]
-     * 
+     * Renvoie un tableau indexé [tarifId => montant, .
+     * ..]
+     *
      * @return array
      */
     public function getTarifs()
@@ -168,10 +172,11 @@ class Tarifs extends AbstractSbmTable
     public function setSelection($tarifId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray([
-            'tarifId' => $tarifId,
-            'selection' => $selection
-        ]);
+        $oData->exchangeArray(
+            [
+                'tarifId' => $tarifId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 }

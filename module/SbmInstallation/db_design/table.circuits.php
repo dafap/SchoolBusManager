@@ -8,17 +8,17 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'circuits',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'circuitId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'millesime' => 'int(11) NOT NULL',
@@ -39,52 +39,52 @@ return array(
             'commentaire1' => 'text NULL', // aller
             'commentaire2' => 'text NULL', // retour
             'geopt' => 'GEOMETRY'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'circuitId'
-        ),
-        'keys' => array(
-            'milserstapas' => array(
+        ],
+        'keys' => [
+            'milserstapas' => [
                 'unique' => true,
-                'fields' => array(
+                'fields' => [
                     'millesime',
                     'serviceId',
                     'stationId',
                     'passage'
-                )
-            )
-        ),
-        'foreign key' => array(
-            array(
+                ]
+            ]
+        ],
+        'foreign key' => [
+            [
                 'key' => 'serviceId',
-                'references' => array(
+                'references' => [
                     'table' => 'services',
-                    'fields' => array(
+                    'fields' => [
                         'serviceId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'stationId',
-                'references' => array(
+                'references' => [
                     'table' => 'stations',
-                    'fields' => array(
+                    'fields' => [
                         'stationId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     'data' => __DIR__ . '/data/data.circuits.php'
-);
+];

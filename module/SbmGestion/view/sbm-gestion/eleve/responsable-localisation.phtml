@@ -9,16 +9,17 @@
  * @filesource responsable-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 // calcul du contenu de l'infobulle
-$description = array();
-$description[] = $domicile = '<b>' . implode(' ', array(
-    $this->responsable->titre,
-    $this->responsable->nom,
-    $this->responsable->prenom
-)) . '</b>';
+$description = [];
+$description[] = $domicile = '<b>' . implode(' ', 
+    [
+        $this->responsable->titre,
+        $this->responsable->nom,
+        $this->responsable->prenom
+    ]) . '</b>';
 $description[] = $this->responsable->adresseL1;
 $domicile .= ' ' . $this->responsable->adresseL1;
 $tmp = $this->responsable->adresseL2;
@@ -26,13 +27,14 @@ if (! empty($tmp)) {
     $description[] = $this->responsable->adresseL2;
     $domicile .= ' ' . $this->responsable->adresseL2;
 }
-$cp_ville = implode(' ', array(
-    $this->responsable->codePostal,
-    $this->responsable->commune
-));
+$cp_ville = implode(' ', 
+    [
+        $this->responsable->codePostal,
+        $this->responsable->commune
+    ]);
 $description[] = $cp_ville;
 $domicile .= ' ' . $cp_ville;
-$telephone = array();
+$telephone = [];
 $tmp = $this->responsable->telephoneF;
 if (! empty($tmp)) {
     $telephone[] = $this->responsable->telephoneF;
@@ -61,17 +63,16 @@ const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
 const INI_ZOOM = <?php echo $this->config['zoom'];?>;
 initialiser('mon domicile', "<?php echo implode('<br/>', $description);?>", []);
-<?php 
-$this->inlineScript()->captureEnd(); 
+<?php
+$this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
 ?>
 <h1>Position de votre domicile sur la carte</h1>
 <div id="carte-wrapper">
 	<div id="carte-header">
 		<p>
-			Cliquez sur le domicile de <b><?php echo $domicile;?></b>
-			puis <b>Enregistrer la localisation</b>.
-			Utilisez le zoom pour plus de précision.
+			Cliquez sur le domicile de <b><?php echo $domicile;?></b> puis <b>Enregistrer
+				la localisation</b>. Utilisez le zoom pour plus de précision.
 		</p>
 <?php
 echo $this->form($this->form);

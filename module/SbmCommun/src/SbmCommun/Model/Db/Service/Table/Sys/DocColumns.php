@@ -9,8 +9,8 @@
  * @filesource DocColumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -19,6 +19,7 @@ use SbmCommun\Model\Db\Service\Table\Exception;
 
 class DocColumns extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la classe
      */
@@ -29,15 +30,17 @@ class DocColumns extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocColumns';
         $this->id_name = 'doccolumnId';
     }
-    
+
     public function getConfig($documentId, $ordinal_table)
     {
         $where = "documentId = $documentId AND ordinal_table = $ordinal_table";
         $resultset = $this->fetchAll($where, 'ordinal_position');
         if (! $resultset->count()) {
-            throw new Exception(sprintf(_("Could not find rows '%s' in table %s"), $where, $this->table_name));
+            throw new Exception(
+                sprintf(_("Could not find rows '%s' in table %s"), $where, 
+                    $this->table_name));
         }
-        $result = array();
+        $result = [];
         foreach ($resultset as $row) {
             $result[] = $row->getArrayCopy();
         }

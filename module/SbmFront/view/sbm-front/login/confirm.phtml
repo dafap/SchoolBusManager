@@ -9,8 +9,8 @@
  * @filesource confirm.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 févr. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <h1>Choisissez un mot de passe</h1>
@@ -25,16 +25,18 @@ echo $this->formHidden($this->form->get('userId'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>
 <fieldset class="sbm-page1">
-	<div id="user-first-mdp" class="row-inner edit"><?php echo $this->formRow($this->form->get('mdp')); ?></div>
-	<div id="user-first-ctrl" class="row-inner edit"><?php echo $this->formRow($this->form->get('ctrl')); ?></div>
-	<div id="user-edit-buttons" class="row-inner top-6px">
+			<div id="user-first-mdp" class="row-inner edit"><?php echo $this->formRow($this->form->get('mdp')); ?></div>
+			<div id="user-first-ctrl" class="row-inner edit"><?php echo $this->formRow($this->form->get('ctrl')); ?></div>
+			<div id="user-edit-buttons" class="row-inner top-6px">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
     </div>
-</fieldset>
+		</fieldset>
 <?php echo $this->form()->closeTag();?>
 <div class="sbm-description">
-  <p class="important">Le mot de passe doit avoir au moins 6 caractères, au moins une lettre en majuscule, au moins une lettre en minuscule et au moins un chiffre.</p>
-</div>
-</div>
+			<p class="important">Le mot de passe doit avoir au moins 6
+				caractères, au moins une lettre en majuscule, au moins une lettre en
+				minuscule et au moins un chiffre.</p>
+		</div>
+	</div>
 	<div id="fiche-footer"></div>
 </div>

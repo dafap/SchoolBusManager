@@ -7,8 +7,8 @@
  * @filesource PlageIp.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Validator;
 
@@ -24,25 +24,25 @@ class PlageIp extends AbstractValidator
     const INVALID_RANGE = 'ipRangeInvalid';
 
     const NOT_IP_ADDRESS = 'notIpAddress';
-    
+
     const NOT_AUTHORIZED_ADDRESS = 'notAuthorizedIpAddress';
 
     /**
      *
      * @var array
      */
-    protected $messageTemplates = array(
+    protected $messageTemplates = [
         self::INVALID => 'Invalid type given. String expected',
         self::INVALID_RANGE => 'Invalid range given. Integer between 1 and 31 expected',
         self::NOT_IP_ADDRESS => 'The input does not appear to be a valid IP address',
         self::NOT_AUTHORIZED_ADDRESS => 'This IP address is not authorized.'
-    );
+    ];
 
     public function isValidRange($value)
     {
         if (is_array($value)) {
             foreach ($value as $ip) {
-                if (!$this->isValidRange($ip))
+                if (! $this->isValidRange($ip))
                     return false;
             }
             return true;
@@ -53,7 +53,7 @@ class PlageIp extends AbstractValidator
             $parts = explode('/', $value);
             if (count($parts) == 2) {
                 $digit_validator = new Digits();
-                if (!$digit_validator->isValid($parts[1])) {
+                if (! $digit_validator->isValid($parts[1])) {
                     $this->error(self::INVALID_RANGE);
                     return false;
                 } elseif (1 > (int) $parts[1] || 31 < (int) $parts[1]) {
@@ -62,23 +62,23 @@ class PlageIp extends AbstractValidator
                 }
             }
             $ip_validator = new Ip();
-            if  (!$ip_validator->isValid($parts[0])){
+            if (! $ip_validator->isValid($parts[0])) {
                 $this->error(self::NOT_IP_ADDRESS);
                 return false;
             }
             return true;
         }
     }
-    
+
     public function isValid($ip)
     {
         // contrôle $ip et le code en integer
-        if (!is_string($ip)) {
+        if (! is_string($ip)) {
             $this->error(self::INVALID);
             return false;
         }
         $validator = new Ip();
-        if (!$validator->isValid($ip)) {
+        if (! $validator->isValid($ip)) {
             $this->error(self::NOT_IP_ADDRESS);
             return false;
         }
@@ -86,7 +86,7 @@ class PlageIp extends AbstractValidator
         
         // contrôle le $range et le force en tableau
         $range = $this->getOption('range');
-        if (!$this->isValidRange($range)) {
+        if (! $this->isValidRange($range)) {
             return false;
         }
         $range = (array) $range;
@@ -108,12 +108,12 @@ class PlageIp extends AbstractValidator
         $this->error(self::NOT_AUTHORIZED_ADDRESS);
         return false;
     }
-    
+
     /**
      * Renvoie un entier représentant l'adresse IP
      * L'adresse ip est valide.
-     * 
-     * @param string $ip
+     *
+     * @param string $ip            
      * @return integer
      */
     private function ipToInteger($ip)

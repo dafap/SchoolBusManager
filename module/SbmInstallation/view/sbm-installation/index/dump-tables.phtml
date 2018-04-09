@@ -9,8 +9,8 @@
  * @filesource dump-tables.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 oct. 2017
- * @version 2017-2.3.12
+ * @date 9 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -34,31 +34,34 @@ if (! empty($inner)) {
 ?>
 <h1><?php echo $this->titre; ?></h1>
 <div id="data-wrapper">
-    <div id="data-header">
-    <div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions)?></div>
-    </div>
-    <div id="data-inner">
-	<p><?php echo $output; ?></p>
+	<div id="data-header">
+		<div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions)?></div>
+	</div>
+	<div id="data-inner">
+		<p><?php echo $output; ?></p>
 <?php if (is_null($this->form)) : ?>
   <?php
     // liste des tables copiées
     echo var_dump($this->tables);
     ?>
 <a href="<?php echo $retour; ?>" class="bouton" title="Retour"><i
-		class="fam-door-out"></i></a>
+			class="fam-door-out"></i></a>
 <?php else : ?>
   <?php
     // formulaire
     $this->form->prepare();
-    $this->form->setAttribute('action', $this->url('sbminstall', [
-        'action' => 'dump-tables'
-    ]));
+    $this->form->setAttribute('action', 
+        $this->url('sbminstall', [
+            'action' => 'dump-tables'
+        ]));
     
     echo $this->form()->openTag($this->form);
     
     $element = $this->form->get('tables');
     echo $this->formRow($element);
     $element = $this->form->get('systems');
+    echo $this->formRow($element);
+    $element = $this->form->get('plugin');
     echo $this->formRow($element);
     $element = $this->form->get('onscreen');
     $element->setValue(0);
@@ -70,5 +73,5 @@ if (! empty($inner)) {
     ?> 
 <?php endif; ?>
     </div>
-    <div id="data-footer"></div>
+	<div id="data-footer"></div>
 </div>

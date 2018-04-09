@@ -9,19 +9,23 @@
  * @filesource par-classe.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 try {
     $url_retour = $this->url('sbmgestion/statistiques');
-    $url_rapports = $this->url('sbmgestion/statistiques', [
-        'action' => 'pdf-classe'
-    ]);
+    $url_rapports = $this->url('sbmgestion/statistiques', 
+        [
+            'action' => 'pdf-classe'
+        ]);
     // l'exception est lancée par l'aide de vue url() donc la methode appendStylesheet doit être placée après
     $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 } catch (\Zend\View\Exception\RuntimeException $e) {
     $url_retour = false;
-    $this->headLink()->appendStylesheet($this->basePath('/css/statistiques.css'), ['media' => 'all']);
+    $this->headLink()->appendStylesheet($this->basePath('/css/statistiques.css'), 
+        [
+            'media' => 'all'
+        ]);
     echo $this->headLink();
 }
 $n = $this->millesime;
@@ -49,18 +53,20 @@ $totaux = [
 		<?php
 if ($url_retour) {
     $hiddens = [];
-    $menuImpression = $this->menuRapports($this->url('sbmgestion/statistiques', [
-        'action' => 'par-classe'
-    ]), $url_rapports, 'fam-printer', null, $hiddens);
+    $menuImpression = $this->menuRapports(
+        $this->url('sbmgestion/statistiques', [
+            'action' => 'par-classe'
+        ]), $url_rapports, 'fam-printer', null, $hiddens);
     $hiddens = $menuImpression['hiddens'];
-    echo $this->listeZoneActions($hiddens, [
-        'retour' => [
-            'class' => 'fam-door-out',
-            'formaction' => $url_retour,
-            'title' => 'Retour'
-        ],
-        'rapports' => $menuImpression['content']
-    ]);
+    echo $this->listeZoneActions($hiddens, 
+        [
+            'retour' => [
+                'class' => 'fam-door-out',
+                'formaction' => $url_retour,
+                'title' => 'Retour'
+            ],
+            'rapports' => $menuImpression['content']
+        ]);
 }
 ?>
         </div>

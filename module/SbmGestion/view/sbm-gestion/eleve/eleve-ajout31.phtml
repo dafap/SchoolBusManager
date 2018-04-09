@@ -20,8 +20,8 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 nov. 2016
- * @version 2016-2.2.3
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -31,31 +31,33 @@ $this->inlineScript()->captureStart();
 ?>
 multicheckbox_actions.init("wrapper-joursTransport");
 js_ajout31.init();
-<?php 
+<?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
-//======================= fin js =================================================
-$url_map = $this->url('sbmgestion/eleve', array(
-    'action' => 'localisation',
-    'page' => $this->page
-));
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-ajout31',
-    'page' => $this->page
-));
-$hiddens = array(
+// ======================= fin js =================================================
+$url_map = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'localisation',
+        'page' => $this->page
+    ]);
+$url_ici = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-ajout31',
+        'page' => $this->page
+    ]);
+$hiddens = [
     'eleveId' => $this->data['eleveId'],
     'eleveName' => $this->info,
     'origine' => $url_ici
-);
-$actions = array(
-    'localiser' => array(
+];
+$actions = [
+    'localiser' => [
         'class' => 'fam-map-magnify',
         'formaction' => $url_map,
         'title' => 'localiser cet élève sur la carte',
         'onclick' => sprintf($js, "'localiser'")
-    )
-);
+    ]
+];
 ?>
 <h1>Création d'un nouvel élève</h1>
 <div id="fiche-wrapper">
@@ -84,7 +86,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner edit">
 					<?php echo $this->formRow($this->form->get('etablissementId'));?>
-					<br><span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
+					<br> <span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
 					</div>
 					<div id="wrapper-classeId" class="row-inner edit">
 					<?php echo $this->formRow($this->form->get('classeId'));?>

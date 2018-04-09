@@ -9,20 +9,22 @@
  * @filesource export.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_exportEleves = $this->url('sbmadmin', [
     'action' => 'export-eleve'
 ]);
-$url_exportEtablissements = $this->url('sbmadmin', [
-    'action' => 'export-etablissement'
-]);
-$url_exportResponsables = $this->url('sbmadmin', [
-    'action' => 'export-responsable'
-]);
+$url_exportEtablissements = $this->url('sbmadmin', 
+    [
+        'action' => 'export-etablissement'
+    ]);
+$url_exportResponsables = $this->url('sbmadmin', 
+    [
+        'action' => 'export-responsable'
+    ]);
 $url_exportStations = $this->url('sbmadmin', [
     'action' => 'export-station'
 ]);
@@ -38,14 +40,19 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
     </div>
-    <h1>Exportation de données avec coordonnées géographiques</h1>
-	<div  id="menugeneral-inner">
+	<h1>Exportation de données avec coordonnées géographiques</h1>
+	<div id="menugeneral-inner">
 		<ul>
-			<li><a href="<?php echo $url_exportEleves; ?>"><i class="fam-bullet-go"></i>Exporter des élèves</a></li>
-			<li><a href="<?php echo $url_exportEtablissements; ?>"><i class="fam-bullet-go"></i>Exporter des établissements</a></li>
-			<li><a href="<?php echo $url_exportResponsables; ?>"><i class="fam-bullet-go"></i>Exporter des responsables</a></li>
-			<li><a href="<?php echo $url_exportStations; ?>"><i class="fam-bullet-go"></i>Exporter des stations</a></li>
-			<li><a href="<?php echo $url_retour; ?>"><i class="fam-door-out"></i>Espace d'administration</a></li>
+			<li><a href="<?php echo $url_exportEleves; ?>"><i
+					class="fam-bullet-go"></i>Exporter des élèves</a></li>
+			<li><a href="<?php echo $url_exportEtablissements; ?>"><i
+					class="fam-bullet-go"></i>Exporter des établissements</a></li>
+			<li><a href="<?php echo $url_exportResponsables; ?>"><i
+					class="fam-bullet-go"></i>Exporter des responsables</a></li>
+			<li><a href="<?php echo $url_exportStations; ?>"><i
+					class="fam-bullet-go"></i>Exporter des stations</a></li>
+			<li><a href="<?php echo $url_retour; ?>"><i class="fam-door-out"></i>Espace
+					d'administration</a></li>
 		</ul>
 	</div>
 </div>

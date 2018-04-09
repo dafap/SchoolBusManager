@@ -18,8 +18,8 @@
  * @filesource Select.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model\Db\Sql;
 
@@ -35,7 +35,8 @@ class Select extends ZendSelect
     private $recordSource;
 
     /**
-     * On passe le recordSource (sql string) par le constructeur. On ne peut plus passer la table.
+     * On passe le recordSource (sql string) par le constructeur.
+     * On ne peut plus passer la table.
      *
      * @param string $recordSource            
      */
@@ -61,16 +62,19 @@ class Select extends ZendSelect
      * Surcharge de la méthode
      *
      * (non-PHPdoc)
-     * 
+     *
      * @see \Zend\Db\Sql\Select::processSelect()
      */
-    protected function processSelect(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processSelect(PlatformInterface $platform, 
+        DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
     {
         $expr = 1;
         if (empty($this->recordSource)) {
-            list ($table, $fromTable) = parent::resolveTable($this->table, $platform, $driver, $parameterContainer);
+            list ($table, $fromTable) = parent::resolveTable($this->table, $platform, 
+                $driver, $parameterContainer);
         } else {
-            list ($table, $fromTable) = $this->resolveTable($this->recordSource, $platform);
+            list ($table, $fromTable) = $this->resolveTable($this->recordSource, 
+                $platform);
         }
         // process table columns
         $columns = [];
@@ -82,16 +86,19 @@ class Select extends ZendSelect
                 continue;
             }
             
-            $columnName = $this->resolveColumnValue([
-                'column' => $column,
-                'fromTable' => $fromTable,
-                'isIdentifier' => true
-            ], $platform, $driver, $parameterContainer, (is_string($columnIndexOrAs) ? $columnIndexOrAs : 'column'));
+            $columnName = $this->resolveColumnValue(
+                [
+                    'column' => $column,
+                    'fromTable' => $fromTable,
+                    'isIdentifier' => true
+                ], $platform, $driver, $parameterContainer, 
+                (is_string($columnIndexOrAs) ? $columnIndexOrAs : 'column'));
             // process As portion
             if (is_string($columnIndexOrAs)) {
                 $columnAs = $platform->quoteIdentifier($columnIndexOrAs);
             } elseif (stripos($columnName, ' as ') === false) {
-                $columnAs = (is_string($column)) ? $platform->quoteIdentifier($column) : 'Expression' . $expr ++;
+                $columnAs = (is_string($column)) ? $platform->quoteIdentifier($column) : 'Expression' .
+                     $expr ++;
             }
             $columns[] = (isset($columnAs)) ? [
                 $columnName,
@@ -104,16 +111,20 @@ class Select extends ZendSelect
         // process join columns
         foreach ($this->joins as $join) {
             $joinName = (is_array($join['name'])) ? key($join['name']) : $join['name'];
-            $joinName = parent::resolveTable($joinName, $platform, $driver, $parameterContainer);
+            $joinName = parent::resolveTable($joinName, $platform, $driver, 
+                $parameterContainer);
             
             foreach ($join['columns'] as $jKey => $jColumn) {
                 $jColumns = [];
-                $jFromTable = is_scalar($jColumn) ? $joinName . $platform->getIdentifierSeparator() : '';
-                $jColumns[] = $this->resolveColumnValue([
-                    'column' => $jColumn,
-                    'fromTable' => $jFromTable,
-                    'isIdentifier' => true
-                ], $platform, $driver, $parameterContainer, (is_string($jKey) ? $jKey : 'column'));
+                $jFromTable = is_scalar($jColumn) ? $joinName .
+                     $platform->getIdentifierSeparator() : '';
+                $jColumns[] = $this->resolveColumnValue(
+                    [
+                        'column' => $jColumn,
+                        'fromTable' => $jFromTable,
+                        'isIdentifier' => true
+                    ], $platform, $driver, $parameterContainer, 
+                    (is_string($jKey) ? $jKey : 'column'));
                 if (is_string($jKey)) {
                     $jColumns[] = $platform->quoteIdentifier($jKey);
                 } elseif ($jColumn !== self::SQL_STAR) {
@@ -124,7 +135,8 @@ class Select extends ZendSelect
         }
         
         if ($this->quantifier) {
-            $quantifier = ($this->quantifier instanceof ExpressionInterface) ? $this->processExpression($this->quantifier, $platform, $driver, $parameterContainer, 'quantifier') : $this->quantifier;
+            $quantifier = ($this->quantifier instanceof ExpressionInterface) ? $this->processExpression(
+                $this->quantifier, $platform, $driver, $parameterContainer, 'quantifier') : $this->quantifier;
         }
         
         if (! isset($table)) {
@@ -145,7 +157,8 @@ class Select extends ZendSelect
         }
     }
 
-    protected function resolveTable($table, PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function resolveTable($table, PlatformInterface $platform, 
+        DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
     {
         $alias = null;
         

@@ -7,8 +7,8 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
 
@@ -35,7 +35,7 @@ class Circuits implements FactoryInterface
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
     private $db_manager;
-    
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -57,7 +57,7 @@ class Circuits implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -108,44 +108,49 @@ class Circuits implements FactoryInterface
         switch ($horaire) {
             case 'matin':
                 $order = 'm1';
-                $columns = array(
+                $columns = [
                     'serviceId',
                     'horaire' => 'm1',
                     'typeArret',
                     'commentaire1'
-                );
+                ];
                 break;
             case 'midi':
                 $order = 's2';
-                $columns = array(
+                $columns = [
                     'serviceId',
-                    'horaire' => new Expression('CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
+                    'horaire' => new Expression(
+                        'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
                     'typeArret',
                     'commentaire2'
-                );
+                ];
                 break;
             case 'soir':
                 $order = 's1';
-                $columns = array(
+                $columns = [
                     'serviceId',
-                    'horaire' => new Expression('CONCAT(IFNULL(s2, ""), " ", IFNULL(s1, ""))'),
+                    'horaire' => new Expression(
+                        'CONCAT(IFNULL(s2, ""), " ", IFNULL(s1, ""))'),
                     'typeArret',
                     'commentaire1'
-                );
+                ];
                 break;
             default:
                 throw new Exception('L\'horaire demandé est inconnu.');
         }
         $select = $this->sql->select();
-        $select->from(array(
-            'cir' => $this->db_manager->getCanonicName('circuits')
-        ))
-            ->join(array(
-            'sta' => $this->db_manager->getCanonicName('stations')
-        ), 'cir.stationId = sta.stationId', array(
-            'stationId' => 'stationId',
-            'station' => 'nom'
-        ))
+        $select->from(
+            [
+                'cir' => $this->db_manager->getCanonicName('circuits')
+            ])
+            ->join(
+            [
+                'sta' => $this->db_manager->getCanonicName('stations')
+            ], 'cir.stationId = sta.stationId', 
+            [
+                'stationId' => 'stationId',
+                'station' => 'nom'
+            ])
             ->columns($columns)
             ->where($where)
             ->order($order);
@@ -182,44 +187,52 @@ class Circuits implements FactoryInterface
         $where->equalTo('millesime', $this->millesime)->equalTo('serviceId', $serviceId);
         switch ($horaire) {
             case 'matin':
-                $where->lessThanOrEqualTo('m1', $this->passageEtablissement($serviceId, $etablissementId, $horaire));
+                $where->lessThanOrEqualTo('m1', 
+                    $this->passageEtablissement($serviceId, $etablissementId, $horaire));
                 $order = 'm1 ASC';
-                $columns = array(
+                $columns = [
                     'horaire' => 'm1',
                     'typeArret',
                     'commentaire1'
-                );
+                ];
                 break;
             case 'midi':
-                $where->greaterThanOrEqualTo('s2', $this->passageEtablissement($serviceId, $etablissementId, $horaire));
+                $where->greaterThanOrEqualTo('s2', 
+                    $this->passageEtablissement($serviceId, $etablissementId, $horaire));
                 $order = 's2 DESC';
-                $columns = array(
-                    'horaire' => new Expression('CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
+                $columns = [
+                    'horaire' => new Expression(
+                        'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
                     'typeArret',
                     'commentaire2'
-                );
+                ];
                 break;
             case 'soir':
-                $where->greaterThanOrEqualTo('s1', $this->passageEtablissement($serviceId, $etablissementId, $horaire));
+                $where->greaterThanOrEqualTo('s1', 
+                    $this->passageEtablissement($serviceId, $etablissementId, $horaire));
                 $order = 's1 DESC';
-                $columns = array(
-                    'horaire' => new Expression('CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
+                $columns = [
+                    'horaire' => new Expression(
+                        'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
                     'typeArret',
                     'commentaire1'
-                );
+                ];
                 break;
             default:
                 throw new Exception('L\'horaire demandé est inconnu.');
         }
         $select = $this->sql->select();
-        $select->from(array(
-            'cir' => $this->db_manager->getCanonicName('circuits')
-        ))
-            ->join(array(
-            'sta' => $this->db_manager->getCanonicName('stations')
-        ), 'cir.stationId = sta.stationId', array(
-            'station' => 'nom'
-        ))
+        $select->from(
+            [
+                'cir' => $this->db_manager->getCanonicName('circuits')
+            ])
+            ->join(
+            [
+                'sta' => $this->db_manager->getCanonicName('stations')
+            ], 'cir.stationId = sta.stationId', 
+            [
+                'station' => 'nom'
+            ])
             ->columns($columns)
             ->where($where)
             ->order($order);
@@ -238,17 +251,20 @@ class Circuits implements FactoryInterface
     public function arretEtablissement($serviceId, $etablissementId)
     {
         try {
-            $oetablissementservice = $this->sm->get('Sbm\Db\Table\EtablissementsServices')->getRecord(array(
-                'etablissementId' => $etablissementId,
-                'serviceId' => $serviceId
-            ));
+            $oetablissementservice = $this->sm->get('Sbm\Db\Table\EtablissementsServices')->getRecord(
+                [
+                    'etablissementId' => $etablissementId,
+                    'serviceId' => $serviceId
+                ]);
             return $oetablissementservice->stationId;
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $code = $e->getCode();
             if (! is_numeric($code)) {
                 $code = 0;
             }
-            throw new Exception("L'établissement $etablissementId n'est pas desservi par le circuit $serviceId.", $code, $e);
+            throw new Exception(
+                "L'établissement $etablissementId n'est pas desservi par le circuit $serviceId.", 
+                $code, $e);
         }
     }
 
@@ -264,11 +280,12 @@ class Circuits implements FactoryInterface
      */
     public function passageEtablissement($serviceId, $etablissementId, $horaire)
     {
-        $ocircuit = $this->sm->get('Sbm\Db\Table\Circuits')->getRecord(array(
-            'millesime' => $this->millesime,
-            'serviceId' => $serviceId,
-            'stationId' => $this->arretEtablissement($serviceId, $etablissementId)->stationId
-        ));
+        $ocircuit = $this->sm->get('Sbm\Db\Table\Circuits')->getRecord(
+            [
+                'millesime' => $this->millesime,
+                'serviceId' => $serviceId,
+                'stationId' => $this->arretEtablissement($serviceId, $etablissementId)->stationId
+            ]);
         switch ($horaire) {
             case 'matin':
                 return $ocircuit->m1;

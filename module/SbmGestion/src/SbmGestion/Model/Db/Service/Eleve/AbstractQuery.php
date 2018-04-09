@@ -7,8 +7,8 @@
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 oct. 2015
- * @version 2015-1.6.5
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -17,6 +17,7 @@ use SbmCommun\Model\Db\Sql\Predicate\Not;
 
 abstract class AbstractQuery
 {
+
     /**
      * Transforme un tableau $filtre en Where
      *
@@ -24,22 +25,22 @@ abstract class AbstractQuery
      * <li>$key => $value qui sera traduit en equalTo($key, $value)</li>
      * <li>'or' qui sera traduit en OR</li>
      * <li>'and' qui sera traduit en AND</li>
-     * <li>'<' => array(left, right, [leftType, rightType]) qui sera traduit en lessThan</li>
-     * <li>'>' => array(left, right, [leftType, rightType]) qui sera traduit en greaterThan</li>
-     * <li>'=' => array(left, right, [leftType, rightType]) qui sera traduit en equalTo</li>
-     * <li>'<=' => array(left, right, [leftType, rightType]) qui sera traduit en lessThanOrEqualTo</li>
-     * <li>'>=' => array(left, right, [leftType, rightType]) qui sera traduit en greaterThanOrEqualTo</li>
-     * <li>'<>' => array(left, right, [leftType, rightType]) qui sera traduit en notEqualTo</li>
+     * <li>'<' => [left, right, [leftType, rightType]) qui sera traduit en lessThan</li>
+     * <li>'>' => [left, right, [leftType, rightType]) qui sera traduit en greaterThan</li>
+     * <li>'=' => [left, right, [leftType, rightType]) qui sera traduit en equalTo</li>
+     * <li>'<=' => [left, right, [leftType, rightType]) qui sera traduit en lessThanOrEqualTo</li>
+     * <li>'>=' => [left, right, [leftType, rightType]) qui sera traduit en greaterThanOrEqualTo</li>
+     * <li>'<>' => [left, right, [leftType, rightType]) qui sera traduit en notEqualTo</li>
      * <li>'sauf' => $sous_filtre qui sera traduit en NOT predicate où predicate est la transformation du $sous_filtre. On peut remplacer 'sauf' par 'not' ou 'pas'</li>
      * <li>$sous_filtre qui sera traduit en nest()->predicate->unnest() où predicate est la transformation du $sous_filtre</li></ul>
      *
-     * @param Where $where
-     * @param array $filtre
+     * @param Where $where            
+     * @param array $filtre            
      *
      * @throws \InvalidArgumentException
      * @return Ambigous <Where, \Zend\Db\Sql\Where>
      */
-    protected function arrayToWhere(Where $where = null, $filtre = array())
+    protected function arrayToWhere(Where $where = null, $filtre = [])
     {
         if (empty($where)) {
             $where = new Where();
@@ -60,10 +61,12 @@ abstract class AbstractQuery
                                 $where->lessThan($value[0], $value[1]);
                                 break;
                             case 4:
-                                $where->lessThan($value[0], $value[1], $value[2], $value[3]);
+                                $where->lessThan($value[0], $value[1], $value[2], 
+                                    $value[3]);
                                 break;
                             default:
-                                throw new \InvalidArgumentException('Nombre incorrect de paramètres dans lessThan.');
+                                throw new \InvalidArgumentException(
+                                    'Nombre incorrect de paramètres dans lessThan.');
                         }
                         break;
                     case '<=':
@@ -73,10 +76,12 @@ abstract class AbstractQuery
                                 $where->lessThanOrEqualTo($value[0], $value[1]);
                                 break;
                             case 4:
-                                $where->lessThanOrEqualTo($value[0], $value[1], $value[2], $value[3]);
+                                $where->lessThanOrEqualTo($value[0], $value[1], $value[2], 
+                                    $value[3]);
                                 break;
                             default:
-                                throw new \InvalidArgumentException('Nombre incorrect de paramètres dans lessThanOrEqualTo.');
+                                throw new \InvalidArgumentException(
+                                    'Nombre incorrect de paramètres dans lessThanOrEqualTo.');
                         }
                         break;
                     case '>':
@@ -86,10 +91,12 @@ abstract class AbstractQuery
                                 $where->greaterThan($value[0], $value[1]);
                                 break;
                             case 4:
-                                $where->greaterThan($value[0], $value[1], $value[2], $value[3]);
+                                $where->greaterThan($value[0], $value[1], $value[2], 
+                                    $value[3]);
                                 break;
                             default:
-                                throw new \InvalidArgumentException('Nombre incorrect de paramètres dans greaterThan.');
+                                throw new \InvalidArgumentException(
+                                    'Nombre incorrect de paramètres dans greaterThan.');
                         }
                         break;
                     case '>=':
@@ -99,10 +106,12 @@ abstract class AbstractQuery
                                 $where->greaterThanOrEqualTo($value[0], $value[1]);
                                 break;
                             case 4:
-                                $where->greaterThanOrEqualTo($value[0], $value[1], $value[2], $value[3]);
+                                $where->greaterThanOrEqualTo($value[0], $value[1], 
+                                    $value[2], $value[3]);
                                 break;
                             default:
-                                throw new \InvalidArgumentException('Nombre incorrect de paramètres dans greaterThanOrEqualTo.');
+                                throw new \InvalidArgumentException(
+                                    'Nombre incorrect de paramètres dans greaterThanOrEqualTo.');
                         }
                         break;
                     case '=':
@@ -112,10 +121,12 @@ abstract class AbstractQuery
                                 $where->equalTo($value[0], $value[1]);
                                 break;
                             case 4:
-                                $where->equalTo($value[0], $value[1], $value[2], $value[3]);
+                                $where->equalTo($value[0], $value[1], $value[2], 
+                                    $value[3]);
                                 break;
                             default:
-                                throw new \InvalidArgumentException('Nombre incorrect de paramètres dans notEqualTo.');
+                                throw new \InvalidArgumentException(
+                                    'Nombre incorrect de paramètres dans notEqualTo.');
                         }
                         break;
                     case '<>':
@@ -126,10 +137,12 @@ abstract class AbstractQuery
                                 $where->notEqualTo($value[0], $value[1]);
                                 break;
                             case 4:
-                                $where->notEqualTo($value[0], $value[1], $value[2], $value[3]);
+                                $where->notEqualTo($value[0], $value[1], $value[2], 
+                                    $value[3]);
                                 break;
                             default:
-                                throw new \InvalidArgumentException('Nombre incorrect de paramètres dans notEqualTo.');
+                                throw new \InvalidArgumentException(
+                                    'Nombre incorrect de paramètres dans notEqualTo.');
                         }
                         break;
                     case 'isNull':
@@ -142,8 +155,8 @@ abstract class AbstractQuery
                         break;
                     default:
                         $where->nest()
-                        ->addPredicate($this->arrayToWhere(null, $value))
-                        ->unnest();
+                            ->addPredicate($this->arrayToWhere(null, $value))
+                            ->unnest();
                         break;
                 }
             } else {
@@ -161,6 +174,6 @@ abstract class AbstractQuery
             }
         }
         return $where;
-    }    
+    }
 }
  

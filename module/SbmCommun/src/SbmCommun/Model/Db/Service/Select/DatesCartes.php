@@ -8,8 +8,8 @@
  * @filesource DatesCartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -39,17 +39,18 @@ class DatesCartes implements FactoryInterface
         $db_manager = $serviceLocator;
         $sql = new Sql($db_manager->getDbAdapter());
         $select = $sql->select($db_manager->getCanonicName('scolarites', 'table'));
-        $select->columns(array(
+        $select->columns([
             'dateCarte'
-        ))
+        ])
             ->order('dateCarte Desc')
             ->quantifier('DISTINCT')
             ->where($where);
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
-            $array[$row['dateCarte']] = DateLib::formatDateTimeFromMysql($row['dateCarte']);
+            $array[$row['dateCarte']] = DateLib::formatDateTimeFromMysql(
+                $row['dateCarte']);
         }
         return $array;
     }

@@ -9,60 +9,70 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('login', [
     'action' => 'home-page'
 ]);
 $categorieId = $this->auth->getCategorieId();
-if ($this->acl->hasResource('edit-liste') && $this->acl->isAllowed($categorieId, 'edit-liste')) {
+if ($this->acl->hasResource('edit-liste') &&
+     $this->acl->isAllowed($categorieId, 'edit-liste')) {
     $url_edit = $this->url('sbmmailchimp', [
         'action' => 'edit-liste'
     ]);
 } else {
     $url_edit = false;
 }
-if ($this->acl->hasResource('dupliquer-liste') && $this->acl->isAllowed($categorieId, 'dupliquer-liste')) {
-    $url_duplique = $this->url('sbmmailchimp', [
-        'action' => 'dupliquer-liste'
-    ]);
+if ($this->acl->hasResource('dupliquer-liste') &&
+     $this->acl->isAllowed($categorieId, 'dupliquer-liste')) {
+    $url_duplique = $this->url('sbmmailchimp', 
+        [
+            'action' => 'dupliquer-liste'
+        ]);
 } else {
     $url_duplique = false;
 }
-if ($this->acl->hasResource('creer-liste') && $this->acl->isAllowed($categorieId, 'creer-liste')) {
+if ($this->acl->hasResource('creer-liste') &&
+     $this->acl->isAllowed($categorieId, 'creer-liste')) {
     $url_creer = $this->url('sbmmailchimp', [
         'action' => 'creer-liste'
     ]);
 } else {
     $url_creer = false;
 }
-if ($this->acl->hasResource('suppr-liste') && $this->acl->isAllowed($categorieId, 'suppr-liste')) {
+if ($this->acl->hasResource('suppr-liste') &&
+     $this->acl->isAllowed($categorieId, 'suppr-liste')) {
     $url_suppr = $this->url('sbmmailchimp', [
         'action' => 'suppr-liste'
     ]);
 } else {
     $url_suppr = false;
 }
-if ($this->acl->hasResource('fields-liste') && $this->acl->isAllowed($categorieId, 'fields-liste')) {
+if ($this->acl->hasResource('fields-liste') &&
+     $this->acl->isAllowed($categorieId, 'fields-liste')) {
     $url_fields = $this->url('sbmmailchimp', [
         'action' => 'fields-liste'
     ]);
 } else {
     $url_fields = false;
 }
-if ($this->acl->hasResource('segments-liste') && $this->acl->isAllowed($categorieId, 'segments-liste')) {
-    $url_segments = $this->url('sbmmailchimp', [
-        'action' => 'segments-liste'
-    ]);
+if ($this->acl->hasResource('segments-liste') &&
+     $this->acl->isAllowed($categorieId, 'segments-liste')) {
+    $url_segments = $this->url('sbmmailchimp', 
+        [
+            'action' => 'segments-liste'
+        ]);
 } else {
     $url_segments = false;
 }
-if ($this->acl->hasResource('liste-members') && $this->acl->isAllowed($categorieId, 'liste-members')) {
-    $url_members = $this->url('sbmmailchimp', [
-        'action' => 'liste-members'
-    ]);
+if ($this->acl->hasResource('liste-members') &&
+     $this->acl->isAllowed($categorieId, 'liste-members')) {
+    $url_members = $this->url('sbmmailchimp', 
+        [
+            'action' => 'liste-members'
+        ]);
 } else {
     $url_members = false;
 }
@@ -179,11 +189,11 @@ if ($this->message) {
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-		<?php 
-		if ($this->source->count()) {
-		    echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); 
-		}
-		?>
+		<?php
+if ($this->source->count()) {
+    echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []);
+}
+?>
 		</div>
 	</div>
 </div>

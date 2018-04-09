@@ -24,26 +24,28 @@
  * @filesource org-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2017
- * @version 2017-2.3.6
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_horaires = $this->url('sbmdocument', array(
+$url_horaires = $this->url('sbmdocument', [
     'action' => 'horaires'
-));
-$url_eleves = $this->url('sbmportail', array(
+]);
+$url_eleves = $this->url('sbmportail', [
     'action' => 'org-eleves'
-));
-$url_circuits = $this->url('sbmportail', array(
+]);
+$url_circuits = $this->url('sbmportail', [
     'action' => 'org-circuits'
-));
-$url_carte_stations = $this->url('sbmportail', array(
-    'action' => 'tr-carte-stations'
-));
-$url_carte_etablissements = $this->url('sbmportail', array(
-    'action' => 'tr-carte-etablissements'
-));
+]);
+$url_carte_stations = $this->url('sbmportail', 
+    [
+        'action' => 'tr-carte-stations'
+    ]);
+$url_carte_etablissements = $this->url('sbmportail', 
+    [
+        'action' => 'tr-carte-etablissements'
+    ]);
 
 $paiementsAS = $this->paiements['totalASMode'];
 $paiementsMode = current($paiementsAS);

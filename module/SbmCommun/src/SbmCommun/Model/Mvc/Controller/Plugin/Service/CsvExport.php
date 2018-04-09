@@ -24,8 +24,8 @@
  * @filesource CsvExport.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
@@ -81,7 +81,7 @@ class CsvExport extends AbstractPlugin
 
     /**
      * Attention, le délimiteur par défaut est ';'
-     * 
+     *
      * @param string $filename            
      * @param string $header            
      * @param string $records            
@@ -91,7 +91,8 @@ class CsvExport extends AbstractPlugin
      *
      * @return \SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport|\Zend\Http\PhpEnvironment\Response
      */
-    public function __invoke($filename = null, $header = null, $records = null, callable $callback = null, $delimiter = ';', $enclosure = '"')
+    public function __invoke($filename = null, $header = null, $records = null, 
+        callable $callback = null, $delimiter = ';', $enclosure = '"')
     {
         if (func_num_args() == 0) {
             return $this;
@@ -107,6 +108,8 @@ class CsvExport extends AbstractPlugin
 
     /**
      * Supprime l'extension .
+     *
+     *
      * csv du fichier si elle est donnée dans le nom
      *
      * @param string $name
@@ -181,6 +184,7 @@ class CsvExport extends AbstractPlugin
     {
         if (method_exists($this->controller, 'getResponse')) {
             /**
+             *
              * @var HttpResponse $response
              */
             $response = $this->controller->getResponse();
@@ -196,7 +200,10 @@ class CsvExport extends AbstractPlugin
             try {
                 $fields = $this->callback ? call_user_func($this->callback, $item) : $item;
                 if (! is_array($fields)) {
-                    throw new Exception('CsvExport can only accept arrays, ' . gettype($fields) . ' provided at index ' . $i . '. Either use arrays when setting the records or use a callback to convert each record into an array.');
+                    throw new Exception(
+                        'CsvExport can only accept arrays, ' . gettype($fields) .
+                             ' provided at index ' . $i .
+                             '. Either use arrays when setting the records or use a callback to convert each record into an array.');
                 }
                 fputcsv($fp, $fields, $this->delimiter, $this->enclosure);
             } catch (\Exception $ex) {
@@ -207,10 +214,12 @@ class CsvExport extends AbstractPlugin
         fclose($fp);
         $response->setContent(ob_get_clean());
         
-        $response->getHeaders()->addHeaders(array(
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment;filename="' . str_replace('"', '\\"', $this->name) . '.csv"'
-        ));
+        $response->getHeaders()->addHeaders(
+            [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment;filename="' .
+                     str_replace('"', '\\"', $this->name) . '.csv"'
+            ]);
         
         return $response;
     }

@@ -8,16 +8,18 @@
  * @filesource create.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 
-$hiddens = array();
-$actions = array();
+$hiddens = [];
+$actions = [];
 ?>
 <div id="winpopup">
 	<div id="winpopup-content"
@@ -49,11 +51,12 @@ echo $this->formHidden($this->form->get('titre'));
 echo $this->formHidden($this->form->get('csrf'));
 $elementTitre = new \Zend\Form\Element\Text('titre');
 $elementTitre->setValue($this->identity['titre'])
-    ->setAttributes([
-    'id' => 'titre1-readonly',
-    'class' => 'sbm-width-10c',
-    'readonly' => 'readonly'
-])
+    ->setAttributes(
+    [
+        'id' => 'titre1-readonly',
+        'class' => 'sbm-width-10c',
+        'readonly' => 'readonly'
+    ])
     ->setOptions([
     'label' => 'Identité du responsable'
 ]);

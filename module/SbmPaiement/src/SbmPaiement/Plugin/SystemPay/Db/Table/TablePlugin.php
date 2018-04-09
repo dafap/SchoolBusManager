@@ -8,8 +8,8 @@
  * @filesource TablePlugin.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 avr. 2015
- * @version 2015-1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Plugin\SystemPay\Db\Table;
 
@@ -39,74 +39,75 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
     public function setSelection($id, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            $this->getIdName() => $id,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                $this->getIdName() => $id,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
-    
+
     public function criteres()
     {
-        return array(
-            array(
+        return [
+            [
                 'name' => 'vads_cust_name',
-                'attributes' => array(
+                'attributes' => [
                     'type' => 'text',
                     'id' => 'critere-vads_cust_name',
                     'class' => 'sbm-width-30c',
                     'maxlegth' => '30'
-                ),
-                'options' => array(
+                ],
+                'options' => [
                     'label' => 'Responsable',
-                    'label_attributes' => array(
+                    'label_attributes' => [
                         'class' => 'sbm-first'
-                    ),
-                    'error_attributes' => array(
+                    ],
+                    'error_attributes' => [
                         'class' => 'sbm-error'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'type' => 'Zend\Form\Element\Date',
                 'name' => 'vads_trans_date',
-                'attributes' => array(
+                'attributes' => [
                     'id' => 'critere-vads_trans_date',
                     'class' => ''
-                ),
-                'options' => array(
+                ],
+                'options' => [
                     'label' => 'Date du paiement',
-                    'label_attributes' => array(
+                    'label_attributes' => [
                         'class' => ''
-                    ),
-                    'error_attributes' => array(
+                    ],
+                    'error_attributes' => [
                         'class' => 'sbm-error'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
-                'attributes' => array(
+                'attributes' => [
                     'type' => 'checkbox',
                     'useHiddenElement' => false,
-                    'options' => array(
+                    'options' => [
                         'checkedValue' => false,
                         'uncheckedValue' => true
-                    ),
+                    ],
                     'class' => 'sbm-checkbox'
-                ),
-                'options' => array(
+                ],
+                'options' => [
                     'label' => 'Sélectionnés',
-                    'label_attributes' => array(
+                    'label_attributes' => [
                         'class' => ''
-                    ),
-                    'error_attributes' => array(
+                    ],
+                    'error_attributes' => [
                         'class' => 'sbm-error'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**
@@ -120,7 +121,8 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
         $predicates = $where->getPredicates();
         foreach ($predicates as &$predicate) {
             foreach ($predicate as &$item) {
-                if ($item instanceof \Zend\Db\Sql\Predicate\Like && $item->getIdentifier() == 'vads_trans_date') {
+                if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
+                     $item->getIdentifier() == 'vads_trans_date') {
                     $item->setLike(str_replace('-', '', $item->getLike()));
                 }
             }

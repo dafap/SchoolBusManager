@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 août 2017
- * @version 2017-2.3.6
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Controller;
 
@@ -44,7 +44,7 @@ class DocumentController extends AbstractActionController
 
     /**
      * Action pour générer les horaires au format pdf
-     * 
+     *
      * Reçoit éventuellement en post un 'serviceId'
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
@@ -60,9 +60,10 @@ class DocumentController extends AbstractActionController
         // on doit être authentifié
         $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
+            return $this->redirect()->toRoute('login', 
+                [
+                    'action' => 'home-page'
+                ]);
         }
         $userId = $auth->getUserId();
         $this->categorie = $auth->getCategorieId();
@@ -72,15 +73,17 @@ class DocumentController extends AbstractActionController
                 try {
                     $responsable = $this->responsable->get();
                 } catch (\Exception $e) {
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'logout'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'logout'
+                        ]);
                 }
                 try {
-                    $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll([
-                        'responsableId' => $responsable->responsableId,
-                        'millesime' => $millesime
-                    ]);
+                    $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll(
+                        [
+                            'responsableId' => $responsable->responsableId,
+                            'millesime' => $millesime
+                        ]);
                     $services = [];
                     // construction d'une table sans doublons
                     foreach ($affectations as $affectation) {
@@ -93,44 +96,55 @@ class DocumentController extends AbstractActionController
                         $services = array_values($services);
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-                    $this->flashMessenger()->addInfoMessage('Vos enfants n\'ont pas été affectés sur un circuit.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    $this->flashMessenger()->addInfoMessage(
+                        'Vos enfants n\'ont pas été affectés sur un circuit.');
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             case 2: // transporteur
                 try {
-                    $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
-                    $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll([
-                        'transporteurId' => $transporteurId
-                    ]);
+                    $transporteurId = $this->db_manager->get(
+                        'Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
+                    $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll(
+                        [
+                            'transporteurId' => $transporteurId
+                        ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-                    $this->flashMessenger()->addInfoMessage('Pas d\'enfants affectés sur vos circuits.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    $this->flashMessenger()->addInfoMessage(
+                        'Pas d\'enfants affectés sur vos circuits.');
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             case 3: // établissement
                 try {
-                    $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
-                    $oservices = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->fetchAll([
-                        'etablissementId' => $etablissementId
-                    ]);
+                    $etablissementId = $this->db_manager->get(
+                        'Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
+                    $oservices = $this->db_manager->get(
+                        'Sbm\Db\Table\EtablissementsServices')->fetchAll(
+                        [
+                            'etablissementId' => $etablissementId
+                        ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-                    $this->flashMessenger()->addInfoMessage('Aucun service dessert votre établissement.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    $this->flashMessenger()->addInfoMessage(
+                        'Aucun service dessert votre établissement.');
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             case 200: // secrétariat
@@ -144,17 +158,21 @@ class DocumentController extends AbstractActionController
                         $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-                    $this->flashMessenger()->addInfoMessage('Impossible d\'obtenir la liste des services.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    $this->flashMessenger()->addInfoMessage(
+                        'Impossible d\'obtenir la liste des services.');
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             default:
-                $this->flashMessenger()->addErrorMessage('La catégorie de cet utilisateur est inconnue.');
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'logout'
-                ]);
+                $this->flashMessenger()->addErrorMessage(
+                    'La catégorie de cet utilisateur est inconnue.');
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'logout'
+                    ]);
                 break;
         }
         if (array_key_exists('serviceId', $args)) {
@@ -173,19 +191,22 @@ class DocumentController extends AbstractActionController
         $ahoraires = []; // c'est un tableau
         foreach ($services as $serviceId) {
             $ahoraires[$serviceId] = [
-                'aller' => $qCircuits->complet($serviceId, 'matin', function ($arret) use($qListe, $millesime) {
-                    return $this->detailHoraireArret($arret, $qListe, $millesime);
-                }),
-                'retour' => $qCircuits->complet($serviceId, 'soir', function ($arret) use($qListe, $millesime) {
-                    return $this->detailHoraireArret($arret, $qListe, $millesime);
-                })
+                'aller' => $qCircuits->complet($serviceId, 'matin', 
+                    function ($arret) use($qListe, $millesime) {
+                        return $this->detailHoraireArret($arret, $qListe, $millesime);
+                    }),
+                'retour' => $qCircuits->complet($serviceId, 'soir', 
+                    function ($arret) use($qListe, $millesime) {
+                        return $this->detailHoraireArret($arret, $qListe, $millesime);
+                    })
             ];
         }
         $this->pdf_manager->get(Tcpdf::class)
-            ->setParams([
-            'documentId' => 'Horaires détaillés',
-            'layout' => 'sbm-pdf/document/horaires.phtml'
-        ])
+            ->setParams(
+            [
+                'documentId' => 'Horaires détaillés',
+                'layout' => 'sbm-pdf/document/horaires.phtml'
+            ])
             ->setData($ahoraires)
             ->run();
     }
@@ -193,18 +214,22 @@ class DocumentController extends AbstractActionController
     private function detailHoraireArret($arret, $qListe, $millesime)
     {
         // pour les parents, on ne montre que les inscrits
-        $liste = $qListe->query($millesime, FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'], $this->categorie == 1), [
-            'nom',
-            'prenom'
-        ]);
+        $liste = $qListe->query($millesime, 
+            FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'], 
+                $this->categorie == 1), 
+            [
+                'nom',
+                'prenom'
+            ]);
         $arret['effectif'] = count($liste);
         $arret['liste'] = [];
         foreach ($liste as $eleve) {
-            $arret['liste'][] = $eleve['nom'] . ' ' . $eleve['prenom'] . ' - ' . $eleve['classe'];
+            $arret['liste'][] = $eleve['nom'] . ' ' . $eleve['prenom'] . ' - ' .
+                 $eleve['classe'];
         }
         return $arret;
     }
-    
+
     /**
      * Action permettant de générer la liste des élèves au format pdf dans le portail de l'organisateur
      */
@@ -219,9 +244,10 @@ class DocumentController extends AbstractActionController
         // on doit être authentifié
         $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
+            return $this->redirect()->toRoute('login', 
+                [
+                    'action' => 'home-page'
+                ]);
         }
         $identity = $auth->getIdentity();
         $userId = $auth->getUserId();
@@ -265,13 +291,14 @@ class DocumentController extends AbstractActionController
             ]);
         
         $this->pdf_manager->get(Tcpdf::class)
-        ->setParams([
-            'documentId' => 'List élèves portail organisateur',
-            'layout' => 'sbm-pdf/document/org-pdf.phtml'
-        ])
-        ->setData(iterator_to_array($data))
-        ->run();
+            ->setParams(
+            [
+                'documentId' => 'List élèves portail organisateur',
+                'layout' => 'sbm-pdf/document/org-pdf.phtml'
+            ])
+            ->setData(iterator_to_array($data))
+            ->run();
         
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");        
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 }

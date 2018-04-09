@@ -9,8 +9,8 @@
  * @filesource Documents.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -57,9 +57,9 @@ class Documents extends AbstractSbmTable
 
     /**
      * Renvoie le documentId de l'enregistrement ayant pour name le $name donné.
-     * 
-     * @param string $name
-     * 
+     *
+     * @param string $name            
+     *
      * @return int
      * @throws \SbmCommun\Model\Db\Service\Table\Exception
      */
@@ -68,8 +68,9 @@ class Documents extends AbstractSbmTable
         $where = new Where();
         $where->equalTo('name', $name);
         $rowset = $this->fetchAll($where);
-        if (!$rowset->count()) {
-            throw new \SbmCommun\Model\Db\Service\Table\Exception(sprintf('Définir le document %s.', $name));
+        if (! $rowset->count()) {
+            throw new \SbmCommun\Model\Db\Service\Table\Exception(
+                sprintf('Définir le document %s.', $name));
         }
         return $rowset->current()->documentId;
     }

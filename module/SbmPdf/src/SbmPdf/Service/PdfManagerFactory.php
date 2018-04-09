@@ -10,8 +10,8 @@
  * @filesource PdfManagerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Service;
 
@@ -27,18 +27,24 @@ class PdfManagerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config_application = $serviceLocator->get('config');
-        $controllers = array_merge(StdLib::getParamR([
-            'controllers',
-            'factories'
-        ], $config_application, []), StdLib::getParamR([
-            'controllers',
-            'invokables'
-        ], $config_application, []));
+        $controllers = array_merge(
+            StdLib::getParamR(
+                [
+                    'controllers',
+                    'factories'
+                ], $config_application, []), 
+            StdLib::getParamR(
+                [
+                    'controllers',
+                    'invokables'
+                ], $config_application, []));
         asort($controllers);
-        $pdf_manager = new PdfManager(new Config($serviceLocator->get('config')['pdf_manager']));
+        $pdf_manager = new PdfManager(
+            new Config($serviceLocator->get('config')['pdf_manager']));
         $pdf_manager->setService('Sbm\DbManager', $serviceLocator->get('Sbm\DbManager'))
             ->setService('ViewRenderer', $serviceLocator->get('ViewRenderer'))
-            ->setService('SbmAuthentification\Authentication', $serviceLocator->get('SbmAuthentification\Authentication'))
+            ->setService('SbmAuthentification\Authentication', 
+            $serviceLocator->get('SbmAuthentification\Authentication'))
             ->setService('routes', $config_application['router']['routes'])
             ->setService('controllers', $controllers);
         return $pdf_manager;

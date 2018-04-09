@@ -14,8 +14,8 @@
  * @filesource AbstractPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Plugin;
 
@@ -32,7 +32,8 @@ use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Validator\PlageIp;
 
-abstract class AbstractPlateforme implements FactoryInterface, EventManagerAwareInterface, PlateformeInterface
+abstract class AbstractPlateforme implements FactoryInterface, EventManagerAwareInterface, 
+    PlateformeInterface
 {
 
     /**
@@ -173,9 +174,10 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
      */
     public function setEventManager(EventManagerInterface $eventManager)
     {
-        $eventManager->addIdentifiers([
-            'SbmPaiement\Plugin\Plateforme'
-        ]);
+        $eventManager->addIdentifiers(
+            [
+                'SbmPaiement\Plugin\Plateforme'
+            ]);
         $this->eventManager = $eventManager;
     }
 
@@ -195,31 +197,36 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
 
     /**
      * (non-PHPdoc)
+     * 
      * @see \Zend\ServiceManager\FactoryInterface::createService()
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
-        $config_paiement = StdLib::getParamR([
-            'sbm',
-            'paiement',
-        ], $serviceLocator->get('config'), []);
+        $config_paiement = StdLib::getParamR(
+            [
+                'sbm',
+                'paiement'
+            ], $serviceLocator->get('config'), []);
         $this->plateforme = StdLib::getParam('plateforme', $config_paiement);
         $class = __NAMESPACE__ . '\\' . $this->plateforme . '\Plateforme';
         if (is_null($this->plateforme) || ! class_exists($class)) {
-            throw new Exception('Mauvaise configuration de la plateforme de paiement dans le fichier de configuration.');
+            throw new Exception(
+                'Mauvaise configuration de la plateforme de paiement dans le fichier de configuration.');
         }
         $this->config = StdLib::getParam(strtolower($this->plateforme), $config_paiement);
-        $this->filelog = StdLib::concatPath(StdLib::getParam('path_filelog', $config_paiement), strtolower($this->plateforme) . '_error.log');
+        $this->filelog = StdLib::concatPath(
+            StdLib::getParam('path_filelog', $config_paiement), 
+            strtolower($this->plateforme) . '_error.log');
         // initialisation particulière de la classe dérivée
-        $this->init();        
+        $this->init();
         
         return $this;
     }
 
     /**
      * Renvoie le db manager permettant d'accéder à la base de données
-     * 
+     *
      * @return \Zend\ServiceManager\ServiceLocatorInterface
      */
     public function getDbManager()
@@ -236,9 +243,10 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
      */
     public function isAuthorizedRemoteAdress($remote_adress)
     {
-        $validator = new PlageIp([
-            'range' => $this->getAuthorizedIp()
-        ]);
+        $validator = new PlageIp(
+            [
+                'range' => $this->getAuthorizedIp()
+            ]);
         return $validator->isValid($remote_adress);
     }
 
@@ -271,14 +279,17 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
                     $this->data = $data;
                 if ($this->validPaiement()) {
                     // log en INFO puis lance un évènement 'paiementOK' avec $this->data en paramètre
-                    $this->logError(Logger::INFO, $this->error_no ? $this->error_msg : 'Paiement OK', $data);
+                    $this->logError(Logger::INFO, 
+                        $this->error_no ? $this->error_msg : 'Paiement OK', $data);
                     $this->prepareData();
                     $this->getEventManager()->trigger('paiementOK', null, $this->paiement);
-                    $this->getEventManager()->trigger('scolariteOK', null, $this->scolarite);
+                    $this->getEventManager()->trigger('scolariteOK', null, 
+                        $this->scolarite);
                     return 'Notification reçue le ' . date('d/m/Y à H/i/s') . ' (UTC).';
                 } else {
                     // log en NOTICE puis lance un évènement 'paiementKO' avec $this->data en paramètre
-                    $this->logError(Logger::NOTICE, 'Paiement KO : ' . $this->error_msg, $data);
+                    $this->logError(Logger::NOTICE, 'Paiement KO : ' . $this->error_msg, 
+                        $data);
                     $this->getEventManager()->trigger('paiementKO', null, $this->data);
                     return 'Notification reçue le ' . date('d/m/Y à H/i/s') . ' (UTC).';
                 }
@@ -286,18 +297,22 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
                 // log en ERR puis lance un évènement 'notificationError' avec $data en paramètre
                 $this->logError(Logger::ERR, $this->error_msg, $data);
                 $this->getEventManager()->trigger('notificationError', null, $data);
-                return "Notification incorrecte reçue le " . date('d/m/Y à H/i/s') . ' (UTC).';
+                return "Notification incorrecte reçue le " . date('d/m/Y à H/i/s') .
+                     ' (UTC).';
             }
         } else {
             // log en WARN puis lance un évènement 'notificationForbidden'
-            $this->logError(Logger::WARN, 'Notification interdite: Adresse IP non autorisée', [
-                $remote_addr,
-                $data
-            ]);
-            $this->getEventManager()->trigger('notificationForbidden', null, [
-                $remote_addr,
-                $data
-            ]);
+            $this->logError(Logger::WARN, 
+                'Notification interdite: Adresse IP non autorisée', 
+                [
+                    $remote_addr,
+                    $data
+                ]);
+            $this->getEventManager()->trigger('notificationForbidden', null, 
+                [
+                    $remote_addr,
+                    $data
+                ]);
             return false;
         }
     }
@@ -331,7 +346,9 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
         $key = (array) $key;
         if (! StdLib::array_keys_exists($key, $this->config)) {
             $propriete = count($key) == 1 ? current($key) : print_r($key, true);
-            throw new Exception("Mauvaise configuration de la plateforme de paiement. La propriété '$propriete' n'est pas définie dans " . print_r($this->config, true));
+            throw new Exception(
+                "Mauvaise configuration de la plateforme de paiement. La propriété '$propriete' n'est pas définie dans " .
+                     print_r($this->config, true));
         }
         return StdLib::getParamR($key, $this->config);
     }
@@ -398,7 +415,7 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
 
     /**
      * Renvoie le code du mode de paiement par CB
-     * 
+     *
      * @return integer
      */
     protected function getCodeModeDePaiement()
@@ -431,7 +448,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
     public function logError($niveau, $message, $array = [])
     {
         if (empty($this->logger)) {
-            $filter = new Priority(StdLib::getParam('error_reporting', $this->config, Logger::WARN));
+            $filter = new Priority(
+                StdLib::getParam('error_reporting', $this->config, Logger::WARN));
             $writer = new Stream($this->filelog);
             $writer->addFilter($filter);
             $this->logger = new Logger();
@@ -496,6 +514,7 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
             '98' => 'Serveur indisponible routage réseau demandé à nouveau.',
             '99' => 'Incident domaine initiateur.'
         ];
-        return StdLib::getParam($code, "$code $nomenclature", "$code Code réponse inconnu.");
+        return StdLib::getParam($code, "$code $nomenclature", 
+            "$code Code réponse inconnu.");
     }
 }

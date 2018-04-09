@@ -52,15 +52,17 @@ class ModifHoraires
             's3'
         ];
         $millesime = Session::get('millesime');
-        $circuits = $this->tcircuits->fetchAll([
-            'millesime' => $millesime,
-            'selection' => 1
-        ]);
+        $circuits = $this->tcircuits->fetchAll(
+            [
+                'millesime' => $millesime,
+                'selection' => 1
+            ]);
         foreach ($circuits as $circuit) {
             $cr = true;
             $change = false;
             foreach ($horaires as $horaire) {
-                $str_laps = sprintf('PT%dM%dS', $this->actions[$horaire . '-min'], $this->actions[$horaire . '-sec']);
+                $str_laps = sprintf('PT%dM%dS', $this->actions[$horaire . '-min'], 
+                    $this->actions[$horaire . '-sec']);
                 if ($this->actions[$horaire . '-op'] == - 1) {
                     $change = true;
                     $date = new \DateTime($circuit->{$horaire});

@@ -7,24 +7,25 @@
  * @filesource voir.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juill. 2016
- * @version 2016-2.1.10
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmpaiement', array(
-    'action' => 'liste',
-    'page' => $this->page
-));
-$hiddens = array(
+$retour = $this->url('sbmpaiement', 
+    [
+        'action' => 'liste',
+        'page' => $this->page
+    ]);
+$hiddens = [
     'op' => 'retour'
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <h1>Détail d'une notification de paiement</h1>

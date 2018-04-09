@@ -9,8 +9,8 @@
  * @filesource Decimal.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Validator;
 
@@ -18,25 +18,27 @@ use Zend\Validator\AbstractValidator;
 
 class Decimal extends AbstractValidator
 {
+
     const PATTERN = '/^[0-9]+(?:[.,][0-9]+)?$/';
+
     const FLOAT = 'float';
-    
-    protected $messageTemplates = array(
+
+    protected $messageTemplates = [
         self::FLOAT => "'%value%' n'est pas un décimal positif."
-    );
-    
+    ];
+
     public function isValid($value)
     {
         $this->setValue($value);
         if (is_float($value)) {
             return true;
         }
-               
-        if (!preg_match(self::PATTERN, $value)) {
+        
+        if (! preg_match(self::PATTERN, $value)) {
             $this->error(self::FLOAT);
             return false;
         }
-    
+        
         return true;
     }
 }

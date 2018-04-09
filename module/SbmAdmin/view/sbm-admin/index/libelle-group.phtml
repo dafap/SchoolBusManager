@@ -7,19 +7,21 @@
  * @filesource libelle-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$retour = $this->url('sbmadmin', [
-    'action' => 'libelle-liste',
-    'page' => $this->page
-]);
-$pdf = $this->url('sbmadmin', [
-    'action' => 'libelle-pdf',
-    'page' => $this->page
-]);
+$retour = $this->url('sbmadmin', 
+    [
+        'action' => 'libelle-liste',
+        'page' => $this->page
+    ]);
+$pdf = $this->url('sbmadmin', 
+    [
+        'action' => 'libelle-pdf',
+        'page' => $this->page
+    ]);
 $hiddens = [
     'nature' => $this->nature,
     'code' => $this->code

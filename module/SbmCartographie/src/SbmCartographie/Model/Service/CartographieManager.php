@@ -9,8 +9,8 @@
  * @filesource CartographieManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\Model\Service;
 
@@ -21,12 +21,15 @@ use Zend\ServiceManager\Config;
 
 class CartographieManager implements FactoryInterface
 {
+
     private $cartographie_manager;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->cartographie_manager = new ServiceManager(new Config($serviceLocator->get('config')['cartographie_manager']));
-        $this->cartographie_manager->setService('Sbm\DbManager', $serviceLocator->get('Sbm\DbManager'));
+        $this->cartographie_manager = new ServiceManager(
+            new Config($serviceLocator->get('config')['cartographie_manager']));
+        $this->cartographie_manager->setService('Sbm\DbManager', 
+            $serviceLocator->get('Sbm\DbManager'));
         return $this->cartographie_manager;
     }
 }

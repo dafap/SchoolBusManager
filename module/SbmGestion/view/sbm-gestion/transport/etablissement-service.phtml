@@ -8,59 +8,66 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_ajouter = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-service-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-service-pdf',
-    'page' => $this->page
-));
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-service',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-service-suppr',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-service-group',
-    'id' => $this->page
-));
+$url_ajouter = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-service-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-service-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-service',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-service-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-service-group',
+        'id' => $this->page
+    ]);
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 
-$hiddens = array(
+$hiddens = [
     'serviceId' => null,
     'etablissementId' => $this->etablissement->etablissementId,
     'origine' => 'etablissement-service'
-);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'etablissement-service'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', 
+        [
+            'action' => 'etablissement-service'
+        ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau service'
-    )
-);
+    ]
+];
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -101,15 +108,16 @@ echo $this->flashMessenger()->render('default');
 				</tr>
             <?php foreach($data as $test => $service): ?>
             <?php $fmt?>
-            <?php $nbInscrits = StdLib::getParamR(array($service->serviceId, 'total'), $this->t_nb_inscrits, 0); ?>
+            <?php $nbInscrits = StdLib::getParamR([$service->serviceId, 'total'], $this->t_nb_inscrits, 0); ?>
             <?php $exces = $service->serv_nbPlaces < $nbInscrits; ?>
                 <tr
 					class="<?php
                 
-                echo $this->cycle(array(
-                    "even",
-                    "odd"
-                ))->next();
+                echo $this->cycle(
+                    [
+                        "even",
+                        "odd"
+                    ])->next();
                 if ($exces)
                     echo ' exces';
                 ?>">
@@ -126,24 +134,27 @@ echo $this->flashMessenger()->render('default');
 					<td class="soir"><?php echo $service->cir_s1; ?></td>
 					<td class="boutons">
             <?php
-                $hiddens = array(
+                $hiddens = [
                     'etablissementId' => $etablissement->etablissementId,
                     'serviceId' => $service->serviceId,
                     'origine' => 'etablissement-service'
-                );
-                $buttons = array(
-                    'supprimer' => array(
+                ];
+                $buttons = [
+                    'supprimer' => [
                         'class' => 'fam-delete',
                         'formaction' => $url_delete,
                         'title' => 'supprimer'
-                    ),
-                    'eleves' => array(
+                    ],
+                    'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
-                        'title' => sprintf('élèves de %s inscrits sur le service %s', $this->etablissement->nom, $service->serviceId)
-                    )
-                );
-                echo $this->listeLigneActions($etablissement->etablissementId . '|' . $service->serviceId, $hiddens, $buttons);
+                        'title' => sprintf('élèves de %s inscrits sur le service %s', 
+                            $this->etablissement->nom, $service->serviceId)
+                    ]
+                ];
+                echo $this->listeLigneActions(
+                    $etablissement->etablissementId . '|' . $service->serviceId, $hiddens, 
+                    $buttons);
                 ?>
 			        </td>
 				</tr>         
@@ -152,6 +163,6 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 	</div>
 </div>

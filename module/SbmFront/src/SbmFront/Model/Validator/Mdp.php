@@ -13,8 +13,8 @@
  * @filesource Mdp.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Model\Validator;
 
@@ -30,38 +30,48 @@ class Mdp extends AbstractValidator
     const LOWER = 'lower';
 
     const DIGIT = 'digit';
-    
+
     const SPECIAL = 'special';
 
-    protected $messageTemplates = array(
+    protected $messageTemplates = [
         self::LENGTH => "Trop court. Nombre minimum de caractères : %len%",
         self::UPPER => "Invalide. Nombre minimum de lettres majuscules : %maj%",
         self::LOWER => "Invalide. Nombre minimum de lettres minuscules : %min%",
         self::DIGIT => "Invalide. Nombre minimum de caractères numériques : %num%",
         self::SPECIAL => "Invalide. Il faut %spe% caractère(s) autre que des lettres ou des chiffres."
-    );
-    
+    ];
+
     /**
+     *
      * @var array
      */
-    protected $messageVariables = array(
-        'len' => array('options' => 'len'),
-        'min' => array('options' => 'min'),
-        'maj' => array('options' => 'maj'),
-        'num' => array('options' => 'num'),
-        'spe' => array('options' => 'spe'),
-    );
+    protected $messageVariables = [
+        'len' => [
+            'options' => 'len'
+        ],
+        'min' => [
+            'options' => 'min'
+        ],
+        'maj' => [
+            'options' => 'maj'
+        ],
+        'num' => [
+            'options' => 'num'
+        ],
+        'spe' => [
+            'options' => 'spe'
+        ]
+    ];
 
-    protected $options = array(
+    protected $options = [
         'len' => 6, // Minimum length
         'min' => 1, // Minimum lowercase number
         'maj' => 1, // Mimimum uppercase number
         'num' => 1, // Minimum digit number
         'spe' => 0
-    ) // Minimum special char number
-;
-
-    public function __construct($options = array())
+    ];
+ // Minimum special char number
+    public function __construct($options = [])
     {
         if (! is_array($options)) {
             $options = func_get_args();

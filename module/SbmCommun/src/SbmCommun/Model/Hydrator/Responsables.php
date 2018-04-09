@@ -13,8 +13,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2016
- * @version 2016-2.1.10
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Hydrator;
 
@@ -29,13 +29,16 @@ class Responsables extends AbstractHydrator
 
     /**
      * (non-PHPdoc)
-     * 
+     *
      * @see \SbmCommun\Model\Hydrator\AbstractHydrator::calculate()
      */
     protected function calculate($object)
     {
         if (! $object instanceof ObjectData) {
-            throw new Exception\InvalidArgumentException(sprintf('%s : On attend un SbmCommun\Model\Db\ObjectData\Responsable et on a reçu un %s', __METHOD__, gettype($object)));
+            throw new Exception\InvalidArgumentException(
+                sprintf(
+                    '%s : On attend un SbmCommun\Model\Db\ObjectData\Responsable et on a reçu un %s', 
+                    __METHOD__, gettype($object)));
         }
         $calculate_fields = $object->getCalculateFields();
         $now = new \DateTime('now');
@@ -51,7 +54,8 @@ class Responsables extends AbstractHydrator
             } elseif ($value == 'dateCreation') {
                 $object->dateCreation = $now->format('Y-m-d H:i:s');
             } elseif ($value == 'userId') {
-                $auth = new AuthenticationService(new Session(AuthenticationServiceFactory::SESSION_AUTH_NAMESPACE));
+                $auth = new AuthenticationService(
+                    new Session(AuthenticationServiceFactory::SESSION_AUTH_NAMESPACE));
                 $object->userId = $auth->getUserId();
             }
         }

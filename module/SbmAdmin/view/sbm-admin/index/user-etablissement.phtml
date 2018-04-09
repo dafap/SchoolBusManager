@@ -9,14 +9,15 @@
  * @filesource user-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmadmin', [
-    'action' => 'user-liste',
-    'page' => $this->page
-]);
+$url_retour = $this->url('sbmadmin', 
+    [
+        'action' => 'user-liste',
+        'page' => $this->page
+    ]);
 $hiddens = [];
 $actions = [
     'retour' => [
@@ -49,8 +50,8 @@ $actions = [
     ?>
         <fieldset class="sbm-page1">
     <?php
-        echo $this->formHidden($this->form->get('csrf'));
-        echo $this->formHidden($this->form->get('userId'));
+    echo $this->formHidden($this->form->get('csrf'));
+    echo $this->formHidden($this->form->get('userId'));
     ?>
             <div id="user-etablissement-ajout-etablissementId"
 				class="row-inner ajout"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
@@ -80,7 +81,7 @@ $actions = [
 				<div class="label">Horaires du matin</div>de <?php echo $this->etablissement->hMatin; ?> à <?php echo $this->etablissement->hMidi; ?></div>
 			<div>
 				<div class="label">de l'après-midi</div>de <?php echo $this->etablissement->hAMidi; ?> à <?php echo $this->etablissement->hSoir; ?></div>
-				
+
 		</fieldset>
 <?php endif;?>
     </div>

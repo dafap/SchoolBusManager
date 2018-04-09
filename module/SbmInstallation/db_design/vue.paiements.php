@@ -9,107 +9,107 @@
  * @filesource vue.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 janv. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'paiements',
     'type' => 'vue',
     'drop' => true,
     'edit_entity' => true,
-    'structure' => array(
-        'fields' => array(
-            array(
+    'structure' => [
+        'fields' => [
+            [
                 'field' => 'paiementId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'selection'
-            ),
-            array(
+            ],
+            [
                 'field' => 'dateBordereau'
-            ),
-            array(
+            ],
+            [
                 'field' => 'dateDepot'
-            ),
-            array(
+            ],
+            [
                 'field' => 'datePaiement'
-            ),
-            array(
+            ],
+            [
                 'field' => 'dateValeur'
-            ),
-            array(
+            ],
+            [
                 'field' => 'responsableId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'anneeScolaire'
-            ),
-            array(
+            ],
+            [
                 'field' => 'exercice'
-            ),
-            array(
+            ],
+            [
                 'field' => 'montant'
-            ),
-            array(
+            ],
+            [
                 'field' => 'codeModeDePaiement'
-            ),
-            array(
+            ],
+            [
                 'field' => 'codeCaisse'
-            ),
-            array(
+            ],
+            [
                 'field' => 'banque'
-            ),
-            array(
+            ],
+            [
                 'field' => 'titulaire'
-            ),
-            array(
+            ],
+            [
                 'field' => 'reference'
-            )
-        ),
-        'from' => array(
+            ]
+        ],
+        'from' => [
             'table' => 'paiements', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
             'alias' => 'pai'
-        ), // optionnel
-        'join' => array(
-            array(
+        ], // optionnel
+        'join' => [
+            [
                 'table' => 'responsables',
                 'type' => 'table',
                 'alias' => 'res',
                 'relation' => 'pai.responsableId = res.responsableId',
-                'fields' => array(
-                    array(
-                        'expression' => array(
+                'fields' => [
+                    [
+                        'expression' => [
                             'value' => "CONCAT(res.nom, ' ', res.prenom)",
                             'type' => 'varchar(61)'
-                        ),
+                        ],
                         'alias' => 'responsable'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'table' => 'libelles-caisses',
                 'type' => 'vue',
                 'alias' => 'cai',
                 'relation' => 'pai.codeCaisse = cai.code',
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'libelle',
                         'alias' => 'caisse'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'table' => 'libelles-modes-de-paiement',
                 'type' => 'vue',
                 'alias' => 'mod',
                 'relation' => 'pai.codeModeDePaiement = mod.code',
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'libelle',
                         'alias' => 'modeDePaiement'
-                    )
-                )
-            ),
-        )
-    )
-);
+                    ]
+                ]
+            ]
+        ]
+    ]
+];

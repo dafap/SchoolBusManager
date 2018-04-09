@@ -8,8 +8,8 @@
  * @filesource AbstractModule.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmBase;
 
@@ -21,27 +21,25 @@ use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use SbmBase\Model\StdLib;
 
-class Module implements 
-    AutoloaderProviderInterface, 
-    BootstrapListenerInterface, 
+class Module implements AutoloaderProviderInterface, BootstrapListenerInterface, 
     ServiceProviderInterface
 {
 
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
-                )
-            )
-        );
+                ]
+            ]
+        ];
     }
 
     public function getServiceConfig()
     {
-        return array(
-            'factories' => array(
+        return [
+            'factories' => [
                 'SbmAuthentificationManager' => function ($sm) {
                     $config = $sm->get('config');
                     if (isset($config['sbm_session'])) {
@@ -63,15 +61,16 @@ class Module implements
                             // cette classe doit être récupérée par le service manager car son constructeur a des arguments
                             $sessionSaveHandler = $sm->get($session['save_handler']);
                         }
-                        $sessionManager = new SessionManager($sessionConfig, $sessionStorage, $sessionSaveHandler);
+                        $sessionManager = new SessionManager($sessionConfig, 
+                            $sessionStorage, $sessionSaveHandler);
                     } else {
                         $sessionManager = new SessionManager();
                     }
                     Container::setDefaultManager($sessionManager);
                     return $sessionManager;
                 }
-            )
-        );
+            ]
+        ];
     }
 
     public function onBootstrap(EventInterface $e)
@@ -104,7 +103,7 @@ class Module implements
                 $session->regenerateId(true);
             } catch (\Exception $e) {
                 // try catch nécessaire pour les tests unitaires avec AbstractControllerTestCase
-            }            
+            }
             $container->init = 1;
             if ($request instanceof \Zend\Http\PhpEnvironment\Request) {
                 $container->remoteAddr = $request->getServer()->get('REMOTE_ADDR');
@@ -112,10 +111,11 @@ class Module implements
             }
             
             $config = $serviceManager->get('config');
-            if (! StdLib::array_keys_exists([
-                'sbm_session',
-                'validators'
-            ], $config)) {
+            if (! StdLib::array_keys_exists(
+                [
+                    'sbm_session',
+                    'validators'
+                ], $config)) {
                 return;
             }
             
@@ -132,10 +132,11 @@ class Module implements
                     default:
                         $validator = new $validator();
                 }
-                $chain->attach('session.validate', array(
-                    $validator,
-                    'isValid'
-                ));
+                $chain->attach('session.validate', 
+                    [
+                        $validator,
+                        'isValid'
+                    ]);
             }
         }
     }

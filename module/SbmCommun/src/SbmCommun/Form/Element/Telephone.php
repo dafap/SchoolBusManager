@@ -8,8 +8,8 @@
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juil. 2014
- * @version 2014-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\Element;
 
@@ -20,27 +20,30 @@ use Zend\Validator\ValidatorInterface;
 
 class Telephone extends Element implements InputProviderInterface
 {
+
     /**
+     *
      * @var ValidatorInterface
      */
     protected $validator;
-    
+
     public function getValidator()
     {
         if (is_null($this->validator)) {
             $validator = new RegexValidator('/^0[1-9](\s?\d{2}){4}$/');
-            $validator->setMessage('Entrez les 10 chiffres composant le numéro !', RegexValidator::NOT_MATCH);
+            $validator->setMessage('Entrez les 10 chiffres composant le numéro !', 
+                RegexValidator::NOT_MATCH);
             $this->validator = $validator;
         }
         return $this->validator;
     }
-    
+
     public function setValidator(ValidatorInterface $validator)
     {
         $this->validator = $validator;
         return $this;
     }
-    
+
     /**
      * Provide default input rules for this element
      *
@@ -50,16 +53,24 @@ class Telephone extends Element implements InputProviderInterface
      */
     public function getInputSpecification()
     {
-        return array(
+        return [
             'name' => $this->getName(),
             'required' => true,
-            'filters' => array(
-                array('name' => 'Zend\Filter\PregReplace', 'options' => array('pattern' => '/\D/', 'replacement' => '')),
-                array('name' => 'Zend\Filter\StringTrim'),
-            ),
-            'validators' => array(
-                $this->getValidator(),
-            ),
-        );
+            'filters' => [
+                [
+                    'name' => 'Zend\Filter\PregReplace',
+                    'options' => [
+                        'pattern' => '/\D/',
+                        'replacement' => ''
+                    ]
+                ],
+                [
+                    'name' => 'Zend\Filter\StringTrim'
+                ]
+            ],
+            'validators' => [
+                $this->getValidator()
+            ]
+        ];
     }
 }

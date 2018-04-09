@@ -9,8 +9,8 @@
  * @filesource Lambert06CC9zones.php
  *             @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- *         @date 28 mars 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -25,7 +25,9 @@ class Lambert06CC9zones extends AbstractProjection implements ProjectionInterfac
     public function __construct($nzone)
     {
         if (! is_int($nzone) || $nzone < 42 || $nzone > 50) {
-            throw new Exception(__CLASS__ . " - Zone $nzone inconnue. Le numéro de zone doit être un entier compris entre 42 et 50.");
+            throw new Exception(
+                __CLASS__ .
+                     " - Zone $nzone inconnue. Le numéro de zone doit être un entier compris entre 42 et 50.");
         }
         $this->ellipsoide = new IagGrs80();
         $this->name = 'Lambert_Conformal_Conic_2SP';
@@ -50,7 +52,8 @@ class Lambert06CC9zones extends AbstractProjection implements ProjectionInterfac
      */
     public function gRGF93versXYZ(Point $p)
     {
-        return $p->transforme($this->alg0003($p->getLongitude('radian'), $p->getLatitude('radian')));
+        return $p->transforme(
+            $this->alg0003($p->getLongitude('radian'), $p->getLatitude('radian')));
     }
 
     /**
@@ -61,7 +64,8 @@ class Lambert06CC9zones extends AbstractProjection implements ProjectionInterfac
      */
     public function xyzVersgRGF93(Point $p)
     {
-        return $p->transforme($this->alg0004($p->getX(), $p->getY())
-            ->to('degré'));
+        return $p->transforme(
+            $this->alg0004($p->getX(), $p->getY())
+                ->to('degré'));
     }
 }

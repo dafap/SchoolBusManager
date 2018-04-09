@@ -7,8 +7,8 @@
  * @filesource StdLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmBase\Model;
 
@@ -107,13 +107,17 @@ abstract class StdLib
         if (! is_array($array)) {
             ob_start();
             var_dump($array);
-            $mess = sprintf("%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s", __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
+            $mess = sprintf(
+                "%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s", 
+                __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
             throw new Exception($mess);
         }
         if (! is_string($index) && ! is_integer($index)) {
             ob_start();
             print_r($index);
-            $mess = sprintf("Le paramètre demandé doit être une chaîne de caractères ou un entier. On a reçu %s", html_entity_decode(strip_tags(ob_get_clean())));
+            $mess = sprintf(
+                "Le paramètre demandé doit être une chaîne de caractères ou un entier. On a reçu %s", 
+                html_entity_decode(strip_tags(ob_get_clean())));
             throw new Exception($mess);
         }
         if (array_key_exists($index, $array)) {
@@ -140,7 +144,9 @@ abstract class StdLib
         if (! is_array($array)) {
             ob_start();
             var_dump($array);
-            $mess = sprintf("%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s", __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
+            $mess = sprintf(
+                "%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s", 
+                __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
             throw new Exception($mess);
         }
         if (is_array($index)) {
@@ -157,14 +163,15 @@ abstract class StdLib
             return self::getParam($index, $array, $default);
         }
     }
-    
+
     /**
-     * Renvoie le path absolu correspondant à $path dans la branche de l'arborescence 
-     * de fichiers antérieure à $dir. Renvoie false si le $path n'est pas trouvé.
-     * 
-     * @param string $dir
-     * @param string $path
-     * 
+     * Renvoie le path absolu correspondant à $path dans la branche de l'arborescence
+     * de fichiers antérieure à $dir.
+     * Renvoie false si le $path n'est pas trouvé.
+     *
+     * @param string $dir            
+     * @param string $path            
+     *
      * @return boolean|string
      */
     public static function findParentPath($dir, $path)
@@ -197,15 +204,17 @@ abstract class StdLib
     public static function concatPath($path, $file)
     {
         if (! (is_string($path) && is_string($file))) {
-            throw new Exception(__METHOD__ . 'Des chaînes de caractères sont attendues comme paramètres.');
+            throw new Exception(
+                __METHOD__ . 'Des chaînes de caractères sont attendues comme paramètres.');
         }
         if (substr($file, 0, 2) == '//') {
             return $file;
         } else {
-            list ($path, $file) = preg_replace('/([\/\\\\]+)/', '/', [
-                $path,
-                $file
-            ]);
+            list ($path, $file) = preg_replace('/([\/\\\\]+)/', '/', 
+                [
+                    $path,
+                    $file
+                ]);
             return rtrim($path, '/') . '/' . ltrim($file, '/');
         }
     }
@@ -267,7 +276,8 @@ abstract class StdLib
     public static function getArrayFromString($str)
     {
         if (! is_string($str) && ! is_numeric($str) && ! is_null($str)) {
-            throw new Exception('Le paramètre doit être une chaine de caractère ou un nombre ou null.');
+            throw new Exception(
+                'Le paramètre doit être une chaine de caractère ou un nombre ou null.');
         }
         // on analyse la chaine reçue et on la formate correctement, avec quotes et échappement
         $trows = explode(',', $str); // tableau de lignes
@@ -283,7 +293,7 @@ abstract class StdLib
         $str = implode(',', $trows);
         
         // construction du tableau résultat
-        $tableau = array();
+        $tableau = [];
         eval("\$tableau=array($str);");
         return $tableau;
     }
@@ -299,7 +309,7 @@ abstract class StdLib
     public static function translateData($data, $array)
     {
         if (is_array($data) && self::isIndexedArray($data)) {
-            $result = array();
+            $result = [];
             foreach ($data as $item) {
                 $result[] = self::traduire($item, $array);
             }
@@ -311,7 +321,8 @@ abstract class StdLib
     private static function traduire($data, $array)
     {
         if (! is_string($data) && ! is_numeric($data) && ! is_null($data)) {
-            throw new Exception('Le paramètre doit être une chaine de caractère ou un nombre ou null.');
+            throw new Exception(
+                'Le paramètre doit être une chaine de caractère ou un nombre ou null.');
         }
         if (is_null($data)) {
             return '';
@@ -328,10 +339,10 @@ abstract class StdLib
      *            null est considérée comme une chaine vide.
      * @param int $precision
      *            Ignoré si $data est un entier
-     *            Indique le nombre de décimales si $data est un décimal ou 
+     *            Indique le nombre de décimales si $data est un décimal ou
      *            une chaine de digits
      *            Indique une troncature de la chaine $data sinon. Par exemple :
-     *            formatData('un bel exemple', 4, 9) donnera '     un b' (largeur 9 caractères).
+     *            formatData('un bel exemple', 4, 9) donnera ' un b' (largeur 9 caractères).
      *            Mettre un nombre négatif pour pas de troncature.
      * @param int|digits $completion
      *            Indique la largeur minimale de la chaine
@@ -343,7 +354,8 @@ abstract class StdLib
     public static function formatData($data, $precision, $completion)
     {
         if (is_array($data) || is_object($data)) {
-            throw new Exception('La donnée est d\'un type incorrect : nombre, chaine ou null attendus.');
+            throw new Exception(
+                'La donnée est d\'un type incorrect : nombre, chaine ou null attendus.');
         }
         if ($completion != 0) {
             if ($precision > - 1) {

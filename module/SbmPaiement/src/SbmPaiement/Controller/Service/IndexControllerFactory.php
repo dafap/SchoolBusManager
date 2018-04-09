@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Controller\Service;
 
@@ -34,16 +34,18 @@ class IndexControllerFactory implements FactoryInterface
             'plugin_plateforme' => $sm->get('SbmPaiement\Plugin\Plateforme'),
             'responsable' => $sm->get(Responsable::class),
             'user' => $sm->get('SbmAuthentification\Authentication')
-            ->by()
-            ->getIdentity(),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application),
-            'mail_config' => StdLib::getParamR([
-                'sbm',
-                'mail'
-            ], $sm->get('config'))
+                ->by()
+                ->getIdentity(),
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application),
+            'mail_config' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mail'
+                ], $sm->get('config'))
         ];
         return new IndexController($config_controller);
     }

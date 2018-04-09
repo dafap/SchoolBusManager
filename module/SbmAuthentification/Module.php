@@ -20,8 +20,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAuthentification;
 
@@ -36,23 +36,25 @@ use SbmBase\Module\AbstractModule;
 
 class Module extends AbstractModule
 {
+
     public function getDir()
     {
         return __DIR__;
     }
-    
+
     public function getNamespace()
     {
         return __NAMESPACE__;
     }
-    
+
     public function onBootstrap(EventInterface $e)
     {
         $eventManager = $e->getApplication()->getEventManager();
-        $eventManager->attach('route', array(
-            $this,
-            'bootstrapPermissions'
-        ), 100);
+        $eventManager->attach('route', 
+            [
+                $this,
+                'bootstrapPermissions'
+            ], 100);
         $this->bootstrapTranslation($e);
     }
 
@@ -63,8 +65,11 @@ class Module extends AbstractModule
      */
     private function bootstrapTranslation(EventInterface $e)
     {
-        $translator = $e->getApplication()->getServiceManager()->get('MvcTranslator');
-        $translator->addTranslationFile('phpArray', sprintf(Resources::getBasePath() . Resources::getPatternForValidator(), 'fr'));
+        $translator = $e->getApplication()
+            ->getServiceManager()
+            ->get('MvcTranslator');
+        $translator->addTranslationFile('phpArray', 
+            sprintf(Resources::getBasePath() . Resources::getPatternForValidator(), 'fr'));
         AbstractValidator::setDefaultTranslator($translator);
     }
 
@@ -82,10 +87,12 @@ class Module extends AbstractModule
         $request = $sm->get('request');
         $matchedRoute = $router->match($request);
         if (null !== $matchedRoute) {
-            $sharedManager->attach('Zend\Mvc\Controller\AbstractActionController', MvcEvent::EVENT_DISPATCH, function ($e) use($sm) {
-                $sm->get('SbmAuthentification\AclRoutes')
-                    ->dispatch($e); // pass to the plugin...
-            }, 100);
+            $sharedManager->attach('Zend\Mvc\Controller\AbstractActionController', 
+                MvcEvent::EVENT_DISPATCH, 
+                function ($e) use($sm) {
+                    $sm->get('SbmAuthentification\AclRoutes')
+                        ->dispatch($e); // pass to the plugin...
+                }, 100);
         }
     }
 }

@@ -9,13 +9,14 @@
  * @filesource ResponsableVerrouille.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
 class ResponsableVerrouille extends Responsable
 {
+
     public function __construct()
     {
         parent::__construct(true);

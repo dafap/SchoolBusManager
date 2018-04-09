@@ -10,8 +10,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMailChimp\Form;
 
@@ -27,297 +27,316 @@ class Liste extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('sbm-mailchimp-liste');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'id_liste'
-        ]);
-        $this->add([
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => [
-                'csrf_options' => [
-                    'timeout' => 180
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'id_liste'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'name',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'mailchimp-name',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Nom',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'name',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'mailchimp-name',
+                    'class' => 'sbm-width-45c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'company',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'mailchimp-company',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Organisateur',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'company',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'mailchimp-company',
+                    'class' => 'sbm-width-45c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Organisateur',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'address1',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => [
-                'id' => 'mailchimp-address1',
-                'class' => 'sbm-width-40c'
-            ],
-            'options' => [
-                'label' => 'Adresse',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'address1',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'mailchimp-address1',
+                    'class' => 'sbm-width-40c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'address2',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => [
-                'id' => 'mailchimp-address2',
-                'class' => 'sbm-width-40c'
-            ],
-            'options' => [
-                'label' => 'Complément d\'adresse',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'address2',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'mailchimp-address2',
+                    'class' => 'sbm-width-40c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Complément d\'adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'zip',
-            'type' => 'SbmCommun\Form\Element\CodePostal',
-            'attributes' => [
-                'id' => 'mailchimp-zip',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Code postal',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'zip',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'mailchimp-zip',
+                    'class' => 'sbm-width-5c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'city',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'mailchimp-city',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Commune',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'city',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'mailchimp-city',
+                    'class' => 'sbm-width-45c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'state',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'mailchimp-state',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Pays',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'state',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'mailchimp-state',
+                    'class' => 'sbm-width-45c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Pays',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'country',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'mailchimp-country',
-                'class' => 'sbm-width-2c'
-            ],
-            'options' => [
-                'label' => 'Code du pays',
-                'label_attributes' => [
-                    'value' => 'FR',
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'country',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'mailchimp-country',
+                    'class' => 'sbm-width-2c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Code du pays',
+                    'label_attributes' => [
+                        'value' => 'FR',
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'phone',
-            'type' => 'SbmCommun\Form\Element\Telephone',
-            'attributes' => [
-                'id' => 'mailchimp-phone',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Téléphone',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'phone',
+                'type' => 'SbmCommun\Form\Element\Telephone',
+                'attributes' => [
+                    'id' => 'mailchimp-phone',
+                    'class' => 'sbm-width-10c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Téléphone',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'permission_reminder',
-            'type' => 'Zend\Form\Element\Textarea',
-            'attributes' => [
-                'id' => 'mailchimp-permission-reminder',
-                'class' => 'sbm-width-50c'
-            ],
-            'options' => [
-                'label' => 'Rappel d\'autorisation',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'permission_reminder',
+                'type' => 'Zend\Form\Element\Textarea',
+                'attributes' => [
+                    'id' => 'mailchimp-permission-reminder',
+                    'class' => 'sbm-width-50c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Rappel d\'autorisation',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'from_name',
-            'type' => 'SbmCommun\Form\Element\NomPropre',
-            'attributes' => [
-                'id' => 'mailchimp-from-name',
-                'class' => 'sbm-width-30c'
-            ],
-            'options' => [
-                'label' => 'Nom',
-                'label_attributes' => [
-                    'class' => 'sbm-label responsable-nom'
+            ]);
+        $this->add(
+            [
+                'name' => 'from_name',
+                'type' => 'SbmCommun\Form\Element\NomPropre',
+                'attributes' => [
+                    'id' => 'mailchimp-from-name',
+                    'class' => 'sbm-width-30c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label responsable-nom'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'from_email',
-            'type' => 'Zend\Form\Element\Email',
-            'attributes' => [
-                'id' => 'mailchimp-from-email',
-                'class' => 'sbm-width-50c'
-            ],
-            'options' => [
-                'label' => 'Email',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'from_email',
+                'type' => 'Zend\Form\Element\Email',
+                'attributes' => [
+                    'id' => 'mailchimp-from-email',
+                    'class' => 'sbm-width-50c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'subject',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'mailchimp-subject',
-                'value' => 'Lettre d\'information de *|LIST:COMPANY|*',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Sujet',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'subject',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'mailchimp-subject',
+                    'value' => 'Lettre d\'information de *|LIST:COMPANY|*',
+                    'class' => 'sbm-width-45c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Sujet',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'language',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'mailchimp-language',
-                'value' => 'fr',
-                'class' => 'sbm-width-2c'
-            ],
-            'options' => [
-                'label' => 'Langue',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'language',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'mailchimp-language',
+                    'value' => 'fr',
+                    'class' => 'sbm-width-2c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Langue',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'email_type_option',
-            'type' => 'Zend\Form\Element\Radio',
-            'attributes' => [
-                'id' => 'mailchimp-email-type-option',
-                'class' => 'sbm-radio'
-            ],
-            'options' => [
-                'label' => 'Type d\'email',
-                'label_attributes' => [
-                    'class' => 'sbm-label-radio'
+            ]);
+        $this->add(
+            [
+                'name' => 'email_type_option',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'id' => 'mailchimp-email-type-option',
+                    'class' => 'sbm-radio'
                 ],
-                'value_options' => [
-                    '0' => 'Texte brut',
-                    '1' => 'Html'
+                'options' => [
+                    'label' => 'Type d\'email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '0' => 'Texte brut',
+                        '1' => 'Html'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
         
-        $this->add([
-            'name' => 'submit',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'sbm-submit',
-                'class' => 'button default submit'
-            ]
-        ]);
-        $this->add([
-            'name' => 'cancel',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'sbm-cancel',
-                'class' => 'button default cancel'
-            ]
-        ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'sbm-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'sbm-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
@@ -456,8 +475,8 @@ class Liste extends AbstractSbmForm implements InputFilterProviderInterface
     }
 
     /**
-     * Fait un Form::getData() puis  structure le résultat pour l'API v3
-     * 
+     * Fait un Form::getData() puis structure le résultat pour l'API v3
+     *
      * @param boolean $with_id
      *            si vrai alors l'id de la liste est dans le résultat, sinon il n'y est pas
      * @param int $flag
@@ -491,7 +510,7 @@ class Liste extends AbstractSbmForm implements InputFilterProviderInterface
             'email_type_option' => StdLib::getParam('email_type_option', $data) == 1,
             'visibility' => 'prv'
         ];
-        if (!$with_id){
+        if (! $with_id) {
             unset($result['id']);
         }
         return $result;
@@ -499,7 +518,7 @@ class Liste extends AbstractSbmForm implements InputFilterProviderInterface
 
     /**
      * Fait un Form::setData($data) à partir d'un tableau structuré selon l'API v3
-     * 
+     *
      * @param array $data
      *            tableau associatif structuré comme l'indique le résultat d'un appel par l'API v3
      * @param boolean $with_id
@@ -509,60 +528,73 @@ class Liste extends AbstractSbmForm implements InputFilterProviderInterface
      */
     public function setDataFromApi3($data, $with_id = true)
     {
-        $this->setData([
-            'id_liste' => $with_id ? StdLib::getParam('id', $data) : null,
-            'name' => StdLib::getParam('name', $data),
-            'company' => StdLib::getParamR([
-                'contact',
-                'company'
-            ], $data),
-            'address1' => StdLib::getParamR([
-                'contact',
-                'address1'
-            ], $data),
-            'address2' => StdLib::getParamR([
-                'contact',
-                'address2'
-            ], $data),
-            'city' => StdLib::getParamR([
-                'contact',
-                'city'
-            ], $data),
-            'state' => StdLib::getParamR([
-                'contact',
-                'state'
-            ], $data),
-            'zip' => StdLib::getParamR([
-                'contact',
-                'zip'
-            ], $data),
-            'country' => StdLib::getParamR([
-                'contact',
-                'country'
-            ], $data),
-            'phone' => StdLib::getParamR([
-                'contact',
-                'phone'
-            ], $data),
-            'permission_reminder' => StdLib::getParam('permission_reminder', $data),
-            'from_name' => StdLib::getParamR([
-                'campaign_defaults',
-                'from_name'
-            ], $data),
-            'from_email' => StdLib::getParamR([
-                'campaign_defaults',
-                'from_email'
-            ], $data),
-            'subject' => StdLib::getParamR([
-                'campaign_defaults',
-                'subject'
-            ], $data),
-            'language' => StdLib::getParamR([
-                'campaign_defaults',
-                'language'
-            ], $data),
-            'email_type_option' => StdLib::getParam('email_type_option', $data)
-        ]);
+        $this->setData(
+            [
+                'id_liste' => $with_id ? StdLib::getParam('id', $data) : null,
+                'name' => StdLib::getParam('name', $data),
+                'company' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'company'
+                    ], $data),
+                'address1' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'address1'
+                    ], $data),
+                'address2' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'address2'
+                    ], $data),
+                'city' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'city'
+                    ], $data),
+                'state' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'state'
+                    ], $data),
+                'zip' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'zip'
+                    ], $data),
+                'country' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'country'
+                    ], $data),
+                'phone' => StdLib::getParamR(
+                    [
+                        'contact',
+                        'phone'
+                    ], $data),
+                'permission_reminder' => StdLib::getParam('permission_reminder', $data),
+                'from_name' => StdLib::getParamR(
+                    [
+                        'campaign_defaults',
+                        'from_name'
+                    ], $data),
+                'from_email' => StdLib::getParamR(
+                    [
+                        'campaign_defaults',
+                        'from_email'
+                    ], $data),
+                'subject' => StdLib::getParamR(
+                    [
+                        'campaign_defaults',
+                        'subject'
+                    ], $data),
+                'language' => StdLib::getParamR(
+                    [
+                        'campaign_defaults',
+                        'language'
+                    ], $data),
+                'email_type_option' => StdLib::getParam('email_type_option', $data)
+            ]);
         return $this;
     }
 }

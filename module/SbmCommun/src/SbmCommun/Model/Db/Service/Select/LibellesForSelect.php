@@ -14,8 +14,8 @@
  * @filesource LibellesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2016
- * @version 2016-2.1.10
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -53,15 +53,15 @@ class LibellesForSelect implements FactoryInterface
         $where = new Where();
         $where->literal('ouvert = 1');
         $select = $this->sql->select($this->table_name);
-        $select->columns(array(
+        $select->columns([
             'nature'
-        ))
+        ])
             ->order('nature')
             ->quantifier($select::QUANTIFIER_DISTINCT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['nature']] = $row['nature'];
         }
@@ -73,15 +73,15 @@ class LibellesForSelect implements FactoryInterface
         $where = new Where();
         $where->literal("nature = 'ModeDePaiement'")->AND->literal('ouvert = 1');
         $select = $this->sql->select($this->table_name);
-        $select->columns(array(
+        $select->columns([
             'code',
             'libelle'
-        ))
+        ])
             ->order('code')
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['code']] = $row['libelle'];
         }
@@ -93,15 +93,15 @@ class LibellesForSelect implements FactoryInterface
         $where = new Where();
         $where->literal('nature = "Caisse"')->AND->literal('ouvert = 1');
         $select = $this->sql->select($this->table_name);
-        $select->columns(array(
+        $select->columns([
             'code',
             'libelle'
-        ))
+        ])
             ->order('code')
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['code']] = $row['libelle'];
         }
@@ -111,16 +111,16 @@ class LibellesForSelect implements FactoryInterface
     public function toutes()
     {
         $select = $this->sql->select($this->table_name);
-        $select->columns(array(
+        $select->columns([
             'code',
             'libelle'
-        ))->order(array(
+        ])->order([
             'nature',
             'code'
-        ));
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['nature'] . $row['code']] = $row['libelle'];
         }
@@ -132,18 +132,18 @@ class LibellesForSelect implements FactoryInterface
         $where = new Where();
         $where->literal('ouverte = 1');
         $select = $this->sql->select($this->table_name);
-        $select->columns(array(
+        $select->columns([
             'code',
             'libelle'
-        ))
-            ->order(array(
+        ])
+            ->order([
             'nature',
             'code'
-        ))
+        ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['nature'] . $row['code']] = $row['libelle'];
         }

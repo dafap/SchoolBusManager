@@ -14,10 +14,10 @@
  * @filesource systempay.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'url_paiement' => 'https://paiement.systempay.fr/vads-payment/',
     'url_marchand' => 'https://paiement.systempay.fr/vads-merchant/',
     'vads_action_mode' => 'INTERACTIVE',
@@ -26,7 +26,7 @@ return array(
     'vads_capture_delay' => '0',
     'vads_validation_mode' => '0',
     'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription',
-    //'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription;SUCCESS_FOOTER_MSG_RETURN=Retour au site d\'inscription',  
+    // 'vads_theme_config' => 'CANCEL_FOOTER_MSG_RETURN=Annuler et retourner au site d\'inscription;SUCCESS_FOOTER_MSG_RETURN=Retour au site d\'inscription',
     'vads_version' => 'V2',
     'uniqid_path' => realpath(__DIR__ . '/../../../../../../../data/share'),
     // vads_trans_id_max doit être, d'après la documentation, compris entre 000000 et 899999,
@@ -34,4 +34,4 @@ return array(
     // Lorsque la valeur maxi est atteinte, le vads_trans_id repart depuis 000001.
     // Fixer la valeur maxi en tenant compte d'un flux maxi
     'vads_trans_id_max' => 1000
-); 
+]; 

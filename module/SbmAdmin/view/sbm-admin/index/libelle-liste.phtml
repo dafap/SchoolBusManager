@@ -7,27 +7,30 @@
  * @filesource libelle-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 janv. 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $libelles = $this->paginator->getCurrentItems();
-$url_ajouter = $this->url('sbmadmin', [
-    'action' => 'libelle-ajout',
-    'page' => $this->page
-]);
-$url_rapports = $this->url('sbmadmin', [
-    'action' => 'libelle-pdf',
-    'page' => $this->page
-]);
+$url_ajouter = $this->url('sbmadmin', 
+    [
+        'action' => 'libelle-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmadmin', 
+    [
+        'action' => 'libelle-pdf',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmadmin');
 $hiddens = [];
-$menuImpression = $this->menuRapports($this->url('sbmadmin', [
-    'action' => 'libelle-liste'
-]), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports(
+    $this->url('sbmadmin', [
+        'action' => 'libelle-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
 $actions = [
     'retour' => [
@@ -73,18 +76,21 @@ echo $this->flashMessenger()->render('default');
 					<td class="ouvert centre"><?php echo $this->escapeHtml($libelle->ouvert); ?></td>
 					<td class="boutons">
             <?php
-            $url_edit = $this->url('sbmadmin', [
-                'action' => 'libelle-edit',
-                'page' => $this->page
-            ]);
-            $url_delete = $this->url('sbmadmin', [
-                'action' => 'libelle-suppr',
-                'page' => $this->page
-            ]);
-            $url_group = $this->url('sbmadmin', [
-                'action' => 'libelle-group',
-                'page' => $this->page
-            ]);
+            $url_edit = $this->url('sbmadmin', 
+                [
+                    'action' => 'libelle-edit',
+                    'page' => $this->page
+                ]);
+            $url_delete = $this->url('sbmadmin', 
+                [
+                    'action' => 'libelle-suppr',
+                    'page' => $this->page
+                ]);
+            $url_group = $this->url('sbmadmin', 
+                [
+                    'action' => 'libelle-group',
+                    'page' => $this->page
+                ]);
             $hiddens = [
                 'id' => $libelle->nature . '|' . $libelle->code
             ];

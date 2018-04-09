@@ -8,8 +8,8 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -52,10 +52,11 @@ class Paiements extends AbstractSbmTable
     public function setSelection($paiementId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'paiementId' => $paiementId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'paiementId' => $paiementId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 
@@ -72,9 +73,10 @@ class Paiements extends AbstractSbmTable
     public function getPaiementId($responsableId, $datePaiement, $reference)
     {
         $where = new Where();
-        $rowset = $this->fetchAll($where->equalTo('responsableId', $responsableId)
-            ->equalTo('datePaiement', $datePaiement)
-            ->equalTo('reference', $reference));
+        $rowset = $this->fetchAll(
+            $where->equalTo('responsableId', $responsableId)
+                ->equalTo('datePaiement', $datePaiement)
+                ->equalTo('reference', $reference));
         if ($rowset && $rowset->current()) {
             return $rowset->current()->paiementId;
         } else {
@@ -100,7 +102,8 @@ class Paiements extends AbstractSbmTable
      *            
      * @return int Nombre de lignes du bordereau
      */
-    public function marqueBordereau($date, $codeModeDePaiement, $codeCaisse, $exercice = null, $anneeScolaire = null)
+    public function marqueBordereau($date, $codeModeDePaiement, $codeCaisse, 
+        $exercice = null, $anneeScolaire = null)
     {
         $where = new Where();
         $where->equalTo('codeModeDePaiement', $codeModeDePaiement)
@@ -113,9 +116,10 @@ class Paiements extends AbstractSbmTable
         if (! is_null($anneeScolaire)) {
             $where->equalTo('anneeScolaire', $anneeScolaire);
         }
-        return $this->table_gateway->update(array(
-            'dateBordereau' => $date
-        ), $where);
+        return $this->table_gateway->update(
+            [
+                'dateBordereau' => $date
+            ], $where);
     }
 
     /**
@@ -134,9 +138,10 @@ class Paiements extends AbstractSbmTable
         $where->equalTo('codeModeDePaiement', $codeModeDePaiement)
             ->equalTo('dateBordereau', $dateBordereau)
             ->isNull('dateDepot');
-        return $this->table_gateway->update(array(
-            'dateBordereau' => null
-        ), $where);
+        return $this->table_gateway->update(
+            [
+                'dateBordereau' => null
+            ], $where);
     }
 
     /**
@@ -157,10 +162,11 @@ class Paiements extends AbstractSbmTable
         $where->equalTo('codeModeDePaiement', $codeModeDePaiement)
             ->equalTo('dateBordereau', $dateBordereau)
             ->isNull('dateDepot');
-        return $this->table_gateway->update(array(
-            'dateDepot' => $dateDepot,
-            'codeCaisse' => $codeCaisseComptable
-        ), $where);
+        return $this->table_gateway->update(
+            [
+                'dateDepot' => $dateDepot,
+                'codeCaisse' => $codeCaisseComptable
+            ], $where);
     }
 
     /**
@@ -177,16 +183,18 @@ class Paiements extends AbstractSbmTable
      *            
      * @return int Nombre de lignes du bordereau du depot annulé
      */
-    public function annuleDepot($dateDepot, $dateBordereau, $codeModeDePaiement, $codeCaisse)
+    public function annuleDepot($dateDepot, $dateBordereau, $codeModeDePaiement, 
+        $codeCaisse)
     {
         $where = new Where();
         $where->equalTo('dateDepot', $dateDepot)
             ->equalTo('codeModeDePaiement', $codeModeDePaiement)
             ->equalTo('dateBordereau', $dateBordereau);
-        return $this->table_gateway->update(array(
-            'dateDepot' => null,
-            'codeCaisse' => $codeCaisse
-        ), $where);
+        return $this->table_gateway->update(
+            [
+                'dateDepot' => null,
+                'codeCaisse' => $codeCaisse
+            ], $where);
     }
 
     /**
@@ -202,23 +210,25 @@ class Paiements extends AbstractSbmTable
     public function dateDernierBordereau($codeModeDePaiement, $encours = false)
     {
         $where = new Where();
-        $where->equalTo('codeModeDePaiement', $codeModeDePaiement)->isNotNull('dateBordereau');
+        $where->equalTo('codeModeDePaiement', $codeModeDePaiement)->isNotNull(
+            'dateBordereau');
         if ($encours) {
             $where->isNull('dateDepot');
         }
         $select = $this->table_gateway->getSql()->select();
-        $select->columns(array(
-            'date' => new Expression('max(dateBordereau)')
-        ))->where($where);
+        $select->columns(
+            [
+                'date' => new Expression('max(dateBordereau)')
+            ])->where($where);
         $result = $this->table_gateway->selectWith($select)->current();
         return $result->date;
     }
 
     /**
      * Donne la date du denier paiement
-     * 
-     * @param int $codeModeDePaiement
-     * 
+     *
+     * @param int $codeModeDePaiement            
+     *
      * @return string format dateMysql
      */
     public function dateDernierPaiement($codeModeDePaiement)
@@ -226,13 +236,14 @@ class Paiements extends AbstractSbmTable
         $where = new Where();
         $where->equalTo('codeModeDePaiement', $codeModeDePaiement);
         $select = $this->table_gateway->getSql()->select();
-        $select->columns(array(
-            'date' => new Expression('max(datePaiement)')
-        ))->where($where);
+        $select->columns(
+            [
+                'date' => new Expression('max(datePaiement)')
+            ])->where($where);
         $result = $this->table_gateway->selectWith($select)->current();
         return $result->date;
     }
-    
+
     /**
      * Renvoie le montant total d'un bordereau.
      * Par défaut, n'examine que les bordereaux en cours.
@@ -260,7 +271,8 @@ class Paiements extends AbstractSbmTable
         return $this->total($where);
     }
 
-    public function totalAnneeScolaire($millesime, $codeCaisse = null, $codeModeDePaiement = null)
+    public function totalAnneeScolaire($millesime, $codeCaisse = null, 
+        $codeModeDePaiement = null)
     {
         $as = sprintf('%d-%d', $millesime, $millesime + 1);
         $where = new Where();
@@ -286,13 +298,14 @@ class Paiements extends AbstractSbmTable
         }
         return $this->total($where);
     }
-    
+
     public function total(Where $where)
     {
         $select = $this->table_gateway->getSql()->select();
-        $select->columns(array(
-            'somme' => new Expression('sum(montant)')
-        ))->where($where);
+        $select->columns(
+            [
+                'somme' => new Expression('sum(montant)')
+            ])->where($where);
         $result = $this->table_gateway->selectWith($select)->current();
         return $result->somme;
     }

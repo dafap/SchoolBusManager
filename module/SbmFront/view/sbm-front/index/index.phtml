@@ -8,15 +8,15 @@
  * @filesource view/sbm-front/index/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 juin 2017
- * @version 2017-2.3.2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
 $url_admin = $this->url('sbmadmin');
-$url_carte = $this->url('sbmcarte', array(
+$url_carte = $this->url('sbmcarte', [
     'action' => 'etablissements'
-));
+]);
 
 if ($this->etat['etat'] == 0) {
     // avant le début de la période d'inscription
@@ -36,7 +36,11 @@ if ($this->etat['etat'] == 0) {
 <p>Pour tout autre renseignement ou tout autre mode d'inscription, vous pouvez vous adresser directement au service Transport à l'adresse :</p>
 EOT;
     
-    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->client['name'], $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);
+    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), 
+        $this->etat['dateFin']->format('d/m/Y'), $this->client['name'], 
+        $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], 
+        $this->permanences[1], $this->permanences[2], $this->permanences[3], 
+        $this->permanences[4]);
 } elseif ($this->etat['etat'] == 1) {
     // durant la période d'inscriptions
     $format = <<<EOT
@@ -55,7 +59,11 @@ EOT;
 <p>Pour tout autre renseignement ou tout autre mode d'inscription, vous pouvez vous adresser directement au service Transport à l'adresse :</p>
 EOT;
     
-    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), $this->etat['dateFin']->format('d/m/Y'), $this->client['name'], $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], $this->permanences[1], $this->permanences[2], $this->permanences[3], $this->permanences[4]);
+    $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), 
+        $this->etat['dateFin']->format('d/m/Y'), $this->client['name'], 
+        $this->etat['echeance']->format('d/m/Y'), $this->permanences[0], 
+        $this->permanences[1], $this->permanences[2], $this->permanences[3], 
+        $this->permanences[4]);
 } else {
     // après la période d'inscription
     $format = <<<EOT
@@ -106,7 +114,7 @@ EOT;
 				<div class="centre"><?php echo $this->formSubmit($this->form->get('signin')); ?></div>
 				<div class="centre top-6px">
 					<a
-						href="<?php echo $this->url('login', array('action' => 'mdp-demande')); ?>">Mot
+						href="<?php echo $this->url('login', ['action' => 'mdp-demande']); ?>">Mot
 						de passe oublié ?</a>
 				</div>
 			</fieldset>

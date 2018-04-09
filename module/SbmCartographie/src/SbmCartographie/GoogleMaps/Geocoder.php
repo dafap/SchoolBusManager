@@ -7,8 +7,8 @@
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 déc. 2017
- * @version 2017-2.3.14
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -78,11 +78,11 @@ class Geocoder
         } else {
             throw new ExceptionNotAnswer('GoogleMaps API ne répond pas');
         }
-        return array(
+        return [
             'lat' => $lat,
             'lng' => $lng,
             'adresse' => $formatted_address
-        );
+        ];
     }
 
     /**
@@ -101,7 +101,7 @@ class Geocoder
         $reponse = json_decode(@file_get_contents($url), true);
         if ($reponse) {
             if (is_array($reponse) && $reponse['status'] == "OK") {
-                $location = array(
+                $location = [
                     'numero' => '',
                     'rue' => '',
                     'lieu-dit' => '',
@@ -110,7 +110,7 @@ class Geocoder
                     'departement' => '',
                     'region' => '',
                     'pays' => ''
-                );
+                ];
                 foreach ($reponse['results']['0']['address_components'] as $component) {
                     
                     switch ($component['types']) {

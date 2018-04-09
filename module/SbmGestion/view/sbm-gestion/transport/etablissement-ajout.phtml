@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/etablissement-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 oct. 2016
- * @version 2016-2.2.1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -17,19 +17,23 @@ $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->inlineScript()->captureStart();
 ?>
 multicheckbox_actions.init("etablissement-ajout-jOuverture");
-<?php 
+<?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/transport', array('action'=> 'etablissement-liste', 'page' => $this->page));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'etablissement-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Création d'un nouvel établissement</h1>
 <div id="fiche-wrapper">
@@ -39,65 +43,78 @@ $actions = array(
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('csrf'));
 ?>
 <fieldset class="sbm-page1 clearfix">
-<div class="float-left cols-1">
-  <div id="etablissement-ajout-etablissementId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('etablissementId')); ?></div>
-  <div id="etablissement-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
-  <div id="etablissement-ajout-alias" class="row-inner ajout"><?php echo $this->formRow($this->form->get('alias')); ?></div>
-  <div id="etablissement-ajout-adresse1" class="row-inner ajout"><?php echo $this->formRow($this->form->get('adresse1')); ?></div>
-  <div id="etablissement-ajout-adresse2" class="row-inner ajout"><?php echo $this->formRow($this->form->get('adresse2')); ?></div>
-  <div id="etablissement-ajout-codePostal" class="row-inner ajout"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
-  <div id="etablissement-ajout-communeId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
-  <div id="etablissement-ajout-telephone" class="row-inner ajout"><?php echo $this->formRow($this->form->get('telephone')); ?></div>
-  <div id="etablissement-ajout-fax" class="row-inner ajout"><?php echo $this->formRow($this->form->get('fax')); ?></div>
-  <div id="etablissement-ajout-email" class="row-inner ajout"><?php echo $this->formRow($this->form->get('email')); ?></div>
-  <div id="etablissement-ajout-directeur" class="row-inner ajout"><?php echo $this->formRow($this->form->get('directeur')); ?></div>
-  <div id="etablissement-ajout-regrPeda" class="row-inner ajout"><?php echo $this->formRow($this->form->get('regrPeda')); ?></div>
-  <div id="etablissement-ajout-rattacheA" class="row-inner ajout"><?php echo $this->formRow($this->form->get('rattacheA')); ?></div>
-  <div id="etablissement-ajout-x" class="row-inner ajout"><?php echo $this->formRow($this->form->get('x')); ?></div>
-  <div id="etablissement-ajout-y" class="row-inner ajout"><?php echo $this->formRow($this->form->get('y')); ?></div>
-  <div id="etablissement-edit-desservie" class="row-inner edit"><?php echo $this->formRow($this->form->get('desservie')); ?></div>
-  <div id="etablissement-ajout-visible" class="row-inner ajout"><?php echo $this->formRow($this->form->get('visible')); ?></div>
-</div>
-<div class="float-left cols-2">
-  <div id="etablissement-ajout-niveau" class="row-inner ajout"><?php echo $this->formRow($this->form->get('niveau')); ?></div>
-  <div id="etablissement-ajout-statut" class="row-inner ajout multicheckbox"><?php echo $this->formRow($this->form->get('statut')); ?></div>
-  <div id="etablissement-ajout-jOuverture" class="row-inner ajout multicheckbox"><?php echo $this->formRow($this->form->get('jOuverture')); ?></div>
-  <div class="clearfix">
-    <div id="horaires-matin" class="row-inner ajout float-left cols-3">
-      <fieldset class=""><legend>Horaires du matin</legend>
-      <div id="etablissement-ajout-hMatin" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hMatin')); ?></div>
-      <div id="etablissement-ajout-hMidi" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hMidi')); ?></div>
-      </fieldset>
-    </div>
-    <div id="horaires-soir" class="row-inner ajout float-left cols-3">
-      <fieldset class=""><legend>Horaires de l'après-midi</legend>
-      <div id="etablissement-ajout-hAMidi" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hAMidi')); ?></div>
-      <div id="etablissement-ajout-hSoir" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hSoir')); ?></div>
-      </fieldset>
-    </div>
-  </div>
-  <div class="clearfix">
-    <div id="ouverture-garderie" class="row-inner ajout float-left cols-3">
-      <fieldset class="rows-2"><legend>Ouverture de la garderie</legend>
-      <div id="etablissement-ajout-hGarderieOMatin" class="row-inner ajout float-left"><?php echo $this->formRow($this->form->get('hGarderieOMatin')); ?></div>
-      </fieldset>
-    </div>
-    <div id="fermeture-garderie" class="row-inner ajout float-left cols-3">
-      <fieldset><legend>Fermeture de la garderie</legend>
-      <div id="etablissement-ajout-hGarderieFSoir" class="row-inner ajout float-left"><?php echo $this->formRow($this->form->get('hGarderieFSoir')); ?></div>
-      <div id="etablissement-ajout-hGarderieFMidi" class="row-inner ajout float-left"><?php echo $this->formRow($this->form->get('hGarderieFMidi')); ?></div>
-      </fieldset></div>
-    <div id="etablissement-ajout-buttons" class="row-inner ajout">
+			<div class="float-left cols-1">
+				<div id="etablissement-ajout-etablissementId"
+					class="row-inner ajout"><?php echo $this->formRow($this->form->get('etablissementId')); ?></div>
+				<div id="etablissement-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+				<div id="etablissement-ajout-alias" class="row-inner ajout"><?php echo $this->formRow($this->form->get('alias')); ?></div>
+				<div id="etablissement-ajout-adresse1" class="row-inner ajout"><?php echo $this->formRow($this->form->get('adresse1')); ?></div>
+				<div id="etablissement-ajout-adresse2" class="row-inner ajout"><?php echo $this->formRow($this->form->get('adresse2')); ?></div>
+				<div id="etablissement-ajout-codePostal" class="row-inner ajout"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
+				<div id="etablissement-ajout-communeId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
+				<div id="etablissement-ajout-telephone" class="row-inner ajout"><?php echo $this->formRow($this->form->get('telephone')); ?></div>
+				<div id="etablissement-ajout-fax" class="row-inner ajout"><?php echo $this->formRow($this->form->get('fax')); ?></div>
+				<div id="etablissement-ajout-email" class="row-inner ajout"><?php echo $this->formRow($this->form->get('email')); ?></div>
+				<div id="etablissement-ajout-directeur" class="row-inner ajout"><?php echo $this->formRow($this->form->get('directeur')); ?></div>
+				<div id="etablissement-ajout-regrPeda" class="row-inner ajout"><?php echo $this->formRow($this->form->get('regrPeda')); ?></div>
+				<div id="etablissement-ajout-rattacheA" class="row-inner ajout"><?php echo $this->formRow($this->form->get('rattacheA')); ?></div>
+				<div id="etablissement-ajout-x" class="row-inner ajout"><?php echo $this->formRow($this->form->get('x')); ?></div>
+				<div id="etablissement-ajout-y" class="row-inner ajout"><?php echo $this->formRow($this->form->get('y')); ?></div>
+				<div id="etablissement-edit-desservie" class="row-inner edit"><?php echo $this->formRow($this->form->get('desservie')); ?></div>
+				<div id="etablissement-ajout-visible" class="row-inner ajout"><?php echo $this->formRow($this->form->get('visible')); ?></div>
+			</div>
+			<div class="float-left cols-2">
+				<div id="etablissement-ajout-niveau" class="row-inner ajout"><?php echo $this->formRow($this->form->get('niveau')); ?></div>
+				<div id="etablissement-ajout-statut"
+					class="row-inner ajout multicheckbox"><?php echo $this->formRow($this->form->get('statut')); ?></div>
+				<div id="etablissement-ajout-jOuverture"
+					class="row-inner ajout multicheckbox"><?php echo $this->formRow($this->form->get('jOuverture')); ?></div>
+				<div class="clearfix">
+					<div id="horaires-matin" class="row-inner ajout float-left cols-3">
+						<fieldset class="">
+							<legend>Horaires du matin</legend>
+							<div id="etablissement-ajout-hMatin" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hMatin')); ?></div>
+							<div id="etablissement-ajout-hMidi" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hMidi')); ?></div>
+						</fieldset>
+					</div>
+					<div id="horaires-soir" class="row-inner ajout float-left cols-3">
+						<fieldset class="">
+							<legend>Horaires de l'après-midi</legend>
+							<div id="etablissement-ajout-hAMidi" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hAMidi')); ?></div>
+							<div id="etablissement-ajout-hSoir" class="row-inner ajout"><?php echo $this->formRow($this->form->get('hSoir')); ?></div>
+						</fieldset>
+					</div>
+				</div>
+				<div class="clearfix">
+					<div id="ouverture-garderie"
+						class="row-inner ajout float-left cols-3">
+						<fieldset class="rows-2">
+							<legend>Ouverture de la garderie</legend>
+							<div id="etablissement-ajout-hGarderieOMatin"
+								class="row-inner ajout float-left"><?php echo $this->formRow($this->form->get('hGarderieOMatin')); ?></div>
+						</fieldset>
+					</div>
+					<div id="fermeture-garderie"
+						class="row-inner ajout float-left cols-3">
+						<fieldset>
+							<legend>Fermeture de la garderie</legend>
+							<div id="etablissement-ajout-hGarderieFSoir"
+								class="row-inner ajout float-left"><?php echo $this->formRow($this->form->get('hGarderieFSoir')); ?></div>
+							<div id="etablissement-ajout-hGarderieFMidi"
+								class="row-inner ajout float-left"><?php echo $this->formRow($this->form->get('hGarderieFMidi')); ?></div>
+						</fieldset>
+					</div>
+					<div id="etablissement-ajout-buttons" class="row-inner ajout">
     <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
     </div>
-  </div>
-</div>
-</fieldset>
+				</div>
+			</div>
+		</fieldset>
 <?php echo $this->form()->closeTag(); ?>
     </div><?php // fiche-inner ?>
 	<div id="fiche-footer"></div>

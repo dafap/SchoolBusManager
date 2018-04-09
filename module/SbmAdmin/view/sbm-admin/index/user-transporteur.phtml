@@ -9,18 +9,20 @@
  * @filesource user-transporteur.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmadmin', [
-    'action' => 'user-liste',
-    'page' => $this->page
-]);
-$url_suppr = $this->url('sbmadmin', [
-    'action' => 'user-transporteur-suppr',
-    'page' => $this->page
-]);
+$url_retour = $this->url('sbmadmin', 
+    [
+        'action' => 'user-liste',
+        'page' => $this->page
+    ]);
+$url_suppr = $this->url('sbmadmin', 
+    [
+        'action' => 'user-transporteur-suppr',
+        'page' => $this->page
+    ]);
 $hiddens = [
     'userId' => $this->user->userId,
     'transporteurId' => $this->transporteur ? $this->transporteur->transporteurId : null
@@ -48,9 +50,11 @@ $actions = [
 	<div id="fiche-inner">
 		<div class="float-left">
 			<fieldset style="margin-top: 0;" class="sbm-page1 gras">
-			<legend>Utilisateur</legend>
-				<div><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?><br>&nbsp;</div>
-				<div>Identifiant: <?php echo $this->user->email;?><br>&nbsp;</div>
+				<legend>Utilisateur</legend>
+				<div><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?><br>&nbsp;
+				</div>
+				<div>Identifiant: <?php echo $this->user->email;?><br>&nbsp;
+				</div>
 				<div>Créé le: <?php echo $this->user->dateCreation;?></div>
 				<div>Modifié le: <?php echo $this->user->dateModification;?></div>
 			</fieldset>
@@ -75,7 +79,7 @@ $actions = [
     <?php echo $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="sbm-page1">
-        <legend>Transporteur</legend>
+				<legend>Transporteur</legend>
 				<div>
 					<div class="label">Nom</div><?php echo $this->transporteur->nom; ?></div>
 				<div>

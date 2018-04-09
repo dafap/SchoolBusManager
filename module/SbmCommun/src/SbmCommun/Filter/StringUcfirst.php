@@ -9,8 +9,8 @@
  * @filesource StringUcfirst.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2014
- * @version 2014-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Filter;
 
@@ -24,11 +24,11 @@ class StringUcfirst extends AbstractUnicode implements FilterInterface
      *
      * @var array
      */
-    protected $options = array(
+    protected $options = [
         'encoding' => null
-    );
-    
-    protected static $exceptions = array();
+    ];
+
+    protected static $exceptions = [];
 
     /**
      * Constructor
@@ -46,8 +46,8 @@ class StringUcfirst extends AbstractUnicode implements FilterInterface
             }
         }
     }
-    
-    public function setExceptions($array = array())
+
+    public function setExceptions($array = [])
     {
         self::$exceptions = $array;
     }

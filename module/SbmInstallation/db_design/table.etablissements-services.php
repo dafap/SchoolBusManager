@@ -8,73 +8,72 @@
  * @filesource table.etablissements-services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-
-return array(
+return [
     'name' => 'etablissements-services',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'etablissementId' => 'char(8) NOT NULL',
             'serviceId' => 'varchar(11) NOT NULL',
             'stationId' => 'int(11) NOT NULL'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'etablissementId',
             'serviceId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'etablissementId',
-                'references' => array(
+                'references' => [
                     'table' => 'etablissements',
-                    'fields' => array(
+                    'fields' => [
                         'etablissementId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'serviceId',
-                'references' => array(
+                'references' => [
                     'table' => 'services',
-                    'fields' => array(
+                    'fields' => [
                         'serviceId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'stationId',
-                'references' => array(
+                'references' => [
                     'table' => 'stations',
-                    'fields' => array(
+                    'fields' => [
                         'stationId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
-
+    ],
+    
     // 'data' => include __DIR__ . '/data/data.services.php',
-    // 'data' => array('after' => array('transporteurs'),'include' => __DIR__ . '/data/data.services.php')
+    // 'data' => ['after' => ['transporteurs'],'include' => __DIR__ . '/data/data.services.php']
     'data' => __DIR__ . '/data/data.etablissements-services.php'
-);
+];

@@ -8,8 +8,8 @@
  * @filesource AbstractModule.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmBase\Module;
 
@@ -17,47 +17,47 @@ use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\LocatorRegisteredInterface;
 
-abstract class AbstractModule implements 
-    AutoloaderProviderInterface,
-    ConfigProviderInterface,
-    LocatorRegisteredInterface 
+abstract class AbstractModule implements AutoloaderProviderInterface, 
+    ConfigProviderInterface, LocatorRegisteredInterface
 {
 
     /**
      * Renvoie le DIR de la classe dérivée.
-     * 
+     *
      * @return string
      */
     abstract public function getDir();
 
     /**
      * Renvoie le NAMESPACE de la classe dérivée
-     * 
+     *
      * @return string
      */
     abstract public function getNamespace();
 
     /**
      * Ne doit pas faire référence à DIR/autoload_classmap.php
-     * En effet, les modules seront déclarés dans la section autoload du composer.json 
-     * du projet. Ainsi, composer inclut automatiquement les références des classes dans 
+     * En effet, les modules seront déclarés dans la section autoload du composer.json
+     * du projet.
+     * Ainsi, composer inclut automatiquement les références des classes dans
      * le fichier vendor/composer/autoload_classmap.php
      * Il est donc tout à fait inutile de référencer à nouveau les classes dans chaque
      * module.
-     * 
+     *
      * @return multitype:multitype:multitype:string
      */
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    $this->getNamespace() => $this->getDir() . '/src/' . $this->getNamespace(),
-                ),
-            ),
-        );
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
+                    $this->getNamespace() => $this->getDir() . '/src/' .
+                         $this->getNamespace()
+                ]
+            ]
+        ];
     }
-    
+
     /**
      * Charge la configuration du module
      */

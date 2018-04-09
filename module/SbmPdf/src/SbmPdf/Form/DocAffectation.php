@@ -8,8 +8,8 @@
  * @filesource DocAffectation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Form;
 
@@ -23,91 +23,101 @@ class DocAffectation extends AbstractSbmForm implements InputFilterProviderInter
     {
         parent::__construct('docaffectation');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => [
-                'csrf_options' => [
-                    'timeout' => 180
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'docaffectationId'
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'documentId'
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'name'
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'recordSource'
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'libelle',
-            'attributes' => [
-                'autofocus' => 'autofocus',
-                'id' => 'libelle',
-                'class' => 'sbm-width-55c'
-            ],
-            'options' => [
-                'label' => 'Libellé dans le menu',
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'docaffectationId'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'documentId'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'name'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'recordSource'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'libelle',
+                'attributes' => [
+                    'autofocus' => 'autofocus',
+                    'id' => 'libelle',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Libellé dans le menu',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'route',
-            'attributes' => [
-                'id' => 'route'
-            ],
-            'options' => [
-                'label' => 'Page du site',
-                'empty_option' => 'Choisissez',
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'route',
+                'attributes' => [
+                    'id' => 'route'
+                ],
+                'options' => [
+                    'label' => 'Page du site',
+                    'empty_option' => 'Choisissez',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'ordinal_position',
-            'attributes' => [
-                'id' => 'ordinal_position'
-            ],
-            'options' => [
-                'label' => 'Position dans le menu',
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'ordinal_position',
+                'attributes' => [
+                    'id' => 'ordinal_position'
+                ],
+                'options' => [
+                    'label' => 'Position dans le menu',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'submit',
-            'name' => 'submit',
-            'attributes' => [
-                'value' => 'Enregistrer',
-                'id' => 'docaffectation-submit',
-                'class' => 'button default submit'
-            ]
-        ]);
-        $this->add([
-            'type' => 'submit',
-            'name' => 'cancel',
-            'attributes' => [
-                'value' => 'Abandonner',
-                'id' => 'docaffectation-cancel',
-                'class' => 'button default cancel'
-            ]
-        ]);
+            ]);
+        $this->add(
+            [
+                'type' => 'submit',
+                'name' => 'submit',
+                'attributes' => [
+                    'value' => 'Enregistrer',
+                    'id' => 'docaffectation-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'submit',
+                'name' => 'cancel',
+                'attributes' => [
+                    'value' => 'Abandonner',
+                    'id' => 'docaffectation-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()

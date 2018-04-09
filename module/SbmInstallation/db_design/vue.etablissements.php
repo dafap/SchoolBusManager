@@ -8,128 +8,127 @@
  * @filesource vue.etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 févr. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'etablissements',
     'type' => 'vue',
     'drop' => true, // si true, un DROP TABLE IF EXISTS sera fait avant la création
     'edit_entity' => true,
-    'structure' => array(
-        'fields' => array(
-            array(
+    'structure' => [
+        'fields' => [
+            [
                 'field' => 'etablissementId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'selection'
-            ),
-            array(
+            ],
+            [
                 'field' => 'nom'
-            ),
-            array(
+            ],
+            [
                 'field' => 'alias'
-            ),
-            array(
+            ],
+            [
                 'field' => 'aliasCG'
-            ),
-            array(
+            ],
+            [
                 'field' => 'adresse1'
-            ),
-            array(
+            ],
+            [
                 'field' => 'adresse2'
-            ),
-            array(
+            ],
+            [
                 'field' => 'codePostal'
-            ),
-            array(
+            ],
+            [
                 'field' => 'communeId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'niveau'
-            ),
-            array(
+            ],
+            [
                 'field' => 'statut'
-            ),
-            array(
+            ],
+            [
                 'field' => 'visible'
-            ),
-            array(
+            ],
+            [
                 'field' => 'desservie'
-            ),
-            array(
+            ],
+            [
                 'field' => 'regrPeda'
-            ),
-            array(
+            ],
+            [
                 'field' => 'rattacheA'
-            ),
-            array(
+            ],
+            [
                 'field' => 'telephone'
-            ),
-            array(
+            ],
+            [
                 'field' => 'fax'
-            ),
-            array(
+            ],
+            [
                 'field' => 'email'
-            ),
-            array(
+            ],
+            [
                 'field' => 'directeur'
-            ),
-            array(
+            ],
+            [
                 'field' => 'jOuverture'
-            ),
-            array(
+            ],
+            [
                 'field' => 'hMatin'
-            ),
-            array(
+            ],
+            [
                 'field' => 'hMidi'
-            ),
-            array(
+            ],
+            [
                 'field' => 'hAMidi'
-            ),
-            array(
+            ],
+            [
                 'field' => 'hSoir'
-            ),
-            array(
+            ],
+            [
                 'field' => 'hGarderieOMatin'
-            ),
-            array(
+            ],
+            [
                 'field' => 'hGarderieFMidi'
-            ),
-            array(
+            ],
+            [
                 'field' => 'hGarderieFSoir'
-            ),
-            array(
+            ],
+            [
                 'field' => 'x'
-            ),
-            array(
+            ],
+            [
                 'field' => 'y'
-            )
-        ),
-        'from' => array(
+            ]
+        ],
+        'from' => [
             'table' => 'etablissements', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
             'alias' => 'eta'
-        ) // optionnel
-,
-        'join' => array(
-            array(
+        ], // optionnel
+        'join' => [
+            [
                 'table' => 'communes', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
                 'alias' => 'com', // optionnel
                 'relation' => 'com.communeId = eta.communeId', // obligatoire
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'commune'
-                    )
-                )
-            )
-        ),
-        'order' => array(
+                    ]
+                ]
+            ]
+        ],
+        'order' => [
             'commune',
             'niveau',
             'nom'
-        )
-    )
-);
+        ]
+    ]
+];

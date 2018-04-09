@@ -43,8 +43,8 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 août 2017
- * @version 2017-2.3.6
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model;
 
@@ -103,7 +103,8 @@ class Calculs
     public function range($debut = 0, $fin = null)
     {
         if (! is_int($debut) || (! is_null($fin) && ! is_int($fin))) {
-            throw new Exception('Erreur de type dans les arguments de la méthode ' . __METHOD__);
+            throw new Exception(
+                'Erreur de type dans les arguments de la méthode ' . __METHOD__);
         }
         if (! ($this->debut == $debut && $this->fin == $fin)) {
             $this->debut = $debut;
@@ -189,8 +190,10 @@ class Calculs
         $search = $this->expressions[$key]['search'];
         $replace = [];
         for ($j = 0; $j < count($search); $j ++) {
-            if (! method_exists($this, $this->expressions[$key]['functions'][$j])) continue;
-            $replace[] = $this->{$this->expressions[$key]['functions'][$j]}($this->expressions[$key]['args'][$j]);
+            if (! method_exists($this, $this->expressions[$key]['functions'][$j]))
+                continue;
+            $replace[] = $this->{$this->expressions[$key]['functions'][$j]}(
+                $this->expressions[$key]['args'][$j]);
         }
         return $this->resultats[$key] = str_replace($search, $replace, $s);
     }
@@ -216,7 +219,7 @@ class Calculs
         $millesime = Session::get('millesime');
         return sprintf('%d-%d', $millesime, $millesime + 1);
     }
-    
+
     /**
      * Renvoie la date du jour.
      *
@@ -239,14 +242,14 @@ class Calculs
 
     /**
      * Renvoie le millesime courant
-     * 
+     *
      * @return int
      */
     public function millesime()
     {
         return Session::get('millesime');
     }
-    
+
     /**
      * Renvoie le nombre de lignes du tableau dans l'intervalle fixé par la méthode range.
      *
@@ -266,7 +269,8 @@ class Calculs
                 ob_start();
                 print_r($this->data);
                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
-                throw new Exception("Ligne $ligne. Pas de colonne n° $column dans les données ($colonne).\n$dump\n");
+                throw new Exception(
+                    "Ligne $ligne. Pas de colonne n° $column dans les données ($colonne).\n$dump\n");
             }
             $val = $this->data[$ligne][$colonne];
             if ($oConditions->value($val)) {
@@ -300,7 +304,8 @@ class Calculs
                 ob_start();
                 print_r($this->data);
                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
-                throw new Exception("Ligne $ligne. Pas de colonne n° $column dans les données ($colonne).\n$dump\n");
+                throw new Exception(
+                    "Ligne $ligne. Pas de colonne n° $column dans les données ($colonne).\n$dump\n");
             }
             $val = $this->data[$ligne][$colonne];
             $somme += is_numeric($val) ? $val : 0;

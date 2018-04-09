@@ -11,8 +11,8 @@
  * @filesource Carte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2016
- * @version 2016-2.1.5
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model;
 
@@ -30,9 +30,9 @@ class Carte extends Etiquette
 
     /**
      * version 2015 sur étiquettes
-     * 
-     * @param unknown $delta
-     * @param unknown $hauteur_utile
+     *
+     * @param unknown $delta            
+     * @param unknown $hauteur_utile            
      */
     private function initPositions_version2015($delta, $hauteur_utile)
     {
@@ -46,7 +46,7 @@ class Carte extends Etiquette
         }
         $this->positions[0]['data'] = false; // c'est du texte - prendre uniquement le label du docfield
         $y = $this->positions[2]['y'] = 15; // en mm
-        // zone 2 
+                                            // zone 2
         for ($y += $delta; $i < 14; $i ++) {
             $this->positions[$i]['x'] = 1;
             $this->positions[$i]['y'] = $y;
@@ -67,24 +67,26 @@ class Carte extends Etiquette
 
     /**
      * version 2016 sur page A4
-     * 
-     * @param unknown $delta
-     * @param unknown $hauteur_utile
+     *
+     * @param unknown $delta            
+     * @param unknown $hauteur_utile            
      */
     private function initPositions($delta, $hauteur_utile)
     {
         // zone 1
         for ($y = $delta, $i = 0; $i < 10; $i ++) {
-            /*$this->positions[$i]['x'] = 12;
-            $this->positions[$i]['y'] = $y;
-            $this->positions[$i]['data'] = true;
-            $this->positions[$i]['style'] = 'main';
-            $y += $delta;
-        }
-        $this->positions[0]['data'] = false; // c'est du texte - prendre uniquement le label du docfield
-        $y = $this->positions[2]['y'] = 15; // en mm
-        // zone 2
-        for ($y += $delta; $i < 14; $i ++) {*/
+            /*
+             * $this->positions[$i]['x'] = 12;
+             * $this->positions[$i]['y'] = $y;
+             * $this->positions[$i]['data'] = true;
+             * $this->positions[$i]['style'] = 'main';
+             * $y += $delta;
+             * }
+             * $this->positions[0]['data'] = false; // c'est du texte - prendre uniquement le label du docfield
+             * $y = $this->positions[2]['y'] = 15; // en mm
+             * // zone 2
+             * for ($y += $delta; $i < 14; $i ++) {
+             */
             $this->positions[$i]['x'] = 1;
             $this->positions[$i]['y'] = $y;
             $this->positions[$i]['data'] = true;
@@ -98,23 +100,23 @@ class Carte extends Etiquette
             $this->initPositions($delta, $hauteur_utile);
         }
     }
-    
+
     public function Ln($rang)
     {
         $result = parent::Ln($rang);
         $result[1] = $this->yStart() + $this->positions[$rang]['y'];
         return $result;
     }
-    
+
     public function descripteurData()
     {
         $descripteur = parent::descripteurData();
-        for ($i = 0; $i < count($this->positions); $i++) {
+        for ($i = 0; $i < count($this->positions); $i ++) {
             $descripteur[$i]['data'] = $this->positions[$i]['data'];
         }
         return $descripteur;
     }
-    
+
     public function X($rang)
     {
         return $this->xStart($rang) + $this->positions[$rang]['x'];

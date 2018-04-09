@@ -8,38 +8,43 @@
  * @filesource view/sbm-gestion/transport/stations-non-desservies.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_origine = $this->url('sbmgestion/transport', array(
-    'action' => 'stations-non-desservies',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'stations-non-desservies-pdf',
-    'page' => $this->page
-));
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => 'station-liste',
-    'page' => $this->page
-));
-$hiddens = array();
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'stations-non-desservies'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$url_origine = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'stations-non-desservies',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'stations-non-desservies-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', 
+        [
+            'action' => 'stations-non-desservies'
+        ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content']
-);
+];
 ?>
 <h1>Liste des stations non desservies</h1>
 <div id="liste-wrapper">
@@ -65,10 +70,10 @@ echo $this->flashMessenger()->render('default');
 					<th>Inscrits</th>
 				</tr>
             <?php foreach($this->data as $test => $station): ?>
-            <?php $nbInscrits = StdLib::getParamR(array($station['stationId'], 'total'), $this->t_nb_inscrits, 0); ?>
+            <?php $nbInscrits = StdLib::getParamR([$station['stationId'], 'total'], $this->t_nb_inscrits, 0); ?>
             <?php $exces = $nbInscrits > 0; ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next(); if ($exces) echo ' exces';?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next(); if ($exces) echo ' exces';?>">
 					<td class="commune"><?php echo $this->escapeHtml($station['commune']); ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($station['nom']); ?></td>
 					<td class="visible"><?php echo $station['visible'] ? 'Oui' : 'Non'; ?></td>
@@ -76,39 +81,43 @@ echo $this->flashMessenger()->render('default');
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="boutons">
             <?php
-                $url_edit = $this->url('sbmgestion/transport', array(
-                    'action' => 'station-edit',
-                    'page' => $this->page
-                ));
-                $url_delete = $this->url('sbmgestion/transport', array(
-                    'action' => 'station-suppr',
-                    'page' => $this->page
-                ));
-                $url_group = $this->url('sbmgestion/transport', array(
-                    'action' => 'station-group',
-                    'page' => $this->page
-                ));
-                $hiddens = array(
+                $url_edit = $this->url('sbmgestion/transport', 
+                    [
+                        'action' => 'station-edit',
+                        'page' => $this->page
+                    ]);
+                $url_delete = $this->url('sbmgestion/transport', 
+                    [
+                        'action' => 'station-suppr',
+                        'page' => $this->page
+                    ]);
+                $url_group = $this->url('sbmgestion/transport', 
+                    [
+                        'action' => 'station-group',
+                        'page' => $this->page
+                    ]);
+                $hiddens = [
                     'stationId' => $station['stationId'],
                     'origine' => $url_origine
-                );
-                $buttons = array(
-                    'modifier' => array(
+                ];
+                $buttons = [
+                    'modifier' => [
                         'class' => 'fam-pencil',
                         'formaction' => $url_edit,
                         'title' => 'modifier'
-                    ),
-                    'supprimer' => array(
+                    ],
+                    'supprimer' => [
                         'class' => 'fam-delete',
                         'formaction' => $url_delete,
                         'title' => 'supprimer'
-                    ),
-                    'eleves' => array(
+                    ],
+                    'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
-                        'title' => sprintf('élèves de la station %s - %s', $station['nom'], $station['commune'])
-                    )
-                );
+                        'title' => sprintf('élèves de la station %s - %s', 
+                            $station['nom'], $station['commune'])
+                    ]
+                ];
                 echo $this->listeLigneActions($station['stationId'], $hiddens, $buttons);
                 ?>
 			        </td>

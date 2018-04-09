@@ -9,19 +9,19 @@
  * @filesource simulation-preparer.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/anneescolaire');
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Préparation d'une simulation</h1>
 <div id="liste-wrapper">

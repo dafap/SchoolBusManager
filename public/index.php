@@ -1,10 +1,21 @@
 <?php
+/**
+ * Entrée principale de l'application School Bus Manager
+ *
+ * @project sbm
+ * @package public
+ * @filesource index.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 8 avr. 2018
+ * @version 2018-2.4.0
+ */
 if (getenv('APPLICATION_ENV') == 'development') {
     // Cette constante est nécessaire pour utiliser ZendDeveloperTools en version PHP < 5.4
     if (PHP_VERSION_ID < 50400) {
         define('REQUEST_MICROTIME', microtime(true));
     }
-} 
+}
 
 /**
  * Cela rend notre vie plus facile lorsqu'il s'agit de chemins.
@@ -14,7 +25,8 @@ if (getenv('APPLICATION_ENV') == 'development') {
 chdir(dirname(__DIR__));
 
 // Decline static file requests back to the PHP built-in webserver
-if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
+if (php_sapi_name() === 'cli-server' &&
+     is_file(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
     return false;
 }
 

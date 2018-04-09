@@ -9,65 +9,69 @@
  * @filesource Simulation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form;
 
-use SbmCommun\Form\AbstractSbmForm As Form;
+use SbmCommun\Form\AbstractSbmForm as Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class Simulation extends Form implements InputFilterProviderInterface
 {
+
     public function __construct()
     {
         parent::__construct('simulation');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'millesime',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'simulation_millesime',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Millésime de base',
-                'label_attributes' => array(
-                    'class' => 'sbm-label sbm-form-auto'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error sbm-form-auto'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'decision-cancel',
-                'autofocus' => 'autofocus',
-                'class' => 'button default cancel left-10px'
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Valider',
-                'id' => 'decision-submit',
-                'class' => 'button default submit left-10px'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'millesime',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'simulation_millesime',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Millésime de base',
+                    'label_attributes' => [
+                        'class' => 'sbm-label sbm-form-auto'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error sbm-form-auto'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'decision-cancel',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default cancel left-10px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Valider',
+                    'id' => 'decision-submit',
+                    'class' => 'button default submit left-10px'
+                ]
+            ]);
     }
-    
+
     public function getInputFilterSpecification()
     {
-        return array(
-            'millesime' => array(
+        return [
+            'millesime' => [
                 'name' => 'millesime',
                 'required' => true
-            )
-        );
+            ]
+        ];
     }
 } 

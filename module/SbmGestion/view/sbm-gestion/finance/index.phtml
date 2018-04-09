@@ -8,24 +8,27 @@
  * @filesource view/finance/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_finance_encaissements = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-liste',
-    'page' => 1,
-    'id' => 'tous'
-));
-$url_finance_tarifs = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-liste'
-));
-$url_organisme_liste = $this->url('sbmgestion/finance', array(
-    'action' => 'organisme-liste'
-));
+$url_finance_encaissements = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'paiement-liste',
+        'page' => 1,
+        'id' => 'tous'
+    ]);
+$url_finance_tarifs = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'tarif-liste'
+    ]);
+$url_organisme_liste = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'organisme-liste'
+    ]);
 $url_finance_factures = $this->url('sbmgestion/finance');
 $url_finance_prelevements = $this->url('sbmgestion/finance');
 $url_paiement_liste = $this->url('sbmpaiement');
@@ -34,9 +37,17 @@ $url_gestion = $this->url('sbmgestion');
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $anneeScolaire = sprintf("%d-%d", $this->millesime, $this->millesime + 1);
 
-$nouveauBordereauCheques = (empty($this->dateBordereauCheques) && ! empty($this->datePaiementCheques)) || (! empty($this->dateBordereauCheques) && ! empty($this->datePaiementCheques) && $this->dateBordereauCheques < $this->datePaiementCheques);
-$nouveauBordereauEspeces = (empty($this->dateBordereauEspeces) && ! empty($this->datePaiementEspeces)) || (! empty($this->dateBordereauEspeces) && ! empty($this->datePaiementEspeces) && $this->dateBordereauEspeces < $this->datePaiementEspeces);
-$nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiementCB)) || (! empty($this->dateBordereauCB) && ! empty($this->datePaiementCB) && $this->dateBordereauCB < $this->datePaiementCB);
+$nouveauBordereauCheques = (empty($this->dateBordereauCheques) &&
+     ! empty($this->datePaiementCheques)) || (! empty($this->dateBordereauCheques) &&
+     ! empty($this->datePaiementCheques) &&
+     $this->dateBordereauCheques < $this->datePaiementCheques);
+$nouveauBordereauEspeces = (empty($this->dateBordereauEspeces) &&
+     ! empty($this->datePaiementEspeces)) || (! empty($this->dateBordereauEspeces) &&
+     ! empty($this->datePaiementEspeces) &&
+     $this->dateBordereauEspeces < $this->datePaiementEspeces);
+$nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiementCB)) || (! empty(
+    $this->dateBordereauCB) && ! empty($this->datePaiementCB) &&
+     $this->dateBordereauCB < $this->datePaiementCB);
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">

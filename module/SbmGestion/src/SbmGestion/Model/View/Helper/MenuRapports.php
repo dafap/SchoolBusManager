@@ -51,7 +51,8 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
     {
         $where = new Where();
         $where->equalTo('route', $route);
-        $resultset = $this->db_manager->get('Sbm\Db\System\DocAffectations')->fetchAll($where, 'ordinal_position');
+        $resultset = $this->db_manager->get('Sbm\Db\System\DocAffectations')->fetchAll(
+            $where, 'ordinal_position');
         $content = array();
         foreach ($resultset as $affectation) {
             $documentId = sprintf('documentId[%d]', $affectation->ordinal_position);

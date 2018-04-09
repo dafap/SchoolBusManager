@@ -9,25 +9,25 @@
  * @filesource paiement-edit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
- * @version 2016-2.2.1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/finance', array(
+$url_retour = $this->url('sbmgestion/finance', [
     'action' => 'paiement-edit'
-));
-$hiddens = array(
+]);
+$hiddens = [
     'op' => $this->h2 ? '' : 'retour'
-);
-$actions = array(
-    'cancel' => array(
+];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Modification d'un paiement</h1>
 <?php if ($this->hidden_responsableId):?>

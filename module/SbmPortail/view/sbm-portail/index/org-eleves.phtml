@@ -9,8 +9,8 @@
  * @filesource org-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 
@@ -54,53 +54,53 @@ try {
 
 // les url à utiliser
 $url_ici = $this->url('sbmportail', 
-    array(
+    [
         'action' => 'org-eleves',
         'page' => $this->page
-    ));
+    ]);
 $url_responsable = $this->url('sbmportail', 
-    array(
+    [
         'action' => 'org-responsable',
         'page' => $this->page
-    ));
+    ]);
 $url_group = $this->url('sbmportail', 
-    array(
+    [
         'action' => 'org-famille',
         'page' => $this->page
-    ));
+    ]);
 $url_rapports = $this->url('sbmportail', 
-    array(
+    [
         'action' => 'org-pdf',
         'page' => $this->page
-    ));
+    ]);
 $url_map = $this->url('sbmcarte', 
-    array(
+    [
         'action' => 'eleves',
         'page' => $this->page
-    ));
-$url_retour = $this->url('sbmportail', array(
+    ]);
+$url_retour = $this->url('sbmportail', [
     'action' => 'retour'
-));
+]);
 $url_telephones = $this->url('sbmportail', 
-    array(
+    [
         'action' => 'tr-extraction-telephones',
         'page' => $this->page
-    ));
+    ]);
 
 // le formulaire des actions du haut de page - aide de vue listeZoneActions()
-$hiddens = array();
-$actions = array(
-    'cancel' => array(
+$hiddens = [];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_ici,
         'title' => 'Retour'
-    ),
-    'rapports' => array(
+    ],
+    'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $url_rapports,
         'title' => 'Liste à imprimer'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des élèves</h1>
 <div id="liste-wrapper">
@@ -169,10 +169,10 @@ echo $this->flashMessenger()->render('default');
             }
             $nbResponsables = count($r);
             $tr_css = $this->cycle(
-                array(
+                [
                     "even",
                     "odd"
-                ))->next();
+                ])->next();
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
@@ -219,7 +219,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
 		<?php
 

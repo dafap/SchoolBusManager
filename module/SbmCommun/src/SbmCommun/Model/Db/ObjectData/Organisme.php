@@ -8,14 +8,15 @@
  * @filesource Organisme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
 class Organisme extends AbstractObjectData
 {
-    public function __construct() 
+
+    public function __construct()
     {
         $this->setObjName(__CLASS__);
         $this->setIdFieldName('organismeId');

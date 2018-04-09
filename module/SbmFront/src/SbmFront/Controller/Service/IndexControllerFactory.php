@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Controller\Service;
 
@@ -30,15 +30,17 @@ class IndexControllerFactory implements FactoryInterface
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'login_form' => $sm->get(Login::class),
-            'client' => StdLib::getParamR([
-                'sbm',
-                'client'
-            ], $config_application),
-            'accueil' => StdLib::getParamR([
-                'sbm',
-                'layout',
-                'accueil'
-            ], $config_application)
+            'client' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'client'
+                ], $config_application),
+            'accueil' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'layout',
+                    'accueil'
+                ], $config_application)
         ];
         return new IndexController($config_controller);
     }

@@ -12,8 +12,8 @@
  * @filesource colonne-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()
     ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
@@ -28,29 +28,32 @@ $this->inlineScript()->captureStart();
 $this->inlineScript()->captureEnd();
 // =============================================================================================
 
-$this->form->setAttribute('action', $this->url('sbmpdf', array(
-    'action' => 'colonne-edit',
-    'page' => $this->page
-)));
+$this->form->setAttribute('action', 
+    $this->url('sbmpdf', 
+        [
+            'action' => 'colonne-edit',
+            'page' => $this->page
+        ]));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmpdf', array(
-    'action' => 'colonne-liste',
-    'page' => $this->page
-));
-$hiddens = array(
+$url_retour = $this->url('sbmpdf', 
+    [
+        'action' => 'colonne-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [
     'documentId' => $this->document['documentId'],
     'name' => $this->document['name'],
     'ordinal_table' => $this->document['ordinal_table'],
     'recordSource' => $this->document['recordSource']
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Définition d'une colonne d'un tableau</h1>
 <ul>

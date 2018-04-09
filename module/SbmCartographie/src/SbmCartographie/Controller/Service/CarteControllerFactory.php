@@ -9,8 +9,8 @@
  * @filesource CarteControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\Controller\Service;
 
@@ -29,19 +29,21 @@ class CarteControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $cm = $sm->get('Sbm\CartographieManager');
         $cartographie = $cm->get('cartographie');
-        $projection = str_replace('ProjectionInterface', StdLib::getParam('system', $cartographie), ProjectionInterface::class);
+        $projection = str_replace('ProjectionInterface', 
+            StdLib::getParam('system', $cartographie), ProjectionInterface::class);
         $nzone = StdLib::getParam('nzone', $cartographie, 0);
         $config_cartes = $cm->get('cartes');
         $google_api = $cm->get('google_api');
         
-        return new CarteController([
-            'db_manager' => $sm->get('Sbm\DbManager'),
-            'projection' => new $projection($nzone),
-            'config_cartes' => $config_cartes,
+        return new CarteController(
+            [
+                'db_manager' => $sm->get('Sbm\DbManager'),
+                'projection' => new $projection($nzone),
+                'config_cartes' => $config_cartes,
                 'url_api' => $google_api['js'],
-            'user' => $sm->get('SbmAuthentification\Authentication')
-                ->by()
-                ->getIdentity()
-        ]);
+                'user' => $sm->get('SbmAuthentification\Authentication')
+                    ->by()
+                    ->getIdentity()
+            ]);
     }
 }

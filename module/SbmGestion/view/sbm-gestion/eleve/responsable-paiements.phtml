@@ -9,13 +9,14 @@
  * @filesource responsable-paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juill. 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
-$retour = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste',
-    'page' => $this->page
-));
+$retour = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
 
 ?>
 <h1>Paiements effectués par une personne</h1>
@@ -27,17 +28,28 @@ $retour = $this->url('sbmgestion/eleve', array(
 		</ul>
 	</div>
 	<div class="liste-wrapper">
-	    <div class="liste-inner">
+		<div class="liste-inner">
 			<?php foreach ($this->data as $key => $liste) : ?>
 			    <?php if ($liste->count()) : ?>
-			        <?php switch ($key) :
-			        case 'régisseur' : ?>
+			        <?php
+        
+        switch ($key) :
+            case 'régisseur':
+                ?>
 			            <h3>Liste des paiements en caisse du régisseur</h3>
-			        <?php break; 
-                    case 'comptable' : ?>
-                        <h3>Liste des paiements déposés au comptable public</h3>
-			        <?php break; 
-			        endswitch; ?>
+			        <?php
+                
+                break;
+            case 'comptable':
+                ?>
+                        <h3>Liste des paiements déposés au comptable
+				public</h3>
+			        <?php
+                
+                break;
+        endswitch
+        ;
+        ?>
 			        <ul>
 			            <?php foreach ($liste as $row) : ?>
 			                
@@ -46,5 +58,5 @@ $retour = $this->url('sbmgestion/eleve', array(
 			    <?php endif;?>
 			<?php endforeach; ?>
 		</div>
-    </div>
-</div>	
+	</div>
+</div>

@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmInstallation\Controller\Service;
 
@@ -28,23 +28,28 @@ class IndexControllerFactory implements FactoryInterface
         $config_application = $sm->get('config');
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
+            'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'db_config' => StdLib::getParam('db', $config_application),
-            'config_paiement' => StdLib::getParamR([
-                'sbm',
-                'paiement'
-            ], $config_application),
-            'error_log' => StdLib::getParamR([
-                'php_settings',
-                'error_log'
-            ], $config_application),
-            'mailchimp_key' => StdLib::getParamR([
-                'sbm',
-                'mailchimp'
-            ], $config_application, ''),
-            'img' => StdLib::getParamR([
-                'sbm',
-                'img'
-            ], $config_application, [])
+            'config_paiement' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'paiement'
+                ], $config_application),
+            'error_log' => StdLib::getParamR(
+                [
+                    'php_settings',
+                    'error_log'
+                ], $config_application),
+            'mailchimp_key' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mailchimp'
+                ], $config_application, ''),
+            'img' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'img'
+                ], $config_application, [])
         ];
         return new IndexController($config_controller);
     }

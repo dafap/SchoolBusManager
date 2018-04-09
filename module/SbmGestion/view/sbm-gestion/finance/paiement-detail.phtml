@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Justificatif du montant encaissé pour un responsable
  *
@@ -11,18 +12,18 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
     $element->setUseHiddenElement(false)
-    ->setAttribute('id', $id)
-    ->setValue($value);
+        ->setAttribute('id', $id)
+        ->setValue($value);
     return $view->formCheckbox($element);
 }
- 
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
@@ -51,20 +52,20 @@ $("#chk%d").change(function() {
 			});
   });
 EOT;
-	      
 
-$url_retour = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-liste',
-    'page' => $this->page
-));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'paiement-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
@@ -90,9 +91,11 @@ $actions = array(
 				</tr>
 	            <?php foreach ($this->liste as $enfant) : ?>
 	            <?php
-	            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $enfant['eleveId']);
-	            $jsCallback .= sprintf("$modele\n", $enfant['eleveId'], $enfant['eleveId']);
-	            ?>
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", 
+                    $enfant['eleveId']);
+                $jsCallback .= sprintf("$modele\n", $enfant['eleveId'], 
+                    $enfant['eleveId']);
+                ?>
 	            <tr>
 					<td><?php echo $this->escapeHtml($enfant['nom']);?></td>
 					<td><?php echo $this->escapeHtml($enfant['prenom']);?></td>
@@ -112,13 +115,13 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
   function totalEncaisse() {
-  <?php 
-    if ($this->totalEncaisse > 0) {
-      echo 'return ' . $this->totalEncaisse . ';';
-    } else {
-      echo 'return 0.0;';
-    }
-  ?>
+  <?php
+if ($this->totalEncaisse > 0) {
+    echo 'return ' . $this->totalEncaisse . ';';
+} else {
+    echo 'return 0.0;';
+}
+?>
 }
   function totalAPayer() {
     var total = <?php echo $this->montantDuplicatas;?>;

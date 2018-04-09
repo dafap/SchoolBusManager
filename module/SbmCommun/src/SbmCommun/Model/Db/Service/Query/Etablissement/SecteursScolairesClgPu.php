@@ -8,8 +8,8 @@
  * @filesource SecteursScolairesClgPu.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
@@ -30,7 +30,7 @@ class SecteursScolairesClgPu implements FactoryInterface
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
     private $db_manager;
-    
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -46,7 +46,7 @@ class SecteursScolairesClgPu implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -66,7 +66,7 @@ class SecteursScolairesClgPu implements FactoryInterface
         $this->sql = new Sql($this->dbAdapter);
         return $this;
     }
-    
+
     public function getRecord($id)
     {
         $where = new Where();
@@ -87,45 +87,55 @@ class SecteursScolairesClgPu implements FactoryInterface
      *
      * @return \SbmCommun\Model\Db\Service\Query\Etablissement\Paginator
      */
-    public function paginator($where, $order = array())
+    public function paginator($where, $order = [])
     {
-        return new Paginator(new DbSelect($this->select($where, $order), $this->db_manager->getDbAdapter()));
+        return new Paginator(
+            new DbSelect($this->select($where, $order), $this->db_manager->getDbAdapter()));
     }
 
-    private function select($filtre, $order = array())
+    private function select($filtre, $order = [])
     {
         $where = new Where();
         $where->literal('eta.niveau = 4')->literal('eta.statut = 1');
         
         $select1 = $this->sql->select();
-        $select1->from(array(
-            'ss' => $this->db_manager->getCanonicName('secteurs-scolaires-clg-pu', 'table')
-        ))
-            ->join(array(
-            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-        ), 'ss.etablissementId = eta.etablissementId', array(
-            'etablissement' => 'nom'
-        ))
-            ->join(array(
-            'cet' => $this->db_manager->getCanonicName('communes', 'table')
-        ), 'cet.communeId = eta.communeId', array(
-            'communeetab' => 'nom'
-        ))
-            ->join(array(
-            'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ), 'ss.communeId = com.communeId', array(
-            'commune' => 'nom'
-        ))
-            ->columns(array(
-            'etablissementId',
-            'communeId'
-        ))
+        $select1->from(
+            [
+                'ss' => $this->db_manager->getCanonicName('secteurs-scolaires-clg-pu', 
+                    'table')
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'ss.etablissementId = eta.etablissementId', 
+            [
+                'etablissement' => 'nom'
+            ])
+            ->join(
+            [
+                'cet' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'cet.communeId = eta.communeId', 
+            [
+                'communeetab' => 'nom'
+            ])
+            ->join(
+            [
+                'com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'ss.communeId = com.communeId', 
+            [
+                'commune' => 'nom'
+            ])
+            ->columns(
+            [
+                'etablissementId',
+                'communeId'
+            ])
             ->where($where);
         if (! empty($filtre)) {
             $select = $this->sql->select();
-            $select->from(array(
+            $select->from([
                 'liste' => $select1
-            ))
+            ])
                 ->where($filtre)
                 ->order($order);
         } else {

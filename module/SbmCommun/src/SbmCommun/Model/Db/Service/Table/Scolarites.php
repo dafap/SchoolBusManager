@@ -8,8 +8,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2018
- * @version 2018-2.3.19
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -34,10 +34,10 @@ class Scolarites extends AbstractSbmTable
         $this->table_name = 'scolarites';
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Scolarites';
-        $this->id_name = array(
+        $this->id_name = [
             'millesime',
             'eleveId'
-        );
+        ];
     }
 
     /**
@@ -68,9 +68,10 @@ class Scolarites extends AbstractSbmTable
             $is_new = true;
         }
         if ($is_new) {
-            $obj_data->setCalculateFields(array(
-                'dateInscription'
-            ));
+            $obj_data->setCalculateFields(
+                [
+                    'dateInscription'
+                ]);
             $changeEtab = true;
         } else {
             // on vérifie si des données ont changé
@@ -109,9 +110,9 @@ class Scolarites extends AbstractSbmTable
             $where->equalTo('millesime', $millesime)->equalTo('eleveId', $aEleveId);
         }
         $update = $this->table_gateway->getSql()->update();
-        $update->set(array(
+        $update->set([
             'paiement' => $paiement ? 1 : 0
-        ))->where($where);
+        ])->where($where);
         return $this->table_gateway->updateWith($update);
     }
 
@@ -131,11 +132,12 @@ class Scolarites extends AbstractSbmTable
     {
         $champ = "accord$r";
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'millesime' => $millesime,
-            'eleveId' => $eleveId,
-            $champ => $accord
-        ));
+        $oData->exchangeArray(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId,
+                $champ => $accord
+            ]);
         parent::saveRecord($oData);
     }
 
@@ -150,17 +152,18 @@ class Scolarites extends AbstractSbmTable
     public function setInscrit($millesime, $eleveId, $inscrit)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'millesime' => $millesime,
-            'eleveId' => $eleveId,
-            'inscrit' => $inscrit
-        ));
+        $oData->exchangeArray(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId,
+                'inscrit' => $inscrit
+            ]);
         parent::saveRecord($oData);
     }
 
     /**
      * Affecte le champ derogation
-     * 
+     *
      * @param int $millesime            
      * @param int $eleveId            
      * @param int $derogation
@@ -169,11 +172,12 @@ class Scolarites extends AbstractSbmTable
     public function setDerogation($millesime, $eleveId, $derogation)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'millesime' => $millesime,
-            'eleveId' => $eleveId,
-            'derogation' => $derogation
-        ));
+        $oData->exchangeArray(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId,
+                'derogation' => $derogation
+            ]);
         parent::saveRecord($oData);
     }
 
@@ -184,9 +188,10 @@ class Scolarites extends AbstractSbmTable
     {
         $select = $this->table_gateway->getSql()
             ->select()
-            ->columns(array(
-            'lastDateCarte' => new Expression('MAX(dateCarte)')
-        ));
+            ->columns(
+            [
+                'lastDateCarte' => new Expression('MAX(dateCarte)')
+            ]);
         $rowset = $this->table_gateway->selectWith($select);
         return $rowset->current()->lastDateCarte;
     }
@@ -204,9 +209,9 @@ class Scolarites extends AbstractSbmTable
         $where1 = new Where();
         $where1->expression('millesime = ?', $millesime);
         $select = new Select($this->db_manager->getCanonicName('affectations', 'table'));
-        $select->columns(array(
+        $select->columns([
             'eleveId'
-        ))
+        ])
             ->where($where1)
             ->quantifier(Select::QUANTIFIER_DISTINCT);
         $now = DateLib::nowToMysql();
@@ -214,9 +219,10 @@ class Scolarites extends AbstractSbmTable
         $where->expression('millesime = ?', $millesime)
             ->lessThan('dateCarte', $dateDebut)
             ->in('eleveId', $select);
-        return $this->getTableGateway()->update(array(
-            'dateCarte' => $now
-        ), $where);
+        return $this->getTableGateway()->update(
+            [
+                'dateCarte' => $now
+            ], $where);
     }
 
     /**
@@ -229,10 +235,11 @@ class Scolarites extends AbstractSbmTable
      */
     public function addDuplicata($millesime, $eleveId, $cancel = false)
     {
-        $oData = $this->getRecord(array(
-            'millesime' => $millesime,
-            'eleveId' => $eleveId
-        ));
+        $oData = $this->getRecord(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId
+            ]);
         if ($cancel && $oData->duplicata > 0) {
             $oData->duplicata --;
         } else {
@@ -250,9 +257,10 @@ class Scolarites extends AbstractSbmTable
      */
     public function isEmptyMillesime($millesime)
     {
-        $resultset = $this->fetchAll(array(
-            'millesime' => $millesime
-        ));
+        $resultset = $this->fetchAll(
+            [
+                'millesime' => $millesime
+            ]);
         return $resultset->count() == 0;
     }
 
@@ -265,8 +273,9 @@ class Scolarites extends AbstractSbmTable
      */
     public function viderMillesime($millesime)
     {
-        return $this->table_gateway->delete(array(
-            'millesime' => $millesime
-        ));
+        return $this->table_gateway->delete(
+            [
+                'millesime' => $millesime
+            ]);
     }
 }

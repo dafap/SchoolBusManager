@@ -9,8 +9,8 @@
  * @filesource Transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Transporteur;
 
@@ -70,10 +70,10 @@ class Transporteurs implements FactoryInterface
 
     /**
      * Renvoie la liste des emails des utilisateurs associés à un transporteur
-     * 
-     * @param int $transporteurId
-     * @param string|array $order
-     * 
+     *
+     * @param int $transporteurId            
+     * @param string|array $order            
+     *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getUserEmails($transporteurId, $order = null)
@@ -82,26 +82,29 @@ class Transporteurs implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
-    
+
     private function selectUserEmails($transporteurId, $order)
     {
-        $select = $this->sql->select([
-            'ut' => $this->db_manager->getCanonicName('users-transporteurs', 'table')
-        ])
-            ->join([
-            'u' => $this->db_manager->getCanonicName('users', 'table')
-        ], 'u.userId = ut.userId', [
-            'email'
-        ])
-            ->columns([
-            'nomprenom' => new Expression('CONCAT(u.prenom, " ", u.nom)')
-        ]);
-        if (!empty($order)) {
+        $select = $this->sql->select(
+            [
+                'ut' => $this->db_manager->getCanonicName('users-transporteurs', 'table')
+            ])
+            ->join(
+            [
+                'u' => $this->db_manager->getCanonicName('users', 'table')
+            ], 'u.userId = ut.userId', [
+                'email'
+            ])
+            ->columns(
+            [
+                'nomprenom' => new Expression('CONCAT(u.prenom, " ", u.nom)')
+            ]);
+        if (! empty($order)) {
             $select->order($order);
         }
         $where = new Where();
         $where->equalTo('ut.transporteurId', $transporteurId);
-        //die($this->getSqlString($select));
+        // die($this->getSqlString($select));
         return $select->where($where);
     }
 }

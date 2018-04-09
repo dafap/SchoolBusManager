@@ -6,8 +6,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Strategy
  * @filesource Semaine.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Strategy;
 
@@ -51,45 +51,45 @@ class Semaine extends AbstractPower2
         $this->nombre_de_codes = self::NOMBRE_DE_CODES;
         return parent::hydrate($value);
     }
-    
+
     /**
      * Vérifie que la valeur est valide
      *
      * @param int $value
      *            valeur à tester
-     *
+     *            
      * @return boolean
      */
     protected function valid($value)
     {
         return array_key_exists($value, self::getJours());
     }
-    
-    /**
-     * Renvoie la liste des jours de la semaine sous forme d'un tableau indexé
-     * 
-     * @return array
-     * La clé est le code du jour, la valeur est le nom abrégé du jour
-     */
-    public static function getJours()
-    {
-        /*return  array(
-            self::CODE_SEMAINE_LUNDI => 'lun',
-            self::CODE_SEMAINE_MARDI => 'mar',
-            self::CODE_SEMAINE_MERCREDI => 'mer',
-            self::CODE_SEMAINE_JEUDI => 'jeu',
-            self::CODE_SEMAINE_VENDREDI => 'ven',
-            self::CODE_SEMAINE_SAMEDI => 'sam',
-            self::CODE_SEMAINE_DIMANCHE => 'dim'
-        );*/
-        return \SbmCommun\Module::getSemaine();
-    }
-    
+
     /**
      * Renvoie la liste des jours de la semaine sous forme d'un tableau indexé
      *
-     * @return array
-     * La clé est le nom abrégé du jour, la valeur est le code du jour
+     * @return array La clé est le code du jour, la valeur est le nom abrégé du jour
+     */
+    public static function getJours()
+    {
+        /*
+         * return [
+         * self::CODE_SEMAINE_LUNDI => 'lun',
+         * self::CODE_SEMAINE_MARDI => 'mar',
+         * self::CODE_SEMAINE_MERCREDI => 'mer',
+         * self::CODE_SEMAINE_JEUDI => 'jeu',
+         * self::CODE_SEMAINE_VENDREDI => 'ven',
+         * self::CODE_SEMAINE_SAMEDI => 'sam',
+         * self::CODE_SEMAINE_DIMANCHE => 'dim'
+         * ];
+         */
+        return \SbmCommun\Module::getSemaine();
+    }
+
+    /**
+     * Renvoie la liste des jours de la semaine sous forme d'un tableau indexé
+     *
+     * @return array La clé est le nom abrégé du jour, la valeur est le code du jour
      */
     public static function getCodesJours()
     {

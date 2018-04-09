@@ -8,50 +8,53 @@
  * @filesource etiquette-format.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->
 // ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
 appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_cancel = $this->url('sbmpdf', array(
-    'action' => 'pdf-liste',
-    'page' => $this->page
-));
-$url_retour = $this->url('sbmpdf', array(
-    'action' => 'pdf-edit',
-    'page' => $this->page
-));
-$url_fields = $this->url('sbmpdf', array(
-    'action' => 'field-liste',
-    'page' => $this->page
-));
+$url_cancel = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-liste',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-edit',
+        'page' => $this->page
+    ]);
+$url_fields = $this->url('sbmpdf', 
+    [
+        'action' => 'field-liste',
+        'page' => $this->page
+    ]);
 
-$hiddens = array(
+$hiddens = [
     'documentId' => $this->document['documentId'],
     'name' => $this->document['name'],
     'recordSource' => $this->document['recordSource']
-);
+];
 
-$actions = array(
-    'homepdf' => array(
+$actions = [
+    'homepdf' => [
         'class' => 'fam-door-out',
         'formaction' => $url_cancel,
         'title' => 'Liste des documents'
-    ),
-    'retour' => array(
+    ],
+    'retour' => [
         'class' => 'fam-book-previous',
         'formaction' => $url_retour,
         'title' => 'Configuration du document'
-    ),
-    'champs' => array(
+    ],
+    'champs' => [
         'formaction' => $url_fields,
         'class' => 'button default',
         'value' => 'Liste des champs',
         'title' => 'Définition et mise en forme du contenu de l\'étiquette'
-    )
-);
+    ]
+];
 ?>
 <h1>Paramétrage des étiquettes</h1>
 <ul>

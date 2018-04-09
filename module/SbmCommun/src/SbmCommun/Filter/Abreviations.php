@@ -8,8 +8,8 @@
  * @filesource Abreviations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2017
- * @version 2017-2.3.13
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Filter;
 
@@ -21,30 +21,32 @@ class Abreviations extends AbstractUnicode implements FilterInterface
 
     /**
      * Le filtre se déclanchera si la chaine à filtrer est de longueur supérieure au seuil.
+     * 
      * @var array
      */
-    protected $options = array(
+    protected $options = [
         'encoding' => null,
         'seuil' => 38
-    );
+    ];
 
     /**
      * Liste des mots et des abréviations correspondantes
-     * Syntaxe :  
-     *   Le mot est inscrit en minuscule et est accentué. 
-     *   Lorsqu'il y a une variante, il est suivi d'une parenthèse qui contient les parties changeantes.
-     *   Pour un pluriel comme allée, allées, la racine commune (avant la parenthèse) est allée et la variante est (,s) qui veut dire
-     *   - ne rajoute rien ou rajoute un s
-     *   Pour un pluriel comme hôpital, hôpitaux, la racine commune (avant la parenthèse) est hôpit et les variantes sont (al,aux) qui veut dire
-     *   - rajoute al ou rajoute aux
-     *   Il peut y avoir plus de 2 variantes. Il suffit de les séparer par une virgule dans la parenthèse.
-     *   
-     *   Pour les mots composés, il peut y avoir 2 blocs de variantes - exemple : 'chemin(,s) vicin(al,aux)'. Dans ce cas, il faut respecter 
-     *   l'ordre des variantes sur les 2 mots : 'chemin vicinal' ou 'chemins vicinaux'.
-     * 
+     * Syntaxe :
+     * Le mot est inscrit en minuscule et est accentué.
+     *
+     * Lorsqu'il y a une variante, il est suivi d'une parenthèse qui contient les parties changeantes.
+     * Pour un pluriel comme allée, allées, la racine commune (avant la parenthèse) est allée et la variante est (,s) qui veut dire
+     * - ne rajoute rien ou rajoute un s
+     * Pour un pluriel comme hôpital, hôpitaux, la racine commune (avant la parenthèse) est hôpit et les variantes sont (al,aux) qui veut dire
+     * - rajoute al ou rajoute aux
+     * Il peut y avoir plus de 2 variantes. Il suffit de les séparer par une virgule dans la parenthèse.
+     *
+     * Pour les mots composés, il peut y avoir 2 blocs de variantes - exemple : 'chemin(,s) vicin(al,aux)'. Dans ce cas, il faut respecter
+     * l'ordre des variantes sur les 2 mots : 'chemin vicinal' ou 'chemins vicinaux'.
+     *
      * @var unknown
      */
-    private $references = array(
+    private $references = [
         'abbaye' => 'ABE',
         'adjudant' => 'ADJ',
         'aérodrome' => 'AER',
@@ -125,7 +127,7 @@ class Abreviations extends AbstractUnicode implements FilterInterface
         'coopérative' => 'COOP',
         'corniche(,s)' => 'COR',
         'coteau' => 'COTE',
-        'cottage(,s)' => 'COTT', 
+        'cottage(,s)' => 'COTT',
         'couloir' => 'CLR',
         'cours' => 'CRS',
         'croix' => 'CRX',
@@ -160,7 +162,7 @@ class Abreviations extends AbstractUnicode implements FilterInterface
         'faculté' => 'FAC',
         'faubourg' => 'FG',
         'ferme(,s)' => 'FRM',
-        'fontaine' => 'FON', 
+        'fontaine' => 'FON',
         'for(êt,estier)' => 'FOR',
         'forum' => 'FORM',
         'fosse(,s)' => 'FOS',
@@ -306,7 +308,7 @@ class Abreviations extends AbstractUnicode implements FilterInterface
         'square' => 'SQ',
         'stade' => 'STDE',
         'station' => 'STA',
-        'techni(cien,que)' => 'TECH',    
+        'techni(cien,que)' => 'TECH',
         'ter' => 'T',
         'terre plein' => 'TPL',
         'terrain' => 'TRN',
@@ -328,10 +330,11 @@ class Abreviations extends AbstractUnicode implements FilterInterface
         'ville(,s)' => 'VIL',
         'voie(,s)' => 'VOI',
         'zone artizanale' => 'ZA',
-        'zone industrielle' => 'ZI'        
-    );
+        'zone industrielle' => 'ZI'
+    ];
 
-    private $abreviations = array();
+    private $abreviations = [];
+
     /**
      * Constructor
      *
@@ -356,38 +359,43 @@ class Abreviations extends AbstractUnicode implements FilterInterface
                 $this->abreviations[$mots] = $abrev;
                 $this->abreviations[$sa->filter($mots)] = $abrev;
             } elseif ($nparts == 1) {
-                preg_match('#' . $pattern .'#', $mots, $matches);
+                preg_match('#' . $pattern . '#', $mots, $matches);
                 foreach (explode(',', $matches[2]) as $suffixe) {
                     $idx = $matches[1] . $suffixe;
                     $this->abreviations[$idx] = $abrev;
                     $this->abreviations[$sa->filter($idx)] = $abrev;
                 }
             } else { // mot composé de 2 parties seulement
-                preg_match('#' . $pattern . $pattern .'#', $mots, $matches);
+                preg_match('#' . $pattern . $pattern . '#', $mots, $matches);
                 $suffixes1 = explode(',', $matches[2]);
                 $suffixes2 = explode(',', $matches[4]);
                 if (count($suffixes1) != count($suffixes2)) {
-                    throw new Exception('Erreur de référence dans le fichier ' . __FILE__ . '. Les deux parties du mot composé doivent avoir le même nombre de variantes.');
+                    throw new Exception(
+                        'Erreur de référence dans le fichier ' . __FILE__ .
+                             '. Les deux parties du mot composé doivent avoir le même nombre de variantes.');
                 }
-                for ($i=0; $i < count($suffixes1); $i++) {
-                    $idx = $matches[1] . $suffixes1[$i] . ' ' . $matches[3] . $suffixes2[$i];
+                for ($i = 0; $i < count($suffixes1); $i ++) {
+                    $idx = $matches[1] . $suffixes1[$i] . ' ' . $matches[3] .
+                         $suffixes2[$i];
                     $this->abreviations[$idx] = $abrev;
                     $this->abreviations[$sa->filter($idx)] = $abrev;
                 }
             }
         }
-        if (!uksort($this->abreviations, function($k1, $k2) use ($encoding) {
-            $l1 = mb_strlen($k1, $encoding);
-            $l2 = mb_strlen($k2, $encoding);
-            if ($l1 < $l2) {
-                return 1; // les plus courts après les plus longs
-            } elseif ($l1 > $l2) {
-                return -1; // les plus long avant les plus courts
-            } else {
-                return strcasecmp($k1, $k2); // ordre alphabétique pour des mots de même longueur
-            }
-        })) {
-            throw new Exception(__CLASS__ . '. Impossible de trier le tableau des abréviations.');
+        if (! uksort($this->abreviations, 
+            function ($k1, $k2) use($encoding) {
+                $l1 = mb_strlen($k1, $encoding);
+                $l2 = mb_strlen($k2, $encoding);
+                if ($l1 < $l2) {
+                    return 1; // les plus courts après les plus longs
+                } elseif ($l1 > $l2) {
+                    return - 1; // les plus long avant les plus courts
+                } else {
+                    return strcasecmp($k1, $k2); // ordre alphabétique pour des mots de même longueur
+                }
+            })) {
+            throw new Exception(
+                __CLASS__ . '. Impossible de trier le tableau des abréviations.');
         }
     }
 
@@ -398,7 +406,9 @@ class Abreviations extends AbstractUnicode implements FilterInterface
                 $val = mb_strtolower($val, $this->options['encoding']);
                 foreach ($this->abreviations as $idx => $abr) {
                     $val = implode($abr, mb_split($idx, $val));
-                    if (mb_strlen($val, $this->options['encoding']) <= $this->options['seuil']) return $val;
+                    if (mb_strlen($val, $this->options['encoding']) <=
+                         $this->options['seuil'])
+                        return $val;
                 }
             }
         }

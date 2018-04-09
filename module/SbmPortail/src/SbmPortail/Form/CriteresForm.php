@@ -7,8 +7,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juillet 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPortail\Form;
 
@@ -23,205 +23,215 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
         parent::__construct('criteres');
         $this->setAttribute('method', 'post');
         
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'numero',
-            'attributes' => array(
-                'id' => 'critere-nom',
-                'maxlength' => '11',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Numéro',
-                'label_attributes' => array(
-                    'class' => 'sbm-first'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'nomSA',
-            'attributes' => array(
-                'id' => 'critere-nom',
-                'maxlength' => '45',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'prenomSA',
-            'attributes' => array(
-                'id' => 'critere-prenom',
-                'maxlength' => '45',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Prénom',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'responsable',
-            'attributes' => array(
-                'id' => 'critere-responsable',
-                'maxlength' => '45',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Responsable',
-                'label_attributes' => array(
-                    'class' => 'sbm-new-line'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'etablissementId',
-            'attributes' => array(
-                'id' => 'critere-etablissementId',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Etablissement',
-                'empty_option' => 'Tout',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'classeId',
-            'attributes' => array(
-                'id' => 'critere-classeId',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Classe',
-                'empty_option' => 'Tout',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'serviceId',
-            'attributes' => array(
-                'id' => 'critere-serviceId',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Circuit',
-                'label_attributes' => array(
-                    'class' => 'sbm-new-line'),
-                'empty_option' => 'Tous',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'stationId',
-            'attributes' => array(
-                'id' => 'critere-stationId',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Arrêt',
-                'empty_option' => 'Tous',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'submit',
-            'name' => 'submit',
-            'attributes' => array(
-                'title' => 'Rechercher',
-                'id' => 'criteres-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'fam-find button submit'
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'numero',
+                'attributes' => [
+                    'id' => 'critere-nom',
+                    'maxlength' => '11',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Numéro',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'nomSA',
+                'attributes' => [
+                    'id' => 'critere-nom',
+                    'maxlength' => '45',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'prenomSA',
+                'attributes' => [
+                    'id' => 'critere-prenom',
+                    'maxlength' => '45',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Prénom',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'responsable',
+                'attributes' => [
+                    'id' => 'critere-responsable',
+                    'maxlength' => '45',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Responsable',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'etablissementId',
+                'attributes' => [
+                    'id' => 'critere-etablissementId',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Etablissement',
+                    'empty_option' => 'Tout',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'classeId',
+                'attributes' => [
+                    'id' => 'critere-classeId',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Classe',
+                    'empty_option' => 'Tout',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'serviceId',
+                'attributes' => [
+                    'id' => 'critere-serviceId',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Circuit',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
+                    'empty_option' => 'Tous',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'stationId',
+                'attributes' => [
+                    'id' => 'critere-stationId',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Arrêt',
+                    'empty_option' => 'Tous',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'submit',
+                'name' => 'submit',
+                'attributes' => [
+                    'title' => 'Rechercher',
+                    'id' => 'criteres-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'fam-find button submit'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'numero' => array(
+        return [
+            'numero' => [
                 'name' => 'numero',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'nomSA' => array(
+                    ]
+                ]
+            ],
+            'nomSA' => [
                 'name' => 'nomSA',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'prenomSA' => array(
+                    ]
+                ]
+            ],
+            'prenomSA' => [
                 'name' => 'prenomSA',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'responsable' => array(
+                    ]
+                ]
+            ],
+            'responsable' => [
                 'name' => 'responsable',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'etablissementId' => array(
+                    ]
+                ]
+            ],
+            'etablissementId' => [
                 'name' => 'etablissementId',
                 'required' => false
-            ),
-            'classeId' => array(
+            ],
+            'classeId' => [
                 'name' => 'classeId',
                 'required' => false
-            ),
-            'serviceId' => array(
+            ],
+            'serviceId' => [
                 'name' => 'serviceId',
                 'required' => false
-            ),
-            'stationId' => array(
+            ],
+            'stationId' => [
                 'name' => 'stationId',
                 'required' => false
-            ),
-            'etat' => array(
+            ],
+            'etat' => [
                 'name' => 'etat',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
 }

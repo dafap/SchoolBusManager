@@ -8,10 +8,9 @@
  * @filesource table.classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-
 
 /**
  * *************************************************************************
@@ -34,25 +33,27 @@
  * 255 pour tous les niveaux *
  * *************************************************************************
  */
-return array(
+return [
     'name' => 'classes',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure'=> array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'classeId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'nom' => 'varchar(30) NOT NULL',
             'aliasCG' => 'varchar(30) NULL DEFAULT NULL',
             'niveau' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "255"',
             'suivantId' => 'int(11) NULL DEFAULT NULL',
-            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
-        ),
-        'primary_key' => array('classeId',),
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"'
+        ],
+        'primary_key' => [
+            'classeId'
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci',
-    ),
+        'collate' => 'utf8_unicode_ci'
+    ],
     'data' => __DIR__ . '/data/data.classes.php'
-);
+];

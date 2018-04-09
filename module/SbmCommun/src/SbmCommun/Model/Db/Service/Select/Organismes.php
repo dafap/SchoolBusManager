@@ -8,11 +8,10 @@
  * @filesource Organismes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
-
-namespace SbmCommun\Model\Db\Service\Select; 
+namespace SbmCommun\Model\Db\Service\Select;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -23,6 +22,7 @@ use SbmCommun\Model\Db\Exception;
 
 class Organismes implements FactoryInterface
 {
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof DbManager)) {
@@ -32,11 +32,16 @@ class Organismes implements FactoryInterface
         $db_manager = $serviceLocator;
         $sql = new Sql($db_manager->getDbAdapter());
         $select = $sql->select($db_manager->getCanonicName('organismes', 'vue'));
-        $select->columns(array('organismeId', 'nom', 'commune'));
+        $select->columns(
+            [
+                'organismeId',
+                'nom',
+                'commune'
+            ]);
         $select->order('nom');
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['organismeId']] = $row['nom'] . ' (' . $row['commune'] . ')';
         }

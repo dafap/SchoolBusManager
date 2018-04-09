@@ -18,8 +18,8 @@
  * @filesource CodeService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2018
- * @version 2018-2.3.15
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Validator;
 
@@ -28,28 +28,30 @@ use Zend\Validator\AbstractValidator;
 /**
  * Il y a 3 modèles séparés par des OU dans le PATTERN
  * (les 2 premiers modèles composés d'une partie commune et d'une partie alternative)
- * 
- * @author pomirol
  *
+ * @author pomirol
+ *        
  */
 class CodeService extends AbstractValidator
 {
+
     const PATTERN = '/^[0-9]{3}-(?:[0-9]{1,2}[A-Z]?(?:-R)?|T[A-C])$|^M[1-2][0-9]{2}[A-Z]$/';
+
     const ERROR = 'codeService';
-    
-    protected $messageTemplates = array(
+
+    protected $messageTemplates = [
         self::ERROR => "'%value%' n'a pas la forme du code d'un service. Consultez l'aide."
-    );
-    
+    ];
+
     public function isValid($value)
     {
         $this->setValue($value);
-            
-        if (!preg_match(self::PATTERN, $value)) {
+        
+        if (! preg_match(self::PATTERN, $value)) {
             $this->error(self::ERROR);
             return false;
         }
-    
+        
         return true;
     }
 }

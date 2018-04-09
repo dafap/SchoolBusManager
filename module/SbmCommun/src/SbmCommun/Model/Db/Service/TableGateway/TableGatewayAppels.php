@@ -11,13 +11,14 @@
  * @filesource TableGatewayAppels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
 
 class TableGatewayAppels extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'appels';

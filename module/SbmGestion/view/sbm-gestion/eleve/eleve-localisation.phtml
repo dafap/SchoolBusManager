@@ -9,14 +9,17 @@
  * @filesource eleve-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 
-$nomEleve =  implode(' ', array($this->eleve['nom'], $this->eleve['prenom']));
+$nomEleve = implode(' ', [
+    $this->eleve['nom'],
+    $this->eleve['prenom']
+]);
 // calcul du contenu de l'infobulle
-$description = array();
+$description = [];
 $description[] = '<b>' . $nomEleve . '</b>';
 
 // mise en place des JS de googleMaps
@@ -24,14 +27,14 @@ $this->headScript()->appendFile($this->url_api);
 $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->appendFile('/js/maps/localisation.js');
 // lancement du script (sera affiché dans le layout à la fin de la page
-$this->inlineScript()->captureStart(); 
+$this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
 const INI_ZOOM = <?php echo $this->config['zoom'];?>;
 initialiser('mon domicile', "<?php echo implode('<br/>', $description);?>", []);
-<?php 
-$this->inlineScript()->captureEnd(); 
+<?php
+$this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
 ?><h1>Adresse personnelle de <?php echo $nomEleve;?></h1>
 <div id="carte-wrapper">
@@ -41,34 +44,45 @@ $this->inlineScript()->captureEnd();
 	<?php echo $this->formHidden($this->form->get('lat'));?>
 	<?php echo $this->formHidden($this->form->get('lng'));?>
 	   <fieldset class="sbm-page1">
-	       <div id="ligne1">
+			<div id="ligne1">
 	       <?php echo $this->formRow($this->form->get('chez'));?>
 	       <?php echo $this->formRow($this->form->get('adresseL1'));?>
 	       <?php echo $this->formRow($this->form->get('adresseL2'));?>
 	       </div>
-	       <div id="ligne2" class="top-6px">
+			<div id="ligne2" class="top-6px">
 	       <?php echo $this->formRow($this->form->get('codePostal'));?>
 	       <?php echo $this->formRow($this->form->get('communeId'));?>
 	       <?php echo $this->formSubmit($this->form->get('submit'));?>
 	       <?php echo $this->formSubmit($this->form->get('remove'));?>
 	       <?php echo $this->formSubmit($this->form->get('cancel'));?>
 	       </div>
-	   </fieldset>
+		</fieldset>
     <?php echo $this->form()->closeTag();?>
-<?php if ($this->form->getMessages()) {
-    $msg = $this->form->getMessages();
-    if (StdLib::array_keys_exists(array('lat', 'notBetween'), $msg) || StdLib::array_keys_exists(array('lng', 'notBetween'), $msg)) {
-?>
-            <p class="sbm-description important">La position indiquée n'est pas dans la zone géographique de l'organisateur.</p>
-<?php             
+<?php
+
+    
+if ($this->form->getMessages()) {
+        $msg = $this->form->getMessages();
+        if (StdLib::array_keys_exists([
+            'lat',
+            'notBetween'
+        ], $msg) || StdLib::array_keys_exists([
+            'lng',
+            'notBetween'
+        ], $msg)) {
+            ?>
+            <p class="sbm-description important">La position indiquée
+			n'est pas dans la zone géographique de l'organisateur.</p>
+<?php
+        }
     }
-}
-?>
+    ?>
 		<p class="sbm-description">
-			Indiquez l'adresse de l'élève puis positionnez la sur la carte avant de cliquer
-			sur le bouton <b>'Enregistrer'</b>. Utilisez le zoom pour plus de précision.
+			Indiquez l'adresse de l'élève puis positionnez la sur la carte avant
+			de cliquer sur le bouton <b>'Enregistrer'</b>. Utilisez le zoom pour
+			plus de précision.
 		</p>
-    </div>
+	</div>
 	<div id="carte-inner"
 		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>
 </div>

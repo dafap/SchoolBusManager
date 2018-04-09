@@ -12,24 +12,24 @@
  * /
  
  return array(
-    'db' => array(
-    'driver' => 'Pdo',
-    'dsn' => 'mysql:dbname=bdts;host=localhost',
-    'driver_options' => array(
-        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
-    )
+ 'db' => array(
+ 'driver' => 'Pdo',
+ 'dsn' => 'mysql:dbname=bdts;host=localhost',
+ 'driver_options' => array(
+ PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
+ )
  ),
  
  'service_manager' => array(
-    'factories' => array(
-        'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory'
-    )
+ 'factories' => array(
+ 'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory'
+ )
  ),
  
  'session' => array(
-     'name' => 'SBM_SESSION',
-    'save_path' => __DIR__ . '/../../data/session'
-         ),
+ 'name' => 'SBM_SESSION',
+ 'save_path' => __DIR__ . '/../../data/session'
+ ),
  );
  */
 if (! defined('SBM_BASE_PATH')) {

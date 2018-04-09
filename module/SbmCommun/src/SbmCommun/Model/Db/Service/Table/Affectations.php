@@ -8,8 +8,8 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -27,14 +27,14 @@ class Affectations extends AbstractSbmTable
         $this->table_name = 'affectations';
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Affectations';
-        $this->id_name = array(
+        $this->id_name = [
             'millesime',
             'eleveId',
             'trajet',
             'jours',
             'sens',
             'correspondance'
-        );
+        ];
     }
 
     public function insertRecord(ObjectDataInterface $obj_data)
@@ -90,15 +90,18 @@ class Affectations extends AbstractSbmTable
      * @param int $ancienResponsableId            
      * @param int $nouveauResponsableId            
      */
-    public function updateResponsableId($millesime, $eleveId, $ancienResponsableId, $nouveauResponsableId)
+    public function updateResponsableId($millesime, $eleveId, $ancienResponsableId, 
+        $nouveauResponsableId)
     {
-        return $this->table_gateway->update(array(
-            'responsableId' => $nouveauResponsableId
-        ), array(
-            'millesime' => $millesime,
-            'eleveId' => $eleveId,
-            'responsableId' => $ancienResponsableId
-        ));
+        return $this->table_gateway->update(
+            [
+                'responsableId' => $nouveauResponsableId
+            ], 
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId,
+                'responsableId' => $ancienResponsableId
+            ]);
     }
 
     /**
@@ -110,35 +113,41 @@ class Affectations extends AbstractSbmTable
      */
     public function deleteResponsableId($millesime, $eleveId, $ancienResponsableId)
     {
-        return $this->table_gateway->delete(array(
-            'millesime' => $millesime,
-            'eleveId' => $eleveId,
-            'responsableId' => $ancienResponsableId
-        ));
+        return $this->table_gateway->delete(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId,
+                'responsableId' => $ancienResponsableId
+            ]);
     }
-    
+
     /**
      * Renvoie vrai si la table ne contient pas de données pour ce millésime.
      *
-     * @param int $millesime
+     * @param int $millesime            
      *
      * @return boolean
      */
     public function isEmptyMillesime($millesime)
     {
-        $resultset = $this->fetchAll(array('millesime' => $millesime));
-        return $resultset->count()==0;
+        $resultset = $this->fetchAll([
+            'millesime' => $millesime
+        ]);
+        return $resultset->count() == 0;
     }
-    
+
     /**
      * Supprime tous les enregistrements concernant le millesime indiqué.
      *
-     * @param unknown $millesime
+     * @param unknown $millesime            
      *
      * @return \Zend\Db\TableGateway\int
      */
     public function viderMillesime($millesime)
     {
-        return $this->table_gateway->delete(array('millesime' => $millesime));
+        return $this->table_gateway->delete(
+            [
+                'millesime' => $millesime
+            ]);
     }
 }

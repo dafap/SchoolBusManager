@@ -56,27 +56,32 @@ class Stations extends AbstractHelper implements FactoryInterface
             ->equalTo('trajet', $trajet);
         $sql = new Sql($this->db_manager->getDbAdapter());
         $select = $sql->select()
-            ->from(array(
-            'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-        ))
-            ->join(array(
-            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
-        ), 'sta1.stationId=aff.station1Id', array(
-            'station1' => 'nom'
-        ))
-            ->join(array(
-            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
-        ), 'sta2.stationId=aff.station2Id', array(
-            'station2' => 'nom'
-        ), Select::JOIN_LEFT);
+            ->from(
+            array(
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ))
+            ->join(
+            array(
+                'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+            ), 'sta1.stationId=aff.station1Id', 
+            array(
+                'station1' => 'nom'
+            ))
+            ->join(
+            array(
+                'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+            ), 'sta2.stationId=aff.station2Id', 
+            array(
+                'station2' => 'nom'
+            ), Select::JOIN_LEFT);
         $statement = $sql->prepareStatementForSqlObject($select->where($where));
         $resultset = $statement->execute();
         $content = array();
-        foreach ($resultset as $affectation) {        
+        foreach ($resultset as $affectation) {
             $station1Id = $affectation['station1'];
             $content[$station1Id] = $station1Id;
             $station2Id = $affectation['station2'];
-            if (!empty($station2Id)) {
+            if (! empty($station2Id)) {
                 $content[$station2Id] = $station2Id;
             }
         }

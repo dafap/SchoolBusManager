@@ -8,8 +8,8 @@
  * @filesource TcpdfFonts.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model;
 
@@ -47,7 +47,10 @@ class TcpdfFonts
         if (empty($this->fonts)) {
             $pwd = getcwd();
             if (! chdir($this->tcpdf_font_path)) {
-                throw new \Exception(sprintf('Le dossier %s n\'est pas le dossier des polices du module TcPdf.', $this->tcpdf_font_path));
+                throw new \Exception(
+                    sprintf(
+                        'Le dossier %s n\'est pas le dossier des polices du module TcPdf.', 
+                        $this->tcpdf_font_path));
             }
             foreach (glob('*.php') as $php_file) {
                 $features = $this->getFontFeatures($php_file);
@@ -102,11 +105,13 @@ class TcpdfFonts
         $result = new \stdClass();
         if (isset($file)) {
             $result->font = [
-                basename($file, '.z') => isset($name) ? $name : basename($php_file, '.php')
+                basename($file, '.z') => isset($name) ? $name : basename($php_file, 
+                    '.php')
             ];
         } else {
             $result->font = [
-                basename($php_file, '.php') => isset($name) ? $name : basename($php_file, '.php')
+                basename($php_file, '.php') => isset($name) ? $name : basename($php_file, 
+                    '.php')
             ];
         }
         $result->mono = max($cw) == min($cw);

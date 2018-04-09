@@ -8,24 +8,25 @@
  * @filesource view/sbm-gestion/transport/commune-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => 'commune-liste',
-    'page' => $this->page
-));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'commune-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Création d'une nouvelle commune</h1>
 <div id="fiche-wrapper">
@@ -35,27 +36,27 @@ $actions = array(
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('csrf'));
 ?>
     <fieldset class="sbm-page1">
-        <div id="commune-ajout-communeId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
-        <div id="commune-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
-        <div id="commune-ajout-nom-min" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom_min')); ?></div>
-        <div id="commune-ajout-alias" class="row-inner ajout"><?php echo $this->formRow($this->form->get('alias')); ?></div>
-        <div id="commune-ajout-alias-min" class="row-inner ajout"><?php echo $this->formRow($this->form->get('alias_min')); ?></div>
-        <div id="commune-ajout-aliasCG" class="row-inner ajout"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
-        <div id="commune-ajout-codepostal" class="row-inner ajout"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
-        <div id="commune-ajout-departement" class="row-inner ajout"><?php echo $this->formRow($this->form->get('departement')); ?></div>
-        <div id="commune-ajout-canton" class="row-inner ajout"><?php echo $this->formRow($this->form->get('canton')); ?></div>
-        <div id="commune-ajout-population" class="row-inner ajout"><?php echo $this->formRow($this->form->get('population')); ?></div>
-        <div id="commune-ajout-membre" class="row-inner ajout"><?php echo $this->formRow($this->form->get('membre')); ?></div>
-        <div id="commune-ajout-desservie" class="row-inner ajout"><?php echo $this->formRow($this->form->get('desservie')); ?></div>
-        <div id="commune-ajout-visible" class="row-inner ajout"><?php echo $this->formRow($this->form->get('visible')); ?></div>
-        <div id="commune-ajout-buttons" class="row-inner ajout">
+			<div id="commune-ajout-communeId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
+			<div id="commune-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
+			<div id="commune-ajout-nom-min" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom_min')); ?></div>
+			<div id="commune-ajout-alias" class="row-inner ajout"><?php echo $this->formRow($this->form->get('alias')); ?></div>
+			<div id="commune-ajout-alias-min" class="row-inner ajout"><?php echo $this->formRow($this->form->get('alias_min')); ?></div>
+			<div id="commune-ajout-aliasCG" class="row-inner ajout"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
+			<div id="commune-ajout-codepostal" class="row-inner ajout"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
+			<div id="commune-ajout-departement" class="row-inner ajout"><?php echo $this->formRow($this->form->get('departement')); ?></div>
+			<div id="commune-ajout-canton" class="row-inner ajout"><?php echo $this->formRow($this->form->get('canton')); ?></div>
+			<div id="commune-ajout-population" class="row-inner ajout"><?php echo $this->formRow($this->form->get('population')); ?></div>
+			<div id="commune-ajout-membre" class="row-inner ajout"><?php echo $this->formRow($this->form->get('membre')); ?></div>
+			<div id="commune-ajout-desservie" class="row-inner ajout"><?php echo $this->formRow($this->form->get('desservie')); ?></div>
+			<div id="commune-ajout-visible" class="row-inner ajout"><?php echo $this->formRow($this->form->get('visible')); ?></div>
+			<div id="commune-ajout-buttons" class="row-inner ajout">
         <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-    </fieldset>
+		</fieldset>
 <?php echo $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>

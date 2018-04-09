@@ -7,8 +7,8 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2017
- * @version 2017-2.3.3
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMailChimp\Model\Db\Service;
 
@@ -96,41 +96,51 @@ class Users implements FactoryInterface
     {
         $sub_having = new Having();
         $sub_having->isNotNull('r.email');
-        $sub_select = $this->sql->select([
-            'r' => $this->db_manager->getCanonicName('responsables', 'table')
-        ])
-            ->columns([
-            'email',
-            'nbelv' => new Expression('count(s.eleveId)')
-        ])
-            ->join([
-            'e' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'r.responsableId = e.responsable1Id OR r.responsableId = e.responsable2Id', [])
-            ->join([
-            's' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'e.eleveId = s.eleveId', [])
-            ->where([
-            's.millesime' => $this->millesime,
-            'e.mailchimp' => 1
-        ])
+        $sub_select = $this->sql->select(
+            [
+                'r' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'email',
+                'nbelv' => new Expression('count(s.eleveId)')
+            ])
+            ->join(
+            [
+                'e' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 'r.responsableId = e.responsable1Id OR r.responsableId = e.responsable2Id', 
+            [])
+            ->join(
+            [
+                's' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'e.eleveId = s.eleveId', [])
+            ->where(
+            [
+                's.millesime' => $this->millesime,
+                'e.mailchimp' => 1
+            ])
             ->group([
             'r.email'
         ])
             ->having($sub_having);
         // die($this->getSqlString($sub_select));
-        $select = $this->sql->select([
-            'usr' => $this->usrUtiles()
-        ])
-            ->columns([
-            'email_address' => 'email',
-            'PRENOM' => 'prenom',
-            'NOM' => 'nom',
-            'CATEGORIE' => 'categorieId',
-            'CONFIRME' => 'confirme',
-            'NBELV' => new Expression('IFNULL(`res`.`nbelv`, 0)'),
-            'TERM' => new Expression('IFNULL(`term`.`userId`, 0) / IFNULL(`term`.`userId`, 1)'),
-            'HORSTERM' => new Expression('IFNULL(`horsterm`.`userId`, 0) / IFNULL(`horsterm`.`userId`, 1)')
-        ])
+        $select = $this->sql->select(
+            [
+                'usr' => $this->usrUtiles()
+            ])
+            ->columns(
+            [
+                'email_address' => 'email',
+                'PRENOM' => 'prenom',
+                'NOM' => 'nom',
+                'CATEGORIE' => 'categorieId',
+                'CONFIRME' => 'confirme',
+                'NBELV' => new Expression('IFNULL(`res`.`nbelv`, 0)'),
+                'TERM' => new Expression(
+                    'IFNULL(`term`.`userId`, 0) / IFNULL(`term`.`userId`, 1)'),
+                'HORSTERM' => new Expression(
+                    'IFNULL(`horsterm`.`userId`, 0) / IFNULL(`horsterm`.`userId`, 1)')
+            ])
             ->join([
             'res' => $sub_select
         ], 'usr.email = res.email', [], Select::JOIN_LEFT)
@@ -146,14 +156,14 @@ class Users implements FactoryInterface
         if ($limit) {
             $select->limit($limit);
         }
-        //die($this->getSqlString($select));
+        // die($this->getSqlString($select));
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // TEST
-        //$result = $statement->execute();
-        //foreach ($result as $member) {
-        //    var_dump($member);
-        //}
-        //die();
+        // $result = $statement->execute();
+        // foreach ($result as $member) {
+        // var_dump($member);
+        // }
+        // die();
         return $statement->execute();
     }
 
@@ -175,40 +185,49 @@ class Users implements FactoryInterface
     {
         $where = new Where();
         $where->greaterThanOrEqualTo('dateCreation', $this->dateDebut);
-        $select2 = $this->sql->select([
-            'u2' => $this->db_manager->getCanonicName('users', 'table')
-        ])
-            ->columns([
-            'userId',
-            'email',
-            'prenom',
-            'nom',
-            'categorieId',
-            'confirme'
-        ])
+        $select2 = $this->sql->select(
+            [
+                'u2' => $this->db_manager->getCanonicName('users', 'table')
+            ])
+            ->columns(
+            [
+                'userId',
+                'email',
+                'prenom',
+                'nom',
+                'categorieId',
+                'confirme'
+            ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($where);
         
-        $select1 = $this->sql->select([
-            'u1' => $this->db_manager->getCanonicName('users', 'table')
-        ])
-            ->columns([
-            'userId',
-            'email',
-            'prenom',
-            'nom',
-            'categorieId',
-            'confirme'
-        ])
-            ->join([
-            'r1' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'r1.email = u1.email', [])
-            ->join([
-            'e1' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'r1.responsableId = e1.responsable1Id OR r1.responsableId = e1.responsable2Id', [])
-            ->join([
-            's1' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'e1.eleveId = s1.eleveId', [])
+        $select1 = $this->sql->select(
+            [
+                'u1' => $this->db_manager->getCanonicName('users', 'table')
+            ])
+            ->columns(
+            [
+                'userId',
+                'email',
+                'prenom',
+                'nom',
+                'categorieId',
+                'confirme'
+            ])
+            ->join(
+            [
+                'r1' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'r1.email = u1.email', [])
+            ->join(
+            [
+                'e1' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 
+            'r1.responsableId = e1.responsable1Id OR r1.responsableId = e1.responsable2Id', 
+            [])
+            ->join(
+            [
+                's1' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'e1.eleveId = s1.eleveId', [])
             ->group([
             'userId'
         ])
@@ -225,24 +244,31 @@ class Users implements FactoryInterface
             ->literal('e3.mailchimp = 1')
             ->equalTo('c3.niveau', 8)
             ->isNull('c3.suivantId');
-        $select = $this->sql->select([
-            'u3' => $this->db_manager->getCanonicName('users', 'table')
-        ])
+        $select = $this->sql->select(
+            [
+                'u3' => $this->db_manager->getCanonicName('users', 'table')
+            ])
             ->columns([
             'userId'
         ])
-            ->join([
-            'r3' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'r3.email = u3.email', [])
-            ->join([
-            'e3' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'r3.responsableId = e3.responsable1Id OR r3.responsableId = e3.responsable2Id', [])
-            ->join([
-            's3' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'e3.eleveId = s3.eleveId', [])
-            ->join([
-            'c3' => $this->db_manager->getCanonicName('classes', 'table')
-        ], 'c3.classeId = s3.classeId', [])
+            ->join(
+            [
+                'r3' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'r3.email = u3.email', [])
+            ->join(
+            [
+                'e3' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 
+            'r3.responsableId = e3.responsable1Id OR r3.responsableId = e3.responsable2Id', 
+            [])
+            ->join(
+            [
+                's3' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'e3.eleveId = s3.eleveId', [])
+            ->join(
+            [
+                'c3' => $this->db_manager->getCanonicName('classes', 'table')
+            ], 'c3.classeId = s3.classeId', [])
             ->where($where);
         return $select;
     }
@@ -254,24 +280,31 @@ class Users implements FactoryInterface
             ->literal('e4.mailchimp = 1')
             ->nest()
             ->notEqualTo('c4.niveau', 8)->or->isNotNull('c4.suivantId')->unnest();
-        $select = $this->sql->select([
-            'u4' => $this->db_manager->getCanonicName('users', 'table')
-        ])
+        $select = $this->sql->select(
+            [
+                'u4' => $this->db_manager->getCanonicName('users', 'table')
+            ])
             ->columns([
             'userId'
         ])
-            ->join([
-            'r4' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'r4.email = u4.email', [])
-            ->join([
-            'e4' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'r4.responsableId = e4.responsable1Id OR r4.responsableId = e4.responsable2Id', [])
-            ->join([
-            's4' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'e4.eleveId = s4.eleveId', [])
-            ->join([
-            'c4' => $this->db_manager->getCanonicName('classes', 'table')
-        ], 'c4.classeId = s4.classeId', [])
+            ->join(
+            [
+                'r4' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'r4.email = u4.email', [])
+            ->join(
+            [
+                'e4' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 
+            'r4.responsableId = e4.responsable1Id OR r4.responsableId = e4.responsable2Id', 
+            [])
+            ->join(
+            [
+                's4' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'e4.eleveId = s4.eleveId', [])
+            ->join(
+            [
+                'c4' => $this->db_manager->getCanonicName('classes', 'table')
+            ], 'c4.classeId = s4.classeId', [])
             ->where($where);
         return $select;
     }

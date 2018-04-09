@@ -14,8 +14,10 @@
 namespace SbmCommun\Model\Db\Service\TableGateway\Vue;
 
 use SbmCommun\Model\Db\Service\TableGateway\AbstractSbmTableGateway;
+
 class TableGatewayEtablissements extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'etablissements';

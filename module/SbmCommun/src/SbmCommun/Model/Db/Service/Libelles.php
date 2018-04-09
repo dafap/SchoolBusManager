@@ -10,8 +10,8 @@
  * @filesource Libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -21,18 +21,20 @@ use SbmBase\Model\StdLib;
 
 class Libelles implements FactoryInterface
 {
-    private $datas = array();
-    
+
+    private $datas = [];
+
     public function createService(ServiceLocatorInterface $serviceLocator)
-    { 
+    {
         $table = $serviceLocator->get('Sbm\Db\System\Libelles');
         $resultset = $table->fetchOpen();
         foreach ($resultset as $row) {
-            $this->datas[\mb_strtolower($row->nature, 'utf-8')][$row->code] = mb_strtolower($row->libelle, 'utf-8');
+            $this->datas[\mb_strtolower($row->nature, 'utf-8')][$row->code] = mb_strtolower(
+                $row->libelle, 'utf-8');
         }
         return $this;
     }
-    
+
     public function getCode($nature, $libelle)
     {
         $nature = \mb_strtolower($nature, 'utf-8');
@@ -48,11 +50,15 @@ class Libelles implements FactoryInterface
             return false;
         }
     }
-    
+
     public function getLibelle($nature, $code)
     {
         $nature = \mb_strtolower($nature, 'utf-8');
-        if (StdLib::array_keys_exists(array($nature, $code), $this->datas)) {
+        if (StdLib::array_keys_exists(
+            [
+                $nature,
+                $code
+            ], $this->datas)) {
             return $this->datas[$nature][$code];
         } else {
             return false;

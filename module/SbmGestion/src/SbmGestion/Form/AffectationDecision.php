@@ -7,12 +7,12 @@
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2016
- * @version 2016-2.1.10
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form;
 
-use SbmCommun\Form\AbstractSbmForm As Form;
+use SbmCommun\Form\AbstractSbmForm as Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class AffectationDecision extends Form implements InputFilterProviderInterface
@@ -47,17 +47,18 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
         $this->phase = $phase;
         parent::__construct('decision');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
         // les hiddens reçus en post et à transmettre à nouveau
-        foreach (array(
+        foreach ([
             'eleveId',
             'millesime',
             'trajet',
@@ -67,47 +68,51 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'responsableId',
             'demandeR' . $trajet,
             'op'
-        ) as $name) {
-            $this->add(array(
-                'name' => $name,
-                'type' => 'hidden'
-            ));
+        ] as $name) {
+            $this->add(
+                [
+                    'name' => $name,
+                    'type' => 'hidden'
+                ]);
         }
         
         if ($phase == 1) {
             $this->preparePhase1();
         } else {
             $this->preparePhase2();
-            $this->add(array(
-                'name' => 'back',
-                'attributes' => array(
+            $this->add(
+                [
+                    'name' => 'back',
+                    'attributes' => [
+                        'type' => 'submit',
+                        'value' => 'Précédent',
+                        'id' => 'decision-cancel',
+                        'autofocus' => 'autofocus',
+                        'class' => 'button default cancel'
+                    ]
+                ]);
+        }
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
                     'type' => 'submit',
-                    'value' => 'Précédent',
+                    'value' => 'Abandonner',
                     'id' => 'decision-cancel',
                     'autofocus' => 'autofocus',
                     'class' => 'button default cancel'
-                )
-            ));
-        }
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'decision-cancel',
-                'autofocus' => 'autofocus',
-                'class' => 'button default cancel'
-            )
-        ));        
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Valider',
-                'id' => 'decision-submit',
-                'class' => 'button default submit'
-            )
-        ));
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Valider',
+                    'id' => 'decision-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
     }
 
     /**
@@ -115,208 +120,219 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
      */
     private function preparePhase1()
     {
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'fictif',
-            'attributes' => array(
-                'id' => 'decision_district',
-                'class' => 'sbm-checkbox',
-                'disabled' => 'disabled'
-            ),
-            'options' => array(
-                'label' => 'Secteur scolaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'fictif',
+                'attributes' => [
+                    'id' => 'decision_district',
+                    'class' => 'sbm-checkbox',
+                    'disabled' => 'disabled'
+                ],
+                'options' => [
+                    'label' => 'Secteur scolaire',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'derogation',
-            'attributes' => array(
-                'id' => 'decision_derogation',
-                'class' => 'sbm-checkbox',
-            ),
-            'options' => array(
-                'label' => 'Dérogation',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'derogation',
+                'attributes' => [
+                    'id' => 'decision_derogation',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Dérogation',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'motifDerogation' . $this->trajet,
-            'attributes' => array(
-                'id' => 'decision_motifDerogation',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'Motif de la dérogation',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'motifDerogation' . $this->trajet,
+                'attributes' => [
+                    'id' => 'decision_motifDerogation',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Motif de la dérogation',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'accordR' . $this->trajet,
-            'attributes' => array(
-                'id' => 'decision_accordR',
-                'class' => 'sbm-checkbox',
-            ),
-            'options' => array(
-                'label' => 'Transport accepté',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'accordR' . $this->trajet,
+                'attributes' => [
+                    'id' => 'decision_accordR',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Transport accepté',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'motifRefusR' . $this->trajet,
-            'attributes' => array(
-                'id' => 'decision_motifRefusR',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'Motif du refus',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'motifRefusR' . $this->trajet,
+                'attributes' => [
+                    'id' => 'decision_motifRefusR',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Motif du refus',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'subventionR' . $this->trajet,
-            'attributes' => array(
-                'id' => 'decision_subventionR',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Subvention attribuée',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'subventionR' . $this->trajet,
+                'attributes' => [
+                    'id' => 'decision_subventionR',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Subvention attribuée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
     }
-    
+
     /**
      * Crée les éléments du formulaire pour la phase 2
      */
     private function preparePhase2()
     {
-        $this->add(array(
-            'name' => 'service1Id',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'affectation-service1Id',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Circuit',
-                'label_attributes' => array(
-                    'class' => 'sbm-form-auto'
-                ),
-                'empty_option' => 'Choisissez un circuit',
-                //'allow_empty' => true,
-                //'disable_inarray_validator' => false,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));        
-        $this->add(array(
-            'name' => 'station1Id',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'affectation-station1Id',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Point de montée',
-                'label_attributes' => array(
-                    'class' => 'sbm-form-auto'
-                ),
-                'empty_option' => 'Choisissez une station',
-                //'allow_empty' => true,
-                //'disable_inarray_validator' => false,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'station2Id',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'affectation-station2Id',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Point de descente',
-                'label_attributes' => array(
-                    'class' => 'sbm-form-auto'
-                ),
-                'empty_option' => 'Choisissez une station',
-                'allow_empty' => true,
-                'disable_inarray_validator' => false,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'service2Id',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'affectation-service2Id',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Correspondance',
-                'label_attributes' => array(
-                    'class' => 'sbm-form-auto'
-                ),
-                'empty_option' => 'Choisissez un circuit',
-                'allow_empty' => true,
-                'disable_inarray_validator' => false,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'service1Id',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'affectation-service1Id',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Circuit',
+                    'label_attributes' => [
+                        'class' => 'sbm-form-auto'
+                    ],
+                    'empty_option' => 'Choisissez un circuit',
+                    // 'allow_empty' => true,
+                    // 'disable_inarray_validator' => false,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'station1Id',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'affectation-station1Id',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Point de montée',
+                    'label_attributes' => [
+                        'class' => 'sbm-form-auto'
+                    ],
+                    'empty_option' => 'Choisissez une station',
+                    // 'allow_empty' => true,
+                    // 'disable_inarray_validator' => false,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'station2Id',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'affectation-station2Id',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Point de descente',
+                    'label_attributes' => [
+                        'class' => 'sbm-form-auto'
+                    ],
+                    'empty_option' => 'Choisissez une station',
+                    'allow_empty' => true,
+                    'disable_inarray_validator' => false,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'service2Id',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'affectation-service2Id',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Correspondance',
+                    'label_attributes' => [
+                        'class' => 'sbm-form-auto'
+                    ],
+                    'empty_option' => 'Choisissez un circuit',
+                    'allow_empty' => true,
+                    'disable_inarray_validator' => false,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
     }
-    
+
     /**
      * En phase 1, pour afficher un checkbox disabled avec la valeur de district, car l'élément district ne fait pas partie du formulaire
      * Dans tous les cas, la sortie du formulaire doit se faire avec un demandeR1 ou un demandeR2 (selon trajet) égal à 2 (demandé et traité)
-     * 
+     *
      * (non-PHPdoc)
+     * 
      * @see \Zend\Form\Form::setData()
      */
     public function setData($data)
@@ -334,59 +350,59 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         if ($this->phase == 1) {
-            return array(
-                'fictif' => array(
+            return [
+                'fictif' => [
                     'name' => 'fictif',
                     'required' => false
-                ),
-                'derogation' => array(
+                ],
+                'derogation' => [
                     'name' => 'derogation',
                     'required' => true
-                ),
-                'accordR' . $this->trajet => array(
+                ],
+                'accordR' . $this->trajet => [
                     'name' => 'accordR' . $this->trajet,
                     'required' => true
-                ),
-                'subventionR' . $this->trajet => array(
+                ],
+                'subventionR' . $this->trajet => [
                     'name' => 'subventionR' . $this->trajet,
                     'required' => true
-                ),
-                'motifDerogation' . $this->trajet => array(
+                ],
+                'motifDerogation' . $this->trajet => [
                     'name' => 'motifDerogation' . $this->trajet,
                     'required' => false,
-                    'filters' => array(
-                        array(
+                    'filters' => [
+                        [
                             'name' => 'StripTags'
-                        ),
-                        array(
+                        ],
+                        [
                             'name' => 'StringTrim'
-                        )
-                    )
-                ),
-                'motifRefusR' . $this->trajet => array(
+                        ]
+                    ]
+                ],
+                'motifRefusR' . $this->trajet => [
                     'name' => 'motifRefusR' . $this->trajet,
                     'required' => false,
-                    'filters' => array(
-                        array(
+                    'filters' => [
+                        [
                             'name' => 'StripTags'
-                        ),
-                        array(
+                        ],
+                        [
                             'name' => 'StringTrim'
-                        )
-                    )
-                )
-            );
+                        ]
+                    ]
+                ]
+            ];
         } else {
-            return array(
-                'station2Id' => array(
+            return [
+                'station2Id' => [
                     'name' => 'station2Id',
                     'required' => false
-                ),
-                'service2Id' => array(
+                ],
+                'service2Id' => [
                     'name' => 'service2Id',
                     'required' => false
-                )
-            );
+                ]
+            ];
         }
     }
 }

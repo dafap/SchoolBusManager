@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 sept. 2017
- * @version 2017-2.3.8
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmCartographie\Model\Point;
 
@@ -40,70 +40,78 @@ $("#chk%d").change(function() {
   });
 EOT;
 
-
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $responsables = $this->paginator->getCurrentItems();
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-suppr',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-group',
-    'page' => $this->page
-));
-$url_euro = $this->url('sbmgestion/finance', array(
+$url_edit = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-group',
+        'page' => $this->page
+    ]);
+$url_euro = $this->url('sbmgestion/finance', [
     'action' => 'paiement-liste'
-));
-$url_map = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-localisation',
-    'page' => $this->page
-));
-$url_loger = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-loger',
-    'page' => $this->page
-));
-$url_ajouter = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-pdf',
-    'page' => $this->page
-));
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+]);
+$url_map = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-localisation',
+        'page' => $this->page
+    ]);
+$url_loger = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-loger',
+        'page' => $this->page
+    ]);
+$url_ajouter = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-pdf',
+        'page' => $this->page
+    ]);
+$url_ici = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
+]);
 $url_retour = $this->url('sbmgestion');
-$hiddens = array();
-$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/eleve', [
+        'action' => 'responsable-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
                                        // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'onclick' => $js_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau responsable'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des responsables</h1>
 <div id="liste-wrapper">
@@ -140,13 +148,15 @@ echo $this->flashMessenger()->render('default');
             $pt = new Point($responsable['x'], $responsable['y']);
             $ptOk = $this->projection->isValid($pt, 'parent');
             // construction du JS pour selection
-            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $responsable['responsableId']);
-            $jsCallback .= sprintf("$modele\n", $responsable['responsableId'], $responsable['responsableId']);
+            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", 
+                $responsable['responsableId']);
+            $jsCallback .= sprintf("$modele\n", $responsable['responsableId'], 
+                $responsable['responsableId']);
             // nombre d'inscrits
-            $nbInscrits = $responsable['nbInscrits'] + $responsable['nbGratuits'] + $responsable['nbFa'];
+            $nbInscrits = $responsable['nbInscrits'] + $responsable['nbGratuits'] +
+                 $responsable['nbFa'];
             ?>
-         <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+         <tr class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td>
 					<?php if (!$ptOk) : ?>
 					   <i class="fam-error"></i>
@@ -170,7 +180,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="boutons">
              <?php
             $identite = $ttr . ' ' . $nm . ' ' . $prn . ' de ' . $cmn;
-            $hiddens = array(
+            $hiddens = [
                 'responsableId' => $responsable['responsableId'],
                 'info' => $identite,
                 'nbInscrits' => $responsable['nbInscrits'],
@@ -180,55 +190,59 @@ echo $this->flashMessenger()->render('default');
                 'email' => $responsable['email'],
                 'responsable' => $identite,
                 'group' => $url_ici
-            );
+            ];
             // ne pas utiliser de guillement dans la chaine $js
-            $js = 'window.document.getElementById(\'op' . $responsable['responsableId'] . '\').value=%s;';
-            $buttons = array(
-                'modifier' => array(
+            $js = 'window.document.getElementById(\'op' . $responsable['responsableId'] .
+                 '\').value=%s;';
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier la fiche de ' . $identite,
                     'onclick' => sprintf($js, "'modifier'")
-                ),
-                'localiser' => array(
+                ],
+                'localiser' => [
                     'class' => $ptOk ? 'fam-map-magnify' : 'fam-map-add',
                     'formaction' => $url_map,
-                    'title' => $ptOk ? 'localiser le domicile de ' . $identite . ' sur la carte' : 'le domicile de ' . $identite . ' n\'est pas localisé sur la carte',
-                    'onclick' => sprintf($js, "'localiser'")
-                ),
-                'loger' => array(
+                    'title' => $ptOk ? 'localiser le domicile de ' . $identite .
+                         ' sur la carte' : 'le domicile de ' . $identite .
+                         ' n\'est pas localisé sur la carte',
+                        'onclick' => sprintf($js, "'localiser'")
+                ],
+                'loger' => [
                     'class' => 'fam-user-add',
                     'formaction' => $url_loger,
                     'title' => 'créer un compte pour ' . $identite,
                     'onclick' => sprintf($js, "'loger'")
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer le responsable ' . $identite,
                     'onclick' => sprintf($js, "'supprimer'")
-                ),
-                'enfants' => array(
+                ],
+                'enfants' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'enfants de ' . $identite,
                     'onclick' => sprintf($js, "'enfants'")
-                ),
-                'paiements' => array(
+                ],
+                'paiements' => [
                     'class' => 'fam-money-euro',
                     'formaction' => $url_euro,
                     'title' => 'paiements de ' . $identite,
                     'onclick' => sprintf($js, "'paiements'")
-                )
-            );
+                ]
+            ];
             if (! empty($responsable['email'])) {
-                $buttons['ecrire'] = array(
+                $buttons['ecrire'] = [
                     'class' => 'fam-email',
                     'formaction' => $url_mail,
                     'title' => 'Envoyer un email'
-                );
+                ];
             }
-            echo $this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);
+            echo $this->listeLigneActions($responsable['responsableId'], $hiddens, 
+                $buttons);
             ?>
 				</td>
 				</tr>         
@@ -237,7 +251,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper responsables">
 <?php echo $this->form()->openTag($this->criteres_form);?>
 <?php echo $this->formCollection($this->criteres_form, true);?>

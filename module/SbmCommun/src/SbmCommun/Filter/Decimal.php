@@ -10,8 +10,8 @@
  * @filesource Decimal.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Filter;
 
@@ -24,17 +24,19 @@ class Decimal extends AbstractFilter implements FilterInterface
 
     const PATTERN = '/[^0-9#]/';
 
-    protected $options = array(
+    protected $options = [
         'separateur' => '.',
         'car2sep' => null
-    );
+    ];
 
     private $car2sep;
 
     public function __construct($options)
     {
         if (! is_array($options)) {
-            throw new \Exception(__CLASS__ . " - Le séparateur décimal est donné dans un tableau options => array('separateur' => ',')");
+            throw new \Exception(
+                __CLASS__ .
+                     " - Le séparateur décimal est donné dans un tableau options => array('separateur' => ',')");
         }
         $this->car2sep = StdLib::getParam('car2sep', $options, false);
         $this->setOptions($options);
@@ -43,7 +45,8 @@ class Decimal extends AbstractFilter implements FilterInterface
     public function filter($val)
     {
         if ($this->car2sep) {
-            $val = str_replace($this->options['car2sep'], $this->options['separateur'], $val);
+            $val = str_replace($this->options['car2sep'], $this->options['separateur'], 
+                $val);
         }
         $pattern = str_replace('#', $this->options['separateur'], self::PATTERN);
         return preg_replace($pattern, '', $val);

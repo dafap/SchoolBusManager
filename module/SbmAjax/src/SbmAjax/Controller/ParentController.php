@@ -9,8 +9,8 @@
  * @filesource ParentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAjax\Controller;
 
@@ -27,9 +27,11 @@ class ParentController extends AbstractActionController
         $queryCommunes = $this->db_manager->get('Sbm\Db\Select\Communes');
         $communes = $queryCommunes->codePostal($this->params('codePostal'));
         $communes = array_flip($communes);
-        return $this->getResponse()->setContent(Json::encode(array(
-            'data' => $communes,
-            'success' => 1
-        )));
+        return $this->getResponse()->setContent(
+            Json::encode(
+                [
+                    'data' => $communes,
+                    'success' => 1
+                ]));
     }
 }

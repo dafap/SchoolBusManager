@@ -8,8 +8,8 @@
  * @filesource create.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 janv. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 use Zend\Db\Adapter\Driver\ResultInterface;
 
@@ -81,7 +81,8 @@ echo $this->flashMessenger()->render('default');
 			</thead>
 			<tbody>
 	<?php foreach ($this->args as $row) : ?>
-		        <tr class="<?php echo $this->cycle(["even", "odd"])->next(); ?>">
+		        <tr
+					class="<?php echo $this->cycle(["even", "odd"])->next(); ?>">
 					<td><?php echo $row['name']?></td>
 					<td><?php echo $row['type']?></td>
 					<td><?php echo $row['drop']?></td>

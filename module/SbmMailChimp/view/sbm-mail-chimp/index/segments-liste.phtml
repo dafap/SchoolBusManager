@@ -9,46 +9,53 @@
  * @filesource segments-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $categorieId = $this->auth->getCategorieId();
 $url_retour = $this->url('sbmmailchimp');
-if ($this->acl->hasResource('edit-segment') && $this->acl->isAllowed($categorieId, 'edit-segment')) {
+if ($this->acl->hasResource('edit-segment') &&
+     $this->acl->isAllowed($categorieId, 'edit-segment')) {
     $url_edit = $this->url('sbmmailchimp', [
         'action' => 'edit-segment'
     ]);
 } else {
     $url_edit = false;
 }
-if ($this->acl->hasResource('dupliquer-segment') && $this->acl->isAllowed($categorieId, 'dupliquer-segment')) {
-    $url_duplique = $this->url('sbmmailchimp', [
-        'action' => 'dupliquer-segment'
-    ]);
+if ($this->acl->hasResource('dupliquer-segment') &&
+     $this->acl->isAllowed($categorieId, 'dupliquer-segment')) {
+    $url_duplique = $this->url('sbmmailchimp', 
+        [
+            'action' => 'dupliquer-segment'
+        ]);
 } else {
     $url_duplique = false;
 }
-if ($this->acl->hasResource('creer-segment') && $this->acl->isAllowed($categorieId, 'creer-segment')) {
+if ($this->acl->hasResource('creer-segment') &&
+     $this->acl->isAllowed($categorieId, 'creer-segment')) {
     $url_creer = $this->url('sbmmailchimp', [
         'action' => 'creer-segment'
     ]);
 } else {
     $url_creer = false;
 }
-if ($this->acl->hasResource('suppr-segment') && $this->acl->isAllowed($categorieId, 'suppr-segment')) {
+if ($this->acl->hasResource('suppr-segment') &&
+     $this->acl->isAllowed($categorieId, 'suppr-segment')) {
     $url_suppr = $this->url('sbmmailchimp', [
         'action' => 'suppr-segment'
     ]);
 } else {
     $url_suppr = false;
 }
-if ($this->acl->hasResource('segment-members') && $this->acl->isAllowed($categorieId, 'segment-members')) {
-    $url_members = $this->url('sbmmailchimp', [
-        'action' => 'segment-members'
-    ]);
+if ($this->acl->hasResource('segment-members') &&
+     $this->acl->isAllowed($categorieId, 'segment-members')) {
+    $url_members = $this->url('sbmmailchimp', 
+        [
+            'action' => 'segment-members'
+        ]);
 } else {
     $url_members = false;
 }
@@ -146,14 +153,17 @@ if ($this->message) {
                 'title' => 'liste des membres'
             ];
         }
-        $match = StdLib::getParamR([
-            'options',
-            'match'
-        ], $segment, '') == 'any' ? 'OU' : 'ET';
-        $n_conditions = count(StdLib::getParamR([
-            'options',
-            'conditions'
-        ], $segment, []));
+        $match = StdLib::getParamR(
+            [
+                'options',
+                'match'
+            ], $segment, '') == 'any' ? 'OU' : 'ET';
+        $n_conditions = count(
+            StdLib::getParamR(
+                [
+                    'options',
+                    'conditions'
+                ], $segment, []));
         $conditions = sprintf('%s (%d)', $match, $n_conditions);
         ?>
 	    <tr class="<?php echo $this->cycle(['even', 'odd'])->next();?>">

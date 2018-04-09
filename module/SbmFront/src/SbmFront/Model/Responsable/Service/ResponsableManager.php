@@ -10,8 +10,8 @@
  * @filesource ResponsableManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
- * @version 2016-2.2.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Model\Responsable\Service;
 
@@ -22,8 +22,9 @@ use SbmFront\Model\Responsable\Responsable;
 
 class ResponsableManager implements FactoryInterface
 {
+
     /**
-     * 
+     *
      * @var \Zend\ServiceManager\ServiceManager
      */
     private $responsable_manager;
@@ -31,15 +32,18 @@ class ResponsableManager implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->responsable_manager = new ServiceManager();
-        $this->responsable_manager->setFactory(Responsable::class, ResponsableFactory::class);
-        $this->responsable_manager->setService('SbmAuthentification\Authentication', $serviceLocator->get('SbmAuthentification\Authentication'));
-        $this->responsable_manager->setService('Sbm\DbManager', $serviceLocator->get('Sbm\DbManager'));
+        $this->responsable_manager->setFactory(Responsable::class, 
+            ResponsableFactory::class);
+        $this->responsable_manager->setService('SbmAuthentification\Authentication', 
+            $serviceLocator->get('SbmAuthentification\Authentication'));
+        $this->responsable_manager->setService('Sbm\DbManager', 
+            $serviceLocator->get('Sbm\DbManager'));
         return $this;
     }
-    
+
     /**
      * Renvoie l'instance du responsable
-     * 
+     *
      * @return \SbmFront\Model\Responsable\Responsable
      */
     public function get()

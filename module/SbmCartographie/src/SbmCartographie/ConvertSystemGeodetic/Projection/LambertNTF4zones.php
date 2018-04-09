@@ -9,8 +9,8 @@
  * @filesource LambertNTF4zones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -25,7 +25,9 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
     public function __construct($nzone)
     {
         if (! is_int($nzone) || $nzone < 1 || $nzone > 4) {
-            throw new Exception(__CLASS__ . " - Zone $nzone inconnue. Le numéro de zone doit être un entier compris entre 44 et 50.");
+            throw new Exception(
+                __CLASS__ .
+                     " - Zone $nzone inconnue. Le numéro de zone doit être un entier compris entre 44 et 50.");
         }
         $this->ellipsoide = new Clarke1880Ign();
         $this->name = 'Lambert_Conformal_Conic_1SP';
@@ -33,7 +35,7 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         $this->unit = 'grade';
         $this->central_meridian = 0;
         $this->primem = 2 + (20 + 14.025 / 60) / 60; // méridien de Paris (2°20'14,025")
-        $this->paramsToWgs84 = array(
+        $this->paramsToWgs84 = [
             - 168,
             - 60,
             320,
@@ -41,7 +43,7 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
             0,
             0,
             0
-        );
+        ];
         switch ($nzone) {
             case 1:
                 $this->latitude_of_origin = 55;
@@ -85,9 +87,11 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         // change de projection
         $proj = new Lambert93();
         // passe en coordonnées cartésiennes
-        $pt = $proj->alg0009($point->getLongitude('radian'), $point->getLatitude('radian'));
+        $pt = $proj->alg0009($point->getLongitude('radian'), 
+            $point->getLatitude('radian'));
         // applique la transformation 7 paramètres inverse (dont 4 nuls)
-        $pt = $this->alg0013($pt, -$this->paramsToWgs84[0], -$this->paramsToWgs84[1], -$this->paramsToWgs84[2]);
+        $pt = $this->alg0013($pt, - $this->paramsToWgs84[0], - $this->paramsToWgs84[1], 
+            - $this->paramsToWgs84[2]);
         // passe en coordonnées géographiques NTF
         $pt = $this->alg0012($pt->getX(), $pt->getY(), $pt->getZ())
             ->to('grade');
@@ -108,7 +112,8 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         // passe en coordonnées cartésiennes
         $pt = $this->alg0009($pt->getLongitude('radian'), $pt->getLatitude('radian'));
         // applique la transformation 7 paramètres (dont 4 nuls)
-        $pt = $this->alg0013($pt, $this->paramsToWgs84[0], $this->paramsToWgs84[1], $this->paramsToWgs84[2]);
+        $pt = $this->alg0013($pt, $this->paramsToWgs84[0], $this->paramsToWgs84[1], 
+            $this->paramsToWgs84[2]);
         // change de projection
         $proj = new Lambert93();
         // passe en coordonnée géographiques RGF93
@@ -138,6 +143,8 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
      */
     public function gNTFversXYZ(Point $point)
     {
-        return $this->alg0003($point->getLongitude('radian'), $point->getLatitude('radian'));;
+        return $this->alg0003($point->getLongitude('radian'), 
+            $point->getLatitude('radian'));
+        ;
     }
 }

@@ -13,10 +13,9 @@
  * @filesource org-pdf.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 déc. 2017
- * @version 2017-2.3.14
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
- 
 use SbmBase\Model\DateLib;
 
 ?>
@@ -98,10 +97,10 @@ table.eleves td.centre {
             }
             $nbResponsables = count($r);
             $tr_css = $this->cycle(
-                array(
+                [
                     "even",
                     "odd"
-                ))->next();
+                ])->next();
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
@@ -132,7 +131,7 @@ table.eleves td.centre {
 					<?php if ($nbResponsables == 2) :?>
 				</tr>
 		<tr class="<?php echo $tr_css;?>">
-		    <td class="numero align-right">
+			<td class="numero align-right">
 					<?php echo $eleve['numero']; ?></td>
 			<td class="nom"></td>
 			<td class="prenom"></td>
@@ -141,7 +140,7 @@ table.eleves td.centre {
 			<td class="etablissement"></td>
 			<td class="classe"></td>
 			<td><?php echo $circuits[1];?></td>
-			<td><?php echo $arrets[1];?></td>	
+			<td><?php echo $arrets[1];?></td>
 			<td class="centre"></td>
 					<?php endif;?>
 				</tr>         

@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 déc. 2017
- * @version 2017-2.3.14
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -643,7 +643,7 @@ class ElevesScolarites implements FactoryInterface
     public function paginatorScolaritesR($where, $order = null, $millesime = null)
     {
         $select = $this->selectScolaritesR($where, $order);
-        //die($this->getSqlString($select));
+        // die($this->getSqlString($select));
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
@@ -653,7 +653,7 @@ class ElevesScolarites implements FactoryInterface
             $this->selectScolaritesR($where, $order));
         return $statement->execute();
     }
-    
+
     private function selectScolaritesR($where, $order = null, $millesime = null)
     {
         $select = $this->sql->select(
@@ -666,7 +666,7 @@ class ElevesScolarites implements FactoryInterface
                 'eleveid',
                 'inscrit',
                 'fa',
-                'paiement', 
+                'paiement',
                 'gratuit'
             ])
             ->join(
@@ -706,7 +706,8 @@ class ElevesScolarites implements FactoryInterface
             ->join(
             [
                 'res1' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], new Expression('ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'), 
+            ], 
+            new Expression('ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'), 
             [
                 'responsable1' => new Expression(
                     '(CASE WHEN isnull(res1.responsableId) THEN NULL ELSE concat(res1.nomSA," ",res1.prenomSA) END)')
@@ -766,7 +767,8 @@ class ElevesScolarites implements FactoryInterface
             ->join(
             [
                 'res2' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], new Expression('ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'), 
+            ], 
+            new Expression('ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'), 
             [
                 'responsable2' => new Expression(
                     '(CASE WHEN isnull(res2.responsableId) THEN NULL ELSE concat(res2.nomSA," ",res2.prenomSA) END)')

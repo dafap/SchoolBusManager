@@ -7,8 +7,8 @@
  * @filesource Bienvenue.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\View\Helper;
 
@@ -34,17 +34,36 @@ class Bienvenue extends AbstractHelper
             $identity = $this->getAuthService()->getIdentity();
             $bienvenue = $identity['prenom'] . ' ' . $identity['nom'];
             $view = $this->getView();
-            $logout = $view->url('login', array(
-                'action' => 'logout'
-            ));
+            $logout = $view->url('login', 
+                [
+                    'action' => 'logout'
+                ]);
             $container = new Container('layout');
             $route = $container->home;
-            $url_home = $view->url('login', array('action' => 'home-page'));
-            $url_compte = $view->url($route, array('action' => 'modif-compte'));
-            $url_localisation = $view->url($route, array('action' => 'localisation'));
-            $url_mdp = $view->url($route, array('action' => 'mdp-change'));
-            $url_email = $view->url($route, array('action' => 'email-change'));
-            $url_msg = $view->url($route, array('action' => 'message'));
+            $url_home = $view->url('login', 
+                [
+                    'action' => 'home-page'
+                ]);
+            $url_compte = $view->url($route, 
+                [
+                    'action' => 'modif-compte'
+                ]);
+            $url_localisation = $view->url($route, 
+                [
+                    'action' => 'localisation'
+                ]);
+            $url_mdp = $view->url($route, 
+                [
+                    'action' => 'mdp-change'
+                ]);
+            $url_email = $view->url($route, 
+                [
+                    'action' => 'email-change'
+                ]);
+            $url_msg = $view->url($route, 
+                [
+                    'action' => 'message'
+                ]);
             return <<<EOT
 <div id="menu-haut" class="menu float-right">
    <ul class="menubar">

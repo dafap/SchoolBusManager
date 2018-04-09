@@ -9,36 +9,41 @@
  * @filesource fields-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $categorieId = $this->auth->getCategorieId();
 $url_retour = $this->url('sbmmailchimp');
-if ($this->acl->hasResource('edit-field') && $this->acl->isAllowed($categorieId, 'edit-field')) {
+if ($this->acl->hasResource('edit-field') &&
+     $this->acl->isAllowed($categorieId, 'edit-field')) {
     $url_edit = $this->url('sbmmailchimp', [
         'action' => 'edit-field'
     ]);
 } else {
     $url_edit = false;
 }
-if ($this->acl->hasResource('dupliquer-field') && $this->acl->isAllowed($categorieId, 'dupliquer-field')) {
-    $url_duplique = $this->url('sbmmailchimp', [
-        'action' => 'dupliquer-field'
-    ]);
+if ($this->acl->hasResource('dupliquer-field') &&
+     $this->acl->isAllowed($categorieId, 'dupliquer-field')) {
+    $url_duplique = $this->url('sbmmailchimp', 
+        [
+            'action' => 'dupliquer-field'
+        ]);
 } else {
     $url_duplique = false;
 }
-if ($this->acl->hasResource('creer-field') && $this->acl->isAllowed($categorieId, 'creer-field')) {
+if ($this->acl->hasResource('creer-field') &&
+     $this->acl->isAllowed($categorieId, 'creer-field')) {
     $url_creer = $this->url('sbmmailchimp', [
         'action' => 'creer-field'
     ]);
 } else {
     $url_creer = false;
 }
-if ($this->acl->hasResource('suppr-field') && $this->acl->isAllowed($categorieId, 'suppr-field')) {
+if ($this->acl->hasResource('suppr-field') &&
+     $this->acl->isAllowed($categorieId, 'suppr-field')) {
     $url_suppr = $this->url('sbmmailchimp', [
         'action' => 'suppr-field'
     ]);

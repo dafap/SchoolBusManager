@@ -18,11 +18,10 @@
  * @filesource CommunesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
-
-namespace SbmCommun\Model\Db\Service\Select; 
+namespace SbmCommun\Model\Db\Service\Select;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -34,10 +33,15 @@ use SbmCommun\Model\Db\Exception;
 
 class CommunesForSelect implements FactoryInterface
 {
+
     private $db_manager;
+
     private $table_name;
+
     private $sql;
+
     private $myDep;
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof DbManager)) {
@@ -50,37 +54,50 @@ class CommunesForSelect implements FactoryInterface
         $this->myDep = new Expression('CASE departement WHEN 12 THEN 0 ELSE 1 END');
         return $this;
     }
+
     /**
      * Retourne une liste ordonnée pour un début de nom donné
-     * 
-     * @param string $like
+     *
+     * @param string $like            
      * @return multitype:string
      */
     public function nomLike($like)
-    {    
+    {
         $where = new Where();
         $where->like('nom', $like . '%');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(array('communeId', 'nom', 'departement', 'myDep' => $this->myDep));
-        $select->order(array('myDep', 'nom', 'departement'));
+        $select->columns(
+            [
+                'communeId',
+                'nom',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
+        $select->order(
+            [
+                'myDep',
+                'nom',
+                'departement'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
+
     /**
      * Retourne une liste ordonnée pour un code postal donné
-     * 
-     * @param string $cp
+     *
+     * @param string $cp            
      * @return multitype:string
      */
     public function codePostal($cp)
     {
-        if (!is_string($cp) && is_int($cp)) {
+        if (! is_string($cp) && is_int($cp)) {
             // ça c'est pour les départements de AIN (01) à ARIEGE (09) qui pourraient perdre le zéro non sigificatif
             $cp = sprintf('%05d', $cp);
         }
@@ -88,20 +105,31 @@ class CommunesForSelect implements FactoryInterface
         $where->equalTo('codePostal', $cp);
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(array('communeId', 'nom', 'departement', 'myDep' => $this->myDep));
-        $select->order(array('myDep', 'nom', 'departement'));
+        $select->columns(
+            [
+                'communeId',
+                'nom',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
+        $select->order(
+            [
+                'myDep',
+                'nom',
+                'departement'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
-    
+
     /**
      * Retourne la liste des communes visibles
-     * 
+     *
      * @return multitype:string
      */
     public function visibles()
@@ -110,20 +138,31 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('visible = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(array('communeId', 'nom', 'departement', 'myDep' => $this->myDep));
-        $select->order(array('myDep', 'nom', 'departement'));
+        $select->columns(
+            [
+                'communeId',
+                'nom',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
+        $select->order(
+            [
+                'myDep',
+                'nom',
+                'departement'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
-    
+
     /**
      * Retourne la liste des communes desservies
-     * 
+     *
      * @return multitype:string
      */
     public function desservies()
@@ -132,20 +171,31 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('desservie = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(array('communeId', 'nom', 'departement', 'myDep' => $this->myDep));
-        $select->order(array('myDep', 'nom', 'departement'));
+        $select->columns(
+            [
+                'communeId',
+                'nom',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
+        $select->order(
+            [
+                'myDep',
+                'nom',
+                'departement'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
-    
+
     /**
      * Retourne la liste des communes membres
-     * 
+     *
      * @return multitype:string
      */
     public function membres()
@@ -154,11 +204,22 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('membre = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(array('communeId', 'nom', 'departement', 'myDep' => $this->myDep));
-        $select->order(array('myDep', 'nom', 'departement'));
+        $select->columns(
+            [
+                'communeId',
+                'nom',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
+        $select->order(
+            [
+                'myDep',
+                'nom',
+                'departement'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
         }

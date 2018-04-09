@@ -15,8 +15,8 @@
  * @filesource AbstractProjection.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mars 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -45,10 +45,10 @@ abstract class AbstractProjection
      *
      * @var array
      */
-    protected $axe = array(
+    protected $axe = [
         'longitude' => 'est',
         'latitude' => 'nord'
-    );
+    ];
 
     /**
      * Nom de la projection
@@ -176,7 +176,7 @@ abstract class AbstractProjection
      *
      * @var array
      */
-    protected $paramsToWgs84 = array(
+    protected $paramsToWgs84 = [
         0,
         0,
         0,
@@ -184,7 +184,7 @@ abstract class AbstractProjection
         0,
         0,
         0
-    );
+    ];
 
     /**
      * Position du méridien d'origine par rapport au méridien de Greenwich (exprimé en degrés décimaux)
@@ -362,12 +362,12 @@ abstract class AbstractProjection
      */
     private function initUniteDGR()
     {
-        $prp = array(
+        $prp = [
             'central_meridian' => 'lambda_0',
             'latitude_of_origin' => 'phi_0',
             'standard_parallel_1' => 'phi_1',
             'standard_parallel_2' => 'phi_2'
-        );
+        ];
         foreach ($prp as $vu => $vr) {
             if (! isset($this->{$vu}))
                 continue;
@@ -382,7 +382,9 @@ abstract class AbstractProjection
                     $this->{$vr} = $this->{$vu};
                     break;
                 default:
-                    throw new Exception(__METHOD__ . ' - Unité non conforme. On attend degré, grade ou radian.');
+                    throw new Exception(
+                        __METHOD__ .
+                             ' - Unité non conforme. On attend degré, grade ou radian.');
                     break;
             }
         }
@@ -464,7 +466,8 @@ abstract class AbstractProjection
         $li = $this->alg0001($phi);
         $c_exp_n_li = $this->getC() * exp(- $this->getN() * $li);
         $n_lambda_lambdaC = $this->getN() * ($lambda - $this->getLambdaC());
-        return new Point($this->getXs() + $c_exp_n_li * sin($n_lambda_lambdaC), $this->getYs() - $c_exp_n_li * cos($n_lambda_lambdaC));
+        return new Point($this->getXs() + $c_exp_n_li * sin($n_lambda_lambdaC), 
+            $this->getYs() - $c_exp_n_li * cos($n_lambda_lambdaC));
     }
 
     /**
@@ -482,7 +485,8 @@ abstract class AbstractProjection
         $R = sqrt($x1 * $x1 + $y1 * $y1);
         $gama = atan2($x1, $y1);
         $li = - log(abs($R / $this->getC())) / $this->getN();
-        return new Point($this->getLambdaC() + $gama / $this->getN(), $this->alg0002($li), 0, 'radian');
+        return new Point($this->getLambdaC() + $gama / $this->getN(), $this->alg0002($li), 
+            0, 'radian');
     }
 
     /**
@@ -500,7 +504,9 @@ abstract class AbstractProjection
     public function alg0009($lambda, $phi, $he = 0)
     {
         $grdNormale = $this->alg0021($phi);
-        return new Point(($grdNormale + $he) * cos($phi) * cos($lambda), ($grdNormale + $he) * cos($phi) * sin($lambda), ($grdNormale * (1 - $this->getECarre()) + $he) * sin($phi));
+        return new Point(($grdNormale + $he) * cos($phi) * cos($lambda), 
+            ($grdNormale + $he) * cos($phi) * sin($lambda), 
+            ($grdNormale * (1 - $this->getECarre()) + $he) * sin($phi));
     }
 
     /**
@@ -517,16 +523,21 @@ abstract class AbstractProjection
     {
         $lambda = atan2($y, $x);
         $module_xy = sqrt($x * $x + $y * $y);
-        $phi = atan2($z, $module_xy * (1 - $this->getA() * $this->getECarre() / sqrt($x * $x + $y * $y + $z * $z)));
+        $phi = atan2($z, 
+            $module_xy *
+                 (1 -
+                 $this->getA() * $this->getECarre() / sqrt($x * $x + $y * $y + $z * $z)));
         $delta = 1 + $eps;
         while ($delta > $eps) {
             $phi_1 = $phi;
             $tmp = sin($phi_1);
             $tmp = sqrt(1 - $this->getECarre() * $tmp * $tmp); // racine(1 - e² sin²($phi_1))
-            $phi = atan2($z * $tmp, $module_xy * $tmp - $this->getA() * $this->getECarre() * cos($phi_1));
+            $phi = atan2($z * $tmp, 
+                $module_xy * $tmp - $this->getA() * $this->getECarre() * cos($phi_1));
             $delta = abs($phi - $phi_1);
         }
-        $he = $module_xy / cos($phi) - $this->getA() / sqrt(1 - $this->getECarre() * sin($phi) * sin($phi));
+        $he = $module_xy / cos($phi) -
+             $this->getA() / sqrt(1 - $this->getECarre() * sin($phi) * sin($phi));
         return new Point($lambda, $phi, $he, 'radian');
     }
 
@@ -552,11 +563,12 @@ abstract class AbstractProjection
      *            
      * @return \SbmCartographie\Model\Point
      */
-    public function alg0013(Point $point, $tx = 0, $ty = 0, $tz = 0, $k = 0, $rx = 0, $ry = 0, $rz = 0)
+    public function alg0013(Point $point, $tx = 0, $ty = 0, $tz = 0, $k = 0, $rx = 0, $ry = 0, 
+        $rz = 0)
     {
         return $point->translate($tx, $ty, $tz);
-            //->ajoute($point->dilate(1 + $k))
-            //->ajoute($point->rotate($rx, $ry, $rz));
+        // ->ajoute($point->dilate(1 + $k))
+        // ->ajoute($point->rotate($rx, $ry, $rz));
     }
 
     /**
@@ -570,11 +582,14 @@ abstract class AbstractProjection
     public function alg0019()
     {
         $this->initUniteDGR();
-        if (!isset($this->k0) || !isset($this->phi_0) || !isset($this->lambda_0) || !isset($this->x0) || !isset($this->y0)) {
+        if (! isset($this->k0) || ! isset($this->phi_0) || ! isset($this->lambda_0) ||
+             ! isset($this->x0) || ! isset($this->y0)) {
             ob_start();
             var_dump($this);
             $dump_obj = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(__METHOD__ . " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas tangent.\n$dump_obj");
+            throw new Exception(
+                __METHOD__ .
+                     " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas tangent.\n$dump_obj");
         }
         $this->lambda_c = $this->lambda_0;
         $this->n = sin($this->phi_0);
@@ -607,11 +622,14 @@ abstract class AbstractProjection
     {
         $this->initUniteDGR();
         
-        if (!isset($this->phi_0) || !isset($this->phi_1) || !isset($this->phi_2) || !isset($this->lambda_0) || !isset($this->x0) || !isset($this->y0)) {
+        if (! isset($this->phi_0) || ! isset($this->phi_1) || ! isset($this->phi_2) ||
+             ! isset($this->lambda_0) || ! isset($this->x0) || ! isset($this->y0)) {
             ob_start();
             var_dump($this);
             $dump_obj = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(__METHOD__ . " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas sécant.\n$dump_obj");
+            throw new Exception(
+                __METHOD__ .
+                     " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas sécant.\n$dump_obj");
         }
         $this->lambda_c = $this->lambda_0;
         $n1cos1 = $this->alg0021($this->phi_1) * cos($this->phi_1);
@@ -624,7 +642,8 @@ abstract class AbstractProjection
         if (abs($this->phi_0 - pi() / 2) < 1e-13) {
             $this->Ys = $this->y0;
         } else {
-            $this->Ys = $this->y0 + $this->C * exp(- $this->n * $this->alg0001($this->phi_0));
+            $this->Ys = $this->y0 +
+                 $this->C * exp(- $this->n * $this->alg0001($this->phi_0));
         }
     }
 }

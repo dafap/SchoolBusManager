@@ -14,8 +14,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Controller;
 
@@ -34,9 +34,10 @@ class IndexController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
         } catch (\Exception $e) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'logout'
-            ]);
+            return $this->redirect()->toRoute('login', 
+                [
+                    'action' => 'logout'
+                ]);
         }
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -48,9 +49,10 @@ class IndexController extends AbstractActionController
         $args = (array) $prg;
         
         // préparation des données
-        $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits($responsable->responsableId);
+        $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
+            $responsable->responsableId);
         $elevesIds = [];
-        /** 
+        /**
          * VERSION 2.3.1
          */
         $eleveIdsAnneeComplete = [];
@@ -61,7 +63,9 @@ class IndexController extends AbstractActionController
         // ceux qui sont sélectionnés (selectionScolarite : selection dans table scolarites) sont mis en attente. Pas de paiement pour le moment.
         // de même pour ceux qui sont à moins de 1 km et pour ceux qu sont hors district et sans dérogation
         foreach ($preinscrits as $row) {
-            if (! $row['selectionScolarite'] && ($row['distanceR1'] >= 1 || $row['distanceR2'] >= 1) && ($row['district'] || $row['derogation'])) {
+            if (! $row['selectionScolarite'] &&
+                 ($row['distanceR1'] >= 1 || $row['distanceR2'] >= 1) &&
+                 ($row['district'] || $row['derogation'])) {
                 /**
                  * VERSION 2.3.1
                  */
@@ -97,10 +101,12 @@ class IndexController extends AbstractActionController
         $nbElvTarif1 = count($eleveIdsAnneeComplete);
         $nbElvTarif2 = count($eleveIds3emeTrimestre);
         if ($args['montant'] != $tarif1 * $nbElvTarif1 + $tarif2 * $nbElvTarif2) {
-            $this->flashMessenger()->addErrorMessage('Problème sur le montant à payer. Contactez l\'organisateur.');
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
+            $this->flashMessenger()->addErrorMessage(
+                'Problème sur le montant à payer. Contactez l\'organisateur.');
+            return $this->redirect()->toRoute('login', 
+                [
+                    'action' => 'home-page'
+                ]);
         }
         /**
          * Fin de l'ajout VERSION 2.3.1
@@ -125,24 +131,26 @@ class IndexController extends AbstractActionController
         $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
         $odata = $tAppels->getObjData();
         foreach ($elevesIds as $eleveId) {
-            $odata->exchangeArray([
-                'referenceId' => $id,
-                'responsableId' => $responsable->responsableId,
-                'eleveId' => $eleveId
-            ]);
+            $odata->exchangeArray(
+                [
+                    'referenceId' => $id,
+                    'responsableId' => $responsable->responsableId,
+                    'eleveId' => $eleveId
+                ]);
             $tAppels->saveRecord($odata);
         }
         
         // préparation du formulaire
         $form = new \Zend\Form\Form('plugin-formulaire');
         foreach ($args as $key => $value) {
-            $form->add([
-                'type' => 'hidden',
-                'name' => $key,
-                'attributes' => [
-                    'value' => $value
-                ]
-            ]);
+            $form->add(
+                [
+                    'type' => 'hidden',
+                    'name' => $key,
+                    'attributes' => [
+                        'value' => $value
+                    ]
+                ]);
         }
         $form->setAttribute('action', $objectPlateforme->getUrl());
         return new ViewModel([
@@ -160,12 +168,14 @@ class IndexController extends AbstractActionController
         if (method_exists($table, 'adapteWhere')) {
             $table->adapteWhere($args['where']);
         }
-        return new ViewModel([
-            'paginator' => $table->paginator($args['where'], $order),
-            'page' => $this->params('page', 1),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_notifications', 15),
-            'criteres_form' => $args['form']
-        ]);
+        return new ViewModel(
+            [
+                'paginator' => $table->paginator($args['where'], $order),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_notifications', 
+                    15),
+                'criteres_form' => $args['form']
+            ]);
     }
 
     public function pdfAction()
@@ -197,35 +207,41 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            if (($notificationId = $this->getFromSession('notificationId', false)) === false) {
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'logout'
-                ]);
+            if (($notificationId = $this->getFromSession('notificationId', false)) ===
+                 false) {
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'logout'
+                    ]);
             }
         } else {
             $args = $prg;
-            if (($notificationId = StdLib::getParam('notificationId', $args, false)) === false) {
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'logout'
-                ]);
+            if (($notificationId = StdLib::getParam('notificationId', $args, false)) ===
+                 false) {
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'logout'
+                    ]);
             } else {
                 $this->setToSession('notificationId', $notificationId);
             }
         }
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
-        return new ViewModel([
-            'notification' => $table->getRecord($notificationId),
-            'page' => $this->params('page', 1)
-        ]);
+        return new ViewModel(
+            [
+                'notification' => $table->getRecord($notificationId),
+                'page' => $this->params('page', 1)
+            ]);
     }
 
     public function notificationAction()
     {
         $plugin = $this->plugin_plateforme;
         $message = $plugin->notification($this->getRequest()
-            ->getPost(), $this->getRequest()
-            ->getServer()
-            ->get('REMOTE_ADDR'));
+            ->getPost(), 
+            $this->getRequest()
+                ->getServer()
+                ->get('REMOTE_ADDR'));
         if ($message === false) {
             return $this->getResponse()
                 ->setStatusCode(403)

@@ -11,34 +11,39 @@
  * @filesource view/layout/footer.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <div id="footer">
-  <div class="float-left">
-  <?php echo $this->translate('School Bus Manager');?> : <a href="https://www.dafap.fr" target="_blank" title="Conception et r&eacute;alisation">Dafap informatique</a>
-  &copy;2013 - <?php echo date('Y')?> - <a href="https://www.ex2.com" title=" H&eacute;bergement web">Ex2Hosting</a>
-  </div>
-  <div class="float-right"> 
-  <?php 
-  // mentions légales, formulaire de contact ... passés dans un tableau associatif {$name => $url}
-  $sep = '';
-  foreach ((array) $this->footer_elements as $name => $url) {
-      if (is_array($url)) {
-          $href= array_key_exists('href', $url) ? $url['href'] : '';
-          $accesskey = array_key_exists('accesskey', $url) ? ' accesskey="' . $url['accesskey'] .'"' : '';
-          $title = array_key_exists('title', $url) ? ' title="' . $url['title'] .'"' : '';
-          $css = array_key_exists('class', $url) ? ' class="' . $url['class'] .'"' : '';
-      } elseif (is_string($url)) {
-          $href = $url;
-          $accesskey = '';
-          $title = '';
-          $css = '';
-      }
-      echo $sep . '<a' . $title . $accesskey . $css. ' href="' . $href . '">' . $name . '</a>';
-      $sep = ' | ';
-  }
-  ?>
+	<div class="float-left">
+  <?php echo $this->translate('School Bus Manager');?> : <a
+			href="https://www.dafap.fr" target="_blank"
+			title="Conception et r&eacute;alisation">Dafap informatique</a>
+  &copy;2013 - <?php echo date('Y')?> - <a href="https://www.ex2.com"
+			title=" H&eacute;bergement web">Ex2Hosting</a>
+	</div>
+	<div class="float-right"> 
+  <?php
+// mentions légales, formulaire de contact ... passés dans un tableau associatif {$name => $url}
+$sep = '';
+foreach ((array) $this->footer_elements as $name => $url) {
+    if (is_array($url)) {
+        $href = array_key_exists('href', $url) ? $url['href'] : '';
+        $accesskey = array_key_exists('accesskey', $url) ? ' accesskey="' .
+             $url['accesskey'] . '"' : '';
+        $title = array_key_exists('title', $url) ? ' title="' . $url['title'] . '"' : '';
+        $css = array_key_exists('class', $url) ? ' class="' . $url['class'] . '"' : '';
+    } elseif (is_string($url)) {
+        $href = $url;
+        $accesskey = '';
+        $title = '';
+        $css = '';
+    }
+    echo $sep . '<a' . $title . $accesskey . $css . ' href="' . $href . '">' . $name .
+         '</a>';
+    $sep = ' | ';
+}
+?>
   </div>
 </div>

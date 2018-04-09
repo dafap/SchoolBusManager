@@ -9,8 +9,8 @@
  * @filesource menu.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 août 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <ul id="menu">
@@ -20,18 +20,18 @@
         <div class="dropdown_2columns">
         <?php  foreach ($page as $catpage) :?>
             <div class="col_1">
-                <h3 <?= $page->isActive()? 'class="active"' : 'class="drop"' ?>>
+				<h3 <?= $page->isActive()? 'class="active"' : 'class="drop"' ?>>
                 <?= $this->navigation()->menu()->htmlify($catpage). PHP_EOL?></h3>
 				<ul>
 				<?php  foreach ($catpage as $subpage) :?>
-				    <li <?= $subpage->isActive()? 'class="active"' : 'class="drop"' ?>>
+				    <li
+						<?= $subpage->isActive()? 'class="active"' : 'class="drop"' ?>>
 				    <?= $this->navigation()->menu()->htmlify($subpage). PHP_EOL?></li>
 				<?php endforeach; ?>
 				</ul>
 			</div>
 		<?php endforeach; ?>
-		</div>
-		<!-- End dropdown container -->
+		</div> <!-- End dropdown container -->
 	</li>
     <?php endforeach; ?>
  </ul>

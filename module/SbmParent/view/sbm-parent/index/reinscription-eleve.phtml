@@ -18,16 +18,18 @@
  * @filesource reinscription-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2018
- * @version 2018-2.3.19
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 if ($this->phase == 1) {
-    $url_ajoutEleve = $this->url('sbmparent', [
-        'action' => 'inscription-eleve'
-    ]);
-    $url_reinscrire = $this->url('sbmparent', [
-        'action' => 'reinscription-eleve'
-    ]);
+    $url_ajoutEleve = $this->url('sbmparent', 
+        [
+            'action' => 'inscription-eleve'
+        ]);
+    $url_reinscrire = $this->url('sbmparent', 
+        [
+            'action' => 'reinscription-eleve'
+        ]);
     $url_retour = $this->url('sbmparent');
     $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td></tr>';
     ?>
@@ -59,10 +61,11 @@ if ($this->phase == 1) {
             ]
         ];
         $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
-        echo sprintf($modeleligne, $this->cycle([
-            "odd",
-            "even"
-        ])->next(), $row['nom'], $row['prenom'], $btligne);
+        echo sprintf($modeleligne, 
+            $this->cycle([
+                "odd",
+                "even"
+            ])->next(), $row['nom'], $row['prenom'], $btligne);
     }
     ?>
 		        </tbody>
@@ -197,9 +200,11 @@ $(function() {
 <?php
     
     $this->inlineScript()->captureEnd();
-    $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->nom, $this->responsable->prenom);
+    $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, 
+        $this->responsable->nom, $this->responsable->prenom);
     if ($this->hasGa) {
-        $r2identite = sprintf('%s %s %s', $this->responsable2['titre'], $this->responsable2['nom'], $this->responsable2['prenom']);
+        $r2identite = sprintf('%s %s %s', $this->responsable2['titre'], 
+            $this->responsable2['nom'], $this->responsable2['prenom']);
         $r2adresseL1 = $this->responsable2['adresseL1'];
         $r2adresseL2 = $this->responsable2['adresseL2'];
         $r2cp = $this->responsable2['codePostal'];
@@ -222,12 +227,13 @@ $(function() {
     echo $this->formHidden($this->form->get('prenom'));
     if (! $this->sansDateN) {
         echo $this->formHidden($this->form->get('dateN'));
-        $formatDateN = \SbmBase\Model\DateLib::formatDateFromMysql($this->form->get('dateN')->getValue());
+        $formatDateN = \SbmBase\Model\DateLib::formatDateFromMysql(
+            $this->form->get('dateN')->getValue());
         $lignedate = '<div class="enfant-label">';
         $lignedate .= $this->form->get('dateN')->getLabel();
         $lignedate .= $formatDateN;
     } else {
-        $lignedate = $this->formRowDate($this->form->get('dateN')); 
+        $lignedate = $this->formRowDate($this->form->get('dateN'));
     }
     echo $this->formHidden($this->form->get('derogation'));
     echo $this->formHidden($this->form->get('motifDerogation'));

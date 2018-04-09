@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -73,7 +73,8 @@ class Responsables extends AbstractSbmTable
      *         (adresseL1 ou adresseL2 ou codePostal ou commune).
      *         Si non on renvoie vrai si la commune a changé.
      */
-    public function saveResponsable(ObjectDataInterface $obj_data, $checkDemenagement = false)
+    public function saveResponsable(ObjectDataInterface $obj_data, 
+        $checkDemenagement = false)
     {
         try {
             $old_data = $this->getRecord($obj_data->getId());
@@ -95,11 +96,14 @@ class Responsables extends AbstractSbmTable
                 $old_data = $this->getRecordByEmail($email);
                 // $old_data est false si pas trouvé
                 if (! $old_data) {
-                    $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL1, $communeId);
+                    $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, 
+                        $adresseL1, $communeId);
                     if (! $old_data) {
-                        $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, $adresseL2, $communeId);
+                        $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom, 
+                            $adresseL2, $communeId);
                         if (! $old_data) {
-                            $old_data = $this->getRecordByNomPrenomTelephone($nom, $prenom, $telephones);
+                            $old_data = $this->getRecordByNomPrenomTelephone($nom, 
+                                $prenom, $telephones);
                         }
                     }
                 }
@@ -107,23 +111,25 @@ class Responsables extends AbstractSbmTable
                 if (! $is_new) {
                     // dans ce cas, c'est le responsable. On le met à jour.
                     $obj_data_array = $obj_data->getArrayCopy();
-                    // Les clés sont responsableId, userId, nature, titre, nom, prenom, titre2, nom2, prenom2, 
+                    // Les clés sont responsableId, userId, nature, titre, nom, prenom, titre2, nom2, prenom2,
                     // adresseL1, adresseL2, codePostal, communeId, telephoneF, telephoneP, telephoneT, email
                     unset($obj_data_array['responsableId']);
-                    $obj_data->exchangeArray(array_merge($old_data->getArrayCopy(), $obj_data_array));
+                    $obj_data->exchangeArray(
+                        array_merge($old_data->getArrayCopy(), $obj_data_array));
                 }
             } catch (ExceptionObjectData $e) {
                 $is_new = true;
             }
         }
         if ($is_new) {
-            $obj_data->setCalculateFields([
-                'nomSA',
-                'prenomSA',
-                'nom2SA',
-                'prenom2SA',
-                'dateCreation'
-            ]);
+            $obj_data->setCalculateFields(
+                [
+                    'nomSA',
+                    'prenomSA',
+                    'nom2SA',
+                    'prenom2SA',
+                    'dateCreation'
+                ]);
             $changeCommuneId = true;
         } else {
             // on vérifie si des données ont changé
@@ -166,7 +172,8 @@ class Responsables extends AbstractSbmTable
                             'ancienCodePostal' => $old_data->codePostal,
                             'ancienCommuneId' => $old_data->communeId
                         ];
-                        $obj_data->exchangeArray(array_merge($obj_data->getArrayCopy(), $dataDemenagement));
+                        $obj_data->exchangeArray(
+                            array_merge($obj_data->getArrayCopy(), $dataDemenagement));
                     }
                     $changeCommuneId = $demenagement;
                 } catch (ExceptionObjectData $e) {
@@ -193,10 +200,11 @@ class Responsables extends AbstractSbmTable
     public function setSelection($responsableId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray([
-            'responsableId' => $responsableId,
-            'selection' => $selection
-        ]);
+        $oData->exchangeArray(
+            [
+                'responsableId' => $responsableId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 
@@ -219,11 +227,12 @@ class Responsables extends AbstractSbmTable
      */
     public function changeEmail($email_old, $email_new)
     {
-        $update = $this->table_gateway->update([
-            'email' => $email_new
-        ], [
-            'email' => $email_old
-        ]);
+        $update = $this->table_gateway->update(
+            [
+                'email' => $email_new
+            ], [
+                'email' => $email_old
+            ]);
     }
 
     /**
@@ -239,7 +248,8 @@ class Responsables extends AbstractSbmTable
     public function getNomPrenom($responsabled, $with_titre = false)
     {
         $record = $this->getRecord($responsabled);
-        return ($with_titre ? $record->titre . ' ' : '') . $record->nom . ' ' . $record->prenom;
+        return ($with_titre ? $record->titre . ' ' : '') . $record->nom . ' ' .
+             $record->prenom;
     }
 
     /**
@@ -283,56 +293,62 @@ class Responsables extends AbstractSbmTable
             if (empty($telephone)) {
                 continue;
             }
-            $resultset = $this->fetchAll([
-                'nomSA' => $nom,
-                'prenomSA' => $prenom,
-                'telephoneF' => $telephone
-            ]);
+            $resultset = $this->fetchAll(
+                [
+                    'nomSA' => $nom,
+                    'prenomSA' => $prenom,
+                    'telephoneF' => $telephone
+                ]);
             if ($resultset->count()) {
                 break;
             }
             
-            $resultset = $this->fetchAll([
-                'nomSA' => $nom,
-                'prenomSA' => $prenom,
-                'telephoneP' => $telephone
-            ]);
+            $resultset = $this->fetchAll(
+                [
+                    'nomSA' => $nom,
+                    'prenomSA' => $prenom,
+                    'telephoneP' => $telephone
+                ]);
             if ($resultset->count()) {
                 break;
             }
             
-            $resultset = $this->fetchAll([
-                'nomSA' => $nom,
-                'prenomSA' => $prenom,
-                'telephoneT' => $telephone
-            ]);
+            $resultset = $this->fetchAll(
+                [
+                    'nomSA' => $nom,
+                    'prenomSA' => $prenom,
+                    'telephoneT' => $telephone
+                ]);
             if ($resultset->count()) {
                 break;
             }
             
-            $resultset = $this->fetchAll([
-                'nom2SA' => $nom,
-                'prenom2SA' => $prenom,
-                'telephoneF' => $telephone
-            ]);
+            $resultset = $this->fetchAll(
+                [
+                    'nom2SA' => $nom,
+                    'prenom2SA' => $prenom,
+                    'telephoneF' => $telephone
+                ]);
             if ($resultset->count()) {
                 break;
             }
             
-            $resultset = $this->fetchAll([
-                'nom2SA' => $nom,
-                'prenom2SA' => $prenom,
-                'telephoneP' => $telephone
-            ]);
+            $resultset = $this->fetchAll(
+                [
+                    'nom2SA' => $nom,
+                    'prenom2SA' => $prenom,
+                    'telephoneP' => $telephone
+                ]);
             if ($resultset->count()) {
                 break;
             }
             
-            $resultset = $this->fetchAll([
-                'nom2SA' => $nom,
-                'prenom2SA' => $prenom,
-                'telephoneT' => $telephone
-            ]);
+            $resultset = $this->fetchAll(
+                [
+                    'nom2SA' => $nom,
+                    'prenom2SA' => $prenom,
+                    'telephoneT' => $telephone
+                ]);
             if ($resultset->count()) {
                 break;
             }
@@ -357,35 +373,39 @@ class Responsables extends AbstractSbmTable
         if (empty($nom) || empty($prenom) || empty($adresse) || empty($communeId)) {
             return false;
         }
-        $resultset = $this->fetchAll([
-            'nomSA' => $nom,
-            'prenomSA' => $prenom,
-            'adresseL1' => $adresse,
-            'communeId' => $communeId
-        ]);
-        if (!$resultset->count()) {
-            $resultset = $this->fetchAll([
+        $resultset = $this->fetchAll(
+            [
                 'nomSA' => $nom,
                 'prenomSA' => $prenom,
-                'adresseL2' => $adresse,
-                'communeId' => $communeId
-            ]);
-        }
-        if (!$resultset->count()) {
-            $resultset = $this->fetchAll([
-                'nom2SA' => $nom,
-                'prenom2SA' => $prenom,
                 'adresseL1' => $adresse,
                 'communeId' => $communeId
             ]);
+        if (! $resultset->count()) {
+            $resultset = $this->fetchAll(
+                [
+                    'nomSA' => $nom,
+                    'prenomSA' => $prenom,
+                    'adresseL2' => $adresse,
+                    'communeId' => $communeId
+                ]);
         }
-        if (!$resultset->count()) {
-            $resultset = $this->fetchAll([
-                'nom2SA' => $nom,
-                'prenom2SA' => $prenom,
-                'adresseL2' => $adresse,
-                'communeId' => $communeId
-            ]);
+        if (! $resultset->count()) {
+            $resultset = $this->fetchAll(
+                [
+                    'nom2SA' => $nom,
+                    'prenom2SA' => $prenom,
+                    'adresseL1' => $adresse,
+                    'communeId' => $communeId
+                ]);
+        }
+        if (! $resultset->count()) {
+            $resultset = $this->fetchAll(
+                [
+                    'nom2SA' => $nom,
+                    'prenom2SA' => $prenom,
+                    'adresseL2' => $adresse,
+                    'communeId' => $communeId
+                ]);
         }
         return $resultset->current();
     }

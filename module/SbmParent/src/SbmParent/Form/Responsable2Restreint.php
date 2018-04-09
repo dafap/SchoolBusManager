@@ -10,13 +10,14 @@
  * @filesource Responsable2Restreint.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmParent\Form;
 
 class Responsable2Restreint extends AbstractResponsable2
 {
+
     public function __construct()
     {
         $this->complet = false;

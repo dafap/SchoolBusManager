@@ -11,8 +11,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMail\Controller;
 
@@ -45,9 +45,10 @@ class IndexController extends AbstractActionController
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('login', array(
-                    'action' => 'home-page'
-                ));
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'home-page'
+                    ]);
             }
         }
         $user = $this->user;
@@ -58,7 +59,8 @@ class IndexController extends AbstractActionController
                 $data = $form->getData();
                 // préparation du corps
                 $body = "<p><b>Message envoyé par %s %s %s depuis School bus manager<br>Email: %s</b></p><hr>";
-                $body = sprintf($body, $user['titre'], $user['nom'], $user['prenom'], $user['email']);
+                $body = sprintf($body, $user['titre'], $user['nom'], $user['prenom'], 
+                    $user['email']);
                 if ($data['body'] == strip_tags($data['body'])) {
                     // c'est du txt
                     $body .= nl2br($data['body']);
@@ -67,38 +69,41 @@ class IndexController extends AbstractActionController
                     $body .= $data['body'];
                 }
                 // envoie l'email
-                $params = array(
+                $params = [
                     'bcc' => StdLib::getParam('destinataires', $this->mail_config),
-                    'cc' => array(
-                        array(
+                    'cc' => [
+                        [
                             'email' => $user['email'],
                             'name' => $user['nom'] . ' ' . $user['prenom']
-                        )
-                    ),
+                        ]
+                    ],
                     'subject' => $data['subject'],
-                    'body' => array(
+                    'body' => [
                         'html' => $body
-                    )
-                );
+                    ]
+                ];
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
                 $this->getEventManager()->trigger('sendMail', null, $params);
-                $this->flashMessenger()->addInfoMessage('Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
+                $this->flashMessenger()->addInfoMessage(
+                    'Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('login', array(
-                        'action' => 'home-page'
-                    ));
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
             }
         }
-        $form->setData(array(
+        $form->setData([
             'userId' => $user['userId']
-        ));
-        return new ViewModel(array(
-            'form' => $form->prepare(),
-            'user' => $user
-        ));
+        ]);
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'user' => $user
+            ]);
     }
 
     /**
@@ -117,7 +122,7 @@ class IndexController extends AbstractActionController
             $history = $this->db_manager->get('Sbm\Db\Query\History');
             $services = $this->db_manager->get('Sbm\Db\Table\Services');
             $transporteurs = $this->db_manager->get('Sbm\Db\Table\Transporteurs');
-            $destinataires = array();
+            $destinataires = [];
             $changes = $history->getLastDayChanges('affectations', $millesime);
             if ($changes instanceof \Traversable) {
                 foreach ($changes as $affectation) {
@@ -134,17 +139,19 @@ class IndexController extends AbstractActionController
                     }
                 }
                 $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
-                $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', [
-                    'file_name' => $logo_bas_de_mail,
-                    'path' => StdLib::getParam('path', $this->img),
-                    'img_attributes' => StdLib::getParamR([
-                        'administrer',
-                        $logo_bas_de_mail
-                    ], $this->img),
-                    'client' => $this->client
-                ]);
+                $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', 
+                    [
+                        'file_name' => $logo_bas_de_mail,
+                        'path' => StdLib::getParam('path', $this->img),
+                        'img_attributes' => StdLib::getParamR(
+                            [
+                                'administrer',
+                                $logo_bas_de_mail
+                            ], $this->img),
+                        'client' => $this->client
+                    ]);
                 $qtransporteurs = $this->db_manager->get('Sbm\Db\Query\Transporteurs');
-                $controle = array();
+                $controle = [];
                 foreach ($destinataires as $transporteurId => $circuits) {
                     $odata = $transporteurs->getRecord($transporteurId);
                     $email = $odata->email;
@@ -167,21 +174,24 @@ class IndexController extends AbstractActionController
                     if (empty($to))
                         continue;
                     
-                    $params = array(
+                    $params = [
                         'to' => array_values($to),
                         'subject' => 'Modification des inscriptions',
-                        'body' => array(
-                            'html' => $mailTemplate->render(array(
-                                'services' => $circuits,
-                                'url_portail' => $this->url()
-                                    ->fromRoute('sbmportail', array(
-                                    'action' => 'tr-index'
-                                ), array(
-                                    'force_canonical' => true
-                                ))
-                            ))
-                        )
-                    );
+                        'body' => [
+                            'html' => $mailTemplate->render(
+                                [
+                                    'services' => $circuits,
+                                    'url_portail' => $this->url()
+                                        ->fromRoute('sbmportail', 
+                                        [
+                                            'action' => 'tr-index'
+                                        ], 
+                                        [
+                                            'force_canonical' => true
+                                        ])
+                                ])
+                        ]
+                    ];
                     $this->getEventManager()->addIdentifiers('SbmMail\Send');
                     $this->getEventManager()->trigger('sendMail', null, $params);
                 }

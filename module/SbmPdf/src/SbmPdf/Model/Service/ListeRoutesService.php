@@ -9,8 +9,8 @@
  * @filesource ListeRoutesService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model\Service;
 
@@ -59,7 +59,8 @@ class ListeRoutesService implements FactoryInterface
             $methodes = (array) get_class_methods($alias);
             asort($methodes);
             foreach ($methodes as $key => &$item) {
-                if (substr($item, - 6) == 'Action' && $item != 'notFoundAction' && $item != 'getMethodFromAction') {
+                if (substr($item, - 6) == 'Action' && $item != 'notFoundAction' &&
+                     $item != 'getMethodFromAction') {
                     // $method = $classControler . '::' . $item;
                     $item = strtolower($filter->filter(substr($item, 0, - 6)));
                     $method = $controllers[$alias] . '/' . $item;

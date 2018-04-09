@@ -10,8 +10,8 @@
  * @filesource FormRowDate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -24,10 +24,11 @@ use Zend\Form\View\Helper\FormLabel;
 
 class FormRowDate extends FormDateSelect
 {
+
     public function __invoke(ElementInterface $element = NULL, $dateType = 1, $locale = 'FR_fr')
     {
         $this->setLocale($locale);
-        if (!$element) {
+        if (! $element) {
             return $this;
         }
         $label = new FormLabel();

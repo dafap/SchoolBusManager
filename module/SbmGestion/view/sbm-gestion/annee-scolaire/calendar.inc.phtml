@@ -7,8 +7,8 @@
  * @filesource calendar.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 
@@ -27,11 +27,22 @@ use SbmBase\Model\DateLib;
 			<th></th>
 		</tr>
     <?php foreach ($this->table as $element) : ?>
-    <?php $url_edit = $this->url('sbmgestion/anneescolaire', array('action' => 'edit', 'millesime' => $this->millesime, 'id' => $element['calendarId'])); ?>
-        <tr class="<?php echo $this->cycle(array(
+    <?php
+        $url_edit = $this->url('sbmgestion/anneescolaire', 
+            [
+                'action' => 'edit',
+                'millesime' => $this->millesime,
+                'id' => $element['calendarId']
+            ]);
+        ?>
+        <tr
+			class="<?php
+        
+        echo $this->cycle([
             "even",
             "odd"
-        ))->next();?>">
+        ])->next();
+        ?>">
 			<td><?php echo $element['ordinal'];?></td>
 			<td><?php echo $element['nature'];?></td>
 			<td><?php echo $element['libelle'];?></td>

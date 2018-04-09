@@ -7,8 +7,8 @@
  * @filesource email-change.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <h1>Changement d'email</h1>
@@ -17,7 +17,9 @@
 		<div class="zone-actions"></div>
 	</div>
 	<div id="fiche-inner">
-	<p>Votre email actuel est : <b><?php echo $this->email; ?></b></p>
+		<p>
+			Votre email actuel est : <b><?php echo $this->email; ?></b>
+		</p>
 <?php echo $this->form()->openTag($this->form); ?>
 <?php echo $this->formHidden($this->form->get('csrf')); ?>
     <fieldset class="sbm-page1">
@@ -30,8 +32,10 @@
 		</fieldset>
 <?php echo $this->form()->closeTag(); ?>
     <div class="sbm-description">
-			<p>Donnez d'abord votre mot de passe puis votre nouvel email. Confirmez-le en l'écrivant à nouveau.</p>
-			<p>Votre email sera changé dans toutes les fiches des enfants que vous avez inscrits.</p>
+			<p>Donnez d'abord votre mot de passe puis votre nouvel email.
+				Confirmez-le en l'écrivant à nouveau.</p>
+			<p>Votre email sera changé dans toutes les fiches des enfants que
+				vous avez inscrits.</p>
 		</div>
 	</div>
 	<div id="fiche-footer"></div>

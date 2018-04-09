@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmParent\Model\Db\Service\Query;
 
@@ -81,88 +81,96 @@ class Eleves implements FactoryInterface
         $where = new Where();
         $where->lessThan('millesime', $this->millesime)->equalTo('ele.eleveId', $eleveId);
         $select = $this->sql->select();
-        $select->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-            ->columns(array(
-            'eleveId' => 'eleveId',
-            'dateCreation' => 'dateCreation',
-            'dateModificationEleve' => 'dateModification',
-            'nom' => 'nom',
-            'nomSA' => 'nomSA',
-            'prenom' => 'prenom',
-            'prenomSA' => 'prenomSA',
-            'dateN' => 'dateN',
-            'numero' => 'numero',
-            'responsable1Id' => 'responsable1Id',
-            'x1' => 'x1',
-            'y1' => 'y1',
-            'responsable2Id' => 'responsable2Id',
-            'x2' => 'x2',
-            'y2' => 'y2',
-            'responsableFId' => 'responsableFId',
-            'selectionEleve' => 'selection',
-            'noteEleve' => 'note'
-        ))
-            ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'ele.eleveId = sco.eleveId', array(
-            'millesime' => 'millesime',
-            'selectionScolarite' => 'selection',
-            'dateInscription' => 'dateInscription',
-            'dateModificationScolarite' => 'dateModification',
-            'etablissementId' => 'etablissementId',
-            'classeId' => 'classeId',
-            'chez' => 'chez',
-            'adresseEleveL1' => 'adresseL1',
-            'adresseEleveL2' => 'adresseL2',
-            'codePostalEleve' => 'codePostal',
-            'communeEleveId' => 'communeId',
-            'x' => 'x',
-            'y' => 'y',
-            'distanceR1' => 'distanceR1',
-            'distanceR2' => 'distanceR2',
-            'dateEtiquette' => 'dateEtiquette',
-            'dateCarte' => 'dateCarte',
-            'inscrit' => 'inscrit',
-            'gratuit' => 'gratuit',
-            'paiement' => 'paiement',
-            'duplicata' => 'duplicata',
-            'fa' => 'fa',
-            'anneeComplete' => 'anneeComplete',
-            'subventionR1' => 'subventionR1',
-            'subventionR2' => 'subventionR2',
-            'demandeR1' => 'demandeR1',
-            'demandeR2' => 'demandeR2',
-            'accordR1' => 'accordR1',
-            'accordR2' => 'accordR2',
-            'internet' => 'internet',
-            'district' => 'district',
-            'derogation' => 'derogation',
-            'dateDebut' => 'dateDebut',
-            'dateFin' => 'dateFin',
-            'joursTransport' => 'joursTransport',
-            'subventionTaux' => 'subventionTaux',
-            'tarifId' => 'tarifId',
-            'organismeId' => 'organismeId',
-            'regimeId' => 'regimeId',
-            'motifDerogation' => 'motifDerogation',
-            'motifRefusR1' => 'motifRefusR1',
-            'motifRefusR2' => 'motifRefusR2',
-            'commentaire' => 'commentaire'
-        ))
-            ->join(array(
-            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-        ), 'sco.etablissementId = eta.etablissementId', array(
-            'etablissement' => 'nom',
-            'xeta' => 'x',
-            'yeta' => 'y'
-        ))
-            ->join(array(
-            'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ), 'eta.communeId = com.communeId', array(
-            'communeEtablissement' => 'nom'
-        ))
+        $select->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns(
+            [
+                'eleveId' => 'eleveId',
+                'dateCreation' => 'dateCreation',
+                'dateModificationEleve' => 'dateModification',
+                'nom' => 'nom',
+                'nomSA' => 'nomSA',
+                'prenom' => 'prenom',
+                'prenomSA' => 'prenomSA',
+                'dateN' => 'dateN',
+                'numero' => 'numero',
+                'responsable1Id' => 'responsable1Id',
+                'x1' => 'x1',
+                'y1' => 'y1',
+                'responsable2Id' => 'responsable2Id',
+                'x2' => 'x2',
+                'y2' => 'y2',
+                'responsableFId' => 'responsableFId',
+                'selectionEleve' => 'selection',
+                'noteEleve' => 'note'
+            ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'ele.eleveId = sco.eleveId', 
+            [
+                'millesime' => 'millesime',
+                'selectionScolarite' => 'selection',
+                'dateInscription' => 'dateInscription',
+                'dateModificationScolarite' => 'dateModification',
+                'etablissementId' => 'etablissementId',
+                'classeId' => 'classeId',
+                'chez' => 'chez',
+                'adresseEleveL1' => 'adresseL1',
+                'adresseEleveL2' => 'adresseL2',
+                'codePostalEleve' => 'codePostal',
+                'communeEleveId' => 'communeId',
+                'x' => 'x',
+                'y' => 'y',
+                'distanceR1' => 'distanceR1',
+                'distanceR2' => 'distanceR2',
+                'dateEtiquette' => 'dateEtiquette',
+                'dateCarte' => 'dateCarte',
+                'inscrit' => 'inscrit',
+                'gratuit' => 'gratuit',
+                'paiement' => 'paiement',
+                'duplicata' => 'duplicata',
+                'fa' => 'fa',
+                'anneeComplete' => 'anneeComplete',
+                'subventionR1' => 'subventionR1',
+                'subventionR2' => 'subventionR2',
+                'demandeR1' => 'demandeR1',
+                'demandeR2' => 'demandeR2',
+                'accordR1' => 'accordR1',
+                'accordR2' => 'accordR2',
+                'internet' => 'internet',
+                'district' => 'district',
+                'derogation' => 'derogation',
+                'dateDebut' => 'dateDebut',
+                'dateFin' => 'dateFin',
+                'joursTransport' => 'joursTransport',
+                'subventionTaux' => 'subventionTaux',
+                'tarifId' => 'tarifId',
+                'organismeId' => 'organismeId',
+                'regimeId' => 'regimeId',
+                'motifDerogation' => 'motifDerogation',
+                'motifRefusR1' => 'motifRefusR1',
+                'motifRefusR2' => 'motifRefusR2',
+                'commentaire' => 'commentaire'
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId = eta.etablissementId', 
+            [
+                'etablissement' => 'nom',
+                'xeta' => 'x',
+                'yeta' => 'y'
+            ])
+            ->join(
+            [
+                'com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'eta.communeId = com.communeId', 
+            [
+                'communeEtablissement' => 'nom'
+            ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute()->current();
@@ -192,16 +200,19 @@ class Eleves implements FactoryInterface
         $where = new Where();
         $where->isNull('s.eleveId')
             ->nest()
-            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', $responsableId)->unnest();
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', 
+            $responsableId)->unnest();
         $select = $this->sql->select();
-        $select->from([
-            'e' => $this->db_manager->getCanonicName('eleves', 'table')
-        ])
-            ->columns([
-            'eleveId',
-            'nom',
-            'prenom'
-        ])
+        $select->from(
+            [
+                'e' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns(
+            [
+                'eleveId',
+                'nom',
+                'prenom'
+            ])
             ->join([
             's' => $select1
         ], 'e.eleveId = s.eleveId', [], Select::JOIN_LEFT)
@@ -225,12 +236,14 @@ class Eleves implements FactoryInterface
             ->equalTo('s1.eleveId', $eleveId)
             ->literal('s1.etablissementId = s2.etablissementId');
         $select = $this->sql->select();
-        $select->from([
-            's1' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ])
-            ->join([
-            's2' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 's1.eleveId = s2.eleveId', [])
+        $select->from(
+            [
+                's1' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
+            ->join(
+            [
+                's2' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 's1.eleveId = s2.eleveId', [])
             ->columns([
             'meme' => new Expression('count(*)')
         ])

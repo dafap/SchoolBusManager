@@ -7,8 +7,8 @@
  * @filesource DateLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmBase\Model;
 
@@ -34,7 +34,8 @@ class DateLib
             } elseif ($date = DateTime::createFromFormat('Y-m-d H:i:s', $d)) {
                 return $date->format('d/m/Y');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (an-mois-jour attendu).");
+                throw new Exception(
+                    "La donnée $d a un format incorrect (an-mois-jour attendu).");
             }
         }
     }
@@ -54,9 +55,10 @@ class DateLib
             if ($date = DateTime::createFromFormat('Y-m-d H:i:s', $d)) {
                 return $date->format('d/m/Y H:i:s');
             } elseif ($date = DateTime::createFromFormat('Y-m-d|', $d)) {
-                 return $date->format('d/m/Y H:i:s');
+                return $date->format('d/m/Y H:i:s');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (an-mois-jour heure:minute:seconde attendu).");
+                throw new Exception(
+                    "La donnée $d a un format incorrect (an-mois-jour heure:minute:seconde attendu).");
             }
         }
     }
@@ -78,7 +80,8 @@ class DateLib
             } elseif ($date = DateTime::createFromFormat('d/m/Y H:i:s', $d)) {
                 return $date->format('Y-m-d');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (jour/mois/an attendu).");
+                throw new Exception(
+                    "La donnée $d a un format incorrect (jour/mois/an attendu).");
             }
         }
     }
@@ -100,11 +103,12 @@ class DateLib
             } elseif ($date = DateTime::createFromFormat('d/m/Y|', $d)) {
                 return $date->format('Y-m-d H:i:s');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (jour/mois/an heure:minute:seconde attendu).");
+                throw new Exception(
+                    "La donnée $d a un format incorrect (jour/mois/an heure:minute:seconde attendu).");
             }
         }
     }
-    
+
     /**
      * Renvoie la date-heure actuelle au format (an-mois-jour heure:min:s)
      */
@@ -113,7 +117,7 @@ class DateLib
         $date = new DateTime();
         return $date->format('Y-m-d H:i:s');
     }
-    
+
     /**
      * Renvoie la date actuelle au format (an-mois-jour)
      */
@@ -122,7 +126,7 @@ class DateLib
         $date = new DateTime();
         return $date->format('Y-m-d');
     }
-    
+
     /**
      * Renvoie la date-heure actuele au format (jour/mois/an heure:min:s)
      */
@@ -131,7 +135,7 @@ class DateLib
         $date = new DateTime();
         return $date->format('d/m/Y H:i:s');
     }
-    
+
     /**
      * Renvoie la date actuelle au format (jour/mois/an)
      */

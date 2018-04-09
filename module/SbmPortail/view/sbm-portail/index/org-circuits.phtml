@@ -7,23 +7,25 @@
  * @filesource org-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2017
- * @version 2017-2.3.6
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_retour = $this->url('sbmportail');
 $url_ici = $this->url();
-$url_circuits = $this->url('sbmportail', array('action' => 'tr-circuits'));
+$url_circuits = $this->url('sbmportail', [
+    'action' => 'tr-circuits'
+]);
 
-$hiddens = array();
-$actions = array(
-    'cancel' => array(
+$hiddens = [];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 
 $this->paginator->setDefaultItemCountPerPage(6);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -57,15 +59,17 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($services as $serviceId => $service): ?>
         <?php
             // etablissements
-            $cr = array_walk($service['etablissements'], function(&$item, $key){
-                $item = implode (' - ', $item);
-            });
+            $cr = array_walk($service['etablissements'], 
+                function (&$item, $key) {
+                    $item = implode(' - ', $item);
+                });
             $etablissements = implode("\n", $service['etablissements']);
-                          // tr css
-            $tr_css = $this->cycle(array(
-                "even",
-                "odd"
-            ))->next();
+            // tr css
+            $tr_css = $this->cycle(
+                [
+                    "even",
+                    "odd"
+                ])->next();
             ?>
          <tr class="<?php echo $tr_css;?>">
 					<td class="serviceId"><?php echo $this->escapeHtml($serviceId); ?></td>
@@ -77,18 +81,18 @@ echo $this->flashMessenger()->render('default');
 					<td class="etablissements"><?php echo nl2br($this->escapeHtml($etablissements));?></td>
 					<td class="boutons">
             <?php
-            $hiddens = array(
+            $hiddens = [
                 'serviceId' => $serviceId,
                 'info' => $serviceId . ' - ' . $service['nom'],
                 'origine' => 'org-circuits'
-            );
-            $buttons = array(
-                'horaires' => array(
+            ];
+            $buttons = [
+                'horaires' => [
                     'class' => 'fam-clock-red',
                     'formaction' => $url_circuits,
-                    'title' => 'Fiche horaires et informations',
-                )
-            );
+                    'title' => 'Fiche horaires et informations'
+                ]
+            ];
             echo $this->listeLigneActions($serviceId, $hiddens, $buttons);
             ?>
 				</td>
@@ -98,7 +102,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper"></div>
 	</div>
 </div>

@@ -22,8 +22,8 @@
  * @filesource AppelPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Listener;
 
@@ -50,10 +50,12 @@ class AppelPlateforme implements ListenerAggregateInterface
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPaiement\AppelPlateforme', 'appelPaiement', [
-            $this,
-            'onAppelPaiement'
-        ], 1);
+        $this->listeners[] = $sharedEvents->attach('SbmPaiement\AppelPlateforme', 
+            'appelPaiement', 
+            [
+                $this,
+                'onAppelPaiement'
+            ], 1);
     }
 
     /**
@@ -71,10 +73,10 @@ class AppelPlateforme implements ListenerAggregateInterface
     }
 
     /**
-     * Le contexte (target) de l'evenement $e donne la plate-forme configurée dans le 
+     * Le contexte (target) de l'evenement $e donne la plate-forme configurée dans le
      * service manager sous la clé 'SbmPaiement\Plugin\Plateforme'
-     
-     * @param Event $e
+     *
+     * @param Event $e            
      */
     public function onAppelPaiement(Event $e)
     {
@@ -85,11 +87,12 @@ class AppelPlateforme implements ListenerAggregateInterface
         $objectPlateforme = $e->getTarget();
         
         $adapter = new Curl();
-        $adapter->setOptions([
-            CURLOPT_HEADER => 0,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_SSL_VERIFYPEER => true
-        ]);
+        $adapter->setOptions(
+            [
+                CURLOPT_HEADER => 0,
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_SSL_VERIFYPEER => true
+            ]);
         $adapter->setCurlOption(CURLOPT_CAINFO, $cacert);
         $client = new Client($objectPlateforme->getUrl());
         $client->setAdapter($adapter);
@@ -97,8 +100,8 @@ class AppelPlateforme implements ListenerAggregateInterface
         $client->setParameterPost($objectPlateforme->prepareAppel($params));
         $response = $client->send($client->getRequest());
         
-        //output the response
-        echo $response->getBody()."<br/>";
+        // output the response
+        echo $response->getBody() . "<br/>";
         /*
          * // appel en post
          * $ch = curl_init($objectPlateforme->getUrl());

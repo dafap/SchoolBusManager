@@ -11,8 +11,8 @@
  * @filesource ScolariteOK.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Listener;
 
@@ -36,10 +36,11 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme', 'scolariteOK', [
-            $this,
-            'onScolariteOK'
-        ], 1);
+        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme', 
+            'scolariteOK', [
+                $this,
+                'onScolariteOK'
+            ], 1);
     }
 
     /**
@@ -73,14 +74,17 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
         $objectData_scolarite = $this->db_manager->get('Sbm\Db\ObjectData\Scolarite');
         foreach ($params['eleveIds'] as $eleveId) {
             try {
-                $objectData_scolarite->exchangeArray([
-                    'millesime' => $params['millesime'],
-                    'eleveId' => $eleveId,
-                    'paiement' => $indicateur
-                ]);
+                $objectData_scolarite->exchangeArray(
+                    [
+                        'millesime' => $params['millesime'],
+                        'eleveId' => $eleveId,
+                        'paiement' => $indicateur
+                    ]);
                 $table_scolarites->updateRecord($objectData_scolarite);
             } catch (\Exception $e) {
-                $msg = sprintf('Impossible de mettre à jour la scolarité de l\'élève n° %s pour l\'année %s', $eleveId, $params['millesime']);
+                $msg = sprintf(
+                    'Impossible de mettre à jour la scolarité de l\'élève n° %s pour l\'année %s', 
+                    $eleveId, $params['millesime']);
                 $this->log(Logger::CRIT, $msg, $params);
             }
         }

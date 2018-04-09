@@ -9,16 +9,17 @@
  * @filesource localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 // calcul du contenu de l'infobulle et du libellé du domicile
-$description = array();
-$description[] = '<b>' . implode(' ', array(
-    $this->responsable->titre,
-    $this->responsable->nom,
-    $this->responsable->prenom
-)) . '</b>';
+$description = [];
+$description[] = '<b>' . implode(' ', 
+    [
+        $this->responsable->titre,
+        $this->responsable->nom,
+        $this->responsable->prenom
+    ]) . '</b>';
 $description[] = $this->responsable->adresseL1;
 $domicile = $this->responsable->adresseL1;
 $tmp = $this->responsable->adresseL2;
@@ -26,13 +27,14 @@ if (! empty($tmp)) {
     $description[] = $this->responsable->adresseL2;
     $domicile .= ' ' . $this->responsable->adresseL2;
 }
-$cp_commune = implode(' ', array(
-    $this->responsable->codePostal,
-    $this->responsable->commune
-));
+$cp_commune = implode(' ', 
+    [
+        $this->responsable->codePostal,
+        $this->responsable->commune
+    ]);
 $description[] = $cp_commune;
 $domicile .= ' ' . $cp_commune;
-$telephone = array();
+$telephone = [];
 $tmp = $this->responsable->telephoneF;
 if (! empty($tmp)) {
     $telephone[] = $this->responsable->telephoneF;
@@ -61,8 +63,8 @@ const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
 const INI_ZOOM = <?php echo $this->config['zoom'];?>;
 initialiser('mon domicile', "<?php echo implode('<br/>', $description);?>", []);
-<?php 
-$this->inlineScript()->captureEnd(); 
+<?php
+$this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
 ?>
 <h1>Position de votre domicile sur la carte</h1>

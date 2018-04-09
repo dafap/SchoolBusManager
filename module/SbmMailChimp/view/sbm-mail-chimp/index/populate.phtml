@@ -10,8 +10,8 @@
  * @filesource populate.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -24,9 +24,10 @@ if ($this->compte_rendu['status'] != 'finished') {
     ]);
 } else {
     $hiddens = [];
-    $url_retour = $this->url('sbmmailchimp', [
-        'action' => 'liste-members'
-    ]);
+    $url_retour = $this->url('sbmmailchimp', 
+        [
+            'action' => 'liste-members'
+        ]);
 }
 $actions = [
     'retour' => [

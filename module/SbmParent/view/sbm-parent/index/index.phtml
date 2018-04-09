@@ -7,14 +7,16 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2017
- * @version 2017-2.3.10
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $this->headScript()->captureStart();
 ?>
 $(document).ready(function($){
@@ -108,18 +110,19 @@ echo $this->flashMessenger()->render('default');
 	</blockquote>
 	<div class="menu clearfix">
     <?php
-        echo $this->listeZoneActions([], [
-            'modif-adresse' => [
-                'class' => 'accueil default',
-                'formaction' => $url_modif_adresse,
-                'value' => 'Modifier adresse ou téléphone'
-            ],
-            'inscrire' => [
-                'class' => 'accueil default',
-                'formaction' => $url_ajoutEleve,
-                'value' => 'Inscrire un enfant'
-            ]
-        ]);
+        echo $this->listeZoneActions([], 
+            [
+                'modif-adresse' => [
+                    'class' => 'accueil default',
+                    'formaction' => $url_modif_adresse,
+                    'value' => 'Modifier adresse ou téléphone'
+                ],
+                'inscrire' => [
+                    'class' => 'accueil default',
+                    'formaction' => $url_ajoutEleve,
+                    'value' => 'Inscrire un enfant'
+                ]
+            ]);
         ?>
     </div>	
     <?php else :?>
@@ -157,22 +160,29 @@ echo $this->flashMessenger()->render('default');
             if ($nbAffectations) {
                 // construction des tableaux $service, $station et $circuit sans doublons
                 foreach ($reseau as $transport) {
-                    $service_transporteur = $transport['service1Id'] . ' - ' . $transport['transporteur1'];
-                    $station_commune = $transport['station1'] . ' - ' . $transport['commune1'];
+                    $service_transporteur = $transport['service1Id'] . ' - ' .
+                         $transport['transporteur1'];
+                    $station_commune = $transport['station1'] . ' - ' .
+                         $transport['commune1'];
                     $circuitId = $transport['circuit1Id'];
-                    $key = md5(sprintf('%s;%s;%d', $service_transporteur, $station_commune, $circuitId));
+                    $key = md5(
+                        sprintf('%s;%s;%d', $service_transporteur, $station_commune, 
+                            $circuitId));
                     $service[$key] = $service_transporteur;
                     $station[$key] = $station_commune;
                     $circuit[$key] = $circuitId;
-                    $correspondance = ! empty($transport['service2Id']) || ! empty($transport['station2Id']);
+                    $correspondance = ! empty($transport['service2Id']) ||
+                         ! empty($transport['station2Id']);
                     if ($correspondance) {
                         if (! empty($transport['service2Id'])) {
-                            $service_transporteur = $transport['service2Id'] . ' - ' . $transport['transporteur2'];
+                            $service_transporteur = $transport['service2Id'] . ' - ' .
+                                 $transport['transporteur2'];
                         } else {
                             $service_transporteur = '';
                         }
                         if (! empty($transport['station2Id'])) {
-                            $station_commune = $transport['station2'] . ' - ' . $transport['commune2'];
+                            $station_commune = $transport['station2'] . ' - ' .
+                                 $transport['commune2'];
                         } else {
                             $station_commune = '';
                         }
@@ -181,7 +191,9 @@ echo $this->flashMessenger()->render('default');
                         } else {
                             $circuitId = 0;
                         }
-                        $key = md5(sprintf('%s;%s;%d', $service_transporteur, $station_commune, $circuitId));
+                        $key = md5(
+                            sprintf('%s;%s;%d', $service_transporteur, $station_commune, 
+                                $circuitId));
                         $service[$key] = $service_transporteur;
                         $station[$key] = $station_commune;
                         $circuit[$key] = $circuitId;
@@ -191,14 +203,17 @@ echo $this->flashMessenger()->render('default');
                 $station = array_values($station);
                 $circuit = array_values($circuit);
             }
-            $css = $this->cycle([
-                "odd",
-                "even"
-            ])->next();
+            $css = $this->cycle(
+                [
+                    "odd",
+                    "even"
+                ])->next();
             $colonne1_4 = '<td %s' . $nbAffectations . '>' . $row['nom'] . '</td>';
             $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
-            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] . '</td>';
-            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['communeEtablissement'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] .
+                 '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['communeEtablissement'] .
+                 '</td>';
             $nbCircuits = count($circuit);
             // on prépare le code HTML avant pour ajuster les "rowspan" et les hiddens si nécessaire
             switch ($nbCircuits) {
@@ -217,14 +232,17 @@ echo $this->flashMessenger()->render('default');
                             'circuit1Id' => $circuit[0],
                             'etablissementId' => $row['etablissementId']
                         ];
-                        $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
+                        $code_boutons = $this->listeLigneActions($row['eleveId'], 
+                            $hiddens_horaires, $boutons_horaires);
                     }
                     $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité, scolarité
-                    $ligneHtml .= '<td>' . $service[0] . '</td><td>' . $station[0] . '</td>';
+                    $ligneHtml .= '<td>' . $service[0] . '</td><td>' . $station[0] .
+                         '</td>';
                     $ligneHtml .= '<td>' . $code_boutons . "</td></tr>\n";
                     break;
                 default:
-                    $colonne1_4 = str_replace('%s', 'rowspan="' . $nbCircuits . '"', $colonne1_4);
+                    $colonne1_4 = str_replace('%s', 'rowspan="' . $nbCircuits . '"', 
+                        $colonne1_4);
                     $lignesTableau = [
                         ''
                     ];
@@ -236,7 +254,8 @@ echo $this->flashMessenger()->render('default');
                             $hiddens_horaires['circuit' . ($i + 1) . 'Id'] = $circuit[$i];
                         }
                         $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_4;
-                        $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' . $station[$i] . '</td>';
+                        $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' .
+                             $station[$i] . '</td>';
                         // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les hiddens
                         if ($i > 0) {
                             $lignesTableau[$i] .= "</tr>\n";
@@ -248,8 +267,10 @@ echo $this->flashMessenger()->render('default');
                         $lignesTableau[0] .= "<td></td></tr>\n"; // pas de bouton
                     } else {
                         $hiddens_horaires['etablissementId'] = $row['etablissementId']; // ajout de l'etablissementId
-                        $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
-                        $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' . $code_boutons . "</td></tr>\n";
+                        $code_boutons = $this->listeLigneActions($row['eleveId'], 
+                            $hiddens_horaires, $boutons_horaires);
+                        $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' .
+                             $code_boutons . "</td></tr>\n";
                     }
                     $ligneHtml = implode('', $lignesTableau);
                     break;
@@ -279,26 +300,32 @@ echo $this->flashMessenger()->render('default');
 					</tr>
             <?php
         foreach ($this->preinscrits as $row) {
-            $peutPayer = max($row['distanceR1'], $row['distanceR2']) >= 1.0 && ($row['district'] == 1 || $row['derogation'] == 1);
+            $peutPayer = max($row['distanceR1'], $row['distanceR2']) >= 1.0 &&
+                 ($row['district'] == 1 || $row['derogation'] == 1);
             if ($row['selectionScolarite']) {
                 $montantUnitaire = 'en attente';
                 $enAttente = true;
             } elseif ($peutPayer) {
-                $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']], 'EUR');
+                $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']], 
+                    'EUR');
                 $montantTotal += $this->tarifs[$row['tarifId']];
             } else {
-                $montantUnitaire = '<span class="exces" title="Prenez contact avec le service des transports de ' . $this->client['name'] . '">pas de droit au transport scolaire</span>';
+                $montantUnitaire = '<span class="exces" title="Prenez contact avec le service des transports de ' .
+                     $this->client['name'] . '">pas de droit au transport scolaire</span>';
                 $enAttente = true;
             }
-            $url_edit = $this->url('sbmparent', [
-                'action' => 'edit-eleve'
-            ]);
-            $url_delete = $this->url('sbmparent', [
-                'action' => 'suppr-eleve'
-            ]);
-            $url_attente = $this->url('sbmparent', [
-                'action' => 'attente-eleve'
-            ]);
+            $url_edit = $this->url('sbmparent', 
+                [
+                    'action' => 'edit-eleve'
+                ]);
+            $url_delete = $this->url('sbmparent', 
+                [
+                    'action' => 'suppr-eleve'
+                ]);
+            $url_attente = $this->url('sbmparent', 
+                [
+                    'action' => 'attente-eleve'
+                ]);
             $hiddens = [
                 'id' => $row['eleveId']
             ];
@@ -319,7 +346,8 @@ echo $this->flashMessenger()->render('default');
                 ];
                 if ($peutPayer) {
                     $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente';
-                    $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' . $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
+                    $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
+                         $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
                     $attenteTitle .= ' la liste des inscriptions à payer';
                     $buttons['attente'] = [
                         'class' => 'button default left-10px',
@@ -333,10 +361,13 @@ echo $this->flashMessenger()->render('default');
             }
             $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
             $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>';
-            echo sprintf($modeleligne, $this->cycle([
-                "odd",
-                "even"
-            ])->next(), $row['nom'], $row['prenom'], $row['etablissement'], $row['communeEtablissement'], $montantUnitaire, $btligne);
+            echo sprintf($modeleligne, 
+                $this->cycle(
+                    [
+                        "odd",
+                        "even"
+                    ])->next(), $row['nom'], $row['prenom'], $row['etablissement'], 
+                $row['communeEtablissement'], $montantUnitaire, $btligne);
         }
         ?>
             </tbody>
@@ -386,7 +417,8 @@ echo $this->flashMessenger()->render('default');
                 break;
             case 1:
                 $msg = "N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
-                $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " . $this->permanences[0] . '.';
+                $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " .
+                     $this->permanences[0] . '.';
                 break;
             default:
                 $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
@@ -432,7 +464,9 @@ echo $this->flashMessenger()->render('default');
 					</tr>
             <?php
         foreach ($this->paiements as $row) {
-            echo '<tr><td>' . DateLib::formatDateTimeFromMysql($row->datePaiement) . '</td><td>' . $row->modeDePaiement . '</td><td>' . $row->montant . '</td></tr>';
+            echo '<tr><td>' . DateLib::formatDateTimeFromMysql($row->datePaiement) .
+                 '</td><td>' . $row->modeDePaiement . '</td><td>' . $row->montant .
+                 '</td></tr>';
         }
         ?>
             </tbody>

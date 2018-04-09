@@ -8,13 +8,14 @@
  * @filesource Communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 déc. 2015
- * @version 2015-1.6.9
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 class Communes extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la commune
      */
@@ -25,27 +26,31 @@ class Communes extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Communes';
         $this->id_name = 'communeId';
     }
-    
+
     /**
      * Renvoie l'identifiant d'une commune desservie dont on donne le nom
-     * 
-     * @param string $nom
-     * 
+     *
+     * @param string $nom            
+     *
      * @return string Code INSEE de la commune
      */
     public function getCommuneId($nom)
     {
-        $result = $this->fetchAll(array('nom' => $nom, 'desservie' => 1));
+        $result = $this->fetchAll(
+            [
+                'nom' => $nom,
+                'desservie' => 1
+            ]);
         if (! is_null($result)) {
             return $result->current()->communeId;
         } else {
             return null;
         }
     }
-    
+
     public function getCodePostal($communeId)
     {
-        if (!empty($communeId)) {
+        if (! empty($communeId)) {
             try {
                 $c = $this->getRecord($communeId);
                 return $c->codePostal;
@@ -57,21 +62,26 @@ class Communes extends AbstractSbmTable
             return '';
         }
     }
-    
+
     public function setVisible($communeId)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array('communeId' => $communeId, 'visible' => 1));
+        $oData->exchangeArray(
+            [
+                'communeId' => $communeId,
+                'visible' => 1
+            ]);
         $this->saveRecord($oData);
     }
-    
+
     public function setSelection($communeId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'communeId' => $communeId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'communeId' => $communeId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 }

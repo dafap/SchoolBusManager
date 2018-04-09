@@ -8,20 +8,22 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2016
- * @version 2016-2.1.9
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // $url_gest_eleve = $this->url('sbmgestion/eleve');
-$url_gest_eleves = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-liste',
-    'page' => $this->page
-));
-$url_gest_responsables = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste',
-    'page' => $this->page
-));
+$url_gest_eleves = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-liste',
+        'page' => $this->page
+    ]);
+$url_gest_responsables = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
 $url_portail = $this->url('sbmportail');
 $url_gest_finance = $this->url('sbmgestion/finance');
 $url_gest_transport = $this->url('sbmgestion/transport');
@@ -163,10 +165,10 @@ echo $this->flashMessenger()->render('default');
 				<li><a href="<?php echo $url_gest_change_as; ?>"><i
 						class="fam-bullet-go"></i>Choix de l'année scolaire</a></li>
 				<li><a href="<?php echo $url_gest_statistiques; ?>"><i
-					class="fam-bullet-go"></i>Statistiques</a></li>
+						class="fam-bullet-go"></i>Statistiques</a></li>
 				<li><a href="<?php echo $url_gest_mailchimp; ?>"><i
-					class="fam-bullet-go"></i>Gestion de la liste de diffusion</a></li>
-			<!-- >li><a href="<?php echo $url_gest_parametre; ?>"><i
+						class="fam-bullet-go"></i>Gestion de la liste de diffusion</a></li>
+				<!-- >li><a href="<?php echo $url_gest_parametre; ?>"><i
 					class="fam-bullet-go"></i>Configuration et paramètres</a></li-->
 				<li><a href="<?php echo $url_portail; ?>"><i class="fam-bullet-go"></i>Portail
 						de consultation</a></li>

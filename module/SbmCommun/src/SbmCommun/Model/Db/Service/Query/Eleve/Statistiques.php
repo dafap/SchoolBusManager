@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -90,10 +90,11 @@ class Statistiques implements FactoryInterface
     {
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->group('millesime');
         if (isset($millesime)) {
             $where = new Where();
@@ -124,10 +125,11 @@ class Statistiques implements FactoryInterface
         }
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -154,10 +156,11 @@ class Statistiques implements FactoryInterface
         }
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -181,10 +184,11 @@ class Statistiques implements FactoryInterface
         }
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -206,10 +210,12 @@ class Statistiques implements FactoryInterface
         $where = new Where();
         $where->literal('inscrit = 0');
         if ($inscrits) {
-            $where->nest()->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+            $where->nest()->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                'gratuit > 0')->unnest();
         } else {
             $where1 = new Where();
-            $where1->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0');
+            $where1->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                'gratuit > 0');
             $where->addPredicate(new Not($where1));
         }
         if (isset($millesime)) {
@@ -217,10 +223,11 @@ class Statistiques implements FactoryInterface
         }
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -247,16 +254,19 @@ class Statistiques implements FactoryInterface
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(ele.eleveId)')
-        ))
-            ->join(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ), 'ele.eleveId = sco.eleveId', array())
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(ele.eleveId)')
+            ])
+            ->join(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 'ele.eleveId = sco.eleveId', [])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -281,27 +291,33 @@ class Statistiques implements FactoryInterface
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
-            ->join(array(
-            'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-        ), 'sco.etablissementId = eta.etablissementId', array())
-            ->join(array(
-            'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ), 'com.communeId = eta.communeId', array(
-            'etablissement' => new Expression('concat(com.nom, " - ", eta.nom)')
-        ))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId = eta.etablissementId', [])
+            ->join(
+            [
+                'com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'com.communeId = eta.communeId', 
+            [
+                'etablissement' => new Expression('concat(com.nom, " - ", eta.nom)')
+            ])
             ->where($where)
-            ->group(array(
-            'millesime',
-            'com.nom',
-            'eta.nom'
-        ));
+            ->group(
+            [
+                'millesime',
+                'com.nom',
+                'eta.nom'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return iterator_to_array($statement->execute());
     }
@@ -324,23 +340,27 @@ class Statistiques implements FactoryInterface
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
-            ->join(array(
-            'cla' => $this->db_manager->getCanonicName('classes', 'table')
-        ), 'sco.classeId = cla.classeId', array(
-            'classe' => 'nom'
-        ))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
+            ->join(
+            [
+                'cla' => $this->db_manager->getCanonicName('classes', 'table')
+            ], 'sco.classeId = cla.classeId', 
+            [
+                'classe' => 'nom'
+            ])
             ->where($where)
-            ->group(array(
+            ->group([
             'millesime',
             'cla.nom'
-        ));
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return iterator_to_array($statement->execute());
     }
@@ -362,10 +382,11 @@ class Statistiques implements FactoryInterface
         }
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -387,16 +408,18 @@ class Statistiques implements FactoryInterface
         $where->lessThan('distanceR1', 3)
             ->lessThan('distanceR2', 3)
             ->nest()
-            ->greaterThanOrEqualTo('distanceR1', 1)->or->greaterThanOrEqualTo('distanceR2', 1)->unnest();
+            ->greaterThanOrEqualTo('distanceR1', 1)->or->greaterThanOrEqualTo(
+            'distanceR2', 1)->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -415,16 +438,18 @@ class Statistiques implements FactoryInterface
     public function getNb3kmEtPlusByMillesime($millesime = null)
     {
         $where = new Where();
-        $where->nest()->greaterThanOrEqualTo('distanceR1', 3)->or->greaterThanOrEqualTo('distanceR2', 3)->unnest();
+        $where->nest()->greaterThanOrEqualTo('distanceR1', 3)->or->greaterThanOrEqualTo(
+            'distanceR2', 3)->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns(array(
-            'millesime',
-            'effectif' => new Expression('count(eleveId)')
-        ))
+            ->columns(
+            [
+                'millesime',
+                'effectif' => new Expression('count(eleveId)')
+            ])
             ->where($where)
             ->group('millesime');
         $statement = $this->sql->prepareStatementForSqlObject($select);

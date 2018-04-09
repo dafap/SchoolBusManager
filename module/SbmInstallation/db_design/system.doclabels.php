@@ -7,17 +7,17 @@
  * @filesource system.doclabels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'doclabels',
     'type' => 'system',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'doclabelId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL',
             'margin_left' => 'float NOT NULL DEFAULT "0"', // marge de gauche du la planche (0 mm par défaut)
@@ -36,29 +36,29 @@ return array(
             'border_dash' => 'varchar(4) NOT NULL DEFAULT "0"', // 0 continu; 2 tirets de 2mm séparés de 2mm; "1,2" tirets de 1mm séparés de 2mm
             'border_width' => 'float NOT NULL DEFAULT "0.3"', // épaisseur du trait (0.3 mmm par défaut)
             'border_color' => 'varchar(20) NOT NULL DEFAULT "000000"'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'doclabelId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'documentId',
-                'references' => array(
+                'references' => [
                     'table' => 'documents',
-                    'fields' => array(
+                    'fields' => [
                         'documentId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'CASCADE'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     'data' => __DIR__ . '/data/data.system.doclabels.php'
-);
+];
  

@@ -18,8 +18,8 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 nov. 2017
- * @version 2017-2.3.14
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -53,56 +53,67 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $stations = $this->paginator->getCurrentItems();
-$url_origine = $this->url('sbmgestion/transport', [
-    'action' => 'station-liste',
-    'page' => $this->page
-]);
-$url_ajouter = $this->url('sbmgestion/transport', [
-    'action' => 'station-ajout',
-    'page' => $this->page
-]);
+$url_origine = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-liste',
+        'page' => $this->page
+    ]);
+$url_ajouter = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-ajout',
+        'page' => $this->page
+    ]);
 $url_carte = $this->url('sbmcarte', [
     'action' => 'stations'
 ]);
-$url_rapports = $this->url('sbmgestion/transport', [
-    'action' => 'station-pdf',
-    'page' => $this->page
-]);
-$url_nondesservies = $this->url('sbmgestion/transport', [
-    'action' => 'stations-non-desservies',
-    'page' => $this->page
-]);
-$url_localiser = $this->url('sbmgestion/transport', [
-    'action' => 'station-localisation',
-    'page' => $this->page
-]);
-$url_edit = $this->url('sbmgestion/transport', [
-    'action' => 'station-edit',
-    'page' => $this->page
-]);
-$url_delete = $this->url('sbmgestion/transport', [
-    'action' => 'station-suppr',
-    'page' => $this->page
-]);
-$url_relation = $this->url('sbmgestion/transport', [
-    'action' => 'station-service',
-    'id' => $this->page
-]);
-$url_group = $this->url('sbmgestion/transport', [
-    'action' => 'station-group',
-    'page' => $this->page
-]);
-$url_suppr_doublon = $this->url('sbmgestion/transport', [
-    'action' => 'station-doublon',
-    'page' => $this->page
-]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-pdf',
+        'page' => $this->page
+    ]);
+$url_nondesservies = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'stations-non-desservies',
+        'page' => $this->page
+    ]);
+$url_localiser = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-localisation',
+        'page' => $this->page
+    ]);
+$url_edit = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-suppr',
+        'page' => $this->page
+    ]);
+$url_relation = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-service',
+        'id' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-group',
+        'page' => $this->page
+    ]);
+$url_suppr_doublon = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-doublon',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/transport');
 $hiddens = [
     'back' => $url_origine
 ];
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', [
-    'action' => 'station-liste'
-]), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'station-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 $actions = [
     'retour' => [
@@ -162,14 +173,17 @@ echo $this->flashMessenger()->render('default');
             <?php
                 $pt = new Point($station->x, $station->y);
                 $ptOk = $this->projection->isValid($pt, 'etablissements'); // stations et etablissements ont la même config
-                $nbInscrits = StdLib::getParamR([
-                    $station->stationId,
-                    'total'
-                ], $this->t_nb_inscrits, 0);
+                $nbInscrits = StdLib::getParamR(
+                    [
+                        $station->stationId,
+                        'total'
+                    ], $this->t_nb_inscrits, 0);
                 $exces = ! $station->ouverte && ($nbInscrits > 0);
                 // construction des JS pour selection
-                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $station->stationId);
-                $jsCallback .= sprintf("$modele\n", $station->stationId, $station->stationId);
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", 
+                    $station->stationId);
+                $jsCallback .= sprintf("$modele\n", $station->stationId, 
+                    $station->stationId);
                 ?>
                 <tr
 					class="<?php echo $this->cycle(["even", "odd"])->next(); if ($exces) echo ' exces';?>">
@@ -209,12 +223,14 @@ echo $this->flashMessenger()->render('default');
                     'services' => [
                         'class' => 'fam-table-relationship',
                         'formaction' => $url_relation,
-                        'title' => sprintf('circuits desservant la station %s - %s', $station->nom, $station->commune)
+                        'title' => sprintf('circuits desservant la station %s - %s', 
+                            $station->nom, $station->commune)
                     ],
                     'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
-                        'title' => sprintf('élèves de la station %s - %s', $station->nom, $station->commune)
+                        'title' => sprintf('élèves de la station %s - %s', $station->nom, 
+                            $station->commune)
                     ]
                 ];
                 echo $this->listeLigneActions($station->stationId, $hiddens, $buttons);
@@ -226,7 +242,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
          <?php echo $this->form()->openTag($this->criteres_form);?>
          <?php echo $this->formCollection($this->criteres_form, true);?>

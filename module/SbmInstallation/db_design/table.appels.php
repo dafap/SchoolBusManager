@@ -10,57 +10,57 @@
  * @filesource table.appels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'appels',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'appelId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'referenceId' => 'varchar(20) NOT NULL',
             'responsableId' => 'int(11) NOT NULL',
             'eleveId' => 'int(11) NOT NULL'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'appelId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'responsableId',
-                'references' => array(
+                'references' => [
                     'table' => 'responsables',
-                    'fields' => array(
+                    'fields' => [
                         'responsableId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'eleveId',
-                'references' => array(
+                'references' => [
                     'table' => 'eleves',
-                    'fields' => array(
+                    'fields' => [
                         'eleveId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
-
+    ],
+    
     'data' => __DIR__ . '/data/data.appels.php'
-);
+];

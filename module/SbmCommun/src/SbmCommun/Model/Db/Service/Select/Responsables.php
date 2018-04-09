@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -23,6 +23,7 @@ use SbmCommun\Model\Db\SbmCommun\Model\Db;
 
 class Responsables implements FactoryInterface
 {
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof DbManager)) {
@@ -32,11 +33,16 @@ class Responsables implements FactoryInterface
         $db_manager = $serviceLocator;
         $sql = new Sql($db_manager->getDbAdapter());
         $select = $sql->select($db_manager->getCanonicName('responsables', 'table'));
-        $select->columns(array('responsableId', 'nom', 'prenom'));
+        $select->columns(
+            [
+                'responsableId',
+                'nom',
+                'prenom'
+            ]);
         $select->order('nom', 'prenom');
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             $array[$row['responsableId']] = $row['nom'] . ' ' . $row['prenom'];
         }

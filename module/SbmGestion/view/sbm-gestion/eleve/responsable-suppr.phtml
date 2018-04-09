@@ -8,8 +8,8 @@
  * @filesource eleve-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juillet 2014
- * @version 2014-1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <h1>Suppression d'un responsable</h1>
@@ -44,8 +44,8 @@
 	<p>Confirmez-vous ?</p>
 <?php
 echo $this->form()->openTag($form);
-//echo $this->formHidden($this->form->get('responsableId'));
-//echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) . '</div>';
+// echo $this->formHidden($this->form->get('responsableId'));
+// echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) . '</div>';
 echo $this->formCollection($form);
 echo $this->form()->closeTag();
 ?>

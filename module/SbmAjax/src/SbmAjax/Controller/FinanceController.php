@@ -9,8 +9,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAjax\Controller;
 
@@ -35,22 +35,24 @@ class FinanceController extends AbstractActionController
         $millesime = Session::get('millesime');
         try {
             $eleveId = $this->params('eleveId');
-            $this->db_manager
-            ->get('Sbm\Db\Table\Scolarites')
-            ->setPaiement($millesime, $eleveId, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime, 
+                $eleveId, 1);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
-    
+
     /**
-     * ajax - décocher la case  paiement de scolarites
+     * ajax - décocher la case paiement de scolarites
      *
      * @method GET
      * @return dataType json
@@ -60,17 +62,19 @@ class FinanceController extends AbstractActionController
         $millesime = Session::get('millesime');
         try {
             $eleveId = $this->params('eleveId');
-            $this->db_manager
-            ->get('Sbm\Db\Table\Scolarites')
-            ->setPaiement($millesime, $eleveId, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime, 
+                $eleveId, 0);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -84,17 +88,19 @@ class FinanceController extends AbstractActionController
     {
         try {
             $organismeId = $this->params('organismeId');
-            $this->db_manager
-                ->get('Sbm\Db\Table\Organismes')
-                ->setSelection($organismeId, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Organismes')->setSelection($organismeId, 
+                1);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -108,17 +114,19 @@ class FinanceController extends AbstractActionController
     {
         try {
             $organismeId = $this->params('organismeId');
-            $this->db_manager
-                ->get('Sbm\Db\Table\Organismes')
-                ->setSelection($organismeId, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Organismes')->setSelection($organismeId, 
+                0);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -132,17 +140,18 @@ class FinanceController extends AbstractActionController
     {
         try {
             $paiementId = $this->params('paiementId');
-            $this->db_manager
-                ->get('Sbm\Db\Table\Paiements')
-                ->setSelection($paiementId, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Paiements')->setSelection($paiementId, 1);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -156,17 +165,18 @@ class FinanceController extends AbstractActionController
     {
         try {
             $paiementId = $this->params('paiementId');
-            $this->db_manager
-                ->get('Sbm\Db\Table\Paiements')
-                ->setSelection($paiementId, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Paiements')->setSelection($paiementId, 0);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -180,17 +190,18 @@ class FinanceController extends AbstractActionController
     {
         try {
             $tarifId = $this->params('tarifId');
-            $this->db_manager
-                ->get('Sbm\Db\Table\Tarifs')
-                ->setSelection($tarifId, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')->setSelection($tarifId, 1);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -204,17 +215,18 @@ class FinanceController extends AbstractActionController
     {
         try {
             $tarifId = $this->params('tarifId');
-            $this->db_manager
-                ->get('Sbm\Db\Table\Tarifs')
-                ->setSelection($tarifId, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')->setSelection($tarifId, 0);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -228,17 +240,18 @@ class FinanceController extends AbstractActionController
     {
         try {
             $id = $this->params('id');
-            $this->db_manager
-                ->get('SbmPaiement\Plugin\Table')
-                ->setSelection($id, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('SbmPaiement\Plugin\Table')->setSelection($id, 1);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -252,17 +265,18 @@ class FinanceController extends AbstractActionController
     {
         try {
             $id = $this->params('id');
-            $this->db_manager
-                ->get('SbmPaiement\Plugin\Table')
-                ->setSelection($id, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('SbmPaiement\Plugin\Table')->setSelection($id, 0);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 
@@ -277,30 +291,29 @@ class FinanceController extends AbstractActionController
         $responsableId = $this->params('responsableId', - 1);
         $tEleves = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         $result = $tEleves->getElevesPreinscritsWithMontant($responsableId);
-        $data = array();
+        $data = [];
         foreach ($result as $row) {
-            $data[] = array(
+            $data[] = [
                 'eleveId' => $row['eleveId'],
                 'nom' => $row['nom'],
                 'prenom' => $row['prenom'],
                 'montant' => $row['montant'],
                 'nomTarif' => $row['nomTarif']
-            );
+            ];
         }
         $nbDuplicatas = $tEleves->getNbDuplicatas($responsableId);
         if ($nbDuplicatas) {
-            $montantUnitaire = $this->db_manager
-                ->get('Sbm\Db\Table\Tarifs')
-                ->getMontant('duplicata');
+            $montantUnitaire = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
+                'duplicata');
             $montantDuplicatas = $nbDuplicatas * $montantUnitaire;
             // duplicatas déjà encaissés
             $where = new Where();
             $millesime = Session::get('millesime');
             $as = sprintf('%d-%d', $millesime, $millesime + 1);
-            $where->equalTo('anneeScolaire', $as)->equalTo('responsableId', $responsableId);
-            $totalEncaisse = $this->db_manager
-                ->get('Sbm\Db\Table\Paiements')
-                ->total($where);
+            $where->equalTo('anneeScolaire', $as)->equalTo('responsableId', 
+                $responsableId);
+            $totalEncaisse = $this->db_manager->get('Sbm\Db\Table\Paiements')->total(
+                $where);
             $totalInscriptions = $tEleves->getMontantElevesInscrits($responsableId);
             $duplicatasPayes = $totalEncaisse - $totalInscriptions;
             // reste à payer
@@ -308,10 +321,12 @@ class FinanceController extends AbstractActionController
         } else {
             $montantDuplicatas = 0.00;
         }
-        return $this->getResponse()->setContent(Json::encode(array(
-            'duplicatas' => $montantDuplicatas,
-            'data' => $data,
-            'success' => 1
-        )));
+        return $this->getResponse()->setContent(
+            Json::encode(
+                [
+                    'duplicatas' => $montantDuplicatas,
+                    'data' => $data,
+                    'success' => 1
+                ]));
     }
 }

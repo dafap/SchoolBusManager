@@ -61,10 +61,17 @@ class StationSupprDoublon
     public function execute()
     {
         $messages = [];
-        $messages[] = sprintf('%d fiches modifiées dans la table des circuits', $this->supprDoublonsDansCircuits());
-        $messages[] = sprintf('%d fiches modifiées dans la table des établissements-services', $this->supprDoublonsDansEtablissementsServices());
-        $messages[] = sprintf('%d fiches modifiées dans la table des affectations en montée', $this->supprDoublonsDansAffectations1());
-        $messages[] = sprintf('%d fiches modifiées dans la table des affectations en descente', $this->supprDoublonsDansAffectations2());
+        $messages[] = sprintf('%d fiches modifiées dans la table des circuits', 
+            $this->supprDoublonsDansCircuits());
+        $messages[] = sprintf(
+            '%d fiches modifiées dans la table des établissements-services', 
+            $this->supprDoublonsDansEtablissementsServices());
+        $messages[] = sprintf(
+            '%d fiches modifiées dans la table des affectations en montée', 
+            $this->supprDoublonsDansAffectations1());
+        $messages[] = sprintf(
+            '%d fiches modifiées dans la table des affectations en descente', 
+            $this->supprDoublonsDansAffectations2());
         try {
             $tStations = $this->db_manager->get('Sbm\Db\Table\Stations');
             $tStations->deleteRecord($this->supprId);
@@ -78,41 +85,45 @@ class StationSupprDoublon
     private function supprDoublonsDansCircuits()
     {
         $tableGateway = $this->db_manager->get('Sbm\Db\Table\Circuits')->getTableGateway();
-        return $tableGateway->update([
-            'stationId' => $this->garderId
-        ], [
-            'stationId' => $this->supprId
-        ]);
+        return $tableGateway->update(
+            [
+                'stationId' => $this->garderId
+            ], [
+                'stationId' => $this->supprId
+            ]);
     }
 
     private function supprDoublonsDansEtablissementsServices()
     {
         $tableGateway = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->getTableGateway();
-        return $tableGateway->update([
-            'stationId' => $this->garderId
-        ], [
-            'stationId' => $this->supprId
-        ]);
+        return $tableGateway->update(
+            [
+                'stationId' => $this->garderId
+            ], [
+                'stationId' => $this->supprId
+            ]);
     }
 
     private function supprDoublonsDansAffectations1()
     {
         $tableGateway = $this->db_manager->get('Sbm\Db\Table\Affectations')->getTableGateway();
-        return $tableGateway->update([
-            'station1Id' => $this->garderId
-        ], [
-            'station1Id' => $this->supprId
-        ]);
+        return $tableGateway->update(
+            [
+                'station1Id' => $this->garderId
+            ], [
+                'station1Id' => $this->supprId
+            ]);
     }
 
     private function supprDoublonsDansAffectations2()
     {
         $tableGateway = $this->db_manager->get('Sbm\Db\Table\Affectations')->getTableGateway();
-        return $tableGateway->update([
-            'station2Id' => $this->garderId
-        ], [
-            'station2Id' => $this->supprId
-        ]);
+        return $tableGateway->update(
+            [
+                'station2Id' => $this->garderId
+            ], [
+                'station2Id' => $this->supprId
+            ]);
     }
 }
  

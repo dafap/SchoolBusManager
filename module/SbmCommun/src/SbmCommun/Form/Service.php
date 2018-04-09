@@ -8,8 +8,8 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 oct. 2017
- * @version 2017-2.3.12
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
@@ -22,284 +22,298 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('service');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'serviceId',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'service-codeid',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Code du service',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'service-nom',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Désignation du service',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'aliasCG',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'service-aliascg',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Désignation au CG',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'transporteurId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'service-transporteurId',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Transporteur',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez un transporteur',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'operateur',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'service-operateur',
-                'class' => 'sbm-width-20c'
-            ),
-            'options' => array(
-                'label' => 'Opérateur',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez un opérateur',
-                'value_options' => [],
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nbPlaces',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'service-nbPlaces',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Nombre de places',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'kmAVide',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'service-kmAVide',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Km à vide',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'kmEnCharge',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'service-kmEnCharge',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Km en charge',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'surEtatCG',
-            'attributes' => array(
-                'id' => 'service-surEtatCG',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Sur les états du CG',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'service-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'service-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'serviceId',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-codeid',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Code du service',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-nom',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Désignation du service',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'aliasCG',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-aliascg',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Désignation au CG',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'transporteurId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'service-transporteurId',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Transporteur',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un transporteur',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'operateur',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'service-operateur',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'Opérateur',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un opérateur',
+                    'value_options' => [],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nbPlaces',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-nbPlaces',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Nombre de places',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'kmAVide',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-kmAVide',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Km à vide',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'kmEnCharge',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-kmEnCharge',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Km en charge',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'surEtatCG',
+                'attributes' => [
+                    'id' => 'service-surEtatCG',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Sur les états du CG',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'service-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'service-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function modifFormForEdit()
     {
         $e = $this->remove('serviceId');
-        $this->add(array(
-            'name' => 'serviceId',
-            'type' => 'hidden'
-        ));
+        $this->add(
+            [
+                'name' => 'serviceId',
+                'type' => 'hidden'
+            ]);
         $this->get('nom')->setAttribute('autofocus', 'autofocus');
-        $this->add(array(
-            'name' => 'codeService',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'service-codeid',
-                'disabled' => 'disabled',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Code du service',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'codeService',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-codeid',
+                    'disabled' => 'disabled',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Code du service',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         return $this;
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'serviceId' => array(
+        return [
+            'serviceId' => [
                 'name' => 'serviceId',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\CodeService'
-                    )
-                )
-            ),
-            'nom' => array(
+                    ]
+                ]
+            ],
+            'nom' => [
                 'name' => 'nom',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'aliasCG' => array(
+                    ]
+                ]
+            ],
+            'aliasCG' => [
                 'name' => 'aliasCG',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'transporteurId' => array(
+                    ]
+                ]
+            ],
+            'transporteurId' => [
                 'name' => 'transporteurId',
                 'required' => true
-            ),
-            'surEtatCG' => array(
+            ],
+            'surEtatCG' => [
                 'name' => 'surEtatCG',
                 'required' => false
-            ),
-            'nbPlaces' => array(
+            ],
+            'nbPlaces' => [
                 'name' => 'nbPlaces',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Digits'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     public function setData($data)

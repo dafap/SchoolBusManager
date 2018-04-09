@@ -11,13 +11,14 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juillet 2014
- * @version 2014-1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-group',
-    'page' => $this->page
-));
+$url_ici = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-group',
+        'page' => $this->page
+    ]);
 ?>
 <h1>Groupe des élèves inscrits ayant comme responsable 1</h1>
 <div class="groupe-wrapper">

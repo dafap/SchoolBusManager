@@ -7,33 +7,39 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2015
- * @version 2015-1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_non_affectes = $this->url('sbmgestion/gestioneleve', array(
-    'action' => 'affecter-liste'
-));
-$url_ga_localisation = $this->url('sbmgestion/gestioneleve', array(
-    'action' => 'ga-localisation-liste'
-));
-$retour = $this->url('sbmgestion/eleve', array(
+$url_non_affectes = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'affecter-liste'
+    ]);
+$url_ga_localisation = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'ga-localisation-liste'
+    ]);
+$retour = $this->url('sbmgestion/eleve', [
     'action' => 'eleve-liste'
-));
+]);
 ?>
 <h1>Gestion des élèves</h1>
 <div id="menugeneral-wrapper">
 	<div id="menugeneral-header" class="clearfix">
 		<div class="menu float-left">
-		<?php
-echo $this->listeZoneActions(array('op' => 'retour'), array(
-    'retour' => array(
-        'class' => 'fam-door-out',
-        'formaction' => $retour,
-        'title' => 'Retour'
-    )
-));
+<?php
+echo $this->listeZoneActions(
+    [
+        'op' => 'retour'
+    ], 
+    [
+        'retour' => [
+            'class' => 'fam-door-out',
+            'formaction' => $retour,
+            'title' => 'Retour'
+        ]
+    ]);
 ?>
         </div>
 		<div class="flashMessenger float-right">
@@ -45,14 +51,14 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
         </div>
-    </div>
+	</div>
 	<div id="menugeneral-inner">
-			<ul>
-				<li><a href="<?php echo $url_non_affectes; ?>"><i
-						class="fam-bullet-go"></i>Traitement des élèves non affectés</a></li>
-				<li><a href="<?php echo $url_ga_localisation;?>"><i
-						class="fam-bullet-go"></i>Localisation de la seconde adresse des
-						élèves en garde alternée</a></li>
-			</ul>
+		<ul>
+			<li><a href="<?php echo $url_non_affectes; ?>"><i
+					class="fam-bullet-go"></i>Traitement des élèves non affectés</a></li>
+			<li><a href="<?php echo $url_ga_localisation;?>"><i
+					class="fam-bullet-go"></i>Localisation de la seconde adresse des
+					élèves en garde alternée</a></li>
+		</ul>
 	</div>
 </div>

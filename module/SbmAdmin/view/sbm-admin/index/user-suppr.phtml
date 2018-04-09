@@ -9,8 +9,8 @@
  * @filesource user-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $acategories = [
@@ -21,10 +21,11 @@ $acategories = [
     2 => 'Transporteur',
     3 => 'Etablissement'
 ];
-$url_retour = $this->url('sbmadmin', [
-    'action' => 'user-liste',
-    'page' => $this->page
-]);
+$url_retour = $this->url('sbmadmin', 
+    [
+        'action' => 'user-liste',
+        'page' => $this->page
+    ]);
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',

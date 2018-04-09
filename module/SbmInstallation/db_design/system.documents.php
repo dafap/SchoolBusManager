@@ -8,19 +8,19 @@
  * @filesource system.documents.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 
 // $k_path_images = str_replace('\\', '/', dirname(__FILE__).'/../../../public/img/');
-return array(
+return [
     'name' => 'documents',
     'type' => 'system',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             // document
             'documentId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'type' => 'char(3) NOT NULL DEFAULT "pdf"',
@@ -56,7 +56,7 @@ return array(
             'docfooter_title' => 'varchar(255) NOT NULL DEFAULT ""',
             'docfooter_string' => 'text NULL',
             'docfooter_page_distincte' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 la suite sur la même page ; 1 la suite sur une nouvelle page
-            'docfooter_insecable'  => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 le footer peut être scindé ; 1 tout le footer sur la même page
+            'docfooter_insecable' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 le footer peut être scindé ; 1 tout le footer sur la même page
             'docfooter_margin' => 'int(11) NOT NULL DEFAULT "20"', // marge du bloc docfooter si page_distincte == 0
             'docfooter_pageheader' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pageheader sur la dernière page ; 1 si oui
             'docfooter_pagefooter' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pagefooter sur la dernière page ; 1 si oui
@@ -67,7 +67,7 @@ return array(
             'pageheader_string' => 'text NULL',
             'pageheader_logo_visible' => 'tinyint(1) NOT NULL DEFAULT "1"', // si 0 on envoie l'image blank
             'pageheader_logo' => 'varchar(255) NOT NULL DEFAULT "sbm-logo.gif"',
-            'pageheader_logo_width' => 'int(11) NOT NULL DEFAULT "15"', 
+            'pageheader_logo_width' => 'int(11) NOT NULL DEFAULT "15"',
             'pageheader_margin' => 'int(11) NOT NULL DEFAULT "5"',
             'pageheader_font_family' => 'varchar(64) NOT NULL DEFAULT "helvetica"',
             'pageheader_font_style' => 'char(2) NOT NULL DEFAULT ""',
@@ -80,7 +80,7 @@ return array(
             'pagefooter_string' => 'text NULL',
             'pagefooter_font_family' => 'varchar(64) NOT NULL DEFAULT "helvetica"',
             'pagefooter_font_style' => 'char(2) NOT NULL DEFAULT ""',
-            'pagefooter_font_size' => 'int(11) NOT NULL DEFAULT "11"',           
+            'pagefooter_font_size' => 'int(11) NOT NULL DEFAULT "11"',
             'pagefooter_text_color' => 'varchar(20) NOT NULL DEFAULT "000000"',
             'pagefooter_line_color' => 'varchar(20) NOT NULL DEFAULT "000000"',
             // page
@@ -122,15 +122,15 @@ return array(
             'titre4_line' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'titre4_line_color' => 'varchar(20) NOT NULL DEFAULT "000000"',
             'default_font_monospaced' => 'varchar(64) NOT NULL DEFAULT "courier"'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'documentId'
-        ),
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
-    //'data' => include __DIR__ . '/data/data.system.documents.php'
-    //'data' => array('after' => array(), 'include' => __DIR__ . '/data/data.documents.php')
+    ],
+    // 'data' => include __DIR__ . '/data/data.system.documents.php'
+    // 'data' => ['after' => [], 'include' => __DIR__ . '/data/data.documents.php']
     'data' => __DIR__ . '/data/data.system.documents.php'
-);
+];

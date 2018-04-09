@@ -8,73 +8,72 @@
  * @filesource vue.organismes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'organismes',
     'type' => 'vue',
     'drop' => true, // si true, un DROP TABLE IF EXISTS sera fait avant la création
     'edit_entity' => true,
-    'structure' => array(
-        'fields' => array(
-            array(
+    'structure' => [
+        'fields' => [
+            [
                 'field' => 'organismeId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'selection'
-            ),
-            array(
+            ],
+            [
                 'field' => 'nom'
-            ),
-            array(
+            ],
+            [
                 'field' => 'adresse1'
-            ),
-            array(
+            ],
+            [
                 'field' => 'adresse2'
-            ),
-            array(
+            ],
+            [
                 'field' => 'codePostal'
-            ),
-            array(
+            ],
+            [
                 'field' => 'communeId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'telephone'
-            ),
-            array(
+            ],
+            [
                 'field' => 'fax'
-            ),
-            array(
+            ],
+            [
                 'field' => 'email'
-            ),
-            array(
+            ],
+            [
                 'field' => 'siret'
-            ),
-            array(
+            ],
+            [
                 'field' => 'naf'
-            ),
-        ),
-        'from' => array(
+            ]
+        ],
+        'from' => [
             'table' => 'organismes', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
             'alias' => 'org'
-        ) // optionnel
-,
-        'join' => array(
-            array(
+        ], // optionnel
+        'join' => [
+            [
                 'table' => 'communes', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
                 'alias' => 'com', // optionnel
                 'relation' => 'com.communeId = org.communeId', // obligatoire
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'commune'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'order' => 'nom'
-    )
-);
+    ]
+];

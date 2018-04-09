@@ -9,8 +9,8 @@
  * @filesource paiement-suppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 
@@ -18,7 +18,9 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <h1>Suppression d'un paiement</h1>
 <div id="suppr-wrapper">
-	<p><i>Vous avez demandé la suppression du paiement suivant :</i></p>
+	<p>
+		<i>Vous avez demandé la suppression du paiement suivant :</i>
+	</p>
 	<div class="header-wrapper">
 		<ul>
 			<li>Responsable : <b><?php echo $this->escapeHtml($this->responsable); ?></b></li>
@@ -37,12 +39,18 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 			<?php endif; ?>
 		</ul>
 	</div>
-	<p><i>Pour confirmer, donnez la raison puis cliquez sur le bouton de confirmation.</i></p>
+	<p>
+		<i>Pour confirmer, donnez la raison puis cliquez sur le bouton de
+			confirmation.</i>
+	</p>
 <?php
 echo $this->form()->openTag($form);
 echo $this->formHidden($this->form->get('paiementId'));
-echo '<div id="paiement-suppr-note" class="row-inner edit" style="vertical-align: top;">' . $this->formRow($this->form->get('note')) . '</div>';
-echo '<div id="paiement-suppr-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
+echo '<div id="paiement-suppr-note" class="row-inner edit" style="vertical-align: top;">' .
+     $this->formRow($this->form->get('note')) . '</div>';
+echo '<div id="paiement-suppr-buttons" class="row-inner edit">' .
+     $this->formSubmit($this->form->get('submit')) .
+     $this->formSubmit($this->form->get('cancel')) . '</div>';
 echo $this->form()->closeTag();
 ?>
 </div>

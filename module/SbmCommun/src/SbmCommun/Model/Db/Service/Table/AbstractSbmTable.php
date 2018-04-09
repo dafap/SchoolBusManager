@@ -10,8 +10,8 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
- * @version 2016-2.2.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -132,9 +132,12 @@ abstract class AbstractSbmTable implements FactoryInterface
             throw new Exception(sprintf(_($message), $type));
         }
         $this->init();
-        $this->primary_key = $db_manager->getPrimaryKey($this->table_name, $this->table_type);
-        $this->are_nullables = $db_manager->getAreNullableColumns($this->table_name, $this->table_type);
-        $this->column_defaults = $db_manager->getColumnDefaults($this->table_name, $this->table_type);
+        $this->primary_key = $db_manager->getPrimaryKey($this->table_name, 
+            $this->table_type);
+        $this->are_nullables = $db_manager->getAreNullableColumns($this->table_name, 
+            $this->table_type);
+        $this->column_defaults = $db_manager->getColumnDefaults($this->table_name, 
+            $this->table_type);
         $this->table_gateway = $db_manager->get($this->table_gateway_alias);
         $this->obj_select = clone $this->table_gateway->getSql()->select(); // utile pour join() et pour paginator()
         $this->join();
@@ -142,14 +145,18 @@ abstract class AbstractSbmTable implements FactoryInterface
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
         $this->obj_data->setArrayMask($this->getColumnsNames());
         try {
-            $this->obj_data->setAreNullable($this->db_manager->getAreNullableColumns($this->table_name, $this->table_type));
+            $this->obj_data->setAreNullable(
+                $this->db_manager->getAreNullableColumns($this->table_name, 
+                    $this->table_type));
         } catch (\SbmCommun\Model\Db\Exception $e) {
-            die('<!DOCTYPE Html><head><meta charset="utf-8"><title>SBM School Bus Manager</title></head><body>Il faut installer les tables dans la base de données.</body></html>');
+            die(
+                '<!DOCTYPE Html><head><meta charset="utf-8"><title>SBM School Bus Manager</title></head><body>Il faut installer les tables dans la base de données.</body></html>');
         }
-        if (is_callable(array(
-            $this->table_gateway->getResultSetPrototype(),
-            'getHydrator'
-        ))) {
+        if (is_callable(
+            [
+                $this->table_gateway->getResultSetPrototype(),
+                'getHydrator'
+            ])) {
             $this->hydrator = $this->table_gateway->getResultSetPrototype()->getHydrator();
             $this->setStrategies();
         }
@@ -220,7 +227,8 @@ abstract class AbstractSbmTable implements FactoryInterface
      */
     public function getColumnsNames()
     {
-        return $this->db_manager->getMetadata()->getColumnNames($this->db_manager->getCanonicName($this->table_name, $this->table_type));
+        return $this->db_manager->getMetadata()->getColumnNames(
+            $this->db_manager->getCanonicName($this->table_name, $this->table_type));
     }
 
     /**
@@ -255,7 +263,10 @@ abstract class AbstractSbmTable implements FactoryInterface
      */
     public function paginator($where_obj = null, $order = null)
     {
-        return new Paginator(new DbSelect($this->select($where_obj, $order), $this->db_manager->getDbadapter(), $this->table_gateway->getResultSetPrototype()));
+        return new Paginator(
+            new DbSelect($this->select($where_obj, $order), 
+                $this->db_manager->getDbadapter(), 
+                $this->table_gateway->getResultSetPrototype()));
     }
 
     /**
@@ -293,7 +304,8 @@ abstract class AbstractSbmTable implements FactoryInterface
             if (is_string($where)) {
                 $msg .= "\n WHERE = (" . $where . ')';
             } else {
-                $msg .= "\n" . $select->getSqlString($this->db_manager->getDbAdapter()->platform);
+                $msg .= "\n" .
+                     $select->getSqlString($this->db_manager->getDbAdapter()->platform);
             }
             if (getenv('APPLICATION_ENV') != 'development') {
                 $msg = "Impossible d'exécuter la requête.";
@@ -316,24 +328,26 @@ abstract class AbstractSbmTable implements FactoryInterface
     public function getRecord($id)
     {
         if (is_array($id)) {
-            $array_where = array();
-            $condition_msg = array();
+            $array_where = [];
+            $condition_msg = [];
             foreach ($id as $key => $condition) {
                 $array_where[$key . ' = ?'] = $condition;
                 $condition_msg[] = "$key = $condition";
             }
             $condition_msg = implode(' et ', $condition_msg);
         } else {
-            $array_where = array(
+            $array_where = [
                 $this->id_name . ' = ?' => $id
-            );
+            ];
             $condition_msg = $this->id_name . " = $id";
         }
         
         $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();
         if (! $row) {
-            throw new Exception(sprintf(_("Could not find row '%s' in table %s"), $condition_msg, $this->table_name));
+            throw new Exception(
+                sprintf(_("Could not find row '%s' in table %s"), $condition_msg, 
+                    $this->table_name));
         }
         return $row;
     }
@@ -364,9 +378,9 @@ abstract class AbstractSbmTable implements FactoryInterface
         } elseif (is_array($item) || $item instanceof Where) {
             $array_where = $item;
         } else {
-            $array_where = array(
+            $array_where = [
                 $this->id_name . ' = ?' => $item
-            );
+            ];
         }
         
         return $this->table_gateway->delete($array_where);
@@ -393,21 +407,26 @@ abstract class AbstractSbmTable implements FactoryInterface
             if ($this->getRecord($id)) {
                 if (is_array($id)) {
                     $array_where = $id;
-                    $condition_msg = array();
+                    $condition_msg = [];
                     foreach ($id as $key => $condition) {
                         $condition_msg[] = "$key = $condition";
                     }
                     $condition_msg = implode(' et ', $condition_msg);
                 } else {
-                    $array_where = array(
+                    $array_where = [
                         $this->id_name . ' = ?' => $id
-                    );
+                    ];
                     $condition_msg = $this->id_name . " = $id";
                 }
                 
-                $this->table_gateway->update($this->prepareDataForUpdate($data), $array_where);
+                $this->table_gateway->update($this->prepareDataForUpdate($data), 
+                    $array_where);
             } else {
-                throw new Exception(sprintf(_("This is not a new data and the id '%s' can not be found in the table %s."), $condition_msg, $this->table_name));
+                throw new Exception(
+                    sprintf(
+                        _(
+                            "This is not a new data and the id '%s' can not be found in the table %s."), 
+                        $condition_msg, $this->table_name));
             }
         }
     }
@@ -432,21 +451,25 @@ abstract class AbstractSbmTable implements FactoryInterface
         if ($this->getRecord($id)) {
             if (is_array($id)) {
                 $array_where = $id;
-                $condition_msg = array();
+                $condition_msg = [];
                 foreach ($id as $key => $condition) {
                     $condition_msg[] = "$key = $condition";
                 }
                 $condition_msg = implode(' et ', $condition_msg);
             } else {
-                $array_where = array(
+                $array_where = [
                     $this->id_name . ' = ?' => $id
-                );
+                ];
                 $condition_msg = $this->id_name . " = $id";
             }
             
             $this->table_gateway->update($this->prepareDataForUpdate($data), $array_where);
         } else {
-            throw new Exception(sprintf(_("This is not a new data and the id '%s' can not be found in the table %s."), $condition_msg, $this->table_name));
+            throw new Exception(
+                sprintf(
+                    _(
+                        "This is not a new data and the id '%s' can not be found in the table %s."), 
+                    $condition_msg, $this->table_name));
         }
     }
 
@@ -462,9 +485,12 @@ abstract class AbstractSbmTable implements FactoryInterface
     {
         foreach ($data as $key => &$value) {
             if ($value === '') {
-                if ($this->db_manager->isAutoIncrement($key, $this->table_name, $this->table_type)) {
+                if ($this->db_manager->isAutoIncrement($key, $this->table_name, 
+                    $this->table_type)) {
                     $value = null;
-                } elseif ($this->db_manager->isDateTimeColumn($key, $this->table_name, $this->table_type) || $this->db_manager->isNumericColumn($key, $this->table_name, $this->table_type)) {
+                } elseif ($this->db_manager->isDateTimeColumn($key, $this->table_name, 
+                    $this->table_type) || $this->db_manager->isNumericColumn($key, 
+                    $this->table_name, $this->table_type)) {
                     if ($this->are_nullables[$key]) {
                         $value = null;
                     } elseif (array_key_exists($key, $this->column_defaults)) {
@@ -488,7 +514,9 @@ abstract class AbstractSbmTable implements FactoryInterface
     {
         foreach ($data as $key => &$value) {
             if ($value === '') {
-                if ($this->db_manager->isDateTimeColumn($key, $this->table_name, $this->table_type) || $this->db_manager->isNumericColumn($key, $this->table_name, $this->table_type)) {
+                if ($this->db_manager->isDateTimeColumn($key, $this->table_name, 
+                    $this->table_type) || $this->db_manager->isNumericColumn($key, 
+                    $this->table_name, $this->table_type)) {
                     if ($this->are_nullables[$key]) {
                         $value = null;
                     } elseif (array_key_exists($key, $this->column_defaults)) {
@@ -499,7 +527,6 @@ abstract class AbstractSbmTable implements FactoryInterface
         }
         return $data;
     }
-    
 
     /**
      * Remie à zéro de la sélection des fiches de la table.
@@ -510,8 +537,9 @@ abstract class AbstractSbmTable implements FactoryInterface
      */
     public function clearSelection()
     {
-        return $this->getTableGateway()->update(array(
-            'selection' => 0
-        ));
+        return $this->getTableGateway()->update(
+            [
+                'selection' => 0
+            ]);
     }
 }

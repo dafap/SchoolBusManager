@@ -10,8 +10,8 @@
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 oct. 2015
- * @version 2015-1.6.5
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
 
@@ -35,124 +35,126 @@ abstract class Filtre
     public static function byCircuit($serviceId, $stationId, $inscrit = false)
     {
         if ($inscrit) {
-            return array(
+            return [
                 'inscrit' => 1,
-                array(
+                [
                     'paiement' => 1,
                     'or',
                     'fa' => 1,
                     'or',
-                    '>' => array(
+                    '>' => [
                         'gratuit',
                         0
-                    )
-                ),
-                array(
-                    array(
+                    ]
+                ],
+                [
+                    [
                         'service1Id' => $serviceId,
                         'station1Id' => $stationId
-                    ),
+                    ],
                     'or',
-                    array(
+                    [
                         'service2Id' => $serviceId,
                         'station2Id' => $stationId
-                    )
-                )
-            );
+                    ]
+                ]
+            ];
         } else {
-            return array(
+            return [
                 'inscrit' => 1,
-                array(
-                    array(
+                [
+                    [
                         'service1Id' => $serviceId,
                         'station1Id' => $stationId
-                    ),
+                    ],
                     'or',
-                    array(
+                    [
                         'service2Id' => $serviceId,
                         'station2Id' => $stationId
-                    )
-                )
-            );
+                    ]
+                ]
+            ];
         }
     }
 
     public static function byClasse($classeId)
     {
-        return array(
+        return [
             'inscrit' => 1,
             'sco.classeId' => $classeId
-        );
+        ];
     }
 
     public static function byCommune($communeId)
     {
-        return array(
+        return [
             'inscrit' => 1,
-            array(
+            [
                 'sco.communeId' => $communeId,
                 'or',
                 'res.communeId' => $communeId
-            )
-        );
+            ]
+        ];
     }
 
     public static function byEtablissement($etablissementId)
     {
-        return array(
+        return [
             'inscrit' => 1,
             'sco.etablissementId' => $etablissementId
-        );
+        ];
     }
 
     public static function byService($serviceId)
     {
-        return array(
+        return [
             'inscrit' => 1,
-            array(
+            [
                 'service1Id' => $serviceId,
                 'or',
                 'service2Id' => $serviceId
-            )
-        );
+            ]
+        ];
     }
 
     public static function byStation($stationId)
     {
-        return array(
+        return [
             'inscrit' => 1,
-            array(
+            [
                 'station1Id' => $stationId,
                 'or',
-                array(
+                [
                     'station2Id' => $stationId,
-                    'isNotNull' => array('service2Id')
-                )
-            )
-        );
+                    'isNotNull' => [
+                        'service2Id'
+                    ]
+                ]
+            ]
+        ];
     }
 
     public static function byTransporteur($transporteurId)
     {
-        return array(
+        return [
             'inscrit' => 1,
             'transporteurId' => $transporteurId
-        );
+        ];
     }
 
     public static function byOrganisme($organismeId)
     {
-        return array(
+        return [
             'inscrit' => 1,
             'organismeId' => $organismeId
-        );
+        ];
     }
 
     public static function byTarif($tarifId)
     {
-        return array(
+        return [
             'inscrit' => 1,
             'tarifId' => $tarifId
-        );
+        ];
     }
 }

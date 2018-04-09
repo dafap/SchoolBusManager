@@ -7,8 +7,8 @@
  * @filesource DigitSeparator.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Filter;
 
@@ -23,6 +23,11 @@ class DigitSeparator extends AbstractFilter implements FilterInterface
     public function filter($val)
     {
         $result = preg_replace(self::PATTERN, '', $val);
-        return str_replace(array('/', '_', ' '), '-', $result);
+        return str_replace(
+            [
+                '/',
+                '_',
+                ' '
+            ], '-', $result);
     }
 }

@@ -8,8 +8,8 @@
  * @filesource EtablissementService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -18,25 +18,30 @@ use SbmCommun\Model\Validator\CodeService;
 
 class EtablissementService extends AbstractObjectData
 {
+
     public function __construct()
     {
         $this->setObjName(__CLASS__);
-        $this->setIdFieldName(array('etablissementId', 'serviceId'));
+        $this->setIdFieldName(
+            [
+                'etablissementId',
+                'serviceId'
+            ]);
     }
-    
+
     /**
      * Contrôle si l'id passé en paramètre est une chaine composée de 2 parties etablissementId|serviceId
      * où etablissementId est une chaine CodeEtablissement et serviceId est une chaine CodeService.
      * (Utilisé pour sécuriser le paramètre id passé par get dans la gestion des libellés)
      *
      * @param string $id
-     * $id devrait être une chaine de la forme etablissementId|serviceId sinon la fonction renvoie faux
-     *
+     *            $id devrait être une chaine de la forme etablissementId|serviceId sinon la fonction renvoie faux
+     *            
      * @return bool
      */
     public function isValidId($id)
     {
-        if (!is_string($id)) {
+        if (! is_string($id)) {
             return false;
         } else {
             $parts = explode('|', $id);
@@ -51,7 +56,6 @@ class EtablissementService extends AbstractObjectData
                     return false;
                 }
             }
-    
         }
     }
 } 

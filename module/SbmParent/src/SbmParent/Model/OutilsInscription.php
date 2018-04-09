@@ -10,8 +10,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2018
- * @version 2018-2.3.19
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmParent\Model;
 
@@ -182,20 +182,26 @@ class OutilsInscription
         $responsable1Id = StdLib::getParam('responsable1Id', $data);
         if (empty($responsable1Id)) {
             if ($hasGa) {
-                $oData->exchangeArray(array_merge($data, [
-                    'responsable1Id' => $this->responsableId,
-                    'responsable2Id' => $responsable2Id
-                ]));
+                $oData->exchangeArray(
+                    array_merge($data, 
+                        [
+                            'responsable1Id' => $this->responsableId,
+                            'responsable2Id' => $responsable2Id
+                        ]));
             } else {
-                $oData->exchangeArray(array_merge($data, [
-                    'responsable1Id' => $this->responsableId
-                ]));
+                $oData->exchangeArray(
+                    array_merge($data, 
+                        [
+                            'responsable1Id' => $this->responsableId
+                        ]));
             }
         } else {
             if ($hasGa) {
-                $oData->exchangeArray(array_merge($data, [
-                    'responsable2Id' => $responsable2Id
-                ]));
+                $oData->exchangeArray(
+                    array_merge($data, 
+                        [
+                            'responsable2Id' => $responsable2Id
+                        ]));
             } else {
                 $oData->exchangeArray($data);
             }
@@ -223,7 +229,8 @@ class OutilsInscription
         if (is_null($eleveId)) {
             $array = [
                 'millesime' => $this->millesime,
-                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('tarif1')
+                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId(
+                    'tarif1')
             ];
         } else {
             $array = [
@@ -238,7 +245,8 @@ class OutilsInscription
                 'anneeComplete' => 1,
                 'subventionR1' => 0,
                 'subventionR2' => 0,
-                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('tarif1')
+                'tarifId' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId(
+                    'tarif1')
             ];
         }
         $oData->exchangeArray(array_merge($data, $array));
@@ -248,8 +256,8 @@ class OutilsInscription
     /**
      * Cette méthode renvoie un booléen indiquant qu'il faut recalculer les droits si
      * si un domicile ou l'établissement ont changé.
-     * 
-     * Si le domicile et l'établissement n'ont pas changé 
+     *
+     * Si le domicile et l'établissement n'ont pas changé
      * alors enregistre les affectations de l'année précédente
      * sinon supprime la dérogation (s'il y en a une).
      *
@@ -259,10 +267,11 @@ class OutilsInscription
     {
         $eleve = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord($this->eleveId);
         // affectations de l'année précédentes
-        $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll([
-            'millesime' => $this->millesime - 1,
-            'eleveId' => $this->eleveId
-        ]);
+        $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll(
+            [
+                'millesime' => $this->millesime - 1,
+                'eleveId' => $this->eleveId
+            ]);
         if ($affectations->count()) {
             // il y a des affectations. Faut-il les reprendre ?
             $this->repriseAffectationsPour($affectations, $eleve->responsable1Id, 1);
@@ -289,7 +298,8 @@ class OutilsInscription
      */
     private function repriseAffectationsPour($affectations, $responsableId, $trajet)
     {
-        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($responsableId);
+        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+            $responsableId);
         if ($this->memeDomicile($responsable) && $this->memeEtablissement()) {
             $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
             foreach ($affectations as $oaffectation) {
@@ -316,15 +326,17 @@ class OutilsInscription
         if (! $responsable->demenagement) {
             return true;
         }
-        $as = $this->db_manager->get('Sbm\Db\System\Calendar')->fetchAll([
-            'millesime' => $this->millesime - 1,
-            'nature' => 'AS'
-        ]);
+        $as = $this->db_manager->get('Sbm\Db\System\Calendar')->fetchAll(
+            [
+                'millesime' => $this->millesime - 1,
+                'nature' => 'AS'
+            ]);
         if (! $as->count()) {
             return false; // il n'y avait pas d'année scolaire précédente donc rien à reprendre
         }
         $dateRef = DateTime::createFromFormat('Y-m-d', $as->current()->dateDebut);
-        $dateDemenagement = DateTime::createFromFormat('Y-m-d', $responsable->dateDemenagement);
+        $dateDemenagement = DateTime::createFromFormat('Y-m-d', 
+            $responsable->dateDemenagement);
         return $dateDemenagement < $dateRef;
     }
 

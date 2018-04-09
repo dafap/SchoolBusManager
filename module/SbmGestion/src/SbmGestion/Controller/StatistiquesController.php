@@ -8,8 +8,8 @@
  * @filesource StatistiquesController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Controller;
 
@@ -30,15 +30,16 @@ class StatistiquesController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        return new ViewModel(array());
+        return new ViewModel([]);
     }
 
     public function parClasseAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasse()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasse()
+            ]);
     }
 
     public function pdfClasseAction()
@@ -48,12 +49,13 @@ class StatistiquesController extends AbstractActionController
 
     public function parCommuneAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommune()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommune()
+            ]);
     }
-    
+
     public function pdfCommuneAction()
     {
         $this->pdf('par-commune', 'statistiquesParCommune');
@@ -61,12 +63,13 @@ class StatistiquesController extends AbstractActionController
 
     public function parCircuitAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuit()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuit()
+            ]);
     }
-    
+
     public function pdfCircuitAction()
     {
         $this->pdf('par-circuit', 'statistiquesParCircuit');
@@ -74,12 +77,13 @@ class StatistiquesController extends AbstractActionController
 
     public function parEtablissementAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissement()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissement()
+            ]);
     }
-    
+
     public function pdfEtablissementAction()
     {
         $this->pdf('par-etablissement', 'statistiquesParEtablissement');
@@ -87,12 +91,13 @@ class StatistiquesController extends AbstractActionController
 
     public function parCircuitCommuneAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuitCommune()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCircuitCommune()
+            ]);
     }
-    
+
     public function pdfCircuitCommuneAction()
     {
         $this->pdf('par-circuit-commune', 'statistiquesParCircuitCommune');
@@ -100,12 +105,13 @@ class StatistiquesController extends AbstractActionController
 
     public function parCommuneCircuitAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommuneCircuit()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParCommuneCircuit()
+            ]);
     }
-    
+
     public function pdfCommuneCircuitAction()
     {
         $this->pdf('par-commune-circuit', 'statistiquesParCommuneCircuit');
@@ -113,12 +119,13 @@ class StatistiquesController extends AbstractActionController
 
     public function parClasseEtablissementAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasseEtablissement()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParClasseEtablissement()
+            ]);
     }
-    
+
     public function pdfClasseEtablissementAction()
     {
         $this->pdf('par-classe-etablissement', 'statistiquesParClasseEtablissement');
@@ -126,17 +133,18 @@ class StatistiquesController extends AbstractActionController
 
     public function parEtablissementClasseAction()
     {
-        return new ViewModel(array(
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissementClasse()
-        ));
+        return new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->statistiquesParEtablissementClasse()
+            ]);
     }
-    
+
     public function pdfEtablissementClasseAction()
     {
         $this->pdf('par-etablissement-classe', 'statistiquesParEtablissementClasse');
     }
-    
+
     private function pdf($action, $method)
     {
         $prg = $this->prg();
@@ -145,33 +153,38 @@ class StatistiquesController extends AbstractActionController
         } else {
             $args = (array) $prg;
             if (! array_key_exists('documentId', $args)) {
-                $this->flashMessenger()->addErrorMessage('Le document à imprimer n\'a pas été indiqué.');
-                return $this->redirect()->toRoute('sbmgestion/statistiques', [
-                    'action' => $action
-                ]);
+                $this->flashMessenger()->addErrorMessage(
+                    'Le document à imprimer n\'a pas été indiqué.');
+                return $this->redirect()->toRoute('sbmgestion/statistiques', 
+                    [
+                        'action' => $action
+                    ]);
             }
             $documentId = $args['documentId'];
         }
-        $stack = new Resolver\TemplatePathStack(array(
-            'script_paths' => array(
-                __DIR__ . '/../../../view'
-            )
-        ));
+        $stack = new Resolver\TemplatePathStack(
+            [
+                'script_paths' => [
+                    __DIR__ . '/../../../view'
+                ]
+            ]);
         $resolver = new Resolver\AggregateResolver();
         $resolver->attach($stack);
         $renderer = new PhpRenderer();
         $renderer->setResolver($resolver)
-        ->plugin('basePath')
-        ->setBasePath('/');
+            ->plugin('basePath')
+            ->setBasePath('/');
         ;
-        $view = new ViewModel([
-            'millesime' => Session::get('millesime'),
-            'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->{$method}()
+        $view = new ViewModel(
+            [
+                'millesime' => Session::get('millesime'),
+                'statistiques' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->{$method}()
             ]);
         $view->setTemplate("sbm-gestion/statistiques/$action.phtml");
         // die($renderer->render($view));
         $call_pdf = $this->RenderPdfService;
-        $call_pdf->setParam('documentId', $documentId)->setParam('html', $renderer->render($view));
+        $call_pdf->setParam('documentId', $documentId)->setParam('html', 
+            $renderer->render($view));
         $call_pdf->renderPdf();
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }

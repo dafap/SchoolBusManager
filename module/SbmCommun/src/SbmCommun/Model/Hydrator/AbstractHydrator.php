@@ -13,35 +13,36 @@
  * @filesource AbstractHydrator.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2016
- * @version 2016-2.1.10
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Hydrator;
- 
+
 /*
  * @deprecated use Zend\Stdlib\Hydrator\ArraySerializable;
- */ 
+ */
 use Zend\Hydrator\ArraySerializable;
 
 abstract class AbstractHydrator extends ArraySerializable
 {
+
     /**
      * Copie de l'objet qui sera modifiée par calculate() avant extraction
-     * 
+     *
      * @var object qui implemente la methode getArrayCopy()
      */
-    protected  $object;
-    
+    protected $object;
+
     public function extract($object)
     {
         return parent::extract($this->calculate($object));
     }
-    
+
     /**
      * L'objet doit implémenter la méthode getArrayCopy()
-     * 
-     * @param object $object
-     * 
+     *
+     * @param object $object            
+     *
      * @return object
      */
     protected abstract function calculate($object);

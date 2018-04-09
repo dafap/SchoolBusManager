@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMailChimp\Controller\Service;
 
@@ -32,21 +32,24 @@ class IndexControllerFactory implements FactoryInterface
         $authenticate = $sm->get('SbmAuthentification\Authentication');
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
-            'client' => StdLib::getParamR([
-                'sbm',
-                'client'
-            ], $config_application),
-            'mail_config' => StdLib::getParamR([
-                'sbm',
-                'mail'
-            ], $config_application),
+            'client' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'client'
+                ], $config_application),
+            'mail_config' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mail'
+                ], $config_application),
             'authenticate' => $authenticate,
             'acl' => $this->createAcl($config_application['acl']),
-            'mailchimp_key' => StdLib::getParamR([
-                'sbm',
-                'mailchimp',
-                'key'
-            ], $config_application, '')
+            'mailchimp_key' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mailchimp',
+                    'key'
+                ], $config_application, '')
         ];
         return new IndexController($config_controller);
     }
@@ -62,30 +65,34 @@ class IndexControllerFactory implements FactoryInterface
             if (is_null($parent)) {
                 $acl->addRole(new GenericRole($categorieIds[$role]));
             } else {
-                $acl->addRole(new GenericRole($categorieIds[$role]), $categorieIds[$parent]);
+                $acl->addRole(new GenericRole($categorieIds[$role]), 
+                    $categorieIds[$parent]);
             }
         }
         // les resources
         $resourcesMC = $config_acl['resources']['sbmmailchimp'];
         $acl->addResource(new GenericResource('sbmmailchimp'));
-        foreach (StdLib::getParamR([
-            'allow',
-            'roles'
-        ], $resourcesMC, []) as $role) {
+        foreach (StdLib::getParamR(
+            [
+                'allow',
+                'roles'
+            ], $resourcesMC, []) as $role) {
             $acl->allow($categorieIds[$role], 'sbmmailchimp');
         }
         foreach (StdLib::getParam('actions', $resourcesMC) as $action => $description) {
             $acl->addResource(new GenericResource($action), 'sbmmailchimp');
-            foreach (stdlib::getParamR([
-                'allow',
-                'roles'
-            ], $description, []) as $role) {
+            foreach (stdlib::getParamR(
+                [
+                    'allow',
+                    'roles'
+                ], $description, []) as $role) {
                 $acl->allow($categorieIds[$role], $action);
             }
-            foreach (stdlib::getParamR([
-                'deny',
-                'roles'
-            ], $description, []) as $role) {
+            foreach (stdlib::getParamR(
+                [
+                    'deny',
+                    'roles'
+                ], $description, []) as $role) {
                 $acl->deny($categorieIds[$role], $action);
             }
         }

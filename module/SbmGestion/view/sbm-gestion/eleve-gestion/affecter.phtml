@@ -9,26 +9,30 @@
  * @filesource affecter.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 // test sur le formulaire decision
 
-
 // calcul des variables
-$url_retour = $this->url('sbmgestion/gestioneleve', array(
-    'action' => 'affecter-liste',
-    'page' => $this->page
-));
-$descriptionElv = implode('<br>', array(
-    $this->eleve['nom'] . ' ' . $this->eleve['prenom'],
-    empty($this->eleve['adresseL2']) ? $this->eleve['adresseL1'] : $this->eleve['adresseL1'] . '<br>' . $this->eleve['adresseL2'],
-    $this->eleve['codePostal'] . ' ' . $this->eleve['commune']
-));
-$descriptionEta = addslashes(implode('<br>', array(
-    $this->eleve['etablissement'],
-    $this->eleve['communeEtablissement']
-)));
+$url_retour = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'affecter-liste',
+        'page' => $this->page
+    ]);
+$descriptionElv = implode('<br>', 
+    [
+        $this->eleve['nom'] . ' ' . $this->eleve['prenom'],
+        empty($this->eleve['adresseL2']) ? $this->eleve['adresseL1'] : $this->eleve['adresseL1'] .
+             '<br>' . $this->eleve['adresseL2'],
+            $this->eleve['codePostal'] . ' ' . $this->eleve['commune']
+    ]);
+$descriptionEta = addslashes(
+    implode('<br>', 
+        [
+            $this->eleve['etablissement'],
+            $this->eleve['communeEtablissement']
+        ]));
 $latCentre = ($this->ptElv->getLatitude() + $this->ptEta->getLatitude()) / 2;
 $lngCentre = ($this->ptElv->getLongitude() + $this->ptEta->getLongitude()) / 2;
 // page html
@@ -44,14 +48,18 @@ $color = '#fc6700';
 $lettre = 'D';
 $title = "domicile de l'élève";
 $info = $descriptionElv;
-$tMarkers .= '{"lat":' . $this->ptElv->getLatitude() .',"lng":' . $this->ptElv->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre. '","title":"' . $title .'","info":"' . $info ."\"},\n";
+$tMarkers .= '{"lat":' . $this->ptElv->getLatitude() . ',"lng":' .
+     $this->ptElv->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre .
+     '","title":"' . $title . '","info":"' . $info . "\"},\n";
 $color = '#e5c3d0';
 $lettre = 'E';
 $title = "établissement scolaire";
 $info = $descriptionEta;
-$tMarkers .= '{"lat":' . $this->ptEta->getLatitude() .',"lng":' . $this->ptEta->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre. '","title":"' . $title .'","info":"' . $info ."\"},\n";
+$tMarkers .= '{"lat":' . $this->ptEta->getLatitude() . ',"lng":' .
+     $this->ptEta->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre .
+     '","title":"' . $title . '","info":"' . $info . "\"},\n";
 $tMarkers .= ']';
-//lancement des scripts d'initialisation
+// lancement des scripts d'initialisation
 $this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?php echo $this->config['centre']['lat']; ?>;
@@ -59,9 +67,9 @@ const CENTRE_LNG = <?php echo $this->config['centre']['lng']; ?>;
 const INI_ZOOM = <?php echo $this->config['zoom']; ?>;
 initialiser(<?php echo $tMarkers;?>);
 js_affecter.adaptedecision();
-<?php 
-$this->inlineScript()->captureEnd(); 
-//============= fin des javaScripts =================== 
+<?php
+$this->inlineScript()->captureEnd();
+// ============= fin des javaScripts ===================
 ?>
 <div id="page-titre" class="clearfix">
 	<div class="float-left">
@@ -99,7 +107,8 @@ echo $this->flashMessenger()->render('default');
         <?php if ($element->getAttribute('type') == 'hidden'):?>
             <?php echo $this->formHidden($element);?>
         <?php elseif ($element->getAttribute('type') != 'submit'):?>
-            <div id="row-<?php echo $element->getAttribute('id');?>" class="row-inner">
+            <div id="row-<?php echo $element->getAttribute('id');?>"
+						class="row-inner">
             <?php echo $this->formRow($element);?>
             </div>
         <?php endif;?>
@@ -110,7 +119,9 @@ echo $this->flashMessenger()->render('default');
     <?php echo $this->form()->closeTag(); ?>
 <?php else:?>
     <p>Transport accepté</p>
-    <p class="sbm-description">Précisez le circuit, le point de montée et, en cas de correspondance, le point de descente et le circuit suivant.'</p>
+					<p class="sbm-description">Précisez le circuit, le point de montée
+						et, en cas de correspondance, le point de descente et le circuit
+						suivant.'</p>
 <?php endif;?>
 	<?php
 if ($this->op > 1) {

@@ -12,26 +12,28 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_horaires = $this->url('sbmdocument', array(
+$url_horaires = $this->url('sbmdocument', [
     'action' => 'horaires'
-));
-$url_eleves = $this->url('sbmportail', array(
+]);
+$url_eleves = $this->url('sbmportail', [
     'action' => 'tr-eleves'
-));
-$url_circuits = $this->url('sbmportail', array(
+]);
+$url_circuits = $this->url('sbmportail', [
     'action' => 'tr-circuits'
-));
-$url_carte_stations = $this->url('sbmportail', array(
-    'action' => 'tr-carte-stations'
-));
-$url_carte_etablissements = $this->url('sbmportail', array(
-    'action' => 'tr-carte-etablissements'
-));
+]);
+$url_carte_stations = $this->url('sbmportail', 
+    [
+        'action' => 'tr-carte-stations'
+    ]);
+$url_carte_etablissements = $this->url('sbmportail', 
+    [
+        'action' => 'tr-carte-etablissements'
+    ]);
 
 ?>
 <div id="tableau-de-bord" class="clearfix">
@@ -63,16 +65,16 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<?php foreach ($this->services as $service):?>
 				    <?php
-        $hiddens = array(
+        $hiddens = [
             'serviceId' => $service['serviceId']
-        );
-        $buttons = array(
-            'horaires' => array(
+        ];
+        $buttons = [
+            'horaires' => [
                 'class' => 'fam-clock-red',
                 'formaction' => $url_circuits,
                 'title' => 'Fiche horaires et informations'
-            )
-        );
+            ]
+        ];
         ?>
 				<tr>
 					<td><?php echo $service['serviceId'];?></td>

@@ -9,8 +9,8 @@
  * @filesource AdapterEmail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAuthentification\Authentication;
 
@@ -36,7 +36,7 @@ class AdapterEmail implements ValidatableAdapterInterface
 
     /**
      * C'est un db manager mais on n'utilise que la méthode get()
-     * 
+     *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
     protected $db_manager;
@@ -84,7 +84,9 @@ class AdapterEmail implements ValidatableAdapterInterface
     public function authenticate()
     {
         if (empty($this->identity) || empty($this->mdp)) {
-            throw new Exception(__METHOD__ . 'Paramètres d\'identification incorrects. L\'email ou le mot de passe n\'ont pas été donnés.');
+            throw new Exception(
+                __METHOD__ .
+                     'Paramètres d\'identification incorrects. L\'email ou le mot de passe n\'ont pas été donnés.');
         }
         $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
         $result = $tUsers->getMdpGdsByEmail($this->identity);
@@ -97,18 +99,21 @@ class AdapterEmail implements ValidatableAdapterInterface
                 unset($identity['token']);
                 $odata->completeForLogin();
                 $tUsers->saveRecord($odata);
-                return new Result(Result::SUCCESS, $identity, [
-                    'Identification réussie.'
-                ]);
+                return new Result(Result::SUCCESS, $identity, 
+                    [
+                        'Identification réussie.'
+                    ]);
             } else {
-                return new Result(Result::FAILURE_CREDENTIAL_INVALID, '', [
-                    'Mot de passe incorrect ou compte bloqué.'
-                ]);
+                return new Result(Result::FAILURE_CREDENTIAL_INVALID, '', 
+                    [
+                        'Mot de passe incorrect ou compte bloqué.'
+                    ]);
             }
         } else {
-            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', [
-                'Email inconnu ou compte inactif.'
-            ]);
+            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', 
+                [
+                    'Email inconnu ou compte inactif.'
+                ]);
         }
     }
 
@@ -138,7 +143,9 @@ class AdapterEmail implements ValidatableAdapterInterface
         } elseif (is_array($identity) && array_key_exists('email', $identity)) {
             $this->identity = $identity['email'];
         } else {
-            throw new Exception(__METHOD__ . 'Paramètres d\'identification incorrects. L\'email n\'a pas été donné.');
+            throw new Exception(
+                __METHOD__ .
+                     'Paramètres d\'identification incorrects. L\'email n\'a pas été donné.');
         }
         return $this;
     }
@@ -169,7 +176,9 @@ class AdapterEmail implements ValidatableAdapterInterface
         } elseif (is_array($credential) && array_key_exists('mdp', $credential)) {
             $this->credential = $credential['mdp'];
         } else {
-            throw new Exception(__METHOD__ . 'Paramètres d\'identification incorrects. Le mot de passe n\'a pas été donné.');
+            throw new Exception(
+                __METHOD__ .
+                     'Paramètres d\'identification incorrects. Le mot de passe n\'a pas été donné.');
         }
         return $this;
     }

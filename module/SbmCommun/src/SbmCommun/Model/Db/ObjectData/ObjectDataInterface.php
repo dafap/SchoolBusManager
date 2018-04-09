@@ -7,8 +7,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource ObjectDataInterface.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 juill. 2016
- * @version 2016-2.1.10
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -19,7 +19,7 @@ interface ObjectDataInterface
 
     /**
      * Peut être soit traversable|array
-     * 
+     *
      * @abstract
      *
      * @param Iterator|IteratorAggregate|array $dataSource            
@@ -29,7 +29,7 @@ interface ObjectDataInterface
 
     /**
      * Renvoie les données sous forme d'un tableau
-     * 
+     *
      * @abstract
      *
      * @return array
@@ -38,7 +38,7 @@ interface ObjectDataInterface
 
     /**
      * Donne l'id de la dataSource si elle existe, false si non
-     * 
+     *
      * @abstract
      *
      * @return mixed
@@ -47,7 +47,7 @@ interface ObjectDataInterface
 
     /**
      * Renvoie le(s) nom(s) du(des) champ(s) Id de l'objet
-     * 
+     *
      * @abstract
      *
      * @return string|array
@@ -56,7 +56,7 @@ interface ObjectDataInterface
 
     /**
      * Renvoie l'iterator
-     * 
+     *
      * @abstract
      *
      * @return Iterator
@@ -65,7 +65,7 @@ interface ObjectDataInterface
 
     /**
      * Renvoi le nom de l'objet
-     * 
+     *
      * @abstract
      *
      * @return string
@@ -74,7 +74,7 @@ interface ObjectDataInterface
 
     /**
      * Enregistre la masque de champs à utiliser pour la méthode exchangeArray()
-     * 
+     *
      * @param array $array_mask            
      */
     public function setArrayMask($array_mask);

@@ -12,5 +12,4 @@
  * @date 6 oct. 2015
  * @version 2015-1
  */
-
- return array();
+return array();

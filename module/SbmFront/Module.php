@@ -9,8 +9,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront;
 
@@ -19,7 +19,7 @@ use Zend\Mvc\MvcEvent;
 use SbmBase\Module\AbstractModule;
 use SbmBase\Model\StdLib;
 
-class Module extends AbstractModule 
+class Module extends AbstractModule
 {
 
     public function getDir()
@@ -39,10 +39,11 @@ class Module extends AbstractModule
             ->getServiceManager()
             ->get('config');
         $configLayout = StdLib::getParam('sbm', $config);
-        $eventManager->attach(MvcEvent::EVENT_RENDER, function ($e) use($configLayout) {
-            $e->getViewModel()
-                ->setVariable('parameter', $configLayout);
-        });
+        $eventManager->attach(MvcEvent::EVENT_RENDER, 
+            function ($e) use($configLayout) {
+                $e->getViewModel()
+                    ->setVariable('parameter', $configLayout);
+            });
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
     }

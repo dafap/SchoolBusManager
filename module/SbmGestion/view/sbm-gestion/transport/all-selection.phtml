@@ -7,13 +7,13 @@
  * @filesource all-selection.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
- * @version 2016-2.2.1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <h1>Démarquer les fiches sélectionnées</h1>
 <div id="suppr-wrapper">
-<?php  
+<?php
 if ($this->nbSelection) :
     if ($this->nbSelection > 1) {
         $description = sprintf('%d fiches sélectionnées', $this->nbSelection);
@@ -26,11 +26,12 @@ if ($this->nbSelection) :
 	<p>Confirmez ou abandonnez.</p>
 <?php else :?>
     <p>Il n'y a pas de fiche sélectionnée.</p>
-    <?php 
-        $this->form->remove('csrf')->remove('confirmer');
+    <?php
+    $this->form->remove('csrf')->remove('confirmer');
     ?>
 <?php endif;?>
 <?php
+
 echo $this->form()->openTag($form);
 echo $this->formCollection($form);
 echo $this->form()->closeTag();

@@ -14,11 +14,11 @@
  */
 return array(
     array(
-        'userId' => 185, 
-        'etablissementId' => '0120622L', 
+        'userId' => 185,
+        'etablissementId' => '0120622L'
     ),
     array(
-        'userId' => 464, 
-        'etablissementId' => '0120622L', 
-    ),
+        'userId' => 464,
+        'etablissementId' => '0120622L'
+    )
 );

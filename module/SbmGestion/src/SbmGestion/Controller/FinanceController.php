@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Controller;
 
@@ -60,40 +60,53 @@ class FinanceController extends AbstractActionController
         $codeRegisseur = $tLibelles->getCode('Caisse', 'régisseur');
         $codeComptable = $tLibelles->getCode('Caisse', 'comptable');
         $codeDft = $tLibelles->getCode('Caisse', 'dft');
-        return new ViewModel([
-            'millesime' => $millesime,
-            'dateBordereauCheques' => $tPaiements->dateDernierBordereau($codeCheques),
-            'datePaiementCheques' => $tPaiements->dateDernierPaiement($codeCheques), // date('Y-m-d'),
-            'dateBordereauEspeces' => $tPaiements->dateDernierBordereau($codeEspeces),
-            'datePaiementEspeces' => $tPaiements->dateDernierPaiement($codeEspeces),
-            'dateBordereauCB' => $tPaiements->dateDernierBordereau($codeCB),
-            'datePaiementCB' => $tPaiements->dateDernierPaiement($codeCB),
-            'encoursCheques' => $tPaiements->sommeBordereau($codeCheques),
-            'encoursEspeces' => $tPaiements->sommeBordereau($codeEspeces),
-            'encoursCB' => $tPaiements->sommeBordereau($codeCB),
-            'encoursTotal' => $tPaiements->sommeBordereau(null),
-            'asCheques' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur, $codeCheques),
-            'asEspeces' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur, $codeEspeces),
-            'asRegie' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur),
-            'asDft' => $tPaiements->totalAnneeScolaire($millesime, $codeDft),
-            'asComptable' => $tPaiements->totalAnneeScolaire($millesime, $codeComptable),
-            'asTotal' => $tPaiements->totalAnneeScolaire($millesime),
-            'montantCheques1' => $tPaiements->totalExercice($millesime, $codeRegisseur, $codeCheques),
-            'montantEspeces1' => $tPaiements->totalExercice($millesime, $codeRegisseur, $codeEspeces),
-            'totaRegie1' => $tPaiements->totalExercice($millesime, $codeRegisseur),
-            'totalDft1' => $tPaiements->totalExercice($millesime, $codeDft),
-            'totalComptable1' => $tPaiements->totalExercice($millesime, $codeComptable),
-            'total1' => $tPaiements->totalExercice($millesime),
-            'montantCheques2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur, $codeCheques),
-            'montantEspeces2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur, $codeEspeces),
-            'totaRegie2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur),
-            'totalDft2' => $tPaiements->totalExercice($millesime + 1, $codeDft),
-            'totalComptable2' => $tPaiements->totalExercice($millesime + 1, $codeComptable),
-            'total2' => $tPaiements->totalExercice($millesime + 1),
-            'titresAs' => $tPaiements->totalAnneeScolaire($millesime + 1, null, $codeTitres),
-            'titresExercice1' => $tPaiements->totalExercice($millesime, null, $codeTitres),
-            'titresExercice2' => $tPaiements->totalExercice($millesime + 1, null, $codeTitres)
-        ]);
+        return new ViewModel(
+            [
+                'millesime' => $millesime,
+                'dateBordereauCheques' => $tPaiements->dateDernierBordereau($codeCheques),
+                'datePaiementCheques' => $tPaiements->dateDernierPaiement($codeCheques), // date('Y-m-d'),
+                'dateBordereauEspeces' => $tPaiements->dateDernierBordereau($codeEspeces),
+                'datePaiementEspeces' => $tPaiements->dateDernierPaiement($codeEspeces),
+                'dateBordereauCB' => $tPaiements->dateDernierBordereau($codeCB),
+                'datePaiementCB' => $tPaiements->dateDernierPaiement($codeCB),
+                'encoursCheques' => $tPaiements->sommeBordereau($codeCheques),
+                'encoursEspeces' => $tPaiements->sommeBordereau($codeEspeces),
+                'encoursCB' => $tPaiements->sommeBordereau($codeCB),
+                'encoursTotal' => $tPaiements->sommeBordereau(null),
+                'asCheques' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur, 
+                    $codeCheques),
+                'asEspeces' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur, 
+                    $codeEspeces),
+                'asRegie' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur),
+                'asDft' => $tPaiements->totalAnneeScolaire($millesime, $codeDft),
+                'asComptable' => $tPaiements->totalAnneeScolaire($millesime, 
+                    $codeComptable),
+                'asTotal' => $tPaiements->totalAnneeScolaire($millesime),
+                'montantCheques1' => $tPaiements->totalExercice($millesime, 
+                    $codeRegisseur, $codeCheques),
+                'montantEspeces1' => $tPaiements->totalExercice($millesime, 
+                    $codeRegisseur, $codeEspeces),
+                'totaRegie1' => $tPaiements->totalExercice($millesime, $codeRegisseur),
+                'totalDft1' => $tPaiements->totalExercice($millesime, $codeDft),
+                'totalComptable1' => $tPaiements->totalExercice($millesime, 
+                    $codeComptable),
+                'total1' => $tPaiements->totalExercice($millesime),
+                'montantCheques2' => $tPaiements->totalExercice($millesime + 1, 
+                    $codeRegisseur, $codeCheques),
+                'montantEspeces2' => $tPaiements->totalExercice($millesime + 1, 
+                    $codeRegisseur, $codeEspeces),
+                'totaRegie2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur),
+                'totalDft2' => $tPaiements->totalExercice($millesime + 1, $codeDft),
+                'totalComptable2' => $tPaiements->totalExercice($millesime + 1, 
+                    $codeComptable),
+                'total2' => $tPaiements->totalExercice($millesime + 1),
+                'titresAs' => $tPaiements->totalAnneeScolaire($millesime + 1, null, 
+                    $codeTitres),
+                'titresExercice1' => $tPaiements->totalExercice($millesime, null, 
+                    $codeTitres),
+                'titresExercice2' => $tPaiements->totalExercice($millesime + 1, null, 
+                    $codeTitres)
+            ]);
     }
 
     public function paiementListeAction()
@@ -125,8 +138,8 @@ class FinanceController extends AbstractActionController
             }
         } else {
             // suite à un post,
-            // l'appel provient du formulaire de criteres ou de la liste des responsables 
-            // ou de la sortie d'un paiement-ajout ou d'un paiement-edit 
+            // l'appel provient du formulaire de criteres ou de la liste des responsables
+            // ou de la sortie d'un paiement-ajout ou d'un paiement-edit
             // ou d'un eleve-edit
             // séparer les criteres et le post en session
             $is_post = true;
@@ -151,7 +164,8 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         // le reste vient de $args
         $responsableId = array_key_exists('responsableId', $args) ? $args['responsableId'] : - 1;
-        $url1_retour = array_key_exists('url1_retour', $args) ? $args['url1_retour'] : $this->url()->fromRoute('sbmgestion/finance');
+        $url1_retour = array_key_exists('url1_retour', $args) ? $args['url1_retour'] : $this->url()->fromRoute(
+            'sbmgestion/finance');
         $url2_retour = array_key_exists('url2_retour', $args) ? $args['url2_retour'] : null;
         $op = array_key_exists('op', $args) ? $args['op'] : '';
         if ($retour_n2 = ($op == 'retour')) {
@@ -186,29 +200,33 @@ class FinanceController extends AbstractActionController
                 $criteres_obj->exchangeArray($criteres_data);
                 $criteres_form->setData($criteres_obj->getArrayCopy());
             }
-            return new ViewModel([
-                'paginator' => $tablePaiements->paginator($criteres_obj->getWhere([
-                    'codeCaisse',
-                    'codeModeDePaiement'
-                ]), $order),
-                'count_per_page' => $nb_paiements,
-                'criteres_form' => $criteres_form,
-                'h2' => false,
-                'responsable' => null,
-                'page' => $currentPage,
-                'responsableId' => $responsableId,
-                'url1_retour' => $url1_retour,
-                'url2_retour' => $url2_retour
-            ]);
+            return new ViewModel(
+                [
+                    'paginator' => $tablePaiements->paginator(
+                        $criteres_obj->getWhere(
+                            [
+                                'codeCaisse',
+                                'codeModeDePaiement'
+                            ]), $order),
+                    'count_per_page' => $nb_paiements,
+                    'criteres_form' => $criteres_form,
+                    'h2' => false,
+                    'responsable' => null,
+                    'page' => $currentPage,
+                    'responsableId' => $responsableId,
+                    'url1_retour' => $url1_retour,
+                    'url2_retour' => $url2_retour
+                ]);
         } else {
             // gestion des paiements du $responsableId.
-            // L'appel peut provenir de la liste des responsables, de la fiche d'un responsable, 
+            // L'appel peut provenir de la liste des responsables, de la fiche d'un responsable,
             // de la fiche d'un eleve ou de la liste des paiements.
             // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
             $millesime = Session::get('millesime');
             $as = sprintf('%d-%d', $millesime, $millesime + 1);
             $where = new Where();
-            $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire', $as);
+            $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire', 
+                $as);
             $totalPaye = $this->db_manager->get('Sbm\Db\Table\Paiements')->total($where);
             
             $where = new Where();
@@ -229,30 +247,35 @@ class FinanceController extends AbstractActionController
                 'responsableId'
             ])
                 ->current();
-            $nomPrenom = sprintf('%s %s %s', $responsable['titre'], $responsable['nom'], $responsable['prenom']);
+            $nomPrenom = sprintf('%s %s %s', $responsable['titre'], $responsable['nom'], 
+                $responsable['prenom']);
             $nbTarif1 = $responsable['nbTarif1'];
             $nbTarif2 = $responsable['nbTarif2'];
             $nbDuplicata = $responsable['nbDuplicata'];
             // }
             
-            return new ViewModel([
-                'paginator' => $tablePaiements->paginator($where, $order),
-                'count_per_page' => $nb_paiements,
-                'criteres_form' => null,
-                'h2' => true,
-                'responsable' => $nomPrenom,
-                'totalPaye' => $totalPaye,
-                'tarif1' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant('tarif1'),
-                'tarif2' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant('tarif2'),
-                'duplicata' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant('duplicata'),
-                'nbTarif1' => $nbTarif1,
-                'nbTarif2' => $nbTarif2,
-                'nbDuplicata' => $nbDuplicata,
-                'page' => $currentPage,
-                'responsableId' => $responsableId,
-                'url1_retour' => $url1_retour,
-                'url2_retour' => $url2_retour
-            ]);
+            return new ViewModel(
+                [
+                    'paginator' => $tablePaiements->paginator($where, $order),
+                    'count_per_page' => $nb_paiements,
+                    'criteres_form' => null,
+                    'h2' => true,
+                    'responsable' => $nomPrenom,
+                    'totalPaye' => $totalPaye,
+                    'tarif1' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
+                        'tarif1'),
+                    'tarif2' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
+                        'tarif2'),
+                    'duplicata' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
+                        'duplicata'),
+                    'nbTarif1' => $nbTarif1,
+                    'nbTarif2' => $nbTarif2,
+                    'nbDuplicata' => $nbDuplicata,
+                    'page' => $currentPage,
+                    'responsableId' => $responsableId,
+                    'url1_retour' => $url1_retour,
+                    'url2_retour' => $url2_retour
+                ]);
         }
     }
 
@@ -268,31 +291,36 @@ class FinanceController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'paiement-liste',
-                'page' => $this->params('page', 1)
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         }
         // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
         $args = $prg;
         // si $args contient la clé 'cancel' c'est un abandon de l'action
         if (\array_key_exists('cancel', $args)) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été modifié.");
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'paiement-liste',
-                'page' => $this->params('page', 1)
-            ]);
+            $this->flashMessenger()->addWarningMessage(
+                "L'enregistrement n'a pas été modifié.");
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         }
         // on ouvre la table des paiements
         $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
         // on détermine si le responsable est fixé ou s'il faudra le choisir
         if (\array_key_exists('h2', $args)) {
-            $this->setToSession('responsable_attributes', [
-                'h2' => $args['h2'],
-                'responsable' => $args['responsable']
-            ], $this->getSessionNamespace());
+            $this->setToSession('responsable_attributes', 
+                [
+                    'h2' => $args['h2'],
+                    'responsable' => $args['responsable']
+                ], $this->getSessionNamespace());
         } else {
-            $responsable_attributes = $this->getFromSession('responsable_attributes', [], $this->getSessionNamespace());
+            $responsable_attributes = $this->getFromSession('responsable_attributes', [], 
+                $this->getSessionNamespace());
             $args = \array_merge($args, $responsable_attributes);
         }
         if ($args['h2']) {
@@ -301,22 +329,28 @@ class FinanceController extends AbstractActionController
             $hidden_responsableId = false; // il faudra choisir le responsable
         }
         // on ouvre le formulaire, l'adapte et le lie à l'échange de données
-        $form = new FormPaiement([
-            'responsableId' => $hidden_responsableId,
-            'note' => false
-        ]);
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/finance', [
-            'action' => 'paiement-ajout',
-            'page' => $this->params('page', 1)
-        ]))
-            ->setValueOptions('codeCaisse', $this->db_manager->get('Sbm\Db\Select\Libelles')
-            ->caisse())
-            ->setValueOptions('codeModeDePaiement', $this->db_manager->get('Sbm\Db\Select\Libelles')
-            ->modeDePaiement())
+        $form = new FormPaiement(
+            [
+                'responsableId' => $hidden_responsableId,
+                'note' => false
+            ]);
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-ajout',
+                    'page' => $this->params('page', 1)
+                ]))
+            ->setValueOptions('codeCaisse', 
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->caisse())
+            ->setValueOptions('codeModeDePaiement', 
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->modeDePaiement())
             ->setMaxLength($this->db_manager->getMaxLengthArray('paiements', 'table'));
         if (! $hidden_responsableId) {
-            $form->setValueOptions('responsableId', $this->db_manager->get('Sbm\Db\Select\Responsables'));
+            $form->setValueOptions('responsableId', 
+                $this->db_manager->get('Sbm\Db\Select\Responsables'));
         }
         $form->bind($tablePaiements->getObjData());
         if (array_key_exists('submit', $args)) {
@@ -327,14 +361,17 @@ class FinanceController extends AbstractActionController
                 // validation des paiements dans les fiches scolarites
                 if (! empty($args['eleveId'])) {
                     $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-                    $tScolarites->setPaiement($this->getFromSession('millesime'), $args['eleveId']);
+                    $tScolarites->setPaiement($this->getFromSession('millesime'), 
+                        $args['eleveId']);
                 }
                 // retour à la liste
-                $this->flashMessenger()->addSuccessMessage("Les modifications ont été enregistrées.");
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'paiement-liste',
-                    'page' => $this->params('page', 1)
-                ]);
+                $this->flashMessenger()->addSuccessMessage(
+                    "Les modifications ont été enregistrées.");
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'paiement-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
             }
         } else {
             $millesime = $this->getFromSession('millesime');
@@ -351,13 +388,14 @@ class FinanceController extends AbstractActionController
             }
             $form->setData($init_form);
         }
-        return new ViewModel([
-            'form' => $form->prepare(),
-            'page' => $this->params('page', 1),
-            'paiementId' => null,
-            'hidden_responsableId' => $hidden_responsableId,
-            'responsable' => $args['responsable']
-        ]);
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'page' => $this->params('page', 1),
+                'paiementId' => null,
+                'hidden_responsableId' => $hidden_responsableId,
+                'responsable' => $args['responsable']
+            ]);
     }
 
     /**
@@ -372,21 +410,27 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $tableTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $hidden_responsableId = false; // mettre true pour obtenir en hidden ; mettre false pour obtenir un select
-        $form = new FormPaiement([
-            'responsableId' => $hidden_responsableId,
-            'note' => true
-        ]);
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/finance', [
-            'action' => 'paiement-edit',
-            'page' => $currentPage
-        ]))
-            ->setValueOptions('codeCaisse', $this->db_manager->get('Sbm\Db\Select\Libelles')
-            ->caisse())
-            ->setValueOptions('codeModeDePaiement', $this->db_manager->get('Sbm\Db\Select\Libelles')
-            ->modeDePaiement());
+        $form = new FormPaiement(
+            [
+                'responsableId' => $hidden_responsableId,
+                'note' => true
+            ]);
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-edit',
+                    'page' => $currentPage
+                ]))
+            ->setValueOptions('codeCaisse', 
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->caisse())
+            ->setValueOptions('codeModeDePaiement', 
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->modeDePaiement());
         if (! $hidden_responsableId) {
-            $form->setValueOptions('responsableId', $this->db_manager->get('Sbm\Db\Select\Responsables'));
+            $form->setValueOptions('responsableId', 
+                $this->db_manager->get('Sbm\Db\Select\Responsables'));
         }
         $params = [
             'data' => [
@@ -398,19 +442,21 @@ class FinanceController extends AbstractActionController
             'form' => $form
         ];
         $sessionNS = $this->getSessionNamespace();
-        $r = $this->editData($this->db_manager, $params, function ($post) use($sessionNS) {
-            if (array_key_exists('responsable', $post)) {
-                $responsable = $post['responsable'];
-                \SbmBase\Model\Session::set('responsable', $responsable, $sessionNS);
-            } else {
-                $responsable = \SbmBase\Model\Session::get('responsable', '', $sessionNS);
-            }
-            return [
-                'paiementId' => $post['paiementId'],
-                'responsable' => $responsable,
-                'h2' => isset($post['h2']) ? $post['h2'] : null
-            ];
-        });
+        $r = $this->editData($this->db_manager, $params, 
+            function ($post) use($sessionNS) {
+                if (array_key_exists('responsable', $post)) {
+                    $responsable = $post['responsable'];
+                    \SbmBase\Model\Session::set('responsable', $responsable, $sessionNS);
+                } else {
+                    $responsable = \SbmBase\Model\Session::get('responsable', '', 
+                        $sessionNS);
+                }
+                return [
+                    'paiementId' => $post['paiementId'],
+                    'responsable' => $responsable,
+                    'h2' => isset($post['h2']) ? $post['h2'] : null
+                ];
+            });
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -418,20 +464,24 @@ class FinanceController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/finance', [
-                        'action' => 'paiement-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/finance', 
+                        [
+                            'action' => 'paiement-liste',
+                            'page' => $currentPage
+                        ]);
                     break;
                 default:
-                    return new ViewModel([
-                        'form' => $form->prepare(),
-                        'page' => $currentPage,
-                        'paiementId' => StdLib::getParam('paiementId', $r->getResult()),
-                        'responsable' => StdLib::getParam('responsable', $r->getResult()),
-                        'h2' => StdLib::getParam('h2', $r->getResult()),
-                        'hidden_responsableId' => $hidden_responsableId
-                    ]);
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'paiementId' => StdLib::getParam('paiementId', 
+                                $r->getResult()),
+                            'responsable' => StdLib::getParam('responsable', 
+                                $r->getResult()),
+                            'h2' => StdLib::getParam('h2', $r->getResult()),
+                            'hidden_responsableId' => $hidden_responsableId
+                        ]);
                     break;
             }
         }
@@ -453,32 +503,38 @@ class FinanceController extends AbstractActionController
         } elseif ($prg === false) {
             // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
             $this->flashMessenger()->addErrorMessage("Action interdite.");
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'paiement-liste',
-                'page' => $this->params('page', 1)
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         }
         $args = $prg;
         // si $args contient la clé 'cancel' (ou si paiementId n'est pas défini) c'est un abandon de l'action
         if (array_key_exists('cancel', $args) || ! array_key_exists('paiementId', $args)) {
-            $this->flashMessenger()->addWarningMessage("L'enregistrement n'a pas été supprimé.");
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'paiement-liste',
-                'page' => $this->params('page', 1)
-            ]);
+            $this->flashMessenger()->addWarningMessage(
+                "L'enregistrement n'a pas été supprimé.");
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         }
         // Si responsable est passé, on le met en session afin de le retrouver si nécessaire (cas d'un formulaire non validé)
         if (\array_key_exists('responsable', $args)) {
-            $this->setToSession('responsable', $args['responsable'], $this->getSessionNamespace());
+            $this->setToSession('responsable', $args['responsable'], 
+                $this->getSessionNamespace());
         }
         
         $paiementId = $args['paiementId'];
         $form = new FinancePaiementSuppr();
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('sbmgestion/finance', [
-            'action' => 'paiement-suppr',
-            'page' => $this->params('page', 1)
-        ]));
+        $form->setAttribute('action', 
+            $this->url()
+                ->fromRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-suppr',
+                    'page' => $this->params('page', 1)
+                ]));
         
         $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
         
@@ -489,26 +545,30 @@ class FinanceController extends AbstractActionController
                 $data->note = $args['note'];
                 $tablePaiements->saveRecord($data);
                 $tablePaiements->deleteRecord($paiementId);
-                $this->flashMessenger()->addSuccessMessage("L'enregistrement a été supprimé.");
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'paiement-liste',
-                    'page' => $this->params('page', 1)
-                ]);
+                $this->flashMessenger()->addSuccessMessage(
+                    "L'enregistrement a été supprimé.");
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'paiement-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
             } else {
                 $args['responsable'] = $this->getFromSession('responsable');
             }
         } else {
-            $form->setData($tablePaiements->getRecord($paiementId)
-                ->getArrayCopy());
+            $form->setData(
+                $tablePaiements->getRecord($paiementId)
+                    ->getArrayCopy());
         }
-        return new ViewModel([
-            'data' => $tablePaiements->getRecord($paiementId),
-            'form' => $form->prepare(),
-            'page' => $this->params('page', 1),
-            'paiementId' => $paiementId,
-            'responsable' => $args['responsable'],
-            'libelles' => $this->db_manager->get('Sbm\Libelles')
-        ]);
+        return new ViewModel(
+            [
+                'data' => $tablePaiements->getRecord($paiementId),
+                'form' => $form->prepare(),
+                'page' => $this->params('page', 1),
+                'paiementId' => $paiementId,
+                'responsable' => $args['responsable'],
+                'libelles' => $this->db_manager->get('Sbm\Libelles')
+            ]);
     }
 
     public function paiementDepotAction()
@@ -521,10 +581,11 @@ class FinanceController extends AbstractActionController
             $page = $this->params('page', 1);
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Action abandonnée.');
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'paiement-liste',
-                    'page' => $page
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'paiement-liste',
+                        'page' => $page
+                    ]);
             }
         }
         $tPaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
@@ -540,26 +601,32 @@ class FinanceController extends AbstractActionController
         $form1 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
         $form1->setValueOptions('bordereau', $bordereauxEnCours);
         $editerSubmit = $form1->get('editer');
-        $editerSubmit->setAttribute('formaction', $this->url()
-            ->fromRoute('sbmgestion/finance', [
-            'action' => 'paiement-pdf',
-            'page' => $page,
-            'id' => 1
-        ]));
+        $editerSubmit->setAttribute('formaction', 
+            $this->url()
+                ->fromRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-pdf',
+                    'page' => $page,
+                    'id' => 1
+                ]));
         
         $form2 = new \SbmGestion\Form\Finances\BordereauRemiseValeurCreer();
-        $form2->setValueOptions('codeModeDePaiement', $nouveauxPossibles)->setValueOptions('codeCaisse', $this->db_manager->get('Sbm\Db\Select\Libelles')
-            ->caisse());
+        $form2->setValueOptions('codeModeDePaiement', $nouveauxPossibles)->setValueOptions(
+            'codeCaisse', 
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->caisse());
         
         $form3 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
         $form3->setValueOptions('bordereau', $bordereauxClotures);
         $editerSubmit = $form3->get('editer');
-        $editerSubmit->setAttribute('formaction', $this->url()
-            ->fromRoute('sbmgestion/finance', [
-            'action' => 'paiement-pdf',
-            'page' => $page,
-            'id' => 3
-        ]));
+        $editerSubmit->setAttribute('formaction', 
+            $this->url()
+                ->fromRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-pdf',
+                    'page' => $page,
+                    'id' => 3
+                ]));
         
         if (array_key_exists('preparer', $args)) {
             $form2->setData($args);
@@ -572,45 +639,56 @@ class FinanceController extends AbstractActionController
                     $args['exercice'] = null;
                 }
                 $now = DateLib::nowToMysql();
-                $n = $this->db_manager->get('Sbm\Db\Table\Paiements')->marqueBordereau($now, $args['codeModeDePaiement'], $args['codeCaisse'], $args['exercice'], $args['anneeScolaire']);
-                $message = sprintf('Un bordereau daté du %s a été créé. Il contient %d enregistrements.', DateLib::formatDateTimeFromMysql($now), $n);
+                $n = $this->db_manager->get('Sbm\Db\Table\Paiements')->marqueBordereau(
+                    $now, $args['codeModeDePaiement'], $args['codeCaisse'], 
+                    $args['exercice'], $args['anneeScolaire']);
+                $message = sprintf(
+                    'Un bordereau daté du %s a été créé. Il contient %d enregistrements.', 
+                    DateLib::formatDateTimeFromMysql($now), $n);
                 $this->flashMessenger()->addSuccessMessage($message);
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'paiement-depot'
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'paiement-depot'
+                    ]);
             }
         } elseif (array_key_exists('supprimer', $args)) {
             $form1->setData($args);
             if ($form1->isValid()) {
                 $args = $form1->getData();
                 $aKey = $sBordereaux->decode($args['bordereau']);
-                $n = $tPaiements->annuleBordereau($aKey['dateBordereau'], $aKey['codeModeDePaiement']);
+                $n = $tPaiements->annuleBordereau($aKey['dateBordereau'], 
+                    $aKey['codeModeDePaiement']);
                 $format = "Le bordereau de %s a été supprimé. Il contient %d paiements qui sont à nouveau disponibles pour le prochain bordereau.";
                 $message = sprintf($format, $bordereauxEnCours[$args['bordereau']], $n);
                 $this->flashMessenger()->addSuccessMessage($message);
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'paiement-depot'
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'paiement-depot'
+                    ]);
             }
         } elseif (array_key_exists('cloturer', $args)) {
             $form1->setData($args);
             if ($form1->isValid()) {
                 $args = $form1->getData();
                 $aKey = $sBordereaux->decode($args['bordereau']);
-                $n = $tPaiements->clotureDepot($aKey['dateBordereau'], $aKey['codeModeDePaiement'], $this->db_manager->get('Sbm\Db\System\Libelles')
-                    ->getCode('Caisse', 'comptable'));
+                $n = $tPaiements->clotureDepot($aKey['dateBordereau'], 
+                    $aKey['codeModeDePaiement'], 
+                    $this->db_manager->get('Sbm\Db\System\Libelles')
+                        ->getCode('Caisse', 'comptable'));
                 $format = "Le bordereau de %s a été clôturé. Les %d paiements qu'il contient sont maintenant dans la caisse du comptable.";
                 $message = sprintf($format, $bordereauxEnCours[$args['bordereau']], $n);
                 $this->flashMessenger()->addSuccessMessage($message);
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'paiement-depot'
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'paiement-depot'
+                    ]);
             }
         } else {
-            $form2->setData([
-                'codeCaisse' => $this->db_manager->get('Sbm\Db\System\Libelles')
-                    ->getCode('Caisse', 'régisseur')
-            ]);
+            $form2->setData(
+                [
+                    'codeCaisse' => $this->db_manager->get('Sbm\Db\System\Libelles')
+                        ->getCode('Caisse', 'régisseur')
+                ]);
         }
         if (substr($this->params('id', ''), - 5) == 'error') {
             if ($this->params('id', '1error') == '3error') {
@@ -619,14 +697,15 @@ class FinanceController extends AbstractActionController
                 $form1->setData([])->isValid();
             }
         }
-        return new ViewModel([
-            'form1' => $form1, // bordereaux en cours
-            'voirForm1' => ! empty($bordereauxEnCours),
-            'form2' => $form2, // nouveau bordereau
-            'voirForm2' => ! empty($nouveauxPossibles),
-            'form3' => $form3, // bordereaux clôturés
-            'voirForm3' => ! empty($bordereauxClotures)
-        ]);
+        return new ViewModel(
+            [
+                'form1' => $form1, // bordereaux en cours
+                'voirForm1' => ! empty($bordereauxEnCours),
+                'form2' => $form2, // nouveau bordereau
+                'voirForm2' => ! empty($nouveauxPossibles),
+                'form3' => $form3, // bordereaux clôturés
+                'voirForm3' => ! empty($bordereauxClotures)
+            ]);
     }
 
     /**
@@ -644,10 +723,11 @@ class FinanceController extends AbstractActionController
         } elseif ($prg === false || empty($prg['responsableId'])) {
             $args = $this->getFromSession('post', false, $this->getSessionNamespace());
             if ($args === false) {
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'paiement-liste',
-                    'page' => $page
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'paiement-liste',
+                        'page' => $page
+                    ]);
             }
         } else {
             $args = $prg;
@@ -663,17 +743,19 @@ class FinanceController extends AbstractActionController
         // duplicatas
         $nbDuplicatas = $tEleves->getNbDuplicatas($responsableId);
         if ($nbDuplicatas) {
-            $montantUnitaire = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant('duplicata');
+            $montantUnitaire = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
+                'duplicata');
             $montantDuplicatas = $nbDuplicatas * $montantUnitaire;
         } else {
             $montantDuplicatas = 0.00;
         }
-        return new ViewModel([
-            'liste' => $tEleves->getElevesPayantsWithMontant($responsableId),
-            'args' => $args,
-            'totalEncaisse' => $totalEncaisse,
-            'montantDuplicatas' => $montantDuplicatas
-        ]);
+        return new ViewModel(
+            [
+                'liste' => $tEleves->getElevesPayantsWithMontant($responsableId),
+                'args' => $args,
+                'totalEncaisse' => $totalEncaisse,
+                'montantDuplicatas' => $montantDuplicatas
+            ]);
     }
 
     /**
@@ -695,10 +777,11 @@ class FinanceController extends AbstractActionController
         $args = (array) $prg;
         if (! array_key_exists('editer', $args)) {
             $this->flashMessenger()->addWarningMessage('Action abandonnée.');
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'paiement-depot',
-                'page' => $page
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'paiement-depot',
+                    'page' => $page
+                ]);
         }
         $sBordereaux = $this->db_manager->get('Sbm\Db\Select\Bordereaux');
         $bordereauxClotures = $sBordereaux->clotures();
@@ -722,7 +805,8 @@ class FinanceController extends AbstractActionController
             $call_pdf->setParam('documentId', 'Bordereau de remise de valeurs');
             $aKey = $sBordereaux->decode($args['bordereau']); // tableau de la forme ['dateBordereau' => date, 'codeModeDePaiement' => code)
             $where = new Where();
-            $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo('codeModeDePaiement', $aKey['codeModeDePaiement']);
+            $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo(
+                'codeModeDePaiement', $aKey['codeModeDePaiement']);
             $call_pdf->setParam('where', $where);
             $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
             $view = false;
@@ -730,11 +814,12 @@ class FinanceController extends AbstractActionController
             die();
         }
         // le formulaire ne valide pas. Il s'agit du select qui est vide.
-        return $this->redirect()->toRoute('sbmgestion/finance', [
-            'action' => 'paiement-depot',
-            'page' => $page,
-            'id' => $id . 'error'
-        ]);
+        return $this->redirect()->toRoute('sbmgestion/finance', 
+            [
+                'action' => 'paiement-depot',
+                'page' => $page,
+                'id' => $id . 'error'
+            ]);
         
         $criteresObject = [
             '\SbmCommun\Model\Db\ObjectData\Criteres',
@@ -764,24 +849,28 @@ class FinanceController extends AbstractActionController
      */
     public function tarifListeAction()
     {
-        $args = $this->initListe('tarifs', function ($config, $form) {
-            $table = $config['db_manager']->get('Sbm\Db\Table\Tarifs');
-            $form->setValueOptions('rythme', $table->getRythmes());
-            $form->setValueOptions('grille', $table->getGrilles());
-            $form->setValueOptions('mode', $table->getModes());
-        }, [
-            'rythme',
-            'grille',
-            'mode'
-        ]);
+        $args = $this->initListe('tarifs', 
+            function ($config, $form) {
+                $table = $config['db_manager']->get('Sbm\Db\Table\Tarifs');
+                $form->setValueOptions('rythme', $table->getRythmes());
+                $form->setValueOptions('grille', $table->getGrilles());
+                $form->setValueOptions('mode', $table->getModes());
+            }, 
+            [
+                'rythme',
+                'grille',
+                'mode'
+            ]);
         if ($args instanceof Response)
             return $args;
-        return new ViewModel([
-            'paginator' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->paginator($args['where']),
-            'page' => $this->params('page', 1),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_tarifs', 10),
-            'criteres_form' => $args['form']
-        ]);
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->paginator(
+                    $args['where']),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_tarifs', 10),
+                'criteres_form' => $args['form']
+            ]);
     }
 
     /**
@@ -795,9 +884,12 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $tableTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $form = new FormTarif();
-        $form->setValueOptions('rythme', array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
-            ->setValueOptions('grille', array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
-            ->setValueOptions('mode', array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
+        $form->setValueOptions('rythme', 
+            array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
+            ->setValueOptions('grille', 
+            array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
+            ->setValueOptions('mode', 
+            array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
         $params = [
             'data' => [
                 'table' => 'tarifs',
@@ -816,17 +908,19 @@ class FinanceController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/finance', [
-                        'action' => 'tarif-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/finance', 
+                        [
+                            'action' => 'tarif-liste',
+                            'page' => $currentPage
+                        ]);
                     break;
                 default:
-                    return new ViewModel([
-                        'form' => $form->prepare(),
-                        'page' => $currentPage,
-                        'tarifId' => $r->getResult()
-                    ]);
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'tarifId' => $r->getResult()
+                        ]);
                     break;
             }
         }
@@ -844,16 +938,17 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm([
             'id' => null
-        ], [
-            'supproui' => [
-                'class' => 'confirm',
-                'value' => 'Confirmer'
-            ],
-            'supprnon' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ]);
+        ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
         $params = [
             'data' => [
                 'alias' => 'Sbm\Db\Table\Tarifs',
@@ -862,18 +957,21 @@ class FinanceController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->supprData($this->db_manager, $params, function ($id, $tableTarifs) {
-                return [
-                    'id' => $id,
-                    'data' => $tableTarifs->getRecord($id)
-                ];
-            });
+            $r = $this->supprData($this->db_manager, $params, 
+                function ($id, $tableTarifs) {
+                    return [
+                        'id' => $id,
+                        'data' => $tableTarifs->getRecord($id)
+                    ];
+                });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
-            $this->flashMessenger()->addWarningMessage('Impossible de supprimer ce tarif parce qu\'il est affecté à certains élèves.');
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'tarif-liste',
-                'page' => $currentPage
-            ]);
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer ce tarif parce qu\'il est affecté à certains élèves.');
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'tarif-liste',
+                    'page' => $currentPage
+                ]);
         }
         
         if ($r instanceof Response) {
@@ -883,18 +981,20 @@ class FinanceController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/finance', [
-                        'action' => 'tarif-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/finance', 
+                        [
+                            'action' => 'tarif-liste',
+                            'page' => $currentPage
+                        ]);
                     break;
                 default:
-                    return new ViewModel([
-                        'form' => $form->prepare(),
-                        'page' => $currentPage,
-                        'data' => StdLib::getParam('data', $r->getResult()),
-                        'tarifId' => StdLib::getParam('id', $r->getResult())
-                    ]);
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'tarifId' => StdLib::getParam('id', $r->getResult())
+                        ]);
                     break;
             }
         }
@@ -911,9 +1011,12 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $tableTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $form = new FormTarif();
-        $form->setValueOptions('rythme', array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
-            ->setValueOptions('grille', array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
-            ->setValueOptions('mode', array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
+        $form->setValueOptions('rythme', 
+            array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
+            ->setValueOptions('grille', 
+            array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
+            ->setValueOptions('mode', 
+            array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
         $params = [
             'data' => [
                 'table' => 'tarifs',
@@ -931,17 +1034,19 @@ class FinanceController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'tarif-liste',
-                    'page' => $currentPage
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'tarif-liste',
+                        'page' => $currentPage
+                    ]);
                 break;
             default:
-                return new ViewModel([
-                    'form' => $form->prepare(),
-                    'page' => $currentPage,
-                    'tarifId' => null
-                ]);
+                return new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'page' => $currentPage,
+                        'tarifId' => null
+                    ]);
                 break;
         }
     }
@@ -967,31 +1072,37 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+            $pageRetour = $this->getFromSession('pageRetour', 1, 
+                $this->getSessionNamespace());
         } else {
             $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $tarifId = StdLib::getParam('tarifId', $args, - 1);
         if ($tarifId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'tarif-liste',
-                'page' => $pageRetour
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'tarif-liste',
+                    'page' => $pageRetour
+                ]);
         }
-        return new ViewModel([
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator($this->getFromSession('millesime'), [
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
+                    $this->getFromSession('millesime'), 
+                    [
+                        'tarifId' => $tarifId
+                    ], [
+                        'nom',
+                        'prenom'
+                    ]),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
+                'tarif' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getRecord(
+                    $tarifId),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
                 'tarifId' => $tarifId
-            ], [
-                'nom',
-                'prenom'
-            ]),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'tarif' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getRecord($tarifId),
-            'page' => $currentPage,
-            'pageRetour' => $pageRetour,
-            'tarifId' => $tarifId
-        ]);
+            ]);
     }
 
     /**
@@ -1047,21 +1158,24 @@ class FinanceController extends AbstractActionController
         if ($args instanceof Response)
             return $args;
         
-        return new ViewModel([
-            'paginator' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->paginator($args['where']),
-            't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byOrganisme(),
-            'page' => $this->params('page', 1),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_organismes', 15),
-            'criteres_form' => $args['form']
-        ]);
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->paginator(
+                    $args['where']),
+                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byOrganisme(),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_organismes', 15),
+                'criteres_form' => $args['form']
+            ]);
     }
 
     public function organismeAjoutAction()
     {
         $currentPage = $this->params('page', 1);
         $form = new FormOrganisme();
-        $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
-            ->visibles());
+        $form->setValueOptions('communeId', 
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->visibles());
         $params = [
             'data' => [
                 'table' => 'organismes',
@@ -1078,17 +1192,19 @@ class FinanceController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
-                return $this->redirect()->toRoute('sbmgestion/finance', [
-                    'action' => 'organisme-liste',
-                    'page' => $currentPage
-                ]);
+                return $this->redirect()->toRoute('sbmgestion/finance', 
+                    [
+                        'action' => 'organisme-liste',
+                        'page' => $currentPage
+                    ]);
                 break;
             default:
-                return new ViewModel([
-                    'form' => $form->prepare(),
-                    'page' => $currentPage,
-                    'organismeId' => null
-                ]);
+                return new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'page' => $currentPage,
+                        'organismeId' => null
+                    ]);
                 break;
         }
     }
@@ -1097,8 +1213,9 @@ class FinanceController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new FormOrganisme();
-        $form->setValueOptions('communeId', $this->db_manager->get('Sbm\Db\Select\Communes')
-            ->visibles());
+        $form->setValueOptions('communeId', 
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->visibles());
         $params = [
             'data' => [
                 'table' => 'organismes',
@@ -1117,17 +1234,19 @@ class FinanceController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/finance', [
-                        'action' => 'organisme-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/finance', 
+                        [
+                            'action' => 'organisme-liste',
+                            'page' => $currentPage
+                        ]);
                     break;
                 default:
-                    return new ViewModel([
-                        'form' => $form->prepare(),
-                        'page' => $currentPage,
-                        'organismeId' => $r->getResult()
-                    ]);
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'organismeId' => $r->getResult()
+                        ]);
                     break;
             }
         }
@@ -1138,16 +1257,17 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new ButtonForm([
             'id' => null
-        ], [
-            'supproui' => [
-                'class' => 'confirm',
-                'value' => 'Confirmer'
-            ],
-            'supprnon' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ]);
+        ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
         $params = [
             'data' => [
                 'alias' => 'Sbm\Db\Table\Organismes',
@@ -1157,18 +1277,21 @@ class FinanceController extends AbstractActionController
         ];
         $vueorganismes = $this->db_manager->get('Sbm\Db\Vue\Organismes');
         try {
-            $r = $this->supprData($this->db_manager, $params, function ($id, $tableorganismes) use($vueorganismes) {
-                return [
-                    'id' => $id,
-                    'data' => $vueorganismes->getRecord($id)
-                ];
-            });
+            $r = $this->supprData($this->db_manager, $params, 
+                function ($id, $tableorganismes) use($vueorganismes) {
+                    return [
+                        'id' => $id,
+                        'data' => $vueorganismes->getRecord($id)
+                    ];
+                });
         } catch (\Exception $e) {
-            $this->flashMessenger()->addWarningMessage('Impossible de supprimer cet organisme car il est utilisé.');
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'organisme-liste',
-                'page' => $currentPage
-            ]);
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer cet organisme car il est utilisé.');
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'organisme-liste',
+                    'page' => $currentPage
+                ]);
         }
         
         if ($r instanceof Response) {
@@ -1178,18 +1301,20 @@ class FinanceController extends AbstractActionController
                 case 'error':
                 case 'warning':
                 case 'success':
-                    return $this->redirect()->toRoute('sbmgestion/finance', [
-                        'action' => 'organisme-liste',
-                        'page' => $currentPage
-                    ]);
+                    return $this->redirect()->toRoute('sbmgestion/finance', 
+                        [
+                            'action' => 'organisme-liste',
+                            'page' => $currentPage
+                        ]);
                     break;
                 default:
-                    return new ViewModel([
-                        'form' => $form->prepare(),
-                        'page' => $currentPage,
-                        'data' => StdLib::getParam('data', $r->getResult()),
-                        'organismeId' => StdLib::getParam('id', $r->getResult())
-                    ]);
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'organismeId' => StdLib::getParam('id', $r->getResult())
+                        ]);
                     break;
             }
         }
@@ -1209,33 +1334,38 @@ class FinanceController extends AbstractActionController
             $this->setToSession('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, $this->getSessionNamespace());
+            $pageRetour = $this->getFromSession('pageRetour', 1, 
+                $this->getSessionNamespace());
         } else {
             $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $organismeId = StdLib::getParam('organismeId', $args, - 1);
         if ($organismeId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
-            return $this->redirect()->toRoute('sbmgestion/finance', [
-                'action' => 'organisme-liste',
-                'page' => $pageRetour
-            ]);
+            return $this->redirect()->toRoute('sbmgestion/finance', 
+                [
+                    'action' => 'organisme-liste',
+                    'page' => $pageRetour
+                ]);
         }
-        return new ViewModel([
-            'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->
-            // ->paginatorByOrganisme($this->getFromSession('millesime'), $organismeId, [
-            paginator($this->getFromSession('millesime'), [
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->
+                // ->paginatorByOrganisme($this->getFromSession('millesime'), $organismeId, [
+                paginator($this->getFromSession('millesime'), 
+                    [
+                        'organismeId' => $organismeId
+                    ], [
+                        'nom',
+                        'prenom'
+                    ]),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
+                'organisme' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->getRecord(
+                    $organismeId),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
                 'organismeId' => $organismeId
-            ], [
-                'nom',
-                'prenom'
-            ]),
-            'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
-            'organisme' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->getRecord($organismeId),
-            'page' => $currentPage,
-            'pageRetour' => $pageRetour,
-            'organismeId' => $organismeId
-        ]);
+            ]);
     }
 
     public function organismeGroupPdfAction()

@@ -7,38 +7,42 @@
  * @filesource par-classe-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 try {
     $url_retour = $this->url('sbmgestion/statistiques');
-    $url_rapports = $this->url('sbmgestion/statistiques', [
-        'action' => 'pdf-classe-etablissement'
-    ]);
+    $url_rapports = $this->url('sbmgestion/statistiques', 
+        [
+            'action' => 'pdf-classe-etablissement'
+        ]);
     // l'exception est lancée par l'aide de vue url() donc la methode appendStylesheet doit être placée après
     $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 } catch (\Zend\View\Exception\RuntimeException $e) {
     $url_retour = false;
-    $this->headLink()->appendStylesheet($this->basePath('/css/statistiques.css'), ['media' => 'all']);
+    $this->headLink()->appendStylesheet($this->basePath('/css/statistiques.css'), 
+        [
+            'media' => 'all'
+        ]);
     echo $this->headLink();
 }
 $n = $this->millesime;
 $as0 = sprintf('%d-%d', $n, $n + 1);
 $as1 = sprintf('%d-%d', $n - 1, $n);
-$totaux = array(
-    'annee_courante' => array(
+$totaux = [
+    'annee_courante' => [
         'inscrits' => 0,
         'internet' => 0,
         'papier' => 0,
         'transportes' => 0
-    ),
-    'annee_precedente' => array(
+    ],
+    'annee_precedente' => [
         'inscrits' => 0,
         'internet' => 0,
         'papier' => 0,
         'transportes' => 0
-    )
-);
+    ]
+];
 ?>
 <h1>Effectifs par classe et par établissement</h1>
 <div id="liste-wrapper">
@@ -47,18 +51,21 @@ $totaux = array(
 		<?php
 if ($url_retour) {
     $hiddens = [];
-    $menuImpression = $this->menuRapports($this->url('sbmgestion/statistiques', [
-        'action' => 'par-classe-etablissement'
-    ]), $url_rapports, 'fam-printer', null, $hiddens);
+    $menuImpression = $this->menuRapports(
+        $this->url('sbmgestion/statistiques', 
+            [
+                'action' => 'par-classe-etablissement'
+            ]), $url_rapports, 'fam-printer', null, $hiddens);
     $hiddens = $menuImpression['hiddens'];
-    echo $this->listeZoneActions($hiddens, [
-        'retour' => [
-            'class' => 'fam-door-out',
-            'formaction' => $url_retour,
-            'title' => 'Retour'
-        ],
-        'rapports' => $menuImpression['content']
-    ]);
+    echo $this->listeZoneActions($hiddens, 
+        [
+            'retour' => [
+                'class' => 'fam-door-out',
+                'formaction' => $url_retour,
+                'title' => 'Retour'
+            ],
+            'rapports' => $menuImpression['content']
+        ]);
 }
 ?>
         </div>
@@ -112,7 +119,7 @@ if ($url_retour) {
         $transportes_a_c = $this->statistiques['annee_courante'][$i]['transportes'] ?  : 0;
         $totaux['annee_courante']['transportes'] += $transportes_a_c;
         ?>
-				<tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+				<tr class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td><?php echo $this->statistiques['annee_courante'][$i]['classe'];?></td>
 					<td><?php echo $this->statistiques['annee_courante'][$i]['etablissement'];?></td>
 					<td><?php echo $this->statistiques['annee_courante'][$i]['commune'];?></td>

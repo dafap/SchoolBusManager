@@ -9,8 +9,8 @@
  * @filesource ConfigControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmParent\Controller\Service;
 
@@ -22,6 +22,7 @@ use SbmFront\Model\Responsable\Service\ResponsableManager as Responsable;
 
 class ConfigControllerFactory implements FactoryInterface
 {
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $sm = $serviceLocator->getServiceLocator();
@@ -32,19 +33,22 @@ class ConfigControllerFactory implements FactoryInterface
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'responsable' => $sm->get(Responsable::class),
-            'client' => StdLib::getParamR([
-                'sbm',
-                'client'
-            ], $config_application),
-            'accueil' => StdLib::getParamR([
-                'sbm',
-                'layout',
-                'accueil'
-            ], $config_application),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application)
+            'client' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'client'
+                ], $config_application),
+            'accueil' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'layout',
+                    'accueil'
+                ], $config_application),
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application)
         ];
         return new ConfigController($config_controller);
     }

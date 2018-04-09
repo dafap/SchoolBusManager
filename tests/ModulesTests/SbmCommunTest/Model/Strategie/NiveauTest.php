@@ -30,11 +30,12 @@ class NiveauTest extends PHPUnit_Framework_TestCase
     public function testExtract()
     {
         // on doit obtenir 11 = 1 + 2 + 8
-        $actual = $this->strategy->extract([
-            Niveau::CODE_NIVEAU_MATERNELLE,
-            Niveau::CODE_NIVEAU_ELEMENTAIRE,
-            Niveau::CODE_NIVEAU_SECOND_CYCLE
-        ]);
+        $actual = $this->strategy->extract(
+            [
+                Niveau::CODE_NIVEAU_MATERNELLE,
+                Niveau::CODE_NIVEAU_ELEMENTAIRE,
+                Niveau::CODE_NIVEAU_SECOND_CYCLE
+            ]);
         $expected = 1 * Niveau::CODE_NIVEAU_MATERNELLE;
         $expected += 1 * Niveau::CODE_NIVEAU_ELEMENTAIRE;
         $expected += 0 * Niveau::CODE_NIVEAU_PREMIER_CYCLE;

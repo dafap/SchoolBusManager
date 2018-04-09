@@ -11,36 +11,40 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <style>
 table.horaires {
-    margin: 0;
-    padding: 1px;
-    border-collapse: collapse;
-    border: 1px solid black;
+	margin: 0;
+	padding: 1px;
+	border-collapse: collapse;
+	border: 1px solid black;
 }
+
 table.horaires th {
-    text-align: center;
-    vertical-align: middle;
-    font-weight: bold;
-    border: 1px solid black;
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	border: 1px solid black;
 }
+
 table.horaires td {
-    border: 1px solid black;
+	border: 1px solid black;
 }
+
 table.horaires td.centre {
-    text-align: center;
+	text-align: center;
 }
 </style>
-<?php 
+<?php
 // faut-il une colonne remarque à l'aller ?
 $voirRemarque1 = false;
 foreach ((array) $this->allerRetour['aller'] as $row) {
     $voirRemarque1 = ! empty($row['commentaire1']);
-    if ($voirRemarque1) break;
+    if ($voirRemarque1)
+        break;
 }
 if ($voirRemarque1) {
     $pied = '<tr><th colspan="4">Effectif total</th><th>%d</th><th colspan="2"></th></tr>';
@@ -51,7 +55,9 @@ if ($voirRemarque1) {
 }
 ?>
 <table class="horaires">
-    <tr><th colspan="7"><b>Matin</b></th></tr>
+	<tr>
+		<th colspan="7"><b>Matin</b></th>
+	</tr>
     <?php echo $th1;?>
 <?php $i = 1; $effectif = 0; ?>      
 <?php foreach ((array) $this->allerRetour['aller'] as $row):?> 
@@ -70,12 +76,13 @@ if ($voirRemarque1) {
     <?php echo sprintf($pied, $effectif);?>
 </table>
 <p></p>
-<?php 
+<?php
 // faut-il une colonne remarque au retour ?
 $voirRemarque2 = false;
 foreach ((array) $this->allerRetour['retour'] as $row) {
     $voirRemarque2 = ! empty($row['commentaire2']);
-    if ($voirRemarque2) break;
+    if ($voirRemarque2)
+        break;
 }
 if ($voirRemarque2) {
     $pied = '<tr><th colspan="4">Effectif total</th><th>%d</th><th colspan="2"></th></tr>';
@@ -86,7 +93,9 @@ if ($voirRemarque2) {
 }
 ?>
 <table class="horaires">
-    <tr><th colspan="7"><b>Mercredi midi &amp; soir</b></th></tr>
+	<tr>
+		<th colspan="7"><b>Mercredi midi &amp; soir</b></th>
+	</tr>
     <?php echo $th2;?>
 <?php $i = 1; $effectif = 0; ?>      
 <?php foreach ((array) $this->allerRetour['retour'] as $row):?> 

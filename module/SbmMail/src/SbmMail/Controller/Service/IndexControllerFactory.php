@@ -32,18 +32,21 @@ class IndexControllerFactory implements FactoryInterface
             'user' => $sm->get('SbmAuthentification\Authentication')
                 ->by()
                 ->getIdentity(),
-            'mail_config' => StdLib::getParamR([
-                'sbm',
-                'mail'
-            ], $config_application),
-            'img' => StdLib::getParamR([
-                'sbm',
-                'img'
-            ], $config_application),
-            'client' => StdLib::getParamR([
-                'sbm',
-                'client'
-            ], $config_application)
+            'mail_config' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mail'
+                ], $config_application),
+            'img' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'img'
+                ], $config_application),
+            'client' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'client'
+                ], $config_application)
         ];
         return new IndexController($config);
     }

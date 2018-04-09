@@ -4,14 +4,14 @@
  *
  * @project sbm
  * @package SbmCartographie/GoogleMaps
- * @filesource ExceptionNotAnswer.php
+ * @filesource ExceptionNoAnswer.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 déc. 2017
- * @version 2017-2.3.14
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\GoogleMaps;
 
-class ExceptionNotAnswer extends Exception
+class ExceptionNoAnswer extends Exception
 {
 } 

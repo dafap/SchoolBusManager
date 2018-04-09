@@ -15,8 +15,8 @@
  * @filesource Ellipsoide.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
 
@@ -32,11 +32,11 @@ class Ellipsoide
     private $f;
 
     private $e;
-    
+
     private $e_carre;
-    
+
     private $e2;
-    
+
     private $e2_carre;
 
     /**
@@ -74,10 +74,10 @@ class Ellipsoide
         }
         return $this->e;
     }
-    
+
     /**
      * Carré de la première excentricité
-     * 
+     *
      * @return real
      */
     public function getECarre()
@@ -87,10 +87,10 @@ class Ellipsoide
         }
         return $this->e_carre;
     }
-    
+
     /**
      * Deuxième excentricité
-     * 
+     *
      * @return real;
      */
     public function getE2()
@@ -100,7 +100,7 @@ class Ellipsoide
         }
         return $this->e2;
     }
-    
+
     /**
      * Carré de la deuxième excentricité
      *
@@ -113,7 +113,7 @@ class Ellipsoide
         }
         return $this->e2_carre;
     }
-    
+
     /**
      * Aplatissement
      *
@@ -175,7 +175,9 @@ class Ellipsoide
             $this->calculeB();
             $this->calculeE();
         } else {
-            throw new Exception(__METHOD__ . ' - division par zéro. Il faut donner l\'inverse de l\'aplatissement !');
+            throw new Exception(
+                __METHOD__ .
+                     ' - division par zéro. Il faut donner l\'inverse de l\'aplatissement !');
         }
     }
 
@@ -189,6 +191,7 @@ class Ellipsoide
 
     /**
      * Calcule l'aplatissement f à partir du grand axe a et du petit axe b
+     * 
      * @throws Exception
      */
     private function calculeF()
@@ -199,7 +202,7 @@ class Ellipsoide
             throw new Exception(__METHOD__ . ' - division par zéro !');
         }
     }
-    
+
     private function calculeE()
     {
         if ($this->a != 0) {
@@ -210,7 +213,7 @@ class Ellipsoide
             throw new Exception(__METHOD__ . ' - division par zéro !');
         }
     }
-    
+
     private function calculeE2()
     {
         if (empty($this->b)) {
@@ -223,5 +226,5 @@ class Ellipsoide
         } else {
             throw new Exception(__METHOD__ . ' - division par zéro !');
         }
-    } 
+    }
 }

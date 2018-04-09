@@ -8,8 +8,8 @@
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2015
- * @version 2015-1.6.9
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -25,7 +25,7 @@ class Criteres implements ArraySerializableInterface
      *
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * Nom réel de la table dans la base de donnée
@@ -33,10 +33,10 @@ class Criteres implements ArraySerializableInterface
      * @var string
      */
     protected $table;
-    
+
     /**
      * Tableau contenant éventuellement les clés 'pageheader_title' et 'pageheader_string' et leurs valeurs.
-     * 
+     *
      * @var array
      */
     protected $pageheader_params;
@@ -52,9 +52,9 @@ class Criteres implements ArraySerializableInterface
     public function __construct($form_fields)
     {
         $this->createDataStructure($form_fields);
-        $this->pageheader_params = array();
+        $this->pageheader_params = [];
     }
-    
+
     public function getPageheaderParams()
     {
         return $this->pageheader_params;
@@ -88,7 +88,8 @@ class Criteres implements ArraySerializableInterface
     public function createDataStructure($fields)
     {
         if (! is_array($fields)) {
-            throw new Exception(sprintf("Tableau attendu. On a reçu un %s", gettype($fields)));
+            throw new Exception(
+                sprintf("Tableau attendu. On a reçu un %s", gettype($fields)));
         }
         $this->data = array_fill_keys($fields, null);
     }
@@ -111,11 +112,11 @@ class Criteres implements ArraySerializableInterface
      * @return Zend\Db\Sql\Where
      *
      */
-    public function getWhere($strict = array(), $alias = array())
+    public function getWhere($strict = [], $alias = [])
     {
         $where = new Where();
-        $strict =  (array) $strict;
-        $alias =  (array) $alias;
+        $strict = (array) $strict;
+        $alias = (array) $alias;
         foreach ($this->data as $field => $value) {
             if (! empty($value) || (in_array($field, $strict) && $value == '0')) {
                 $isExpression = false;
@@ -136,13 +137,13 @@ class Criteres implements ArraySerializableInterface
                     }
                 }
                 if ($isLiteral) {
-                    $where->literal($expression); 
+                    $where->literal($expression);
                 } elseif ($isExpression) {
-                    $where->expression($expression, $value); 
+                    $where->expression($expression, $value);
                 } elseif (in_array($field, $strict)) {
-                    $where->equalTo($field, $value); 
+                    $where->equalTo($field, $value);
                 } else {
-                    $where->like($field, $value . '%'); 
+                    $where->like($field, $value . '%');
                 }
             }
         }
@@ -165,18 +166,20 @@ class Criteres implements ArraySerializableInterface
     {
         $descripteur = (array) $descripteur;
         if (! array_key_exists('strict', $descripteur)) {
-            $descripteur['strict'] = array();
+            $descripteur['strict'] = [];
         } else {
             $descripteur['strict'] = (array) $descripteur['strict'];
         }
         if (! array_key_exists('expressions', $descripteur)) {
-            $descripteur['expressions'] = array();
+            $descripteur['expressions'] = [];
         } else {
             $descripteur['expressions'] = (array) $descripteur['expressions'];
             if (getenv('APPLICATION_ENV') == 'development') {
                 foreach ($descripteur['expressions'] as $key => $value) {
                     if (strpos($value, '.') !== false) {
-                        $msg = __METHOD__ . sprintf(' - Ne pas utiliser de champ préfixé. Problème sur %s => %s', $key, $value);
+                        $msg = __METHOD__ . sprintf(
+                            ' - Ne pas utiliser de champ préfixé. Problème sur %s => %s', 
+                            $key, $value);
                         throw new \Exception($msg);
                     }
                 }
@@ -190,20 +193,20 @@ class Criteres implements ArraySerializableInterface
      *
      * @param array $criteres            
      */
-    public function getCriteres($strict = array(), $alias = array())
+    public function getCriteres($strict = [], $alias = [])
     {
         if (empty($strict)) {
-            $strict = array(
-                'empty' => array(),
-                'not empty' => array()
-            );
+            $strict = [
+                'empty' => [],
+                'not empty' => []
+            ];
         }
         
-        $filtre = array(
-            'expression' => array(),
+        $filtre = [
+            'expression' => [],
             'criteres' => (array) $this->data,
             'strict' => $strict
-        );
+        ];
         foreach ($this->data as $field => $value) {
             if (! empty($value) || (in_array($field, $strict['empty']) && $value == '0')) {
                 $isExpression = false;
@@ -221,7 +224,8 @@ class Criteres implements ArraySerializableInterface
                                 if (! is_numeric($value)) {
                                     $value = "'" . addslashes($value) . "'";
                                 }
-                                $filtre['expression'][] = str_replace('?', $value, $expression);
+                                $filtre['expression'][] = str_replace('?', $value, 
+                                    $expression);
                                 break;
                         }
                     }

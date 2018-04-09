@@ -9,8 +9,8 @@
  * @filesource GeocoderFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\GoogleMaps\Service;
 
@@ -26,10 +26,11 @@ class GeocoderFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $cartographie = $serviceLocator->get('cartographie');
-        $projection = str_replace('ProjectionInterface', StdLib::getParam('system', $cartographie), ProjectionInterface::class);
+        $projection = str_replace('ProjectionInterface', 
+            StdLib::getParam('system', $cartographie), ProjectionInterface::class);
         $nzone = StdLib::getParam('nzone', $cartographie, 0);
         $google_api = $serviceLocator->get('google_api');
-
+        
         return new Geocoder(new $projection($nzone), $google_api);
     }
 }

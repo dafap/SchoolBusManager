@@ -9,8 +9,8 @@
  * @filesource DocumentPdfFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Form\Service;
 
@@ -22,6 +22,7 @@ use SbmPdf\Model\Tcpdf;
 
 class DocumentPdfFactory implements FactoryInterface
 {
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof PdfManager)) {
@@ -29,11 +30,14 @@ class DocumentPdfFactory implements FactoryInterface
             throw new Exception(sprintf($message, gettype($pdfManager)));
         }
         $db_manager = $serviceLocator->get('Sbm\DbManager');
-        $auth_userId = $serviceLocator->get('SbmAuthentification\Authentication')->by()->getUserId();
+        $auth_userId = $serviceLocator->get('SbmAuthentification\Authentication')
+            ->by()
+            ->getUserId();
         $pdf = $serviceLocator->get(Tcpdf::class);
-        return new DocumentPdf($db_manager, $auth_userId, $this->getTemplateMethodList($pdf));
+        return new DocumentPdf($db_manager, $auth_userId, 
+            $this->getTemplateMethodList($pdf));
     }
-    
+
     private function getTemplateMethodList($pdf)
     {
         $methods = get_class_methods(Tcpdf::class);

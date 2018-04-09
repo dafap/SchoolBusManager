@@ -8,8 +8,8 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 
 /**
@@ -28,14 +28,14 @@
  * - banque, titulaire et reference sont des varchar(30) destinés à recevoir les informations nécessaires pour les paiements par chèque
  * *************************************************************************
  */
-return array(
+return [
     'name' => 'paiements',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'paiementId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'dateBordereau' => 'datetime DEFAULT NULL',
@@ -52,51 +52,51 @@ return array(
             'titulaire' => 'varchar(30) NOT NULL DEFAULT ""',
             'reference' => 'varchar(30) NOT NULL DEFAULT ""',
             'note' => 'text NULL'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'paiementId'
-        ),
-        'keys' => array(
-            'PAIEMENTS_date_reference' => array(
+        ],
+        'keys' => [
+            'PAIEMENTS_date_reference' => [
                 'unique' => true,
-                'fields' => array(
+                'fields' => [
                     'datePaiement',
                     'reference'
-                )
-            ),
-        ),
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
-    'triggers' => array(
-        'paiements_bi_history' => array(
+    ],
+    'triggers' => [
+        'paiements_bi_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'INSERT',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
 VALUES ('%table(paiements)%', 'insert', 'paiementId', NEW.paiementId, NOW(), CONCAT(IFNULL(NEW.dateDepot, ''), '|', NEW.datePaiement, '|', IFNULL(NEW.dateValeur, ''), '|', NEW.responsableId, '|', NEW.anneeScolaire, '|', NEW.exercice, '|', NEW.montant, '|', NEW.codeModeDePaiement, '|', NEW.codeCaisse, '|', NEW.banque, '|', NEW.titulaire, '|', NEW.reference))
 EOT
-           
-        ),
-        'paiements_bu_history' => array(
+
+        ],
+        'paiements_bu_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
 VALUES ('%table(paiements)%', 'update', 'paiementId', OLD.paiementId, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(NEW.note, '')))
 EOT
-            
-        ),
-        'paiements_bd_history' => array(
+
+        ],
+        'paiements_bd_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
 VALUES ('%table(paiements)%', 'delete', 'paiementId', OLD.paiementId, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(OLD.note, '')))
 EOT
-                     
-        )
-    ),
+
+        ]
+    ],
     'data' => __DIR__ . '/data/data.paiements.php'
-);
+];

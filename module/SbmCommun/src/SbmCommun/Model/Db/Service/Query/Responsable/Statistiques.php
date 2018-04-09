@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -39,7 +39,7 @@ class Statistiques implements FactoryInterface
      * @var \Zend\Db\Adapter\Adapter
      */
     protected $db_manager;
-    
+
     /**
      *
      * @var \Zend\Db\Adapter\Adapter
@@ -55,7 +55,7 @@ class Statistiques implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param \Zend\Db\Sql\Select $select            
      *
      * @return \Zend\Db\Adapter\mixed
      */
@@ -86,9 +86,10 @@ class Statistiques implements FactoryInterface
     {
         $select = $this->sql->select();
         $select->from($this->db_manager->getCanonicName('responsables', 'table'))
-            ->columns(array(
-            'effectif' => new Expression('count(responsableId)')
-        ));
+            ->columns(
+            [
+                'effectif' => new Expression('count(responsableId)')
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
         return iterator_to_array($statement->execute());
@@ -104,42 +105,50 @@ class Statistiques implements FactoryInterface
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
-        $select1->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-            ->columns(array(
+        $select1->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns([
             'responsableId' => 'responsable1Id'
-        ))
-            ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'sco.eleveId = ele.eleveId', array())
+        ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
             ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
         $select2 = $this->sql->select();
-        $select2->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-            ->columns(array(
+        $select2->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns([
             'responsableId' => 'responsable2Id'
-        ))
-            ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'sco.eleveId = ele.eleveId', array())
+        ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
             ->where($where2);
         $select1->combine($select2);
         $select3 = $this->sql->select();
-        $select3->from(array('id' => $select1));
+        $select3->from([
+            'id' => $select1
+        ]);
         
         $where = new Where();
         $where->in('responsableId', $select3);
         $select = $this->sql->select();
-        $select->from(array(
-            'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ))
-            ->columns(array(
-            'effectif' => new Expression('count(responsableId)')
-        ))
+        $select->from(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'effectif' => new Expression('count(responsableId)')
+            ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return iterator_to_array($statement->execute());
@@ -155,26 +164,32 @@ class Statistiques implements FactoryInterface
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
-        $select1->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-            ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'sco.eleveId = ele.eleveId', array())
+        $select1->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
             ->where($where1);
         
         $where2 = new Where();
         $where2->isNull('eleveId');
         $select2 = $this->sql->select();
-        $select2->from(array(
-            'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ))
-            ->columns(array(
-            'effectif' => new Expression('count(responsableId)')
-        ))
-            ->join(array(
+        $select2->from(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'effectif' => new Expression('count(responsableId)')
+            ])
+            ->join([
             'ele' => $select1
-        ), 'ele.responsable1Id = res.responsableId Or ele.responsable2Id = res.responsableId', array(), $select2::JOIN_LEFT)
+        ], 
+            'ele.responsable1Id = res.responsableId Or ele.responsable2Id = res.responsableId', 
+            [], $select2::JOIN_LEFT)
             ->where($where2);
         $statement = $this->sql->prepareStatementForSqlObject($select2);
         // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
@@ -191,54 +206,63 @@ class Statistiques implements FactoryInterface
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
-        $select1->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-        ->columns(array(
+        $select1->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns([
             'responsableId' => 'responsable1Id'
-        ))
-        ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'sco.eleveId = ele.eleveId', array())
-        ->where($where1);
+        ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
+            ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
         $select2 = $this->sql->select();
-        $select2->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-        ->columns(array(
+        $select2->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns([
             'responsableId' => 'responsable2Id'
-        ))
-        ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'sco.eleveId = ele.eleveId', array())
-        ->where($where2);
+        ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
+            ->where($where2);
         $select1->combine($select2);
         $select3 = $this->sql->select();
-        $select3->from(array('id' => $select1));
+        $select3->from([
+            'id' => $select1
+        ]);
         
         $where = new Where();
         $where->in('responsableId', $select3)->literal('com.membre = 0');
         $select = $this->sql->select();
-        $select->from(array(
-            'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ))
-            ->columns(array(
-            'effectif' => new Expression('count(responsableId)')
-        ))
-            ->join(array(
-            'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ), 'com.communeId = res.communeId', array())
+        $select->from(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'effectif' => new Expression('count(responsableId)')
+            ])
+            ->join(
+            [
+                'com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'com.communeId = res.communeId', [])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
         return iterator_to_array($statement->execute());
     }
-    
+
     /**
      * Renvoie le nombre de responsables ayant des enfants inscrits et ayant déménagé
-     * 
+     *
      * @return array
      */
     public function getNbDemenagement()
@@ -246,42 +270,50 @@ class Statistiques implements FactoryInterface
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
         $select1 = $this->sql->select();
-        $select1->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-            ->columns(array(
+        $select1->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns([
             'responsableId' => 'responsable1Id'
-        ))
-            ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'sco.eleveId = ele.eleveId', array())
+        ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
             ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
         $select2 = $this->sql->select();
-        $select2->from(array(
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ))
-            ->columns(array(
+        $select2->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns([
             'responsableId' => 'responsable2Id'
-        ))
-            ->join(array(
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ), 'sco.eleveId = ele.eleveId', array())
+        ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'sco.eleveId = ele.eleveId', [])
             ->where($where2);
         $select1->combine($select2);
         $select3 = $this->sql->select();
-        $select3->from(array('id' => $select1));
+        $select3->from([
+            'id' => $select1
+        ]);
         
         $where = new Where();
         $where->in('responsableId', $select3)->literal('demenagement = 1');
         $select = $this->sql->select();
-        $select->from(array(
-            'res' => $this->db_manager->getCanonicName('responsables', 'table')
-        ))
-            ->columns(array(
-            'effectif' => new Expression('count(responsableId)')
-        ))
+        $select->from(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'effectif' => new Expression('count(responsableId)')
+            ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface

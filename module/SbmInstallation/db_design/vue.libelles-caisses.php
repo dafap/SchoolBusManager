@@ -9,28 +9,38 @@
  * @filesource vue.libelles-caisses.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 janv. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-
-return array(
+return [
     'name' => 'libelles-caisses',
     'type' => 'vue',
-    'drop' => true, 
+    'drop' => true,
     'edit_entity' => true,
-    'structure'=> array(
-        'fields' => array(
-            array('field' => 'code',),
-            array('field' => 'libelle',),
-        ),
-        'from' => array(
+    'structure' => [
+        'fields' => [
+            [
+                'field' => 'code'
+            ],
+            [
+                'field' => 'libelle'
+            ]
+        ],
+        'from' => [
             'table' => 'libelles', // obligatoire mais peut être une vue
             'type' => 'system', // optionnel, 'table' par défaut
-            'alias' => 'caisse', // optionnel
-        ),
-        'where' => array(
-             array('literal', 'nature="Caisse"'),
-             array('literal', 'ouvert=1')
-        ),
-    ),
-);
+            'alias' => 'caisse'
+        ] // optionnel
+,
+        'where' => [
+            [
+                'literal',
+                'nature="Caisse"'
+            ],
+            [
+                'literal',
+                'ouvert=1'
+            ]
+        ]
+    ]
+];

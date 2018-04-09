@@ -9,8 +9,8 @@
  * @filesource Projection.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\Model;
 
@@ -27,13 +27,13 @@ class Projection extends AbstractProjection implements ProjectionInterface
      */
     private $projection = null;
 
-    private $rangeLat = array();
+    private $rangeLat = [];
 
-    private $rangeLng = array();
+    private $rangeLng = [];
 
-    private $rangeX = array();
+    private $rangeX = [];
 
-    private $rangeY = array();
+    private $rangeY = [];
 
     /**
      *
@@ -42,15 +42,17 @@ class Projection extends AbstractProjection implements ProjectionInterface
      */
     public function __construct($projection, $config_cartes)
     {
-        $this->projection = $projection;        
-        $rangeEtab = StdLib::getParamR(array(
-            'etablissements',
-            'valide'
-        ), $config_cartes);
-        $rangeParent = StdLib::getParamR(array(
-            'parent',
-            'valide'
-        ), $config_cartes);
+        $this->projection = $projection;
+        $rangeEtab = StdLib::getParamR(
+            [
+                'etablissements',
+                'valide'
+            ], $config_cartes);
+        $rangeParent = StdLib::getParamR(
+            [
+                'parent',
+                'valide'
+            ], $config_cartes);
         // configure le rectangle de validité pour les etablissements et les stations
         $this->rangeLat['etablissements'] = $rangeEtab['lat'];
         $this->rangeLng['etablissements'] = $rangeEtab['lng'];

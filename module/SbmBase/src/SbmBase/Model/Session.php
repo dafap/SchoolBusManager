@@ -10,16 +10,18 @@
  * @filesource Session.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmBase\Model;
 
 use Zend\Session\Container;
 
-abstract class Session {
+abstract class Session
+{
+
     const SBM_DG_SESSION = 'sbm_dg_session';
-    
+
     /**
      * Renvoie le paramètre en session ou la valeur par défaut s'il n'est pas défini
      *
@@ -29,15 +31,16 @@ abstract class Session {
      *            à renvoyer si le paramètre n'est pas défini
      * @param string|null $sessionNamespace
      *            namespace de la session (par défaut valeur fixée par le constante de cette classe SBM_DG_SESSION)
-     *
+     *            
      * @return int|boolean
      */
-    public static function get($param, $default = null, $sessionNamespace = self::SBM_DG_SESSION)
+    public static function get($param, $default = null, 
+        $sessionNamespace = self::SBM_DG_SESSION)
     {
         $session = new Container($sessionNamespace);
         return isset($session->{$param}) ? $session->{$param} : $default;
     }
-    
+
     /**
      * Place la valeur en session dans le paramètre indiqué
      *
@@ -53,12 +56,12 @@ abstract class Session {
         $session = new Container($sessionNamespace);
         $session->{$param} = $value;
     }
-    
+
     /**
      * Supprime le paramètre indiqué de la session
-     * 
-     * @param string $param
-     * @param string $sessionNamespace
+     *
+     * @param string $param            
+     * @param string $sessionNamespace            
      */
     public static function remove($param, $sessionNamespace = self::SBM_DG_SESSION)
     {

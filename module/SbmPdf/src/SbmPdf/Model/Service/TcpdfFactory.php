@@ -9,8 +9,8 @@
  * @filesource TcpdfFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model\Service;
 
@@ -31,6 +31,6 @@ class TcpdfFactory implements FactoryInterface
             $message = 'PdfManager attendu. On a reçu un %s.';
             throw new Exception(sprintf($message, gettype($pdfManager)));
         }
-        return new Tcpdf($pdfManager);        
+        return new Tcpdf($pdfManager);
     }
 }

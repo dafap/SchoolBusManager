@@ -8,81 +8,80 @@
  * @filesource vue.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 févr. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'services',
     'type' => 'vue',
     'drop' => true, // si true, un DROP TABLE IF EXISTS sera fait avant la création
     'edit_entity' => true,
-    'structure' => array(
-        'fields' => array(
-            array(
+    'structure' => [
+        'fields' => [
+            [
                 'field' => 'serviceId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'selection'
-            ),
-            array(
+            ],
+            [
                 'field' => 'nom'
-            ),
-            array(
+            ],
+            [
                 'field' => 'aliasCG'
-            ),
-            array(
+            ],
+            [
                 'field' => 'transporteurId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'nbPlaces'
-            ),
-            array(
+            ],
+            [
                 'field' => 'surEtatCG'
-            ),
-            array(
+            ],
+            [
                 'field' => 'operateur'
-            ),
-            array(
+            ],
+            [
                 'field' => 'kmAVide'
-            ),
-            array(
+            ],
+            [
                 'field' => 'kmEnCharge'
-            )
-        ),
-        'from' => array(
+            ]
+        ],
+        'from' => [
             'table' => 'services', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
             'alias' => 'ser'
-        ) // optionnel
-,
-        'join' => array(
-            array(
+        ], // optionnel
+        'join' => [
+            [
                 'table' => 'transporteurs', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
                 'alias' => 'tra', // optionnel
                 'relation' => 'tra.transporteurId = ser.transporteurId', // obligatoire
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'transporteur'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'table' => 'communes', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
                 'alias' => 'com', // optionnel
                 'relation' => 'com.communeId = tra.communeId', // obligatoire
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'communeTransporteur'
-                    )
-                )
-            )
-        ),
-        'order' => array(
+                    ]
+                ]
+            ]
+        ],
+        'order' => [
             'serviceId'
-        )
-    )
-);
+        ]
+    ]
+];

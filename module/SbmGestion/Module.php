@@ -22,10 +22,10 @@ use Zend\EventManager\EventInterface;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 
-
 class Module extends AbstractModule
 {
-public function getDir()
+
+    public function getDir()
     {
         return __DIR__;
     }
@@ -33,5 +33,5 @@ public function getDir()
     public function getNamespace()
     {
         return __NAMESPACE__;
-    }    
+    }
 }

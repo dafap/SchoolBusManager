@@ -8,16 +8,16 @@
  * @filesource Classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Strategy\Niveau as NiveauStrategy;
 
-
 class Classes extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la classe
      */
@@ -28,19 +28,20 @@ class Classes extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Classes';
         $this->id_name = 'classeId';
     }
-    
+
     /**
      * (non-PHPdoc)
+     *
      * @see \SbmCommun\Model\Db\Table\AbstractTable::setStrategies()
      */
     protected function setStrategies()
     {
         $this->hydrator->addStrategy('niveau', new NiveauStrategy());
     }
-    
+
     public function getNiveaux()
     {
-        return  array(
+        return [
             NiveauStrategy::CODE_NIVEAU_MATERNELLE => 'maternelle',
             NiveauStrategy::CODE_NIVEAU_ELEMENTAIRE => 'élémentaire',
             NiveauStrategy::CODE_NIVEAU_PREMIER_CYCLE => 'premier cycle',
@@ -48,16 +49,17 @@ class Classes extends AbstractSbmTable
             NiveauStrategy::CODE_NIVEAU_POST_BAC => 'post bac',
             NiveauStrategy::CODE_NIVEAU_SUPERIEUR => 'ens. supérieur',
             NiveauStrategy::CODE_NIVEAU_AUTRE => 'autres'
-        );
+        ];
     }
-    
+
     public function setSelection($classeId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'classeId' => $classeId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'classeId' => $classeId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 }

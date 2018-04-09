@@ -8,53 +8,57 @@
  * @filesource responsable-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-edit',
-    'page' => $this->page
-));
-$url_map = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-localisation',
-    'page' => $this->page
-));
-$url_email = $this->url('sbmgestion/eleve', array(
+$url_ici = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-edit',
+        'page' => $this->page
+    ]);
+$url_map = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-localisation',
+        'page' => $this->page
+    ]);
+$url_email = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
+]);
 $email = $this->form->get('email')->getValue();
-$hiddens = array(
+$hiddens = [
     'responsableId' => $this->responsableId,
     'info' => $this->identite,
     'origine' => $url_ici
-);
-$actions = array(
-    'cancel' => array(
+];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_ici,
         'title' => 'Retour'
-    ),
-    'localiser' => array(
+    ],
+    'localiser' => [
         'class' => 'fam-map-magnify',
         'formaction' => $url_map,
         'title' => 'localiser ce responsable sur la carte',
         'onclick' => sprintf($js, "'localiser'")
-    )
-);
+    ]
+];
 if (! empty($email)) {
     $hiddens['email'] = $email;
     $hiddens['responsable'] = $this->identite;
     $hiddens['group'] = $url_ici;
-    $actions['ecrire'] = array(
+    $actions['ecrire'] = [
         'class' => 'fam-email',
         'formaction' => $url_email,
         'title' => 'Envoyer un email'
-    );
+    ];
 }
 ?>
 <div id="winpopup">

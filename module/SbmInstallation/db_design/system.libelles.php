@@ -15,26 +15,29 @@
  * @filesource system.libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'libelles',
     'type' => 'system',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'nature' => 'varchar(20) NOT NULL',
             'code' => 'int(11) NOT NULL DEFAULT "1"',
             'libelle' => 'text NOT NULL',
-            'ouvert' => 'tinyint(1) NOT NULL DEFAULT "1"',
-        ),
-        'primary_key' => array('nature', 'code'),
+            'ouvert' => 'tinyint(1) NOT NULL DEFAULT "1"'
+        ],
+        'primary_key' => [
+            'nature',
+            'code'
+        ],
         'engine' => 'MyISAM',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     'data' => __DIR__ . '/data/data.system.libelles.php'
-);
+];

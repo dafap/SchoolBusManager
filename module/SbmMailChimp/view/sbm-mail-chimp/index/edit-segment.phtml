@@ -7,8 +7,8 @@
  * @filesource edit-segment.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\StdLib;
 
@@ -73,13 +73,14 @@ $actions = [
 					<legend>Les règles du filtre</legend>
 					<div id="conditions-header" class="menu clearfix">
 				     <?php
-        echo $this->listeZoneActions([], [
-            'addcondition' => [
-                'class' => 'fam-add',
-                'formaction' => $url_ajax,
-                'title' => 'Ajouter une règle'
-            ]
-        ]);
+        echo $this->listeZoneActions([], 
+            [
+                'addcondition' => [
+                    'class' => 'fam-add',
+                    'formaction' => $url_ajax,
+                    'title' => 'Ajouter une règle'
+                ]
+            ]);
         ?>
 				    </div>
 					<div id="conditions"></div>

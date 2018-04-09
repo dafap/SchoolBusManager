@@ -7,55 +7,55 @@
  * @filesource table.users-etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 juil. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'users-etablissements',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'userId' => 'int(11) NOT NULL',
             'etablissementId' => 'char(8) NOT NULL'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'userId',
             'etablissementId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'userId',
-                'references' => array(
+                'references' => [
                     'table' => 'users',
-                    'fields' => array(
+                    'fields' => [
                         'userId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'etablissementId',
-                'references' => array(
+                'references' => [
                     'table' => 'etablissements',
-                    'fields' => array(
+                    'fields' => [
                         'etablissementId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),   
+    ],
     'data' => __DIR__ . '/data/data.users-etablissements.php'
-);
+];

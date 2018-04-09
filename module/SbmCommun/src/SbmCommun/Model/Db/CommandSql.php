@@ -8,8 +8,8 @@
  * @filesource CommandSql.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db;
 
@@ -37,18 +37,21 @@ abstract class CommandSql
     {
         self::isValidDbDesignStructureView($structure); // lance une exception si la structure n'est pas bonne
         $sql = new Select();
-        $table = StdLib::entityName($structure['from']['table'], array_key_exists('type', $structure['from']) ? $structure['from']['type'] : 'table', $prefix);
-        $table = array_key_exists('alias', $structure['from']) ? array(
+        $table = StdLib::entityName($structure['from']['table'], 
+            array_key_exists('type', $structure['from']) ? $structure['from']['type'] : 'table', 
+            $prefix);
+        $table = array_key_exists('alias', $structure['from']) ? [
             $structure['from']['alias'] => $table
-        ) : $table;
+        ] : $table;
         $sql->from($table);
         $sql->columns(self::getColumnsFromDbDesignFields($structure['fields']));
         if (array_key_exists('join', $structure)) {
             foreach ($structure['join'] as $join) {
-                $table = StdLib::entityName($join['table'], array_key_exists('type', $join) ? $join['type'] : 'table', $prefix);
-                $table = array_key_exists('alias', $join) ? array(
+                $table = StdLib::entityName($join['table'], 
+                    array_key_exists('type', $join) ? $join['type'] : 'table', $prefix);
+                $table = array_key_exists('alias', $join) ? [
                     $join['alias'] => $table
-                ) : $table;
+                ] : $table;
                 $on = $join['relation'];
                 if (array_key_exists('fields', $join)) {
                     $columns = self::getColumnsFromDbDesignFields($join['fields']);
@@ -66,7 +69,7 @@ abstract class CommandSql
             $sql->where(self::getWhere($structure['where']));
         }
         if (array_key_exists('group', $structure)) {
-            $fields = array();
+            $fields = [];
             foreach ($structure['group'] as $field) {
                 $fields[] = $field['table'] . '.' . $field['field'];
             }
@@ -89,7 +92,9 @@ abstract class CommandSql
      */
     public static function isValidDbDesignStructureView($structure)
     {
-        $ok = is_array($structure) && array_key_exists('fields', $structure) && is_array($structure['fields']) && array_key_exists('from', $structure) && array_key_exists('table', $structure['from']);
+        $ok = is_array($structure) && array_key_exists('fields', $structure) &&
+             is_array($structure['fields']) && array_key_exists('from', $structure) &&
+             array_key_exists('table', $structure['from']);
         if ($ok) {
             $ok = self::isValidDbDesignFields($structure['fields']);
         }
@@ -141,7 +146,8 @@ abstract class CommandSql
     {
         $ok = false;
         foreach ($fields as $field) {
-            $ok = array_key_exists('field', $field) || (array_key_exists('expression', $field) && array_key_exists('alias', $field));
+            $ok = array_key_exists('field', $field) || (array_key_exists('expression', 
+                $field) && array_key_exists('alias', $field));
             if (! $ok) {
                 break;
             }
@@ -151,7 +157,7 @@ abstract class CommandSql
 
     private static function getColumnsFromDbDesignFields($fields)
     {
-        $result = array();
+        $result = [];
         foreach ($fields as $field) {
             if (array_key_exists('field', $field)) {
                 if (array_key_exists('alias', $field)) {
@@ -183,49 +189,49 @@ abstract class CommandSql
                 case 'unnest':
                 case ')':
                     $result = $result->unnest();
-                case 'between':                   
-                    list($identifier, $minValue, $maxValue) = $arguments;
+                case 'between':
+                    list ($identifier, $minValue, $maxValue) = $arguments;
                     $result = $result->between($identifier, $minValue, $maxValue);
                     break;
                 case 'expression':
-                    list($expression, $parameter) = $arguments;
+                    list ($expression, $parameter) = $arguments;
                     $result = $result->expression($expression, $parameters);
                     break;
                 case 'in':
-                    list($identifier, $valueSet) = $arguments;
+                    list ($identifier, $valueSet) = $arguments;
                     $result = $result->in($identifier, $valueSet);
                     break;
                 case 'isnotnull':
-                    list($identifier) = $arguments;
+                    list ($identifier) = $arguments;
                     $result = $result->isNotNull($identifier);
                     break;
                 case 'isnull':
-                    list($identifier) = $arguments;
+                    list ($identifier) = $arguments;
                     $result = $result->isNotNull($identifier);
                     break;
                 case 'like':
-                    list($identifier, $like) = $arguments;
+                    list ($identifier, $like) = $arguments;
                     $result = $result->like($identifier, $like);
                     break;
                 case 'literal':
-                    list($literal) = $arguments;
+                    list ($literal) = $arguments;
                     $result = $result->literal($literal);
                     break;
                 case 'notin':
-                    list($identifier, $valueSet) = $arguments;
+                    list ($identifier, $valueSet) = $arguments;
                     $result = $result->notIn($identifier);
                     break;
                 case 'notlike':
-                    list($identifier, $notLike) = $arguments;
+                    list ($identifier, $notLike) = $arguments;
                     $result = $result->notLike($identifier, $notLike);
                     break;
                 case 'equalto':
                 case '=':
                     if (count($arguments) == 4) {
-                        list($left, $right, $leftType, $rightType) = $arguments;
+                        list ($left, $right, $leftType, $rightType) = $arguments;
                         $result = $result->equalTo($left, $right, $leftType, $rightType);
                     } else {
-                        list($left, $right) = $arguments;
+                        list ($left, $right) = $arguments;
                         $result = $result->equalTo($left, $right);
                     }
                     break;
@@ -233,55 +239,61 @@ abstract class CommandSql
                 case '<>':
                 case '!=':
                     if (count($arguments) == 4) {
-                        list($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->notEqualTo($left, $right, $leftType, $rightType);
+                        list ($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->notEqualTo($left, $right, $leftType, 
+                            $rightType);
                     } else {
-                        list($left, $right) = $arguments;
+                        list ($left, $right) = $arguments;
                         $result = $result->notEqualTo($left, $right);
                     }
                     break;
                 case 'lessthan':
                 case '<':
                     if (count($arguments) == 4) {
-                        list($left, $right, $leftType, $rightType) = $arguments;
+                        list ($left, $right, $leftType, $rightType) = $arguments;
                         $result = $result->lessThan($left, $right, $leftType, $rightType);
                     } else {
-                        list($left, $right) = $arguments;
+                        list ($left, $right) = $arguments;
                         $result = $result->lessThan($left, $right);
                     }
                     break;
                 case 'lessthanorequalto':
                 case '<=':
                     if (count($arguments) == 4) {
-                        list($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->lessThanOrEqualTo($left, $right, $leftType, $rightType);
+                        list ($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->lessThanOrEqualTo($left, $right, $leftType, 
+                            $rightType);
                     } else {
-                        list($left, $right) = $arguments;
+                        list ($left, $right) = $arguments;
                         $result = $result->lessThanOrEqualTo($left, $right);
                     }
                     break;
                 case 'greaterthan':
                 case '>':
                     if (count($arguments) == 4) {
-                        list($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->greaterThan($left, $right, $leftType, $rightType);
+                        list ($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->greaterThan($left, $right, $leftType, 
+                            $rightType);
                     } else {
-                        list($left, $right) = $arguments;
+                        list ($left, $right) = $arguments;
                         $result = $result->greaterThan($left, $right);
                     }
                     break;
                 case 'greaterthanorequalto':
                 case '>=':
                     if (count($arguments) == 4) {
-                        list($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->greaterThanOrEqualTo($left, $right, $leftType, $rightType);
+                        list ($left, $right, $leftType, $rightType) = $arguments;
+                        $result = $result->greaterThanOrEqualTo($left, $right, $leftType, 
+                            $rightType);
                     } else {
-                        list($left, $right) = $arguments;
+                        list ($left, $right) = $arguments;
                         $result = $result->greaterThanOrEqualTo($left, $right);
                     }
                     break;
                 default:
-                    $msg = sprintf(" : La clé `%s` du tableau passé en paramètre est inconnue.", $predicate);
+                    $msg = sprintf(
+                        " : La clé `%s` du tableau passé en paramètre est inconnue.", 
+                        $predicate);
                     throw new Exception(__METHOD__ . $msg);
                     break;
             }

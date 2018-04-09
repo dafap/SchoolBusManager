@@ -9,8 +9,8 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
@@ -40,441 +40,470 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
         $this->verrouille = $option;
         parent::__construct('responsable');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'responsableId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'userId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'nature',
-            'type' => 'hidden'
-        ));
-        if ($this->verrouille) {
-            $this->add([
-                'name' => 'titre',
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'responsableId',
                 'type' => 'hidden'
             ]);
+        $this->add(
+            [
+                'name' => 'userId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'nature',
+                'type' => 'hidden'
+            ]);
+        if ($this->verrouille) {
+            $this->add(
+                [
+                    'name' => 'titre',
+                    'type' => 'hidden'
+                ]);
         } else {
-            $this->add(array(
-                'name' => 'titre',
+            $this->add(
+                [
+                    'name' => 'titre',
+                    'type' => 'Zend\Form\Element\Select',
+                    'attributes' => [
+                        'id' => 'responsable-titre',
+                        'class' => 'sbm-width-15c'
+                    ],
+                    'options' => [
+                        'label' => 'Identité du responsable',
+                        'label_attributes' => [
+                            'class' => 'sbm-label responsable-titre'
+                        ],
+                        'value_options' => [
+                            'M.' => 'Monsieur',
+                            'Mme' => 'Madame',
+                            'Mlle' => 'Mademoiselle',
+                            'Dr' => 'Docteur',
+                            'Me' => 'Maître',
+                            'Pr' => 'Professeur'
+                        ],
+                        'empty_option' => 'Choisissez la civilité',
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]);
+        }
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'SbmCommun\Form\Element\NomPropre',
+                'attributes' => [
+                    'id' => 'responsable-nom',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label responsable-nom'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'prenom',
+                'type' => 'SbmCommun\Form\Element\Prenom',
+                'attributes' => [
+                    'id' => 'responsable-prenom',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Prénom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label responsable-prenom'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'titre2',
                 'type' => 'Zend\Form\Element\Select',
-                'attributes' => array(
-                    'id' => 'responsable-titre',
+                'attributes' => [
+                    'id' => 'responsable-titre2',
                     'class' => 'sbm-width-15c'
-                ),
-                'options' => array(
-                    'label' => 'Identité du responsable',
-                    'label_attributes' => array(
-                        'class' => 'sbm-label responsable-titre'
-                    ),
-                    'value_options' => array(
+                ],
+                'options' => [
+                    'label' => 'Conjoint',
+                    'label_attributes' => [
+                        'class' => 'sbm-label help'
+                    ],
+                    'value_options' => [
                         'M.' => 'Monsieur',
                         'Mme' => 'Madame',
                         'Mlle' => 'Mademoiselle',
                         'Dr' => 'Docteur',
                         'Me' => 'Maître',
                         'Pr' => 'Professeur'
-                    ),
+                    ],
                     'empty_option' => 'Choisissez la civilité',
-                    'error_attributes' => array(
+                    'error_attributes' => [
                         'class' => 'sbm-error'
-                    )
-                )
-            ));
-        }
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'SbmCommun\Form\Element\NomPropre',
-            'attributes' => array(
-                'id' => 'responsable-nom',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Nom',
-                'label_attributes' => array(
-                    'class' => 'sbm-label responsable-nom'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'prenom',
-            'type' => 'SbmCommun\Form\Element\Prenom',
-            'attributes' => array(
-                'id' => 'responsable-prenom',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Prénom',
-                'label_attributes' => array(
-                    'class' => 'sbm-label responsable-prenom'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'titre2',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'responsable-titre2',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Conjoint',
-                'label_attributes' => array(
-                    'class' => 'sbm-label help'
-                ),
-                'value_options' => array(
-                    'M.' => 'Monsieur',
-                    'Mme' => 'Madame',
-                    'Mlle' => 'Mademoiselle',
-                    'Dr' => 'Docteur',
-                    'Me' => 'Maître',
-                    'Pr' => 'Professeur'
-                ),
-                'empty_option' => 'Choisissez la civilité',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom2',
-            'type' => 'SbmCommun\Form\Element\NomPropre',
-            'attributes' => array(
-                'id' => 'responsable-nom2',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Nom',
-                'label_attributes' => array(
-                    'class' => 'sbm-label responsable-nom'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'prenom2',
-            'type' => 'SbmCommun\Form\Element\Prenom',
-            'attributes' => array(
-                'id' => 'responsable-prenom2',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Prénom',
-                'label_attributes' => array(
-                    'class' => 'sbm-label responsable-prenom'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresseL1',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => array(
-                'id' => 'responsable-adresseL1',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Adresse',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresseL2',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => array(
-                'id' => 'responsable-adresseL2',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Complément d\'adresse',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'codePostal',
-            'type' => 'SbmCommun\Form\Element\CodePostal',
-            'attributes' => array(
-                'id' => 'responsable-codePostal',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code postal',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'communeId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'responsable-communeId',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une commune',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'telephoneF',
-            'type' => 'SbmCommun\Form\Element\Telephone',
-            'attributes' => array(
-                'id' => 'respondable-telephoneF',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Téléphone domicile',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'telephoneP',
-            'type' => 'SbmCommun\Form\Element\Telephone',
-            'attributes' => array(
-                'id' => 'respondable-telephoneP',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Téléphone portable',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'telephoneT',
-            'type' => 'SbmCommun\Form\Element\Telephone',
-            'attributes' => array(
-                'id' => 'respondable-telephoneT',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Autre téléphone',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'email',
-            'type' => 'Zend\Form\Element\Email',
-            'attributes' => array(
-                'id' => 'respondable-email',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Email',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'ancienAdresseL1',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => array(
-                'id' => 'responsable-ancienAdresseL1',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Ancienne adresse',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'ancienAdresseL2',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => array(
-                'id' => 'responsable-ancienAdresseL2',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Ancienne adresse',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'ancienCodePostal',
-            'type' => 'SbmCommun\Form\Element\CodePostal',
-            'attributes' => array(
-                'id' => 'responsable-ancienCodePostal',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Ancien code postal',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'ancienCommuneId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'responsable-ancienCommuneId',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Ancienne commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une commune',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'demenagement',
-            'type' => 'Zend\Form\Element\Checkbox',
-            'attributes' => array(
-                'id' => 'responsable-demenagement'
-            ),
-            'options' => array(
-                'label' => 'Déménagement',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'use_hidden_element' => true,
-                'checked_value' => '1',
-                'unchecked_value' => '0'
-            )
-        ));
-        $this->add(array(
-            'name' => 'dateDemenagement',
-            'type' => 'Zend\Form\Element\Date',
-            'attributes' => array(
-                'id' => 'responsable-dateDemenagement'
-            ),
-            'options' => array(
-                'label' => 'Date du déménagement',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'format' => 'Y-m-d'
-            )
-        ));
-        $this->add(array(
-            'name' => 'selection',
-            'type' => 'Zend\Form\Element\Checkbox',
-            'attributes' => array(
-                'id' => 'responsable-selection'
-            ),
-            'options' => array(
-                'label' => 'Sélectionné',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'use_hidden_element' => true,
-                'checked_value' => '1',
-                'unchecked_value' => '0'
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Textarea',
-            'name' => 'note',
-            'attributes' => array(
-                'id' => 'responsable-note'
-            ),
-            'options' => array(
-                'label' => 'Notes',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm_error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'responsable-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'responsable-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom2',
+                'type' => 'SbmCommun\Form\Element\NomPropre',
+                'attributes' => [
+                    'id' => 'responsable-nom2',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label responsable-nom'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'prenom2',
+                'type' => 'SbmCommun\Form\Element\Prenom',
+                'attributes' => [
+                    'id' => 'responsable-prenom2',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Prénom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label responsable-prenom'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresseL1',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'responsable-adresseL1',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresseL2',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'responsable-adresseL2',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Complément d\'adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'codePostal',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'responsable-codePostal',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'responsable-communeId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une commune',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'telephoneF',
+                'type' => 'SbmCommun\Form\Element\Telephone',
+                'attributes' => [
+                    'id' => 'respondable-telephoneF',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Téléphone domicile',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'telephoneP',
+                'type' => 'SbmCommun\Form\Element\Telephone',
+                'attributes' => [
+                    'id' => 'respondable-telephoneP',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Téléphone portable',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'telephoneT',
+                'type' => 'SbmCommun\Form\Element\Telephone',
+                'attributes' => [
+                    'id' => 'respondable-telephoneT',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Autre téléphone',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'email',
+                'type' => 'Zend\Form\Element\Email',
+                'attributes' => [
+                    'id' => 'respondable-email',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'ancienAdresseL1',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'responsable-ancienAdresseL1',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Ancienne adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'ancienAdresseL2',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'responsable-ancienAdresseL2',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Ancienne adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'ancienCodePostal',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'responsable-ancienCodePostal',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Ancien code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'ancienCommuneId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'responsable-ancienCommuneId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Ancienne commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une commune',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'demenagement',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'responsable-demenagement'
+                ],
+                'options' => [
+                    'label' => 'Déménagement',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => true,
+                    'checked_value' => '1',
+                    'unchecked_value' => '0'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'dateDemenagement',
+                'type' => 'Zend\Form\Element\Date',
+                'attributes' => [
+                    'id' => 'responsable-dateDemenagement'
+                ],
+                'options' => [
+                    'label' => 'Date du déménagement',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'format' => 'Y-m-d'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'selection',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'responsable-selection'
+                ],
+                'options' => [
+                    'label' => 'Sélectionné',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => true,
+                    'checked_value' => '1',
+                    'unchecked_value' => '0'
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'note',
+                'attributes' => [
+                    'id' => 'responsable-note'
+                ],
+                'options' => [
+                    'label' => 'Notes',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'responsable-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'responsable-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
         
         if ($this->verrouille) {
             $this->verrouilleIdentity();
@@ -483,96 +512,96 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
 
     public function getInputFilterSpecification()
     {
-        $spec = array(
-            'titre2' => array(
+        $spec = [
+            'titre2' => [
                 'name' => 'titre2',
                 'required' => false
-            ),
-            'nom2' => array(
+            ],
+            'nom2' => [
                 'name' => 'nom2',
                 'required' => false
-            ),
-            'prenom2' => array(
+            ],
+            'prenom2' => [
                 'name' => 'prenom2',
                 'required' => false
-            ),
-            'adresseL1' => array(
+            ],
+            'adresseL1' => [
                 'name' => 'adresseL1',
                 'required' => true
-            ),
-            'codePostal' => array(
+            ],
+            'codePostal' => [
                 'name' => 'codePostal',
                 'required' => true
-            ),
-            'ancienAdresseL1' => array(
+            ],
+            'ancienAdresseL1' => [
                 'name' => 'ancienAdresseL1',
                 'required' => false
-            ),
-            'ancienAdresseL2' => array(
+            ],
+            'ancienAdresseL2' => [
                 'name' => 'ancienAdresseL2',
                 'required' => false
-            ),
-            'ancienCommuneId' => array(
+            ],
+            'ancienCommuneId' => [
                 'name' => 'ancienCommuneId',
                 'required' => false
-            ),
-            'ancienCodePostal' => array(
+            ],
+            'ancienCodePostal' => [
                 'name' => 'ancienCodePostal',
                 'required' => false
-            ),
-            'telephoneF' => array(
+            ],
+            'telephoneF' => [
                 'name' => 'telephoneF',
                 'required' => false
-            ),
-            'telephoneP' => array(
+            ],
+            'telephoneP' => [
                 'name' => 'telephoneP',
                 'required' => false
-            ),
-            'telephoneT' => array(
+            ],
+            'telephoneT' => [
                 'name' => 'telephoneT',
                 'required' => false
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'name' => 'email',
                 'required' => false
-            ),
-            'dateDemenagement' => array(
+            ],
+            'dateDemenagement' => [
                 'name' => 'dateDemenagement',
                 'required' => false
-            ),
-            'selection' => array(
+            ],
+            'selection' => [
                 'name' => 'selection',
                 'required' => false
-            )
-        );
+            ]
+        ];
         if ($this->verrouille) {
-            $spec['titre'] = array(
+            $spec['titre'] = [
                 'name' => 'adresseL1',
                 'required' => false
-            );
-            $spec['titre'] = array(
+            ];
+            $spec['titre'] = [
                 'name' => 'codePostal',
                 'required' => false
-            );
-            $spec['titre'] = array(
+            ];
+            $spec['titre'] = [
                 'name' => 'titre',
                 'required' => false
-            );
-            $spec['demenagement'] = array(
+            ];
+            $spec['demenagement'] = [
                 'name' => 'demenagement',
                 'required' => false
-            );
+            ];
         }
         return $spec;
     }
 
     private function verrouilleIdentity()
     {
-        foreach (array(
+        foreach ([
             'nom' => 'readonly',
             'prenom' => 'readonly',
             'email' => 'readonly'
-        ) as $elementName => $attr) {
+        ] as $elementName => $attr) {
             $e = $this->get($elementName);
             $e->setAttribute($attr, $attr);
         }
@@ -582,12 +611,14 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
     {
         $result = parent::isValid();
         // un des 3 numéros de téléphones doit être renseigné
-        if (empty($this->data['telephoneF']) && empty($this->data['telephoneP']) && empty($this->data['telephoneT'])) {
+        if (empty($this->data['telephoneF']) && empty($this->data['telephoneP']) &&
+             empty($this->data['telephoneT'])) {
             $result = false;
             $element = $this->get('telephoneT');
-            $element->setMessages(array(
-                'Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'
-            ));
+            $element->setMessages(
+                [
+                    'Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'
+                ]);
         }
         return $result;
     }

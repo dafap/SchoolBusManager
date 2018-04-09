@@ -8,8 +8,8 @@
  * @filesource pdf-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -17,95 +17,112 @@ $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $documents = $this->paginator->getCurrentItems();
 
-$url_edit = $this->url('sbmpdf', array(
-    'action' => 'pdf-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmpdf', array(
-    'action' => 'pdf-suppr',
-    'page' => $this->page
-));
-$url_dupliquer = $this->url('sbmpdf', array(
-    'action' => 'pdf-dupliquer',
-    'page' => $this->page
-));
-$url_apercu = $this->url('sbmpdf', array(
-    'action' => 'pdf-apercu',
-    'page' => $this->page
-));
-$url_ajouter = $this->url('sbmpdf', array(
-    'action' => 'pdf-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmpdf', array(
-    'action' => 'pdf-pdf',
-    'page' => $this->page
-));
-$url_tableau = $this->url('sbmpdf', array(
-    'action' => 'table-liste',
-    'page' => $this->page
-));
-$url_affectation = $this->url('sbmpdf', array(
-    'action' => 'affectation-liste',
-    'page' => $this->page
-));
+$url_edit = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-suppr',
+        'page' => $this->page
+    ]);
+$url_dupliquer = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-dupliquer',
+        'page' => $this->page
+    ]);
+$url_apercu = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-apercu',
+        'page' => $this->page
+    ]);
+$url_ajouter = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmpdf', 
+    [
+        'action' => 'pdf-pdf',
+        'page' => $this->page
+    ]);
+$url_tableau = $this->url('sbmpdf', 
+    [
+        'action' => 'table-liste',
+        'page' => $this->page
+    ]);
+$url_affectation = $this->url('sbmpdf', 
+    [
+        'action' => 'affectation-liste',
+        'page' => $this->page
+    ]);
 
-$url_etiquette = $this->url('sbmpdf', array('action' => 'etiquette-format', 'page' => $this->page));
-$url_texte = $this->url('sbmpdf', array('action' => 'texte-format', 'page' => $this->page));
+$url_etiquette = $this->url('sbmpdf', 
+    [
+        'action' => 'etiquette-format',
+        'page' => $this->page
+    ]);
+$url_texte = $this->url('sbmpdf', 
+    [
+        'action' => 'texte-format',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmadmin');
-$hiddens = array();
-$menuImpression = $this->menuRapports('/pdf/pdf-liste', $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = [];
+$menuImpression = $this->menuRapports('/pdf/pdf-liste', $url_rapports, 'fam-printer', 
+    null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-//die(var_dump($menuImpression));
-$actions = array(
-    'retour' => array(
+// die(var_dump($menuImpression));
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau document'
-    )
-);
-$buttons = array(
-    'modifier' => array(
+    ]
+];
+$buttons = [
+    'modifier' => [
         'class' => 'fam-pencil',
         'formaction' => $url_edit,
         'title' => 'modifier'
-    ),
-    'disposition' => array(),
-    'dupliquer' => array(
+    ],
+    'disposition' => [],
+    'dupliquer' => [
         'class' => 'fam-page-copy',
         'formaction' => $url_dupliquer,
         'title' => 'dupliquer'
-    ),
-    'supprimer' => array(
+    ],
+    'supprimer' => [
         'class' => 'fam-delete',
         'formaction' => $url_delete,
         'title' => 'supprimer'
-    ),
-    'affecter' => array(
+    ],
+    'affecter' => [
         'class' => 'fam-page-link',
         'formaction' => $url_affectation,
         'title' => 'affecter'
-    ),
-    'apercu' => array(
+    ],
+    'apercu' => [
         'class' => 'fam-page-white-magnify',
         'formaction' => $url_apercu,
         'title' => 'aperçu'
-    )
-);
+    ]
+];
 ?>
 
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="float-left">
 			<h1>Liste des documents pdf</h1>
-	        <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-	    </div>
+			<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -163,30 +180,30 @@ echo $this->flashMessenger()->render('default');
                 }
                 switch ($doc->disposition) {
                     case 'Tabulaire':
-                        $buttons['disposition'] = array(
+                        $buttons['disposition'] = [
                             'class' => 'fam-table-edit',
                             'formaction' => $url_tableau,
                             'title' => 'configuration et contenu du tableau inclus dans le document'
-                        );
+                        ];
                         break;
                     case 'Etiquette':
-                        $buttons['disposition'] = array(
+                        $buttons['disposition'] = [
                             'class' => 'fam-table-edit',
                             'formaction' => $url_etiquette,
                             'title' => 'configuration et contenu des étiquettes'
-                        );
+                        ];
                         break;
                     default: // Texte
-                        $buttons['disposition'] = array(
+                        $buttons['disposition'] = [
                             'class' => 'fam-table-edit',
                             'formaction' => $url_texte,
                             'title' => 'configuration et contenu du texte'
-                        );
+                        ];
                         break;
                 }
                 ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="documentId"><?php echo $doc->documentId; ?></td>
 					<td class="name"><?php echo $this->escapeHtml($doc->name); ?></td>
 					<td class="recordSource"><div style="max-width: 400px;"><?php echo nl2br($this->escapeHtml($doc->recordSource)); ?></div></td>
@@ -200,12 +217,12 @@ echo $this->flashMessenger()->render('default');
 					<td class="pagefooter" <?php echo $page_footer;?>><?php echo $doc->pagefooter ? 'Oui' : ''; ?></td>
 					<td class="boutons">
             <?php
-                $hiddens = array(
+                $hiddens = [
                     'documentId' => $doc->documentId,
                     'name' => $doc->name,
                     'ordinal_table' => 1,
                     'recordSource' => $doc->recordSource
-                );
+                ];
                 echo $this->listeLigneActions($doc->documentId, $hiddens, $buttons);
                 ?>
 				    </td>
@@ -215,7 +232,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
 	    <?php echo $this->form()->openTag($this->criteres_form);?>
 	    <?php echo $this->formCollection($this->criteres_form, true);?>

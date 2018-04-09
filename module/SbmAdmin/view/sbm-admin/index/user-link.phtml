@@ -9,14 +9,15 @@
  * @filesource user-link.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmadmin', [
-    'action' => 'user-liste',
-    'page' => $this->page
-]);
+$url_retour = $this->url('sbmadmin', 
+    [
+        'action' => 'user-liste',
+        'page' => $this->page
+    ]);
 $hiddens = [];
 $actions = [
     'retour' => [

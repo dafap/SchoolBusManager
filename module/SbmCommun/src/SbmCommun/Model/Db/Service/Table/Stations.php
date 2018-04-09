@@ -8,13 +8,14 @@
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 class Stations extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la station
      */
@@ -25,14 +26,15 @@ class Stations extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Stations';
         $this->id_name = 'stationId';
     }
-    
+
     public function setSelection($stationId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'stationId' => $stationId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'stationId' => $stationId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 }

@@ -9,8 +9,8 @@
  * @filesource Prepare.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1.7.1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
@@ -20,7 +20,6 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmGestion\Model\Db\Service\Exception;
-
 
 class Prepare implements FactoryInterface
 {
@@ -49,7 +48,7 @@ class Prepare implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        if (!($serviceLocator instanceof DbManager)) {
+        if (! ($serviceLocator instanceof DbManager)) {
             $message = 'DbManager attendu. On a reçu un %s.';
             throw new Exception(sprintf($message, gettype($serviceLocator)));
         }
@@ -62,9 +61,7 @@ class Prepare implements FactoryInterface
         if (empty($this->classeIds)) {
             $where = new Where();
             $where->isNotNull('suivantId');
-            $resultset = $this->db_manager
-                ->get('Sbm\Db\Table\Classes')
-                ->fetchAll($where);
+            $resultset = $this->db_manager->get('Sbm\Db\Table\Classes')->fetchAll($where);
             foreach ($resultset as $classe) {
                 $this->classeIds[$classe->classeId] = $classe->suivantId;
             }
@@ -72,7 +69,7 @@ class Prepare implements FactoryInterface
     }
 
     /**
-     * Cette méthode duplique les circuits du millesime source dans le millésime cible 
+     * Cette méthode duplique les circuits du millesime source dans le millésime cible
      * à condition que le millésime cible soit vide.
      *
      *
@@ -87,9 +84,10 @@ class Prepare implements FactoryInterface
     {
         $table = $this->db_manager->get('Sbm\Db\Table\Circuits');
         if ($table->isEmptyMillesime($cible)) {
-            $resultset = $table->fetchAll(array(
-                'millesime' => $source
-            ));
+            $resultset = $table->fetchAll(
+                [
+                    'millesime' => $source
+                ]);
             foreach ($resultset as $circuit) {
                 $circuit->circuitId = null;
                 $circuit->millesime = $cible;
@@ -101,7 +99,7 @@ class Prepare implements FactoryInterface
 
     /**
      * Cette méthode est appelée par la méthode duplicateEleves().
-     * Elle duplique la scolarité des élèves à reprendre à condition que les scolarites 
+     * Elle duplique la scolarité des élèves à reprendre à condition que les scolarites
      * du millésime cible soit vide.
      *
      * @param int $source
@@ -116,7 +114,8 @@ class Prepare implements FactoryInterface
             $this->eleveIds = [];
             $this->setClasseIds();
             $where = new Where();
-            $where->equalTo('millesime', $source)->in('classeId', array_keys($this->classeIds));
+            $where->equalTo('millesime', $source)->in('classeId', 
+                array_keys($this->classeIds));
             $resultset = $table->fetchAll($where);
             foreach ($resultset as $scolarite) {
                 $scolarite->millesime = $cible;

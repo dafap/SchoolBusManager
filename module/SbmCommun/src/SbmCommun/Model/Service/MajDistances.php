@@ -7,8 +7,8 @@
  * @filesource MajDistances.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 déc. 2017
- * @version 2017-2.3.14
+ * @date 8 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Service;
 
@@ -19,6 +19,7 @@ use SbmBase\Model\Session;
 use SbmCartographie\Model\Point;
 use SbmCartographie\Model\Service\CartographieManager;
 use SbmCartographie\Model\Exception;
+use SbmCartographie\GoogleMaps;
 
 class MajDistances implements FactoryInterface
 {
@@ -53,14 +54,16 @@ class MajDistances implements FactoryInterface
 
     /**
      *
-     * @var \SbmCartographie\GoogleMaps\DistanceEtablissements
+     * @var \SbmCartographie\GoogleMaps\DistanceMatrix
      */
-    private $oDomicileEtablissements;
+    private $oDistanceMatrix;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        if (! $serviceLocator->has('SbmCarto\DistanceEtablissements')) {
-            throw new Exception(sprintf('CartographieManager attendu.'));
+        if (! $serviceLocator->has(GoogleMaps\DistanceMatrix::class)) {
+            throw new Exception(
+                sprintf(_("CartographieManagerattendu, doit contenir %s."), 
+                    GoogleMaps\DistanceMatrix::class));
         }
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->millesime = Session::get('millesime');
@@ -71,7 +74,7 @@ class MajDistances implements FactoryInterface
             ],
             'etablissements' => []
         ];
-        $this->oDomicileEtablissements = $serviceLocator->get('SbmCarto\DistanceEtablissements');
+        $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
         return $this;
     }
 
@@ -80,24 +83,26 @@ class MajDistances implements FactoryInterface
      * L'enregistrement est fait dans la table scolarites, pour le millesime en cours.
      * (Un seul appel à l'API de google)
      *
-     * @param int $responsableId    
-     * 
-     * @return string|null
-     *         renvoie null en cas de succès ou le message d'erreur en cas d'échec
+     * @param int $responsableId            
+     *
+     * @return string|null renvoie null en cas de succès ou le message d'erreur en cas d'échec
      */
     public function pour($responsableId)
     {
         // domicile
-        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord($responsableId);
+        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+            $responsableId);
         $this->domicile = new Point($responsable->x, $responsable->y);
         
         // liste des élèves et des établissements à prendre en compte
         $destinations = [];
         for ($i = 1; $i <= 2; $i ++) {
-            $rowset = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEnfants($responsableId, $i);
+            $rowset = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEnfants(
+                $responsableId, $i);
             foreach ($rowset as $row) {
                 $this->famille['enfants'][$i][$row['eleveId']] = $row['etablissementId'];
-                if (array_key_exists($row['etablissementId'], $this->famille['etablissements']))
+                if (array_key_exists($row['etablissementId'], 
+                    $this->famille['etablissements']))
                     continue;
                 $this->famille['etablissements'][$row['etablissementId']] = [
                     'pt' => new Point($row['xeta'], $row['yeta']),
@@ -110,7 +115,8 @@ class MajDistances implements FactoryInterface
         if (! empty($destinations)) {
             try {
                 // appel de l'API
-                $result = $this->oDomicileEtablissements->uneOriginePlusieursDestinations($this->domicile, $destinations);
+                $result = $this->oDistanceMatrix->uneOriginePlusieursDestinations(
+                    $this->domicile, $destinations);
                 
                 // analyse du résultat. On n'a qu'un domicile donc qu'une distance par établissement. Cette distance est en mètres.
                 $j = 0;
@@ -123,20 +129,22 @@ class MajDistances implements FactoryInterface
                 $oData = $tScolarites->getObjData();
                 for ($i = 1; $i <= 2; $i ++) {
                     foreach ($this->famille['enfants'][$i] as $eleveId => $etablissementId) {
-                        $oData->exchangeArray([
-                            'millesime' => $this->millesime,
-                            'eleveId' => $eleveId,
-                        'distanceR' . $i => round($this->famille['etablissements'][$etablissementId]['distance'] / 1000, 1)
-                    ]);
-                    $tScolarites->saveRecord($oData);
+                        $oData->exchangeArray(
+                            [
+                                'millesime' => $this->millesime,
+                                'eleveId' => $eleveId,
+                                'distanceR' . $i => round(
+                                    $this->famille['etablissements'][$etablissementId]['distance'] /
+                                         1000, 1)
+                            ]);
+                        $tScolarites->saveRecord($oData);
+                    }
                 }
-            }
-            } catch (\SbmCartographie\GoogleMaps\ExceptionNotAnswer $e) {
+            } catch (GoogleMaps\ExceptionNoAnswer $e) {
                 $msg = "Google Maps API ne répond pas. La distance entre le domicile et l'établissement scolaire n'a pas pu être mise à jour dans les fiches des enfants.";
             } catch (\Exception $e) {
                 $msg = "La distance entre le domicile et l'établissement n'a pas pu être enregistrée dans les fiches des enfants.";
             }
-            
         }
         return $msg;
     }

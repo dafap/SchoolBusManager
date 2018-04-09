@@ -21,8 +21,8 @@
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMail\Model;
 
@@ -74,10 +74,11 @@ class EnvoiMail implements ListenerAggregateInterface
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmMail\Send', 'sendMail', [
-            $this,
-            'onSendMail'
-        ], 1);
+        $this->listeners[] = $sharedEvents->attach('SbmMail\Send', 'sendMail', 
+            [
+                $this,
+                'onSendMail'
+            ], 1);
     }
 
     /**
@@ -108,8 +109,10 @@ class EnvoiMail implements ListenerAggregateInterface
         // message
         $mail = new Mail\Message();
         $mail->setEncoding($this->config['message']['message_encoding']);
-        $mail->setFrom($this->config['message']['from']['email'], $this->config['message']['from']['name']);
-        $mail->setReplyTo($this->config['message']['replyTo']['email'], $this->config['message']['replyTo']['name']);
+        $mail->setFrom($this->config['message']['from']['email'], 
+            $this->config['message']['from']['name']);
+        $mail->setReplyTo($this->config['message']['replyTo']['email'], 
+            $this->config['message']['replyTo']['name']);
         $to = empty($params['to']) ? [] : $params['to'];
         foreach ($to as $destinataire) {
             
@@ -124,7 +127,8 @@ class EnvoiMail implements ListenerAggregateInterface
             $mail->addBcc($this->getAdresse($destinataire));
         }
         $mail->setSubject($this->config['message']['subject'] . $params['subject']);
-        $this->setBody($mail, $params['body'], $this->config['message']['message_encoding']);
+        $this->setBody($mail, $params['body'], 
+            $this->config['message']['message_encoding']);
         // transport
         if ($this->config['transport']['mode'] == 'sendmail') {
             $transport = new Mail\Transport\Sendmail();
@@ -189,7 +193,8 @@ class EnvoiMail implements ListenerAggregateInterface
                 $bodyinfo['text'] = strip_tags($bodyinfo['html']);
             }
         } elseif (empty($bodyinfo['text'])) {
-            throw new Exception('Le message est vide. Donnez un texte, éventuellement formaté en html.');
+            throw new Exception(
+                'Le message est vide. Donnez un texte, éventuellement formaté en html.');
         }
         if (! array_key_exists('files', $bodyinfo)) {
             $bodyinfo['files'] = [];
@@ -219,10 +224,11 @@ class EnvoiMail implements ListenerAggregateInterface
         }
         finfo_close($fileinfo);
         if (count($attaches) > 0) {
-            $parts = array_merge([
-                $textPart,
-                $htmlPart
-            ], $attaches);
+            $parts = array_merge(
+                [
+                    $textPart,
+                    $htmlPart
+                ], $attaches);
             $type = Mime\Mime::MULTIPART_MIXED;
         } else {
             $parts = [

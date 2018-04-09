@@ -11,8 +11,8 @@
  * @filesource duplicata-carte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -27,20 +27,21 @@ $("#btcancel").click(function(){
 });
 <?php
 $this->headScript()->captureEnd();
-$hiddens = array(
+$hiddens = [
     'eleveId' => $this->eleveId,
     'origine' => $this->origine
-);
-$url_ici = $this->url('sbmgestion/gestioneleve', array(
-    'action' => 'duplicata-carte'
-));
-$actions = array(
-    'cancel' => array(
+];
+$url_ici = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'duplicata-carte'
+    ]);
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_ici, // traitement de cancel pour un redirect proprement
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <div id="fiche-wrapper">
 	<h1>Duplicata d'une carte de transport</h1>
@@ -67,9 +68,9 @@ $actions = array(
 	</div>
 	<div id="fiche-footer">
 		<p class="sbm-description">
-			Vous pouvez exceptionnellement éditer un duplicata
-			à titre gratuit en cochant la case <em>gratuité</em>. Sinon, le coût
-			d'un duplicata sera ajouté à la somme due par la famille.
+			Vous pouvez exceptionnellement éditer un duplicata à titre gratuit en
+			cochant la case <em>gratuité</em>. Sinon, le coût d'un duplicata sera
+			ajouté à la somme due par la famille.
 		</p>
 	</div>
 </div>

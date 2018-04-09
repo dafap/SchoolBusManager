@@ -8,8 +8,8 @@
  * @filesource Etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -45,7 +45,7 @@ class Etablissements extends AbstractSbmTable
 
     public function getSemaine()
     {
-        return array(
+        return [
             SemaineStrategy::CODE_SEMAINE_LUNDI => 'lun',
             SemaineStrategy::CODE_SEMAINE_MARDI => 'mar',
             SemaineStrategy::CODE_SEMAINE_MERCREDI => 'mer',
@@ -53,18 +53,18 @@ class Etablissements extends AbstractSbmTable
             SemaineStrategy::CODE_SEMAINE_VENDREDI => 'ven',
             SemaineStrategy::CODE_SEMAINE_SAMEDI => 'sam',
             SemaineStrategy::CODE_SEMAINE_DIMANCHE => 'dim'
-        );
+        ];
     }
 
     public function getNiveau()
     {
-        return array(
+        return [
             '1' => 'Maternelle',
             '2' => 'Primaire',
             '4' => 'Collège',
             '8' => 'Lycée',
             '16' => 'Autre'
-        );
+        ];
     }
 
     /**
@@ -175,34 +175,37 @@ class Etablissements extends AbstractSbmTable
         $where->literal('statut = 0')->equalTo('niveau', 4);
         return $this->fetchAll($where);
     }
-    
+
     public function setSelection($etablissementId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'etablissementId' => $etablissementId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'etablissementId' => $etablissementId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
-    
+
     public function setDesservie($etablissementId, $desservie)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'etablissementId' => $etablissementId,
-            'desservie' => $desservie
-        ));
+        $oData->exchangeArray(
+            [
+                'etablissementId' => $etablissementId,
+                'desservie' => $desservie
+            ]);
         parent::saveRecord($oData);
     }
 
     public function setVisible($etablissementId, $visible)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'etablissementId' => $etablissementId,
-            'visible' => $visible
-        ));
+        $oData->exchangeArray(
+            [
+                'etablissementId' => $etablissementId,
+                'visible' => $visible
+            ]);
         parent::saveRecord($oData);
     }
 }

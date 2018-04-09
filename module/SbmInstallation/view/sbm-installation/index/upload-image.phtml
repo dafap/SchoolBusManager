@@ -7,8 +7,8 @@
  * @filesource upload-image.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->form->prepare(); // met le bon enctype
 ?>
@@ -28,7 +28,7 @@ echo $this->formHidden($this->form->get('type'));
 echo $this->formHidden($this->form->get('mime'));
 ?>
         <fieldset class="sbm-page1">
-            <div class="form-element row-inner">
+			<div class="form-element row-inner">
             <?php $fileElement = $form->get('image-file'); ?>
             <?php echo $this->formLabel($fileElement); ?>
             <?php echo $this->formFile($fileElement); ?>
@@ -36,7 +36,8 @@ echo $this->formHidden($this->form->get('mime'));
             </div>
 			<div id="classe-edit-buttons" class="row-inner edit">
             <?php
-            echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));
+            echo $this->formSubmit($this->form->get('submit')) .
+                 $this->formSubmit($this->form->get('cancel'));
             ?>
             </div>
 		</fieldset>

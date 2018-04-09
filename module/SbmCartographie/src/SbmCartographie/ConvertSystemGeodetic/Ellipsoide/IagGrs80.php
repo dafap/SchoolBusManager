@@ -7,14 +7,15 @@
  * @filesource IagGrs80.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
 
-class IagGrs80 extends Ellipsoide 
+class IagGrs80 extends Ellipsoide
 {
-    function __construct() 
+
+    function __construct()
     {
         $this->setA(6378137.0);
         $this->setF(298.257222101);

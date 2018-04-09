@@ -8,47 +8,52 @@
  * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-liste',
-    'page' => $this->pageRetour
-));
-$url_rapports = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-group-pdf',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-group',
-    'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+$url_retour = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'tarif-liste',
+        'page' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'tarif-group-pdf',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/finance', 
+    [
+        'action' => 'tarif-group',
+        'page' => $this->page
+    ]);
+$url_edit = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
-$hiddens = array(
+]);
+$hiddens = [
     'tarifId' => $this->tarifId
-);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/finance', array(
-    'action' => 'tarif-group'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/finance', [
+        'action' => 'tarif-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
+    ],
     'rapports' => $menuImpression['content']
-);
+];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
@@ -64,16 +69,16 @@ $data = $this->paginator->getCurrentItems();
 		</ul>
 		<div class="flashMessenger float-right">
 		<?php
-		echo $this->flashMessenger()->render('success');
-		echo $this->flashMessenger()->render('warning');
-		echo $this->flashMessenger()->render('error');
-		echo $this->flashMessenger()->render('info');
-		echo $this->flashMessenger()->render('default');
-		?>
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
 		</div>
 	</div>
 	<div class="liste-header">
-	    <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
 			<em>Il y a <?php echo $this->paginator->getAdapter()->count(); ?> élèves.</em>
 		</p>
@@ -97,29 +102,30 @@ $data = $this->paginator->getCurrentItems();
 				</tr>
 			<?php foreach ($data as $row):?>
 			<?php
-    $hiddens = array(
+    $hiddens = [
         'eleveId' => $row['eleveId'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
-    );
-    $buttons = array(
-        'modifier' => array(
+    ];
+    $buttons = [
+        'modifier' => [
             'class' => 'fam-pencil',
             'formaction' => $url_edit,
             'title' => 'Modifier'
-        )
-    );
+        ]
+    ];
     if (! empty($row['email'])) {
-        $buttons['ecrire'] = array(
+        $buttons['ecrire'] = [
             'class' => 'fam-email',
             'formaction' => $url_mail,
             'title' => 'Envoyer un email'
-        );
+        ];
     }
-    $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+    $this->pictogrammes('init')->addPreinscrit(
+        $row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
     ?>
-			    <tr class="<?php echo $this->cycle(array("even", "odd"));?>">
+			    <tr class="<?php echo $this->cycle(["even", "odd"]);?>">
 					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $this->escapeHtml($row['nom']);?></td>
 					<td><?php echo $this->escapeHtml($row['prenom']);?></td>
@@ -129,8 +135,8 @@ $data = $this->paginator->getCurrentItems();
 					<td><?php echo $this->escapeHtml($row['commune']);?></td>
 					<td><?php echo $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?php echo $this->escapeHtml($row['classe']);?></td>
-					<td><?php echo implode('<br>', array($row['service1Id'], $row['service2Id']));?></td>
-					<td><?php echo implode('<br>', array($row['station1'], $row['station2']));?></td>
+					<td><?php echo implode('<br>', [$row['service1Id'], $row['service2Id']]);?></td>
+					<td><?php echo implode('<br>', [$row['station1'], $row['station2']]);?></td>
 					<td><?php echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 			<?php endforeach;?>
@@ -138,6 +144,6 @@ $data = $this->paginator->getCurrentItems();
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 	</div>
 </div>

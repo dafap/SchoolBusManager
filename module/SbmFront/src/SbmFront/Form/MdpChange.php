@@ -9,8 +9,8 @@
  * @filesource MdpChange.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Form;
 
@@ -24,137 +24,144 @@ class MdpChange extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('mdp');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'userId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'mdp_old',
-            'type' => 'password',
-            'attributes' => array(
-                'id' => 'mdp-old',
-                'class' => 'sbm-mdp'
-            ),
-            'options' => array(
-                'label' => 'Donnez votre mot de passe',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'mdp_new',
-            'type' => 'password',
-            'attributes' => array(
-                'id' => 'mdp-new',
-                'class' => 'sbm-mdp'
-            ),
-            'options' => array(
-                'label' => 'Donnez un nouveau mot de passe',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'mdp_ctrl',
-            'type' => 'password',
-            'attributes' => array(
-                'id' => 'mdp-ctrl',
-                'class' => 'sbm-mdp'
-            ),
-            'options' => array(
-                'label' => 'Confirmez ce mot de passe',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Envoyer la demande',
-                'id' => 'responsable-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'responsable-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'userId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'mdp_old',
+                'type' => 'password',
+                'attributes' => [
+                    'id' => 'mdp-old',
+                    'class' => 'sbm-mdp'
+                ],
+                'options' => [
+                    'label' => 'Donnez votre mot de passe',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'mdp_new',
+                'type' => 'password',
+                'attributes' => [
+                    'id' => 'mdp-new',
+                    'class' => 'sbm-mdp'
+                ],
+                'options' => [
+                    'label' => 'Donnez un nouveau mot de passe',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'mdp_ctrl',
+                'type' => 'password',
+                'attributes' => [
+                    'id' => 'mdp-ctrl',
+                    'class' => 'sbm-mdp'
+                ],
+                'options' => [
+                    'label' => 'Confirmez ce mot de passe',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Envoyer la demande',
+                    'id' => 'responsable-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'responsable-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'mdp_new' => array(
+        return [
+            'mdp_new' => [
                 'name' => 'mdp_new',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmFront\Model\Validator\Mdp',
-                        'options' => array(
+                        'options' => [
                             'len' => 6,
                             'min' => 1,
                             'maj' => 1,
                             'num' => 1
-                        )
-                    )
-                )
-            ),
-            'mdp_ctrl' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'mdp_ctrl' => [
                 'name' => 'mdp_ctrl',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'identical',
-                        'options' => array(
+                        'options' => [
                             'token' => 'mdp_new'
-                        )
-                    )
-                )
-            )
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 }

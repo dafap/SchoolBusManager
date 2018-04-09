@@ -9,8 +9,8 @@
  * @filesource formpaiement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 // style css utilisés dans le formulaire
 $this->headStyle()->captureStart();
@@ -89,14 +89,15 @@ $this->inlineScript()->captureEnd();
 echo $this->inlineScript();
 ?>
 <div id="formpaiement">
-<?php 
+<?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('eleveId'));
 echo $this->formHidden($this->form->get('csrf'));
 ?>
 <div id="formpaiement-gratuit" class="row-inner"><?php echo $this->formRow($this->form->get('gratuit'));?></div>
-<div id="formpaiement-organismeId" class="row-inner" style="display: none;"><?php echo $this->formRow($this->form->get('organismeId'));?></div>
-<div id="formpaiement-buttons" class="row-inner edit left-95px">
+	<div id="formpaiement-organismeId" class="row-inner"
+		style="display: none;"><?php echo $this->formRow($this->form->get('organismeId'));?></div>
+	<div id="formpaiement-buttons" class="row-inner edit left-95px">
 <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
 </div>
 <?php echo $this->form()->closeTag();?>

@@ -9,8 +9,8 @@
  * @filesource EmailChange.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Form;
 
@@ -19,155 +19,164 @@ use SbmCommun\Form\AbstractSbmForm;
 
 class EmailChange extends AbstractSbmForm implements InputFilterProviderInterface
 {
+
     private $canonic_name;
+
     private $db_adapter;
-    
+
     public function __construct($canonic_name, $db_adapter)
     {
         $this->canonic_name = $canonic_name;
         $this->db_adapter = $db_adapter;
         parent::__construct('mdp');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'userId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'mdp',
-            'type' => 'password',
-            'attributes' => array(
-                'id' => 'mdp',
-                'class' => 'sbm-mdp',
-                'autofocus' => 'autofocus'
-            ),
-            'options' => array(
-                'label' => 'Donnez votre mot de passe',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));        
-        $this->add(array(
-            'name' => 'email_new',
-            'type' => 'Zend\Form\Element\Email',
-            'attributes' => array(
-                'id' => 'front-email',
-                'class' => '',
-            ),
-            'options' => array(
-                'label' => 'Donnez votre nouvel email',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'userId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'mdp',
+                'type' => 'password',
+                'attributes' => [
+                    'id' => 'mdp',
+                    'class' => 'sbm-mdp',
+                    'autofocus' => 'autofocus'
+                ],
+                'options' => [
+                    'label' => 'Donnez votre mot de passe',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'email_new',
+                'type' => 'Zend\Form\Element\Email',
+                'attributes' => [
+                    'id' => 'front-email',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Donnez votre nouvel email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'name' => 'email_ctrl',
-            'type' => 'Zend\Form\Element\Email',
-            'attributes' => array(
-                'id' => 'front-email',
-                'class' => '',
-            ),
-            'options' => array(
-                'label' => 'Confirmez cet email',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'email_ctrl',
+                'type' => 'Zend\Form\Element\Email',
+                'attributes' => [
+                    'id' => 'front-email',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Confirmez cet email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Envoyer la demande',
-                'id' => 'responsable-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'responsable-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Envoyer la demande',
+                    'id' => 'responsable-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'responsable-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
-    
+
     public function getInputFilterSpecification()
     {
-        return array(
-            'mdp' => array(
+        return [
+            'mdp' => [
                 'name' => 'mdp',
                 'required' => true
-            ),
-            'email_new' => array(
+            ],
+            'email_new' => [
                 'name' => 'email_new',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'Zend\Validator\EmailAddress'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Validator\Db\NoRecordExists',
-                        'options' => array(
+                        'options' => [
                             'table' => $this->canonic_name,
                             'field' => 'email',
                             'adapter' => $this->db_adapter
-                        )
-                    )
-                )
-            ),
-            'email_ctrl' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'email_ctrl' => [
                 'name' => 'email_ctrl',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'identical',
-                        'options' => array(
+                        'options' => [
                             'token' => 'email_new'
-                        )
-                    )
-                )
-            )
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 } 

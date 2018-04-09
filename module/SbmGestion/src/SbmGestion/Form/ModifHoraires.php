@@ -9,8 +9,8 @@
  * @filesource ModifHoraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
- * @version 2016-2.2.1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form;
 
@@ -40,25 +40,27 @@ class ModifHoraires extends Form
         $this->add($this->radio('s1-op'));
         $this->add($this->radio('s2-op'));
         $this->add($this->radio('s3-op'));
-        $this->add([
-            'name' => 'cancel',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'decision-cancel',
-                'autofocus' => 'autofocus',
-                'class' => 'button default cancel left-10px'
-            ]
-        ]);
-        $this->add([
-            'name' => 'submit',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Valider',
-                'id' => 'decision-submit',
-                'class' => 'button default submit left-10px'
-            ]
-        ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'decision-cancel',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default cancel left-10px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Valider',
+                    'id' => 'decision-submit',
+                    'class' => 'button default submit left-10px'
+                ]
+            ]);
     }
 
     private function radio($name)
@@ -91,25 +93,26 @@ class ModifHoraires extends Form
 
     public function initData()
     {
-        $this->setData([
-            'm1-op' => 0,
-            'm1-min' => 0,
-            'm1-sec' => 0,
-            'm2-op' => 0,
-            'm2-min' => 0,
-            'm2-sec' => 0,
-            'm3-op' => 0,
-            'm3-min' => 0,
-            'm3-sec' => 0,
-            's1-op' => 0,
-            's1-min' => 0,
-            's1-sec' => 0,
-            's2-op' => 0,
-            's2-min' => 0,
-            's2-sec' => 0,
-            's3-op' => 0,
-            's3-min' => 0,
-            's3-sec' => 0
-        ]);
+        $this->setData(
+            [
+                'm1-op' => 0,
+                'm1-min' => 0,
+                'm1-sec' => 0,
+                'm2-op' => 0,
+                'm2-min' => 0,
+                'm2-sec' => 0,
+                'm3-op' => 0,
+                'm3-min' => 0,
+                'm3-sec' => 0,
+                's1-op' => 0,
+                's1-min' => 0,
+                's1-sec' => 0,
+                's2-op' => 0,
+                's2-min' => 0,
+                's2-sec' => 0,
+                's3-op' => 0,
+                's3-min' => 0,
+                's3-sec' => 0
+            ]);
     }
 }

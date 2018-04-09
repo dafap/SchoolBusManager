@@ -9,8 +9,8 @@
  * @filesource BordereauxForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -58,22 +58,24 @@ class BordereauxForSelect implements FactoryInterface
         $where = new Where();
         $where->isNotNull('dateBordereau')->isNull('dateDepot');
         $select = $this->sql->select($this->table_name)
-            ->columns(array(
-            'codeModeDePaiement',
-            'modeDePaiement',
-            'dateBordereau'
-        ))
+            ->columns(
+            [
+                'codeModeDePaiement',
+                'modeDePaiement',
+                'dateBordereau'
+            ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             if ($row['modeDePaiement'] == 'chèque') {
                 $row['modeDePaiement'] = 'chèques';
             }
             $key = sprintf('%s|%d', $row['dateBordereau'], $row['codeModeDePaiement']);
-            $array[$key] = sprintf('bordereau de %s du %s', $row['modeDePaiement'], DateLib::formatDateTimeFromMysql($row['dateBordereau']));
+            $array[$key] = sprintf('bordereau de %s du %s', $row['modeDePaiement'], 
+                DateLib::formatDateTimeFromMysql($row['dateBordereau']));
         }
         return $array;
     }
@@ -88,23 +90,29 @@ class BordereauxForSelect implements FactoryInterface
         $where = new Where();
         $where->isNotNull('dateDepot')->isNotNull('dateBordereau');
         $select = $this->sql->select($this->table_name)
-            ->columns(array(
-            'codeModeDePaiement',
-            'modeDePaiement',
-            'dateBordereau'
-        ))
+            ->columns(
+            [
+                'codeModeDePaiement',
+                'modeDePaiement',
+                'dateBordereau'
+            ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($where)
-            ->order(array('dateBordereau DESC', 'codeModeDePaiement'));
+            ->order(
+            [
+                'dateBordereau DESC',
+                'codeModeDePaiement'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             if ($row['modeDePaiement'] == 'chèque') {
                 $row['modeDePaiement'] = 'chèques';
             }
             $key = sprintf('%s|%d', $row['dateBordereau'], $row['codeModeDePaiement']);
-            $array[$key] = sprintf('bordereau de %s du %s', $row['modeDePaiement'], DateLib::formatDateTimeFromMysql($row['dateBordereau']));
+            $array[$key] = sprintf('bordereau de %s du %s', $row['modeDePaiement'], 
+                DateLib::formatDateTimeFromMysql($row['dateBordereau']));
         }
         return $array;
     }
@@ -120,7 +128,7 @@ class BordereauxForSelect implements FactoryInterface
     public function decode($key)
     {
         $parts = explode('|', $key);
-        return array(
+        return [
             'dateBordereau' => $parts[0],
             'codeModeDePaiement' => $parts[1]
         );

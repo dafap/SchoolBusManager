@@ -7,8 +7,8 @@
  * @filesource FontStyle.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model\Strategy;
 
@@ -23,8 +23,8 @@ class FontStyle implements StrategyInterface
         "U", // Souligné
         "D", // Barré
         "O"
-    ] // Trait suscrit
-;
+    ]; // Trait suscrit
+
 
     public function extract($param)
     {

@@ -7,8 +7,8 @@
  * @filesource Factory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Metadata\Source;
 
@@ -22,17 +22,18 @@ use Zend\Db\Metadata\MetadataInterface;
  */
 class Factory
 {
+
     /**
      * Create source from adapter
      *
-     * @param  Adapter $adapter
+     * @param Adapter $adapter            
      * @return MetadataInterface
      * @throws InvalidArgumentException If adapter platform name not recognized.
      */
     public static function createSourceFromAdapter(Adapter $adapter)
     {
         $platformName = $adapter->getPlatform()->getName();
-
+        
         switch ($platformName) {
             case 'MySQL':
                 return new MysqlMetadata($adapter);
@@ -45,7 +46,8 @@ class Factory
             case 'Oracle':
                 return new ZendSource\OracleMetadata($adapter);
             default:
-                throw new InvalidArgumentException("Unknown adapter platform '{$platformName}'");
+                throw new InvalidArgumentException(
+                    "Unknown adapter platform '{$platformName}'");
         }
     }
 }

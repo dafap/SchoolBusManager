@@ -10,8 +10,8 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2016
- * @version 2016-2.2.1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Model\Responsable;
 
@@ -35,7 +35,7 @@ class Responsable
     private $vue_responsable;
 
     /**
-     * 
+     *
      * @var array
      */
     private $responsable;
@@ -58,7 +58,8 @@ class Responsable
     {
         $this->authenticate_by = $authenticate_by;
         $this->vue_responsable = $vue_responsable;
-        $this->responsable = Session::get('responsable', [], self::SESSION_RESPONSABLE_NAMESPACE);
+        $this->responsable = Session::get('responsable', [], 
+            self::SESSION_RESPONSABLE_NAMESPACE);
         $this->init();
     }
 
@@ -69,20 +70,24 @@ class Responsable
         }
         
         $trace = debug_backtrace();
-        trigger_error('Propriété non-définie via __get() : ' . $name . ' dans ' . $trace[0]['file'] . ' à la ligne ' . $trace[0]['line'], E_USER_NOTICE);
+        trigger_error(
+            'Propriété non-définie via __get() : ' . $name . ' dans ' . $trace[0]['file'] .
+                 ' à la ligne ' . $trace[0]['line'], E_USER_NOTICE);
         return null;
     }
 
     public function __set($name, $value)
     {
         $this->responsable['name'] = $value;
-        Session::set('responsable', $this->responsable, self::SESSION_RESPONSABLE_NAMESPACE);
+        Session::set('responsable', $this->responsable, 
+            self::SESSION_RESPONSABLE_NAMESPACE);
     }
 
     public function __unset($name)
     {
         unset($this->responsable['name']);
-        Session::set('responsable', $this->responsable, self::SESSION_RESPONSABLE_NAMESPACE);
+        Session::set('responsable', $this->responsable, 
+            self::SESSION_RESPONSABLE_NAMESPACE);
     }
 
     public function __isset($name)
@@ -121,7 +126,8 @@ class Responsable
                 throw new Exception('Responsable à créer');
             } else {
                 $this->responsable = $r->getArrayCopy();
-                Session::set('responsable', $this->responsable, self::SESSION_RESPONSABLE_NAMESPACE);
+                Session::set('responsable', $this->responsable, 
+                    self::SESSION_RESPONSABLE_NAMESPACE);
             }
         }
     }
@@ -134,13 +140,15 @@ class Responsable
      */
     private function invalid($email)
     {
-        if (! is_array($this->responsable) || ! array_key_exists('email', $this->responsable) || $this->responsable['email'] != $email) {
+        if (! is_array($this->responsable) ||
+             ! array_key_exists('email', $this->responsable) ||
+             $this->responsable['email'] != $email) {
             Session::remove('responsable', self::SESSION_RESPONSABLE_NAMESPACE);
             return true;
         }
         return false;
     }
-    
+
     /**
      * Supprime le responsable en session
      */

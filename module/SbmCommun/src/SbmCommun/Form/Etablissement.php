@@ -8,8 +8,8 @@
  * @filesource Etablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juin 2017
- * @version 2017-2.3.4
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
@@ -22,552 +22,583 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
     {
         parent::__construct('etablissement');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'etablissementId',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-codeid',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Code',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-nom',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'alias',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-alias',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Autre désignation',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'aliasCG',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-aliasCG',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Désignation au CG',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresse1',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => array(
-                'id' => 'etablissement-adresse1',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Adresse',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresse2',
-            'type' => 'SbmCommun\Form\Element\Adresse',
-            'attributes' => array(
-                'id' => 'etablissement-adresse2',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Adresse (suite)',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'codePostal',
-            'type' => 'SbmCommun\Form\Element\CodePostal',
-            'attributes' => array(
-                'id' => 'etablissement-codepostal',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code postal',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'communeId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'etablissement-communeId',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une commune',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'directeur',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-directeur',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Nom du directeur',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'telephone',
-            'type' => 'SbmCommun\Form\Element\Telephone',
-            'attributes' => array(
-                'id' => 'etablissement-telephone',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Téléphone',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'fax',
-            'type' => 'SbmCommun\Form\Element\Telephone',
-            'attributes' => array(
-                'id' => 'etablissement-fax',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Fax',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'email',
-            'type' => 'Zend\Form\Element\Email',
-            'attributes' => array(
-                'id' => 'etablissement-email',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Email',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\MultiCheckbox',
-            'name' => 'niveau',
-            'attributes' => array(
-                'id' => 'etablissement-niveau',
-                'class' => 'sbm-multicheckbox'
-            ),
-            'options' => array(
-                'label' => 'Niveau',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Radio',
-            'name' => 'statut',
-            'attributes' => array(
-                'id' => 'etablissement-statut',
-                'class' => 'sbm-radio'
-            ),
-            'options' => array(
-                'label' => 'Statut',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-radio'
-                ),
-                'value_options' => array(
-                    '0' => 'Privé',
-                    '1' => 'Public'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'hMatin',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'etablissement-hMatin',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Entrée',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'hMidi',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'etablissement-hMidi',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Sortie',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'hAMidi',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'etablissement-hAMidi',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Entrée',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'hSoir',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'etablissement-hSoir',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Sortie',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'hGarderieOMatin',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'etablissement-hMatin',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Tous les jours',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'hGarderieFSoir',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'etablissement-hMidi',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Lu Ma Je Ve',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'hGarderieFMidi',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'etablissement-hAMidi',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Mercredi',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\MultiCheckbox',
-            'name' => 'jOuverture',
-            'attributes' => array(
-                'id' => 'etablissement-jOuverture',
-                'class' => 'sbm-multicheckbox'
-            ),
-            'options' => array(
-                'label' => 'Jours d\'ouverture',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'regrPeda',
-            'attributes' => array(
-                'id' => 'etablissement-regrPeda',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Regroupement pédagogique',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rattacheA',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'etablissement-rattacheA',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Secteur scolaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez un établissement',
-                'allow_empty' => true,
-                'disable_inarray_validator' => false,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'x',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-x',
-                'title' => 'Utilisez . comme séparateur décimal',
-                'class' => 'sbm-width-20c'
-            ),
-            'options' => array(
-                'label' => 'X',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'y',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-y',
-                'title' => 'Utilisez . comme séparateur décimal',
-                'class' => 'sbm-width-20c'
-            ),
-            'options' => array(
-                'label' => 'Y',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'desservie',
-            'attributes' => array(
-                'id' => 'etablissement-desservie',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Desservi',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'visible',
-            'attributes' => array(
-                'id' => 'etablissement-visible',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Visible',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'etablissement-submit',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'etablissement-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'etablissementId',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-codeid',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Code',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-nom',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'alias',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-alias',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Autre désignation',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'aliasCG',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-aliasCG',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Désignation au CG',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresse1',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'etablissement-adresse1',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresse2',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'etablissement-adresse2',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Adresse (suite]',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'codePostal',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'etablissement-codepostal',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'etablissement-communeId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une commune',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'directeur',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-directeur',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom du directeur',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'telephone',
+                'type' => 'SbmCommun\Form\Element\Telephone',
+                'attributes' => [
+                    'id' => 'etablissement-telephone',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Téléphone',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'fax',
+                'type' => 'SbmCommun\Form\Element\Telephone',
+                'attributes' => [
+                    'id' => 'etablissement-fax',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Fax',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'email',
+                'type' => 'Zend\Form\Element\Email',
+                'attributes' => [
+                    'id' => 'etablissement-email',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\MultiCheckbox',
+                'name' => 'niveau',
+                'attributes' => [
+                    'id' => 'etablissement-niveau',
+                    'class' => 'sbm-multicheckbox'
+                ],
+                'options' => [
+                    'label' => 'Niveau',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'statut',
+                'attributes' => [
+                    'id' => 'etablissement-statut',
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Statut',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '0' => 'Privé',
+                        '1' => 'Public'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'hMatin',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'etablissement-hMatin',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Entrée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'hMidi',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'etablissement-hMidi',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Sortie',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'hAMidi',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'etablissement-hAMidi',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Entrée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'hSoir',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'etablissement-hSoir',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Sortie',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'hGarderieOMatin',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'etablissement-hMatin',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Tous les jours',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'hGarderieFSoir',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'etablissement-hMidi',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Lu Ma Je Ve',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'hGarderieFMidi',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'etablissement-hAMidi',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Mercredi',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\MultiCheckbox',
+                'name' => 'jOuverture',
+                'attributes' => [
+                    'id' => 'etablissement-jOuverture',
+                    'class' => 'sbm-multicheckbox'
+                ],
+                'options' => [
+                    'label' => 'Jours d\'ouverture',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'regrPeda',
+                'attributes' => [
+                    'id' => 'etablissement-regrPeda',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Regroupement pédagogique',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'rattacheA',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'etablissement-rattacheA',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Secteur scolaire',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un établissement',
+                    'allow_empty' => true,
+                    'disable_inarray_validator' => false,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'x',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-x',
+                    'title' => 'Utilisez . comme séparateur décimal',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'X',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'y',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-y',
+                    'title' => 'Utilisez . comme séparateur décimal',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'Y',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'desservie',
+                'attributes' => [
+                    'id' => 'etablissement-desservie',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Desservi',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'visible',
+                'attributes' => [
+                    'id' => 'etablissement-visible',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Visible',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'etablissement-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'etablissement-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
         $this->getInputFilter()
             ->get('rattacheA')
             ->setRequired(false);
@@ -577,229 +608,231 @@ class Etablissement extends AbstractSbmForm implements InputFilterProviderInterf
     {
         $e = $this->remove('etablissementId');
         $this->get('nom')->setAttribute('autofocus', 'autofocus');
-        $this->add(array(
-            'name' => 'etablissementId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'codeEtablissement',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'etablissement-codeid',
-                'disabled' => 'disabled',
-                'class' => 'sbm-text8'
-            ),
-            'options' => array(
-                'label' => 'Code',
-                'label_attributes' => array(
-                    'class' => 'sbm-label170'
-                ),
-                'error_attributes' => array(
-                    'class' => 'form etablissement error error-codeid'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'etablissementId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'codeEtablissement',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'etablissement-codeid',
+                    'disabled' => 'disabled',
+                    'class' => 'sbm-text8'
+                ],
+                'options' => [
+                    'label' => 'Code',
+                    'label_attributes' => [
+                        'class' => 'sbm-label170'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'form etablissement error error-codeid'
+                    ]
+                ]
+            ]);
         return $this;
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'etablissementId' => array(
+        return [
+            'etablissementId' => [
                 'name' => 'etablissementId',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Alnum'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\CodeEtablissement'
-                    )
-                )
-            ),
-            'nom' => array(
+                    ]
+                ]
+            ],
+            'nom' => [
                 'name' => 'nom',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringToUpper'
-                    )
-                )
-            ),
-            'alias' => array(
+                    ]
+                ]
+            ],
+            'alias' => [
                 'name' => 'alias',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringToUpper'
-                    )
-                )
-            ),
-            'aliasCG' => array(
+                    ]
+                ]
+            ],
+            'aliasCG' => [
                 'name' => 'aliasCG',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringToUpper'
-                    )
-                )
-            ),
-            'adresse1' => array(
+                    ]
+                ]
+            ],
+            'adresse1' => [
                 'name' => 'adresse1',
                 'required' => false
-            ),
-            'adresse2' => array(
+            ],
+            'adresse2' => [
                 'name' => 'adresse2',
                 'required' => false
-            ),
-            'codePostal' => array(
+            ],
+            'codePostal' => [
                 'name' => 'codePostal',
                 'required' => true
-            ),
-            'communeId' => array(
+            ],
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => true
-            ),
-            'niveau' => array(
+            ],
+            'niveau' => [
                 'name' => 'niveau',
                 'required' => true
-            ),
-            'statut' => array(
+            ],
+            'statut' => [
                 'name' => 'statut',
                 'required' => true
-            ),
-            'visible' => array(
+            ],
+            'visible' => [
                 'name' => 'visible',
                 'required' => false
-            ),
-            'desservie' => array(
+            ],
+            'desservie' => [
                 'name' => 'desservie',
                 'required' => false
-            ),
-            'regrPeda' => array(
+            ],
+            'regrPeda' => [
                 'name' => 'regrPeda',
                 'required' => false
-            ),
-            'rattacheA' => array(
+            ],
+            'rattacheA' => [
                 'name' => 'rattacheA',
                 'required' => false
-            ),
-            'telephone' => array(
+            ],
+            'telephone' => [
                 'name' => 'telephone',
                 'required' => false
-            ),
-            'fax' => array(
+            ],
+            'fax' => [
                 'name' => 'fax',
                 'required' => false
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'name' => 'email',
                 'required' => false
-            ),
-            'directeur' => array(
+            ],
+            'directeur' => [
                 'name' => 'directeur',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringToUpper'
-                    )
-                )
-            ),
-            'jOuverture' => array(
+                    ]
+                ]
+            ],
+            'jOuverture' => [
                 'name' => 'jOuverture',
                 'required' => true
-            ),
-            'hMatin' => array(
+            ],
+            'hMatin' => [
                 'name' => 'hMatin',
                 'required' => false
-            ),
-            'hMidi' => array(
+            ],
+            'hMidi' => [
                 'name' => 'hMidi',
                 'required' => false
-            ),
-            'hAMidi' => array(
+            ],
+            'hAMidi' => [
                 'name' => 'hAMidi',
                 'required' => false
-            ),
-            'hSoir' => array(
+            ],
+            'hSoir' => [
                 'name' => 'hSoir',
                 'required' => false
-            ),
-            'hGarderieOMatin' => array(
+            ],
+            'hGarderieOMatin' => [
                 'name' => 'hGarderieOMatin',
                 'required' => false
-            ),
-            'hGarderieFMidi' => array(
+            ],
+            'hGarderieFMidi' => [
                 'name' => 'hGarderieFMidi',
                 'required' => false
-            ),
-            'hGarderieFSoir' => array(
+            ],
+            'hGarderieFSoir' => [
                 'name' => 'hGarderieFSoir',
                 'required' => false
-            ),
-            'x' => array(
+            ],
+            'x' => [
                 'name' => 'x',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'y' => array(
+                    ]
+                ]
+            ],
+            'y' => [
                 'name' => 'y',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     public function setData($data)

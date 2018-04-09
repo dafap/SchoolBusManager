@@ -8,17 +8,17 @@
  * @filesource table.organismes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'organismes',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'organismeId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'nom' => 'varchar(30) NOT NULL',
@@ -32,28 +32,28 @@ return array(
             'siret' => 'varchar(14) NOT NULL DEFAULT ""',
             'naf' => 'varchar(5) NOT NULL DEFAULT ""',
             'tvaIntraCommunautaire' => 'varchar(13) NOT NULL DEFAULT ""'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'organismeId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'communeId',
-                'references' => array(
+                'references' => [
                     'table' => 'communes',
-                    'fields' => array(
+                    'fields' => [
                         'communeId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDB',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     'data' => __DIR__ . '/data/data.organismes.php'
-);
+];

@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMailChimp\Controller;
 
@@ -51,12 +51,13 @@ class IndexController extends AbstractActionController
         } else {
             $message = '';
         }
-        return new ViewModel([
-            'source' => $listes,
-            'auth' => $this->authenticate->by('email'),
-            'acl' => $this->acl,
-            'message' => $message
-        ]);
+        return new ViewModel(
+            [
+                'source' => $listes,
+                'auth' => $this->authenticate->by('email'),
+                'acl' => $this->acl,
+                'message' => $message
+            ]);
     }
 
     /**
@@ -89,9 +90,10 @@ class IndexController extends AbstractActionController
                 break;
         }
         $this->removeInSession('identifiant', $this->getSessionNamespace());
-        return $this->redirect()->toRoute('sbmmailchimp', [
-            'action' => $action
-        ]);
+        return $this->redirect()->toRoute('sbmmailchimp', 
+            [
+                'action' => $action
+            ]);
     }
 
     /**
@@ -131,54 +133,64 @@ class IndexController extends AbstractActionController
                 return $this->retourListe('success', 'La liste a été crée.');
             }
         } else {
-            $form->setData([
-                'company' => StdLib::getParamR([
-                    'client',
-                    'name'
-                ], $this->config),
-                'address1' => StdLib::getParamR([
-                    'client',
-                    'adresse',
-                    0
-                ], $this->config),
-                'address2' => StdLib::getParamR([
-                    'client',
-                    'adresse',
-                    1
-                ], $this->config),
-                'city' => StdLib::getParamR([
-                    'client',
-                    'commune'
-                ], $this->config),
-                'zip' => StdLib::getParamR([
-                    'client',
-                    'code_postal'
-                ], $this->config),
-                'country' => 'FR',
-                'phone' => StdLib::getParamR([
-                    'client',
-                    'telephone'
-                ], $this->config),
-                'from_name' => StdLib::getParamR([
-                    'mail_config',
-                    'destinataires',
-                    0,
-                    'name'
-                ], $this->config),
-                'from_email' => StdLib::getParamR([
-                    'mail_config',
-                    'destinataires',
-                    0,
-                    'email'
-                ], $this->config),
-                'language' => 'fr',
-                'email_type_option' => true
-            ]);
+            $form->setData(
+                [
+                    'company' => StdLib::getParamR(
+                        [
+                            'client',
+                            'name'
+                        ], $this->config),
+                    'address1' => StdLib::getParamR(
+                        [
+                            'client',
+                            'adresse',
+                            0
+                        ], $this->config),
+                    'address2' => StdLib::getParamR(
+                        [
+                            'client',
+                            'adresse',
+                            1
+                        ], $this->config),
+                    'city' => StdLib::getParamR(
+                        [
+                            'client',
+                            'commune'
+                        ], $this->config),
+                    'zip' => StdLib::getParamR(
+                        [
+                            'client',
+                            'code_postal'
+                        ], $this->config),
+                    'country' => 'FR',
+                    'phone' => StdLib::getParamR(
+                        [
+                            'client',
+                            'telephone'
+                        ], $this->config),
+                    'from_name' => StdLib::getParamR(
+                        [
+                            'mail_config',
+                            'destinataires',
+                            0,
+                            'name'
+                        ], $this->config),
+                    'from_email' => StdLib::getParamR(
+                        [
+                            'mail_config',
+                            'destinataires',
+                            0,
+                            'email'
+                        ], $this->config),
+                    'language' => 'fr',
+                    'email_type_option' => true
+                ]);
         }
-        $view = new ViewModel([
-            'h1_msg' => 'Paramétrage d\'une nouvelle liste de diffusion',
-            'form' => $form->prepare()
-        ]);
+        $view = new ViewModel(
+            [
+                'h1_msg' => 'Paramétrage d\'une nouvelle liste de diffusion',
+                'form' => $form->prepare()
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/edit-liste.phtml');
         return $view;
     }
@@ -226,10 +238,11 @@ class IndexController extends AbstractActionController
             $result = $mailchimp->get('lists/' . $args['id_liste']);
             $form->setDataFromApi3($result, false);
         }
-        $view = new ViewModel([
-            'h1_msg' => 'Paramétrage d\'une nouvelle liste de diffusion à partir des paramètres d\'une autre',
-            'form' => $form->prepare()
-        ]);
+        $view = new ViewModel(
+            [
+                'h1_msg' => 'Paramétrage d\'une nouvelle liste de diffusion à partir des paramètres d\'une autre',
+                'form' => $form->prepare()
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/edit-liste.phtml');
         return $view;
     }
@@ -241,7 +254,8 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             $args = [
-                'id_liste' => $this->getFromSession('identifiant', false, $this->getSessionNamespace())
+                'id_liste' => $this->getFromSession('identifiant', false, 
+                    $this->getSessionNamespace())
             ];
             if ($args === false) {
                 return $this->retourListe();
@@ -249,7 +263,8 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('edit', $prg)) {
                 if (array_key_exists('id_liste', $prg)) {
-                    $this->setToSession('identifiant', $prg['id_liste'], $this->getSessionNamespace());
+                    $this->setToSession('identifiant', $prg['id_liste'], 
+                        $this->getSessionNamespace());
                 } else {
                     return $this->retourListe();
                 }
@@ -278,10 +293,11 @@ class IndexController extends AbstractActionController
             $result = $mailchimp->get('lists/' . $args['id_liste']);
             $form->setDataFromApi3($result);
         }
-        return new ViewModel([
-            'h1_msg' => 'Modification du paramétrage d\'une liste de diffusion',
-            'form' => $form->prepare()
-        ]);
+        return new ViewModel(
+            [
+                'h1_msg' => 'Modification du paramétrage d\'une liste de diffusion',
+                'form' => $form->prepare()
+            ]);
     }
 
     /**
@@ -311,16 +327,17 @@ class IndexController extends AbstractActionController
         $mailchimp = new MailChimp($this->mailchimp_key);
         $form = new ButtonForm([
             'id_liste' => $args['id_liste']
-        ], [
-            'supproui' => [
-                'class' => 'confirm',
-                'value' => 'Confirmer'
-            ],
-            'supprnon' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ]);
+        ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
         if (array_key_exists('supproui', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -331,15 +348,17 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', sprintf('La liste %s a été supprimée.', $args['id_liste']));
+                return $this->retourListe('success', 
+                    sprintf('La liste %s a été supprimée.', $args['id_liste']));
             }
         }
         $liste_info = $mailchimp->get('lists/' . $args['id_liste']);
         
-        return new ViewModel([
-            'liste_info' => $liste_info,
-            'form' => $form->prepare()
-        ]);
+        return new ViewModel(
+            [
+                'liste_info' => $liste_info,
+                'form' => $form->prepare()
+            ]);
     }
 
     /**
@@ -357,22 +376,26 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, $this->getSessionNamespace());
+            $args = $this->getFromSession('identifiant', false, 
+                $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
             }
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('fields', $prg)) {
-                    $this->setToSession('identifiant', [
-                        'id_liste' => $prg['id_liste'],
-                        'liste_name' => $prg['liste_name']
-                    ], $this->getSessionNamespace());
+                    $this->setToSession('identifiant', 
+                        [
+                            'id_liste' => $prg['id_liste'],
+                            'liste_name' => $prg['liste_name']
+                        ], $this->getSessionNamespace());
                 }
             } elseif (! array_key_exists('retour', $prg)) {
                 return $this->retourListe();
             }
-            $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
+            $args = array_merge(
+                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
         // lecture des infos de la liste
@@ -399,12 +422,13 @@ class IndexController extends AbstractActionController
             $message = ob_get_clean();
             throw new \Exception($message);
         }
-        return new ViewModel([
-            'liste_info' => $liste_info,
-            'auth' => $this->authenticate->by('email'),
-            'acl' => $this->acl,
-            'source' => $source
-        ]);
+        return new ViewModel(
+            [
+                'liste_info' => $liste_info,
+                'auth' => $this->authenticate->by('email'),
+                'acl' => $this->acl,
+                'source' => $source
+            ]);
     }
 
     public function editFieldAction()
@@ -413,23 +437,27 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, $this->getSessionNamespace());
+            $args = $this->getFromSession('identifiant', false, 
+                $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'fields-liste');
             }
         } else {
             if (array_key_exists('edit', $prg)) {
-                if (array_key_exists('id_liste', $prg) && array_key_exists('merge_id', $prg)) {
-                    $this->setToSession('identifiant', [
-                        'id_liste' => $prg['id_liste'],
-                        'merge_id' => $prg['merge_id']
-                    ], $this->getSessionNamespace());
+                if (array_key_exists('id_liste', $prg) &&
+                     array_key_exists('merge_id', $prg)) {
+                    $this->setToSession('identifiant', 
+                        [
+                            'id_liste' => $prg['id_liste'],
+                            'merge_id' => $prg['merge_id']
+                        ], $this->getSessionNamespace());
                 } else {
                     return $this->retourListe('error', 'Action interdite', 'fields-liste');
                 }
             }
             if (array_key_exists('cancel', $prg)) {
-                return $this->retourListe('warning', 'Pas de modification.', 'fields-liste');
+                return $this->retourListe('warning', 'Pas de modification.', 
+                    'fields-liste');
             }
             $args = $prg;
         }
@@ -444,7 +472,9 @@ class IndexController extends AbstractActionController
                  * Attention à la syntaxe : opérateur 'merge-fields' et clés dans les
                  * paramètres ou le résultat 'merge_fields' et 'merge_id'
                  */
-                $result = $mailchimp->patch('lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id'], $params);
+                $result = $mailchimp->patch(
+                    'lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id'], 
+                    $params);
                 if (! array_key_exists('merge_id', $result)) {
                     ob_start();
                     print_r($result);
@@ -452,10 +482,12 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', 'Modification enregistrée.', 'fields-liste');
+                return $this->retourListe('success', 'Modification enregistrée.', 
+                    'fields-liste');
             }
         } else {
-            $result = $mailchimp->get('lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id']);
+            $result = $mailchimp->get(
+                'lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id']);
             $form->setDataFromApi3($result);
         }
         // lecture des infos de la liste
@@ -467,11 +499,12 @@ class IndexController extends AbstractActionController
             $message = ob_get_clean();
             throw new \Exception($message);
         }
-        return new ViewModel([
-            'h1_msg' => 'Modification d\'un champ d\'une liste',
-            'liste_info' => $liste_info,
-            'form' => $form->prepare()
-        ]);
+        return new ViewModel(
+            [
+                'h1_msg' => 'Modification d\'un champ d\'une liste',
+                'liste_info' => $liste_info,
+                'form' => $form->prepare()
+            ]);
     }
 
     public function dupliquerFieldAction()
@@ -483,12 +516,14 @@ class IndexController extends AbstractActionController
             return $this->retourListe('error', 'Action interdite', 'fields-liste');
         } else {
             if (array_key_exists('dupliquer', $prg)) {
-                if (! (array_key_exists('id_liste', $prg) && array_key_exists('merge_id', $prg))) {
+                if (! (array_key_exists('id_liste', $prg) &&
+                     array_key_exists('merge_id', $prg))) {
                     return $this->retourListe('error', 'Action interdite', 'fields-liste');
                 }
             }
             if (array_key_exists('cancel', $prg)) {
-                return $this->retourListe('warning', 'Le champ n\'a pas été dupliqué.', 'fields-liste');
+                return $this->retourListe('warning', 'Le champ n\'a pas été dupliqué.', 
+                    'fields-liste');
             }
             $args = $prg;
         }
@@ -503,17 +538,20 @@ class IndexController extends AbstractActionController
                  * Attention à la syntaxe : opérateur 'merge-fields' et clés dans les
                  * paramètres ou le résultat 'merge_fields' et 'merge_id'
                  */
-                $result = $mailchimp->post('lists/' . $args['id_liste'] . '/merge-fields', $params);
+                $result = $mailchimp->post('lists/' . $args['id_liste'] . '/merge-fields', 
+                    $params);
                 if (! array_key_exists('merge_id', $result)) {
                     ob_start();
                     print_r($result);
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', 'Le champ a été dupliqué.', 'fields-liste');
+                return $this->retourListe('success', 'Le champ a été dupliqué.', 
+                    'fields-liste');
             }
         } else {
-            $result = $mailchimp->get('lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id']);
+            $result = $mailchimp->get(
+                'lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id']);
             $form->setDataFromApi3($result);
         }
         // lecture des infos de la liste
@@ -525,11 +563,12 @@ class IndexController extends AbstractActionController
             $message = ob_get_clean();
             throw new \Exception($message);
         }
-        $view = new ViewModel([
-            'h1_msg' => 'Créer un nouveau champ à partir d\'un autre',
-            'liste_info' => $liste_info,
-            'form' => $form->prepare()
-        ]);
+        $view = new ViewModel(
+            [
+                'h1_msg' => 'Créer un nouveau champ à partir d\'un autre',
+                'liste_info' => $liste_info,
+                'form' => $form->prepare()
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/edit-field.phtml');
         return $view;
     }
@@ -544,11 +583,13 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('creer', $prg)) {
                 if (! array_key_exists('id_liste', $prg)) {
-                    return $this->retourListe('error', 'La liste n\'est pas précisée.', 'fields-liste');
+                    return $this->retourListe('error', 'La liste n\'est pas précisée.', 
+                        'fields-liste');
                 }
             }
             if (array_key_exists('cancel', $prg)) {
-                return $this->retourListe('warning', 'Le champ n\'a pas été créé.', 'fields-liste');
+                return $this->retourListe('warning', 'Le champ n\'a pas été créé.', 
+                    'fields-liste');
             }
             $id_liste = $prg['id_liste'];
             $args = $prg;
@@ -564,7 +605,8 @@ class IndexController extends AbstractActionController
                  * Attention à la syntaxe : opérateur 'merge-fields' et clés dans les
                  * paramètres ou le résultat 'merge_fields' et 'merge_id'
                  */
-                $result = $mailchimp->post('lists/' . $id_liste . '/merge-fields', $params);
+                $result = $mailchimp->post('lists/' . $id_liste . '/merge-fields', 
+                    $params);
                 if (! array_key_exists('merge_id', $result)) {
                     ob_start();
                     print_r($result);
@@ -573,16 +615,18 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', 'Le champ a été créé.', 'fields-liste');
+                return $this->retourListe('success', 'Le champ a été créé.', 
+                    'fields-liste');
             }
         } else {
             /**
              * *****
              * Attention à la dénomination de ce champ dans l'API
              */
-            $form->setDataFromApi3([
-                'list_id' => $id_liste
-            ]);
+            $form->setDataFromApi3(
+                [
+                    'list_id' => $id_liste
+                ]);
         }
         // lecture des infos de la liste
         $liste_info = $mailchimp->get('lists/' . $id_liste);
@@ -593,11 +637,12 @@ class IndexController extends AbstractActionController
             $message = ob_get_clean();
             throw new \Exception($message);
         }
-        $view = new ViewModel([
-            'h1_msg' => 'Créer un nouveau champ',
-            'liste_info' => $liste_info,
-            'form' => $form->prepare()
-        ]);
+        $view = new ViewModel(
+            [
+                'h1_msg' => 'Créer un nouveau champ',
+                'liste_info' => $liste_info,
+                'form' => $form->prepare()
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/edit-field.phtml');
         return $view;
     }
@@ -611,33 +656,38 @@ class IndexController extends AbstractActionController
             return $this->retourListe('error', 'Action interdite', 'fields-liste');
         } else {
             if (array_key_exists('suppr', $prg)) {
-                if (! (array_key_exists('id_liste', $prg) && array_key_exists('merge_id', $prg))) {
+                if (! (array_key_exists('id_liste', $prg) &&
+                     array_key_exists('merge_id', $prg))) {
                     return $this->retourListe('error', 'Action interdite', 'fields-liste');
                 }
             }
             if (array_key_exists('supprnon', $prg)) {
-                return $this->retourListe('warning', 'Pas de suppression.', 'fields-liste');
+                return $this->retourListe('warning', 'Pas de suppression.', 
+                    'fields-liste');
             }
             $args = $prg;
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
-        $form = new ButtonForm([
-            'id_liste' => $args['id_liste'],
-            'merge_id' => $args['merge_id']
-        ], [
-            'supproui' => [
-                'class' => 'confirm',
-                'value' => 'Confirmer'
-            ],
-            'supprnon' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ]);
+        $form = new ButtonForm(
+            [
+                'id_liste' => $args['id_liste'],
+                'merge_id' => $args['merge_id']
+            ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
         if (array_key_exists('supproui', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
-                $result = $mailchimp->delete('lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id']);
+                $result = $mailchimp->delete(
+                    'lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id']);
                 if (is_array($result)) {
                     ob_start();
                     print_r($result);
@@ -645,17 +695,20 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', sprintf('Le champ %s a été supprimé.', $args['merge_id']), 'fields-liste');
+                return $this->retourListe('success', 
+                    sprintf('Le champ %s a été supprimé.', $args['merge_id']), 
+                    'fields-liste');
             }
         }
         $liste_info = $mailchimp->get('lists/' . $args['id_liste']);
         
-        $view = new ViewModel([
-            'liste_info' => $liste_info,
-            'form' => $form->prepare(),
-            'field_name' => $args['field_name'],
-            'merge_id' => $args['merge_id']
-        ]);
+        $view = new ViewModel(
+            [
+                'liste_info' => $liste_info,
+                'form' => $form->prepare(),
+                'field_name' => $args['field_name'],
+                'merge_id' => $args['merge_id']
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/suppr-liste.phtml');
         return $view;
     }
@@ -682,23 +735,27 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, $this->getSessionNamespace());
+            $args = $this->getFromSession('identifiant', false, 
+                $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
             }
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('segments', $prg)) {
-                    $this->setToSession('identifiant', [
-                        'id_liste' => $prg['id_liste'],
-                        'liste_name' => $prg['liste_name']
-                    ], $this->getSessionNamespace());
+                    $this->setToSession('identifiant', 
+                        [
+                            'id_liste' => $prg['id_liste'],
+                            'liste_name' => $prg['liste_name']
+                        ], $this->getSessionNamespace());
                 }
             } elseif (! array_key_exists('retour', $prg)) {
                 return $this->retourListe();
             }
             // on s'assure que les 2 paramètres sont dans args (cas d'un retour)
-            $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
+            $args = array_merge(
+                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
         // lecture des infos de la liste
@@ -718,13 +775,14 @@ class IndexController extends AbstractActionController
         } else {
             $message = '';
         }
-        return new ViewModel([
-            'liste_info' => $liste_info,
-            'source' => $source,
-            'auth' => $this->authenticate->by('email'),
-            'acl' => $this->acl,
-            'message' => $message
-        ]);
+        return new ViewModel(
+            [
+                'liste_info' => $liste_info,
+                'source' => $source,
+                'auth' => $this->authenticate->by('email'),
+                'acl' => $this->acl,
+                'message' => $message
+            ]);
     }
 
     /**
@@ -741,11 +799,13 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('creer', $prg)) {
                 if (! array_key_exists('id_liste', $prg)) {
-                    return $this->retourListe('error', 'La liste n\'est pas précisée.', 'segments-liste');
+                    return $this->retourListe('error', 'La liste n\'est pas précisée.', 
+                        'segments-liste');
                 }
             }
             if (array_key_exists('cancel', $prg)) {
-                return $this->retourListe('warning', 'Le segment n\'a pas été créé.', 'segments-liste');
+                return $this->retourListe('warning', 'Le segment n\'a pas été créé.', 
+                    'segments-liste');
             }
             $id_liste = $prg['id_liste'];
             $args = $prg;
@@ -765,16 +825,19 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', 'Le segment a été créé. Il faut maintenant ajouter les règles de filtrage.', 'segments-liste');
+                return $this->retourListe('success', 
+                    'Le segment a été créé. Il faut maintenant ajouter les règles de filtrage.', 
+                    'segments-liste');
             }
         } else {
             /**
              * *****
              * Attention à la dénomination de ce champ dans l'API
              */
-            $form->setDataFromApi3([
-                'list_id' => $id_liste
-            ]);
+            $form->setDataFromApi3(
+                [
+                    'list_id' => $id_liste
+                ]);
         }
         // lecture des infos de la liste
         $liste_info = $mailchimp->get('lists/' . $id_liste);
@@ -785,11 +848,12 @@ class IndexController extends AbstractActionController
             $message = ob_get_clean();
             throw new \Exception($message);
         }
-        $view = new ViewModel([
-            'h1_msg' => 'Créer un nouveau segment dans une liste',
-            'liste_info' => $liste_info,
-            'form' => $form->prepare()
-        ]);
+        $view = new ViewModel(
+            [
+                'h1_msg' => 'Créer un nouveau segment dans une liste',
+                'liste_info' => $liste_info,
+                'form' => $form->prepare()
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/edit-segment.phtml');
         return $view;
     }
@@ -807,33 +871,41 @@ class IndexController extends AbstractActionController
             return $this->retourListe('error', 'Action interdite', 'segments-liste');
         } else {
             if (array_key_exists('dupliquer', $prg)) {
-                if (! (array_key_exists('id_liste', $prg) && array_key_exists('segment_id', $prg))) {
-                    return $this->retourListe('error', 'Action interdite', 'segments-liste');
+                if (! (array_key_exists('id_liste', $prg) &&
+                     array_key_exists('segment_id', $prg))) {
+                    return $this->retourListe('error', 'Action interdite', 
+                        'segments-liste');
                 }
             }
             if (array_key_exists('cancel', $prg)) {
-                return $this->retourListe('warning', 'Le segment n\'a pas été dupliqué.', 'segments-liste');
+                return $this->retourListe('warning', 'Le segment n\'a pas été dupliqué.', 
+                    'segments-liste');
             }
             $args = $prg;
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
-        $source = $mailchimp->get('lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
-        $form = new Form\Segment(StdLib::getParamR([
-            'options',
-            'conditions'
-        ], $source), []);
+        $source = $mailchimp->get(
+            'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
+        $form = new Form\Segment(
+            StdLib::getParamR(
+                [
+                    'options',
+                    'conditions'
+                ], $source), []);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
                 $params = $form->getDataForApi3(true);
-                $result = $mailchimp->post('lists/' . $args['id_liste'] . '/segments', $params);
+                $result = $mailchimp->post('lists/' . $args['id_liste'] . '/segments', 
+                    $params);
                 if (! array_key_exists('id', $result)) {
                     ob_start();
                     print_r($result);
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', 'Le segment a été dupliqué.', 'segments-liste');
+                return $this->retourListe('success', 'Le segment a été dupliqué.', 
+                    'segments-liste');
             }
         } else {
             $form->setDataFromApi3($source);
@@ -847,11 +919,12 @@ class IndexController extends AbstractActionController
             $message = ob_get_clean();
             throw new \Exception($message);
         }
-        $view = new ViewModel([
-            'h1_msg' => 'Créer un segment champ à partir d\'un autre',
-            'liste_info' => $liste_info,
-            'form' => $form->prepare()
-        ]);
+        $view = new ViewModel(
+            [
+                'h1_msg' => 'Créer un segment champ à partir d\'un autre',
+                'liste_info' => $liste_info,
+                'form' => $form->prepare()
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/edit-segment.phtml');
         return $view;
     }
@@ -867,23 +940,28 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, $this->getSessionNamespace());
+            $args = $this->getFromSession('identifiant', false, 
+                $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'segments-liste');
             }
         } else {
             if (array_key_exists('edit', $prg)) {
-                if (array_key_exists('id_liste', $prg) && array_key_exists('segment_id', $prg)) {
-                    $this->setToSession('identifiant', [
-                        'id_liste' => $prg['id_liste'],
-                        'segment_id' => $prg['segment_id']
-                    ], $this->getSessionNamespace());
+                if (array_key_exists('id_liste', $prg) &&
+                     array_key_exists('segment_id', $prg)) {
+                    $this->setToSession('identifiant', 
+                        [
+                            'id_liste' => $prg['id_liste'],
+                            'segment_id' => $prg['segment_id']
+                        ], $this->getSessionNamespace());
                 } else {
-                    return $this->retourListe('error', 'Action interdite.', 'segments-liste');
+                    return $this->retourListe('error', 'Action interdite.', 
+                        'segments-liste');
                 }
             }
             if (array_key_exists('cancel', $prg)) {
-                return $this->retourListe('warning', 'Pas de modification.', 'segments-liste');
+                return $this->retourListe('warning', 'Pas de modification.', 
+                    'segments-liste');
             }
             $args = $prg;
         }
@@ -893,7 +971,9 @@ class IndexController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $params = $form->getDataForApi3();
-                $result = $mailchimp->patch('lists/' . $args['id_liste'] . '/segments/' . $args['segment_id'], $params);
+                $result = $mailchimp->patch(
+                    'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id'], 
+                    $params);
                 if (! array_key_exists('id', $result)) {
                     ob_start();
                     print_r($result);
@@ -901,10 +981,12 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', 'Modification enregistrée.', 'segments-liste');
+                return $this->retourListe('success', 'Modification enregistrée.', 
+                    'segments-liste');
             }
         } else {
-            $segment = $mailchimp->get('lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
+            $segment = $mailchimp->get(
+                'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
             $form->setDataFromApi3($segment);
         }
         // lecture des infos de la liste
@@ -916,14 +998,15 @@ class IndexController extends AbstractActionController
             $message = ob_get_clean();
             throw new \Exception($message);
         }
-        return new ViewModel([
-            'h1_msg' => 'Modification d\'un segment d\'une liste',
-            'liste_info' => $liste_info,
-            'id_liste' => $args['id_liste'],
-            'segment_id' => $args['segment_id'],
-            'form' => $form->prepare(),
-            'segment' => $segment
-        ]);
+        return new ViewModel(
+            [
+                'h1_msg' => 'Modification d\'un segment d\'une liste',
+                'liste_info' => $liste_info,
+                'id_liste' => $args['id_liste'],
+                'segment_id' => $args['segment_id'],
+                'form' => $form->prepare(),
+                'segment' => $segment
+            ]);
     }
 
     /**
@@ -939,33 +1022,39 @@ class IndexController extends AbstractActionController
             return $this->retourListe('error', 'Action interdite', 'segments-liste');
         } else {
             if (array_key_exists('suppr', $prg)) {
-                if (! (array_key_exists('id_liste', $prg) && array_key_exists('segment_id', $prg))) {
-                    return $this->retourListe('error', 'Action interdite', 'segments-liste');
+                if (! (array_key_exists('id_liste', $prg) &&
+                     array_key_exists('segment_id', $prg))) {
+                    return $this->retourListe('error', 'Action interdite', 
+                        'segments-liste');
                 }
             }
             if (array_key_exists('supprnon', $prg)) {
-                return $this->retourListe('warning', 'Pas de suppression.', 'segments-liste');
+                return $this->retourListe('warning', 'Pas de suppression.', 
+                    'segments-liste');
             }
             $args = $prg;
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
-        $form = new ButtonForm([
-            'id_liste' => $args['id_liste'],
-            'segment_id' => $args['segment_id']
-        ], [
-            'supproui' => [
-                'class' => 'confirm',
-                'value' => 'Confirmer'
-            ],
-            'supprnon' => [
-                'class' => 'confirm',
-                'value' => 'Abandonner'
-            ]
-        ]);
+        $form = new ButtonForm(
+            [
+                'id_liste' => $args['id_liste'],
+                'segment_id' => $args['segment_id']
+            ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
         if (array_key_exists('supproui', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
-                $result = $mailchimp->delete('lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
+                $result = $mailchimp->delete(
+                    'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id']);
                 if (is_array($result)) {
                     ob_start();
                     print_r($result);
@@ -973,16 +1062,19 @@ class IndexController extends AbstractActionController
                     $msg = ob_get_clean();
                     throw new \Exception($msg);
                 }
-                return $this->retourListe('success', sprintf('Le segment %s a été supprimé.', $args['segment_id']), 'segments-liste');
+                return $this->retourListe('success', 
+                    sprintf('Le segment %s a été supprimé.', $args['segment_id']), 
+                    'segments-liste');
             }
         }
         $liste_info = $mailchimp->get('lists/' . $args['id_liste']);
-        $view = new ViewModel([
-            'liste_info' => $liste_info,
-            'form' => $form->prepare(),
-            'segment_name' => $args['segment_name'],
-            'segment_id' => $args['segment_id']
-        ]);
+        $view = new ViewModel(
+            [
+                'liste_info' => $liste_info,
+                'form' => $form->prepare(),
+                'segment_name' => $args['segment_name'],
+                'segment_id' => $args['segment_id']
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/suppr-liste.phtml');
         return $view;
     }
@@ -1008,44 +1100,52 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, $this->getSessionNamespace());
+            $args = $this->getFromSession('identifiant', false, 
+                $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'segments-liste');
             }
         } else {
             if (array_key_exists('id_liste', $prg) && array_key_exists('segment_id', $prg)) {
                 if (array_key_exists('members', $prg)) {
-                    $this->setToSession('identifiant', [
-                        'id_liste' => $prg['id_liste'],
-                        'liste_name' => $prg['liste_name'],
-                        'segment_id' => $prg['segment_id'],
-                        'segment_name' => $prg['segment_name']
-                    ], $this->getSessionNamespace());
+                    $this->setToSession('identifiant', 
+                        [
+                            'id_liste' => $prg['id_liste'],
+                            'liste_name' => $prg['liste_name'],
+                            'segment_id' => $prg['segment_id'],
+                            'segment_name' => $prg['segment_name']
+                        ], $this->getSessionNamespace());
                 }
             } elseif (! array_key_exists('retour', $prg)) {
                 return $this->retourListe('error', 'Action interdite.', 'segments-liste');
             }
             if (array_key_exists('cancel', $prg)) {
-                return $this->retourListe('warning', 'Pas de modification.', 'segments-liste');
+                return $this->retourListe('warning', 'Pas de modification.', 
+                    'segments-liste');
             }
             // on s'assure que les 4 paramètres sont dans args
-            $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
+            $args = array_merge(
+                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
-        $method = 'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id'] . '/members';
+        $method = 'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id'] .
+             '/members';
         $source = new Paginator(new MailChimpAdapter($mailchimp, $method, 'members'));
         if (! $source->count()) {
-            return $this->retourListe('warning', 'Pas de membre dans ce segment.', 'segments-liste');
+            return $this->retourListe('warning', 'Pas de membre dans ce segment.', 
+                'segments-liste');
         }
-        return new ViewModel([
-            'source' => $source,
-            'id_liste' => $args['id_liste'],
-            'liste_name' => $args['liste_name'],
-            'segment_name' => $args['segment_name'],
-            'auth' => $this->authenticate->by('email'),
-            'acl' => $this->acl,
-            'page' => $this->params('page', 1)
-        ]);
+        return new ViewModel(
+            [
+                'source' => $source,
+                'id_liste' => $args['id_liste'],
+                'liste_name' => $args['liste_name'],
+                'segment_name' => $args['segment_name'],
+                'auth' => $this->authenticate->by('email'),
+                'acl' => $this->acl,
+                'page' => $this->params('page', 1)
+            ]);
     }
 
     /**
@@ -1067,17 +1167,19 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, $this->getSessionNamespace());
+            $args = $this->getFromSession('identifiant', false, 
+                $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
             }
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('members', $prg)) {
-                    $this->setToSession('identifiant', [
-                        'id_liste' => $prg['id_liste'],
-                        'liste_name' => $prg['liste_name']
-                    ], $this->getSessionNamespace());
+                    $this->setToSession('identifiant', 
+                        [
+                            'id_liste' => $prg['id_liste'],
+                            'liste_name' => $prg['liste_name']
+                        ], $this->getSessionNamespace());
                 }
             } elseif (! array_key_exists('retour', $prg)) {
                 return $this->retourListe();
@@ -1086,7 +1188,9 @@ class IndexController extends AbstractActionController
                 return $this->retourListe('warning', 'Pas de modification.');
             }
             // on s'assure que les 2 paramètres sont dans args
-            $args = array_merge($this->getFromSession('identifiant', [], $this->getSessionNamespace()), $prg);
+            $args = array_merge(
+                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
         $method = 'lists/' . $args['id_liste'] . '/members';
@@ -1096,15 +1200,16 @@ class IndexController extends AbstractActionController
         } else {
             $message = '';
         }
-        $view = new ViewModel([
-            'source' => $source,
-            'id_liste' => $args['id_liste'],
-            'liste_name' => $args['liste_name'],
-            'message' => $message,
-            'auth' => $this->authenticate->by('email'),
-            'acl' => $this->acl,
-            'page' => $this->params('page', 1)
-        ]);
+        $view = new ViewModel(
+            [
+                'source' => $source,
+                'id_liste' => $args['id_liste'],
+                'liste_name' => $args['liste_name'],
+                'message' => $message,
+                'auth' => $this->authenticate->by('email'),
+                'acl' => $this->acl,
+                'page' => $this->params('page', 1)
+            ]);
         $view->setTemplate('sbm-mail-chimp/index/segment-members');
         return $view;
     }
@@ -1124,9 +1229,11 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            return $this->retourListe('info', 'Choisissez une action (1).', 'liste-members');
+            return $this->retourListe('info', 'Choisissez une action (1).', 
+                'liste-members');
         } elseif (array_key_exists('cancel', $prg)) {
-            return $this->retourListe('warning', 'Abandon. La liste n\'a pas été mise à jour.');
+            return $this->retourListe('warning', 
+                'Abandon. La liste n\'a pas été mise à jour.');
         } elseif (array_key_exists('id_liste', $prg) && array_key_exists('populate', $prg)) {
             /**
              * ALGORITHME
@@ -1169,7 +1276,8 @@ class IndexController extends AbstractActionController
                 'compte_rendu' => $cr
             ]);
         } else {
-            return $this->retourListe('info', 'Choisissez une action (2).', 'liste-members');
+            return $this->retourListe('info', 'Choisissez une action (2).', 
+                'liste-members');
         }
     }
 
@@ -1184,7 +1292,8 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            return $this->retourListe('info', 'Choisissez une action (3).', 'liste-members');
+            return $this->retourListe('info', 'Choisissez une action (3).', 
+                'liste-members');
         }
         if (array_key_exists('id_batch', $prg)) {
             $id_batch = $prg['id_batch'];
@@ -1211,7 +1320,8 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            return $this->retourListe('info', 'Choisissez une action (1).', 'liste-members');
+            return $this->retourListe('info', 'Choisissez une action (1).', 
+                'liste-members');
         }
         if (array_key_exists('id_liste', $prg) && array_key_exists('clean', $prg)) {
             
@@ -1257,16 +1367,18 @@ class IndexController extends AbstractActionController
             // lancer l'exécution du batch si nécessaire
             if ($contenu) {
                 $cr = $batch->execute();
-                $view = new ViewModel([
-                    'compte_rendu' => $cr
-                ]);
+                $view = new ViewModel(
+                    [
+                        'compte_rendu' => $cr
+                    ]);
                 $view->setTemplate('sbm-mail-chimp/index/populate');
                 return $view;
             } else {
                 return $this->retourListe('info', 'La liste est à jour.', 'liste-members');
             }
         } else {
-            return $this->retourListe('info', 'Choisissez une action (2).', 'liste-members');
+            return $this->retourListe('info', 'Choisissez une action (2).', 
+                'liste-members');
         }
     }
 }

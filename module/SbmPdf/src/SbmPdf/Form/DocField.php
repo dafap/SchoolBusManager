@@ -9,8 +9,8 @@
  * @filesource DocField.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Form;
 
@@ -24,333 +24,357 @@ class DocField extends Form implements InputFilterProviderInterface
     {
         parent::__construct('champdocumentpdf');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'docfieldId'
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'documentId'
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'name'
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'recordSource'
-        ]);
-        $this->add([
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => [
-                'csrf_options' => [
-                    'timeout' => 180
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'docfieldId'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'documentId'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'name'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'recordSource'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'ordinal_position',
-            'attributes' => [
-                'id' => 'field-ordinal_position'
-            ],
-            'options' => [
-                'label' => 'Rang du champ dans le document',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'fieldname',
-            'attributes' => [
-                'id' => 'field-fieldname'
-            ],
-            'options' => [
-                'label' => 'Donnée à mettre dans ce champ',
-                'label_attributes' => [],
-                'empty_option' => 'Choisissez un champ',
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'fieldname_width',
-            'attributes' => [
-                'id' => 'field-fieldname_width'
-            ],
-            'options' => [
-                'label' => 'Largeur (mettre 0 pour ne pas imposer la largeur)',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'fieldname_align',
-            'attributes' => [
-                'id' => 'field-fieldname_align'
-            ],
-            'options' => [
-                'label' => 'Alignement horizontal du texte dans la cellule',
-                'label_attributes' => [],
-                'value_options' => [
-                    'L' => 'Aligné à gauche',
-                    'C' => 'Centré',
-                    'R' => 'Aligné à droite',
-                    'J' => 'Justifié'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'ordinal_position',
+                'attributes' => [
+                    'id' => 'field-ordinal_position'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Rang du champ dans le document',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'fieldname_stretch',
-            'attributes' => [
-                'id' => 'field-fieldname_stretch'
-            ],
-            'options' => [
-                'label' => 'Etalement (si la largeur est fixée)',
-                'label_attributes' => [],
-                'value_options' => [
-                    '0' => 'Sans étalement',
-                    '1' => 'Etalement par mise à l\'échelle si le texte est plus large que la cellule',
-                    '2' => 'Etalement par mise à l\'échelle à la largeur de la cellule',
-                    '3' => 'Etalement par réglage de l\'espacement si le texte est plus large que la cellule',
-                    '4' => 'Etalement par réglage de l\'espacement à la largeur de la cellule'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'fieldname',
+                'attributes' => [
+                    'id' => 'field-fieldname'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Donnée à mettre dans ce champ',
+                    'label_attributes' => [],
+                    'empty_option' => 'Choisissez un champ',
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'fieldname_precision',
-            'attributes' => [
-                'id' => 'field-fieldname_precision'
-            ],
-            'options' => [
-                'label' => 'Précision',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'fieldname_completion',
-            'attributes' => [
-                'id' => 'field-fieldname_completion'
-            ],
-            'options' => [
-                'label' => 'Complétion à gauche (nombre total de caractères pour ce champ)',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Textarea',
-            'name' => 'filter',
-            'attributes' => [
-                'id' => 'field-filter',
-                'class' => 'sbm-width-55c'
-            ],
-            'options' => [
-                'label' => 'Valeurs de remplacement',
-                'label_attributes' => [
-                    'class' => 'sbm-label-top'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'fieldname_width',
+                'attributes' => [
+                    'id' => 'field-fieldname_width'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Largeur (mettre 0 pour ne pas imposer la largeur)',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'is_date',
-            'attributes' => [
-                'id' => 'field-is_date'
-            ],
-            'options' => [
-                'label' => 'Est-ce une date ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'fieldname_align',
+                'attributes' => [
+                    'id' => 'field-fieldname_align'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Alignement horizontal du texte dans la cellule',
+                    'label_attributes' => [],
+                    'value_options' => [
+                        'L' => 'Aligné à gauche',
+                        'C' => 'Centré',
+                        'R' => 'Aligné à droite',
+                        'J' => 'Justifié'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'format',
-            'attributes' => [
-                'id' => 'field-format',
-                'class' => 'sbm-width-55c'
-            ],
-            'options' => [
-                'label' => 'Description du format',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Textarea',
-            'name' => 'label',
-            'attributes' => [
-                'id' => 'field-label',
-                'class' => 'sbm-width-55c'
-            ],
-            'options' => [
-                'label' => 'Texte précédent la donnée',
-                'label_attributes' => [
-                    'class' => 'sbm-label-top'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'fieldname_stretch',
+                'attributes' => [
+                    'id' => 'field-fieldname_stretch'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Etalement (si la largeur est fixée)',
+                    'label_attributes' => [],
+                    'value_options' => [
+                        '0' => 'Sans étalement',
+                        '1' => 'Etalement par mise à l\'échelle si le texte est plus large que la cellule',
+                        '2' => 'Etalement par mise à l\'échelle à la largeur de la cellule',
+                        '3' => 'Etalement par réglage de l\'espacement si le texte est plus large que la cellule',
+                        '4' => 'Etalement par réglage de l\'espacement à la largeur de la cellule'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'label_space',
-            'attributes' => [
-                'id' => 'field-label_space'
-            ],
-            'options' => [
-                'label' => 'Espacement du texte par rapport à la donnée',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'label_width',
-            'attributes' => [
-                'id' => 'field-label_width'
-            ],
-            'options' => [
-                'label' => 'Largeur ou marge gauche (mettre 0 pour ne pas imposer de largeur)',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'label_align',
-            'attributes' => [
-                'id' => 'field-label_align'
-            ],
-            'options' => [
-                'label' => 'Alignement horizontal du texte dans la cellule',
-                'label_attributes' => [],
-                'value_options' => [
-                    'L' => 'Aligné à gauche',
-                    'C' => 'Centré',
-                    'R' => 'Aligné à droite',
-                    'J' => 'Justifié'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'fieldname_precision',
+                'attributes' => [
+                    'id' => 'field-fieldname_precision'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Précision',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'label_stretch',
-            'attributes' => [
-                'id' => 'field-label_stretch'
-            ],
-            'options' => [
-                'label' => 'Etalement (si la largeur est fixée)',
-                'label_attributes' => [],
-                'value_options' => [
-                    '0' => 'Sans étalement',
-                    '1' => 'Etalement par mise à l\'échelle si le texte est plus large que la cellule',
-                    '2' => 'Etalement par mise à l\'échelle à la largeur de la cellule',
-                    '3' => 'Etalement par réglage de l\'espacement si le texte est plus large que la cellule',
-                    '4' => 'Etalement par réglage de l\'espacement à la largeur de la cellule'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'fieldname_completion',
+                'attributes' => [
+                    'id' => 'field-fieldname_completion'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Complétion à gauche (nombre total de caractères pour ce champ)',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'style',
-            'attributes' => [
-                'id' => 'field-style'
-            ],
-            'options' => [
-                'label' => 'Style',
-                'label_attributes' => [],
-                'empty_option' => 'Choisissez',
-                'value_options' => [
-                    'main' => 'Police principale',
-                    'data' => 'Police des données',
-                    'titre1' => 'Titre 1',
-                    'titre2' => 'Titre 2',
-                    'titre3' => 'Titre 3',
-                    'titre4' => 'Titre 4'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'filter',
+                'attributes' => [
+                    'id' => 'field-filter',
+                    'class' => 'sbm-width-55c'
                 ],
-                'error_options' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Valeurs de remplacement',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-top'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'height',
-            'attributes' => [
-                'id' => 'field-height'
-            ],
-            'options' => [
-                'label' => 'Hauteur des cellules (label et donnée)',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'is_date',
+                'attributes' => [
+                    'id' => 'field-is_date'
+                ],
+                'options' => [
+                    'label' => 'Est-ce une date ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'cancel',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'documentpdf-cancel',
-                'autofocus' => 'autofocus',
-                'class' => 'button default cancel'
-            ]
-        ]);
-        $this->add([
-            'name' => 'submit',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'documentpdf-submit',
-                'class' => 'button default submit'
-            ]
-        ]);
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'format',
+                'attributes' => [
+                    'id' => 'field-format',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Description du format',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'label',
+                'attributes' => [
+                    'id' => 'field-label',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Texte précédent la donnée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-top'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'label_space',
+                'attributes' => [
+                    'id' => 'field-label_space'
+                ],
+                'options' => [
+                    'label' => 'Espacement du texte par rapport à la donnée',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'label_width',
+                'attributes' => [
+                    'id' => 'field-label_width'
+                ],
+                'options' => [
+                    'label' => 'Largeur ou marge gauche (mettre 0 pour ne pas imposer de largeur)',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'label_align',
+                'attributes' => [
+                    'id' => 'field-label_align'
+                ],
+                'options' => [
+                    'label' => 'Alignement horizontal du texte dans la cellule',
+                    'label_attributes' => [],
+                    'value_options' => [
+                        'L' => 'Aligné à gauche',
+                        'C' => 'Centré',
+                        'R' => 'Aligné à droite',
+                        'J' => 'Justifié'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'label_stretch',
+                'attributes' => [
+                    'id' => 'field-label_stretch'
+                ],
+                'options' => [
+                    'label' => 'Etalement (si la largeur est fixée)',
+                    'label_attributes' => [],
+                    'value_options' => [
+                        '0' => 'Sans étalement',
+                        '1' => 'Etalement par mise à l\'échelle si le texte est plus large que la cellule',
+                        '2' => 'Etalement par mise à l\'échelle à la largeur de la cellule',
+                        '3' => 'Etalement par réglage de l\'espacement si le texte est plus large que la cellule',
+                        '4' => 'Etalement par réglage de l\'espacement à la largeur de la cellule'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'style',
+                'attributes' => [
+                    'id' => 'field-style'
+                ],
+                'options' => [
+                    'label' => 'Style',
+                    'label_attributes' => [],
+                    'empty_option' => 'Choisissez',
+                    'value_options' => [
+                        'main' => 'Police principale',
+                        'data' => 'Police des données',
+                        'titre1' => 'Titre 1',
+                        'titre2' => 'Titre 2',
+                        'titre3' => 'Titre 3',
+                        'titre4' => 'Titre 4'
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'height',
+                'attributes' => [
+                    'id' => 'field-height'
+                ],
+                'options' => [
+                    'label' => 'Hauteur des cellules (label et donnée)',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'documentpdf-cancel',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default cancel'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'documentpdf-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
@@ -488,8 +512,8 @@ class DocField extends Form implements InputFilterProviderInterface
                     ]
                 ]
             ]
-            
-        ];
+        ]
+        ;
     }
 
     public function setMaxLength(array $array)

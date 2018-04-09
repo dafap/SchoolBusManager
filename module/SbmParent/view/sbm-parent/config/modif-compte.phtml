@@ -9,15 +9,17 @@
  * @filesource modif-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
-$hiddens = array();
-$actions = array();
+$this->headScript()->appendFile(
+    $this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$hiddens = [];
+$actions = [];
 ?>
 <div id="winpopup">
 	<div id="winpopup-content"
@@ -69,13 +71,13 @@ echo $this->formHidden($this->form->get('csrf'));
             <?php echo $this->formHidden($this->form->get('communeId'));?>
             <?php echo $this->formHidden($this->form->get('demenagement'));?>
             <div id="responsable-edit-email" class="row-inner edit"><?php echo '<div class="enfant-label">Email</div>' . $this->responsable['email']; ?></div>
-            <div id="responsable-edit-adresseL1" class="row-inner edit"><?php echo '<div class="enfant-label">Adresse</div>' . $this->responsable['adresseL1']; ?></div>
+			<div id="responsable-edit-adresseL1" class="row-inner edit"><?php echo '<div class="enfant-label">Adresse</div>' . $this->responsable['adresseL1']; ?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit"><?php echo '<div class="enfant-label">Complément d\'adresse</div>' . $this->responsable['adresseL2']; ?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit"><?php echo '<div class="enfant-label">Code postal</div>' . $this->responsable['codePostal']; ?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit"><?php echo '<div class="enfant-label">Commune</div>' . $this->responsable['commune']; ?></div>
     <?php else : ?>
             <div id="responsable-edit-email" class="row-inner edit"><?php echo '<div class="enfant-label">Email</div>' . $this->responsable['email']; ?></div>
-            <div id="responsable-edit-adresseL1" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresseL1')); ?></div>
+			<div id="responsable-edit-adresseL1" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresseL1')); ?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit"><?php echo $this->formRow($this->form->get('adresseL2')); ?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit"><?php echo $this->formRow($this->form->get('codePostal')); ?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
@@ -97,12 +99,15 @@ echo $this->formHidden($this->form->get('csrf'));
 	<div id="fiche-footer"></div>
 </div>
 <div id="help-r2-content" class="invisible">
-			<p>Il s'agit de personnes vivant en couple à la même adresse, responsables des enfants qui vont être inscrits.</p>
-			<p>Si les deux personnes ont le même nom, indiquez seulement le prénom de la deuxième.</p>
-			<p></p>
-			<h3>Attention !</h3>
-			<p>Il ne s'agit pas de responsables d'enfants en garde alternée. Pour ces cas particuliers, l'information sera demandée
-			au moment de l'inscription des enfants.</p>
-		</div>
+	<p>Il s'agit de personnes vivant en couple à la même adresse,
+		responsables des enfants qui vont être inscrits.</p>
+	<p>Si les deux personnes ont le même nom, indiquez seulement le prénom
+		de la deuxième.</p>
+	<p></p>
+	<h3>Attention !</h3>
+	<p>Il ne s'agit pas de responsables d'enfants en garde alternée. Pour
+		ces cas particuliers, l'information sera demandée au moment de
+		l'inscription des enfants.</p>
+</div>
 <?php
 $this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');

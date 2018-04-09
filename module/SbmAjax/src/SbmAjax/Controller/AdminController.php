@@ -9,8 +9,8 @@
  * @filesource AdminController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAjax\Controller;
 
@@ -19,8 +19,9 @@ use Zend\Json\Json;
 
 class AdminController extends AbstractActionController
 {
+
     const ROUTE = 'sbmajaxadmin';
-    
+
     /**
      * ajax - cocher la case sélection des users
      *
@@ -31,19 +32,21 @@ class AdminController extends AbstractActionController
     {
         try {
             $userId = $this->params('userId');
-            $this->db_manager
-            ->get('Sbm\Db\Table\Users')
-            ->setSelection($userId, 1);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Users')->setSelection($userId, 1);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
+
     /**
      * ajax - décocher la case sélection des users
      *
@@ -54,17 +57,18 @@ class AdminController extends AbstractActionController
     {
         try {
             $userId = $this->params('userId');
-            $this->db_manager
-            ->get('Sbm\Db\Table\Users')
-            ->setSelection($userId, 0);
-            return $this->getResponse()->setContent(Json::encode(array(
-                'success' => 1
-            )));
+            $this->db_manager->get('Sbm\Db\Table\Users')->setSelection($userId, 0);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
-            return $this->getResponse()->setContent(Json::encode(array(
-                'cr' => $e->getMessage(),
-                'success' => 0
-            )));
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
         }
     }
 }

@@ -9,8 +9,8 @@
  * @filesource Lambert93.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mars 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -26,7 +26,7 @@ class Lambert93 extends AbstractProjection implements ProjectionInterface
         $this->ellipsoide = new IagGrs80();
         $this->name = 'Lambert_Conformal_Conic_2SP';
         $this->unit = 'degré';
-        $this->central_meridian = 3; 
+        $this->central_meridian = 3;
         $this->latitude_of_origin = 46.5;
         $this->standard_parallel_1 = 44;
         $this->standard_parallel_2 = 49;

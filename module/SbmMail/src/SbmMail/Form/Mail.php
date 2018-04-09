@@ -14,8 +14,8 @@
  * @filesource Mail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMail\Form;
 
@@ -29,94 +29,100 @@ class Mail extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('mail');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'userId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'text',
-            'name' => 'subject',
-            'attributes' => array(
-                'id' => 'mail-subject'
-            ),
-            'options' => array(
-                'label' => 'Sujet',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Textarea',
-            'name' => 'body',
-            'attributes' => array(
-                'id' => 'mail-body'
-            ),
-            'options' => array(
-                'label' => 'Message',
-                'label_attributes' => array(),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Envoyer le message',
-                'id' => 'mail-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button submit left-95px'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'mail-cancel',
-                'class' => 'button cancel left-10px'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'userId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'subject',
+                'attributes' => [
+                    'id' => 'mail-subject'
+                ],
+                'options' => [
+                    'label' => 'Sujet',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'body',
+                'attributes' => [
+                    'id' => 'mail-body'
+                ],
+                'options' => [
+                    'label' => 'Message',
+                    'label_attributes' => [],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Envoyer le message',
+                    'id' => 'mail-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button submit left-95px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'mail-cancel',
+                    'class' => 'button cancel left-10px'
+                ]
+            ]);
     }
-    
+
     public function getInputFilterSpecification()
     {
-        return array(
-            'subject' => array(
+        return [
+            'subject' => [
                 'name' => 'subject',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'body' => array(
+                    ]
+                ]
+            ],
+            'body' => [
                 'name' => 'body',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 }

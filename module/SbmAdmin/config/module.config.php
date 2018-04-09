@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmAdmin\Form;
 use SbmAdmin\Controller;
@@ -22,10 +22,13 @@ return [
         'resources' => [
             'sbmadmin' => [
                 'allow' => [
-                    'roles' => ['admin', 'sadmin']
+                    'roles' => [
+                        'admin',
+                        'sadmin'
+                    ]
                 ]
             ]
-        ],
+        ]
     ],
     'paginator' => [
         'count_per_page' => [
@@ -43,7 +46,7 @@ return [
     ],
     'form_manager' => [
         'invokables' => [
-            Form\Libelle::class => Form\Libelle::class,
+            Form\Libelle::class => Form\Libelle::class
         ],
         'factories' => [
             Form\Export::class => Form\Service\ExportFactory::class,
@@ -53,7 +56,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
         ]
     ],
     'router' => [

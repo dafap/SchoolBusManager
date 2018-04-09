@@ -10,8 +10,8 @@
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2015
- * @version 2015-1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $this->headScript()->captureStart();
@@ -101,9 +101,11 @@ $(function() {
 <?php
 
 $this->inlineScript()->captureEnd();
-$identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->nom, $this->responsable->prenom);
+$identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, 
+    $this->responsable->nom, $this->responsable->prenom);
 if ($this->hasGa) {
-    $r2identite = sprintf('%s %s %s', $this->responsable2['titre'], $this->responsable2['nom'], $this->responsable2['prenom']);
+    $r2identite = sprintf('%s %s %s', $this->responsable2['titre'], 
+        $this->responsable2['nom'], $this->responsable2['prenom']);
     $r2adresseL1 = $this->responsable2['adresseL1'];
     $r2adresseL2 = $this->responsable2['adresseL2'];
     $r2cp = $this->responsable2['codePostal'];

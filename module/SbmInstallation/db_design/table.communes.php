@@ -8,19 +8,19 @@
  * @filesource table.communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 janv. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 ini_set('memory_limit', '-1');
 
-return array(
+return [
     'name' => 'communes',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false, // si false, on ne touche pas à la structure dans Create::createOrAlterEntity() - true par défaut
     'add_data' => false, // si false, on ne fait rien dans Create::addData() - true par défaut ; sans effet sur une vue
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'communeId' => 'varchar(6) NOT NULL',
             'nom' => 'varchar(45) NOT NULL',
             'nom_min' => 'varchar(45) NOT NULL',
@@ -34,19 +34,21 @@ return array(
             'desservie' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'population' => 'mediumint(8) UNSIGNED NOT NULL DEFAULT "0"',
-        ),
-        'primary_key' => array('communeId',),
-//        'keys' => array(
-//            'noms' => array('fields' => array('nom',),),
-//            'membres_alpha' => array('fields' => array('membre',),),
-//            'desservies_alpha' => array('fields' => array('desservie',),),
-//        ),
+            'population' => 'mediumint(8) UNSIGNED NOT NULL DEFAULT "0"'
+        ],
+        'primary_key' => [
+            'communeId'
+        ],
+        // 'keys' => [
+        // 'noms' => ['fields' => ['nom',),),
+        // 'membres_alpha' => ['fields' => ['membre',),),
+        // 'desservies_alpha' => ['fields' => ['desservie',),),
+        // ),
         'engine' => 'InnoDb',
         'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci',
-    ),
-    //'data' => include __DIR__ . '/data/data.communes.php',
-    //'data' => array('after' => array(), 'include' => __DIR__ . '/data/data.communes.php')
-    'data' => __DIR__ . '/data/data.communes.php',
-);
+        'collate' => 'utf8_unicode_ci'
+    ],
+    // 'data' => include __DIR__ . '/data/data.communes.php',
+    // 'data' => ['after' => [), 'include' => __DIR__ . '/data/data.communes.php')
+    'data' => __DIR__ . '/data/data.communes.php'
+];

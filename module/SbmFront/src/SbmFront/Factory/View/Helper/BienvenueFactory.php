@@ -8,8 +8,8 @@
  * @filesource BienvenueFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 févr. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Factory\View\Helper;
 
@@ -19,9 +19,9 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\HelperPluginManager;
 use SbmFront\View\Helper\Bienvenue;
 
-
 class BienvenueFactory implements FactoryInterface
 {
+
     /**
      * {@inheritDoc}
      */
@@ -29,13 +29,13 @@ class BienvenueFactory implements FactoryInterface
     {
         /* @var $pluginManager HelperPluginManager */
         $serviceManager = $pluginManager->getServiceLocator();
-
+        
         /* @var $authService AuthenticationService */
         $authService = $serviceManager->get('SbmAuthentification\Authentication')->by();
-
+        
         $viewHelper = new Bienvenue();
         $viewHelper->setAuthService($authService);
-
+        
         return $viewHelper;
     }
 } 

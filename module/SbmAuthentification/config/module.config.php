@@ -14,13 +14,13 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
-    'acl' => array(
+return [
+    'acl' => [
         // association entre une categorieId (table users) et un rôle
-        'roleId' => array(
+        'roleId' => [
             1 => 'parent',
             2 => 'transporteur',
             3 => 'etablissement',
@@ -28,9 +28,9 @@ return array(
             253 => 'gestion',
             254 => 'admin',
             255 => 'sadmin'
-        ),
+        ],
         // hiérarchie des rôles
-        'roles' => array(
+        'roles' => [
             'guest' => null,
             'transporteur' => 'guest',
             'etablissement' => 'guest',
@@ -39,18 +39,18 @@ return array(
             'gestion' => 'parent',
             'admin' => 'gestion',
             'sadmin' => 'admin'
-        ),
-        'resources' => array(
-            'home' => array(
-                'allow' => array(
-                    'roles' => array(
+        ],
+        'resources' => [
+            'home' => [
+                'allow' => [
+                    'roles' => [
                         'guest'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         // routes de redirection lorsque l'accès n'est pas autorisé (en fonction du rôle)
-        'redirectTo' => array(
+        'redirectTo' => [
             'transporteur' => 'sbmportail',
             'etablissement' => 'sbmportail',
             'secretariat' => 'sbmportail',
@@ -58,12 +58,12 @@ return array(
             'gestion' => 'sbmgestion',
             'admin' => 'sbmadmin',
             'sadmin' => 'sbminstall'
-        )
-    ),    
-    'service_manager' => array(
-        'factories' => array(
+        ]
+    ],
+    'service_manager' => [
+        'factories' => [
             'SbmAuthentification\Authentication' => 'SbmAuthentification\Authentication\AuthenticationServiceFactory',
             'SbmAuthentification\AclRoutes' => 'SbmAuthentification\Permissions\AclRoutes'
-        )
-    )
-);
+        ]
+    ]
+];

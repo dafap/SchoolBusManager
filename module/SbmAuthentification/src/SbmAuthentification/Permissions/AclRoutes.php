@@ -13,8 +13,8 @@
  * @filesource AclRoutes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAuthentification\Permissions;
 
@@ -84,7 +84,8 @@ class AclRoutes implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->authenticationService = $serviceLocator->get('SbmAuthentification\Authentication')->by('email');
+        $this->authenticationService = $serviceLocator->get(
+            'SbmAuthentification\Authentication')->by('email');
         $this->acl_config = $serviceLocator->get('config')['acl'];
         $this->acl = new Acl();
         if (array_key_exists('roleId', $this->acl_config)) {
@@ -95,7 +96,8 @@ class AclRoutes implements FactoryInterface
                 }
             }
         }
-        if ($this->authenticationService->hasIdentity() && array_key_exists('redirectTo', $this->acl_config)) {
+        if ($this->authenticationService->hasIdentity() &&
+             array_key_exists('redirectTo', $this->acl_config)) {
             $key = $this->authenticationService->getCategorieId();
             if (array_key_exists($key, $this->roleId)) {
                 $this->redirectTo = $this->acl_config['redirectTo'][$this->roleId[$key]];
@@ -170,7 +172,7 @@ class AclRoutes implements FactoryInterface
             // Par défaut, on interdit l'accès à toute ressource dont l'ACL racine n'a pas été défini
             if (is_null($parentName) && ! array_key_exists($routePart, $resources)) {
                 $this->acl->deny(self::DEFAULT_ROLE, $routePart);
-                $resources = array();
+                $resources = [];
             }
             if (array_key_exists($routePart, $resources)) {
                 $resources = $resources[$routePart];
@@ -194,10 +196,10 @@ class AclRoutes implements FactoryInterface
                     if (array_key_exists('actions', $resources)) {
                         $actions = $resources['actions'];
                     }
-                    $resources = array();
+                    $resources = [];
                 }
             } else {
-                $resource = array();
+                $resource = [];
             }
             $parentName = $resourceName;
         }

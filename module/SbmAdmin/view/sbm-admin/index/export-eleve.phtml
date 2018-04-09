@@ -9,14 +9,14 @@
  * @filesource export-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juin 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 ?>
 <div id="fiche-wrapper">
 	<div id="fiche-header" class="clearfix">
-	    <div class="flashMessenger float-right">
+		<div class="flashMessenger float-right">
 	<?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -25,7 +25,7 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
         </div>
-    <h1>Exportation des élèves</h1>
+		<h1>Exportation des élèves</h1>
 	</div>
 	<div id="fiche-inner">
 	<?php echo $this->form()->openTag($this->form);?>
@@ -43,7 +43,7 @@ echo $this->flashMessenger()->render('default');
 			<div class="row-inner"><?php echo $this->formRow($this->form->get('ga'));?></div>
 			<div class="row-inner"><?php echo $this->formRow($this->form->get('chez'));?></div>
 			<div class="row-inner"><?php echo $this->formRow($this->form->get('lot'));?></div>
-			<div class="row-inner"><?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?></div>		
+			<div class="row-inner"><?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
 	<?php echo $this->form()->closeTag();?>
 	</div>

@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 nov. 2017
- * @version 2017-2.3.14
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model;
 
@@ -1625,16 +1625,15 @@ class Tcpdf extends \TCPDF
                             for ($key = 0; $key < count($table_columns); $key ++) {
                                 $value = $row[$table_columns[$key]['tbody']];
                                 // traitement des effectifs
-                                if (
-                                    $table_columns[$key]['filter']
-                                    && strpos($table_columns[$key]['filter'], '%valeur%')
-                                ) {
+                                if ($table_columns[$key]['filter'] &&
+                                     strpos($table_columns[$key]['filter'], '%valeur%')) {
                                     $filter = $table_columns[$key]['filter'];
                                     $filter = str_replace('%valeur%', $value, $filter);
                                     $filter = explode('=>', $filter);
                                     if ($filter[0] == 't_nb_inscrits') {
                                         $filter = StdLib::getArrayFromString($filter[1]);
-                                        $value = StdLib::getParamR($filter, $t_nb_inscrits, 0);
+                                        $value = StdLib::getParamR($filter, 
+                                            $t_nb_inscrits, 0);
                                     }
                                 }
                                 // reprise du traitement
@@ -1996,9 +1995,8 @@ class Tcpdf extends \TCPDF
                                         $row[$descripteur[$key]['fieldname']], 
                                         $descripteur[$key]['filter']);
                                     if ($descripteur[$key]['is_date']) {
-                                        if (! empty($descripteur[$key]['format']) &&
-                                             stripos('h', $descripteur[$key]['format']) !==
-                                             false) {
+                                        if (! empty($descripteur[$key]['format']) && stripos(
+                                            'h', $descripteur[$key]['format']) !== false) {
                                             $value = DateLib::formatDateTimeFromMysql(
                                                 $value);
                                         } else {
@@ -2331,10 +2329,9 @@ class Tcpdf extends \TCPDF
         $layout->setTemplate($fichier_phtml);
         $saut_de_page = false;
         $data = $this->getData();
-        $layout->setVariables(
-            [
-                'eleves' => $data
-            ]);
+        $layout->setVariables([
+            'eleves' => $data
+        ]);
         $codeHtml = $viewRender->render($layout);
         set_time_limit(300);
         // echo($codeHtml);

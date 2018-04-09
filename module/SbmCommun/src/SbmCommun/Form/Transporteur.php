@@ -8,8 +8,8 @@
  * @filesource Transporteur.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
@@ -22,320 +22,339 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         parent::__construct('transporteur');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'transporteurId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-nom',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Nom du transporteur',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresse1',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-adresseL1',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Adresse',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresse2',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-adresseL2',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Adresse (suite)',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'codePostal',
-            'type' => 'SbmCommun\Form\Element\CodePostal',
-            'attributes' => array(
-                'id' => 'transporteur-codepostal',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code postal',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'communeId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'transporteur-communeId',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une commune',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'telephone',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-telephone',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Téléphone',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'fax',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-fax',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Fax',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'email',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-email',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Email',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'siret',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-siret',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'SIRET',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'naf',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-naf',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'NAF',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'tvaIntraCommunautaire',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-tvaIntraCommunautaire',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'TVA intra communautaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_titulaire',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_titulaire',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'RIB - titulaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_domiciliation',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_domiciliation',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'RIB - domiciliation',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_bic',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_bic',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'RIB - BIC',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'rib_iban',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'transporteur-rib_iban',
-                'class' => 'sbm-width-35c'
-            ),
-            'options' => array(
-                'label' => 'RIB - IBAN',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'transporteurId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-nom',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Nom du transporteur',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresse1',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-adresseL1',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresse2',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-adresseL2',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Adresse (suite)',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'codePostal',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'transporteur-codepostal',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'transporteur-communeId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une commune',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'telephone',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-telephone',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Téléphone',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'fax',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-fax',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Fax',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'email',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-email',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'siret',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-siret',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'SIRET',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'naf',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-naf',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'NAF',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'tvaIntraCommunautaire',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-tvaIntraCommunautaire',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'TVA intra communautaire',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'rib_titulaire',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-rib_titulaire',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'RIB - titulaire',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'rib_domiciliation',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-rib_domiciliation',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'RIB - domiciliation',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'rib_bic',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-rib_bic',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'RIB - BIC',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'rib_iban',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'transporteur-rib_iban',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'RIB - IBAN',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'transporteur-submit',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'transporteur-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'transporteur-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'transporteur-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'nom' => array(
+        return [
+            'nom' => [
                 'name' => 'nom',
                 'required' => true
-            ),
-            'codePostal' => array(
+            ],
+            'codePostal' => [
                 'name' => 'codePostal',
                 'required' => true
-            ),
-            'communeId' => array(
+            ],
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => true
-            ),
-             'telephone' => array(
+            ],
+            'telephone' => [
                 'name' => 'telephone',
                 'required' => true
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'name' => 'email',
                 'required' => true
-            )
-        );
+            ]
+        ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+use Zend\View\Model\ViewModel;
 /**
  * Liste des paiements pour la table `systempay`
  *
@@ -7,21 +8,32 @@
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
- 
+
+/**
+ *
+ * @param string $date            
+ */
 function formatDate($date)
 {
     return \DateTime::createFromFormat('YmdHis', $date)->format('d/m/Y H:i:s');
 }
 
+/**
+ * 
+ * @param ViewModel $view
+ * @param string $name
+ * @param string $id
+ * @param unknown $value
+ */
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
     $element->setUseHiddenElement(false)
-    ->setAttribute('id', $id)
-    ->setValue($value);
+        ->setAttribute('id', $id)
+        ->setValue($value);
     return $view->formCheckbox($element);
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -45,43 +57,45 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $datas = $this->paginator->getCurrentItems();
-$url_rapports = $this->url('sbmpaiement', array(
-    'action' => 'pdf',
-    'page' => $this->page
-));
+$url_rapports = $this->url('sbmpaiement', 
+    [
+        'action' => 'pdf',
+        'page' => $this->page
+    ]);
 
 $config = include __DIR__ . '/../config/systempay.config.php';
 $url_marchand = $config['url_marchand'];
 $retour = $this->url('sbmgestion/finance');
-$hiddens = array();
-$menuImpression = $this->menuRapports('/paiement/liste', $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = [];
+$menuImpression = $this->menuRapports('/paiement/liste', $url_rapports, 'fam-printer', 
+    null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'systempay' => array(
+    'systempay' => [
         'class' => 'fam-house-link',
         'formaction' => $url_marchand,
         'title' => 'Systempay Back Office'
-    )
-);
+    ]
+];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <h1>Liste des notifications de paiement</h1>
 <div class="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
 	</div>
 	<div id="liste-inner">
 		<table class="notifications">
@@ -100,13 +114,15 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
             <?php foreach($datas as $test => $notification): ?>
             <?php $montant = $fmt->formatCurrency($notification->vads_amount/100, 'EUR'); ?>
             <?php $date_trans = formatDate($notification->vads_trans_date); ?>
-            <?php 
-            // construction des JS pour selection            
-            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $notification->systempayId);
-            $jsCallback .= sprintf("$modele\n", $notification->systempayId, $notification->systempayId);
-            ?>
+            <?php
+                // construction des JS pour selection
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", 
+                    $notification->systempayId);
+                $jsCallback .= sprintf("$modele\n", $notification->systempayId, 
+                    $notification->systempayId);
+                ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="vads_cust_name"><?php echo $this->escapeHtml($notification->vads_cust_name); ?></td>
 					<td class="vads_cust_email"><?php echo $this->escapeHtml($notification->vads_cust_email); ?></td>
 					<td class="vads_trans_date"><?php echo $date_trans; ?></td>
@@ -117,11 +133,12 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $notification->systempayId, $notification->selection)?></td>
 					<td class="boutons">
             <?php
-            $url_voir = $this->url('sbmpaiement', array(
-                'action' => 'voir',
-                'page' => $this->page,
-            ));
-            $title_voir = <<<EOT
+                $url_voir = $this->url('sbmpaiement', 
+                    [
+                        'action' => 'voir',
+                        'page' => $this->page
+                    ]);
+                $title_voir = <<<EOT
 Mode : $notification->vads_ctx_mode
 Type d'opération : $notification->vads_operation_type
 Date de la transaction : $date_trans
@@ -152,18 +169,19 @@ Date d'expiration de la carte : $notification->vads_expiry_month/$notification->
 Code de la banque : $notification->vads_expiry_year
 Code du produit de paiement : $notification->vads_bank_product
 EOT;
-            $hiddens = array(
-                'notificationId' => $notification->systempayId
-            );
-            $buttons = array(
-                'voir' => array(
-                    'class' => 'fam-zoom',
-                    'formaction' => $url_voir,
-                    'title' => $title_voir
-                ),
-            );
-            echo $this->listeLigneActions($notification->systempayId, $hiddens, $buttons);
-            ?>
+                $hiddens = [
+                    'notificationId' => $notification->systempayId
+                ];
+                $buttons = [
+                    'voir' => [
+                        'class' => 'fam-zoom',
+                        'formaction' => $url_voir,
+                        'title' => $title_voir
+                    ]
+                ];
+                echo $this->listeLigneActions($notification->systempayId, $hiddens, 
+                    $buttons);
+                ?>
 					</td>
 				</tr>         
             <?php endforeach;?>
@@ -171,7 +189,7 @@ EOT;
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
 	    <?php echo $this->form()->openTag($this->criteres_form);?>
 	    <?php echo $this->formCollection($this->criteres_form, true);?>

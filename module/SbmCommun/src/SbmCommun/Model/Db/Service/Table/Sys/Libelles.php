@@ -9,8 +9,8 @@
  * @filesource Libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 jan 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -31,17 +31,18 @@ class Libelles extends AbstractSbmTable
         $this->table_name = 'libelles';
         $this->table_type = 'system';
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\Libelles';
-        $this->id_name = array(
+        $this->id_name = [
             'nature',
             'code'
-        );
+        ];
     }
 
     /**
-     * Soit on passe un tableau des valeurs correspondant à la propriété id_name (nature, code), 
+     * Soit on passe un tableau des valeurs correspondant à la propriété id_name (nature, code),
      * soit on passe une chaine contenant ces valeurs séparées par |
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::getRecord()
      */
     public function getRecord($id)
@@ -50,14 +51,16 @@ class Libelles extends AbstractSbmTable
             return parent::getRecord($id);
         } elseif (is_string($id)) {
             list ($nature, $code) = explode('|', $id);
-            return parent::getRecord(array(
-                'nature' => $nature,
-                'code' => $code
-            ));
+            return parent::getRecord(
+                [
+                    'nature' => $nature,
+                    'code' => $code
+                ]);
         }
     }
 
-    public function saveRecordAvecControle(ObjectDataInterface $obj_data, $edit = false, $id = null)
+    public function saveRecordAvecControle(ObjectDataInterface $obj_data, $edit = false, 
+        $id = null)
     {
         $nature = $obj_data->nature;
         $code = $obj_data->code;
@@ -67,25 +70,28 @@ class Libelles extends AbstractSbmTable
             if ($id == $cle) {
                 parent::saveRecord($obj_data);
                 $ok = true;
-            } elseif ($this->is_newRecord(array(
-                'nature' => $nature,
-                'code' => $code
-            ))) {
+            } elseif ($this->is_newRecord(
+                [
+                    'nature' => $nature,
+                    'code' => $code
+                ])) {
                 list ($old_nature, $old_code) = explode('|', $id);
-                parent::deleteRecord(array(
-                    'nature' => $old_nature,
-                    'code' => $old_code
-                ));
+                parent::deleteRecord(
+                    [
+                        'nature' => $old_nature,
+                        'code' => $old_code
+                    ]);
                 parent::saveRecord($obj_data);
                 $ok = true;
             } else {
                 $ok = false;
             }
         } else {
-            if ($this->is_newRecord(array(
-                'nature' => $nature,
-                'code' => $code
-            ))) {
+            if ($this->is_newRecord(
+                [
+                    'nature' => $nature,
+                    'code' => $code
+                ])) {
                 parent::saveRecord($obj_data);
                 $ok = true;
             } else {
@@ -102,48 +108,52 @@ class Libelles extends AbstractSbmTable
      */
     public function fetchOpen()
     {
-        $where = new Where(array(
+        $where = new Where([
             new Literal('ouvert = 1')
-        ));
-        $order = array(
+        ]);
+        $order = [
             'nature',
             'code'
-        );
+        ];
         return $this->fetchAll($where, $order);
     }
-    
+
     /**
      * Renvoie le code d'un libellé pour une nature donnée.
-     * 
-     * @param string $nature
-     * @param string $libelle
-     * 
+     *
+     * @param string $nature            
+     * @param string $libelle            
+     *
      * @return integer
      */
     public function getCode($nature, $libelle)
     {
         $where = new Where();
-        $rowset = $this->fetchAll($where->equalTo('nature', $nature)->equalTo('libelle', $libelle));
-        if (!$rowset) {
+        $rowset = $this->fetchAll(
+            $where->equalTo('nature', $nature)
+                ->equalTo('libelle', $libelle));
+        if (! $rowset) {
             throw new Exception('Ce libellé n\'existe pas.');
         } else {
             return $rowset->current()->code;
         }
     }
-    
+
     /**
      * Renvoie le libellé d'un code pour une nature donnée.
      *
-     * @param string $nature
-     * @param int $code
+     * @param string $nature            
+     * @param int $code            
      *
      * @return string
      */
     public function getLibelle($nature, $code)
     {
         $where = new Where();
-        $rowset = $this->fetchAll($where->equalTo('nature', $nature)->equalTo('code', $code));
-        if (!$rowset) {
+        $rowset = $this->fetchAll(
+            $where->equalTo('nature', $nature)
+                ->equalTo('code', $code));
+        if (! $rowset) {
             throw new Exception('Ce code n\'existe pas.');
         } else {
             return $rowset->current()->libelle;

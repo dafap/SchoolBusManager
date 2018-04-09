@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmBase\Model\DateLib;
 
@@ -82,97 +82,109 @@ try {
 $afficheRouge = false;
 
 // les url à utiliser
-$url_deselection = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-selection',
-    'page' => $this->page
-));
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-liste',
-    'page' => $this->page
-));
-$url_responsable = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-edit',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+$url_deselection = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-selection',
+        'page' => $this->page
+    ]);
+$url_ici = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-liste',
+        'page' => $this->page
+    ]);
+$url_responsable = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-edit',
+        'page' => $this->page
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-suppr',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-group',
-    'page' => $this->page
-));
-$url_ajouter = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/eleve', array(
-    'action' => empty($this->groupe) ? 'eleve-pdf' : 'eleve-groupe-pdf',
-    'page' => $this->page
-));
-$url_map = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-localisation',
-    'page' => $this->page
-));
-$url_cartes = $this->url('sbmgestion/gestioneleve', array(
-    'action' => 'cartes',
-    'page' => $this->page
-));
-$url_duplicata = $this->url('sbmgestion/gestioneleve', array(
-    'action' => 'duplicata-carte',
-    'page' => $this->page
-));
+]);
+$url_edit = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-group',
+        'page' => $this->page
+    ]);
+$url_ajouter = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/eleve', 
+    [
+        'action' => empty($this->groupe) ? 'eleve-pdf' : 'eleve-groupe-pdf',
+        'page' => $this->page
+    ]);
+$url_map = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-localisation',
+        'page' => $this->page
+    ]);
+$url_cartes = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'cartes',
+        'page' => $this->page
+    ]);
+$url_duplicata = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'duplicata-carte',
+        'page' => $this->page
+    ]);
 $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
 $url_retour = $this->url('sbmgestion');
 
 // définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
 if (! empty($this->groupe)) {
-    $hiddens = array(
+    $hiddens = [
         'op' => $this->groupe
-    ); // pour passer les éléments à prendre en compte pour eleve-groupe
+    ]; // pour passer les éléments à prendre en compte pour eleve-groupe
 } else {
-    $hiddens = array();
+    $hiddens = [];
 }
-$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/eleve', [
+        'action' => 'eleve-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
 
-$actions = array(
-    'cancel' => array(
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_ici,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'cartes' => array(
+    'cartes' => [
         'class' => 'fam-vcard',
         'formaction' => $url_cartes,
         'title' => 'Edition des cartes'
-    ),
-    'gestion' => array(
+    ],
+    'gestion' => [
         'class' => 'fam-application-side-expand',
         'formaction' => $url_gestioneleve,
         'title' => 'Gestion des inscriptions'
-    ),
-    'selection' => array(
+    ],
+    'selection' => [
         'class' => 'fam-basket-delete',
         'formaction' => $url_deselection,
         'title' => 'Démarquer toutes les sélections'
-    ),
-    'ajouter' => array(
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvel élève'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des élèves</h1>
 <div id="liste-wrapper">
@@ -207,79 +219,92 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($eleves as $test => $eleve): ?>
         <?php
             // responsable 1
-            $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES, 'utf-8', false);
-            $hiddensR1 = array(
+            $r = htmlspecialchars(
+                str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES, 
+                'utf-8', false);
+            $hiddensR1 = [
                 'responsableId' => $eleve['responsable1Id'],
                 'info' => $r,
                 'origine' => $url_ici
-            );
-            $buttonsR1 = array(
-                'r1' => array(
+            ];
+            $buttonsR1 = [
+                'r1' => [
                     'class' => 'fam-magnifier',
                     'formaction' => $url_responsable,
                     'title' => 'Voir sa fiche',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'voir r1')
-                ),
-                'localiser' => array(
+                ],
+                'localiser' => [
                     'class' => 'fam-map-magnify',
                     'formaction' => $url_map,
                     'title' => 'Localiser cette adresse sur la carte',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'localiser r1')
-                )
-            );
+                ]
+            ];
             if (! empty($eleve['emailR1'])) {
-                $hiddensR1 = array_merge($hiddensR1, array(
-                    'email' => $eleve['emailR1'],
-                    'responsable' => sprintf('%s %s', $eleve['titreR1'], $eleve['responsable1NomPrenom']),
-                    'group' => $url_ici
-                ));
-                $buttonsR1['ecrire'] = array(
+                $hiddensR1 = array_merge($hiddensR1, 
+                    [
+                        'email' => $eleve['emailR1'],
+                        'responsable' => sprintf('%s %s', $eleve['titreR1'], 
+                            $eleve['responsable1NomPrenom']),
+                        'group' => $url_ici
+                    ]);
+                $buttonsR1['ecrire'] = [
                     'class' => 'fam-email',
                     'formaction' => $url_mail,
                     'title' => 'Envoyer un email'
-                );
+                ];
             }
-            $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', $hiddensR1, $buttonsR1, array(
-                'style' => 'display: inline;'
-            ));
+            $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', $hiddensR1, 
+                $buttonsR1, 
+                [
+                    'style' => 'display: inline;'
+                ]);
             $itemR1 .= $r;
             // responsable 2
             if ($eleve['responsable2Id']) {
-                $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), ENT_QUOTES, 'utf-8', false);
-                $hiddensR2 = array(
+                $r = htmlspecialchars(
+                    str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), 
+                    ENT_QUOTES, 'utf-8', false);
+                $hiddensR2 = [
                     'responsableId' => $eleve['responsable2Id'],
                     'info' => $r,
                     'origine' => $url_ici
-                );
-                $buttonsR2 = array(
-                    'r2' => array(
+                ];
+                $buttonsR2 = [
+                    'r2' => [
                         'class' => 'fam-magnifier',
                         'formaction' => $url_responsable,
                         'title' => 'Voir sa fiche',
                         'onclick' => sprintf($js_op, $eleve['eleveId'], 'r2', 'voir r2')
-                    ),
-                    'localiser' => array(
+                    ],
+                    'localiser' => [
                         'class' => 'fam-map-magnify',
                         'formaction' => $url_map,
                         'title' => 'Localiser cette adresse sur la carte',
-                        'onclick' => sprintf($js_op, $eleve['eleveId'], 'r2', 'localiser r2')
-                    )
-                );
+                        'onclick' => sprintf($js_op, $eleve['eleveId'], 'r2', 
+                            'localiser r2')
+                    ]
+                ];
                 if (! empty($eleve['emailR2'])) {
-                    $hiddensR2 = array_merge($hiddensR2, array(
-                        'email' => $eleve['emailR2'],
-                        'responsable' => sprintf('%s %s', $eleve['titreR2'], $eleve['responsable2NomPrenom']),
-                        'group' => $url_ici
-                    ));
-                    $buttonsR2['ecrire'] = array(
+                    $hiddensR2 = array_merge($hiddensR2, 
+                        [
+                            'email' => $eleve['emailR2'],
+                            'responsable' => sprintf('%s %s', $eleve['titreR2'], 
+                                $eleve['responsable2NomPrenom']),
+                            'group' => $url_ici
+                        ]);
+                    $buttonsR2['ecrire'] = [
                         'class' => 'fam-email',
                         'formaction' => $url_mail,
                         'title' => 'Envoyer un email'
-                    );
+                    ];
                 }
-                $itemR2 = $this->listeLigneActions($eleve['eleveId'] . 'r2', $hiddensR2, $buttonsR2, array(
-                    'style' => 'display: inline;'
-                ));
+                $itemR2 = $this->listeLigneActions($eleve['eleveId'] . 'r2', $hiddensR2, 
+                    $buttonsR2, 
+                    [
+                        'style' => 'display: inline;'
+                    ]);
                 $itemR2 .= $r;
                 $ga = true;
                 $rowspan = ' rowspan="2"';
@@ -290,19 +315,23 @@ echo $this->flashMessenger()->render('default');
             }
             // selection
             $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve['eleveId']);
-            $js_chkCallback .= sprintf($modele_chkCallback, $eleve['eleveId'], $eleve['eleveId']);
+            $js_chkCallback .= sprintf($modele_chkCallback, $eleve['eleveId'], 
+                $eleve['eleveId']);
             // tr css
-            $tr_css = $this->cycle(array(
-                "even",
-                "odd"
-            ))->next();
+            $tr_css = $this->cycle(
+                [
+                    "even",
+                    "odd"
+                ])->next();
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
             if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) {
                 $rouge = $eleve['accordR1'] + $eleve['accordR2'] == 0;
             } else {
-                $rouge = ($eleve['district'] == 0 && $eleve['derogation'] == 0) || ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) || ($eleve['distanceR1'] < 1.0 && $eleve['distanceR2'] < 1.0);
+                $rouge = ($eleve['district'] == 0 && $eleve['derogation'] == 0) ||
+                     ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) ||
+                     ($eleve['distanceR1'] < 1.0 && $eleve['distanceR2'] < 1.0);
             }
             if ($rouge) {
                 $tr_css .= ' alert';
@@ -311,12 +340,15 @@ echo $this->flashMessenger()->render('default');
             $inscrit = $eleve['paiement'];
             $inscrit |= $eleve['fa'];
             $inscrit |= $eleve['gratuit'] > 0;
-            $inscrit |= ($eleve['demandeR1'] == 2 && $eleve['accordR1'] == 0 && $eleve['subventionR1'] == 1);
-            $inscrit |= ($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 && $eleve['subventionR2'] == 1);
+            $inscrit |= ($eleve['demandeR1'] == 2 && $eleve['accordR1'] == 0 &&
+                 $eleve['subventionR1'] == 1);
+            $inscrit |= ($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 &&
+                 $eleve['subventionR2'] == 1);
             $this->pictogrammes('init')
                 ->addPreinscrit(! $inscrit)
                 ->addSansAffectation($eleve['affecte'])
-                ->addDistanceZero($eleve['demandeR1'], $eleve['distanceR1'], $eleve['demandeR2'], $eleve['distanceR2']);
+                ->addDistanceZero($eleve['demandeR1'], $eleve['distanceR1'], 
+                $eleve['demandeR2'], $eleve['distanceR2']);
             ?>
          <tr class="<?php echo $tr_css;?>">
 					<td <?php echo $rowspan;?>>
@@ -338,37 +370,39 @@ echo $this->flashMessenger()->render('default');
 					<td <?php echo $rowspan;?> class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?></td>
 					<td <?php echo $rowspan;?> class="boutons">
             <?php
-            $hiddens = array(
+            $hiddens = [
                 'eleveId' => $eleve['eleveId'],
                 'info' => $eleve['nom'] . ' ' . $eleve['prenom'],
                 'origine' => $url_ici
-            );
-            $buttons = array(
-                'modifier' => array(
+            ];
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'modifier')
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'supprimer')
-                ),
-                'duplicata' => array(
+                ],
+                'duplicata' => [
                     'class' => 'fam-vcard-add',
                     'formaction' => $url_duplicata,
                     'title' => 'duplicata de la carte de transport',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'duplicata')
-                ),
-                'famille' => array(
+                ],
+                'famille' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'élèves inscrits de la même famille',
-                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', trim($eleve['responsable1Id'] . '|' . $eleve['responsable2Id']), '|')
-                )
-            );
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', 
+                        trim($eleve['responsable1Id'] . '|' . $eleve['responsable2Id']), 
+                        '|')
+                ]
+            ];
             echo $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);
             ?>
 				</td>
@@ -393,7 +427,7 @@ echo $this->flashMessenger()->render('default');
 		<?php endif; ?>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
 		<?php
 

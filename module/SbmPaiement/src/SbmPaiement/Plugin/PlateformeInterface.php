@@ -1,16 +1,16 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Interface pour une Plateforme
  * 
- * @project project_name
+ * (voir AbstractPlateforme par exemple)
+ * 
+ * @project sbm
  * @package package_name
  * @filesource PlateformeInterface.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2015
- * @version 2015-1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Plugin;
 
@@ -34,18 +34,18 @@ interface PlateformeInterface
      * - prénom : prénom du responsable
      * - eleveIds : tableau des eleveId, référence des élèves concernés par ce paiement
      * Renvoie la chaine de données à transmettre.
-     * 
-     * @param array $params  
-     * 
+     *
+     * @param array $params            
+     *
      * @return array
      */
     public function prepareAppel($params);
-    
+
     /**
-     * Reçoit un tableau obtenu par la méthode prepareAppel et renvoie une clé unique 
-     * 
-     * @param array $params
-     * 
+     * Reçoit un tableau obtenu par la méthode prepareAppel et renvoie une clé unique
+     *
+     * @param array $params            
+     *
      * @return string
      */
     public function getUniqueId(array $params);

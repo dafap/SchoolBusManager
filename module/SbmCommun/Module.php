@@ -10,8 +10,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun;
 
@@ -47,8 +47,9 @@ class Module extends AbstractModule implements BootstrapListenerInterface
         $tCalendar = $db_manager->get('Sbm\Db\System\Calendar');
         if ($sm->get('SbmAuthentification\Authentication')
             ->by()
-            ->hasIdentity()) {            
-            for ($millesime = Session::get('millesime', false); ! $millesime; $millesime = Session::get('millesime', false)) {
+            ->hasIdentity()) {
+            for ($millesime = Session::get('millesime', false); ! $millesime; $millesime = Session::get(
+                'millesime', false)) {
                 Session::set('millesime', $tCalendar->getDefaultMillesime());
             }
         } else {
@@ -58,15 +59,17 @@ class Module extends AbstractModule implements BootstrapListenerInterface
         Session::set('as', $tCalendar->getAnneeScolaire($millesime));
         $application = $e->getParam('application');
         $config = $application->getConfig();
-        $this->getSemaine(StdLib::getParamR(array(
-            'sbm',
-            'semaine'
-        ), $config, null));
+        $this->getSemaine(
+            StdLib::getParamR(
+                [
+                    'sbm',
+                    'semaine'
+                ], $config, null));
     }
 
     public static function getSemaine($init = null)
     {
-        static $semaine = array(
+        static $semaine = [
             Semaine::CODE_SEMAINE_LUNDI => 'lun',
             Semaine::CODE_SEMAINE_MARDI => 'mar',
             Semaine::CODE_SEMAINE_MERCREDI => 'mer',
@@ -74,7 +77,7 @@ class Module extends AbstractModule implements BootstrapListenerInterface
             Semaine::CODE_SEMAINE_VENDREDI => 'ven',
             Semaine::CODE_SEMAINE_SAMEDI => 'sam',
             Semaine::CODE_SEMAINE_DIMANCHE => 'dim'
-        );
+        ];
         if ($init) {
             $semaine = $init;
         }

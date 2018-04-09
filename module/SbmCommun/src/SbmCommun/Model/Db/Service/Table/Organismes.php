@@ -8,8 +8,8 @@
  * @filesource Organismes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -17,6 +17,7 @@ use Zend\Db\Sql\Where;
 
 class Organismes extends AbstractSbmTable
 {
+
     /**
      * Initialisation de l'organisme
      */
@@ -27,17 +28,18 @@ class Organismes extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Organismes';
         $this->id_name = 'organismeId';
     }
-    
+
     public function setSelection($organismeId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(array(
-            'organismeId' => $organismeId,
-            'selection' => $selection
-        ));
+        $oData->exchangeArray(
+            [
+                'organismeId' => $organismeId,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
-    
+
     public function getOrganismeId($email)
     {
         $where = new Where();

@@ -8,70 +8,80 @@
  * @filesource view/sbm-gestion/transport/service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 déc. 2017
- * @version 2017-2.3.14
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine,
-    'page' => $this->pageRetour
-));
-$btn_retour = array(
+$url_retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => $this->origine,
+        'page' => $this->pageRetour
+    ]);
+$btn_retour = [
     'class' => 'fam-door-out',
     'formaction' => $url_retour,
     'title' => 'Retour'
-);
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+];
+$url_edit = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
+]);
 if ($this->origine == 'service-liste') {
-    $url_group = $this->url('sbmgestion/transport', array(
-        'action' => 'service-group',
-        'page' => $this->page
-    ));
-    $url_rapports = $this->url('sbmgestion/transport', array(
-        'action' => 'service-group-pdf',
-        'page' => $this->page
-    ));
-    $hiddens = array(
+    $url_group = $this->url('sbmgestion/transport', 
+        [
+            'action' => 'service-group',
+            'page' => $this->page
+        ]);
+    $url_rapports = $this->url('sbmgestion/transport', 
+        [
+            'action' => 'service-group-pdf',
+            'page' => $this->page
+        ]);
+    $hiddens = [
         'serviceId' => $this->serviceId
-    );
-    $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-        'action' => 'service-group'
-    )), $url_rapports, 'fam-printer', null, $hiddens);
+    ];
+    $menuImpression = $this->menuRapports(
+        $this->url('sbmgestion/transport', 
+            [
+                'action' => 'service-group'
+            ]), $url_rapports, 'fam-printer', null, $hiddens);
     $hiddens = $menuImpression['hiddens'];
     $btn_retour['onclick'] = $js_retour;
 } elseif ($this->origine == 'transporteur-service') {
-    $url_group = $this->url('sbmgestion/transport', array(
-        'action' => 'service-group',
-        'page' => $this->page
-    ));
-    $url_rapports = $this->url('sbmgestion/transport', array(
-        'action' => 'service-group-pdf',
-        'page' => $this->page
-    ));
-    $hiddens = array(
+    $url_group = $this->url('sbmgestion/transport', 
+        [
+            'action' => 'service-group',
+            'page' => $this->page
+        ]);
+    $url_rapports = $this->url('sbmgestion/transport', 
+        [
+            'action' => 'service-group-pdf',
+            'page' => $this->page
+        ]);
+    $hiddens = [
         'serviceId' => $this->serviceId,
         'transporteurId' => $this->service->transporteurId
-    );
-    $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-        'action' => 'service-group'
-    )), $url_rapports, 'fam-printer', null, $hiddens);
+    ];
+    $menuImpression = $this->menuRapports(
+        $this->url('sbmgestion/transport', 
+            [
+                'action' => 'service-group'
+            ]), $url_rapports, 'fam-printer', null, $hiddens);
     $hiddens = $menuImpression['hiddens'];
 }
 
-$actions = array(
+$actions = [
     'retour' => $btn_retour,
     'rapports' => $menuImpression['content']
-);
+];
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -95,12 +105,12 @@ $oService = $this->service;
 		</ul>
 		<div class="flashMessenger float-right">
 		<?php
-		echo $this->flashMessenger()->render('success');
-		echo $this->flashMessenger()->render('warning');
-		echo $this->flashMessenger()->render('error');
-		echo $this->flashMessenger()->render('info');
-		echo $this->flashMessenger()->render('default');
-		?>
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
 		</div>
 	</div>
 	<div id="liste-header">
@@ -128,30 +138,31 @@ $oService = $this->service;
 				</tr>
 			<?php
 foreach ($data as $row) :
-    $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
-    $hiddens = array(
+    $this->pictogrammes('init')->addPreinscrit(
+        $row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+    $hiddens = [
         'eleveId' => $row['eleveId'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
-    );
-    $buttons = array(
-        'modifier' => array(
+    ];
+    $buttons = [
+        'modifier' => [
             'class' => 'fam-pencil',
             'formaction' => $url_edit,
             'title' => 'Modifier'
-        )
-    );
+        ]
+    ];
     if (! empty($row['email'])) {
-        $buttons['ecrire'] = array(
+        $buttons['ecrire'] = [
             'class' => 'fam-email',
             'formaction' => $url_mail,
             'title' => 'Envoyer un email'
-        );
+        ];
     }
     ?>
                 <tr
-					class="<?php echo $this->cycle(array("even","odd"))->next();?>">
+					class="<?php echo $this->cycle(["even","odd"])->next();?>">
 					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $this->escapeHtml($row['nom']);?></td>
 					<td><?php echo $this->escapeHtml($row['prenom']);?></td>
@@ -161,8 +172,8 @@ foreach ($data as $row) :
 					<td><?php echo $this->escapeHtml($row['commune']);?></td>
 					<td><?php echo $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?php echo $this->escapeHtml($row['classe']);?></td>
-					<td><?php echo implode('<br>', array($row['service1Id'], $row['service2Id']));?></td>
-					<td><?php echo implode('<br>', array($row['station1'], $row['station2']));?></td>
+					<td><?php echo implode('<br>', [$row['service1Id'], $row['service2Id']]);?></td>
+					<td><?php echo implode('<br>', [$row['station1'], $row['station2']]);?></td>
 					<td><?php echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>
@@ -170,6 +181,6 @@ foreach ($data as $row) :
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 	</div>
 </div>

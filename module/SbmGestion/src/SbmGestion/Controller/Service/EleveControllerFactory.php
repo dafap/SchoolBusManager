@@ -9,8 +9,8 @@
  * @filesource EleveControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Controller\Service;
 
@@ -32,18 +32,21 @@ class EleveControllerFactory implements FactoryInterface
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
-            'mail_config' => StdLib::getParamR([
-                'sbm',
-                'mail'
-            ], $config_application),
-            'img' => StdLib::getParamR([
-                'sbm',
-                'img'
-            ], $config_application),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application)
+            'mail_config' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mail'
+                ], $config_application),
+            'img' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'img'
+                ], $config_application),
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application)
         ];
         return new EleveController($config_controller);
     }

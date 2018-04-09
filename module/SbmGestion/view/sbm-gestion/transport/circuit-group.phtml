@@ -8,47 +8,52 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine ?  : 'circuit-liste',
-    'page' => $this->pageRetour
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'circuit-group-pdf',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine ? $this->origine . '-group' : 'circuit-group',
-    'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+$url_retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => $this->origine ?  : 'circuit-liste',
+        'page' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'circuit-group-pdf',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport', 
+    [
+        'action' => $this->origine ? $this->origine . '-group' : 'circuit-group',
+        'page' => $this->page
+    ]);
+$url_edit = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
-$hiddens = array(
+]);
+$hiddens = [
     'circuitId' => $this->circuitId
-);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'circuit-group'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'circuit-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
+    ],
     'rapports' => $menuImpression['content']
-);
+];
 ?>
 <h1>Groupe des élèves inscrits sur un point d'arrêt d'un circuit</h1>
 <div id="liste-wrapper">
@@ -62,12 +67,12 @@ $actions = array(
 		</ul>
 		<div class="flashMessenger float-right">
 		<?php
-		echo $this->flashMessenger()->render('success');
-		echo $this->flashMessenger()->render('warning');
-		echo $this->flashMessenger()->render('error');
-		echo $this->flashMessenger()->render('info');
-		echo $this->flashMessenger()->render('default');
-		?>
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
 		</div>
 	</div>
 	<div id="liste-header">
@@ -92,29 +97,30 @@ $actions = array(
 				</tr>
 			<?php foreach ($this->data as $row):?>
 			<?php
-    $hiddens = array(
+    $hiddens = [
         'eleveId' => $row['eleveId'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
-    );
-    $buttons = array(
-        'modifier' => array(
+    ];
+    $buttons = [
+        'modifier' => [
             'class' => 'fam-pencil',
             'formaction' => $url_edit,
             'title' => 'Modifier'
-        )
-    );
+        ]
+    ];
     if (! empty($row['email'])) {
-        $buttons['ecrire'] = array(
+        $buttons['ecrire'] = [
             'class' => 'fam-email',
             'formaction' => $url_mail,
             'title' => 'Envoyer un email'
-        );
+        ];
     }
-    $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+    $this->pictogrammes('init')->addPreinscrit(
+        $row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
     ?>
-			    <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+			    <tr class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $this->escapeHtml($row['nom']);?></td>
 					<td><?php echo $this->escapeHtml($row['prenom']);?></td>

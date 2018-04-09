@@ -8,8 +8,8 @@
  * @filesource AbstractPower2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Strategy;
 
@@ -21,26 +21,33 @@ use SbmCommun\Model\Strategy\Exception;
 
 abstract class AbstractPower2 implements StrategyInterface
 {
+
     const CODE_TOUS = 0;
-    
+
     protected $nombre_de_codes = 0;
-    
+
     protected abstract function valid($value);
+
     /**
      * Reçoit un tableau d'entiers valides et renvoie un entier représentant les niveaux d'enseignement.
      *
      * @param array $param
      *            Valeur valide ou tableau d'entiers
-     *
+     *            
      * @return int Code numérique indiquant les niveaux d'enseignement
-     *
+     *        
      * @throws Exception
      */
     public function extract($param)
     {
         if (is_string($param)) {
             if (! self::valid($param)) {
-                throw new Exception(__METHOD__ . sprintf(_(" Le paramètre est invalide.<pre>%s</pre>\nUne puissance de 2 est attendue."), $dump));
+                throw new Exception(
+                    __METHOD__ .
+                         sprintf(
+                            _(
+                                " Le paramètre est invalide.<pre>%s</pre>\nUne puissance de 2 est attendue."), 
+                            $dump));
             }
             return $param;
         } elseif (! is_array($param)) {
@@ -48,7 +55,12 @@ abstract class AbstractPower2 implements StrategyInterface
             var_dump($param);
             $dump = ob_get_contents();
             ob_end_clean();
-            throw new Exception(__METHOD__ . sprintf(_(" Le paramètre est invalide.<pre>%s</pre>\nUn tableau d'entiers puissances de 2 est attendu."), $dump));
+            throw new Exception(
+                __METHOD__ .
+                     sprintf(
+                        _(
+                            " Le paramètre est invalide.<pre>%s</pre>\nUn tableau d'entiers puissances de 2 est attendu."), 
+                        $dump));
         }
         $result = 0;
         foreach ($param as $value) {
@@ -60,24 +72,29 @@ abstract class AbstractPower2 implements StrategyInterface
                     print_r($value);
                     $dump = html_entity_decode(strip_tags(ob_get_clean()));
                 }
-                throw new Exception(__METHOD__ . sprintf(_(" Le tableau donné en paramètre contient la valeur illégale : %s\nLes valeurs doivent être des entiers puissance de 2."), $dump));
+                throw new Exception(
+                    __METHOD__ .
+                         sprintf(
+                            _(
+                                " Le tableau donné en paramètre contient la valeur illégale : %s\nLes valeurs doivent être des entiers puissance de 2."), 
+                            $dump));
             }
             $result |= (int) $value; // bitwise Or
         }
         return $result;
     }
-    
+
     /**
      * Renvoie un tableau d'entiers valides (maximum NOMBRE_DE_CODES)
      *
      * @param int $value
      *            Valeur à décoder sous forme de tableau de puissances de 2 représentant les niveaux d'enseignement
-     *
+     *            
      * @return array Tableau d'entiers valides
      */
     public function hydrate($value)
     {
-        $tableau = array();
+        $tableau = [];
         for ($j = 0; $j < $this->nombre_de_codes; $j ++) {
             $element = $value & (1 << $j); // bitwise And
             if ($element != 0) {
@@ -85,5 +102,5 @@ abstract class AbstractPower2 implements StrategyInterface
             }
         }
         return $tableau;
-    }    
+    }
 }

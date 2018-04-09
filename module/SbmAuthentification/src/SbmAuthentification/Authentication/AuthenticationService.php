@@ -7,8 +7,8 @@
  * @filesource AuthenticationService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAuthentification\Authentication;
 
@@ -19,20 +19,21 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class AuthenticationService extends ZendAuthenticationService
 {
+
     /**
      * C'est un db manager mais on n'utilise que sa méthode get()
-     * 
+     *
      * @var ServiceLocatorInterface
      */
     private $db_manager;
-    
-    
-    public function __construct(ServiceLocatorInterface $db_manager,StorageInterface $storage = null,AdapterInterface $adapter = null)
+
+    public function __construct(ServiceLocatorInterface $db_manager, 
+        StorageInterface $storage = null, AdapterInterface $adapter = null)
     {
         $this->db_manager = $db_manager;
         parent::__construct($storage, $adapter);
     }
-    
+
     public function getUserId()
     {
         $storage = $this->getStorage();

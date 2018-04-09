@@ -9,8 +9,8 @@
  * @filesource LoginControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 8 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Controller\Service;
 
@@ -19,6 +19,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmFront\Controller\LoginController;
 use SbmFront\Model\Responsable\Service\ResponsableManager as Responsable;
 use SbmBase\Model\StdLib;
+use SbmCartographie\GoogleMaps\DistanceMatrix;
 
 class LoginControllerFactory implements FactoryInterface
 {
@@ -33,20 +34,23 @@ class LoginControllerFactory implements FactoryInterface
             'form_manager' => $sm->get('Sbm\FormManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'responsable' => $sm->get(Responsable::class),
-            'distance_etablissements' => $cm->get('SbmCarto\DistanceEtablissements'),
+            'oDistanceMatrix' => $cm->get(DistanceMatrix::class),
             'config_cartes' => $cm->get('cartes'),
-            'mail_config' => StdLib::getParamR([
-                'sbm',
-                'mail'
-            ], $config_application),
-            'img' => StdLib::getParamR([
-                'sbm',
-                'img'
-            ], $config_application),
-            'client' => StdLib::getParamR([
-                'sbm',
-                'client'
-            ], $config_application)
+            'mail_config' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'mail'
+                ], $config_application),
+            'img' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'img'
+                ], $config_application),
+            'client' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'client'
+                ], $config_application)
         ];
         return new LoginController($config_controller);
     }

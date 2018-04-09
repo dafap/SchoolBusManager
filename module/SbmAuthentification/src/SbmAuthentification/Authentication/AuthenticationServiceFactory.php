@@ -9,8 +9,8 @@
  * @filesource AuthenticationServiceFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAuthentification\Authentication;
 
@@ -24,11 +24,11 @@ class AuthenticationServiceFactory implements FactoryInterface
     const SESSION_AUTH_NAMESPACE = 'sbm_auth';
 
     /**
-     * 
+     *
      * @var Zend\ServiceManager\ServiceLocatorInterface
      */
     private $db_manager;
-    
+
     /**
      *
      * @var \Zend\Authentication\AuthenticationService
@@ -40,9 +40,9 @@ class AuthenticationServiceFactory implements FactoryInterface
      * @var \Zend\Authentication\Adapter\ValidatableAdapterInterface
      */
     private $adapterEmail;
-    
+
     /**
-     * 
+     *
      * @var \Zend\Authentication\Adapter\ValidatableAdapterInterface
      */
     private $adapterToken;
@@ -52,7 +52,8 @@ class AuthenticationServiceFactory implements FactoryInterface
         $this->adapterEmail = null;
         $this->adapterToken = null;
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
-        $this->authService = new AuthenticationService($this->db_manager, new Session(self::SESSION_AUTH_NAMESPACE));
+        $this->authService = new AuthenticationService($this->db_manager, 
+            new Session(self::SESSION_AUTH_NAMESPACE));
         return $this;
     }
 

@@ -15,8 +15,8 @@
  * @filesource Pictogrammes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 oct. 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -29,13 +29,13 @@ class Pictogrammes extends AbstractHelper
 
     public function __construct()
     {
-        $this->pictogrammes = array();
+        $this->pictogrammes = [];
     }
 
     /**
      * Pour une nouvelle ligne, penser à initialiser sinon les pictogrammes se rajoutent
      * à ceux de la ligne précédente.
-     * 
+     *
      * @param string $init
      *            si 'init' on renvoie une structure vide,
      *            si null on renvoie le code
@@ -56,7 +56,7 @@ class Pictogrammes extends AbstractHelper
 
     public function init()
     {
-        $this->pictogrammes = array();
+        $this->pictogrammes = [];
         return $this;
     }
 
@@ -81,7 +81,7 @@ class Pictogrammes extends AbstractHelper
         }
         return $this;
     }
-    
+
     public function addDistanceZero($demande1, $distance1, $demande2, $distance2)
     {
         if (($demande1 > 0 && $distance1 == 0.0) || ($demande2 > 0 && $distance2 == 0.0)) {

@@ -8,8 +8,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource AbstractObjectData.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2016
- * @version 2016-2.1.10
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -93,14 +93,18 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
             if ($this->dataSource->offsetExists($param)) {
                 return $this->dataSource->offsetGet($param);
             } else {
-                throw new Exception(sprintf(_(self::ERROR_PROPERTY_MSG), $param, print_r($this->dataSource, true)));
+                throw new Exception(
+                    sprintf(_(self::ERROR_PROPERTY_MSG), $param, 
+                        print_r($this->dataSource, true)));
             }
         } else {
             foreach ($this->dataSource as $key => $value) {
                 if ($param == $key)
                     return $value;
             }
-            throw new Exception(sprintf(_(self::ERROR_PROPERTY_MSG), $param, print_r($this->dataSource, true)));
+            throw new Exception(
+                sprintf(_(self::ERROR_PROPERTY_MSG), $param, 
+                    print_r($this->dataSource, true)));
         }
     }
 
@@ -118,10 +122,13 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     public function __set($param, $valeur)
     {
         if ($this->dataSource instanceof \ArrayIterator) {
-            if ($this->dataSource->offsetExists($param) || in_array($param, $this->array_mask)) {
+            if ($this->dataSource->offsetExists($param) ||
+                 in_array($param, $this->array_mask)) {
                 $this->dataSource->offsetSet($param, $valeur);
             } else {
-                throw new Exception(sprintf(_(self::ERROR_PROPERTY_MSG), $param, print_r($this->array_mask, true)));
+                throw new Exception(
+                    sprintf(_(self::ERROR_PROPERTY_MSG), $param, 
+                        print_r($this->array_mask, true)));
             }
         } elseif (is_array($this->dataSource) && in_array($param, $this->array_mask)) {
             $this->dataSource[$param] = $valeur;
@@ -133,7 +140,9 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
                     return;
                 }
             }
-            throw new Exception(sprintf(_(self::ERROR_PROPERTY_MSG), $param, print_r($this->dataSource, true)));
+            throw new Exception(
+                sprintf(_(self::ERROR_PROPERTY_MSG), $param, 
+                    print_r($this->dataSource, true)));
         }
     }
 
@@ -170,7 +179,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      */
     public function __unset($param)
     {
-        if ($this->dataSource instanceof \ArrayIterator && $this->dataSource->offsetExists($param)) {
+        if ($this->dataSource instanceof \ArrayIterator &&
+             $this->dataSource->offsetExists($param)) {
             return $this->dataSource->offsetUnset($param);
         } elseif (is_array($this->dataSource)) {
             unset($this->dataSource[$param]);
@@ -236,7 +246,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     public function setArrayMask($array_mask = [])
     {
         if (! is_array($array_mask)) {
-            throw new Exception(sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, gettype($array_mask)));
+            throw new Exception(
+                sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, gettype($array_mask)));
         }
         $this->array_mask = $array_mask;
     }
@@ -251,7 +262,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     public function setAreNullable($are_nullable = [])
     {
         if (! is_array($are_nullable)) {
-            throw new Exception(sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, gettype($are_nullable)));
+            throw new Exception(
+                sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, gettype($are_nullable)));
         }
         $this->are_nullable = $are_nullable;
     }

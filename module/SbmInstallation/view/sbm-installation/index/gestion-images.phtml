@@ -7,17 +7,18 @@
  * @filesource gestion-images.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $id_form_img = 0;
 $buttons = [
     'maj' => [
         'class' => 'fam-image-edit',
-        'formaction' => $this->url('sbminstall', [
-            'action' => 'upload-image'
-        ]),
+        'formaction' => $this->url('sbminstall', 
+            [
+                'action' => 'upload-image'
+            ]),
         'title' => 'Mettre à jour'
     ]
 ];

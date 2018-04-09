@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCartographie\Controller;
 
@@ -46,18 +46,19 @@ class CarteController extends AbstractActionController
             }
         }
         $tEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
-        $ptEtablissements = array();
+        $ptEtablissements = [];
         foreach ($tEtablissements->fetchAll() as $etablissement) {
             $pt = new Point($etablissement->x, $etablissement->y);
             $pt->setAttribute('etablissement', $etablissement);
             $ptEtablissements[] = $this->projection->xyzVersgRGF93($pt);
         }
         
-        return new ViewModel(array(
-            'ptEtablissements' => $ptEtablissements,
-            'config' => StdLib::getParam('etablissements', $this->config_cartes),
-            'url_api' => $this->url_api
-        ));
+        return new ViewModel(
+            [
+                'ptEtablissements' => $ptEtablissements,
+                'config' => StdLib::getParam('etablissements', $this->config_cartes),
+                'url_api' => $this->url_api
+            ]);
     }
 
     public function stationsAction()
@@ -78,18 +79,19 @@ class CarteController extends AbstractActionController
             }
         }
         $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
-        $ptStations = array();
+        $ptStations = [];
         foreach ($tStations->fetchAll() as $station) {
             $pt = new Point($station->x, $station->y);
             $pt->setAttribute('station', $station);
             $ptStations[] = $this->projection->xyzVersgRGF93($pt);
         }
         
-        return new ViewModel(array(
-            'ptStations' => $ptStations,
-            // on utilise la même configuration (centre, zoom) que pour les établissements
-            'config' => StdLib::getParam('etablissements', $this->config_cartes),
-            'url_api' => $this->url_api
-        ));
+        return new ViewModel(
+            [
+                'ptStations' => $ptStations,
+                // on utilise la même configuration (centre, zoom) que pour les établissements
+                'config' => StdLib::getParam('etablissements', $this->config_cartes),
+                'url_api' => $this->url_api
+            ]);
     }
 } 

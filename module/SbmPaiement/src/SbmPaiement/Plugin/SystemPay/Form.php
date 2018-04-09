@@ -11,8 +11,8 @@
  * @filesource Form.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2015
- * @version 2015-1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -23,7 +23,7 @@ class Form extends ZendForm
 
     /**
      * Liste des champs hidden du formulaire
-     * 
+     *
      * @var array
      */
     private $vads;
@@ -36,33 +36,37 @@ class Form extends ZendForm
         $this->setAttribute('action', $config['url_paiement']);
         
         foreach ($vads as $item) {
-            $this->add(array(
-                'name' => $item,
-                'type' => 'hidden'
-            ));
+            $this->add(
+                [
+                    'name' => $item,
+                    'type' => 'hidden'
+                ]);
         }
         
-        $this->add(array(
-            'name' => 'signature',
-            'type' => 'hidden'
-        ));
+        $this->add(
+            [
+                'name' => 'signature',
+                'type' => 'hidden'
+            ]);
         
-        $this->add(array(
-            'name' => 'payer',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Payer',
-                'id' => 'payer',
-                'autofocus' => 'autofocus',
-                'class' => 'button default submit'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'payer',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Payer',
+                    'id' => 'payer',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default submit'
+                ]
+            ]);
     }
 
     /**
      * Surcharge la méthode en calculant la signature
      * Toutes les données du formulaire viennent d'un tableau associatif dont l'une des clés est `certificat`
-     * @param array $data
+     * 
+     * @param array $data            
      */
     private function setData($data)
     {
@@ -77,10 +81,10 @@ class Form extends ZendForm
         $data['signature'] = sha1($signature);
         parent::setData($data);
     }
-    
+
     /**
      * Renvoie le tableau des champs vads_
-     * 
+     *
      * @return array
      */
     public function getVads()

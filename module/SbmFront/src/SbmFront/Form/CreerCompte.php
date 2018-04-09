@@ -10,8 +10,8 @@
  * @filesource CreerCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juin 2016
- * @version 2016-2.1.5
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Form;
 
@@ -36,150 +36,158 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
         $this->db_manager = $db_manager;
         parent::__construct('compte');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'userId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'titre',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'user-titre',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-select1'
-            ),
-            'options' => array(
-                'label' => 'Votre identité',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-page1'
-                ),
-                'value_options' => array(
-                    'M.' => 'Monsieur',
-                    'Mme' => 'Madame',
-                    'Mlle' => 'Mademoiselle',
-                    'Dr' => 'Docteur',
-                    'Me' => 'Maître',
-                    'Pr' => 'Professeur'
-                ),
-                'empty_option' => 'Choisissez la civilité',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'SbmCommun\Form\Element\NomPropre',
-            'attributes' => array(
-                'id' => 'user-nom',
-                'class' => 'sbm-text30'
-            ),
-            'options' => array(
-                'label' => 'Nom',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-page1 align-right'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'prenom',
-            'type' => 'SbmCommun\Form\Element\Prenom',
-            'attributes' => array(
-                'id' => 'user-prenom',
-                'class' => 'sbm-text30'
-            ),
-            'options' => array(
-                'label' => 'Prénom',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-page1 align-right'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'email',
-            'type' => 'Zend\Form\Element\Email',
-            'attributes' => array(
-                'id' => 'user-email',
-                'class' => 'sbm-text50'
-            ),
-            'options' => array(
-                'label' => 'Email',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-page1'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Demander la création du compte',
-                'id' => 'responsable-submit',
-                'class' => 'button submit left-95px'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'responsable-cancel',
-                'class' => 'button cancel left-10px'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'userId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'titre',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'user-titre',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-select1'
+                ],
+                'options' => [
+                    'label' => 'Votre identité',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-page1'
+                    ],
+                    'value_options' => [
+                        'M.' => 'Monsieur',
+                        'Mme' => 'Madame',
+                        'Mlle' => 'Mademoiselle',
+                        'Dr' => 'Docteur',
+                        'Me' => 'Maître',
+                        'Pr' => 'Professeur'
+                    ],
+                    'empty_option' => 'Choisissez la civilité',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'SbmCommun\Form\Element\NomPropre',
+                'attributes' => [
+                    'id' => 'user-nom',
+                    'class' => 'sbm-text30'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-page1 align-right'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'prenom',
+                'type' => 'SbmCommun\Form\Element\Prenom',
+                'attributes' => [
+                    'id' => 'user-prenom',
+                    'class' => 'sbm-text30'
+                ],
+                'options' => [
+                    'label' => 'Prénom',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-page1 align-right'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'email',
+                'type' => 'Zend\Form\Element\Email',
+                'attributes' => [
+                    'id' => 'user-email',
+                    'class' => 'sbm-text50'
+                ],
+                'options' => [
+                    'label' => 'Email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-page1'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Demander la création du compte',
+                    'id' => 'responsable-submit',
+                    'class' => 'button submit left-95px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'responsable-cancel',
+                    'class' => 'button cancel left-10px'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'titre' => array(
+        return [
+            'titre' => [
                 'name' => 'titre',
                 'required' => true
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'name' => 'email',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'Zend\Validator\EmailAddress'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'Zend\Validator\Db\NoRecordExists',
-                        'options' => array(
+                        'options' => [
                             'table' => $this->db_manager->getCanonicName('users', 'table'),
                             'field' => 'email',
                             'adapter' => $this->db_manager->getDbAdapter()
-                        )
-                    )
-                )
-            )
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 
     public function isValid()
@@ -190,20 +198,22 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             $filterSA = new SansAccent();
             // d'abord dans la table user pour savoir s'il n'y a pas un compte avec un autre email
             $where = new Where();
-            $where->equalTo('nom', $this->data['nom'])->equalTo('prenom', $this->data['prenom']);
+            $where->equalTo('nom', $this->data['nom'])->equalTo('prenom', 
+                $this->data['prenom']);
             $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
             $resultset = $tUsers->fetchAll($where);
             if ($resultset->count()) {
                 $u = $resultset->current();
-                $msg = 'Vous avez déjà créé un compte avec l\'email ' . $u->email . ". Si vous ne vous connaissez pas le mot de passe, cliquez sur le lien `Mot de passe oublié` de la page d'accueil.\n";
+                $msg = 'Vous avez déjà créé un compte avec l\'email ' . $u->email .
+                     ". Si vous ne vous connaissez pas le mot de passe, cliquez sur le lien `Mot de passe oublié` de la page d'accueil.\n";
                 $msg .= 'Si vous n\'avez plus accès à cet email rapprochez vous des services de la Communauté de communes pour faire modifier votre compte.';
                 $e = $this->get('prenom');
-                $e->setMessages(array(
+                $e->setMessages([
                     $msg
-                ));
+                ]);
                 $result = false;
             } else {
-                // ensuite dans la table responsables pour savoir si entretemps une inscription papier 
+                // ensuite dans la table responsables pour savoir si entretemps une inscription papier
                 // n'a pas été enregistrée cette année.
                 unset($where);
                 $nomSA = $filterSA->filter($this->data['nom']);
@@ -212,9 +222,10 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                 if ($qResponsables->estDejaInscritCetteAnnee($nomSA, $prenomSA)) {
                     $msg = 'Il existe déjà une personne enregistrée avec ce nom et ce prénom. Rapprochez vous des services de la Communauté de communes pour vous faire créer un compte.';
                     $e = $this->get('prenom');
-                    $e->setMessages(array(
-                        $msg
-                    ));
+                    $e->setMessages(
+                        [
+                            $msg
+                        ]);
                     $result = false;
                 }
             }
@@ -223,9 +234,9 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             $messages = $e->getMessages();
             if (array_key_exists('recordFound', $messages)) {
                 $msg = 'Un compte a déjà été créé avec cet email. Si vous ne vous souvenez plus du mot de passe, cliquez sur le lien `Mot de passe oublié` sur la page d\'accueil.';
-                $e->setMessages(array(
+                $e->setMessages([
                     $msg
-                ));
+                ]);
             }
         }
         return $result;

@@ -9,8 +9,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAdmin\Model\Db\Service\Responsable;
 
@@ -84,18 +84,21 @@ class Responsables implements FactoryInterface
     {
         $where = new Where();
         $where->isNull('u.userId')->isNotNull('r.email');
-        $select = $this->sql->select([
-            'r' => $this->db_manager->getCanonicName('responsables', 'table')
-        ])
-            ->columns([
-            'titre' => 'titre',
-            'nom' => 'nom',
-            'prenom' => 'prenom',
-            'email' => 'email'
-        ])
-            ->join([
-            'u' => $this->db_manager->getCanonicName('users', 'table')
-        ], 'u.email = r.email', [], Select::JOIN_LEFT)
+        $select = $this->sql->select(
+            [
+                'r' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'titre' => 'titre',
+                'nom' => 'nom',
+                'prenom' => 'prenom',
+                'email' => 'email'
+            ])
+            ->join(
+            [
+                'u' => $this->db_manager->getCanonicName('users', 'table')
+            ], 'u.email = r.email', [], Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();

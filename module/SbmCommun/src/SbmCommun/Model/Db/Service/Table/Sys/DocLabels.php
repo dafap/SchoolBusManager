@@ -11,8 +11,8 @@
  * @filesource DocLabels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -21,6 +21,7 @@ use SbmCommun\Model\Strategy\Color;
 
 class DocLabels extends AbstractSbmTable
 {
+
     /**
      * Initialisation de la classe
      */
@@ -40,13 +41,15 @@ class DocLabels extends AbstractSbmTable
             }
         }
     }
-    
+
     public function getConfig($documentId)
     {
         $where = "documentId = $documentId";
         $resultset = $this->fetchAll($where);
         if (! $resultset->count()) {
-            throw new Exception(sprintf(_("Could not find rows '%s' in table %s"), $where, $this->table_name));
+            throw new Exception(
+                sprintf(_("Could not find rows '%s' in table %s"), $where, 
+                    $this->table_name));
         }
         $result = $resultset->current()->getArrayCopy();
         return $result;

@@ -9,8 +9,8 @@
  * @filesource DateTimeSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2015
- * @version 2015-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\Element;
 
@@ -23,28 +23,31 @@ class DateTimeSelect extends ZendDateTimeSelect
     protected function getValidator()
     {
         if (null === $this->validator) {
-            $this->validator = new DateValidator(array('format' => 'Y-m-d H:i:s'));
+            $this->validator = new DateValidator(
+                [
+                    'format' => 'Y-m-d H:i:s'
+                ]);
         }
         return $this->validator;
     }
 
     public function getInputSpecification()
     {
-        return array(
+        return [
             'name' => $this->getName(),
             'required' => false,
-            'filters' => array(
-                array(
+            'filters' => [
+                [
                     'name' => 'DateTimeSelect',
-                    'options' => array(
+                    'options' => [
                         'null_on_all_empty' => true
-                    )
-                )
-            ),
-            'validators' => array(
+                    ]
+                ]
+            ],
+            'validators' => [
                 $this->getValidator()
-            )
-        );
+            ]
+        ];
     }
 
     public function setValue($value)

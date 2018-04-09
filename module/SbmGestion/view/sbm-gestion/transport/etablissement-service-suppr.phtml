@@ -8,34 +8,40 @@
  * @filesource etablissement-service-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2015
- * @version 2015-1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$retour = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine,
-    'page' => $this->page
-));
-$hiddens = array(
+$retour = $this->url('sbmgestion/transport', 
+    [
+        'action' => $this->origine,
+        'page' => $this->page
+    ]);
+$hiddens = [
     'etablissementId' => $this->etablissementId,
     'serviceId' => $this->serviceId,
     'origine' => $this->origine
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 if (empty($this->etablissementId)) {
-    $h1 = sprintf("Suppression d'un établissement desservi par le circuit %s (%s)\nTransporteur : %s", $this->serviceId, $this->service->nom, $this->service->transporteur);
+    $h1 = sprintf(
+        "Suppression d'un établissement desservi par le circuit %s (%s)\nTransporteur : %s", 
+        $this->serviceId, $this->service->nom, $this->service->transporteur);
     $msg = 'Vous avez demandé la suppression de l\'établissement %s - %s dans la liste des établissements desservis par le circuit %s.';
-    $msg = sprintf($msg, $this->etablissement->nom, $this->etablissement->commune, $this->serviceId);
+    $msg = sprintf($msg, $this->etablissement->nom, $this->etablissement->commune, 
+        $this->serviceId);
 } else {
-    $h1 = sprintf("Suppression d'un service desservant l'établissement\n%s %s - %s", $this->etablissementId, $this->etablissement->nom, $this->etablissement->commune);
+    $h1 = sprintf("Suppression d'un service desservant l'établissement\n%s %s - %s", 
+        $this->etablissementId, $this->etablissement->nom, $this->etablissement->commune);
     $msg = 'Vous avez demandé la suppression du circuit %s dans la liste des circuits desservant l\'établissement %s - %s.';
-    $msg = sprintf($msg, $this->serviceId, $this->etablissement->nom, $this->etablissement->commune);
+    $msg = sprintf($msg, $this->serviceId, $this->etablissement->nom, 
+        $this->etablissement->commune);
 }
 ?>
 <h1><?php echo $h1; ?></h1>

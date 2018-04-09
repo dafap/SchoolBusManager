@@ -20,8 +20,8 @@
  * @filesource AddElevePhase1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -31,151 +31,161 @@ use SbmCommun\Form\AbstractSbmForm;
 class AddElevePhase1 extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
-    public function __construct($options = array())
+    public function __construct($options = [])
     {
         parent::__construct('eleve', $options);
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'eleveId',
-            'type' => 'hidden',
-            'attributes' => array(
-                'value' => null
-            )
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'eleveId',
+                'type' => 'hidden',
+                'attributes' => [
+                    'value' => null
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
         
-        $this->add(array(
-            'type' => 'SbmCommun\Form\Element\NomPropre',
-            'name' => 'nom',
-            'attributes' => array(
-                'id' => 'eleve-nom',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Nom de l\'élève',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'SbmCommun\Form\Element\Prenom',
-            'name' => 'prenom',
-            'attributes' => array(
-                'id' => 'eleve-prenom',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Prénom de l\'élève',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Date',
-            'name' => 'dateN',
-            'attributes' => array(
-                'id' => 'eleve-dateN'
-            ),
-            'options' => array(
-                'label' => 'Date de naissance',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                ),
-                'format' => 'Y-m-d'
-            )
-        ));        
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'ga',
-            'attributes' => array(
-                'id' => 'eleve-ga'
-            ),
-            'options' => array(
-                'label' => 'Garde alternée',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'use_hidden_element' => true,
-                'checked_value' => '1',
-                'unchecked_value' => '0'
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'responsable1Id',
-            'attributes' => array(
-                'id' => 'eleve-responsable1Id',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Responsable',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez un responsable',
-                'error_attributes' => array(
-                    'class' => 'sbm_error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'responsable2Id',
-            'attributes' => array(
-                'id' => 'eleve-responsable2Id',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Responsable',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez un responsable',
-                'error_attributes' => array(
-                    'class' => 'sbm_error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'station-submit',
-                'class' => 'button default submit left-95px'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'station-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'type' => 'SbmCommun\Form\Element\NomPropre',
+                'name' => 'nom',
+                'attributes' => [
+                    'id' => 'eleve-nom',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom de l\'élève',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'SbmCommun\Form\Element\Prenom',
+                'name' => 'prenom',
+                'attributes' => [
+                    'id' => 'eleve-prenom',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Prénom de l\'élève',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Date',
+                'name' => 'dateN',
+                'attributes' => [
+                    'id' => 'eleve-dateN'
+                ],
+                'options' => [
+                    'label' => 'Date de naissance',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ],
+                    'format' => 'Y-m-d'
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'ga',
+                'attributes' => [
+                    'id' => 'eleve-ga'
+                ],
+                'options' => [
+                    'label' => 'Garde alternée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => true,
+                    'checked_value' => '1',
+                    'unchecked_value' => '0'
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'responsable1Id',
+                'attributes' => [
+                    'id' => 'eleve-responsable1Id',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Responsable',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un responsable',
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'responsable2Id',
+                'attributes' => [
+                    'id' => 'eleve-responsable2Id',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Responsable',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un responsable',
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'station-submit',
+                    'class' => 'button default submit left-95px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'station-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
-    
+
     /**
      * Description des contraintes, filtres et validateurs
      *
@@ -185,12 +195,11 @@ class AddElevePhase1 extends AbstractSbmForm implements InputFilterProviderInter
      */
     public function getInputFilterSpecification()
     {
-        return array(
-            'responsable2Id' => array(
+        return [
+            'responsable2Id' => [
                 'name' => 'responsable2Id',
                 'required' => false
-            )
-        );
+            ]
+        ];
     }
-    
 }

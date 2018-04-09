@@ -11,8 +11,8 @@
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Model;
 
@@ -84,7 +84,6 @@ class Etiquette
         $this->db_manager = $db_manager;
         $this->documentId = $documentId;
         
-        
         // Lecture des tables system document, doclabel et docfields pour initialiser les paramètres de la structure
         /*
          * il ne semble pas être nécessaire d'utiliser la config du document dans cette classe.
@@ -108,7 +107,8 @@ class Etiquette
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $this->config['docfields'] = [];
         }
-        $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) / ($this->lineCount() - 1);
+        $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) /
+             ($this->lineCount() - 1);
         $this->NewPage();
     }
 
@@ -257,7 +257,8 @@ class Etiquette
     public function Ln($rang)
     {
         $height = (float) $this->config['docfields'][$rang]['height'];
-        if (array_key_exists($rang + 1, $this->config['docfields']) && empty($this->config['docfields'][$rang + 1]['label'])) {
+        if (array_key_exists($rang + 1, $this->config['docfields']) &&
+             empty($this->config['docfields'][$rang + 1]['label'])) {
             $label_width = (float) $this->config['docfields'][$rang + 1]['label_width'];
         } else {
             $label_width = 0;

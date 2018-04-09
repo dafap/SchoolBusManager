@@ -8,8 +8,8 @@
  * @filesource 
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 echo '<div class="clearfix"></div>';
 echo '<div style="overflow:scroll">';
@@ -38,8 +38,8 @@ echo '</div>';
 </div>
 <p>Suite du contenu de la page ...</p>
 <?php
-    $this->form->prepare();
-    echo $this->form()->openTag($this->form);
-    echo $this->formCollection($this->form);
-    echo $this->form()->closeTag();
+$this->form->prepare();
+echo $this->form()->openTag($this->form);
+echo $this->formCollection($this->form);
+echo $this->form()->closeTag();
 ?>

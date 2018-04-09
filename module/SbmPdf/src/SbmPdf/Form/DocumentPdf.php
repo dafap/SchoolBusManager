@@ -9,8 +9,8 @@
  * @filesource DocumentPdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 3 déc. 2017
- * @version 2017-2.3.14
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPdf\Form;
 
@@ -27,7 +27,9 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
     private $fonts;
 
     private $db_manager;
+
     private $auth_userId;
+
     private $template_method_list;
 
     public function __construct($db_manager, $auth_userId, $template_method_list)
@@ -38,1689 +40,1790 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         $fonts = new TcpdfFonts();
         parent::__construct('documentpdf');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'name' => 'documentId',
-            'type' => 'hidden',
-            'attributes' => [
-                'id' => 'documentId'
-            ]
-        ]);
-        $this->add([
-            'name' => 'type',
-            'type' => 'hidden'
-        ]);
-        $this->add([
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => [
-                'csrf_options' => [
-                    'timeout' => 180
+        $this->add(
+            [
+                'name' => 'documentId',
+                'type' => 'hidden',
+                'attributes' => [
+                    'id' => 'documentId'
                 ]
-            ]
-        ]);
+            ]);
+        $this->add(
+            [
+                'name' => 'type',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
         
-        $this->add([
-            'name' => 'disposition',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-disposition',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Disposition',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez la disposition',
-                'value_options' => [
-                    'Tabulaire' => 'Présentation tabulaire',
-                    'Texte' => 'Page de texte',
-                    'Etiquette' => 'Etiquettes'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'name',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-name',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Nom du document pdf',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'out_mode',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-out_mode',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Récupération du pdf',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'value_options' => [
-                    'I' => 'en ligne',
-                    'D' => 'téléchargement',
-                    'F' => 'fichier sur serveur',
-                    'FI' => 'en ligne + fichier sur serveur',
-                    'FD' => 'téléchargement + fichier sur serveur',
-                    'S' => 'chaine de caractères',
-                    'E' => 'intégration dans email'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'out_name',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-out_name',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Nom du fichier pdf',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'value' => 'document.pdf',
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'recordSourceType',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf_recordSourceType',
-                'class' => 'sbm-width-15c'
-            ],
-            'options' => [
-                'label' => 'Provenance',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez',
-                'value_options' => [
-                    'T' => 'table ou vue',
-                    'R' => 'requête SQL'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'recordSource'
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'TrecordSource',
-            'attributes' => [
-                'id' => 'TrecordSource',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Source des données',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez une source de données',
-                'disable_inarray_validator' => true,
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Textarea',
-            'name' => 'RrecordSource',
-            'attributes' => [
-                'id' => 'RrecordSource',
-                'class' => 'sbm-width-40c'
-            ],
-            'options' => [
-                'label' => 'Requête',
-                'label_attributes' => [
-                    'class' => 'sbm-label-top'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'filter',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-filter',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Filtre des données',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'orderBy',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-orderBy',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Ordre de tri',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'url_path_images',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-url_path_images',
-                'class' => 'sbm-width-30c'
-            ],
-            'options' => [
-                'label' => 'Dossier contenant les images du document',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'image_blank',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-image_blank',
-                'class' => 'sbm-width-30c'
-            ],
-            'options' => [
-                'label' => 'Nom de l\'image vide',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docheader',
-            'attributes' => [
-                'id' => 'documentpdf-docheader',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Y a-t-il un en-tête de document ?   ',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docfooter',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Y a-t-il un pied de document ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'pageheader',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Y a-t-il un en-tête de page ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'pagefooter',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Y a-t-il un pied de page ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'creator',
-            'type' => 'hidden'
-        ]);
-        $this->add([
-            'name' => 'author',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-author',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Auteur du document pdf',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'title',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-title',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Titre du document pdf',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'subject',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-subject',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Sujet du document pdf',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'keywords',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-keywords',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Mots clés',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'docheader_subtitle',
-            'type' => 'Zend\Form\Element\Textarea',
-            'attributes' => [
-                'id' => 'documentpdf-docheader_subtitle',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Sous-titre du document pdf',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docheader_page_distincte',
-            'attributes' => [
-                'id' => 'documentpdf-docheader_page_distincte',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Saut de page après l\'en-tête de document ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'docheader_margin',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-docheader_margin',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge de l\'en-tête de document (en mm]',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docheader_pageheader',
-            'attributes' => [
-                'id' => 'documentpdf-docheader_pageheader',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'En-tête de page sur la première page ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docheader_pagefooter',
-            'attributes' => [
-                'id' => 'documentpdf-docheader_pagefooter',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Pied de page sur la première page ? ',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'docheader_templateId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-docheader_templateId',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Modèle de page d\'en-tête',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez un modèle',
-                'value_options' => $this->getTemplateList('docheader'),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'docfooter_title',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_title',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Titre du pied de document',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'docfooter_string',
-            'type' => 'Zend\Form\Element\Textarea',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_string',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Texte du pied de document',
-                'label_attributes' => [
-                    'class' => 'sbm-label-top'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docfooter_page_distincte',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_page_distincte',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Saut de page avant le pied de document ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docfooter_insecable',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_insecable',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Pied de document insécable ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'docfooter_margin',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_margin',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge du pied de document (en mm]',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docfooter_pageheader',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_pageheader',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'En-tête de page sur la dernière page ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'docfooter_pagefooter',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_pagefooter',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Pied de page sur la dernière page ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'docfooter_templateId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-docfooter_templateId',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Modèle de pied de document',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez un modèle',
-                'value_options' => $this->getTemplateList('docfooter'),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_templateId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_templateId',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Modèle d\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez un modèle',
-                'value_options' => $this->getTemplateList('header'),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_title',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_title',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Titre d\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_string',
-            'type' => 'Zend\Form\Element\Textarea',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_string',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Texte d\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'pageheader_logo_visible',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_logo_visible',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Logo dans l\'en-tête de page ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_logo',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_logo',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Logo d\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_logo_width',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_logo_width',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Largeur du logo d\'en-tête de page (en mm]',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_margin',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_margin',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge de l\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_font_family',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Police de l\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style police de l\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille police de l\'en-tête de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_text_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_text_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur du texte dans l\'en-tête',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pageheader_line_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-pageheader_line_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur des traits dans l\'en-tête',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_templateId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_templateId',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Modèle de pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez un modèle',
-                'value_options' => $this->getTemplateList('footer'),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_string',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_string',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Texte de pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_margin',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_margin',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge du pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_font_family',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Police du pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style police du pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille police du pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_text_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_text_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur du texte dans le pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'pagefooter_line_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-pagefooter_line_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur des traits dans le pied de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'page_templateId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-page_templateId',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Modèle de page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez un modèle',
-                'value_options' => $this->getTemplateList('docbody'),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'page_format',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-page_format',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Format de la page',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez un format',
-                'value_options' => $this->getArrayPageFormats(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'page_orientation',
-            'type' => 'Zend\Form\Element\Radio',
-            'attributes' => [
-                'id' => 'documentpdf-page_orientation',
-                'class' => 'sbm-radio'
-            ],
-            'options' => [
-                'label' => 'Orientation de la page',
-                'label_attributes' => [
-                    'class' => 'sbm-label-radio'
-                ],
-                'value_options' => [
-                    'P' => 'Portrait',
-                    'L' => 'Paysage'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'page_margin_top',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-page_margin_top',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge du haut',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'page_margin_bottom',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-page_margin_bottom',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge du bas',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'page_margin_left',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-page_margin_left',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge de gauche',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'page_margin_right',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-page_margin_right',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Marge de droite',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'main_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-main_font_family',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Police principale',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'main_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-main_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style de la police principale',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'main_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-main_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille de la police principale',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'data_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-data_font_family',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Police des données',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'data_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-data_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style de la police des données',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'data_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-data_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille de la police des données',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre1_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-titre1_font_family',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Police des Titre1',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre1_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre1_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style de la police des Titre1',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre1_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre1_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille de la police des Titre1',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre1_text_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre1_text_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur du titre 1',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'titre1_line',
-            'attributes' => [
-                'id' => 'documentpdf-titre1_line',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Encadrement de titre 1 ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre1_line_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre1_line_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur encadrement titre 1',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
-                ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ]
-            ]
-        ]);
+        $this->add(
+            [
+                'name' => 'disposition',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-disposition',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Disposition',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez la disposition',
+                    'value_options' => [
+                        'Tabulaire' => 'Présentation tabulaire',
+                        'Texte' => 'Page de texte',
+                        'Etiquette' => 'Etiquettes'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'name',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-name',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Nom du document pdf',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'out_mode',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-out_mode',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Récupération du pdf',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'value_options' => [
+                        'I' => 'en ligne',
+                        'D' => 'téléchargement',
+                        'F' => 'fichier sur serveur',
+                        'FI' => 'en ligne + fichier sur serveur',
+                        'FD' => 'téléchargement + fichier sur serveur',
+                        'S' => 'chaine de caractères',
+                        'E' => 'intégration dans email'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'out_name',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-out_name',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Nom du fichier pdf',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'value' => 'document.pdf',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'recordSourceType',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf_recordSourceType',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Provenance',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez',
+                    'value_options' => [
+                        'T' => 'table ou vue',
+                        'R' => 'requête SQL'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'recordSource'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'TrecordSource',
+                'attributes' => [
+                    'id' => 'TrecordSource',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Source des données',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une source de données',
+                    'disable_inarray_validator' => true,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'RrecordSource',
+                'attributes' => [
+                    'id' => 'RrecordSource',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Requête',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-top'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'filter',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-filter',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Filtre des données',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'orderBy',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-orderBy',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Ordre de tri',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'url_path_images',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-url_path_images',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Dossier contenant les images du document',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'image_blank',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-image_blank',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom de l\'image vide',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docheader',
+                'attributes' => [
+                    'id' => 'documentpdf-docheader',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Y a-t-il un en-tête de document ?   ',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docfooter',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Y a-t-il un pied de document ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'pageheader',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Y a-t-il un en-tête de page ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'pagefooter',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Y a-t-il un pied de page ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'creator',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'author',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-author',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Auteur du document pdf',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'title',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-title',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Titre du document pdf',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'subject',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-subject',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Sujet du document pdf',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'keywords',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-keywords',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Mots clés',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'docheader_subtitle',
+                'type' => 'Zend\Form\Element\Textarea',
+                'attributes' => [
+                    'id' => 'documentpdf-docheader_subtitle',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Sous-titre du document pdf',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docheader_page_distincte',
+                'attributes' => [
+                    'id' => 'documentpdf-docheader_page_distincte',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Saut de page après l\'en-tête de document ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'docheader_margin',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-docheader_margin',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge de l\'en-tête de document (en mm]',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docheader_pageheader',
+                'attributes' => [
+                    'id' => 'documentpdf-docheader_pageheader',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'En-tête de page sur la première page ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docheader_pagefooter',
+                'attributes' => [
+                    'id' => 'documentpdf-docheader_pagefooter',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Pied de page sur la première page ? ',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'docheader_templateId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-docheader_templateId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Modèle de page d\'en-tête',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un modèle',
+                    'value_options' => $this->getTemplateList('docheader'),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'docfooter_title',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_title',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Titre du pied de document',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'docfooter_string',
+                'type' => 'Zend\Form\Element\Textarea',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_string',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Texte du pied de document',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-top'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docfooter_page_distincte',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_page_distincte',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Saut de page avant le pied de document ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docfooter_insecable',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_insecable',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Pied de document insécable ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'docfooter_margin',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_margin',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge du pied de document (en mm]',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docfooter_pageheader',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_pageheader',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'En-tête de page sur la dernière page ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'docfooter_pagefooter',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_pagefooter',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Pied de page sur la dernière page ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'docfooter_templateId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-docfooter_templateId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Modèle de pied de document',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un modèle',
+                    'value_options' => $this->getTemplateList('docfooter'),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_templateId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_templateId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Modèle d\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un modèle',
+                    'value_options' => $this->getTemplateList('header'),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_title',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_title',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Titre d\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_string',
+                'type' => 'Zend\Form\Element\Textarea',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_string',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Texte d\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'pageheader_logo_visible',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_logo_visible',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Logo dans l\'en-tête de page ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_logo',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_logo',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Logo d\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_logo_width',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_logo_width',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Largeur du logo d\'en-tête de page (en mm]',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_margin',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_margin',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge de l\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_font_family',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Police de l\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_font_style',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Style police de l\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_font_size',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Taille police de l\'en-tête de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_text_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_text_color',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Couleur du texte dans l\'en-tête',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pageheader_line_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-pageheader_line_color',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Couleur des traits dans l\'en-tête',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_templateId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_templateId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Modèle de pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un modèle',
+                    'value_options' => $this->getTemplateList('footer'),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_string',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_string',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Texte de pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_margin',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_margin',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge du pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_font_family',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Police du pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_font_style',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Style police du pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_font_size',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Taille police du pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_text_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_text_color',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Couleur du texte dans le pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'pagefooter_line_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-pagefooter_line_color',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Couleur des traits dans le pied de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'page_templateId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-page_templateId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Modèle de page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un modèle',
+                    'value_options' => $this->getTemplateList('docbody'),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'page_format',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-page_format',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Format de la page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un format',
+                    'value_options' => $this->getArrayPageFormats(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'page_orientation',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'id' => 'documentpdf-page_orientation',
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Orientation de la page',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        'P' => 'Portrait',
+                        'L' => 'Paysage'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'page_margin_top',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-page_margin_top',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge du haut',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'page_margin_bottom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-page_margin_bottom',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge du bas',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'page_margin_left',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-page_margin_left',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge de gauche',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'page_margin_right',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-page_margin_right',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Marge de droite',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'main_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-main_font_family',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Police principale',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'main_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-main_font_style',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Style de la police principale',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'main_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-main_font_size',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Taille de la police principale',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'data_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-data_font_family',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Police des données',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'data_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-data_font_style',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Style de la police des données',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'data_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-data_font_size',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Taille de la police des données',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'titre1_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-titre1_font_family',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Police des Titre1',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'titre1_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre1_font_style',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Style de la police des Titre1',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'titre1_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre1_font_size',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Taille de la police des Titre1',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'titre1_text_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre1_text_color',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Couleur du titre 1',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'titre1_line',
+                'attributes' => [
+                    'id' => 'documentpdf-titre1_line',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Encadrement de titre 1 ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'titre1_line_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre1_line_color',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Couleur encadrement titre 1',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         
-        $this->add([
-            'name' => 'titre2_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-titre2_font_family',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Police des Titre2',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+        $this->add(
+            [
+                'name' => 'titre2_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-titre2_font_family',
+                    'class' => 'sbm-width-35c'
                 ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Police des Titre2',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre2_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre2_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style de la police des Titre2',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre2_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre2_font_style',
+                    'class' => 'sbm-width-5c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Style de la police des Titre2',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre2_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre2_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille de la police des Titre2',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre2_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre2_font_size',
+                    'class' => 'sbm-width-5c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Taille de la police des Titre2',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre2_text_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre2_text_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur du titre 2',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre2_text_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre2_text_color',
+                    'class' => 'sbm-width-10c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Couleur du titre 2',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'titre2_line',
-            'attributes' => [
-                'id' => 'documentpdf-titre2_line',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Encadrement de titre 2 ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'titre2_line',
+                'attributes' => [
+                    'id' => 'documentpdf-titre2_line',
+                    'class' => 'sbm-checkbox'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Encadrement de titre 2 ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre2_line_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre2_line_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur encadrement titre 2',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre2_line_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre2_line_color',
+                    'class' => 'sbm-width-10c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Couleur encadrement titre 2',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
         
-        $this->add([
-            'name' => 'titre3_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-titre3_font_family',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Police des Titre3',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+        $this->add(
+            [
+                'name' => 'titre3_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-titre3_font_family',
+                    'class' => 'sbm-width-35c'
                 ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Police des Titre3',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre3_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre3_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style de la police des Titre3',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre3_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre3_font_style',
+                    'class' => 'sbm-width-5c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Style de la police des Titre3',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre3_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre3_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille de la police des Titre3',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre3_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre3_font_size',
+                    'class' => 'sbm-width-5c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Taille de la police des Titre3',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre3_text_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre3_text_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur du titre 3',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre3_text_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre3_text_color',
+                    'class' => 'sbm-width-10c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Couleur du titre 3',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'titre3_line',
-            'attributes' => [
-                'id' => 'documentpdf-titre3_line',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Encadrement de titre 3 ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'titre3_line',
+                'attributes' => [
+                    'id' => 'documentpdf-titre3_line',
+                    'class' => 'sbm-checkbox'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Encadrement de titre 3 ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre3_line_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre3_line_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur encadrement titre 3',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre3_line_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre3_line_color',
+                    'class' => 'sbm-width-10c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Couleur encadrement titre 3',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
         
-        $this->add([
-            'name' => 'titre4_font_family',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-titre4_font_family',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Police des Titre4',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+        $this->add(
+            [
+                'name' => 'titre4_font_family',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-titre4_font_family',
+                    'class' => 'sbm-width-35c'
                 ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Police des Titre4',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre4_font_style',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre4_font_style',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Style de la police des Titre4',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre4_font_style',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre4_font_style',
+                    'class' => 'sbm-width-5c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Style de la police des Titre4',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre4_font_size',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'documentpdf-titre4_font_size',
-                'class' => 'sbm-width-5c'
-            ],
-            'options' => [
-                'label' => 'Taille de la police des Titre4',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre4_font_size',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'documentpdf-titre4_font_size',
+                    'class' => 'sbm-width-5c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Taille de la police des Titre4',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre4_text_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre4_text_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur du titre 4',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre4_text_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre4_text_color',
+                    'class' => 'sbm-width-10c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Couleur du titre 4',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'titre4_line',
-            'attributes' => [
-                'id' => 'documentpdf-titre4_line',
-                'class' => 'sbm-checkbox'
-            ],
-            'options' => [
-                'label' => 'Encadrement de titre 4 ?',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'titre4_line',
+                'attributes' => [
+                    'id' => 'documentpdf-titre4_line',
+                    'class' => 'sbm-checkbox'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Encadrement de titre 4 ?',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'titre4_line_color',
-            'type' => 'Zend\Form\Element\Color',
-            'attributes' => [
-                'id' => 'documentpdf-titre4_line_color',
-                'class' => 'sbm-width-10c'
-            ],
-            'options' => [
-                'label' => 'Couleur encadrement titre 4',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'titre4_line_color',
+                'type' => 'Zend\Form\Element\Color',
+                'attributes' => [
+                    'id' => 'documentpdf-titre4_line_color',
+                    'class' => 'sbm-width-10c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Couleur encadrement titre 4',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
         
-        $this->add([
-            'name' => 'default_font_monospaced',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'documentpdf-page_font_monospaced',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => 'Police à espacement fixe',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+        $this->add(
+            [
+                'name' => 'default_font_monospaced',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-page_font_monospaced',
+                    'class' => 'sbm-width-45c'
                 ],
-                'empty_option' => 'Choisissez une police',
-                'value_options' => $fonts->getFonts(true),
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Police à espacement fixe',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une police',
+                    'value_options' => $fonts->getFonts(true),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'submit',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'documentpdf-submit',
-                'autofocus' => 'autofocus',
-                'class' => 'button default submit'
-            ]
-        ]);
-        $this->add([
-            'name' => 'cancel',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'documentpdf-cancel',
-                'class' => 'button default'
-            ]
-        ]);
-        $this->add([
-            'name' => 'tableau',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Mise en forme du tableau',
-                'id' => 'documentpdf-tableau',
-                'class' => 'button default',
-                'style' => 'display: none;'
-            ]
-        ]);
-        $this->add([
-            'name' => 'texte',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Mise en forme du texte',
-                'id' => 'documentpdf-texte',
-                'class' => 'button default',
-                'style' => 'display: none;'
-            ]
-        ]);
-        $this->add([
-            'name' => 'etiquette',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Mise en forme des étiquettes',
-                'id' => 'documentpdf-etiquette',
-                'class' => 'button default',
-                'style' => 'display: none;'
-            ]
-        ]);
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'documentpdf-submit',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'documentpdf-cancel',
+                    'class' => 'button default'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'tableau',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Mise en forme du tableau',
+                    'id' => 'documentpdf-tableau',
+                    'class' => 'button default',
+                    'style' => 'display: none;'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'texte',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Mise en forme du texte',
+                    'id' => 'documentpdf-texte',
+                    'class' => 'button default',
+                    'style' => 'display: none;'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'etiquette',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Mise en forme des étiquettes',
+                    'id' => 'documentpdf-etiquette',
+                    'class' => 'button default',
+                    'style' => 'display: none;'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
@@ -2417,8 +2520,9 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
      * 1/ affecter recordSource de la valeur du contrôle visible
      * 2/ calculer isValid(]
      * 3/ si une erreur est sur recordSource, affecter cette erreur sur le contrôle visible
-     * 
+     *
      * (non-PHPdoc]
+     * 
      * @see \Zend\Form\Form::isValid(]
      */
     public function isValid()
@@ -2428,7 +2532,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
         $ok = parent::isValid();
         if (! $ok) {
             $ehidden = $this->get('recordSource');
-            if (!empty($ehidden->getMessages())) {
+            if (! empty($ehidden->getMessages())) {
                 $evisible = $this->get($visibleElementName);
                 $evisible->setMessages($ehidden->getMessages());
             }
@@ -2459,24 +2563,26 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
      * Modification de la méthode en version 2016-2
      * On ne crée plus d'instance pour appeler get_class_methods() mais
      * on passe le nom de la classe.
-     * 
-     * @param string $section
-     * 
+     *
+     * @param string $section            
+     *
      * @return array
      */
     private function getTemplateList($section)
     {
         return StdLib::getParam($section, $this->template_method_list, []);
-        /*$templateSectionMethod = 'template' . $section . 'method';
-        $methods = get_class_methods(Tcpdf::class);
-        $list = [];
-        foreach ($methods as $method) {
-            if (strpos(strtolower($method), $templateSectionMethod) === 0) {
-                $id = substr($method, strlen($templateSectionMethod));
-                $list[$id] = Tcpdf::{$method}('?');
-            }
-        }
-        return $list;*/
+        /*
+         * $templateSectionMethod = 'template' . $section . 'method';
+         * $methods = get_class_methods(Tcpdf::class);
+         * $list = [];
+         * foreach ($methods as $method) {
+         * if (strpos(strtolower($method), $templateSectionMethod) === 0) {
+         * $id = substr($method, strlen($templateSectionMethod));
+         * $list[$id] = Tcpdf::{$method}('?');
+         * }
+         * }
+         * return $list;
+         */
     }
 
     private function getArrayPageFormats()

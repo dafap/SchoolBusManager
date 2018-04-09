@@ -7,19 +7,43 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 nov. 2015
- * @version 2015-1
+ * @date 6 avr. 2018
+ * @version 2018-2.4.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_statistiques_circuit = $this->url('sbmgestion/statistiques', ['action' => 'par-circuit']);
-$url_statistiques_classe = $this->url('sbmgestion/statistiques', ['action' => 'par-classe']);
-$url_statistiques_commune = $this->url('sbmgestion/statistiques', ['action' => 'par-commune']);
-$url_statistiques_etablissement = $this->url('sbmgestion/statistiques', ['action' => 'par-etablissement']);
-$url_statistiques_circuit_commune = $this->url('sbmgestion/statistiques', ['action' => 'par-circuit-commune']);
-$url_statistiques_classe_etablissement = $this->url('sbmgestion/statistiques', ['action' => 'par-classe-etablissement']);
-$url_statistiques_commune_circuit = $this->url('sbmgestion/statistiques', ['action' => 'par-commune-circuit']);
-$url_statistiques_etablissement_classe = $this->url('sbmgestion/statistiques', ['action' => 'par-etablissement-classe']);
+$url_statistiques_circuit = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-circuit'
+    ]);
+$url_statistiques_classe = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-classe'
+    ]);
+$url_statistiques_commune = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-commune'
+    ]);
+$url_statistiques_etablissement = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-etablissement'
+    ]);
+$url_statistiques_circuit_commune = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-circuit-commune'
+    ]);
+$url_statistiques_classe_etablissement = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-classe-etablissement'
+    ]);
+$url_statistiques_commune_circuit = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-commune-circuit'
+    ]);
+$url_statistiques_etablissement_classe = $this->url('sbmgestion/statistiques', 
+    [
+        'action' => 'par-etablissement-classe'
+    ]);
 $url_gestion = $this->url('sbmgestion');
 ?>
 <h1>Statistiques</h1>
@@ -27,13 +51,14 @@ $url_gestion = $this->url('sbmgestion');
 	<div id="menugeneral-header" class="clearfix">
 		<div class="menu float-left">
 		<?php
-echo $this->listeZoneActions(array(), array(
-    'retour' => array(
-        'class' => 'fam-door-out',
-        'formaction' => $url_gestion,
-        'title' => 'Retour'
-    )
-));
+echo $this->listeZoneActions([], 
+    [
+        'retour' => [
+            'class' => 'fam-door-out',
+            'formaction' => $url_gestion,
+            'title' => 'Retour'
+        ]
+    ]);
 ?>
         </div>
 		<div class="flashMessenger float-right">
@@ -45,17 +70,25 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?>
         </div>
-    </div>
+	</div>
 	<div id="menugeneral-inner">
 		<ul>
-			<li><a href="<?php echo $url_statistiques_circuit; ?>"><i class="fam-bullet-go"></i>Par circuit</a></li>
-			<li><a href="<?php echo $url_statistiques_circuit_commune; ?>"><i class="fam-bullet-go"></i>Par circuit et commune</a></li>
-			<li><a href="<?php echo $url_statistiques_classe; ?>"><i class="fam-bullet-go"></i>Par classe</a></li>
-			<li><a href="<?php echo $url_statistiques_classe_etablissement; ?>"><i class="fam-bullet-go"></i>Par classe et établissement</a></li>
-			<li><a href="<?php echo $url_statistiques_commune; ?>"><i class="fam-bullet-go"></i>Par commune</a></li>
-			<li><a href="<?php echo $url_statistiques_commune_circuit; ?>"><i class="fam-bullet-go"></i>Par commune et circuit</a></li>
-			<li><a href="<?php echo $url_statistiques_etablissement; ?>"><i class="fam-bullet-go"></i>Par établissement</a></li>
-			<li><a href="<?php echo $url_statistiques_etablissement_classe; ?>"><i class="fam-bullet-go"></i>Par établissement et classe</a></li>
+			<li><a href="<?php echo $url_statistiques_circuit; ?>"><i
+					class="fam-bullet-go"></i>Par circuit</a></li>
+			<li><a href="<?php echo $url_statistiques_circuit_commune; ?>"><i
+					class="fam-bullet-go"></i>Par circuit et commune</a></li>
+			<li><a href="<?php echo $url_statistiques_classe; ?>"><i
+					class="fam-bullet-go"></i>Par classe</a></li>
+			<li><a href="<?php echo $url_statistiques_classe_etablissement; ?>"><i
+					class="fam-bullet-go"></i>Par classe et établissement</a></li>
+			<li><a href="<?php echo $url_statistiques_commune; ?>"><i
+					class="fam-bullet-go"></i>Par commune</a></li>
+			<li><a href="<?php echo $url_statistiques_commune_circuit; ?>"><i
+					class="fam-bullet-go"></i>Par commune et circuit</a></li>
+			<li><a href="<?php echo $url_statistiques_etablissement; ?>"><i
+					class="fam-bullet-go"></i>Par établissement</a></li>
+			<li><a href="<?php echo $url_statistiques_etablissement_classe; ?>"><i
+					class="fam-bullet-go"></i>Par établissement et classe</a></li>
 		</ul>
 	</div>
 </div>

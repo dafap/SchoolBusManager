@@ -9,8 +9,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 juin 2017
- * @version 2017-2.3.2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -44,9 +44,10 @@ class Calendar extends AbstractSbmTable
     {
         $resultset = $this->fetchAll("nature = 'AS'", 'millesime DESC');
         if (! $resultset->count()) {
-            throw new Exception('Les années scolaires ne sont pas définies. Il faut initialiser à nouveau la table système `calendar`.');
+            throw new Exception(
+                'Les années scolaires ne sont pas définies. Il faut initialiser à nouveau la table système `calendar`.');
         }
-        $result = array();
+        $result = [];
         foreach ($resultset as $row) {
             $ligne = $row->getArrayCopy();
             $ligne['valid'] = $this->isValidMillesime($ligne['millesime']);
@@ -63,7 +64,9 @@ class Calendar extends AbstractSbmTable
         }
         $resultset = $this->fetchAll("nature = 'AS' AND millesime = $millesime");
         if (! $resultset->count()) {
-            throw new Exception(sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime, $millesime + 1));
+            throw new Exception(
+                sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime, 
+                    $millesime + 1));
         }
         return $resultset->current()->getArrayCopy();
     }
@@ -72,9 +75,11 @@ class Calendar extends AbstractSbmTable
     {
         $resultset = $this->fetchAll("millesime = $millesime", 'ordinal');
         if (! $resultset->count()) {
-            throw new Exception(sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime, $millesime + 1));
+            throw new Exception(
+                sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime, 
+                    $millesime + 1));
         }
-        $result = array();
+        $result = [];
         foreach ($resultset as $row) {
             $result[] = $row->getArrayCopy();
         }
@@ -91,9 +96,10 @@ class Calendar extends AbstractSbmTable
         $select = $this->getTableGateway()
             ->getSql()
             ->select();
-        $select->columns(array(
-            'millesime' => new Expression('max(millesime)')
-        ));
+        $select->columns(
+            [
+                'millesime' => new Expression('max(millesime)')
+            ]);
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();
         return $row->millesime;
@@ -111,18 +117,19 @@ class Calendar extends AbstractSbmTable
         $select1 = $this->getTableGateway()
             ->getSql()
             ->select();
-        $select1->columns(array(
+        $select1->columns([
             'millesime'
-        ))->where($where1);
+        ])->where($where1);
         
         $where = new Where();
         $where->literal('ouvert = 1')->notIn('millesime', $select1);
         $select = $this->getTableGateway()
             ->getSql()
             ->select()
-            ->columns(array(
-            'millesime' => new Expression('max(millesime)')
-        ))
+            ->columns(
+            [
+                'millesime' => new Expression('max(millesime)')
+            ])
             ->where($where);
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();
@@ -141,9 +148,9 @@ class Calendar extends AbstractSbmTable
         $select = $this->getTableGateway()
             ->getSql()
             ->select()
-            ->columns(array(
+            ->columns([
             'millesime'
-        ))
+        ])
             ->where($where);
         $resultset = $this->getTableGateway()->selectWith($select);
         if (! $resultset->count()) {
@@ -171,9 +178,10 @@ class Calendar extends AbstractSbmTable
         $select = $this->getTableGateway()
             ->getSql()
             ->select();
-        $select->columns(array(
-            'nb' => new Expression('count(*)')
-        ))->where($where);
+        $select->columns(
+            [
+                'nb' => new Expression('count(*)')
+            ])->where($where);
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();
         return $row->nb == 0;
@@ -187,7 +195,9 @@ class Calendar extends AbstractSbmTable
      */
     public function isValidMillesime($millesime)
     {
-        return $this->isValidColDate($millesime, 'dateDebut') && $this->isValidColDate($millesime, 'dateFin') && $this->isValidColDate($millesime, 'echeance');
+        return $this->isValidColDate($millesime, 'dateDebut') &&
+             $this->isValidColDate($millesime, 'dateFin') &&
+             $this->isValidColDate($millesime, 'echeance');
     }
 
     /**
@@ -216,26 +226,26 @@ class Calendar extends AbstractSbmTable
         $echeance = DateTime::createFromFormat('Y-m-d', $row->echeance);
         $aujourdhui = new DateTime();
         if ($aujourdhui < $dateDebut) {
-            return array(
+            return [
                 'etat' => 0,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
-            );
+            ];
         } elseif ($aujourdhui > $dateFin) {
-            return array(
+            return [
                 'etat' => 2,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
-            );
+            ];
         } else {
-            return array(
+            return [
                 'etat' => 1,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
-            );
+            ];
         }
     }
 
@@ -253,9 +263,10 @@ class Calendar extends AbstractSbmTable
             $where->like('libelle', "%$commune%");
         }
         $resultset = $this->fetchAll($where, 'rang');
-        $result = array();
+        $result = [];
         foreach ($resultset as $row) {
-            $result[] = $row->description . ' ' . DateLib::formatDateFromMysql($row->echeance);
+            $result[] = $row->description . ' ' .
+                 DateLib::formatDateFromMysql($row->echeance);
         }
         return $result;
     }
@@ -272,11 +283,12 @@ class Calendar extends AbstractSbmTable
      */
     public function changeEtat($millesime, $ouvert = 1)
     {
-        return $this->table_gateway->update(array(
-            'ouvert' => $ouvert
-        ), array(
-            'millesime' => $millesime
-        ));
+        return $this->table_gateway->update(
+            [
+                'ouvert' => $ouvert
+            ], [
+                'millesime' => $millesime
+            ]);
     }
 }
  

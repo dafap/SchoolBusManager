@@ -11,7 +11,6 @@
  * @date 29 août 2016
  * @version 2016-2.2.0
  */
-
 use ModulesTests\Bootstrap;
 
 error_reporting(E_ALL | E_STRICT);

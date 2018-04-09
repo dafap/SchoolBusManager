@@ -8,8 +8,8 @@
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -50,35 +50,42 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $users = $this->paginator->getCurrentItems();
-$url_edit = $this->url('sbmadmin', [
-    'action' => 'user-edit',
-    'page' => $this->page
-]);
-$url_delete = $this->url('sbmadmin', [
-    'action' => 'user-suppr',
-    'page' => $this->page
-]);
-$url_group = $this->url('sbmadmin', [
-    'action' => 'user-link',
-    'page' => $this->page
-]);
-$url_ajouter = $this->url('sbmadmin', [
-    'action' => 'user-ajout',
-    'page' => $this->page
-]);
-$url_rapports = $this->url('sbmadmin', [
-    'action' => 'user-pdf',
-    'page' => $this->page
-]);
-$url_creer_comptes_parent = $this->url('sbmadmin', [
-    'action' => 'user-prepare-nouveaux-comptes',
-    'page' => $this->page
-]);
+$url_edit = $this->url('sbmadmin', 
+    [
+        'action' => 'user-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmadmin', 
+    [
+        'action' => 'user-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmadmin', 
+    [
+        'action' => 'user-link',
+        'page' => $this->page
+    ]);
+$url_ajouter = $this->url('sbmadmin', 
+    [
+        'action' => 'user-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmadmin', 
+    [
+        'action' => 'user-pdf',
+        'page' => $this->page
+    ]);
+$url_creer_comptes_parent = $this->url('sbmadmin', 
+    [
+        'action' => 'user-prepare-nouveaux-comptes',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmadmin');
 $hiddens = [];
-$menuImpression = $this->menuRapports($this->url('sbmadmin', [
-    'action' => 'user-liste'
-]), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports(
+    $this->url('sbmadmin', [
+        'action' => 'user-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 $actions = [
     'retour' => [
@@ -163,7 +170,8 @@ echo $this->flashMessenger()->render('default');
                     'title' => 'fiche du compte associé (responsable, transporteur ou établissement)'
                 ]
             ];
-            echo $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);
+            echo $user->categorieId == 255 ? '' : $this->listeLigneActions(
+                $hiddens['userId'], $hiddens, $buttons);
             ?>
 				    </td>
 				</tr>         

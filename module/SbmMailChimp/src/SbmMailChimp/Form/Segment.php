@@ -11,8 +11,8 @@
  * @filesource Segment.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMailChimp\Form;
 
@@ -36,87 +36,95 @@ class Segment extends AbstractSbmForm implements InputFilterProviderInterface
         $this->conditions = $conditions;
         parent::__construct('sbm-mailchimp-liste');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'id_liste'
-        ]);
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'segment_id'
-        ]);
-        $this->add([
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => [
-                'csrf_options' => [
-                    'timeout' => 180
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'id_liste'
+            ]);
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'segment_id'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'name',
-            'type' => 'text',
-            'attributes' => [
-                'id' => 'segment-name',
-                'class' => 'sbm-width-35c'
-            ],
-            'options' => [
-                'label' => 'Nom du segment',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => 'name',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'segment-name',
+                    'class' => 'sbm-width-35c'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Nom du segment',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'match',
-            'type' => 'Zend\Form\Element\Radio',
-            'attributes' => [
-                'id' => 'segment-match',
-                'class' => 'sbm-radio',
-                'value' => 'all'
-            ],
-            'options' => [
-                'label' => 'Opérateur logique',
-                'label_attributes' => [
-                    'class' => 'sbm-label-radio'
+            ]);
+        $this->add(
+            [
+                'name' => 'match',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'id' => 'segment-match',
+                    'class' => 'sbm-radio',
+                    'value' => 'all'
                 ],
-                'value_options' => [
-                    'any' => 'OU',
-                    'all' => 'ET'
+                'options' => [
+                    'label' => 'Opérateur logique',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        'any' => 'OU',
+                        'all' => 'ET'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'submit',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'sbm-submit',
-                'class' => 'button default submit'
-            ]
-        ]);
-        $this->add([
-            'name' => 'cancel',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'sbm-cancel',
-                'class' => 'button default cancel'
-            ]
-        ]);
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'sbm-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'sbm-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function setConditions($conditions)
     {
-        if (!is_array($conditions)) {
-            throw new \Exception(sprintf('Un tableau est attendu. On a reçu %s.',gettype($conditions)));
+        if (! is_array($conditions)) {
+            throw new \Exception(
+                sprintf('Un tableau est attendu. On a reçu %s.', gettype($conditions)));
         }
         $this->conditions = $conditions;
     }
-    
+
     public function getInputFilterSpecification()
     {
         return [
@@ -137,19 +145,22 @@ class Segment extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function setDataFromApi3($data)
     {
-        $this->setData([
-            'id_liste' => $data['list_id'],
-            'segment_id' => StdLib::getParam('id', $data),
-            'name' => StdLib::getParam('name', $data),
-            'match' => StdLib::getParamR([
-                'options',
-                'match'
-            ], $data)
-        ]);
+        $this->setData(
+            [
+                'id_liste' => $data['list_id'],
+                'segment_id' => StdLib::getParam('id', $data),
+                'name' => StdLib::getParam('name', $data),
+                'match' => StdLib::getParamR(
+                    [
+                        'options',
+                        'match'
+                    ], $data)
+            ]);
         return $this;
     }
 
-    public function getDataForApi3($with_condition = false, $flag = FormInterface::VALUES_NORMALIZED)
+    public function getDataForApi3($with_condition = false, 
+        $flag = FormInterface::VALUES_NORMALIZED)
     {
         $data = $this->getData($flag);
         $result = [

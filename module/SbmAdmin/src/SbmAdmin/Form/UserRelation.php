@@ -9,8 +9,8 @@
  * @filesource UserRelation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmAdmin\Form;
 
@@ -23,56 +23,61 @@ class UserRelation extends AbstractSbmForm
     {
         parent::__construct($name);
         $this->setAttribute('method', 'post');
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'userId'
-        ]);
-        $this->add([
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => [
-                'csrf_options' => [
-                    'timeout' => 180
+        $this->add(
+            [
+                'type' => 'hidden',
+                'name' => 'userId'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => $name . 'Id',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => [
-                'id' => 'user-' . $name . 'Id',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-45c'
-            ],
-            'options' => [
-                'label' => ucfirst($name),
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+            ]);
+        $this->add(
+            [
+                'name' => $name . 'Id',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'user-' . $name . 'Id',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-45c'
                 ],
-                'empty_option' => 'Choisissez un ' . $name,
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => ucfirst($name),
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un ' . $name,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
         
-        $this->add([
-            'name' => 'submit',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'station-submit',
-                'class' => 'button default submit'
-            ]
-        ]);
-        $this->add([
-            'name' => 'cancel',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'station-cancel',
-                'class' => 'button default cancel'
-            ]
-        ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'station-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'station-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 }

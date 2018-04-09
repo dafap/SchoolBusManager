@@ -9,8 +9,8 @@
  * @filesource MdpFirst.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Form;
 
@@ -24,121 +24,126 @@ class MdpFirst extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('mdp-first');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'userId',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'mdp',
-            'type' => 'password',
-            'attributes' => array(
-                'id' => 'mdp-new',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-mdp'
-            ),
-            'options' => array(
-                'label' => 'Choisissez un mot de passe',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-200px'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'ctrl',
-            'type' => 'password',
-            'attributes' => array(
-                'id' => 'ctrl',
-                'class' => 'sbm-mdp'
-            ),
-            'options' => array(
-                'label' => 'Confirmez ce mot de passe',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-200px'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'responsable-submit',
-                'class' => 'button submit left-95px'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'responsable-cancel',
-                'class' => 'button cancel left-10px'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'userId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'mdp',
+                'type' => 'password',
+                'attributes' => [
+                    'id' => 'mdp-new',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-mdp'
+                ],
+                'options' => [
+                    'label' => 'Choisissez un mot de passe',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-200px'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'ctrl',
+                'type' => 'password',
+                'attributes' => [
+                    'id' => 'ctrl',
+                    'class' => 'sbm-mdp'
+                ],
+                'options' => [
+                    'label' => 'Confirmez ce mot de passe',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-200px'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'responsable-submit',
+                    'class' => 'button submit left-95px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'responsable-cancel',
+                    'class' => 'button cancel left-10px'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'mdp' => array(
+        return [
+            'mdp' => [
                 'name' => 'mdp',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmFront\Model\Validator\Mdp',
-                        'options' => array(
+                        'options' => [
                             'len' => 6,
                             'min' => 1,
                             'maj' => 1,
                             'num' => 1
-                        )
-                    )
-                )
-            ),
-            'ctrl' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'ctrl' => [
                 'name' => 'ctrl',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'identical',
-                        'options' => array(
+                        'options' => [
                             'token' => 'mdp'
-                        )
-                    )
-                )
-            )
-            
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 }

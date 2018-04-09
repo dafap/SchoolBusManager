@@ -7,103 +7,110 @@
  * @filesource StationDoublon.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juil. 2017
- * @version 2017-2.3.5
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form;
 
-use SbmCommun\Form\AbstractSbmForm As Form;
+use SbmCommun\Form\AbstractSbmForm as Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class StationDoublon extends Form implements InputFilterProviderInterface
 {
+
     public function __construct()
     {
         parent::__construct('doublon');
         $this->setAttribute('method', 'post');
         
-        $this->add(array(
-            'name' => 'page',
-            'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-
-        $this->add(array(
-            'name' => 'stationASupprId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'station-a-supprId',
-                'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
-                'label' => 'Point d\'arrêt à supprimer',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Quel point d\'arrêt ?',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'stationAGarderId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'station-a-garderId',
-                'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
-                'label' => 'Point d\'arrêt à garder',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Quel point d\'arrêt ?',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'decision-cancel',
-                'autofocus' => 'autofocus',
-                'class' => 'button default cancel left-10px'
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Valider',
-                'id' => 'decision-submit',
-                'class' => 'button default submit left-10px'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'page',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        
+        $this->add(
+            [
+                'name' => 'stationASupprId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'station-a-supprId',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Point d\'arrêt à supprimer',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel point d\'arrêt ?',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'stationAGarderId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'station-a-garderId',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Point d\'arrêt à garder',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel point d\'arrêt ?',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'decision-cancel',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default cancel left-10px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Valider',
+                    'id' => 'decision-submit',
+                    'class' => 'button default submit left-10px'
+                ]
+            ]);
     }
-    
+
     public function getInputFilterSpecification()
     {
         return [
-            'stationASupprId' => array(
+            'stationASupprId' => [
                 'name' => 'stationASupprId',
                 'required' => true
-            ),
-            'stationAGarderId' => array(
+            ],
+            'stationAGarderId' => [
                 'name' => 'stationAGarderId',
                 'required' => true
-            )
+            ]
         ];
     }
 }

@@ -9,9 +9,9 @@
  * @filesource Classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
- */ 
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
+ */
 namespace SbmCommun\Model\Db\Service\Select;
 
 use Zend\ServiceManager\FactoryInterface;
@@ -25,6 +25,7 @@ use SbmCommun\Model\Db\Exception;
 
 class Classes implements FactoryInterface
 {
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof DbManager)) {
@@ -36,19 +37,29 @@ class Classes implements FactoryInterface
         $mbUcfirst = new MbUcfirst();
         $sql = new Sql($db_manager->getDbAdapter());
         $select = $sql->select($db_manager->getCanonicName('classes', 'table'));
-        $select->columns(array('classeId', 'nom', 'niveau'));
-        $select->order(array('niveau', 'nom'));
+        $select->columns(
+            [
+                'classeId',
+                'nom',
+                'niveau'
+            ]);
+        $select->order([
+            'niveau',
+            'nom'
+        ]);
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $array = array();
+        $array = [];
         foreach ($rowset as $row) {
             if (array_key_exists($row['niveau'], $array)) {
                 $array[$row['niveau']]['options'][$row['classeId']] = $row['nom'];
             } else {
-                $array[$row['niveau']] = array(
+                $array[$row['niveau']] = [
                     'label' => $mbUcfirst->filter($oNiveau::getNiveaux()[$row['niveau']]),
-                    'options' => array($row['classeId'] => $row['nom'])
-                );
+                    'options' => [
+                        $row['classeId'] => $row['nom']
+                    ]
+                ];
             }
         }
         return $array;

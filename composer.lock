@@ -1482,16 +1482,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.0.5",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "de5f125ea39de846b90b313b2cfb031a0152d223"
+                "reference": "8b34ebb5989df61cbd77eff29a02c4db9ac1069c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/de5f125ea39de846b90b313b2cfb031a0152d223",
-                "reference": "de5f125ea39de846b90b313b2cfb031a0152d223",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/8b34ebb5989df61cbd77eff29a02c4db9ac1069c",
+                "reference": "8b34ebb5989df61cbd77eff29a02c4db9ac1069c",
                 "shasum": ""
             },
             "require": {
@@ -1536,7 +1536,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-19T20:08:53+00:00"
+            "time": "2018-04-03T05:24:00+00:00"
         },
         {
             "name": "tecnickcom/tcpdf",
@@ -2518,30 +2518,30 @@
         },
         {
             "name": "zendframework/zend-dom",
-            "version": "2.6.0",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-dom.git",
-                "reference": "42c9f867bfad1f627997718658fccbe516410436"
+                "reference": "8fed50de7900d8405566dc05194f4bff2f1013b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-dom-2.6.0-575365.zip",
-                "reference": "42c9f867bfad1f627997718658fccbe516410436",
-                "shasum": "d24f200be67f4865499bf8071b19b693507989cb"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-dom-2.7.0-d5fc81.zip",
+                "reference": "8fed50de7900d8405566dc05194f4bff2f1013b6",
+                "shasum": "45d6c2dc92dd4f7723bd7f95a09907601fcf52b5"
             },
             "require": {
-                "php": ">=5.5"
+                "php": "^5.6 || ^7.0"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0"
+                "phpunit/phpunit": "^5.7.23 || ^6.4.3",
+                "zendframework/zend-coding-standard": "~1.0.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev",
-                    "dev-develop": "2.6-dev"
+                    "dev-master": "2.7.x-dev",
+                    "dev-develop": "2.8.x-dev"
                 }
             },
             "autoload": {
@@ -2554,16 +2554,42 @@
                     "ZendTest\\Dom\\": "test/"
                 }
             },
+            "scripts": {
+                "check": [
+                    "@cs-check",
+                    "@test"
+                ],
+                "cs-check": [
+                    "phpcs"
+                ],
+                "cs-fix": [
+                    "phpcbf"
+                ],
+                "test": [
+                    "phpunit --colors=always"
+                ],
+                "test-coverage": [
+                    "phpunit --colors=always --coverage-clover clover.xml"
+                ]
+            },
             "license": [
                 "BSD-3-Clause"
             ],
             "description": "provides tools for working with DOM documents and structures",
-            "homepage": "https://github.com/zendframework/zend-dom",
             "keywords": [
                 "dom",
-                "zf2"
+                "zendframework",
+                "zf"
             ],
-            "time": "2015-10-14T03:37:48+00:00"
+            "support": {
+                "docs": "https://docs.zendframework.com/zend-dom/",
+                "issues": "https://github.com/zendframework/zend-dom/issues",
+                "source": "https://github.com/zendframework/zend-dom",
+                "rss": "https://github.com/zendframework/zend-dom/releases.atom",
+                "slack": "https://zendframework-slack.herokuapp.com",
+                "forum": "https://discourse.zendframework.com/c/questions/components"
+            },
+            "time": "2018-03-27T21:03:04+00:00"
         },
         {
             "name": "zendframework/zend-escaper",

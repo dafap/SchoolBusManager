@@ -9,14 +9,16 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 use SbmCartographie\Controller;
 use SbmCartographie\Model\Service\CartographieManager;
-use SbmCartographie\GoogleMaps\DistanceEtablissements;
-use SbmCartographie\GoogleMaps\Service\DistanceEtablissementsFactory;
+use SbmCartographie\GoogleMaps\DistanceMatrix;
+use SbmCartographie\GoogleMaps\Service\DistanceMatrixFactory;
+use SbmCartographie\GoogleMaps\Geocoder;
 use SbmCartographie\GoogleMaps\Service\GeocoderFactory;
+use SbmCartographie\Model\Projection;
 use SbmCartographie\Model\Service\ProjectionFactory;
 
 return [
@@ -50,9 +52,9 @@ return [
     
     'cartographie_manager' => [
         'factories' => [
-            'SbmCarto\DistanceEtablissements' => DistanceEtablissementsFactory::class,
-            'SbmCarto\Geocoder' => GeocoderFactory::class,
-            'SbmCarto\Projection' => ProjectionFactory::class
+            DistanceMatrix::class => DistanceMatrixFactory::class,
+            Geocoder::class => GeocoderFactory::class,
+            Projection::class => ProjectionFactory::class
         ],
         'services' => [
             'google_api' => [
@@ -60,7 +62,7 @@ return [
                 'distancematrix' => 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=car&language=fr-FR&sensor=false',
                 'geocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?address=%s',
                 'reversegeocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=true'
-            ],
+            ]
         ]
     ],
     'service_manager' => [

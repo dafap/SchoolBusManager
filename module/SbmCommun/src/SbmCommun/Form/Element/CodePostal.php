@@ -8,8 +8,8 @@
  * @filesource CodePostal.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juil. 2014
- * @version 2014-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\Element;
 
@@ -32,7 +32,9 @@ class CodePostal extends Element implements InputProviderInterface
     {
         if (is_null($this->validator)) {
             $validator = new RegexValidator(self::PATTERN);
-            $validator->setMessage('Les codes postaux sont composés de 5 chiffres sauf pour la Corse où l\'on autorise 2A et 2B !', RegexValidator::NOT_MATCH);
+            $validator->setMessage(
+                'Les codes postaux sont composés de 5 chiffres sauf pour la Corse où l\'on autorise 2A et 2B !', 
+                RegexValidator::NOT_MATCH);
             $this->validator = $validator;
         }
         return $this->validator;
@@ -53,15 +55,17 @@ class CodePostal extends Element implements InputProviderInterface
      */
     public function getInputSpecification()
     {
-        return array(
+        return [
             'name' => $this->getName(),
             'required' => true,
-            'filters' => array(
-                array('name' => 'Zend\Filter\StringToUpper')
-            ),
-            'validators' => array(
+            'filters' => [
+                [
+                    'name' => 'Zend\Filter\StringToUpper'
+                ]
+            ],
+            'validators' => [
                 $this->getValidator()
-            )
-        );
+            ]
+        ];
     }
 }
