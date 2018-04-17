@@ -9,8 +9,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2018
- * @version 2018-2.4.0
+ * @date 17 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -272,7 +272,7 @@ class Calendar extends AbstractSbmTable
                 $aPermanences[DateLib::formatDateFromMysql($row->dateFin)] = $commune;
                 $aPermanences[DateLib::formatDateFromMysql($row->echeance)] = $commune;
             }
-            $aPermanences = array_flip($aPermanences);
+            $aPermanences = array_keys($aPermanences);
             if (count($aTmp) == 1) {
                 $result[] = "$commune le " . $aPermanences[0];
             } else {
