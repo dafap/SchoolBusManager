@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 17 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
 
@@ -752,9 +752,9 @@ class EleveController extends AbstractActionController
                     } else {
                         try {
                             $majDistances->majDistancesDistrict($eleveId);
-                        } catch (Exception $e) {
+                        } catch (\Exception $e) {
                             die($e->getMessage());
-                        }                       
+                        }
                         // $this->flashMessenger()->addInfoMessage('majDistancesDistrict');
                     }
                 }
@@ -1077,7 +1077,10 @@ class EleveController extends AbstractActionController
             $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
             $this->db_manager->get('Sbm\Db\Table\Affectations')->deleteRecord($where);
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->deleteRecord($where);
-            $this->db_manager->get('Sbm\Db\Table\Eleves')->deleteRecord($args['eleveId']);
+            try {
+                $this->db_manager->get('Sbm\Db\Table\Eleves')->deleteRecord(
+                    $args['eleveId']);
+            } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {}
             $this->flashMessenger()->addSuccessMessage('L\'inscription a été supprimée.');
             return $this->redirect()->toRoute('sbmgestion/eleve', 
                 [
