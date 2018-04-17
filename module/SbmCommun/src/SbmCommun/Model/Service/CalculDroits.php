@@ -20,7 +20,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
+ * @date 15 avr. 2018
  * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Service;
@@ -118,6 +118,7 @@ class CalculDroits implements FactoryInterface
             $scolarite->etablissementId);
         $destination = new Point($etablissement->x, $etablissement->y);
         $destination->setAttribute('etablissementId', $etablissement->etablissementId);
+        $destination->setAttribute('classeId', $scolarite->classeId);
         $destination->setAttribute('communeId', $etablissement->communeId);
         $destination->setAttribute('statut', $etablissement->statut);
         $classe = $this->db_manager->get('Sbm\Db\Table\Classes')->getRecord(
@@ -137,12 +138,15 @@ class CalculDroits implements FactoryInterface
         $resp = $tResponsables->getRecord($elv->responsable1Id);
         $domiciles[0] = new Point($resp->x, $resp->y);
         $domiciles[0]->setAttribute('communeId', $resp->communeId);
+        $domiciles[0]->setDistance($scolarite->distanceR1);
         // résidence du 2e responsable
         $tmp = $elv->responsable2Id;
-        if (! empty($tmp)) {
+        $r2 = ! empty($tmp);
+        if ($r2) {
             $resp = $tResponsables->getRecord($elv->responsable2Id);
             $domiciles[1] = new Point($resp->x, $resp->y);
             $domiciles[1]->setAttribute('communeId', $resp->communeId);
+            $domiciles[1]->setDistance($scolarite->distanceR2);
         }
         // résidence de l'élève. Cette résidence remplace la résidence du 1er responsable
         $tmp1 = $scolarite->chez;
@@ -152,45 +156,50 @@ class CalculDroits implements FactoryInterface
         if (! empty($tmp1) && ! empty($tmp2) && ! empty($tmp3) && ! empty($tmp4)) {
             $domiciles[0] = new Point($scolarite->x, $scolarite->y);
             $domiciles[0]->setAttribute('communeId', $scolarite->communeId);
+            // la distance à cette résidence est indiquée dans $scolarite->distanceR1
+            // et est déjà initialisée dans $domiciles[0]
         }
+        // Les distances seront mises à jour si elles sont vides (ou 0) ou égales à 99
+        // sinon, elles seront inchangées
         try {
             switch ($niveau) {
                 case 8:
                     // lycée
-                    $distances = $this->oDistanceMatrix->plusieursOriginesUneDestination(
-                        $domiciles, $destination);
-                    $j = 1;
-                    foreach ($distances as $distance) {
-                        $this->distance['R' . $j ++] = round($distance / 1000, 1);
-                    }
-                    // dans tous les cas, l'élève est dans le district du lycée
-                    return true;
+                    $result = [
+                        'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
+                            $domiciles, $destination),
+                        'droit' => true
+                    ];
                     break;
                 case 4:
                     // collège
                     $result = $this->domicilesCollege($domiciles, $destination);
-                    $j = 1;
-                    foreach ($result['distances'] as $distance) {
-                        $this->distance['R' . $j ++] = round($distance / 1000, 1);
-                    }
-                    return $result['droit'];
                     break;
                 default:
                     // école
                     $result = $this->domicilesEcole($niveau, $domiciles, $destination);
-                    $j = 1;
-                    foreach ($result['distances'] as $distance) {
-                        $this->distance['R' . $j ++] = round($distance / 1000, 1);
-                    }
-                    return $result['droit'];
                     break;
             }
+            // on récupère la distance donnée par distanceMatrix
+            $j = 1;
+            foreach ($result['distances'] as $distance) {
+                $this->distance['R' . $j ++] = round($distance / 1000, 1);
+            }
+            // on rétablit la distance indiquée si elle est significative
+            $j = 1;
+            foreach ($domiciles as $domicile) {
+                $distanceActuelle = (float) $domicile->getDistance();
+                if ($distanceActuelle != 99 && ! empty($distanceActuelle)) {
+                    $this->distance['R' . $j ++] = $distanceActuelle;
+                }
+            }
+            return $result['droit'];
         } catch (GoogleMaps\ExceptionNoAnswer $e) {
-            // GoogleMaps API ne répond pas : on fait confiance et on met les distances à 99
-            $this->distance = [
-                'R1' => 99.0,
-                'R2' => 99.0
-            ];
+            // GoogleMaps API ne répond pas : on rétablit la distance indiquée
+            $j = 1;
+            foreach ($domiciles as $domicile) {
+                $this->distance['R' . $j ++] = $domicile->getDistance();
+            }
             return true;
         } catch (\Exception $e) {
             return false;
@@ -199,15 +208,17 @@ class CalculDroits implements FactoryInterface
 
     /**
      * Les Point $domiciles ont pour attribut communeId
-     * Le Point $college a pour attribut son etablissementId, sa communeId et son statut.
+     * Le Point $college a pour attribut etablissementId, classeId, communeId et statut.
      *
+     * Pour le public, collège du secteur scolaire de la commune du domicile
+     * Pour le privé, collège de la commune le plus proche ou collège le plus proche
      *
      * @param array(Point) $domiciles            
      * @param Point $college            
      *
      * @return array tableau associatif de la forme ['droit' => boolean, 'distances' => []]
      */
-    private function domicilesCollege($dominciles, $college)
+    private function domicilesCollege($domiciles, $college)
     {
         $droit = false;
         $where = new Where();
@@ -232,16 +243,13 @@ class CalculDroits implements FactoryInterface
                     $domiciles, $college)
             ];
         } else {
-            // collège privé : est-il d'une commune de résidence de l'élève ?
+            // Le collège privé est-il de la commune d'un domicile ?
             $estDeLaCommune = false;
-            $origines = [];
-            $j = 0;
             foreach ($domiciles as $pt) {
                 $estDeLaCommune |= $pt->getAttribute('communeId') ==
                      $college->getAttribute('communeId');
-                $origines[$j ++] = $this->oDistanceMatrix->getLatLngFromParams($pt);
             }
-            // quels sont les établissements privés ?
+            // liste des collèges privés
             $tClg = $this->db_manager->get('Sbm\Db\Table\Etablissements');
             $where->equalTo('statut', 0)->equalTo('niveau', 4);
             if ($estDeLaCommune) {
@@ -256,55 +264,29 @@ class CalculDroits implements FactoryInterface
                         $domiciles, $college)
                 ];
             } else {
+                $droit = false;
+                // on initialise $distances afin d'éviter une décalage si la réponse de distanceMatrix
+                // est invalide pour le premier domicile ($element->status != OK).
+                $distances = [
+                    0
+                ];
+                // tableau de Point
+                $aDestinations = [];
                 // il y en a plusieurs, recherche du collège privé le plus proche
                 foreach ($rowset as $clg) {
                     $pt = new Point($clg->x, $clg->y);
-                    $aDestinations[] = $p;
-                    $aEtablissementId[] = $clg->etablissementId;
+                    $pt->setAttribute('etablissementId', $clg->etablissementId);
+                    $aDestinations[] = $pt;
                 }
-                $url = $this->oDistanceMatrix->getUrlGoogleApiDistanceMatrix($origines, 
-                    $aDestinations);
-                $obj = json_decode(@file_get_contents($url));
-                if ($obj) {
-                    if ($obj->status == 'OK') {
-                        $distances = [];
-                        $i = 0;
-                        foreach ($obj->rows as $row) {
-                            $dmin = 1e+11;
-                            $procheEtablissementId = '';
-                            $j = 0;
-                            foreach ($row->elements as $element) {
-                                if ($element->status == 'OK') {
-                                    if ($aEtablissementId[$j] ==
-                                         $college->getAttribute('etablissementId')) {
-                                        $distances[$i] = $element->distance->value;
-                                    }
-                                    if ($dmin > $element->distance->value) {
-                                        $dmin = $element->distance->value;
-                                        $procheEtablissementId = $aEtablissementId[$j];
-                                    }
-                                }
-                                $j ++;
-                            }
-                            $droit |= $college->getAttribute('etablissementId') ==
-                                 $procheEtablissementId;
-                        }
-                        return [
-                            'droit' => $droit,
-                            'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
-                                $domiciles, $college)
-                        ];
-                    }
-                } else {
-                    throw new GoogleMaps\ExceptionNoAnswer('GoogleMaps API ne répond pas.');
-                }
+                // calcul des distances (plusieurs origines, plusieurs destinations)
+                return $this->fncDistanceMatrix($college, $domiciles, $aDestinations);
             }
         }
     }
 
     /**
      * Les Point $domiciles ont pour attribut communeId
-     * Le Point $ecole a pour attribut son etablissementId, sa communeId et son statut.
+     * Le Point $ecole a pour attribut etablissementId, classeId, communeId et statut.
      *
      * Pour le public, école publique de la commune la plus proche ou école publique la plus proche
      * Pour le privé, école privée de la commune la plus proche ou école privée la plus proche
@@ -318,27 +300,125 @@ class CalculDroits implements FactoryInterface
     private function domicilesEcole($niveau, $domiciles, $ecole)
     {
         $droit = false;
-        $distances = [];
-        $origines = [];
+        // on initialise $distances afin d'éviter une décalage si la réponse de distanceMatrix
+        // est invalide pour le premier domicile ($element->status != OK).
+        $distances = [
+            0
+        ];
         // L'école est-elle de la commune d'un domicile ?
         $estDeLaCommune = false;
-        $j = 0;
+        $tRpiCommunes = $this->db_manager->get('Sbm\Db\Table\RpiCommunes');
+        $communesEcole = $tRpiCommunes->getCommuneIds($ecole->getAttribute('communeId'));
         foreach ($domiciles as $pt) {
-            $estDeLaCommune |= $pt->getAttribute('communeId') ==
-                 $ecole->getAttribute('communeId');
+            foreach ($communesEcole as $communeId) {
+                $estDeLaCommune |= $pt->getAttribute('communeId') == $communeId;
+            }
         }
         // liste des écoles ayant le statut de l'$ecole
         if ($estDeLaCommune) {
-            $structure = $this->prepareListeEcolesZone($niveau, 
-                $ecole->getAttribute('statut'), $ecole->getAttribute('communeId'));
+            $aDestinations = $this->prepareListeEcolesZone($niveau, 
+                $ecole->getAttribute('statut'), $communesEcole);
         } else {
-            $structure = $this->prepareListeEcolesZone($niveau, 
+            $aDestinations = $this->prepareListeEcolesZone($niveau, 
                 $ecole->getAttribute('statut'));
         }
         // calcul des distances (plusieurs origines, plusieurs destinations)
+        return $this->fncDistanceMatrix($ecole, $domiciles, $aDestinations);
+    }
+
+    /**
+     * Cette méthode construit une structure donnant un tableau de Points des établissements
+     * avec en attribut : etablissementId, communeId, statut
+     *
+     * @param int $niveau            
+     * @param int $statut            
+     * @param array|string|null $communeId            
+     *
+     * @return array tableau de Point
+     */
+    private function prepareListeEcolesZone($niveau, $statut = null, $communeId = null)
+    {
+        $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
+        $result = [];
+        foreach ($tEtablissements->getEcoles($niveau, $statut, $communeId) as $ecole) {
+            $pt = new Point($ecole->x, $ecole->y);
+            $pt->setAttribute('communeId', $ecole->communeId);
+            $pt->setAttribute('etablissementId', $ecole->etablissementId);
+            $pt->setAttribute('statut', $ecole->statut);
+            $result[] = $pt;
+        }
+        return $result;
+    }
+
+    /**
+     * Renvoie $etablissement si l'établissement n'est pas dans un RPI ou si la classeId
+     * est assurée dans cet établissement
+     * sinon, renvoi l'identifiant de l'établissement du RPI qui assure cette classe
+     *
+     * @param int $etablissementId            
+     * @param int $classeId            
+     *
+     * @return boolean|int
+     */
+    private function getEtablissementId($etablissementId, $classeId)
+    {
+        $tRpiEtablissements = $this->db_manager->get('Sbm\Db\Table\RpiEtablissements');
         try {
-            $url = $this->oDistanceMatrix->getUrlGoogleApiDistanceMatrix($domiciles, 
-                $structure['aDestinations']);
+            $rpiId = $tRpiEtablissements->getRpiId($etablissementId);
+            $tRpiClasses = $this->db_manager->get('Sbm\Db\Table\RpiClasses');
+            try {
+                $tRpiClasses->getRecord(
+                    [
+                        'classeId' => $classeId,
+                        'etablissementId' => $etablissementId
+                    ]);
+                return $etablissementId;
+            } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                // il faut chercher quel établissement du RPI assure cette classe
+                $resultset = $tRpiEtablissements->fetchAll(
+                    [
+                        'rpiId' => $rpiId
+                    ]);
+                foreach ($resultset as $row) {
+                    try {
+                        $tRpiClasses->getRecord(
+                            [
+                                'classeId' => $classeId,
+                                'etablissementId' => $row->etablissementId
+                            ]);
+                        return $row->etablissementId;
+                    } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {}
+                }
+                $msg = sprintf(
+                    'Cette classe (classeId = %d) n\'est pas assurée dans ce RPI (rpiId = %d).', 
+                    $classeId, $rpiId);
+                throw new Exception($msg);
+            }
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            return $etablissementId;
+        } catch (\Exception $e) {
+            die(var_dump(__METHOD__, $e->getMessage(), $e->getTraceAsString()));
+        }
+    }
+
+    /**
+     * distanceMatrix, plusieurs origines, plusieurs destinations
+     *
+     * @param Point $etablissement            
+     * @param array(Point) $aOrigines            
+     * @param array(Point) $aDestinations            
+     */
+    private function fncDistanceMatrix($etablissement, $aOrigines, $aDestinations)
+    {
+        $droit = false;
+        // on initialise $distances afin d'éviter une décalage si la réponse de distanceMatrix
+        // est invalide pour la première origine ($element->status != OK).
+        $distances = [
+            0
+        ];
+        try {
+            $url = $this->oDistanceMatrix->getUrlGoogleApiDistanceMatrix($aOrigines, 
+                $aDestinations);
             $obj = json_decode(@file_get_contents($url));
             if ($obj) {
                 if ($obj->status == 'OK') {
@@ -349,67 +429,47 @@ class CalculDroits implements FactoryInterface
                         $j = 0;
                         foreach ($row->elements as $element) {
                             if ($element->status == 'OK') {
-                                if ($structure['aEtablissements'][$j]['etablissementId'] ==
-                                     $ecole->getAttribute('etablissementId')) {
+                                // on récupère la distance entre le domicile et l'ecole
+                                if ($aDestinations[$j]->getAttribute('etablissementId') ==
+                                     $etablissement->getAttribute('etablissementId')) {
                                     $distances[$i] = $element->distance->value;
                                 }
+                                // on met à jour la distance minimale $dmin
+                                // et on mémorise l'établissement le plus proche
                                 if ($dmin > $element->distance->value) {
                                     $dmin = $element->distance->value;
-                                    $procheEtablissementId = $structure['aEtablissements'][$j]['etablissementId'];
+                                    $procheEtablissementId = $aDestinations[$j]->getAttribute(
+                                        'etablissementId');
                                 }
                             }
                             $j ++;
                         }
-                        $droit |= $ecole->getAttribute('etablissementId') ==
+                        // le droit est accordé pour l'établissement le plus proche
+                        // ou pour l'établissement du même RPI s'il fait partie d'un RPI
+                        // et si la classe n'est pas ouverte dans l'établissement le plus
+                        // proche
+                        $procheEtablissementId = $this->getEtablissementId(
+                            $procheEtablissementId, 
+                            $etablissement->getAttribute('classeId'));
+                        $droit |= $etablissement->getAttribute('etablissementId') ==
                              $procheEtablissementId;
+                        $i ++;
                     }
                     return [
                         'droit' => $droit,
-                        'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
-                            $domiciles, $ecole)
+                        'distances' => $distances
                     ];
                 } else {
-                    throw new Exception(
+                    throw new GoogleMaps\Exception(
                         'La requête sur GoogleMaps n\'a pas permis de calculer les distances.');
                 }
             } else {
                 throw new GoogleMaps\ExceptionNoAnswer('GoogleMaps API ne répond pas.');
             }
         } catch (\Exception $e) {
-            throw new \Exception('Calcule de distances impossible dans ' . __METHOD__, 0, 
+            throw new \Exception('Calcul de distances impossible dans ' . __METHOD__, 0, 
                 $e);
         }
-    }
-
-    /**
-     * Cette méthode construit une structure donnant un tableau 'aDestinations' des Points
-     * des établissements et d'autre part un tableau 'aEtablissements' des établissements
-     * [etablissementId, communeId, statut] rangés dans le même ordre que les 'aDestinations'
-     *
-     * @param int $niveau            
-     * @param int $statut            
-     * @param string $communeId            
-     *
-     * @return array tableau associatif dont les clés sont 'aEtablissements' et ''
-     */
-    private function prepareListeEcolesZone($niveau, $statut = null, $communeId = null)
-    {
-        $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
-        $result = [
-            'aEtablissements' => [],
-            'aDestinations' => []
-        ];
-        foreach ($tEtablissements->getEcoles($niveau, $statut, $communeId) as $ecole) {
-            $p = new Point($ecole->x, $ecole->y);
-            $p->setAttribute('communeId', $ecole->communeId);
-            $result['aEtablissements'][] = [
-                'etablissementId' => $ecole->etablissementId,
-                'communeId' => $ecole->communeId,
-                'statut' => $ecole->statut
-            ];
-            $result['aDestinations'][] = $p;
-        }
-        return $result;
     }
 
     /**

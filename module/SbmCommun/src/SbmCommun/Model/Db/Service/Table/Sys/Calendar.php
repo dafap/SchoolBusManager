@@ -9,7 +9,7 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
+ * @date 12 avr. 2018
  * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
@@ -225,6 +225,7 @@ class Calendar extends AbstractSbmTable
         $dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin);
         $echeance = DateTime::createFromFormat('Y-m-d', $row->echeance);
         $aujourdhui = new DateTime();
+        //die(var_dump($aujourdhui, $dateDebut, $dateFin, $echeance));
         if ($aujourdhui < $dateDebut) {
             return [
                 'etat' => 0,
@@ -232,7 +233,7 @@ class Calendar extends AbstractSbmTable
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
             ];
-        } elseif ($aujourdhui > $dateFin) {
+        } elseif ($aujourdhui > max($dateFin, $echeance)) {
             return [
                 'etat' => 2,
                 'dateDebut' => $dateDebut,
@@ -263,10 +264,32 @@ class Calendar extends AbstractSbmTable
             $where->like('libelle', "%$commune%");
         }
         $resultset = $this->fetchAll($where, 'rang');
+        $aPermanences = [];
         $result = [];
-        foreach ($resultset as $row) {
-            $result[] = $row->description . ' ' .
-                 DateLib::formatDateFromMysql($row->echeance);
+        if (! empty($commune)) {
+            foreach ($resultset as $row) {
+                $aPermanences[DateLib::formatDateFromMysql($row->dateDebut)] = $commune;
+                $aPermanences[DateLib::formatDateFromMysql($row->dateFin)] = $commune;
+                $aPermanences[DateLib::formatDateFromMysql($row->echeance)] = $commune;
+            }
+            $aPermanences = array_flip($aPermanences);
+            if (count($aTmp) == 1) {
+                $result[] = "$commune le " . $aPermanences[0];
+            } else {
+                $result[] = "$commune les " . implode(', ', $aPermanences);
+            }
+        } else {
+            foreach ($resultset as $row) {
+                $commune = $row->description;
+                $aPermanences[$row->dateDebut][$commune] = $commune;
+                $aPermanences[$row->dateFin][$commune] = $commune;
+                $aPermanences[$row->echeance][$commune] = $commune;
+            }
+            ksort($aPermanences);
+            foreach ($aPermanences as $date => $liste) {                
+                $result[] = DateLib::formatDateFromMysql($date) . " : " . implode(', ', $liste);
+            }
+            
         }
         return $result;
     }

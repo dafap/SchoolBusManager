@@ -14,21 +14,21 @@
  */
 return array(
     array(
-        'tarifId' => 1, 
-        'selection' => 0, 
-        'montant' => 50.00, 
-        'nom' => 'Tarif annuel', 
-        'rythme' => 1, 
-        'grille' => 1, 
-        'mode' => 3, 
+        'tarifId' => 1,
+        'selection' => 0,
+        'montant' => 50.00,
+        'nom' => 'Tarif annuel',
+        'rythme' => 1,
+        'grille' => 1,
+        'mode' => 3
     ),
     array(
-        'tarifId' => 2, 
-        'selection' => 0, 
-        'montant' => 15.00, 
-        'nom' => 'Duplicata de carte', 
-        'rythme' => 1, 
-        'grille' => 2, 
-        'mode' => 3, 
-    ),
+        'tarifId' => 2,
+        'selection' => 0,
+        'montant' => 15.00,
+        'nom' => 'Duplicata de carte',
+        'rythme' => 1,
+        'grille' => 2,
+        'mode' => 3
+    )
 );

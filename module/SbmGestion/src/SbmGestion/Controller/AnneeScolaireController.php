@@ -34,9 +34,8 @@ class AnneeScolaireController extends AbstractActionController
             return $prg;
         }
         $simulation_vide = $this->db_manager->get('Sbm\Db\Table\Scolarites')->isEmptyMillesime(
-            self::SIMULATION) &&
-             $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(
-                self::SIMULATION);
+            self::SIMULATION) && $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(
+            self::SIMULATION);
         
         return new ViewModel(
             [
@@ -82,7 +81,18 @@ class AnneeScolaireController extends AbstractActionController
                         'millesime' => $millesime
                     ]);
             }
-            $form->setData($request->getPost());
+            // compléter les dates si nécessaire
+            $args = $request->getPost();
+            if (empty($args['dateFin']['day']) || empty($args['dateFin']['month']) ||
+                 empty($args['dateFin']['year'])) {
+                $args['dateFin'] = $args['dateDebut'];
+            }
+            if (empty($args['echeance']['day']) || empty($args['echeance']['month']) ||
+                 empty($args['echeance']['year'])) {
+                $args['echeance'] = $args['dateFin'];
+            }
+            // validation des données
+            $form->setData($args);
             if ($form->isValid()) { // controle le csrf
                 $table_calendar->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage(

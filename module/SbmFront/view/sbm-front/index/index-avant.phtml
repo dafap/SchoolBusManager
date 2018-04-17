@@ -1,0 +1,169 @@
+<?php
+/**
+ * Page d'accueil avant la période d'inscription
+ *
+ *
+ * @project sbm
+ * @package module/SbmFront
+ * @filesource view/sbm-front/index/index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 12 avr. 2018
+ * @version 2018-2.4.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
+$this->headScript()->captureStart();
+?>
+$(document).ready(function($){
+$("#help-delai").on("click", function(){
+	$("#help-delai").hide();
+    $("#help-delai-content").show();
+});
+$("#help-delai-content").on("click", function(){
+	$("#help-delai-content").hide();
+	$("#help-delai").show();
+});
+$("#help-autre").on("click", function(){
+	$("#inscription").hide();
+    $("#help-autre-content").show();
+});
+$("#help-retour").on("click", function(){
+	$("#help-autre-content").hide();
+	$("#inscription").show();
+});
+});
+<?php
+$this->headScript()->captureEnd();
+
+$url_gestion = $this->url('sbmgestion');
+$url_install = $this->url('sbminstall');
+$url_admin = $this->url('sbmadmin');
+$url_carte = $this->url('sbmcarte', [
+    'action' => 'etablissements'
+]);
+
+$communes_membres = implode(', ', $this->communes_membres);
+
+$format = <<<EOT
+<p class="premiere">La période d'inscription %s sera ouverte du %s au %s.
+    <div id="help-delai" class="orange cursor-help"><i>Cas particulier pour les élèves en 
+    attente d'orientation scolaire</i> <i class="fam-help"></i></div></p>
+<p id="help-delai-content" class="info cursor-zoom-out" style="display: none;">
+    <i class="fam-cancel"></i> Un délai supplémentaire sera accordé jusqu’au %s pour 
+    les élèves en attente d’orientation scolaire. Passé ce délai, les inscriptions retardataires 
+    ne pourront être traitées qu’à la rentrée et dans la limite des places disponibles dans les 
+    véhicules.</p>
+<p>Durant cette période, vous pourrez inscrire depuis ce site vos enfants s'ils sont à la fois 
+    domicilié et scolarisé dans l’une des %d communes de %s: %s.</p>
+<div id="inscription">
+<span id="help-autre" class="orange cursor-help"><i>Pour les autres cas, cliquez ici pour obtenir 
+    des informations</i> <i class="fam-help"></i></span>
+<p>Si votre enfant était déjà inscrit au transport scolaire l’an dernier, vos coordonnées seront 
+conservées sur ce site, vous n’aurez plus qu’à modifier la classe et l’établissement si besoin.</p> 
+<p>Vous accèderez à votre dossier à l’aide de votre adresse mail qui est votre identifiant.</p>
+<p>Les inscriptions ne seront définitives qu’après paiement de la carte de transport.
+Les paiements pouront se faire:</p>
+<ul>
+<li>par carte bancaire sur ce site pour recevoir la carte de transport scolaire par courrier</li>
+<li>par chèque ou espèces à la Communauté de communes lors des permanences (9h-12h30 et 13h30-17h30) 
+    organisées par date pour les habitants de : 
+<ul>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+</ul>La carte de transport sera donnée sur place.
+</li>
+</ul>
+</div>
+<div id="help-autre-content" style="display: none;">
+<p>Cas particulier des élèves limitrophes domiciliés à Rulhe-Auzits, Grand-Vabre et dans le 
+    Cantal et scolarisés dans l’une des %d communes : l’inscription sur ce site ne sera pas disponible, 
+    vous devrez contacter le service transport qui prendra votre inscription :</p> 
+<div class="centre">
+Tél : %s<br>
+Mail : %s</br>
+%s – %s – %s – %s %s
+</div>
+<p>Si votre enfant est scolarisé en dehors des %d communes, vous devrez vous inscrire auprès 
+    du service Régional des transports de l’Aveyron à l’adresse : <a href="%s">%s</a></p>
+<span id="help-retour" class="orange cursor-zoom-out"><i class="fam-cancel"></i> 
+    <i>Retour à la page précédente</i></span>
+</div>
+EOT;
+
+$msg = sprintf($format,
+    $this->as,
+    $this->etat['dateDebut']->format('d/m/Y'),
+    $this->etat['dateFin']->format('d/m/Y'),
+    $this->etat['echeance']->format('d/m/Y'),
+    count($this->communes_membres),
+    $this->client['name'],
+    $communes_membres,
+    $this->permanences[0],
+    $this->permanences[1],
+    $this->permanences[2],
+    $this->permanences[3],
+    $this->permanences[4],
+    count($this->communes_membres),
+    $this->telephone($this->client['telephone']),
+    $this->client['email'],
+    $this->client['name'],
+    $this->client['adresse'][0],
+    $this->client['adresse'][1],
+    $this->client['code_postal'],
+    $this->client['commune'],
+    count($this->communes_membres),
+    $this->url_ts_region,
+    $this->url_ts_region
+    );
+
+?>
+<div class="table-page1">
+	<div class="row">
+		<div class="column1 compressed">
+			<div class="centre">
+				<h1>Transports scolaires</h1>
+				<h3 class="accueil">Inscription et paiement en ligne</h3>
+			</div>
+		    <?php echo $msg; ?>
+		</div>
+		<div class="column2">
+			<div class="vecartement-6px">
+		    <?php
+    echo $this->flashMessenger()->render('success');
+    echo $this->flashMessenger()->render('warning');
+    echo $this->flashMessenger()->render('error');
+    echo $this->flashMessenger()->render('info');
+    echo $this->flashMessenger()->render('default');
+    ?>
+		    </div>
+		    <?php echo $this->form()->openTag($this->form); ?>
+		    <fieldset class="sbm-page1">
+				<div class="centre">
+					<h3>Identifiez-vous</h3>
+					<div class="sbm-description">(si vous avez déjà créé votre compte)</div>
+				</div>	
+		    <?php echo $this->formRow($this->form->get('email')); ?>
+		    <br>
+		    <?php echo $this->formRow($this->form->get('mdp')); ?>
+		    <br>
+				<div class="centre"><?php echo $this->formSubmit($this->form->get('signin')); ?></div>
+				<div class="centre top-6px">
+					<a
+						href="<?php echo $this->url('login', ['action' => 'mdp-demande']); ?>">Mot
+						de passe oublié ?</a>
+				</div>
+			</fieldset>
+			<div class="vecartement-6px"></div>
+			<?php echo $this->form()->closeTag(); ?>
+			<div class="sbm-page1">
+				<a href="<?php echo $url_carte;?>"><img
+					alt="carte des établissements desservis"
+					src="img/logocarteetablissements.png"></a>
+			</div>
+		</div>
+	</div>
+</div>

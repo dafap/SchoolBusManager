@@ -26,7 +26,7 @@ return [
             'ordinal' => 'tinyint(3) NOT NULL',
             'nature' => 'varchar(4) NOT NULL',
             'rang' => 'tinyint(3) NOT NULL DEFAULT "1"',
-            'libelle' => 'varchar(30) NOT NULL',
+            'libelle' => 'varchar(64) NOT NULL',
             'description' => 'varchar(255) NOT NULL',
             'dateDebut' => 'date',
             'dateFin' => 'date',

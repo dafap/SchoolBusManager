@@ -9,7 +9,7 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
+ * @date 12 avr. 2018
  * @version 2018-2.4.0
  */
 namespace SbmFront\Controller\Service;
@@ -27,8 +27,16 @@ class IndexControllerFactory implements FactoryInterface
     {
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
+        $db_manager = $sm->get('Sbm\DbManager');
+        $tCommunes = $db_manager->get('Sbm\Db\Table\Communes');
+        $rows = $tCommunes->fetchAll(['membre' => 1], 'nom');
+        $aCommunes = [];
+        foreach ($rows as $c) {
+            $aCommunes[] = $c->nom;
+        }
         $config_controller = [
-            'db_manager' => $sm->get('Sbm\DbManager'),
+            'db_manager' => $db_manager,
+            'communes_membres' => $aCommunes,
             'login_form' => $sm->get(Login::class),
             'client' => StdLib::getParamR(
                 [
@@ -40,8 +48,13 @@ class IndexControllerFactory implements FactoryInterface
                     'sbm',
                     'layout',
                     'accueil'
+                ], $config_application),
+             'url_ts_region' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'ts-region'
                 ], $config_application)
-        ];
+       ];        
         return new IndexController($config_controller);
     }
 }
