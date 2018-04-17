@@ -20,8 +20,8 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2018
- * @version 2018-2.4.0
+ * @date 17 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Service;
 
@@ -103,10 +103,11 @@ class CalculDroits implements FactoryInterface
      * 3/ l'élève est scolarisé dans un établissement autorisé pour son adresse personnelle
      *
      * @param int $eleveId            
+     * @param bool $gardeDistance            
      *
      * @return boolean
      */
-    private function distancesDistrict($eleveId)
+    private function distancesDistrict($eleveId, $gardeDistance = true)
     {
         // scolarisation
         $scolarite = $this->tScolarites->getRecord(
@@ -185,12 +186,14 @@ class CalculDroits implements FactoryInterface
             foreach ($result['distances'] as $distance) {
                 $this->distance['R' . $j ++] = round($distance / 1000, 1);
             }
-            // on rétablit la distance indiquée si elle est significative
-            $j = 1;
-            foreach ($domiciles as $domicile) {
-                $distanceActuelle = (float) $domicile->getDistance();
-                if ($distanceActuelle != 99 && ! empty($distanceActuelle)) {
-                    $this->distance['R' . $j ++] = $distanceActuelle;
+            if ($gardeDistance) {
+                // on rétablit la distance indiquée si elle est significative
+                $j = 1;
+                foreach ($domiciles as $domicile) {
+                    $distanceActuelle = (float) $domicile->getDistance();
+                    if ($distanceActuelle != 99 && ! empty($distanceActuelle)) {
+                        $this->distance['R' . $j ++] = $distanceActuelle;
+                    }
                 }
             }
             return $result['droit'];
@@ -476,11 +479,12 @@ class CalculDroits implements FactoryInterface
      * Méthode à utiliser en début d'année ou en cours d'année s'il n'y a pas de changement d'établissement scolaire.
      * Cette méthode permet de ne pas perdre les droits acquis en cours d'année.
      *
-     * @param int $eleveId            
+     * @param int $eleveId      
+     * @param bool $gardeDistance      
      */
-    public function majDistancesDistrictSansPerte($eleveId)
+    public function majDistancesDistrictSansPerte($eleveId, $gardeDistance = true)
     {
-        if ($this->distancesDistrict($eleveId)) {
+        if ($this->distancesDistrict($eleveId, $gardeDistance)) {
             $oData = $this->tScolarites->getObjData();
             $oData->exchangeArray(
                 [
@@ -497,12 +501,13 @@ class CalculDroits implements FactoryInterface
     /**
      * Méthode à utiliser s'il y a changement d'établissement scolaire en cours d'année.
      *
-     * @param int $eleveId            
+     * @param int $eleveId   
+     * @param bool $gardeDistance         
      */
-    public function majDistancesDistrict($eleveId)
+    public function majDistancesDistrict($eleveId, $gardeDistance = true)
     {
         // à faire au début puisque la méthode met aussi à jour la propriété 'distance'
-        $district = $this->distancesDistrict($eleveId);
+        $district = $this->distancesDistrict($eleveId, $gardeDistance);
         $oData = $this->tScolarites->getObjData();
         $oData->exchangeArray(
             [
