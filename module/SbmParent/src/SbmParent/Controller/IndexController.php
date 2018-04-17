@@ -15,8 +15,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 17 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmParent\Controller;
 
@@ -90,9 +90,9 @@ class IndexController extends AbstractActionController
                         implode(' ; ', 
                             array_filter(
                                 [
-                                    $responsable->telephoneF,
-                                    $responsable->telephoneP,
-                                    $responsable->telephoneT
+                                    implode(' ', str_split($responsable->telephoneF, 2)),
+                                    implode(' ', str_split($responsable->telephoneP, 2)),
+                                    implode(' ', str_split($responsable->telephoneT, 2))
                                 ]))
                     ])
             ]);
@@ -164,7 +164,7 @@ class IndexController extends AbstractActionController
                 if ($outils->saveScolarite($data, $eleveId)) {
                     $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
                         'Sbm\CalculDroitsTransport');
-                    $majDistances->majDistancesDistrict($eleveId);
+                    $majDistances->majDistancesDistrict($eleveId, false);
                 }
                 if ($args['fa']) {
                     $this->flashMessenger()->addSuccessMessage('L\'enfant est inscrit.');
@@ -295,7 +295,7 @@ class IndexController extends AbstractActionController
                 if ($outils->saveScolarite($form->getData())) {
                     $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
                         'Sbm\CalculDroitsTransport');
-                    $majDistances->majDistancesDistrict($eleveId);
+                    $majDistances->majDistancesDistrict($eleveId, false);
                 }
                 Session::remove('responsable2', $this->getSessionNamespace());
                 Session::remove('post', $this->getSessionNamespace());
@@ -709,7 +709,7 @@ class IndexController extends AbstractActionController
                     if ($change_derogation || $change_etablissement) {
                         $majDistances = $this->local_manager->get(
                             'Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
-                        $majDistances->majDistancesDistrict($eleveId);
+                        $majDistances->majDistancesDistrict($eleveId, false);
                     }
                     // compte-rendu et nettoyage de la session
                     Session::remove('responsable2', $this->getSessionNamespace());

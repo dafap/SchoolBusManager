@@ -7,10 +7,12 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 17 avr. 2018
+ * @version 2018-2.4.1
  */
 use SbmBase\Model\DateLib;
+use SbmBase\Model\Session;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headLink()->prependStylesheet(
     $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
@@ -86,11 +88,16 @@ echo $this->flashMessenger()->render('default');
 <?php if ($nbInscrits == 0 && $nbPreinscrits == 0) : ?>
 <div id="parent-wrapper" class="explication">
 	<?php if ($etat == 0) :?>
-	<p>Vos enfants ne sont pas inscrits pour l'année scolaire prochaine.</p>
-	<p>Vous pourrez inscire vos enfants entre le <?php echo $this->etatSite['dateDebut']->format('d/m/Y');?> et le <?php echo $this->etatSite['dateFin']->format('d/m/Y');?>.</p>
+	<p>Vos enfants ne sont pas inscrits pour l'année scolaire <?= Session::get('as')['libelle'];?>.</p>
+	<p>Vous pourrez les inscire entre le <?= $this->etatSite['dateDebut']->format('d/m/Y');?> 
+	et le <?= $this->etatSite['dateFin']->format('d/m/Y');?> (ou jusqu'au 
+	<?= $this->etatSite['echeance']->format('d/m/Y');?> pour ceux qui sont en attente d'affectation).</p>
 	<?php elseif ($etat == 1) :?>
 	<p>Vous n'avez pas encore d'enfant inscrit.</p>
-	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez le paiement en ligne ou adressez votre paiment au service transport de <?php echo $this->client['name'];?> avant le <?php echo $dateLimite; ?> afin de recevoir votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
+	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires 
+	puis effectuez le paiement en ligne ou adressez votre paiment au service transport de 
+	<?php echo $this->client['name'];?> avant le <?php echo $dateLimite; ?> afin de recevoir 
+	votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
 	<ul>
     <?php foreach ($this->permanences as $row) :?>
         <li><?php echo "Pour les habitants de $row";?></li>
@@ -434,12 +441,15 @@ echo $this->flashMessenger()->render('default');
 		<div id="help-preinscrits-content" class="invisible">
 			<p>Vous pouvez :</p>
 			<ul>
-				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire avant le <?php echo $dateLimite;?>. Vous recevrez
-					alors la carte de transport par la poste.</li>
-				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à l'adresse ci-dessous avant le <?php echo $dateLimite;?>. 
-				Vous recevrez alors la carte de transport par la poste.</li>
-				<li>vous rendre à la Communauté de communes (pour les habitant de <?php echo $this->permanences[0];?>) 
-				pour payer en espèces ou par chèque et retirer la carte de transport.</li>
+				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire 
+				avant le <?php echo $dateLimite;?>. Vous recevrez alors la carte de transport 
+				par la poste.</li>
+				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à 
+				l'adresse ci-dessous avant le <?php echo $dateLimite;?>.  Vous recevrez alors 
+				la carte de transport par la poste.</li>
+				<li>vous rendre à la Communauté de communes (pour les habitant de 
+				<?php echo $this->permanences[0];?>) pour payer en espèces ou par chèque et 
+				retirer la carte de transport.</li>
 			</ul>
 			<div class="centre">   
 				<?php echo $this->client['name'];?><br>

@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "a77c1cbd1c1736217d0631e31a689024",
@@ -1652,32 +1652,32 @@
         },
         {
             "name": "zendframework/zend-authentication",
-            "version": "2.5.3",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-authentication.git",
-                "reference": "7a87aacf061e2bac25938a2df23cfce15cc27261"
+                "reference": "b55ffe6b72c69340f0e895cdcb04da322a74bb5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-authentication-2.5.3-d90838.zip",
-                "reference": "7a87aacf061e2bac25938a2df23cfce15cc27261",
-                "shasum": "939b1f1c634a2ce77a4689c3ec1b813c59222500"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-authentication-2.6.0-d1f6a6.zip",
+                "reference": "b55ffe6b72c69340f0e895cdcb04da322a74bb5c",
+                "shasum": "87967080daa18dd1bb536ad5882b1e73004ab47f"
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-stdlib": "^2.7.7 || ^3.1"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0",
-                "zendframework/zend-crypt": "^2.6",
-                "zendframework/zend-db": "^2.7",
-                "zendframework/zend-http": "^2.5.4",
-                "zendframework/zend-ldap": "^2.6",
-                "zendframework/zend-session": "^2.6.2",
-                "zendframework/zend-uri": "^2.5",
-                "zendframework/zend-validator": "^2.6"
+                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.2",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-crypt": "^2.6 || ^3.2.1",
+                "zendframework/zend-db": "^2.8.2",
+                "zendframework/zend-http": "^2.7",
+                "zendframework/zend-ldap": "^2.8",
+                "zendframework/zend-session": "^2.8",
+                "zendframework/zend-uri": "^2.5.2",
+                "zendframework/zend-validator": "^2.10.1"
             },
             "suggest": {
                 "zendframework/zend-crypt": "Zend\\Crypt component",
@@ -1691,8 +1691,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev",
-                    "dev-develop": "2.6-dev"
+                    "dev-master": "2.6.x-dev",
+                    "dev-develop": "2.7.x-dev"
                 }
             },
             "autoload": {
@@ -1701,20 +1701,49 @@
                 }
             },
             "autoload-dev": {
+                "files": [
+                    "test/autoload.php"
+                ],
                 "psr-4": {
                     "ZendTest\\Authentication\\": "test/"
                 }
+            },
+            "scripts": {
+                "check": [
+                    "@cs-check",
+                    "@test"
+                ],
+                "cs-check": [
+                    "phpcs"
+                ],
+                "cs-fix": [
+                    "phpcbf"
+                ],
+                "test": [
+                    "phpunit --colors=always"
+                ],
+                "test-coverage": [
+                    "phpunit --colors=always --coverage-clover clover.xml"
+                ]
             },
             "license": [
                 "BSD-3-Clause"
             ],
             "description": "provides an API for authentication and includes concrete authentication adapters for common use case scenarios",
-            "homepage": "https://github.com/zendframework/zend-authentication",
             "keywords": [
                 "authentication",
-                "zf2"
+                "zendframework",
+                "zf"
             ],
-            "time": "2016-02-28T15:02:34+00:00"
+            "support": {
+                "docs": "https://docs.zendframework.com/zend-authentication/",
+                "issues": "https://github.com/zendframework/zend-authentication/issues",
+                "source": "https://github.com/zendframework/zend-authentication",
+                "rss": "https://github.com/zendframework/zend-authentication/releases.atom",
+                "slack": "https://zendframework-slack.herokuapp.com",
+                "forum": "https://discourse.zendframework.com/c/questions/components"
+            },
+            "time": "2018-04-12T21:09:22+00:00"
         },
         {
             "name": "zendframework/zend-barcode",
@@ -2236,17 +2265,17 @@
         },
         {
             "name": "zendframework/zend-db",
-            "version": "2.9.2",
+            "version": "2.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-db.git",
-                "reference": "38279c54f05b09d74982a2ec8eda6954f83f5687"
+                "reference": "75b53109680711826a6e36ed1a6ced414f084b15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-db-2.9.2-6cb054.zip",
-                "reference": "38279c54f05b09d74982a2ec8eda6954f83f5687",
-                "shasum": "43a802fffe4bb745307899de712e1806f87de940"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-db-2.9.3-4abf61.zip",
+                "reference": "75b53109680711826a6e36ed1a6ced414f084b15",
+                "shasum": "63faca37d07a4831e1a8a4cad969c035a4368190"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -2285,7 +2314,8 @@
                     "test/autoload.php"
                 ],
                 "psr-4": {
-                    "ZendTest\\Db\\": "test/"
+                    "ZendTest\\Db\\": "test/unit",
+                    "ZendIntegrationTest\\Db\\": "test/integration"
                 }
             },
             "scripts": {
@@ -2300,10 +2330,13 @@
                     "phpcbf"
                 ],
                 "test": [
-                    "phpunit --colors=always"
+                    "phpunit --colors=always --testsuite \"unit test\""
                 ],
                 "test-coverage": [
                     "phpunit --colors=always --coverage-clover clover.xml"
+                ],
+                "test-integration": [
+                    "phpunit --colors=always --testsuite \"integration test\""
                 ],
                 "upload-coverage": [
                     "coveralls -v"
@@ -2326,7 +2359,7 @@
                 "slack": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2017-12-11T14:57:52+00:00"
+            "time": "2018-04-09T13:21:36+00:00"
         },
         {
             "name": "zendframework/zend-debug",
@@ -2518,17 +2551,17 @@
         },
         {
             "name": "zendframework/zend-dom",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-dom.git",
-                "reference": "8fed50de7900d8405566dc05194f4bff2f1013b6"
+                "reference": "d01f5c4d06e608e39ad992c68ae200bfee9215a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-dom-2.7.0-d5fc81.zip",
-                "reference": "8fed50de7900d8405566dc05194f4bff2f1013b6",
-                "shasum": "45d6c2dc92dd4f7723bd7f95a09907601fcf52b5"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-dom-2.7.1-033deb.zip",
+                "reference": "d01f5c4d06e608e39ad992c68ae200bfee9215a2",
+                "shasum": "daa258ab64dbdec1034e795e536e6ed9bfacb711"
             },
             "require": {
                 "php": "^5.6 || ^7.0"
@@ -2589,7 +2622,7 @@
                 "slack": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2018-03-27T21:03:04+00:00"
+            "time": "2018-04-09T20:18:00+00:00"
         },
         {
             "name": "zendframework/zend-escaper",
@@ -2872,29 +2905,32 @@
         },
         {
             "name": "zendframework/zend-filter",
-            "version": "2.7.2",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-filter.git",
-                "reference": "6fdae3368de8956268ddad80e937d5a112f702c9"
+                "reference": "64d840b838d378fb2c498db9ab97193d5f8517ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-filter-2.7.2-f1e2ce.zip",
-                "reference": "6fdae3368de8956268ddad80e937d5a112f702c9",
-                "shasum": "fbb073a6a3c25db33bb474a13329422b8779c518"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-filter-2.8.0-489cb4.zip",
+                "reference": "64d840b838d378fb2c498db9ab97193d5f8517ce",
+                "shasum": "816f1ca18b25e1bf5807b1ac117de8f9f3d290a6"
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-stdlib": "^2.7.7 || ^3.1"
+            },
+            "conflict": {
+                "zendframework/zend-validator": "<2.10.1"
             },
             "require-dev": {
-                "pear/archive_tar": "^1.4",
-                "phpunit/phpunit": "^6.0.10 || ^5.7.17",
+                "pear/archive_tar": "^1.4.3",
+                "phpunit/phpunit": "^5.7.23 || ^6.4.3",
                 "zendframework/zend-coding-standard": "~1.0.0",
-                "zendframework/zend-crypt": "^2.6 || ^3.0",
-                "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3",
-                "zendframework/zend-uri": "^2.5"
+                "zendframework/zend-crypt": "^3.2.1",
+                "zendframework/zend-servicemanager": "^2.7.8 || ^3.3",
+                "zendframework/zend-uri": "^2.6"
             },
             "suggest": {
                 "zendframework/zend-crypt": "Zend\\Crypt component, for encryption filters",
@@ -2905,8 +2941,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev",
-                    "dev-develop": "2.8-dev"
+                    "dev-master": "2.8.x-dev",
+                    "dev-develop": "2.9.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Filter",
@@ -2939,21 +2975,26 @@
                 ],
                 "test-coverage": [
                     "phpunit --colors=always --coverage-clover clover.xml"
-                ],
-                "upload-coverage": [
-                    "coveralls -v"
                 ]
             },
             "license": [
                 "BSD-3-Clause"
             ],
             "description": "provides a set of commonly needed data filters",
-            "homepage": "https://github.com/zendframework/zend-filter",
             "keywords": [
                 "filter",
-                "zf2"
+                "zendframework",
+                "zf"
             ],
-            "time": "2017-05-17T20:56:17+00:00"
+            "support": {
+                "docs": "https://docs.zendframework.com/zend-filter/",
+                "issues": "https://github.com/zendframework/zend-filter/issues",
+                "source": "https://github.com/zendframework/zend-filter",
+                "rss": "https://github.com/zendframework/zend-filter/releases.atom",
+                "slack": "https://zendframework-slack.herokuapp.com",
+                "forum": "https://discourse.zendframework.com/c/questions/components"
+            },
+            "time": "2018-04-11T16:20:04+00:00"
         },
         {
             "name": "zendframework/zend-form",
@@ -3531,17 +3572,17 @@
         },
         {
             "name": "zendframework/zend-log",
-            "version": "2.9.2",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-log.git",
-                "reference": "8bc2f55111c77308698c138621e82d293b5c2dc2"
+                "reference": "bba799e070d0650274ee9f8f0c8d4a97dfdc1cff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-log-2.9.2-0200d5.zip",
-                "reference": "8bc2f55111c77308698c138621e82d293b5c2dc2",
-                "shasum": "a0aac91ae81a29b5a7479d44590e74da08e8324c"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-log-2.10.0-7d177f.zip",
+                "reference": "bba799e070d0650274ee9f8f0c8d4a97dfdc1cff",
+                "shasum": "b0852244732930ee1fad3776378e2ef0064c544d"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -3560,7 +3601,7 @@
                 "zendframework/zend-escaper": "^2.5",
                 "zendframework/zend-filter": "^2.5",
                 "zendframework/zend-mail": "^2.6.1",
-                "zendframework/zend-validator": "^2.6"
+                "zendframework/zend-validator": "^2.10.1"
             },
             "suggest": {
                 "ext-mongo": "mongo extension to use Mongo writer",
@@ -3574,8 +3615,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9-dev",
-                    "dev-develop": "2.10-dev"
+                    "dev-master": "2.10.x-dev",
+                    "dev-develop": "2.11.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Log",
@@ -3612,9 +3653,6 @@
                 ],
                 "test-coverage": [
                     "phpunit --colors=always --coverage-clover clover.xml"
-                ],
-                "upload-coverage": [
-                    "coveralls -v"
                 ]
             },
             "license": [
@@ -3627,7 +3665,7 @@
                 "logging",
                 "zf2"
             ],
-            "time": "2017-05-17T16:03:26+00:00"
+            "time": "2018-04-09T21:59:51+00:00"
         },
         {
             "name": "zendframework/zend-mail",
@@ -5169,32 +5207,32 @@
         },
         {
             "name": "zendframework/zend-uri",
-            "version": "2.5.2",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-uri.git",
-                "reference": "f11dc4805ce7c4343f6b0f8a2572036f90214b24"
+                "reference": "29cc805c8fe7e3cf483923347a08f7c78278bdb4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-uri-2.5.2-210611.zip",
-                "reference": "f11dc4805ce7c4343f6b0f8a2572036f90214b24",
-                "shasum": "212be1d131cb699918b9c1b559b244e031763274"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-uri-2.6.0-39d9ab.zip",
+                "reference": "29cc805c8fe7e3cf483923347a08f7c78278bdb4",
+                "shasum": "a12bd2eed5a29cb131dce1871ab6d7d9796c2be7"
             },
             "require": {
-                "php": "^5.5 || ^7.0",
+                "php": "^5.6 || ^7.0",
                 "zendframework/zend-escaper": "^2.5",
                 "zendframework/zend-validator": "^2.5"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0"
+                "phpunit/phpunit": "^6.2.1 || ^5.7.15",
+                "zendframework/zend-coding-standard": "~1.0.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev",
-                    "dev-develop": "2.6-dev"
+                    "dev-master": "2.6.x-dev",
+                    "dev-develop": "2.7.x-dev"
                 }
             },
             "autoload": {
@@ -5207,6 +5245,24 @@
                     "ZendTest\\Uri\\": "test/"
                 }
             },
+            "scripts": {
+                "check": [
+                    "@cs-check",
+                    "@test"
+                ],
+                "cs-check": [
+                    "phpcs"
+                ],
+                "cs-fix": [
+                    "phpcbf"
+                ],
+                "test": [
+                    "phpunit --colors=always"
+                ],
+                "test-coverage": [
+                    "phpunit --colors=always --coverage-clover clover.xml"
+                ]
+            },
             "license": [
                 "BSD-3-Clause"
             ],
@@ -5216,7 +5272,7 @@
                 "uri",
                 "zf2"
             ],
-            "time": "2016-02-17T22:38:51+00:00"
+            "time": "2018-04-10T17:08:10+00:00"
         },
         {
             "name": "zendframework/zend-validator",

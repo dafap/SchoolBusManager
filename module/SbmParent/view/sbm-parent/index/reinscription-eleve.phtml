@@ -18,8 +18,8 @@
  * @filesource reinscription-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 17 avr. 2018
+ * @version 2018-2.4.1
  */
 if ($this->phase == 1) {
     $url_ajoutEleve = $this->url('sbmparent', 
@@ -118,9 +118,7 @@ EOT;
 function phraseDemandeR2(state) {
     var div=$("#demandeR2-text");
     if (div.length==0) {
-        $('#r2enfant_demandeR2 fieldset').append('
-<div id="demandeR2-text"></div>
-');
+        $('#r2enfant_demandeR2 fieldset').append('<div id="demandeR2-text"></div>');
     }
     div=$("#r2enfant_demandeR2 #demandeR2-text");
     if (state) {
@@ -159,9 +157,7 @@ $(function() {
 					$('#r2communeId').empty();
 					if (dataJson.success==1) {
 					    $.each(dataJson.data, function(k, d) {
-	                        $('#r2communeId').append('
-<option value="' + d + '">' + k + '</option>
-');
+	                        $('#r2communeId').append('<option value="' + d + '">' + k + '</option>');
 	                    });
 	                }
 				},
@@ -231,6 +227,7 @@ $(function() {
             $this->form->get('dateN')->getValue());
         $lignedate = '<div class="enfant-label">';
         $lignedate .= $this->form->get('dateN')->getLabel();
+        $lignedate .= '</div>';
         $lignedate .= $formatDateN;
     } else {
         $lignedate = $this->formRowDate($this->form->get('dateN'));
