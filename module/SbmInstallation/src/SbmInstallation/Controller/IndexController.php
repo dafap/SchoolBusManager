@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
+ * @date 19 avr. 2018
  * @version 2018-2.4.1
  */
 namespace SbmInstallation\Controller;
@@ -339,14 +339,13 @@ class IndexController extends AbstractActionController
             if (empty($descriptif)) {
                 $descriptif = [
                     'fname' => $descriptif['fname'],
-                    'label' => ($label = $config['administrer'][$descriptif['fname']]['label']),
+                    'label' => ($label = $this->img['administrer'][$descriptif['fname']]['label']),
                     'width' => $descriptif['width'],
                     'height' => $descriptif['height'],
                     'type' => $descriptif['type'],
                     'mime' => $descriptif['mime']
                 ];
             }
-            $config = $this->img;
             $form->setAttribute('action', 
                 $this->url()
                     ->fromRoute('sbminstall', 
