@@ -336,10 +336,11 @@ class IndexController extends AbstractActionController
         } else {
             $form->get('image-file')->setMessages([]);
             $descriptif = Session::get('post', [], $this->getSessionNamespace());
+            $label = $this->img['administrer'][$descriptif['fname']]['label'];
             if (empty($descriptif)) {
                 $descriptif = [
                     'fname' => $descriptif['fname'],
-                    'label' => ($label = $this->img['administrer'][$descriptif['fname']]['label']),
+                    'label' => $label,
                     'width' => $descriptif['width'],
                     'height' => $descriptif['height'],
                     'type' => $descriptif['type'],
