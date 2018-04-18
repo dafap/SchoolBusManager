@@ -9,20 +9,21 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmMailChimp\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use DrewM\MailChimp\MailChimp;
 use Zend\Http\Response;
+use Zend\Paginator\Paginator;
+use DrewM\MailChimp\MailChimp;
 use SbmBase\Model\StdLib;
+use SbmBase\Model\Session;
 use SbmCommun\Form\ButtonForm;
 use SbmMailChimp\Form;
 use SbmMailChimp\Model\Db\Service\Users;
-use Zend\Paginator\Paginator;
 use SbmMailChimp\Model\Paginator\Adapter\MailChimpAdapter;
 
 class IndexController extends AbstractActionController
@@ -89,7 +90,7 @@ class IndexController extends AbstractActionController
                 break;
                 break;
         }
-        $this->removeInSession('identifiant', $this->getSessionNamespace());
+        Session::remove('identifiant', $this->getSessionNamespace());
         return $this->redirect()->toRoute('sbmmailchimp', 
             [
                 'action' => $action
@@ -254,7 +255,7 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             $args = [
-                'id_liste' => $this->getFromSession('identifiant', false, 
+                'id_liste' => Session::get('identifiant', false, 
                     $this->getSessionNamespace())
             ];
             if ($args === false) {
@@ -263,7 +264,7 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('edit', $prg)) {
                 if (array_key_exists('id_liste', $prg)) {
-                    $this->setToSession('identifiant', $prg['id_liste'], 
+                    Session::set('identifiant', $prg['id_liste'], 
                         $this->getSessionNamespace());
                 } else {
                     return $this->retourListe();
@@ -376,7 +377,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, 
+            $args = Session::get('identifiant', false, 
                 $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
@@ -384,7 +385,7 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('fields', $prg)) {
-                    $this->setToSession('identifiant', 
+                    Session::set('identifiant', 
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name']
@@ -394,7 +395,7 @@ class IndexController extends AbstractActionController
                 return $this->retourListe();
             }
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                Session::get('identifiant', [], $this->getSessionNamespace()), 
                 $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
@@ -437,7 +438,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, 
+            $args = Session::get('identifiant', false, 
                 $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'fields-liste');
@@ -446,7 +447,7 @@ class IndexController extends AbstractActionController
             if (array_key_exists('edit', $prg)) {
                 if (array_key_exists('id_liste', $prg) &&
                      array_key_exists('merge_id', $prg)) {
-                    $this->setToSession('identifiant', 
+                    Session::set('identifiant', 
                         [
                             'id_liste' => $prg['id_liste'],
                             'merge_id' => $prg['merge_id']
@@ -735,7 +736,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, 
+            $args = Session::get('identifiant', false, 
                 $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
@@ -743,7 +744,7 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('segments', $prg)) {
-                    $this->setToSession('identifiant', 
+                    Session::set('identifiant', 
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name']
@@ -754,7 +755,7 @@ class IndexController extends AbstractActionController
             }
             // on s'assure que les 2 paramètres sont dans args (cas d'un retour)
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                Session::get('identifiant', [], $this->getSessionNamespace()), 
                 $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
@@ -940,7 +941,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, 
+            $args = Session::get('identifiant', false, 
                 $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'segments-liste');
@@ -949,7 +950,7 @@ class IndexController extends AbstractActionController
             if (array_key_exists('edit', $prg)) {
                 if (array_key_exists('id_liste', $prg) &&
                      array_key_exists('segment_id', $prg)) {
-                    $this->setToSession('identifiant', 
+                    Session::set('identifiant', 
                         [
                             'id_liste' => $prg['id_liste'],
                             'segment_id' => $prg['segment_id']
@@ -1100,7 +1101,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, 
+            $args = Session::get('identifiant', false, 
                 $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'segments-liste');
@@ -1108,7 +1109,7 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('id_liste', $prg) && array_key_exists('segment_id', $prg)) {
                 if (array_key_exists('members', $prg)) {
-                    $this->setToSession('identifiant', 
+                    Session::set('identifiant', 
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name'],
@@ -1125,7 +1126,7 @@ class IndexController extends AbstractActionController
             }
             // on s'assure que les 4 paramètres sont dans args
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                Session::get('identifiant', [], $this->getSessionNamespace()), 
                 $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
@@ -1167,7 +1168,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false, 
+            $args = Session::get('identifiant', false, 
                 $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
@@ -1175,7 +1176,7 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('members', $prg)) {
-                    $this->setToSession('identifiant', 
+                    Session::set('identifiant', 
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name']
@@ -1189,7 +1190,7 @@ class IndexController extends AbstractActionController
             }
             // on s'assure que les 2 paramètres sont dans args
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()), 
+                Session::get('identifiant', [], $this->getSessionNamespace()), 
                 $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);

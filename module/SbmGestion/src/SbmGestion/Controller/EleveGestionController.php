@@ -9,8 +9,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
 
@@ -46,10 +46,10 @@ class EleveGestionController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('criteres', []);
+            $args = Session::get('criteres', []);
         } else {
             $args = $prg;
-            $this->setToSession('criteres', $args);
+            Session::set('criteres', $args);
         }
         $form = new \Zend\Form\Form('criteres');
         $form->setAttribute('method', 'post');
@@ -123,7 +123,7 @@ class EleveGestionController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if (! $args) {
                 $this->flashMessenger()->addErrorMessage(
                     'Action formellement interdite !');
@@ -142,11 +142,11 @@ class EleveGestionController extends AbstractActionController
                     ]);
             }
             if ($args['op'] == 2 && array_key_exists('back', $args)) {
-                $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+                $args = Session::get('post', false, $this->getSessionNamespace());
             } else {
                 $postSession = $args;
                 unset($postSession['submit'], $postSession['back']);
-                $this->setToSession('post', $postSession, $this->getSessionNamespace());
+                Session::set('post', $postSession, $this->getSessionNamespace());
                 unset($postSession);
             }
         }
@@ -189,7 +189,7 @@ class EleveGestionController extends AbstractActionController
                             ]);
                     } else {
                         // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase 2. Pour le moment, mettre la décision en session
-                        $this->setToSession('decision', $decision);
+                        Session::set('decision', $decision);
                         $formDecision = new AffectationDecision($args['trajet'], 2);
                         $values_options1 = $this->db_manager->get(
                             'Sbm\Db\Select\Stations')->ouvertes();
@@ -208,7 +208,7 @@ class EleveGestionController extends AbstractActionController
                     $oData->exchangeArray($formDecision->getData());
                     $table->saveRecord($oData);
                     // on enregistre la décision qui est en session
-                    $decision = $this->getFromSession('decision');
+                    $decision = Session::get('decision');
                     $table = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                     $oData = $table->getObjData();
                     $oData->exchangeArray($decision);
@@ -541,9 +541,9 @@ class EleveGestionController extends AbstractActionController
         $vue = true;
         $args = (array) $prg;
         if (array_key_exists('origine', $args)) {
-            $this->setToSession('origine', $args['origine'], $this->getSessionNamespace());
+            Session::set('origine', $args['origine'], $this->getSessionNamespace());
         } else {
-            $args['origine'] = $this->getFromSession('origine', null, 
+            $args['origine'] = Session::get('origine', null, 
                 $this->getSessionNamespace());
         }
         if (array_key_exists('cancel', $args) || ! array_key_exists('eleveId', $args)) {

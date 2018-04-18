@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
 
@@ -82,7 +82,7 @@ class TransportController extends AbstractActionController
         if ($args instanceof Response)
             return $args;
         
-        $args['where']->equalTo('millesime', $this->getFromSession('millesime'));
+        $args['where']->equalTo('millesime', Session::get('millesime'));
         $auth = $this->authenticate->by('email');
         return new ViewModel(
             [
@@ -395,10 +395,10 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $circuitId = StdLib::getParam('circuitId', $args, - 1);
         if ($circuitId == - 1) {
@@ -413,7 +413,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query(
-                    $this->getFromSession('millesime'), 
+                    Session::get('millesime'), 
                     FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, 
                         false), 
                     [
@@ -743,16 +743,16 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $classeId = StdLib::getParam('classeId', $args, - 1);
         if ($classeId == - 1) {
@@ -766,7 +766,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
-                    $this->getFromSession('millesime'), FiltreEleve::byClasse($classeId), 
+                    Session::get('millesime'), FiltreEleve::byClasse($classeId), 
                     [
                         'nom',
                         'prenom'
@@ -840,7 +840,7 @@ class TransportController extends AbstractActionController
      */
     public function communeListeAction()
     {
-        // die(var_dump($this->getFromSession('post', 'vide', $this->getSessionNamespace())));
+        // die(var_dump(Session::get('post', 'vide', $this->getSessionNamespace())));
         $args = $this->initListe('communes');
         
         if ($args instanceof Response)
@@ -1035,16 +1035,16 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $communeId = StdLib::getParam('communeId', $args, - 1);
         if ($communeId == - 1) {
@@ -1058,7 +1058,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
-                    $this->getFromSession('millesime'), FiltreEleve::byCommune($communeId), 
+                    Session::get('millesime'), FiltreEleve::byCommune($communeId), 
                     [
                         'nom',
                         'prenom'
@@ -1369,16 +1369,16 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
         if ($etablissementId == - 1) {
@@ -1392,7 +1392,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
-                    $this->getFromSession('millesime'), 
+                    Session::get('millesime'), 
                     FiltreEleve::byEtablissement($etablissementId), 
                     [
                         'nom',
@@ -1682,7 +1682,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $etablissementId = $this->getFromSession('etablissementId', false, 
+            $etablissementId = Session::get('etablissementId', false, 
                 $this->getSessionNamespace());
         } else {
             $args = $prg;
@@ -1691,17 +1691,17 @@ class TransportController extends AbstractActionController
                 $cancel = true;
             } else {
                 $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
-                $this->setToSession('etablissementId', $etablissementId, 
+                Session::set('etablissementId', $etablissementId, 
                     $this->getSessionNamespace());
             }
         }
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         if ($etablissementId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
@@ -1743,7 +1743,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $serviceId = $this->getFromSession('serviceId', false, 
+            $serviceId = Session::get('serviceId', false, 
                 $this->getSessionNamespace());
         } else {
             $args = $prg;
@@ -1752,16 +1752,16 @@ class TransportController extends AbstractActionController
                 $cancel = true;
             } else {
                 $serviceId = StdLib::getParam('serviceId', $args, - 1);
-                $this->setToSession('serviceId', $serviceId, $this->getSessionNamespace());
+                Session::set('serviceId', $serviceId, $this->getSessionNamespace());
             }
         }
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         if ($serviceId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
@@ -1804,14 +1804,14 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
             if (StdLib::getParam('origine', $args, false) === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
                 return $this->redirect()->toRoute('sbmgestion/transport'); // on n'est pas capable de savoir d'où l'on vient
             }
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $currentPage = $this->params('page', 1);
         $origine = StdLib::getParam('origine', $args, 'index');
@@ -1979,16 +1979,16 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
         $serviceId = StdLib::getParam('serviceId', $args, - 1);
@@ -2004,7 +2004,7 @@ class TransportController extends AbstractActionController
             [
                 'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByEtablissementService(
-                    $this->getFromSession('millesime'), $etablissementId, $serviceId, 
+                    Session::get('millesime'), $etablissementId, $serviceId, 
                     [
                         'nom',
                         'prenom'
@@ -2248,16 +2248,16 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $serviceId = StdLib::getParam('serviceId', $args, - 1);
         if ($serviceId == - 1) {
@@ -2273,7 +2273,7 @@ class TransportController extends AbstractActionController
             [
                 'h1' => 'Groupe des élèves inscrits sur un service',
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
-                    $this->getFromSession('millesime'), FiltreEleve::byService($serviceId), 
+                    Session::get('millesime'), FiltreEleve::byService($serviceId), 
                     [
                         'nom',
                         'prenom'
@@ -2748,10 +2748,10 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $stationId = StdLib::getParam('stationId', $args, - 1);
         if ($stationId == - 1) {
@@ -2766,7 +2766,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query(
-                    $this->getFromSession('millesime'), FiltreEleve::byStation($stationId), 
+                    Session::get('millesime'), FiltreEleve::byStation($stationId), 
                     [
                         'nom',
                         'prenom'
@@ -2793,16 +2793,16 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $stationId = StdLib::getParam('stationId', $args, - 1);
         if ($stationId == - 1) {
@@ -2844,14 +2844,14 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $stationId = StdLib::getParam('stationId', $args, - 1);
         $serviceId = StdLib::getParam('serviceId', $args, false);
-        $millesime = $this->getFromSession('millesime');
+        $millesime = Session::get('millesime');
         if ($stationId == - 1 || ! $serviceId) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport', 
@@ -3359,18 +3359,18 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
         if ($transporteurId == - 1) {
@@ -3385,7 +3385,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByTransporteur(
-                    $this->getFromSession('millesime'), 
+                    Session::get('millesime'), 
                     FiltreEleve::byTransporteur($transporteurId), 
                     [
                         'serviceId',
@@ -3412,18 +3412,18 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1, 
+            $pageRetour = Session::get('pageRetour', 1, 
                 $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
         if ($transporteurId == - 1) {

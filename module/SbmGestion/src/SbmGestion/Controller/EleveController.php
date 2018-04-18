@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2018
+ * @date 18 avr. 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -196,7 +196,7 @@ class EleveController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // entrée lors d'un retour éventuel par F5 ou back en 22
-            $prg = $this->getFromSession('post', false, 
+            $prg = Session::get('post', false, 
                 $this->getSessionNamespace('ajout', 1));
         }
         $args = (array) $prg;
@@ -206,10 +206,10 @@ class EleveController extends AbstractActionController
             } else {
                 $responsableId = 0;
             }
-            $this->setToSession('responsableId', $responsableId, 
+            Session::set('responsableId', $responsableId, 
                 $this->getSessionNamespace('ajout', 1));
         } else {
-            $responsableId = $this->getFromSession('responsableId', 0, 
+            $responsableId = Session::get('responsableId', 0, 
                 $this->getSessionNamespace('ajout', 1));
         }
         if (array_key_exists('origine', $args)) {
@@ -218,8 +218,8 @@ class EleveController extends AbstractActionController
             unset($args['origine']);
         }
         if (array_key_exists('cancel', $args)) {
-            $this->removeInSession('post', $this->getSessionNamespace('ajout', 1));
-            $this->removeInSession('responsableId', 
+            Session::remove('post', $this->getSessionNamespace('ajout', 1));
+            Session::remove('responsableId', 
                 $this->getSessionNamespace('ajout', 1));
             $this->flashMessenger()->addInfoMessage('Saisie abandonnée.');
             try {
@@ -234,7 +234,7 @@ class EleveController extends AbstractActionController
         } elseif (array_key_exists('submit', $args)) {
             $ispost = true;
             // pour un retour éventuel par F5 ou back en 22
-            $this->setToSession('post', $args, $this->getSessionNamespace('ajout', 1));
+            Session::set('post', $args, $this->getSessionNamespace('ajout', 1));
         } else {
             $ispost = false;
         }
@@ -320,7 +320,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || ! array_key_exists('eleveId', $prg)) {
-            $prg = $this->getFromSession('post', false, 
+            $prg = Session::get('post', false, 
                 $this->getSessionNamespace('ajout', 2));
             if ($prg === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite.');
@@ -335,7 +335,7 @@ class EleveController extends AbstractActionController
                 }
             }
         } else {
-            $this->setToSession('post', $prg, $this->getSessionNamespace('ajout', 2)); // pour une retour éventuel par F5 ou back
+            Session::set('post', $prg, $this->getSessionNamespace('ajout', 2)); // pour une retour éventuel par F5 ou back
         }
         $info = stdlib::getParam('info', $prg, '');
         $eleveId = $prg['eleveId'];
@@ -552,7 +552,7 @@ class EleveController extends AbstractActionController
             if ($prg instanceof Response) {
                 return $prg;
             } elseif ($prg === false || (isset($prg['op']) && $prg['op'] == 'retour')) {
-                $args = $this->getFromSession('post', false);
+                $args = Session::get('post', false);
                 if ($args === false) {
                     $this->flashMessenger()->addErrorMessage('Action interdite');
                     try {
@@ -584,11 +584,11 @@ class EleveController extends AbstractActionController
                 if (array_key_exists('group', $args)) {
                     $this->redirectToOrigin()->setBack($args['group']);
                     unset($args['group']);
-                    $this->setToSession('post', $args);
+                    Session::set('post', $args);
                 } elseif (array_key_exists('origine', $args)) {
                     $this->redirectToOrigin()->setBack($args['origine']);
                     unset($args['origine']);
-                    $this->setToSession('post', $args);
+                    Session::set('post', $args);
                 }
             }
         } else {
@@ -599,7 +599,7 @@ class EleveController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
             }
-            $this->setToSession('post', $args);
+            Session::set('post', $args);
         }
         if (! array_key_exists('eleveId', $args)) {
             $this->flashMessenger()->addErrorMessage("Pas d'identifiant élève !");
@@ -832,7 +832,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $prg = $this->getFromSession('post', false, 
+            $prg = Session::get('post', false, 
                 $this->getSessionNamespace('ajout', 2));
             if ($prg == false) {
                 try {
@@ -846,7 +846,7 @@ class EleveController extends AbstractActionController
             $this->redirectToOrigin()->setBack($prg['origine']);
             unset($prg['origine']);
         }
-        $this->setToSession('post', $prg, $this->getSessionNamespace('ajout', 2));
+        Session::set('post', $prg, $this->getSessionNamespace('ajout', 2));
         return $this->redirect()->toRoute('sbmgestion/eleve', 
             [
                 'action' => 'eleve-ajout21',
@@ -860,7 +860,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg == false) {
-            $prg = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $prg = Session::get('post', false, $this->getSessionNamespace());
             if ($prg == false) {
                 try {
                     return $this->redirectToOrigin()->back();
@@ -872,7 +872,7 @@ class EleveController extends AbstractActionController
         } elseif (array_key_exists('origine', $prg)) {
             $this->redirectToOrigin()->setBack($prg['origine']);
             unset($prg['origine']);
-            $this->setToSession('post', $prg, $this->getSessionNamespace());
+            Session::set('post', $prg, $this->getSessionNamespace());
         }
         if (! array_key_exists('eleveId', $prg)) {
             try {
@@ -906,7 +906,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false);
+            $args = Session::get('post', false);
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
                 return $this->redirect()->toRoute('login', 
@@ -919,7 +919,7 @@ class EleveController extends AbstractActionController
             if (array_key_exists('origine', $args)) {
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
-                $this->setToSession('post', $args);
+                Session::set('post', $args);
             }
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage(
@@ -1016,7 +1016,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite.');
                 return $this->redirect()->toRoute('sbmgestion/eleve', 
@@ -1038,7 +1038,7 @@ class EleveController extends AbstractActionController
             $rayer = array_key_exists('rayer', $args);
             $supprimer = array_key_exists('confirmer', $args);
             unset($args['rayer'], $args['confirmer']);
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $form = new ButtonForm([
             'eleveId' => $args['eleveId']
@@ -1155,7 +1155,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false);
+            $args = Session::get('post', false);
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
                 return $this->redirect()->toRoute('login', 
@@ -1169,7 +1169,7 @@ class EleveController extends AbstractActionController
             if (array_key_exists('origine', $args)) {
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
-                $this->setToSession('post', $args);
+                Session::set('post', $args);
             }
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage(
@@ -1460,7 +1460,7 @@ class EleveController extends AbstractActionController
             // transforme un post en une redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false);
+            $args = Session::get('post', false);
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
                 return $this->redirect()->toRoute('login', 
@@ -1486,7 +1486,7 @@ class EleveController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($args['origine']);
                 unset($args['origine']);
             }
-            $this->setToSession('post', $args);
+            Session::set('post', $args);
         }
         // on ouvre la table des données
         $responsableId = $args['responsableId'];
@@ -1548,10 +1548,10 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $responsableId = StdLib::getParam('responsableId', $args, - 1);
         if ($responsableId == - 1) {
@@ -1669,7 +1669,7 @@ class EleveController extends AbstractActionController
             if ($prg instanceof Response) {
                 return $prg;
             } elseif ($prg === false) {
-                $args = $this->getFromSession('post', false);
+                $args = Session::get('post', false);
                 if ($args === false) {
                     $this->flashMessenger()->addErrorMessage('Action interdite');
                     return $this->redirect()->toRoute('login', 
@@ -1683,15 +1683,15 @@ class EleveController extends AbstractActionController
                 if (array_key_exists('url1_retour', $args)) {
                     $this->redirectToOrigin()->setBack($args['url1_retour']);
                     unset($args['url1_retour']);
-                    $this->setToSession('post', $args);
+                    Session::set('post', $args);
                 } elseif (array_key_exists('origine', $args)) {
                     $this->redirectToOrigin()->setBack($args['origine']);
                     unset($args['origine']);
-                    $this->setToSession('post', $args);
+                    Session::set('post', $args);
                 } elseif (array_key_exists('url1_retour', $args)) {
                     $this->redirectToOrigin()->setBack($args['url1_retour']);
                     unset($args['url1_retour']);
-                    $this->setToSession('post', $args);
+                    Session::set('post', $args);
                 }
                 if (array_key_exists('cancel', $args)) {
                     $this->flashMessenger()->addWarningMessage(
@@ -1899,7 +1899,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $destinataire = $this->getFromSession('destinataire', [], 
+            $destinataire = Session::get('destinataire', [], 
                 $this->getSessionNamespace());
             $args = [];
         } else {
@@ -1913,7 +1913,7 @@ class EleveController extends AbstractActionController
                     'email' => $args['email'],
                     'responsable' => StdLib::getParam('responsable', $args)
                 ];
-                $this->setToSession('destinataire', $destinataire, 
+                Session::set('destinataire', $destinataire, 
                     $this->getSessionNamespace());
                 unset($args['email'], $args['responsable']);
             } elseif (array_key_exists('ecrirer1', $args) &&
@@ -1922,7 +1922,7 @@ class EleveController extends AbstractActionController
                     'email' => $args['emailr1'],
                     'responsable' => StdLib::getParam('responsabler1', $args)
                 ];
-                $this->setToSession('destinataire', $destinataire, 
+                Session::set('destinataire', $destinataire, 
                     $this->getSessionNamespace());
                 unset($args['emailr1'], $args['responsabler1']);
             } elseif (array_key_exists('ecrirer2', $args) &&
@@ -1931,11 +1931,11 @@ class EleveController extends AbstractActionController
                     'email' => $args['emailr2'],
                     'responsable' => StdLib::getParam('responsabler2', $args)
                 ];
-                $this->setToSession('destinataire', $destinataire, 
+                Session::set('destinataire', $destinataire, 
                     $this->getSessionNamespace());
                 unset($args['emailr2'], $args['responsabler2']);
             } else {
-                $destinataire = $this->getFromSession('destinataire', [], 
+                $destinataire = Session::get('destinataire', [], 
                     $this->getSessionNamespace());
             }
         }

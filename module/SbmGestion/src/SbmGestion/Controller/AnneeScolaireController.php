@@ -8,14 +8,15 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Db\Sql\Where;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Db\DbLib;
 use SbmCommun\Form\Calendar as FormCalendar;
@@ -40,7 +41,7 @@ class AnneeScolaireController extends AbstractActionController
         return new ViewModel(
             [
                 'anneesScolaires' => $this->db_manager->get('Sbm\Db\System\Calendar')->getAnneesScolaires(),
-                'millesimeActif' => $this->getFromSession('millesime', false),
+                'millesimeActif' => Session::get('millesime', false),
                 'simulation_millesime' => self::SIMULATION,
                 'simulation_vide' => $simulation_vide
             ]);
@@ -50,7 +51,7 @@ class AnneeScolaireController extends AbstractActionController
     {
         $millesime = $this->params('millesime', 0);
         if (! empty($millesime)) {
-            $this->setToSession('millesime', $millesime);
+            Session::set('millesime', $millesime);
         }
         $this->flashMessenger()->addSuccessMessage('L\'année active a changé.');
         return $this->redirect()->toRoute('sbmgestion/anneescolaire');

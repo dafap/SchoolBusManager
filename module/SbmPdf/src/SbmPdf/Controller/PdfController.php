@@ -9,8 +9,8 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmPdf\Controller;
 
@@ -18,6 +18,7 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
 use SbmBase\Model\StdLib;
+use SbmBase\Model\Session;
 use SbmCommun\Form\ButtonForm;
 
 class PdfController extends AbstractActionController
@@ -99,7 +100,7 @@ class PdfController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage("Action interdite.");
                 return $this->redirect()->toRoute('sbmpdf', 
@@ -122,7 +123,7 @@ class PdfController extends AbstractActionController
             }
             $isPost = array_key_exists('submit', $args);
             unset($args['submit']);
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $tDocuments = $this->db_manager->get('Sbm\Db\System\Documents');
         $form = $this->pdf_manager->get('FormDocumentPdf');
@@ -258,7 +259,7 @@ class PdfController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 $this->flashMessenger()->addErrorMessage("Action interdite.");
                 return $this->redirect()->toRoute('sbmpdf', 
@@ -281,7 +282,7 @@ class PdfController extends AbstractActionController
             }
             $isPost = array_key_exists('submit', $args);
             unset($args['submit']);
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $tDocuments = $this->db_manager->get('Sbm\Db\System\Documents');
         $form = $this->pdf_manager->get('FormDocumentPdf');
@@ -486,7 +487,7 @@ class PdfController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->redirect()->toRoute('sbmpdf');
             }
@@ -495,7 +496,7 @@ class PdfController extends AbstractActionController
             if (array_key_exists('disposition', $args)) {
                 $args['ordinal_table'] = 1;
                 unset($args['disposition']);
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         return new ViewModel(
@@ -524,7 +525,7 @@ class PdfController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->redirect()->toRoute('sbmpdf');
             }
@@ -539,7 +540,7 @@ class PdfController extends AbstractActionController
             } elseif (array_key_exists('modifier', $args)) {
                 $args['ordinal_table'] = 1;
                 unset($args['modifier']);
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         $tDocTables = $this->db_manager->get('Sbm\Db\System\DocTables');
@@ -596,7 +597,7 @@ class PdfController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || array_key_exists('retour', $prg)) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->redirect()->toRoute('sbmpdf');
             }
@@ -604,7 +605,7 @@ class PdfController extends AbstractActionController
             $args = $prg;
             if (array_key_exists('colonnes', $args)) {
                 unset($args['colonnes']);
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         try {
@@ -938,7 +939,7 @@ class PdfController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || array_key_exists('retour', $prg)) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->redirect()->toRoute('sbmpdf');
             }
@@ -946,7 +947,7 @@ class PdfController extends AbstractActionController
             $args = $prg;
             if (array_key_exists('champs', $args)) {
                 unset($args['champs']);
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         try {
@@ -1206,7 +1207,7 @@ class PdfController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || array_key_exists('retour', $prg)) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->redirect()->toRoute('sbmpdf');
             }
@@ -1214,7 +1215,7 @@ class PdfController extends AbstractActionController
             $args = $prg;
             if (array_key_exists('affecter', $args)) {
                 unset($args['affecter']);
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         try {

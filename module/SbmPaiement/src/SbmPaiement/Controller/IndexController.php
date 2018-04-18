@@ -14,16 +14,17 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmPaiement\Controller;
 
-use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
-use SbmBase\Model\StdLib;
 use Zend\View\Model\Zend\View\Model;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\Session;
+use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmFront\Model\Responsable\Responsable;
 
 class IndexController extends AbstractActionController
@@ -207,7 +208,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            if (($notificationId = $this->getFromSession('notificationId', false)) ===
+            if (($notificationId = Session::get('notificationId', false)) ===
                  false) {
                 return $this->redirect()->toRoute('login', 
                     [
@@ -223,7 +224,7 @@ class IndexController extends AbstractActionController
                         'action' => 'logout'
                     ]);
             } else {
-                $this->setToSession('notificationId', $notificationId);
+                Session::set('notificationId', $notificationId);
             }
         }
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');

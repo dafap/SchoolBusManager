@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmPortail\Controller;
 
@@ -572,7 +572,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('serviceId', $args)) {
                 return $this->redirect()->toRoute('sbmportail', 
                     [
@@ -582,7 +582,7 @@ class IndexController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('horaires', $args)) {
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         $serviceId = $args['serviceId'];
@@ -610,7 +610,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('serviceId', $args) ||
                  ! array_key_exists('circuitId', $args)) {
                 return $this->redirect()->toRoute('sbmportail', 
@@ -621,7 +621,7 @@ class IndexController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('eleves', $args)) {
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         $circuitId = $args['circuitId'];
@@ -629,7 +629,7 @@ class IndexController extends AbstractActionController
         return new ViewModel(
             [
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query(
-                    $this->getFromSession('millesime'), 
+                    Session::get('millesime'), 
                     FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId), 
                     [
                         'nom',

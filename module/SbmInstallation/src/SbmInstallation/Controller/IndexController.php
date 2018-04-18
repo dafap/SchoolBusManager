@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmInstallation\Controller;
 
@@ -19,6 +19,7 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Stdlib\Glob;
 use DrewM\MailChimp;
 use SbmBase\Model\StdLib;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Form\ButtonForm;
 use SbmInstallation\Model\CreateTables;
@@ -30,7 +31,6 @@ use SbmInstallation\Form\UploadImage;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
-use SbmBase\Model\Session;
 use SbmCommun\Model\Db\ObjectData\Eleve;
 use SbmCommun\Model\Db\ObjectData\Scolarite;
 use SbmCommun\Model\Db\ObjectData\Affectation;
@@ -291,7 +291,7 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif (is_array($prg)) {
             if (array_key_exists('cancel', $prg)) {
-                $this->removeInSession('post', $this->getSessionNamespace());
+                Session::remove('post', $this->getSessionNamespace());
                 $this->flashMessenger()->addWarningMessage(
                     'Aucune image n\'a été modifiée.');
                 return $this->redirect()->toRoute('sbminstall', 
@@ -299,7 +299,7 @@ class IndexController extends AbstractActionController
                         'action' => 'gestion-images'
                     ]);
             }
-            $this->setToSession('post', $prg, $this->getSessionNamespace());
+            Session::set('post', $prg, $this->getSessionNamespace());
             if (array_key_exists('submit', $prg)) {
                 if ($form->isValid()) {
                     $data = $form->getData();
@@ -310,7 +310,7 @@ class IndexController extends AbstractActionController
                     // $dest = $this->img']['path']['system'] . DIRECTORY_SEPARATOR . $data['image-file']['name'];
                     copy($source, $dest);
                     unlink($source);
-                    $this->removeInSession('post', $this->getSessionNamespace());
+                    Session::remove('post', $this->getSessionNamespace());
                     $this->flashMessenger()->addSuccessMessage(
                         'L\'image a été enregistrée.');
                     return $this->redirect()->toRoute('sbminstall', 
@@ -331,7 +331,7 @@ class IndexController extends AbstractActionController
                 $label = $prg['label'];
             }
         } else {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
             $config = $this->img;
             $form->setAttribute('action', 
                 $this->url()

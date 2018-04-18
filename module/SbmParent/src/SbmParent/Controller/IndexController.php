@@ -15,7 +15,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2018
+ * @date 18 avr. 2018
  * @version 2018-2.4.1
  */
 namespace SbmParent\Controller;
@@ -482,7 +482,7 @@ class IndexController extends AbstractActionController
             return $this->redirect()->toRoute('sbmparent');
         }
         $args = (array) $prg;
-        // args = array('montant' => ..., 'payer' => ...)
+        // args = ['montant' => ..., 'payer' => ...]
         $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
             $responsable->responsableId);
         $elevesIds = [];
@@ -514,7 +514,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->redirect()->toRoute('sbmparent');
             }
@@ -523,7 +523,7 @@ class IndexController extends AbstractActionController
             if (! array_key_exists('circuit1Id', $args)) {
                 return $this->redirect()->toRoute('sbmparent');
             }
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $tCircuits = $this->db_manager->get('Sbm\Db\Vue\Circuits');
         $rEffectifs = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(true);
@@ -593,7 +593,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 Session::remove('responsable2', $this->getSessionNamespace());
                 Session::remove('post', $this->getSessionNamespace());

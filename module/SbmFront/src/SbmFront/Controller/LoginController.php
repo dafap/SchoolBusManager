@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmFront\Controller;
 
@@ -389,7 +389,7 @@ class LoginController extends AbstractActionController
                 ->setCredential($args['mdp_old']);
             if ($auth->authenticate()->getCode() > 0) {
                 if ($args['mdp_old'] == $args['mdp_new']) {
-                    $this->setToSession('post', []);
+                    Session::set('post', []);
                     $this->flashMessenger()->addInfoMessage(
                         'Le mot de passe est inchangé.');
                     return $this->homePageAction();
@@ -460,7 +460,7 @@ class LoginController extends AbstractActionController
                 ->setCredential($args['mdp']);
             if ($auth->authenticate()->getCode() > 0) {
                 if ($email_old == $args['email_new']) {
-                    $this->setToSession('post', []);
+                    Session::set('post', []);
                     $this->flashMessenger()->addInfoMessage('L\'email est inchangé.');
                     return $this->homePageAction();
                 }
