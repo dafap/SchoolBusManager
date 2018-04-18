@@ -7,15 +7,26 @@
  * @filesource upload-image.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 $this->form->prepare(); // met le bon enctype
+
+$ratio = 1;
+if ($this->descriptif['width'] > 400 || $this->descriptif['height'] > 100) {
+    $ratio1 = 400 / $this->descriptif['width'];
+    $ratio2 = 100 / $this->descriptif['height'];
+    $ratio = $ratio1 < $ratio2 ? $ratio1 : $ratio2;
+}
+$width = (int) $this->descriptif['width'] * $ratio;
+$height = (int) $this->descriptif['height'] * $ratio;
 ?>
 <h1>Choix d'un nouveau fichier image</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<h3><?php echo $this->label;?></h3>
+		<img alt="<?= $this->label;?>" src="<?= $this->image;?>" width="
+			<?php echo $width;?>" height="<?php echo $height;?>">
 	</div>
 	<div id="fiche-inner">
 	<?php

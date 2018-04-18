@@ -299,7 +299,11 @@ class IndexController extends AbstractActionController
                         'action' => 'gestion-images'
                     ]);
             }
-            Session::set('post', $prg, $this->getSessionNamespace());
+
+            $label = $prg['label'];
+            $image = StdLib::concatPath($this->img['path']['url'], $prg['fname']);
+            $descriptif = $prg;
+            Session::set('post', $descriptif, $this->getSessionNamespace());
             if (array_key_exists('submit', $prg)) {
                 if ($form->isValid()) {
                     $data = $form->getData();
@@ -326,12 +330,22 @@ class IndexController extends AbstractActionController
                     }
                 }
             } else {
-                $form = new UploadImage('upload-form');
+                $form->get('image-file')->setMessages([]);
                 $form->setData($prg);
-                $label = $prg['label'];
             }
         } else {
-            $args = Session::get('post', [], $this->getSessionNamespace());
+            $form->get('image-file')->setMessages([]);
+            $descriptif = Session::get('post', [], $this->getSessionNamespace());
+            if (empty($descriptif)) {
+                $descriptif = [
+                    'fname' => $descriptif['fname'],
+                    'label' => ($label = $config['administrer'][$descriptif['fname']]['label']),
+                    'width' => $descriptif['width'],
+                    'height' => $descriptif['height'],
+                    'type' => $descriptif['type'],
+                    'mime' => $descriptif['mime']
+                ];
+            }
             $config = $this->img;
             $form->setAttribute('action', 
                 $this->url()
@@ -339,21 +353,15 @@ class IndexController extends AbstractActionController
                     [
                         'action' => 'upload-image'
                     ]))
-                ->setData(
-                [
-                    'fname' => $args['fname'],
-                    'label' => ($label = $config['administrer'][$args['fname']]['label']),
-                    'width' => $args['width'],
-                    'height' => $args['height'],
-                    'type' => $args['type'],
-                    'mime' => $args['mime']
-                ]);
+                ->setData($descriptif);
+            $image = StdLib::concatPath($this->img['path']['url'], $descriptif['fname']);
         }
-        
         return [
             'form' => $form,
             'label' => $label,
-            'tempFile' => $tempFile
+            'tempFile' => $tempFile,
+            'image' => $image,
+            'descriptif' => $descriptif
         ];
     }
 
