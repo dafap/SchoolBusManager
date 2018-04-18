@@ -7,25 +7,30 @@
  * @filesource libelle-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
+$url_rapports = $this->url('sbmadmin',
+    [
+        'action' => 'libelle-group-pdf',
+        'page' => $this->page
+    ]);
 $retour = $this->url('sbmadmin', 
     [
         'action' => 'libelle-liste',
-        'page' => $this->page
-    ]);
-$pdf = $this->url('sbmadmin', 
-    [
-        'action' => 'libelle-pdf',
         'page' => $this->page
     ]);
 $hiddens = [
     'nature' => $this->nature,
     'code' => $this->code
 ];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmadmin', [
+        'action' => 'libelle-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
 
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
@@ -36,11 +41,7 @@ $actions = [
         'title' => 'Retour',
         'onclick' => $js_retour
     ],
-    'rapports' => [
-        'class' => 'fam-printer',
-        'formaction' => $pdf,
-        'title' => 'Rapports à imprimer'
-    ]
+    'rapports' => $menuImpression['content']
 ];
 ?>
 <h1>Libellés de même nature</h1>

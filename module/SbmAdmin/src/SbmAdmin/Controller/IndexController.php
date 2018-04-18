@@ -9,27 +9,27 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 18 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmAdmin\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
-use Zend\Session\Container as SessionContainer;
 use Zend\Db\Sql\Where;
+use Zend\Session\Container as SessionContainer;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\DateLib;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Form\CriteresForm;
-use SbmBase\Model\StdLib;
-use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmCommun\Form\SecteurScolaire as FormSecteurScolaire;
 use SbmCommun\Form\ButtonForm;
-use SbmBase\Model\DateLib;
+use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmAdmin\Form\User;
 use SbmAdmin\Form\Export as ExportForm;
 use SbmAdmin\Form\UserRelation;
-use SbmBase\Model\Session;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
 use SbmAdmin\Model\Db\Service\Libelle\Liste;
@@ -214,10 +214,10 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         list ($nature, $code) = explode('|', 
             StdLib::getParam('id', $args, 
@@ -261,6 +261,31 @@ class IndexController extends AbstractActionController
         $retour = [
             'route' => 'sbmadmin',
             'action' => 'libelle-liste'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+    
+    /**
+     * lance la création d'une liste de libellés comme filtre la nature et le code reçus en post
+     */
+    public function libelleGroupPdfAction()
+    {
+        $criteresObject = [
+            ObjectDataCriteres::class,
+            null,
+            function ($where, $args) {
+                $nature = StdLib::getParam('nature', $args, - 1);
+                $code = StdLib::getParam('code', $args, - 1);
+                $where = new Where();
+                $where->equalTo('nature', $nature);
+                return $where;
+            }
+        ];
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'classe-group'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
@@ -529,7 +554,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false);
+            $args = Session::get('post', false);
             if ($args === false || ! array_key_exists('userId', $args)) {
                 return $this->redirect()->toRoute('login', 
                     [
@@ -546,7 +571,7 @@ class IndexController extends AbstractActionController
                         'page' => $this->params('page', 1)
                     ]);
             } elseif (! array_key_exists('submit', $args)) {
-                $this->setToSession('post', $args);
+                Session::set('post', $args);
             }
         }
         $form = $this->form_manager->get(User::class);
@@ -655,7 +680,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false);
+            $args = Session::get('post', false);
             if ($args === false || ! array_key_exists('email', $args)) {
                 return $this->redirect()->toRoute('login', 
                     [
@@ -671,7 +696,7 @@ class IndexController extends AbstractActionController
                         'page' => $this->params('page', 1)
                     ]);
             } elseif (! array_key_exists('submit', $args)) {
-                $this->setToSession('post', $args);
+                Session::set('post', $args);
             }
         }
         // récupère la fiche de l'user
