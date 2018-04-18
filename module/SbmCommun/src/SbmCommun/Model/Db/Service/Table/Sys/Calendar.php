@@ -273,7 +273,7 @@ class Calendar extends AbstractSbmTable
                 $aPermanences[DateLib::formatDateFromMysql($row->echeance)] = $commune;
             }
             $aPermanences = array_keys($aPermanences);
-            if (count($aTmp) == 1) {
+            if (count($aPermanences) == 1) {
                 $result[] = "$commune le " . $aPermanences[0];
             } else {
                 $result[] = "$commune les " . implode(', ', $aPermanences);
