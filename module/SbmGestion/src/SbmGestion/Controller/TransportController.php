@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
+ * @date 19 avr. 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -21,7 +21,7 @@ use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\LatLng;
+use SbmCommun\Form\LatLng as LatLngForm;
 use SbmCommun\Form\Circuit as FormCircuit;
 use SbmCommun\Form\Classe as FormClasse;
 use SbmCommun\Form\Commune as FormCommune;
@@ -1556,9 +1556,9 @@ class TransportController extends AbstractActionController
         }
         $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
         $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
-        $configCarte = StdLib::getParam('parent', 
+        $configCarte = StdLib::getParam('etablissement', 
             $this->cartographie_manager->get('cartes'));
-        $form = new LatLng(
+        $form = new LatLngForm(
             [
                 'etablissementId' => [
                     'id' => 'etablissementId'
@@ -2620,10 +2620,10 @@ class TransportController extends AbstractActionController
         }
         $table = $this->db_manager->get('Sbm\Db\Table\Stations');
         // même configuration de carte que pour les etablissements
-        $configCarte = StdLib::getParam('parent', 
+        $configCarte = StdLib::getParam('station', 
             $this->cartographie_manager->get('cartes'));
         $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
-        $formCarte = new LatLng(
+        $formCarte = new LatLngForm(
             [
                 'phase' => 1,
                 'lat' => [
@@ -3007,9 +3007,9 @@ class TransportController extends AbstractActionController
         $stationId = $args['stationId'];
         $tStations = $this->db_manager->get('Sbm\Db\Table\Stations');
         // même configuration de carte que pour les etablissements
-        $configCarte = StdLib::getParam('parent', 
+        $configCarte = StdLib::getParam('station', 
             $this->cartographie_manager->get('cartes'));
-        $form = new LatLng(
+        $form = new LatLngForm(
             [
                 'stationId' => [
                     'id' => 'stationId'

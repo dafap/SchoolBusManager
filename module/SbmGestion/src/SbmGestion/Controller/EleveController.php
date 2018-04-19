@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
+ * @date 19 avr. 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -1186,7 +1186,7 @@ class EleveController extends AbstractActionController
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent', 
+        $configCarte = StdLib::getParam('gestion', 
             $this->cartographie_manager->get('cartes'));
         // ici, il faut un formulaire permettant de saisir l'adresse particulière d'un élève. Le tout est enregistré dans scolarites
         $form = new \SbmGestion\Form\Eleve\LocalisationAdresse($configCarte['valide']);
@@ -1714,7 +1714,7 @@ class EleveController extends AbstractActionController
         }
         // les outils de travail : formulaire et convertisseur de coordonnées
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent', 
+        $configCarte = StdLib::getParam('gestion', 
             $this->cartographie_manager->get('cartes'));
         $form = new LatLngForm(
             [

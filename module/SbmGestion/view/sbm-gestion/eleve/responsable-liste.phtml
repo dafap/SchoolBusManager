@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 avr. 2018
+ * @version 2018-2.4.1
  */
 use SbmCartographie\Model\Point;
 
@@ -146,7 +146,7 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($responsables as $responsable): ?>
         <?php
             $pt = new Point($responsable['x'], $responsable['y']);
-            $ptOk = $this->projection->isValid($pt, 'parent');
+            $ptOk = $this->projection->isValid($pt, 'gestion');
             // construction du JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", 
                 $responsable['responsableId']);

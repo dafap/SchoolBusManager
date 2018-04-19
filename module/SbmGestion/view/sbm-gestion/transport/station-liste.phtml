@@ -18,8 +18,8 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 avr. 2018
+ * @version 2018-2.4.1
  */
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -172,7 +172,7 @@ echo $this->flashMessenger()->render('default');
             <?php foreach($stations as $test => $station): ?>
             <?php
                 $pt = new Point($station->x, $station->y);
-                $ptOk = $this->projection->isValid($pt, 'etablissements'); // stations et etablissements ont la même config
+                $ptOk = $this->projection->isValid($pt, 'station'); // stations et etablissements ont la même config
                 $nbInscrits = StdLib::getParamR(
                     [
                         $station->stationId,

@@ -9,8 +9,8 @@
  * @filesource Projection.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCartographie\Model;
 
@@ -43,50 +43,34 @@ class Projection extends AbstractProjection implements ProjectionInterface
     public function __construct($projection, $config_cartes)
     {
         $this->projection = $projection;
-        $rangeEtab = StdLib::getParamR(
-            [
-                'etablissements',
-                'valide'
-            ], $config_cartes);
-        $rangeParent = StdLib::getParamR(
-            [
-                'parent',
-                'valide'
-            ], $config_cartes);
-        // configure le rectangle de validité pour les etablissements et les stations
-        $this->rangeLat['etablissements'] = $rangeEtab['lat'];
-        $this->rangeLng['etablissements'] = $rangeEtab['lng'];
-        $pt = new Point();
-        $pt->setLatitude($rangeEtab['lat'][0]);
-        $pt->setLongitude($rangeEtab['lng'][0]);
-        $pt = $this->gRGF93versXYZ($pt);
-        $this->rangeX['etablissements'][0] = $pt->getX();
-        $this->rangeY['etablissements'][0] = $pt->getY();
-        unset($pt);
-        $pt = new Point();
-        $pt->setLatitude($rangeEtab['lat'][1]);
-        $pt->setLongitude($rangeEtab['lng'][1]);
-        $pt = $this->gRGF93versXYZ($pt);
-        $this->rangeX['etablissements'][1] = $pt->getX();
-        $this->rangeY['etablissements'][1] = $pt->getY();
-        unset($pt);
-        // configure le rectangle de validité pour les parents et les élèves
-        $this->rangeLat['parent'] = $rangeEtab['lat'];
-        $this->rangeLng['parent'] = $rangeEtab['lng'];
-        $pt = new Point();
-        $pt->setLatitude($rangeParent['lat'][0]);
-        $pt->setLongitude($rangeParent['lng'][0]);
-        $pt = $this->gRGF93versXYZ($pt);
-        $this->rangeX['parent'][0] = $pt->getX();
-        $this->rangeY['parent'][0] = $pt->getY();
-        unset($pt);
-        $pt = new Point();
-        $pt->setLatitude($rangeEtab['lat'][1]);
-        $pt->setLongitude($rangeEtab['lng'][1]);
-        $pt = $this->gRGF93versXYZ($pt);
-        $this->rangeX['parent'][1] = $pt->getX();
-        $this->rangeY['parent'][1] = $pt->getY();
-        unset($pt);
+        foreach ([
+            'etablissement',
+            'station',
+            'gestion',
+            'parent'
+        ] as $nature) {
+            $rangeValid = StdLib::getParamR(
+                [
+                    $nature,
+                    'valide'
+                ], $config_cartes);
+            $this->rangeLat[$nature] = $rangeValid['lat'];
+            $this->rangeLng[$nature] = $rangeValid['lng'];
+            
+            $pt = new Point();
+            $pt->setLatitude($rangeValid['lat'][0]);
+            $pt->setLongitude($rangeValid['lng'][0]);
+            $pt = $this->gRGF93versXYZ($pt);
+            $this->rangeX[$nature][0] = $pt->getX();
+            $this->rangeY[$nature][0] = $pt->getY();
+            
+            $pt = new Point();
+            $pt->setLatitude($rangeValid['lat'][1]);
+            $pt->setLongitude($rangeValid['lng'][1]);
+            $pt = $this->gRGF93versXYZ($pt);
+            $this->rangeX[$nature][1] = $pt->getX();
+            $this->rangeY[$nature][1] = $pt->getY();
+        }
     }
 
     /**
@@ -118,12 +102,20 @@ class Projection extends AbstractProjection implements ProjectionInterface
      *
      * @param Point $p            
      * @param string $nature
-     *            'parent' ou 'etablissements'
+     *            'parent', 'gestion', 'station' ou 'etablissement'
      *            
      * @return boolean
      */
     public function isValid(Point $p, $nature = 'parent')
     {
+        if (!in_array($nature, [
+            'etablissement',
+            'station',
+            'gestion',
+            'parent'
+        ] )) {
+            throw new Exception(__METHOD__ . ' - Paramètre `nature` non conforme.');
+        }
         return $p->setLatLngRange($this->rangeLat[$nature], $this->rangeLng[$nature])
             ->setXYRange($this->rangeX[$nature], $this->rangeY[$nature])
             ->isValid();

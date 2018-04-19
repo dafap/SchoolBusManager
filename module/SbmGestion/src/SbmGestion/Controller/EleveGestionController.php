@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
+ * @date 19 avr. 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -236,7 +236,7 @@ class EleveGestionController extends AbstractActionController
         $ptElv = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
         $point = new Point($eleve['xeta'], $eleve['yeta']);
         $ptEta = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
-        $configCarte = StdLib::getParam('parent', 
+        $configCarte = StdLib::getParam('gestion', 
             $this->cartographie_manager->get('cartes'));
         return new ViewModel(
             [
@@ -294,7 +294,7 @@ class EleveGestionController extends AbstractActionController
         $responsableId = $args['responsableId'];
         $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent', 
+        $configCarte = StdLib::getParam('gestion', 
             $this->cartographie_manager->get('cartes'));
         $form = new LatLng(
             [

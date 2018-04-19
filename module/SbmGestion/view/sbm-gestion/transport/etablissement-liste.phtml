@@ -17,8 +17,8 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 avr. 2018
+ * @version 2018-2.4.1
  */
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -176,7 +176,7 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($etablissements as $test => $etablissement): ?>
         <?php
             $pt = new Point($etablissement->x, $etablissement->y);
-            $ptOk = $this->projection->isValid($pt, 'etablissements');
+            $ptOk = $this->projection->isValid($pt, 'etablissement');
             $nbInscrits = StdLib::getParamR(
                 [
                     $etablissement->etablissementId,
