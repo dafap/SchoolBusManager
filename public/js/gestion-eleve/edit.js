@@ -5,8 +5,8 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2018
- * @version 2018-2.4.0
+ * @date 23 avr. 2018
+ * @version 2018-2.4.1
  */
 
 var js_edit = (function() {
@@ -403,7 +403,7 @@ var js_edit = (function() {
 						$(args3).val(1);
 					}
 				},
-				error : function(xhr, ajaxOptions, throxnError) {
+				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);
 				}
 			});
