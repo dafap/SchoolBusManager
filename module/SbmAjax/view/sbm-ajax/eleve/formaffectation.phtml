@@ -29,44 +29,44 @@
  * $msg_alert .= '+"\nservice1: "+$("#affectation-service1Id option:selected").val()';
  *
  * /* et ajouter la ligne qui suit dans inlineScript()->captureStart()
- * alert(<?php echo $msg_alert;?>);
+ * alert(<?= $msg_alert;?>);
  */
 ?>
 <?php $this->headStyle()->captureStart(); ?>
-#formaffectation<?php echo $this->trajet;?> label.sbm-form-auto {
+#formaffectation<?= $this->trajet;?> label.sbm-form-auto {
     display: inline-block;
     width: 150px;
     margin-right: 5px;
 }
-#formaffectation<?php echo $this->trajet;?> label.sbm-form-auto:before {
+#formaffectation<?= $this->trajet;?> label.sbm-form-auto:before {
 	content: "\A";
 	white-space: pre;
 	line-height: 1.5em;
 }
-#formaffectation<?php echo $this->trajet;?> input.button {
+#formaffectation<?= $this->trajet;?> input.button {
     position: relative;
     top: 1.5rem;
 }
-#formaffectation<?php echo $this->trajet;?> input.button.cancel {
+#formaffectation<?= $this->trajet;?> input.button.cancel {
     margin-left: 100px;
 }
-#formaffectation<?php echo $this->trajet;?> input.button.submit {
+#formaffectation<?= $this->trajet;?> input.button.submit {
 	margin-left: 15px;
 }
 <?php $this->headStyle()->captureEnd(); ?>
-<?php echo $this->headStyle();?>
+<?= $this->headStyle();?>
 <?php $this->headScript()->appendFile($this->basePath('js/ajax/formaffectation.js'));?>
-<?php echo $this->headScript();?>
+<?= $this->headScript();?>
 <?php $this->inlineScript()->captureStart();?>
 is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
 formaffectation = "#formaffectation<?= $this->trajet;?>";
 var urlform = '<?= $this->form->getAttribute('action'); ?>';
-var station1Id = <?php echo $this->station1Id ?:'null';?>;
-var station2Id = <?php echo $this->station2Id?:'null';?>;
+var station1Id = <?= $this->station1Id ?:'null';?>;
+var station2Id = <?= $this->station2Id?:'null';?>;
 affectation.init(station1Id, station2Id);
 <?php $this->inlineScript()->captureEnd();?>
-<div id="formaffectation<?php echo $this->trajet;?>">
-<?php echo $this->form($this->form);?>
+<div id="formaffectation<?= $this->trajet;?>">
+<?= $this->form($this->form);?>
 </div>
 <div id="errors"></div>
-<?php echo $this->inlineScript();?>
+<?= $this->inlineScript();?>
