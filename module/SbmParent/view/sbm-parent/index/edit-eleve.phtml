@@ -2,8 +2,6 @@
 /**
  * Page de modification de l'inscription d'un enfant pour les responsables
  * 
- * Attention !!!
- * Vérifier en cas de mise en forme que le js n'a pas changé lignes 26 et 65
  *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
@@ -20,9 +18,10 @@ La Communauté de communes vous informe que le transport pour cette 2ème adress
     validé qu’en fonction de la disponibilité des places sur les circuits existants. 
     Vous serez informés prochainement des suites données à votre demande par mail. 
 EOT;
+$texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2);
 ?>
 <?php $this->headScript()->captureStart();?>
-texteDemandeR2 = <?= $texteDemandeR2; ?>;
+texteDemandeR2 = "<?= $texteDemandeR2; ?>";
 <?php $this->headScript()->captureEnd(); ?>
 <?php
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, 
@@ -30,6 +29,10 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 if ($this->hasGa) {
     $r2identite = sprintf('%s %s %s', $this->responsable2['titre'], 
         $this->responsable2['nom'], $this->responsable2['prenom']);
+    if (! empty($this->responsable2['nom2'])) {
+        $r2identite = sprintf('%s ou %s %s %s', $r2identite, $this->responsable2['titre2'],
+            $this->responsable2['nom2'], $this->responsable2['prenom2']);
+    }
     $r2adresseL1 = $this->responsable2['adresseL1'];
     $r2adresseL2 = $this->responsable2['adresseL2'];
     $r2cp = $this->responsable2['codePostal'];

@@ -10,8 +10,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmParent\Model;
 
@@ -138,11 +138,15 @@ class OutilsInscription
      * Enregistre les données d'un responsable dans la table des responsables,
      * met à jour la visibilité de la commune
      * et renvoie l'identifiant responsableId
+     * Si l'email du responsable existe déjà, pas d'enregistrement et on renvoie
+     * tout simplement l'identifiant de ce responsable.
      *
      * @param array $data            
      *
      * @return <b>int</b> : le responsableId enregistré, que ce soit un nouvel enregistrement
      *         ou la modification d'un ancien
+     * 
+     * @throws \Exception
      */
     public function saveResponsable($data)
     {
@@ -152,13 +156,26 @@ class OutilsInscription
         if (! $oData->userId) {
             $oData->userId = $this->userId;
         }
-        if ($tResponsables->saveRecord($oData)) {
-            // on s'assure de rendre cette commune visible
-            $this->db_manager->get('Sbm\Db\table\Communes')->setVisible($oData->communeId);
+        try {
+            if ($tResponsables->saveRecord($oData)) {
+                // on s'assure de rendre cette commune visible
+                $this->db_manager->get('Sbm\Db\table\Communes')->setVisible(
+                    $oData->communeId);
+            }
+            // on récupère le responsableId qui vient d'être enregistré,
+            // que ce soit un insert, un update ou la reprise d'un autre responsable par son email
+            return $tResponsables->getLastResponsableId();
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            // vraissemblablement ce responsable est déjà présent dans la base
+            // parce que son email est présent (Integrity constraint violation)
+            // Traitement spécifique à une base MYSQL
+            if ($e->getPrevious()->errorInfo[1] == 1062) {
+                $oResponsable = $tResponsables->getRecordByEmail($oData->email);
+                return $oResponsable->responsableId;
+            } else {
+                throw $e;
+            }
         }
-        // on récupère le responsableId qui vient d'être enregistré,
-        // que ce soit un insert, un update ou la reprise d'un autre responsable par son email
-        return $tResponsables->getLastResponsableId();
     }
 
     /**
