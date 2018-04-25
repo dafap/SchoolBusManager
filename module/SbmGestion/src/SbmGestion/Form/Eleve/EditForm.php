@@ -7,8 +7,8 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -444,7 +444,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'distanceR1',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'eleve-distanceR1',
                     'class' => 'sbm-width-10c',
@@ -464,7 +464,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'distanceR2',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'eleve-distanceR2',
                     'class' => 'sbm-width-10c',

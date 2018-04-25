@@ -8,8 +8,8 @@
  * @filesource Tarif
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Form;
 
@@ -59,7 +59,7 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'montant',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'tarif-montant',
                     'class' => 'sbm-width-15c'

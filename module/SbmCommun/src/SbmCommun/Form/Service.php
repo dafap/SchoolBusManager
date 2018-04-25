@@ -8,8 +8,8 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Form;
 
@@ -147,7 +147,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'kmAVide',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'service-kmAVide',
                     'class' => 'sbm-width-10c'
@@ -165,7 +165,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'kmEnCharge',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'service-kmEnCharge',
                     'class' => 'sbm-width-10c'

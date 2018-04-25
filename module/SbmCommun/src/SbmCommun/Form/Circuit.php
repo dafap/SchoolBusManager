@@ -8,8 +8,8 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Form;
 
@@ -264,7 +264,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'distance',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'circuit-distance',
                     'class' => 'sbm-width-10c'
