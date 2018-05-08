@@ -30,6 +30,14 @@ function versionTcpdfGitHub()
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->inlineScript()->captureStart();
+?>
+$(function() {
+    $("#jquery").html($.fn.jquery);
+});
+<?php
+$this->inlineScript()->captureEnd();
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
@@ -72,6 +80,8 @@ if ($gdInfo['GIF Read Support']) {
 	    Il y a une nouvelle version <?php echo Version::getLatest();?>
 	    <?php endif;?>
 	        </dd>
+			<dt>Version JQuery</dt>
+			<dd>Version installée: <span id="jquery"></span></dd>
 			<dt>Version de TCPDF</dt>
 			<dd>Version installée: <?php echo $vtcpdf = \TCPDF_STATIC::getTCPDFVersion();?><br>
 		<?php if ($vtcpdf == versionTcpdfGitHub()) :?>
