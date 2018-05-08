@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2018
+ * @date 7 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -945,16 +945,18 @@ class EleveController extends AbstractActionController
                 'responsable2Id', $responsableId);
             $or = true;
         }
+        $oEleve = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord($args['eleveId']);
         $viewmodel = new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
+                'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesEleveGroup(
                     $where),
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
                 'criteres_form' => null,
-                'groupe' => $args['op']
+                'groupe' => $args['op'],
+                'eleve' => sprintf('%s %s',$oEleve->prenom, $oEleve->nom)
             ]);
-        $viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
+        //$viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
         return $viewmodel;
     }
 
@@ -1274,7 +1276,7 @@ class EleveController extends AbstractActionController
             $data = [
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $args['eleveId'],
-                'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
                 'chez' => null,
                 'adresseL1' => null,
                 'adresseL2' => null,
@@ -1328,7 +1330,7 @@ class EleveController extends AbstractActionController
                 'form' => $form->prepare(),
                 'eleveId' => $args['eleveId'],
                 'eleve' => $eleve,
-                'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
                 'config' => $configCarte
             ]);
     }
@@ -1359,8 +1361,8 @@ class EleveController extends AbstractActionController
                 'selection' => 'res.selection',
                 'inscrits' => 'Literal:count(ins.eleveId) > 0',
                 'preinscrits' => 'Literal:count(pre.eleveId) > 0',
-                'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], 
-                    $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
+                'localisation' => sprintf($pasLocalisaton, $rangeX['gestion'][0], 
+                    $rangeX['gestion'][1], $rangeY['gestion'][0], $rangeY['gestion'][1])
             ]);
         if ($args instanceof Response)
             return $args;
@@ -1818,7 +1820,7 @@ class EleveController extends AbstractActionController
                 'form' => $form->prepare(),
                 'responsableId' => $args['responsableId'],
                 'responsable' => $responsable,
-                'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
                 'config' => $configCarte
             ]);
     }
@@ -1842,8 +1844,8 @@ class EleveController extends AbstractActionController
                     'nbEnfants' => 'Expression:nbEleves = ?',
                     'inscrits' => 'Literal:0',
                     'preinscrit' => 'Literal:0',
-                    'localisation' => sprintf($pasLocalisaton, $rangeX['parent'][0], 
-                        $rangeX['parent'][1], $rangeY['parent'][0], $rangeY['parent'][1])
+                    'localisation' => sprintf($pasLocalisaton, $rangeX['gestion'][0], 
+                        $rangeX['gestion'][1], $rangeY['gestion'][0], $rangeY['gestion'][1])
                 ]
             ]
         ];
