@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2018
+ * @date 5 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -247,7 +247,7 @@ class EleveGestionController extends AbstractActionController
                 'ptElv' => $ptElv,
                 'ptEta' => $ptEta,
                 'config' => $configCarte,
-                'url_api' => $this->cartographie_manager->get('google_api')['js']
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
             ]);
     }
 
@@ -398,7 +398,7 @@ class EleveGestionController extends AbstractActionController
                         $responsable->codePostal . ' ' . $commune->nom
                 ],
                 'config' => $configCarte,
-                'url_api' => $this->cartographie_manager->get('google_api')['js']
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
             ]);
     }
 
