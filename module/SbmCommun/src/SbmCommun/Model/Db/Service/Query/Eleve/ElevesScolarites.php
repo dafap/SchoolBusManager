@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 5 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -215,6 +215,9 @@ class ElevesScolarites implements FactoryInterface
         $where->equalTo('millesime', Session::get('millesime'))
             ->literal('inscrit = 1')
             ->nest()
+            ->literal('district = 1')->or->literal('derogation = 1')
+            ->unnest()
+            ->nest()
             ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
             ->unnest()
             ->nest()
@@ -230,9 +233,16 @@ class ElevesScolarites implements FactoryInterface
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))
             ->literal('inscrit = 1')
+            ->nest()
+            ->nest()
             ->literal('paiement = 0')
             ->literal('fa = 0')
             ->literal('gratuit = 0')
+            ->unnest()->or->nest()
+            ->literal('district = 0')
+            ->literal('derogation = 0')
+            ->unnest()
+            ->unnest()
             ->nest()
             ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', 
             $responsableId)->unnest();
