@@ -20,7 +20,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2018
+ * @date 5 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Service;
@@ -68,6 +68,12 @@ class CalculDroits implements FactoryInterface
     private $db_manager;
 
     /**
+     *
+     * @var \array
+     */
+    private $compte_rendu = [];
+
+    /**
      * Les distances en km des domiciles de l'élève à son établissement scolaire.
      * Lorsque l'élève a une résidence différente de celles de ses responsable, elle remplace la résidence du responsable n°1.
      * Cette propriété mise à jour dans la méthode district et est reprise dans les méthodes saveAcquisition() et saveAcquisitionPerte()
@@ -95,12 +101,24 @@ class CalculDroits implements FactoryInterface
     }
 
     /**
-     * Retourne un booléen représentant le droit au transport pour l'établissement scolaire.
+     * Retourne un booléen représentant le droit au transport pour l'établissement scolaire
+     * sans tenir compte de la règle des distances.
+     * On ne regarde que si l'établissement est
+     * autorisé pour l'un des 2 domiciles.
+     * Les distances de l'établissement aux domicilex sont calculées et placées dans la
+     * propriété $distance de cette classe (tableau associatif ['R1' => ..., 'R2' => ...]
+     * Même s'il n'y a pas de demande de transport, la distance est calculée.
+     * Si GoogleMaps ne répond pas alors :
+     * - la distance est nulle si pas de demande pour ce domicile
+     * - la distance est reprise si $gardeDistance == true
+     * - la distance est 99 sinon, ce qui donnera un droit au transport et permettra
+     * le paiement en ligne par les parents.
      *
      * Le droit est acquis si :
      * 1/ l'élève est scolarisé en lycée (niveau 8)
      * 2/ l'élève est scolarisé dans un établissement autorisé pour l'un de ses responsable
      * 3/ l'élève est scolarisé dans un établissement autorisé pour son adresse personnelle
+     * Le droit va permettre de mettre à jour le champ district de la table scolarites
      *
      * @param int $eleveId            
      * @param bool $gardeDistance            
@@ -196,17 +214,80 @@ class CalculDroits implements FactoryInterface
                     }
                 }
             }
+            $this->setCompteRendu($result);
             return $result['droit'];
         } catch (GoogleMaps\ExceptionNoAnswer $e) {
-            // GoogleMaps API ne répond pas : on rétablit la distance indiquée
+            /**
+             * GoogleMaps API ne répond pas.
+             * Pour chaque domicile :
+             * - si pas de demande de transport on met 0.0
+             * - si demande et gardeDistance on rétablit la distance indiquée
+             * - sinon 99
+             */
             $j = 1;
             foreach ($domiciles as $domicile) {
-                $this->distance['R' . $j ++] = $domicile->getDistance();
+                $this->distance['R' . $j] = $scolarite->{'demandeR' . $j} ? ($gardeDistance ? $domicile->getDistance() : 99) : 0.0;
+                $j ++;
             }
             return true;
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Prépare un compte_rendu du calcul des distances et des droits en conservant les
+     * messages et recherchant le nom et la commune de l'établissement le plus proche
+     * lorsque l'établissement demandé n'est pas celui donnant droit.
+     * Lorsque l'établissement demandé donne lieu au transport, le compte_rendu est vide.
+     *
+     * Le compte-rendu est de la forme :
+     * ['etablissements' => [['nom' => string, 'commune' => string], ...]]
+     * ou ['message' => string] ou []
+     *
+     * @param array $array
+     *            de la forme [
+     *            'droit' => bool, // obligatoire
+     *            'distances' => [], // non utilisé dans cette méthode
+     *            'message' => string, // optionnel
+     *            'etablissementsAyantDroit' => [int] // optionnel, des etablissementId
+     *            ]
+     */
+    private function setCompteRendu($array)
+    {
+        $this->compte_rendu = [];
+        if (! $array['droit']) {
+            if (array_key_exists('etablissementsAyantDroit', $array)) {
+                foreach ($array['etablissementsAyantDroit'] as $etablissementId) {
+                    $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                        $etablissementId);
+                    $commune = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
+                        $etablissement->communeId);
+                    $this->compte_rendu['etablissements'][] = [
+                        'nom' => $etablissement->nom,
+                        'commune' => $commune->nom
+                    ];
+                }
+            }
+            if (array_key_exists('message', $array)) {
+                $this->compte_rendu['message'] = $array['message'];
+            }
+        }
+    }
+
+    /**
+     * Le compte-rendu renvoyé est un tableau de la forme :
+     * []
+     * ou
+     * ['message' => string]
+     * ou
+     * ['etablissements' => array] ou array est un tableau de ['nom' => string, 'commune'=>string]
+     *
+     * @return array
+     */
+    public function getCompteRendu()
+    {
+        return $this->compte_rendu;
     }
 
     /**
@@ -219,7 +300,10 @@ class CalculDroits implements FactoryInterface
      * @param array(Point) $domiciles            
      * @param Point $college            
      *
-     * @return array tableau associatif de la forme ['droit' => boolean, 'distances' => []]
+     * @return array tableau associatif de la forme
+     *         ['droit' => boolean, 'distances' => [], 'message' => string]
+     *         ou
+     *         ['droit' => ..., 'distances' => ..., 'etablissementsAyantDroit' => [int]]
      */
     private function domicilesCollege($domiciles, $college)
     {
@@ -243,7 +327,8 @@ class CalculDroits implements FactoryInterface
             return [
                 'droit' => $droit,
                 'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
-                    $domiciles, $college)
+                    $domiciles, $college),
+                'message' => $droit ? '' : 'Vous n\'êtes pas dans le secteur scolaire du collège demandé.'
             ];
         } else {
             // Le collège privé est-il de la commune d'un domicile ?
@@ -264,7 +349,8 @@ class CalculDroits implements FactoryInterface
                 return [
                     'droit' => true,
                     'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
-                        $domiciles, $college)
+                        $domiciles, $college),
+                    'message' => ''
                 ];
             } else {
                 $droit = false;
@@ -298,7 +384,8 @@ class CalculDroits implements FactoryInterface
      * @param array(Point) $domiciles            
      * @param Point $ecole            
      *
-     * @return array tableau associatif de la forme ['droit' => boolean, 'distances' => []]
+     * @return array tableau associatif de la forme
+     *         ['droit' => ..., 'distances' => ..., 'etablissementsAyantDroit' => [int]]
      */
     private function domicilesEcole($niveau, $domiciles, $ecole)
     {
@@ -399,17 +486,23 @@ class CalculDroits implements FactoryInterface
             }
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             return $etablissementId;
-        } catch (\Exception $e) {
-            die(var_dump(__METHOD__, $e->getMessage(), $e->getTraceAsString()));
         }
     }
 
     /**
-     * distanceMatrix, plusieurs origines, plusieurs destinations
+     * fncDistanceMatrix, plusieurs origines, plusieurs destinations
      *
-     * @param Point $etablissement            
-     * @param array(Point) $aOrigines            
-     * @param array(Point) $aDestinations            
+     * @param Point $etablissement
+     *            établissement où l'élève est inscrit
+     * @param array(Point) $aOrigines
+     *            liste des domiciles de l'élève
+     * @param array(Point) $aDestinations
+     *            liste des établissements du niveau de l'élève (parfois restreints dans un RPI)
+     *            
+     * @return array Tableau de la forme
+     *         ['droit' => ..., 'distances' => ..., 'etablissementsAyantDroit' => [int]]
+     *        
+     * @throws \SbmCartographie\GoogleMaps\ExceptionNoAnwser ou \Exception
      */
     private function fncDistanceMatrix($etablissement, $aOrigines, $aDestinations)
     {
@@ -420,9 +513,7 @@ class CalculDroits implements FactoryInterface
             0
         ];
         try {
-            $url = $this->oDistanceMatrix->getUrlGoogleApiDistanceMatrix($aOrigines, 
-                $aDestinations);
-            $obj = json_decode(@file_get_contents($url));
+            $obj = $this->oDistanceMatrix->getJsonResult($aOrigines, $aDestinations);
             if ($obj) {
                 if ($obj->status == 'OK') {
                     $i = 0;
@@ -456,11 +547,13 @@ class CalculDroits implements FactoryInterface
                             $etablissement->getAttribute('classeId'));
                         $droit |= $etablissement->getAttribute('etablissementId') ==
                              $procheEtablissementId;
+                        $etablissementsAyantDroit[] = $procheEtablissementId;
                         $i ++;
                     }
                     return [
                         'droit' => $droit,
-                        'distances' => $distances
+                        'distances' => $distances,
+                        'etablissementsAyantDroit' => $etablissementsAyantDroit
                     ];
                 } else {
                     throw new GoogleMaps\Exception(
@@ -479,8 +572,8 @@ class CalculDroits implements FactoryInterface
      * Méthode à utiliser en début d'année ou en cours d'année s'il n'y a pas de changement d'établissement scolaire.
      * Cette méthode permet de ne pas perdre les droits acquis en cours d'année.
      *
-     * @param int $eleveId      
-     * @param bool $gardeDistance      
+     * @param int $eleveId            
+     * @param bool $gardeDistance            
      */
     public function majDistancesDistrictSansPerte($eleveId, $gardeDistance = true)
     {
@@ -501,13 +594,13 @@ class CalculDroits implements FactoryInterface
     /**
      * Méthode à utiliser s'il y a changement d'établissement scolaire en cours d'année.
      *
-     * @param int $eleveId   
-     * @param bool $gardeDistance         
+     * @param int $eleveId            
+     * @param bool $gardeDistance            
      */
     public function majDistancesDistrict($eleveId, $gardeDistance = true)
     {
         // à faire au début puisque la méthode met aussi à jour la propriété 'distance'
-        $district = $this->distancesDistrict($eleveId, $gardeDistance);
+        $droit = $this->distancesDistrict($eleveId, $gardeDistance);
         $oData = $this->tScolarites->getObjData();
         $oData->exchangeArray(
             [
@@ -515,7 +608,7 @@ class CalculDroits implements FactoryInterface
                 'eleveId' => $eleveId,
                 'distanceR1' => round($this->distance['R1'], 1),
                 'distanceR2' => round($this->distance['R2'], 1),
-                'district' => $district ? 1 : 0
+                'district' => $droit ? 1 : 0
             ]);
         $this->tScolarites->saveRecord($oData);
     }
