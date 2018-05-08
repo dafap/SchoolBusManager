@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 2 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmParent\Model\Db\Service\Query;
 
@@ -76,6 +76,15 @@ class Eleves implements FactoryInterface
         return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 
+    /**
+     * Donne les informations (tables eleves, scolarites, etablissements, communes) 
+     * d'une scolarité précédant le millésime courant. S'il y en a plusieurs, donne
+     * la plus récente.
+     * 
+     * @param int $eleveId
+     * 
+     * @return array
+     */
     public function getEleve($eleveId)
     {
         $where = new Where();
@@ -171,9 +180,15 @@ class Eleves implements FactoryInterface
             [
                 'communeEtablissement' => 'nom'
             ])
-            ->where($where);
+            ->where($where)
+            ->order('millesime DESC');
         $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute()->current();
+        try {
+            return $statement->execute()->current();
+        } catch (Exception $e) {
+            return [];
+        }
+        
     }
 
     /**
