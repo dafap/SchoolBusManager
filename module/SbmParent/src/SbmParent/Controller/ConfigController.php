@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 5 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmParent\Controller;
 
@@ -406,7 +406,7 @@ class ConfigController extends AbstractActionController
                 'responsable' => $responsable,
                 'form' => $form->prepare(),
                 'config' => $configCarte,
-                'url_api' => $this->cartographie_manager->get('google_api')['js']
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
             ]);
     }
 } 
