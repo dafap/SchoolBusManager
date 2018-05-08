@@ -15,7 +15,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
+ * @date 4 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmParent\Controller;
@@ -38,13 +38,43 @@ use SbmParent\Model\OutilsInscription;
 class IndexController extends AbstractActionController
 {
 
+    /**
+     * Place des commentaires sur l'écran suite à une demande de transport ne correspondant
+     * pas à un établissement auquel on a droit.
+     * Une dérogation est nécessaire.
+     *
+     * @param array $cr            
+     */
+    private function warningDerogationNecessaire($cr)
+    {
+        if (array_key_exists('message', $cr)) {
+            $message1 = $cr['message'];
+        } else {
+            if (count($cr['etablissements']) > 1) {
+                $format = 'Les établissements auxquels vous avez droit sont %s.';
+            } else {
+                $format = 'L\'établissement auquel vous avez droit est %s.';
+            }
+            $listeEtab = [];
+            foreach ($cr['etablissements'] as $etab) {
+                $listeEtab[] = implode(' - ', $etab);
+            }
+            $message1 = sprintf($format, implode(' ou ', $listeEtab));
+        }
+        $this->flashMessenger()->addWarningMessage($message1);
+        $viewhelperTelephone = new \SbmCommun\Form\View\Helper\Telephone();
+        $message2 = 'Pour obtenir une dérogation, prenez contact avec le service de transport';
+        $message2 .= sprintf(' par téléphone au %s ou par mail à %s.', 
+            $viewhelperTelephone($this->client['telephone']), $this->client['email']);
+        $this->flashMessenger()->addInfoMessage($message2);
+    }
+
     public function indexAction()
     {
         try {
             $responsable = $this->responsable->get();
         } catch (\Exception $e) {
-            if ($this->authenticate->by()->hasIdentity() &&
-                 (($e instanceof CreateResponsableException) ||
+            if ($this->authenticate->by()->hasIdentity() && (($e instanceof CreateResponsableException) ||
                  ($e->getPrevious() instanceof CreateResponsableException))) {
                 // il faut créer un responsable associé car la demande vient d'un gestionnaire ou autre administrateur
                 $this->flashMessenger()->addErrorMessage(
@@ -161,18 +191,25 @@ class IndexController extends AbstractActionController
                 $data['dateDebut'] = $as['dateDebut'];
                 $data['dateFin'] = $as['dateFin'];
                 // Enregistre la scolarité
+                $cr = [];
                 if ($outils->saveScolarite($data, $eleveId)) {
                     $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
                         'Sbm\CalculDroitsTransport');
                     $majDistances->majDistancesDistrict($eleveId, false);
+                    $cr = $majDistances->getCompteRendu();
                 }
-                if ($args['fa']) {
-                    $this->flashMessenger()->addSuccessMessage('L\'enfant est inscrit.');
+                if (empty($cr)) {
+                    if ($args['fa']) {
+                        $this->flashMessenger()->addSuccessMessage(
+                            'L\'enfant est inscrit.');
+                    } else {
+                        $this->flashMessenger()->addSuccessMessage(
+                            'L\'enfant est enregistré.');
+                        $this->flashMessenger()->addWarningMessage(
+                            'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                    }
                 } else {
-                    $this->flashMessenger()->addSuccessMessage(
-                        'L\'enfant est enregistré.');
-                    $this->flashMessenger()->addWarningMessage(
-                        'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                    $this->warningDerogationNecessaire($cr);
                 }
                 return $this->redirect()->toRoute('sbmparent');
             }
@@ -205,7 +242,7 @@ class IndexController extends AbstractActionController
     public function editEleveAction()
     {
         try {
-            $responsable = $this->responsable->get();
+            $auth_responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', 
@@ -242,8 +279,8 @@ class IndexController extends AbstractActionController
         }
         $isPost = array_key_exists('submit', $args);
         $eleveId = $args['id'];
-        $outils = new OutilsInscription($this->db_manager, $responsable->responsableId, 
-            $authUserId, $eleveId);
+        $outils = new OutilsInscription($this->db_manager, 
+            $auth_responsable->responsableId, $authUserId, $eleveId);
         $form = $this->form_manager->get(Form\Enfant::class);
         $form->setAttribute('action', 
             $this->url()
@@ -255,11 +292,15 @@ class IndexController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
             ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
-            ->setValueOptions('joursTransport', Semaine::getJours());
+            ->setValueOptions('joursTransport', Semaine::getJours())
+            ->setValueOptions('communeId', 
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->membres());
         // pour la garde alternée, on doit déterminer si le formulaire sera complet ou non
         // afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout de même
         // responsableId (attention ! dans le post, les champs sont préfixés par r2)
         $formgaComplet = true;
+        $hasGa = false;
         if ($isPost) {
             $hasGa = StdLib::getParam('ga', $args, false);
             if ($hasGa) {
@@ -276,8 +317,11 @@ class IndexController extends AbstractActionController
             if ($hasGa) {
                 $formga->setData($args);
             }
-            // Dans form->isValid(), on refuse si existence d'un élève de même nom, prénom, dateN et n° différent.
-            // formga->isValid() n'est regardé que si hasGa.
+            /**
+             * Dans form->isValid(), on refuse
+             * si existence d'un élève de même nom, prénom, dateN et n° différent.
+             * formga->isValid() n'est regardé que si hasGa.
+             */
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                 // Enregistrement du responsable2 en premier (si on a le droit)
                 if ($hasGa) {
@@ -292,14 +336,31 @@ class IndexController extends AbstractActionController
                 // Enregistrement de l'élève
                 $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
                 // Enregistrement de sa scolarité
+                /**
+                 * Si on change d'établissement, on supprime les affecations reprises
+                 * et on recalcule les droits.
+                 * Mais si on supprime la demandeR2, il faut supprimer les affectations
+                 * la concernant (trajet == 2).
+                 */
+                $cr = [];
                 if ($outils->saveScolarite($form->getData())) {
+                    $outils->supprAffectations();
                     $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
                         'Sbm\CalculDroitsTransport');
                     $majDistances->majDistancesDistrict($eleveId, false);
+                    $cr = $majDistances->getCompteRendu();
+                } elseif (! $form->getData()['demandeR2']) {
+                    // supprime les affectations de responsable2Id si demandeR2 == 0
+                    $outils->supprAffectations(true);
                 }
                 Session::remove('responsable2', $this->getSessionNamespace());
                 Session::remove('post', $this->getSessionNamespace());
-                $this->flashMessenger()->addSuccessMessage('La fiche a été mise à jour.');
+                if (empty($cr)) {
+                    $this->flashMessenger()->addSuccessMessage(
+                        'La fiche a été mise à jour.');
+                } else {
+                    $this->warningDerogationNecessaire($cr);
+                }
                 return $this->redirect()->toRoute('sbmparent');
             }
             $responsable2 = Session::get('responsable2', null, 
@@ -307,6 +368,16 @@ class IndexController extends AbstractActionController
         } else {
             $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve(
                 $eleveId);
+            // adresse personnelle de l'élève
+            if (! empty($data['communeEleveId'])) {
+                $data['ap'] = 1;
+                $data['adresseL1'] = $data['adresseEleveL1'];
+                $data['adresseL2'] = $data['adresseEleveL2'];
+                $data['codePostal'] = $data['codePostalEleve'];
+                $data['communeId'] = $data['communeEleveId'];
+            } else {
+                $data['ap'] = 0;
+            }
             $hasGa = ! is_null($data['responsable2Id']);
             $data['ga'] = $hasGa ? 1 : 0;
             $form->setData($data);
@@ -343,7 +414,7 @@ class IndexController extends AbstractActionController
             [
                 'form' => $form->prepare(),
                 'formga' => $formga->prepare(),
-                'responsable' => $responsable,
+                'responsable' => $auth_responsable,
                 'hasGa' => $hasGa,
                 'responsable2' => $responsable2
             ]);
@@ -659,7 +730,10 @@ class IndexController extends AbstractActionController
                     ->visibles())
                 ->setValueOptions('classeId', 
                 $this->db_manager->get('Sbm\Db\Select\Classes'))
-                ->setValueOptions('joursTransport', Semaine::getJours());
+                ->setValueOptions('joursTransport', Semaine::getJours())
+                ->setValueOptions('communeId', 
+                $this->db_manager->get('Sbm\Db\Select\Communes')
+                    ->membres());
             // pour la garde alternée, on doit déterminer si le formulaire sera complet ou non
             // afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout de même
             // responsableId (attention ! dans le post, les champs sont préfixés par r2)
@@ -677,12 +751,14 @@ class IndexController extends AbstractActionController
             
             if ($isPost) {
                 $form->setData($args);
-                $hasGa = StdLib::getParam('ga', $args, false);
                 if ($hasGa) {
                     $formga->setData($args);
                 }
-                // Dans form->isValid(), on refuse si existence d'un élève de même nom, prénom, dateN et n° différent.
-                // formga->isValid() n'est regardé que si hasGa.
+                /**
+                 * Dans form->isValid(), on refuse
+                 * si existence d'un élève de même nom, prénom, dateN et n° différent.
+                 * formga->isValid() n'est regardé que si hasGa.
+                 */
                 if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                     // Enregistrement du responsable2 en premier (si on a le droit)
                     if ($hasGa) {
@@ -701,30 +777,44 @@ class IndexController extends AbstractActionController
                     $as = Session::get('as');
                     $data['dateDebut'] = $as['dateDebut'];
                     $data['dateFin'] = $as['dateFin'];
+                    $data['demandeR1'] = 1;
+                    $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
                     // Enregistrement de sa scolarité
-                    $change_etablissement = $outils->saveScolarite($data, $eleveId);
+                    $outils->saveScolarite($data, $eleveId);
                     // affectations si l'adresse et la scolarité n'ont pas changé
-                    $change_derogation = $outils->repriseAffectations();
+                    $calculDroitsNecessaire = $outils->repriseAffectations(
+                        $data['demandeR1'], $data['demandeR2']);
                     // mise à jour des droits
-                    if ($change_derogation || $change_etablissement) {
+                    $cr = [];
+                    if ($calculDroitsNecessaire) {
                         $majDistances = $this->local_manager->get(
                             'Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
                         $majDistances->majDistancesDistrict($eleveId, false);
+                        $cr = $majDistances->getCompteRendu();
                     }
                     // compte-rendu et nettoyage de la session
                     Session::remove('responsable2', $this->getSessionNamespace());
                     Session::remove('post', $this->getSessionNamespace());
-                    if ($args['fa']) {
-                        $this->flashMessenger()->addSuccessMessage(
-                            'L\'enfant est inscrit.');
+                    if (empty($cr)) {
+                        if ($args['fa']) {
+                            $this->flashMessenger()->addSuccessMessage(
+                                'L\'enfant est inscrit.');
+                        } else {
+                            $this->flashMessenger()->addSuccessMessage(
+                                'L\'enfant est enregistré.');
+                            $this->flashMessenger()->addWarningMessage(
+                                'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                        }
                     } else {
-                        $this->flashMessenger()->addSuccessMessage(
-                            'L\'enfant est enregistré.');
-                        $this->flashMessenger()->addWarningMessage(
-                            'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                        if ($args['fa']) {
+                            // retirer le paiement
+                            ;
+                        }
+                        $this->warningDerogationNecessaire($cr);
                     }
                     return $this->redirect()->toRoute('sbmparent');
-                }
+                } 
+                // $form->isValid() a échoué
                 $responsable2 = Session::get('responsable2', null, 
                     $this->getSessionNamespace());
             } else {
@@ -736,27 +826,37 @@ class IndexController extends AbstractActionController
                         ->getRecord($eleveId)
                         ->getArrayCopy();
                 }
+                // adresse personnelle de l'élève
+                if (! empty($data['communeEleveId'])) {
+                    $data['ap'] = 1;
+                    $data['adresseL1'] = $data['adresseEleveL1'];
+                    $data['adresseL2'] = $data['adresseEleveL2'];
+                    $data['codePostal'] = $data['codePostalEleve'];
+                    $data['communeId'] = $data['communeEleveId'];
+                } else {
+                    $data['ap'] = 0;
+                }
                 unset($data['classeId']);
                 unset($data['etablissementId']);
                 $hasGa = ! is_null($data['responsable2Id']);
                 $data['ga'] = $hasGa ? 1 : 0;
-                if ($auth_responsable->responsableId ==
-                     StdLib::getParam('responsable2Id', $data, 0)) {
-                    // L'inscription est réalisée par l'ancien responsable2 qui passe responsable1
-                    $r1 = [
-                        'responsableId' => $data['responsable1Id'],
-                        'x1' => $data['x1'],
-                        'y1' => $data['y1']
-                    ];
-                    $data['responsable1Id'] = $data['responsable2Id'];
-                    $data['x1'] = $data['x2'];
-                    $data['y1'] = $data['y2'];
-                    // et l'ancien responsable1 passe responsable 2
-                    $data['responsable2Id'] = $r1['responsableId'];
-                    $data['x2'] = $r1['x2'];
-                    $data['y2'] = $r1['y2'];
-                }
                 if ($hasGa) {
+                    if ($auth_responsable->responsableId ==
+                         StdLib::getParam('responsable2Id', $data, 0)) {
+                        // L'inscription est réalisée par l'ancien responsable2 qui passe responsable1
+                        $r1 = [
+                            'responsableId' => $data['responsable1Id'],
+                            'x' => $data['x1'],
+                            'y' => $data['y1']
+                        ];
+                        $data['responsable1Id'] = $data['responsable2Id'];
+                        $data['x1'] = $data['x2'];
+                        $data['y1'] = $data['y2'];
+                        // et l'ancien responsable1 passe responsable 2
+                        $data['responsable2Id'] = $r1['responsableId'];
+                        $data['x2'] = $r1['x'];
+                        $data['y2'] = $r1['y'];
+                    }
                     try {
                         $responsable2 = $this->db_manager->get('Sbm\Db\Vue\Responsables')
                             ->getRecord($data['responsable2Id'])
@@ -804,7 +904,7 @@ class IndexController extends AbstractActionController
                 'responsable2' => $responsable2,
                 'hasGa' => $hasGa,
                 'form' => $form ? $form->prepare() : $form,
-                'formga' => $formga,
+                'formga' => $formga ? $formga->prepare() : $formga,
                 'sansDateN' => $sansDateN
             ]);
     }
