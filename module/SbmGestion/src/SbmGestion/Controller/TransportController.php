@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2018
+ * @date 8 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -79,11 +79,20 @@ class TransportController extends AbstractActionController
                 'serviceId',
                 'stationId'
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
-        
+        }
+        $millesime = Session::get('millesime');
+        $as = $millesime . '-' . ($millesime + 1);
         $args['where']->equalTo('millesime', Session::get('millesime'));
         $auth = $this->authenticate->by('email');
+        // on cherche si ce millesime a déjà des circuits enregistrés
+        $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+        $resultset = $tCircuits->fetchAll(
+            [
+                'millesime' => $millesime
+            ]);
+        $circuitsVides = $resultset->count() == 0;
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
@@ -92,7 +101,9 @@ class TransportController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
                 'criteres_form' => $args['form'],
-                'admin' => $auth->getCategorieId() > 253
+                'admin' => $auth->getCategorieId() > 253,
+                'as' => $as,
+                'circuitsVides' => $circuitsVides
             ]);
     }
 
@@ -428,7 +439,7 @@ class TransportController extends AbstractActionController
 
     /**
      * Lors de la création d'une nouvelle année scolaire, la table des circuits pour ce millesime est vide.
-     * Cette action reprend les circuits de l'année précédente.
+     * Cette action reprend les circuits de la dernière année connue.
      */
     public function circuitDupliquerAction()
     {
@@ -436,21 +447,15 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $dernierMillesime = $this->db_manager->get('Sbm\Db\System\Calendar')->getDernierMillesime();
-        if ($dernierMillesime != Session::get('millesime')) {
-            $this->flashMessenger()->addInfoMessage(
-                'La génération des circuits d\'une nouvelle année ne peut se faire que si cette année est active.');
-            return $this->redirect()->toRoute('sbmgestion/transport', 
-                [
-                    'action' => 'circuit-liste',
-                    'page' => 1
-                ]);
-        }
-        $millesime = $dernierMillesime - 1;
+        
         $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
-        $where = new Where();
-        $where->equalTo('millesime', $dernierMillesime);
-        $resultset = $tCircuits->fetchAll($where);
+        // millesime en cours pour cette session
+        $millesime = Session::get('millesime');
+        // on cherche si ce millesime a déjà des circuits enregistrés
+        $resultset = $tCircuits->fetchAll(
+            [
+                'millesime' => $millesime
+            ]);
         if ($resultset->count()) {
             $this->flashMessenger()->addErrorMessage(
                 'Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire.');
@@ -460,21 +465,69 @@ class TransportController extends AbstractActionController
                     'page' => 1
                 ]);
         }
-        unset($where);
+        // on cherche le dernier millesime dans les circuits
+        $dernierMillesimeCircuits = $tCircuits->getDernierMillesime();
+        
         $where = new Where();
-        $where->equalTo('millesime', $millesime);
+        $where->equalTo('millesime', $dernierMillesimeCircuits);
         $resultset = $tCircuits->fetchAll($where);
         foreach ($resultset as $row) {
             $row->circuitId = null;
-            $row->millesime = $dernierMillesime;
+            $row->millesime = $millesime;
             $tCircuits->saveRecord($row);
         }
         $this->flashMessenger()->addSuccessMessage(
-            'Les circuits de la dernière année scolaire sont générés.');
+            'Les circuits de cette année scolaire viennent d\'être générés.');
         return $this->redirect()->toRoute('sbmgestion/transport', 
             [
                 'action' => 'circuit-liste',
                 'page' => 1
+            ]);
+    }
+
+    /**
+     * Supprime les circuits de l'année scolaire en session
+     */
+    public function circuitViderAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        $millesime = Session::get('millesime');
+        $form = new ButtonForm([
+            'id' => null
+        ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        $confirme = StdLib::getParam('supproui', $args, false);
+        $cancel = StdLib::getParam('supprnon', $args, false);
+        if ($cancel || $confirme) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                if ($confirme) {
+                    $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+                    $tCircuits->viderMillesime($millesime);
+                }
+                return $this->redirect()->toRoute('sbmgestion/transport', 
+                    [
+                        'action' => 'circuit-liste'
+                    ]);
+            }
+        }
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'as' => $millesime . '-' . ($millesime + 1)
             ]);
     }
 
@@ -749,8 +802,7 @@ class TransportController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -1041,8 +1093,7 @@ class TransportController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -1128,17 +1179,19 @@ class TransportController extends AbstractActionController
      * La localisation géographique est dans un rectangle défini dans la config (voir config/autoload/sbm.local.php)
      * (paramètres dans cartes - etablissements - valide)
      *
+     * @param string $nature
+     *            Prend les valeurs 'etablissement' ou 'station'
+     *            
      * @return string
      */
-    private function critereLocalisation()
+    private function critereLocalisation($nature)
     {
         $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
         $pasLocalisaton = 'Not((x Between %d And %d) And (y Between %d And %d))';
-        return sprintf($pasLocalisaton, $rangeX['etablissements'][0], 
-            $rangeX['etablissements'][1], $rangeY['etablissements'][0], 
-            $rangeY['etablissements'][1]);
+        return sprintf($pasLocalisaton, $rangeX[$nature][0], $rangeX[$nature][1], 
+            $rangeY[$nature][0], $rangeY[$nature][1]);
     }
 
     /**
@@ -1151,7 +1204,7 @@ class TransportController extends AbstractActionController
     {
         $args = $this->initListe('etablissements', null, [], 
             [
-                'localisation' => 'Literal:' . $this->critereLocalisation()
+                'localisation' => 'Literal:' . $this->critereLocalisation('etablissement')
             ]);
         if ($args instanceof Response)
             return $args;
@@ -1375,8 +1428,7 @@ class TransportController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -1418,7 +1470,8 @@ class TransportController extends AbstractActionController
             'SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'expressions' => [
-                    'localisation' => 'Literal:' . $this->critereLocalisation()
+                    'localisation' => 'Literal:' .
+                         $this->critereLocalisation('etablissement')
                 ]
             ],
             function ($where, $args) {
@@ -1554,7 +1607,8 @@ class TransportController extends AbstractActionController
         } else {
             $args = [];
         }
-        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
         $configCarte = StdLib::getParam('etablissement', 
             $this->cartographie_manager->get('cartes'));
@@ -1641,7 +1695,8 @@ class TransportController extends AbstractActionController
             if ($autreEtablissement->etablissementId != $etablissementId) {
                 $pt = new Point($autreEtablissement->x, $autreEtablissement->y);
                 $pt->setAttribute('etablissement', $autreEtablissement);
-                $ptEtablissements[] = $oDistanceMatrix->getProjection()->xyzVersgRGF93($pt);
+                $ptEtablissements[] = $oDistanceMatrix->getProjection()->xyzVersgRGF93(
+                    $pt);
             }
         }
         return new ViewModel(
@@ -1661,7 +1716,7 @@ class TransportController extends AbstractActionController
                     $etablissement->codePostal . ' ' . $commune->nom
                 ],
                 'ptEtablissements' => $ptEtablissements,
-                'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
                 'config' => $configCarte
             ]);
     }
@@ -1698,8 +1753,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -1743,8 +1797,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $serviceId = Session::get('serviceId', false, 
-                $this->getSessionNamespace());
+            $serviceId = Session::get('serviceId', false, $this->getSessionNamespace());
         } else {
             $args = $prg;
             if (StdLib::getParam('op', $args, '') == 'retour') {
@@ -1758,8 +1811,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -1985,8 +2037,7 @@ class TransportController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -2254,8 +2305,7 @@ class TransportController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -2376,7 +2426,7 @@ class TransportController extends AbstractActionController
                 'communeId'
             ], 
             [
-                'localisation' => 'Literal:' . $this->critereLocalisation()
+                'localisation' => 'Literal:' . $this->critereLocalisation('station')
             ]);
         if ($args instanceof Response)
             return $args;
@@ -2622,7 +2672,8 @@ class TransportController extends AbstractActionController
         // même configuration de carte que pour les etablissements
         $configCarte = StdLib::getParam('station', 
             $this->cartographie_manager->get('cartes'));
-        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $formCarte = new LatLngForm(
             [
                 'phase' => 1,
@@ -2728,7 +2779,7 @@ class TransportController extends AbstractActionController
                         'Création d\'une nouvelle station'
                     ],
                     'ptStations' => $ptStations,
-                    'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                    'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
                     'config' => $configCarte
                 ]);
             $view->setTemplate('sbm-gestion/transport/station-localisation.phtml');
@@ -2799,8 +2850,7 @@ class TransportController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -2897,7 +2947,7 @@ class TransportController extends AbstractActionController
                     'communeId'
                 ],
                 'expressions' => [
-                    'localisation' => 'Literal:' . $this->critereLocalisation()
+                    'localisation' => 'Literal:' . $this->critereLocalisation('station')
                 ]
             ]
         ];
@@ -3003,7 +3053,8 @@ class TransportController extends AbstractActionController
                     ]);
             }
         }
-        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $stationId = $args['stationId'];
         $tStations = $this->db_manager->get('Sbm\Db\Table\Stations');
         // même configuration de carte que pour les etablissements
@@ -3102,7 +3153,7 @@ class TransportController extends AbstractActionController
                     $commune->codePostal . ' ' . $commune->nom
                 ],
                 'ptStations' => $ptStations,
-                'url_api' => $this->cartographie_manager->get('google_api')['js'],
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
                 'config' => $configCarte
             ]);
     }
@@ -3367,8 +3418,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -3420,8 +3470,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
