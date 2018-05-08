@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
+ * @date 8 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmAdmin\Controller;
@@ -623,7 +623,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
         
-        $r = $this->supprData($this->db_manage, $params, 
+        $r = $this->supprData($this->db_manager, $params, 
             function ($id, $tUsers) {
                 return [
                     'id' => $id,
