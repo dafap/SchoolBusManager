@@ -7,8 +7,8 @@
  * @filesource DistanceMatrix.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 6 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -26,6 +26,13 @@ class DistanceMatrix
     private $google_distancematrix_url;
 
     /**
+     * Contexte de flux nécessaire pour les appels ssl
+     * 
+     * @var \resource
+     */
+    private $context;
+
+    /**
      *
      * @var SbmCartographie\Projection\ProjectionInterface
      */
@@ -35,6 +42,30 @@ class DistanceMatrix
     {
         $this->projection = $projection;
         $this->google_distancematrix_url = $google_api_distanceMatrix;
+        $cafile = __DIR__ . '/../../../config/cacert.pem';
+        $this->context = stream_context_create(
+            [
+                'ssl' => [
+                    'cafile' => $cafile
+                ]
+            ]);
+    }
+
+    /**
+     * Centralisation des appels à l'API
+     * 
+     * @param array(Point)|Point $origines
+     * @param array(Point)|Point $destinations
+     * 
+     * @return mixed 
+     * @see json_decode
+     */
+    public function getJsonResult($origines, $destinations)
+    {
+        return json_decode(
+            file_get_contents(
+                $this->getUrlGoogleApiDistanceMatrix($origines, $destinations), false, 
+                $this->context));
     }
 
     /**
@@ -55,7 +86,7 @@ class DistanceMatrix
      * @param array(Point)|Point $destinations            
      * @return string
      */
-    public function getUrlGoogleApiDistanceMatrix($origines, $destinations)
+    private function getUrlGoogleApiDistanceMatrix($origines, $destinations)
     {
         try {
             $url = sprintf($this->google_distancematrix_url, 
@@ -69,7 +100,8 @@ class DistanceMatrix
             ob_start();
             var_dump($destinations);
             $sDestinations = ob_get_clean();
-            $msg = sprintf("%s(%s, %s) : %s", __METHOD__, $sOrigines, $sDestinations, $e->getTraceAsString());
+            $msg = sprintf("%s(%s, %s) : %s", __METHOD__, $sOrigines, $sDestinations, 
+                $e->getTraceAsString());
             throw new Exception($msg, 0, $e);
         }
     }
@@ -149,9 +181,7 @@ class DistanceMatrix
     public function calculDistance(Point $origine, Point $destination)
     {
         $d = null;
-        $obj = json_decode(
-            @file_get_contents(
-                $this->getUrlGoogleApiDistanceMatrix($origine, $destination)));
+        $obj = $this->getJsonResult($origine, $destination);
         if ($obj) {
             if ($obj->status == 'OK') {
                 
@@ -193,9 +223,8 @@ class DistanceMatrix
                      gettype($origines));
         }
         $result = [];
-        $obj = json_decode(
-            @file_get_contents(
-                $this->getUrlGoogleApiDistanceMatrix($origines, $destination)));
+        $obj = $this->getJsonResult($origines, $destination);
+        var_dump($obj);
         if ($obj) {
             if ($obj->status == 'OK') {
                 for ($j = 0; $j < count($obj->rows); $j ++) {
@@ -238,9 +267,8 @@ class DistanceMatrix
                      gettype($destinations));
         }
         $result = [];
-        $obj = json_decode(
-            @file_get_contents(
-                $this->getUrlGoogleApiDistanceMatrix($origine, $destinations)));
+        $obj = $this->getJsonResult($origine, $destinations);
+        var_dump($obj);
         if ($obj) {
             if ($obj->status == 'OK') {
                 for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {

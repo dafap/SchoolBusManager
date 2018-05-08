@@ -7,8 +7,8 @@
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 8 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -30,7 +30,19 @@ class Geocoder
      */
     private $google_geocoder_url;
 
+    /**
+     * URL d'appel de l'API reversegeocoder (service)
+     *
+     * @var string
+     */
     private $google_reversegeocoder_url;
+
+    /**
+     * Contexte de flux nécessaire pour les appels ssl
+     *
+     * @var \resource
+     */
+    private $context;
 
     public function __construct($projection, $google_api)
     {
@@ -38,6 +50,13 @@ class Geocoder
         $this->google_geocoder_url = StdLib::getParam('geocoder', $google_api);
         $this->google_reversegeocoder_url = StdLib::getParam('reversegeocoder', 
             $google_api);
+        $cafile = __DIR__ . '/../../../config/cacert.pem';
+        $this->context = stream_context_create(
+            [
+                'ssl' => [
+                    'cafile' => $cafile
+                ]
+            ]);
     }
 
     /**
@@ -55,7 +74,7 @@ class Geocoder
     {
         $ligneAdresse = sprintf('%s,%05s %s', $adresse, $codePostal, $commune);
         $url = sprintf($this->google_geocoder_url, urlencode($ligneAdresse));
-        $reponse = json_decode(@file_get_contents($url));
+        $reponse = json_decode(@file_get_contents($url, false, $this->context));
         $lat = 0;
         $lng = 0;
         $formatted_address = "pas trouvé";
@@ -76,7 +95,7 @@ class Geocoder
                 }
             }
         } else {
-            throw new ExceptionNotAnswer('GoogleMaps API ne répond pas');
+            throw new ExceptionNoAnswer('GoogleMaps API ne répond pas');
         }
         return [
             'lat' => $lat,
@@ -98,7 +117,7 @@ class Geocoder
     public function reverseGeocoding($lat, $lng)
     {
         $url = sprintf($this->google_reversegeocoder_url, $lat, $lng);
-        $reponse = json_decode(@file_get_contents($url), true);
+        $reponse = json_decode(@file_get_contents($url, false, $this->context), true);
         if ($reponse) {
             if (is_array($reponse) && $reponse['status'] == "OK") {
                 $location = [
@@ -146,7 +165,7 @@ class Geocoder
                     'Impossible de trouver les l\'adresse postale de ce lieu.');
             }
         } else {
-            throw new ExceptionNotAnswer('GoogleMaps API ne répond pas');
+            throw new ExceptionNoAnswer('GoogleMaps API ne répond pas');
         }
     }
 }
