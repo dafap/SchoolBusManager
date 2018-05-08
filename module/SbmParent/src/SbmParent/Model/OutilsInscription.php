@@ -10,7 +10,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2018
+ * @date 3 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmParent\Model;
@@ -54,19 +54,18 @@ class OutilsInscription
     private $responsableId;
 
     /**
+     *
+     * @var \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
+     */
+    private $scolariteAnneePrecedente;
+
+    /**
      * userId de la personne authentifiée.
      * Correspond à $sm->get('SbmAuthentification\Authentication')->by('email')->getUserId()
      *
      * @var int
      */
     private $userId;
-
-    /**
-     * indique s'il faut supprimer la dérogation (changement de domicile ou d'établissement)
-     *
-     * @var boolean
-     */
-    private $suppr_derogation;
 
     /**
      *
@@ -85,7 +84,24 @@ class OutilsInscription
         $this->responsableId = $responsableId;
         $this->userId = $userId;
         $this->eleveId = $eleveId;
-        $this->suppr_derogation = false;
+    }
+
+    private function getScolariteAnneePrecedente()
+    {
+        if ($this->eleveId) {
+            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+            try {
+                $this->scolariteAnneePrecedente = $tScolarites->getRecord(
+                    [
+                        'millesime' => $this->millesime - 1,
+                        'eleveId' => $this->eleveId
+                    ])->getArrayCopy();
+            } catch (Exception $e) {
+                $this->scolariteAnneePrecedente = [];
+            }
+        } else {
+            $this->scolariteAnneePrecedente = [];
+        }
     }
 
     /**
@@ -145,7 +161,7 @@ class OutilsInscription
      *
      * @return <b>int</b> : le responsableId enregistré, que ce soit un nouvel enregistrement
      *         ou la modification d'un ancien
-     * 
+     *        
      * @throws \Exception
      */
     public function saveResponsable($data)
@@ -236,6 +252,8 @@ class OutilsInscription
      *
      * @param array $data
      *            tableau de données contenant la scolarité
+     * @param int|null $eleveId
+     *            ne doit être passé que pour une réinscription
      *            
      * @return <b>boolean</b> : indicateur de recalcul de distances
      */
@@ -255,8 +273,6 @@ class OutilsInscription
                 'eleveId' => $eleveId,
                 'inscrit' => 1,
                 'paiement' => 0,
-                'demandeR1' => 1,
-                'demandeR2' => $data['demandeR2'] ? 1 : 0,
                 'internet' => 1,
                 'duplicata' => 0,
                 'anneeComplete' => 1,
@@ -270,6 +286,31 @@ class OutilsInscription
         return $tScolarites->saveRecord($oData);
     }
 
+    private function repriseDistancesDistrictPrecedents()
+    {
+        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        try {
+            // recherche la scolarité de l'année précédente
+            $oDataPrecedent = $tScolarites->getRecord(
+                [
+                    'millesime' => $this->millesime - 1,
+                    'eleveId' => $this->eleveId
+                ]);
+            // recherche la scolarité de l'année en cours
+            $oData = $tScolarites->getRecord(
+                [
+                    'millesime' => $this->millesime,
+                    'eleveId' => $this->eleveId
+                ]);
+            // reprise de données
+            $oData->distanceR1 = $oDataPrecedent->distanceR1;
+            $oData->distanceR2 = $oDataPrecedent->distanceR2;
+            $oData->district = $oDataPrecedent->district;
+            // enregistrement
+            $tScolarites->updateRecord($oData);
+        } catch (Exception $e) {}
+    }
+
     /**
      * Cette méthode renvoie un booléen indiquant qu'il faut recalculer les droits si
      * si un domicile ou l'établissement ont changé.
@@ -280,26 +321,30 @@ class OutilsInscription
      *
      * @return boolean
      */
-    public function repriseAffectations()
+    public function repriseAffectations($demandeR1, $demandeR2)
     {
-        $eleve = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord($this->eleveId);
-        // affectations de l'année précédentes
-        $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll(
-            [
-                'millesime' => $this->millesime - 1,
-                'eleveId' => $this->eleveId
-            ]);
-        if ($affectations->count()) {
-            // il y a des affectations. Faut-il les reprendre ?
-            $this->repriseAffectationsPour($affectations, $eleve->responsable1Id, 1);
-            if ($eleve->responsable2Id) {
-                $this->repriseAffectationsPour($affectations, $eleve->responsable2Id, 2);
+        $calculDroits = true; // indique s'il faut recalculer les droits et les distances
+        if ($this->memeEtablissement()) {
+            $eleve = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord(
+                $this->eleveId);
+            // affectations de l'année précédentes
+            $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll(
+                [
+                    'millesime' => $this->millesime - 1,
+                    'eleveId' => $this->eleveId
+                ]);
+            if ($affectations->count()) {
+                // il y a des affectations. Faut-il les reprendre ?
+                $calculDroits = $this->repriseAffectationsPour($affectations, 
+                    $eleve->responsable1Id, $eleve->responsable2Id, $demandeR1, $demandeR2);
             }
         }
-        if ($this->suppr_derogation) {
+        if ($calculDroits) {
             $this->supprDerogation();
+        } else {
+            $this->repriseDistancesDistrictPrecedents();
         }
-        return $this->suppr_derogation;
+        return $calculDroits;
     }
 
     /**
@@ -308,31 +353,65 @@ class OutilsInscription
      *
      * @param \Zend\Db\ResultSet\HydratingResultSet $affectations
      *            Les affectations de l'élève l'année antérieure
-     * @param int $responsableId
-     *            L'identifiant du responsable concerné
+     * @param int $responsable1Id
+     *            L'identifiant du responsable 1
+     * @param int $responsable2Id
+     *            L'identifiant du responsable 2
+     * @param bool $demandeR1
+     *            Demande de transport sur le trajet 1 (domicile du responsable 1)
+     * @param bool $demandeR2
+     *            Demande de transport sur le trajet 2 (domicile du responsable 2)
      * @param int $trajet
      *            1 pour le parent n°1 : 2 pour le parent n°2 en cas de garde alternée
      */
-    private function repriseAffectationsPour($affectations, $responsableId, $trajet)
+    private function repriseAffectationsPour($affectations, $responsable1Id, 
+        $responsable2Id, $demandeR1, $demandeR2)
     {
-        $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
-            $responsableId);
-        if ($this->memeDomicile($responsable) && $this->memeEtablissement()) {
-            $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
-            foreach ($affectations as $oaffectation) {
-                if ($oaffectation->responsableId == $responsableId) {
-                    $oaffectation->millesime = $this->millesime;
-                    $oaffectation->trajet = $trajet;
-                    $tAffectations->saveRecord($oaffectation);
-                }
+        $responsable1 = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+            $responsable1Id);
+        $memeDomicileR1 = $this->memeDomicile($responsable1);
+        $responsable2 = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+            $responsable2Id);
+        $memeDomicileR2 = $this->memeDomicile($responsable2);
+        $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
+        $reprise1 = $reprise2 = false;
+        foreach ($affectations as $oaffectation) {
+            // pour les affectations du responsable 1 à reprendre
+            if ($demandeR1 && $memeDomicileR1 &&
+                 $oaffectation->responsableId == $responsable1Id) {
+                $oaffectation->millesime = $this->millesime;
+                $oaffectation->trajet = 1; // au cas où il y aurait inversion des responsables 1 et 2
+                $tAffectations->saveRecord($oaffectation);
+                $reprise1 = true;
             }
-        } else {
-            $this->suppr_derogation = true;
+            // pour les affectations du responsable 2 à reprendre
+            if ($demandeR2 && $memeDomicileR2 &&
+                 $oaffectation->responsableId == $responsable2Id) {
+                $oaffectation->millesime = $this->millesime;
+                $oaffectation->trajet = 2; // au cas où il y aurait inversion des responsables 1 et 2
+                $tAffectations->saveRecord($oaffectation);
+                $reprise2 = true;
+            }
         }
+        /**
+         * Le calcul des droits est nécessaire si
+         * - il y a une demandeR1 et responsable1Id n'est pas 0 et pas de reprise1
+         * ou
+         * - il y a une demandeR2 et responsable2Id n'est pas 0 et pas de reprise2
+         */
+        $calculDroitsNecessaire = false;
+        if ($demandeR1 && $responsable1Id) {
+            $calculDroitsNecessaire = ! $reprise1;
+        }
+        if ((! $calculDroitsNecessaire) && $demandeR2 && $responsable2Id) {
+            $calculDroitsNecessaire = ! $reprise2;
+        }
+        return $calculDroitsNecessaire;
     }
 
     /**
      * Indique si le responsable a le même domicile depuis le début de l'année scolaire précédente
+     * (memeDomicile si pas de déménagement ou dateDéménagement avant dateDébut de l'AS précédente)
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $responsable            
      *
@@ -358,7 +437,8 @@ class OutilsInscription
     }
 
     /**
-     * Indique si l'élève a le même établissement que l'année précédente.
+     * Indique si l'élève enregistré dans la table scolarites a le même établissement
+     * que l'année précédente.
      *
      * @return boolean
      */
@@ -376,5 +456,31 @@ class OutilsInscription
     {
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $tScolarites->setDerogation($this->millesime, $this->eleveId, 0);
+    }
+
+    /**
+     * Supprime les affectations de cet élève pour ce millesime parce qu'il y a eu
+     * un changement d'établissement ou parce que le responsable2 ne demande plus de
+     * transport.
+     *
+     * @param bool $r2seulement            
+     */
+    public function supprAffectations($r2seulement = false)
+    {
+        $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
+        if ($r2seulement) {
+            $tAffectations->getTableGateway()->delete(
+                [
+                    'millesime' => $this->millesime,
+                    'eleveId' => $this->eleveId,
+                    'trajet' => 2
+                ]);
+        } else {
+            $tAffectations->getTableGateway()->delete(
+                [
+                    'millesime' => $this->millesime,
+                    'eleveId' => $this->eleveId
+                ]);
+        }
     }
 }
