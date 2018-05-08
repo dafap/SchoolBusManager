@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 5 mai 2018
+ * @version 2018-2.4.1
  */
 use SbmCartographie\Controller;
 use SbmCartographie\Model\Service\CartographieManager;
@@ -57,11 +57,14 @@ return [
             Projection::class => ProjectionFactory::class
         ],
         'services' => [
-            'google_api' => [
+            'google_api_serveur' => [
                 'directions' => 'https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&alternatives=true&sensor=false',
                 'distancematrix' => 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=car&language=fr-FR&sensor=false',
                 'geocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?address=%s',
                 'reversegeocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=true'
+            ],
+            'google_api_browser' => [
+                'js' => 'https://maps.google.com/maps/api/js'
             ]
         ]
     ],

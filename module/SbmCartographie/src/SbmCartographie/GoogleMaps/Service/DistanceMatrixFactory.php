@@ -9,8 +9,8 @@
  * @filesource DistanceMatrixFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2018
- * @version 2018-2.4.0
+ * @date 5 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCartographie\GoogleMaps\Service;
 
@@ -30,7 +30,7 @@ class DistanceMatrixFactory implements FactoryInterface
             StdLib::getParam('system', $cartographie), ProjectionInterface::class);
         $nzone = StdLib::getParam('nzone', $cartographie, 0);
         $google_api_distanceMatrix = StdLib::getParam('distancematrix', 
-            $serviceLocator->get('google_api'));
+            $serviceLocator->get('google_api_serveur'));
         return new DistanceMatrix(new $projection($nzone), $google_api_distanceMatrix);
     }
 }
