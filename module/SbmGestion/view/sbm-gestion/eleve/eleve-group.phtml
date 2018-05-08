@@ -2,45 +2,161 @@
 /**
  * Page de consultation des inscrits ayant le même responsable
  * 
- * CETTE PAGE NE SERT PLUS !
- * =========================
- * (remplacée par un appel à eleve-liste.phtml avec un where convenable)
  *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 7 mai 2018
+ * @version 2018-2.4.1
  */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+// $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+
+// le paginateur
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+try {
+    $eleves = $this->paginator->getCurrentItems();
+} catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+    ?>
+<div id="liste-wrapper">
+	<div id="liste-inner">
+		<pre>
+	  <?php echo $e->getMessage();?>
+	</pre>
+	</div>
+	<div id="liste-footer"></div>
+</div>
+<?php
+} // fin de catch
+  // ===== partie sans erreur du paginateur========
+$afficheRouge = false;
 $url_ici = $this->url('sbmgestion/eleve', 
     [
         'action' => 'eleve-group',
         'page' => $this->page
     ]);
+$url_rapports = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-groupe-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-liste',
+        'page' => $this->pageRetour
+    ]);
+
+// définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
+$hiddens = [
+    'op' => $this->groupe
+];
+
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/eleve', [
+        'action' => 'eleve-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
+
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_ici,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content']
+];
 ?>
-<h1>Groupe des élèves inscrits ayant comme responsable 1</h1>
+<h1>Fratrie de <?= $this->eleve;?></h1>
 <div class="groupe-wrapper">
 	<div class="header-wrapper">
-		<ul>
-			<li><?php echo $this->escapehtml($this->datagroup->nom); ?> <?php echo $this->escapehtml($this->datagroup->prenom); ?></li>
-			<li>habitant <?php echo $this->escapehtml($this->datagroup->adressL1); ?> à <?php echo $this->escapehtml($this->datagroup->commune); ?></li>
-		</ul>
+		<div id="liste-header" class="clearfix">
+			<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+			<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+			</div>
+		</div>
 	</div>
 	<div class="liste-wrapper">
-		<div class="zone-actions">
-			<a href="<?php echo $retour; ?>" class="bouton"
-				title="retour à la liste des eleves"><i class="fam-door-out"></i>
-				Retour</a>
-		</div>
-		<table class="liste-inner">
-			<tbody>
-			</tbody>
-		</table>
+		<div class="zone-actions"></div>
+		<div id="liste-inner">
+			<table class="eleves">
+				<tbody>
+					<tr>
+						<th></th>
+						<th>Dernière année</th>
+						<th>Numéro</th>
+						<th>Nom</th>
+						<th>Prénom</th>
+						<th>Né(e) le</th>
+						<th title="garde alternée">G.A.</th>
+						<th>Etablissement scolaire</th>
+						<th>Classe</th>
+						<th>Services</th>
+						<th>Arrêts</th>
+						<th></th>
+					</tr>
+					<?php foreach($eleves as $test => $eleve): ?>
+					<?php
+        // tr css
+        $tr_css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        if (! $eleve['inscrit'] || ! $eleve['scolarise']) {
+            $tr_css .= ' barre';
+        }
+        if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) {
+            $rouge = $eleve['accordR1'] + $eleve['accordR2'] == 0;
+        } else {
+            $rouge = ($eleve['district'] == 0 && $eleve['derogation'] == 0) ||
+                 ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) ||
+                 ($eleve['distanceR1'] < 1.0 && $eleve['distanceR2'] < 1.0);
+        }
+        if ($rouge) {
+            $tr_css .= ' alert';
+            $afficheRouge = true;
+        }
+        $derniereAs = $eleve['max_millesime'] . '-' . ($eleve['max_millesime'] + 1);
+        ?>
+					<tr class="<?php echo $tr_css;?>">
+						<td class="pictogramme"></td>
+						<td class="centre"><?=  $derniereAs;?></td>
+						<td class="numero"><?= $eleve['numero'];?></td>
+						<td class="nom"><?= $this->escapeHtml($eleve['nom']);?></td>
+						<td class="prenom"><?= $this->escapeHtml($eleve['prenom']);?></td>
+						<td class="dateN"><?= DateLib::formatDateFromMysql($eleve['dateN']);?></td>
+						<td class="ga"><?= $eleve['responsable2Id'] ? 'G.A.' : '';?></td>
+						<td class="etablissement">
+					   <?= $this->escapeHtml($eleve['etablissement'] . ' - ' . $eleve['communeEtablissement']);?>
+					   </td>
+						<td class="classe"><?= $this->escapeHtml($eleve['classe']);?></td>
+						<td class="service">
+						<?= $this->printServices($eleve['eleveId'], 1, $eleve['max_millesime']);?>
+						</td>
+						<td class="station">
+						<?= $this->printStations($eleve['eleveId'], 1, $eleve['max_millesime']);?>
+						</td>
+					</tr>
+					<?php endforeach;?>
+				</tbody>
+			</table>
 
-		<p>
-			<em>A faire</em>
-		</p>
+			<p>
+				<em><span class="alert">En rouge, les élèves n'ayant pas droit au
+						transport demandé</span> selon les règles en vigueur et n'ayant
+					pas de dérogation.<br> Les lignes barrées correspondent à des
+					élèves n'étant pas inscrits pour l'année scolaire sur laquelle vous
+					travaillez.</em>
+			</p>
+		</div>
 	</div>
 </div>
