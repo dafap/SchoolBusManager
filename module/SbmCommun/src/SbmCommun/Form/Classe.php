@@ -8,8 +8,8 @@
  * @filesource Classe.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Form;
 
@@ -85,6 +85,25 @@ class Classe extends AbstractSbmForm implements InputFilterProviderInterface
                     'label' => 'Cochez les niveaux concernés',
                     'label_attributes' => [
                         'class' => 'sbm-label130'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'rang',
+                'type' => 'SbmCommun\Form\Element\IsInt',
+                'attributes' => [
+                    'id' => 'classe-rang',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Rang dans le niveau',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'

@@ -8,8 +8,8 @@
  * @filesource table.classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 
 /**
@@ -45,6 +45,7 @@ return [
             'nom' => 'varchar(30) NOT NULL',
             'aliasCG' => 'varchar(30) NULL DEFAULT NULL',
             'niveau' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "255"',
+            'rang' => 'int(11) NOT NULL DEFAULT "1"',
             'suivantId' => 'int(11) NULL DEFAULT NULL',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"'
         ],

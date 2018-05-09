@@ -33,6 +33,9 @@ return [
                 'field' => 'niveau'
             ],
             [
+                'field' => 'rang'
+            ],
+            [
                 'field' => 'suivantId'
             ]
         ],

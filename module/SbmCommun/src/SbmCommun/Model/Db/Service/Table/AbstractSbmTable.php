@@ -10,8 +10,8 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -69,7 +69,7 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * objet Zend\Db\Sql\Select du table_gateway
      *
-     * @var Zend\Db\Sql\Select
+     * @var \Zend\Db\Sql\Select
      */
     protected $obj_select;
 
@@ -251,6 +251,16 @@ abstract class AbstractSbmTable implements FactoryInterface
             $this->obj_select->order($order);
         }
         return $this->obj_select;
+    }
+
+    /**
+     * Renvoie la requête obj_select sous forme d'une chaine de caractères
+     */
+    public function getSqlString()
+    {
+        return $this->obj_select->getSqlString(
+            $this->db_manager->getDbAdapter()
+                ->getPlatform());
     }
 
     /**

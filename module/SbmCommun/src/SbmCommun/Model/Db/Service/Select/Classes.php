@@ -9,8 +9,8 @@
  * @filesource Classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -45,6 +45,7 @@ class Classes implements FactoryInterface
             ]);
         $select->order([
             'niveau',
+            'rang',
             'nom'
         ]);
         $statement = $sql->prepareStatementForSqlObject($select);

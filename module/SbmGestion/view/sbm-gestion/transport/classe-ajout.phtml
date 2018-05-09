@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/classe-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -32,24 +32,29 @@ $actions = [
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('classeId'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
-    <fieldset class="sbm-page1">
-			<div id="classe-ajout-nom" class="row-inner ajout"><?php echo $this->formRow($this->form->get('nom')); ?></div>
-			<div id="classe-ajout-aliasCG" class="row-inner ajout"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
-			<div id="classe-ajout-niveau" class="row-inner ajout"><?php echo $this->formRow($this->form->get('niveau')); ?></div>
-			<div id="classe-ajout-suivantId" class="row-inner ajout"><?php echo $this->formRow($this->form->get('suivantId')); ?></div>
+<?= $this->form()->openTag($this->form);?>
+<?= $this->formHidden($this->form->get('classeId'));?>
+<?= $this->formHidden($this->form->get('csrf'));?>
+        <fieldset class="sbm-page1">
+			<div id="classe-ajout-nom" class="row-inner ajout">
+			<?= $this->formRow($this->form->get('nom')); ?></div>
+			<div id="classe-ajout-aliasCG" class="row-inner ajout">
+			<?= $this->formRow($this->form->get('aliasCG')); ?></div>
+			<div id="classe-ajout-niveau" class="row-inner ajout">
+			<?= $this->formRow($this->form->get('niveau')); ?></div>
+			<div id="classe-edit-rang" class="row-inner edit">
+			<?= $this->formRow($this->form->get('rang'));?></div>
+			<div id="classe-ajout-suivantId" class="row-inner ajout">
+			<?= $this->formRow($this->form->get('suivantId')); ?></div>
 			<div id="classe-ajout-buttons" class="row-inner ajout">
-        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+            <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
+            </div>
 		</fieldset>
-<?php echo $this->form()->closeTag(); ?>
+<?= $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>
 </div>

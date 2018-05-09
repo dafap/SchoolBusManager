@@ -607,7 +607,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Classes')->paginator(
-                    $args['where']),
+                    $args['where'], ['niveau', 'rang']),
                 't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byClasse(),
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_classes', 15),
