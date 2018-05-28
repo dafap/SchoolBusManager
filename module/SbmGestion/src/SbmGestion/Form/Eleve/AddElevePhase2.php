@@ -20,7 +20,7 @@
  * @filesource AddElevePhase2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2018
+ * @date 29 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Form\Eleve;
@@ -408,6 +408,10 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
                     'class' => 'button default cancel'
                 ]
             ]);
+        
+        $inputFilter = $this->getInputFilter();
+        $distanceR2 = $inputFilter->get('distanceR2');
+        $distanceR2->setRequired(false);
     }
 
     /**
