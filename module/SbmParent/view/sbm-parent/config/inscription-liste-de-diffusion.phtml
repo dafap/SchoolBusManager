@@ -1,0 +1,37 @@
+<?php
+/**
+ * Réinscription à la liste de diffusion MailChimp
+ * 
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/config
+ * @filesource inscription-liste-de-diffusion.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 mai 2018
+ * @version 2018-2.4.1
+ */
+$this->headScript()->appendFile(
+    "//downloads.mailchimp.com/js/signup-forms/popup/embed.js", "text/javascript", 
+    [
+        'data-dojo-config' => "usePlainJson: true, isDebug: false"
+    ]);
+$this->inlineScript()->captureStart();
+?>
+require(["mojo/signup-forms/Loader"], function(L) { L.start({"baseUrl":"mc.us13.list-manage.com","uuid":"f51a0ccc26f0940b9b9130f0d","lid":"05eb302eb3"}) })
+<?php
+$this->inlineScript()->captureEnd();
+?>
+<h1>Inscription à la liste de diffusion</h1>
+<p>Pour des questions de droit privé et de respect de la personne, si
+	vous avez déjà vu le formulaire de réinscription, il est bloqué et ne
+	sera plus affiché à nouveau durant une période de 12 mois.</p>
+<p>
+	En cas de nécessité, vous devez supprimer le cookie MCPopudClosed de ce
+	site sur votre navigateur puis appuer sur la touche F5.<br>Vous pouvez
+	aussi supprimer tous les cookies de ce site puis vous réidentifier pour
+	vous réinscrire à la liste de diffusion.
+</p>
+<div>
+	<input type='button' value='Retour à votre espace personnel'
+		onclick="location.href='/parent'">
+</div>
