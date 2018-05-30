@@ -7,8 +7,8 @@
  * @filesource Bienvenue.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 30 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmFront\View\Helper;
 
@@ -29,10 +29,11 @@ class Bienvenue extends AbstractHelper
 
     public function __invoke()
     {
-        if ($this->getAuthService()->hasIdentity()) {
+        if ($this->getAuthService()->hasIdentity()) {           
             $annee_scolaire = Session::get('as')['libelle'];
             $identity = $this->getAuthService()->getIdentity();
             $bienvenue = $identity['prenom'] . ' ' . $identity['nom'];
+            $categorie = $identity['categorieId'];
             $view = $this->getView();
             $logout = $view->url('login', 
                 [
@@ -64,19 +65,33 @@ class Bienvenue extends AbstractHelper
                 [
                     'action' => 'message'
                 ]);
+            $url_mailchimp = $view->url($route, 
+                [
+                    'action' => 'inscription-liste-de-diffusion'
+                ]);
+            
+            $a_menu_content = [
+                "<li><a href=\"$url_home\">Retour à mon espace</a></li>",
+                "<li><a href=\"$url_compte\">Mon compte</a></li>",
+                "<li><a href=\"$url_mdp\">Changer mon mot de passe</a></li>",
+                "<li><a href=\"$url_email\">Changer mon email</a></li>",
+                "<li><a href=\"$url_msg\">Ecrire au service de transport</a></li>",
+                "<li><a href=\"$url_localisation\">Mon domicile sur la carte</a></li>",
+                "<li><a href=\"$url_mailchimp\">S'inscrire à la liste de diffusion</a></li>"
+            ];
+            if ($categorie > 1) {
+                unset($a_menu_content[6], $a_menu_content[5]);
+            }
+            if ($categorie > 199) {
+                unset($a_menu_content[4]);
+            }
+            $menu_content = implode("\n", $a_menu_content);
             return <<<EOT
 <div id="menu-haut" class="menu float-right">
    <ul class="menubar">
        <li class="annee-scolaire">Année scolaire $annee_scolaire</li>
        <li class="onglet">Bienvenue $bienvenue
-       <ul>
-           <li><a href="$url_home">Retour à mon espace</a></li> 
-           <li><a href="$url_compte">Mon compte</a></li>
-           <li><a href="$url_localisation">Mon domicile sur la carte</a></li>
-           <li><a href="$url_mdp">Changer mon mot de passe</a></li>
-           <li><a href="$url_email">Changer mon email</a></li>
-           <li><a href="$url_msg">Ecrire au service de transport</a></li>
-       </ul> 
+       <ul>$menu_content</ul> 
        </li>        
        <li>| <a href="$logout"><i class="fam-door-out"></i>déconnexion</a></li>
    </ul>
