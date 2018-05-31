@@ -8,8 +8,8 @@
  * @filesource view/sbm-front/index/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2018
- * @version 2018-2.4.0
+ * @date 23 mai 2018
+ * @version 2018-2.4.1
  */
 $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
@@ -59,7 +59,7 @@ EOT;
 		    <?php echo $msg; ?>
 		</div>
 		<div class="column2">
-			<div class="flashMessenger">
+			<div class="vecartement-6px">
 		    <?php
     echo $this->flashMessenger()->render('success');
     echo $this->flashMessenger()->render('warning');
