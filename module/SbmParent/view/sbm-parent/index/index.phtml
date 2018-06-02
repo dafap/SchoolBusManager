@@ -7,7 +7,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2018
+ * @date 2 juin 2018
  * @version 2018-2.4.1
  */
 use SbmBase\Model\DateLib;
@@ -51,6 +51,8 @@ $nbInscrits = $this->inscrits->count();
 $nbPaiements = $this->paiements->count();
 $etat = $this->etatSite['etat'];
 $dateLimite = $this->etatSite['echeance']->format('d/m/Y');
+$dateDebut = $this->etatSite['dateDebut']->format('d/m/Y');
+$dateFin = $this->etatSite['dateFin']->format('d/m/Y');
 $url_ajoutEleve = $this->url('sbmparent', [
     'action' => 'reinscription-eleve'
 ]);
@@ -89,15 +91,18 @@ echo $this->flashMessenger()->render('default');
 <div id="parent-wrapper" class="explication">
 	<?php if ($etat == 0) :?>
 	<p>Vos enfants ne sont pas inscrits pour l'année scolaire <?= Session::get('as')['libelle'];?>.</p>
-	<p>Vous pourrez les inscire entre le <?= $this->etatSite['dateDebut']->format('d/m/Y');?> 
-	et le <?= $this->etatSite['dateFin']->format('d/m/Y');?> (ou jusqu'au 
-	<?= $this->etatSite['echeance']->format('d/m/Y');?> pour ceux qui sont en attente d'affectation).</p>
+	<p>Vous pourrez les inscire entre le <?= $dateDebut;?> 
+	et le <?= $dateFin;?> (ou jusqu'au 
+	<?= $dateLimite;?> pour ceux qui sont en attente d'affectation).</p>
 	<?php elseif ($etat == 1) :?>
 	<p>Vous n'avez pas encore d'enfant inscrit.</p>
 	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires 
 	puis effectuez le paiement en ligne ou adressez votre paiment au service transport de 
-	<?php echo $this->client['name'];?> avant le <?php echo $dateLimite; ?> afin de recevoir 
-	votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
+	<?php echo $this->client['name'];?> avant le <?= $dateFin; ?> (ou le <?= $dateLimite; ?> 
+	pour ceux en attente d'orientation) afin de retenir une place et recevoir votre carte 
+	par courrier. Sinon, vous devrez payer et retirer la carte de transport lors des 
+	permanences mais votre inscription ne sera plus prioritaire et ne sera prise en compte 
+	que dans la mesure des places disponibles à la rentrée.</p>
 	<ul>
     <?php foreach ($this->permanences as $row) :?>
         <li><?php echo "Pour les habitants de $row";?></li>
@@ -136,7 +141,7 @@ echo $this->flashMessenger()->render('default');
     <p>Vous n'avez pas d'enfant inscrit.</p>
 	<p>Les inscriptions en ligne sont fermées.</p>
 	<p>Pour inscrire un enfant, prenez contact avec le service transport de
-		<?php echo $this->client['name'];?>. Au delà du <?php echo $dateLimite;?> les
+		<?php echo $this->client['name'];?>. Au delà du <?php echo $dateFin;?> les
 		places seront attribuées à la rentrée en fonction des disponibilités
 		dans les cars.</p>
 	<?php endif;?>
@@ -310,7 +315,7 @@ echo $this->flashMessenger()->render('default');
             $peutPayer = max($row['distanceR1'], $row['distanceR2']) >= 1.0 &&
                  ($row['district'] == 1 || $row['derogation'] == 1);
             if ($row['selectionScolarite']) {
-                $montantUnitaire = 'en attente';
+                $montantUnitaire = 'en attente(*)';
                 $enAttente = true;
             } elseif ($peutPayer) {
                 $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']], 
@@ -352,7 +357,7 @@ echo $this->flashMessenger()->render('default');
                     ]
                 ];
                 if ($peutPayer) {
-                    $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente';
+                    $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement*';
                     $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
                          $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
                     $attenteTitle .= ' la liste des inscriptions à payer';
@@ -423,9 +428,17 @@ echo $this->flashMessenger()->render('default');
                 $msg = '';
                 break;
             case 1:
-                $msg = "N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
-                $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " .
-                     $this->permanences[0] . '.';
+                $msg = <<<EOT
+L'inscription doit être réglée avant le $dateFin (ou le $dateLimite pour les élèves
+en attente d'orientation) pour retenir une place définitive dans le circuit et recevoir 
+la carte de transport par la poste.<br>
+Passé ce délai, votre demande d'inscription ne devient plus prioritaire et 
+ne sera traitée que dans la mesure des places disponibles à la rentrée. Vous 
+devrez vous rendre à la permanence qui se tiendra à la Communauté de communes
+pour connaitre la suite donnée à votre demande, payer et retirer la carte de transport. 
+Pour les habitants de 
+EOT;
+                $msg .= $this->permanences[0] . '.';
                 break;
             default:
                 $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
@@ -442,14 +455,16 @@ echo $this->flashMessenger()->render('default');
 			<p>Vous pouvez :</p>
 			<ul>
 				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire 
-				avant le <?php echo $dateLimite;?>. Vous recevrez alors la carte de transport 
-				par la poste.</li>
+				avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour les élèves en attente 
+				d'orientation). Vous recevrez alors la carte de transport par la poste.</li>
 				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à 
-				l'adresse ci-dessous avant le <?php echo $dateLimite;?>.  Vous recevrez alors 
-				la carte de transport par la poste.</li>
+				l'adresse ci-dessous avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour 
+				les élèves en attente d'orientation). Vous recevrez alors la carte de transport 
+				par la poste.</li>
 				<li>vous rendre à la Communauté de communes (pour les habitant de 
 				<?php echo $this->permanences[0];?>) pour payer en espèces ou par chèque et 
-				retirer la carte de transport.</li>
+				retirer la carte de transport. Toutefois, votre demande ne sera plus prioritaire
+				et ne sera satisfaite que dans la mesure des places disponibles.</li>
 			</ul>
 			<div class="centre">   
 				<?php echo $this->client['name'];?><br>

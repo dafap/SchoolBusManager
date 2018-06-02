@@ -15,7 +15,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mai 2018
+ * @date 1 juin 2018
  * @version 2018-2.4.1
  */
 namespace SbmParent\Controller;
@@ -836,8 +836,8 @@ class IndexController extends AbstractActionController
                 } else {
                     $data['ap'] = 0;
                 }
-                unset($data['classeId']);
-                unset($data['etablissementId']);
+                unset($data['classeId'], $data['etablissementId']);
+                unset($data['commentaire']); // 2018 pour ne pas afficher Paiement au CD12 - fiche reprise ...
                 $hasGa = ! is_null($data['responsable2Id']);
                 $data['ga'] = $hasGa ? 1 : 0;
                 if ($hasGa) {
