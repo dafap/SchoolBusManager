@@ -10,7 +10,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2018
+ * @date 7 juin 2018
  * @version 2018-2.4.1
  */
 namespace SbmParent\Model;
@@ -370,9 +370,13 @@ class OutilsInscription
         $responsable1 = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
             $responsable1Id);
         $memeDomicileR1 = $this->memeDomicile($responsable1);
-        $responsable2 = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
-            $responsable2Id);
-        $memeDomicileR2 = $this->memeDomicile($responsable2);
+        try {
+            $responsable2 = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
+                $responsable2Id);
+            $memeDomicileR2 = $this->memeDomicile($responsable2);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $memeDomicileR2 = true;
+        }        
         $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
         $reprise1 = $reprise2 = false;
         foreach ($affectations as $oaffectation) {
