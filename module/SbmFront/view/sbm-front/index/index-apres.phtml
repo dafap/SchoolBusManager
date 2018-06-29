@@ -8,9 +8,13 @@
  * @filesource view/sbm-front/index/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mai 2018
+ * @date 29 juin 2018
  * @version 2018-2.4.1
  */
+use SbmBase\Model\Session;
+
+$dateDebut = Session::get('as')['dateDebut'];
+
 $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
 $url_admin = $this->url('sbmadmin');
@@ -20,6 +24,51 @@ $url_carte = $this->url('sbmcarte', [
 
 
     // après la période d'inscription
+if ($dateDebut >= date('Y-m-d')) {
+	$format = <<<EOT
+<p class="premiere">La période d'inscription %s est close.</p>
+<p>Si vous avez inscrit vos enfants et payé en ligne vous recevrez les cartes de transport courant août. 
+Sinon, pensez à venir à la Communauté de communes lors des permanences (9h-12h30 et 13h30-17h30) 
+    organisées par date pour les habitants de : 
+<ul>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+<li>%s</li>
+</ul>La carte de transport sera donnée sur place.</p>
+<p>Si vous avez indiqué votre adresse email, vous pouvez consulter l’affectation de vos enfants, 
+    trouver les horaires, correspondre avec le service grâce à votre compte personnel.</p>
+<p>Pour tout renseignement ou pour une nouvelle inscription, adressez vous directement au 
+    service Transport à l'adresse :</p>
+<div class="centre">
+<a href="%s" class="accueil">%s</a><br>
+%s<br>
+%s<br>
+%s %s<br>
+Tél : %s<br>
+Mail : %s</br>
+
+</div>
+EOT;
+
+$msg = sprintf($format, 
+        $this->as,
+		$this->permanences[0], 
+		$this->permanences[1], 
+		$this->permanences[2], 
+		$this->permanences[3], 
+		$this->permanences[4],
+        $this->accueil,
+        $this->client['name'],
+        $this->client['adresse'][0],
+        $this->client['adresse'][1],
+        $this->client['code_postal'],
+        $this->client['commune'],
+        $this->telephone($this->client['telephone']),
+        $this->client['email']
+        );
+} else {	
     $format = <<<EOT
 <p class="premiere">La période d'inscription %s est close.</p>
 <p>Si vous avez indiqué votre adresse email, vous pouvez consulter l’affectation de vos enfants, 
@@ -48,6 +97,7 @@ EOT;
         $this->telephone($this->client['telephone']),
         $this->client['email']
         );
+}
 ?>
 <div class="table-page1">
 	<div class="row">
