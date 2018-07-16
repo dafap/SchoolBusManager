@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2018
+ * @date 11 juin 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -626,7 +626,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
-            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes'));
+            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout());
         $params = [
             'data' => [
                 'table' => 'classes',
@@ -749,7 +749,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
-            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes'));
+            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout());
         $params = [
             'data' => [
                 'table' => 'classes',

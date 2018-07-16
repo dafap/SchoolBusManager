@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 11 juillet 2018
+ * @version 2018-2.4.1
  */
 use SbmBase\Model\DateLib;
 
@@ -59,8 +59,6 @@ if (count($this->affectations['annee_precedente'])) {
     }
     unset($affectation);
 }
-// echo '<pre>';
-// die(print_r($structAffectations));
 $disableAccordR1 = isset($structAffectations[1]['annee_courante']) ? 'true' : 'false';
 $disableAccordR2 = isset($structAffectations[2]['annee_courante']) ? 'true' : 'false';
 // urls utilisées
@@ -92,12 +90,15 @@ multicheckbox_actions.init("wrapper-joursTransport");
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
-
 const ELEVE_ID = <?php echo $this->eleveId;?>;
 const IDENTITE = "<?php echo urlencode($this->identite)?>";
 const URL_ICI = "<?php echo $url_ici;?>";
 
-js_edit.init(<?php echo $disableAccordR1;?>, <?php echo $disableAccordR2;?>, <?php echo $this->historique['scolarite']['tarifs'];?>);
+js_edit.init(<?= $disableAccordR1;?>, 
+    <?= $disableAccordR2;?>, 
+    <?= $this->subventions['R1'];?>, 
+    <?= $this->subventions['R2'];?>, 
+    <?= $this->historique['scolarite']['tarifs'];?>);
 <?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';

@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2018
+ * @date 15 juillet 2018
  * @version 2018-2.4.1
  */
 namespace SbmGestion\Controller;
@@ -92,7 +92,7 @@ class EleveController extends AbstractActionController
         $criteres_form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'));
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout());
         // créer un objectData qui contient la méthode getWhere() adhoc
         $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves(
             $criteres_form->getElementNames());
@@ -477,7 +477,7 @@ class EleveController extends AbstractActionController
             ->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->bind($tableScolarites->getObjData());
         if ($ispost) {
@@ -648,6 +648,7 @@ class EleveController extends AbstractActionController
                 'millesime' => $millesime,
                 'eleveId' => $eleveId
             ]);
+        $subventions = ['R1' => $odata1->subventionR1, 'R2' =>$odata1->subventionR2];
         if ($odata1->inscrit) {
             $inscrit = $odata1->paiement;
             $inscrit |= $odata1->fa;
@@ -679,7 +680,7 @@ class EleveController extends AbstractActionController
         
         $respSelect = $this->db_manager->get('Sbm\Db\Select\Responsables');
         $etabSelect = $this->db_manager->get('Sbm\Db\Select\Etablissements')->desservis();
-        $clasSelect = $this->db_manager->get('Sbm\Db\Select\Classes');
+        $clasSelect = $this->db_manager->get('Sbm\Db\Select\Classes')->tout();
         $form = new FormEleve();
         $form->setAttribute('action', 
             $this->url()
@@ -821,6 +822,7 @@ class EleveController extends AbstractActionController
                 'historique' => $historique,
                 'args_paiement' => $args_paiement,
                 'affectations' => $affectations,
+                'subventions' => $subventions,
                 'scolarite_precedente' => $this->db_manager->get(
                     'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
             ]);
