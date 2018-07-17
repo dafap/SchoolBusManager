@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2018
+ * @date 9 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmAdmin\Controller;
@@ -23,7 +23,9 @@ use SbmBase\Model\StdLib;
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
+use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Form\CriteresForm;
+use SbmCommun\Form\Rpi;
 use SbmCommun\Form\SecteurScolaire as FormSecteurScolaire;
 use SbmCommun\Form\ButtonForm;
 use SbmAdmin\Form\Libelle as FormLibelle;
@@ -264,7 +266,7 @@ class IndexController extends AbstractActionController
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
-    
+
     /**
      * lance la création d'une liste de libellés comme filtre la nature et le code reçus en post
      */
@@ -291,6 +293,248 @@ class IndexController extends AbstractActionController
     }
 
     /**
+     * Gestion des RPI
+     */
+    public function rpiListeAction()
+    {
+        $args = $this->initListe(
+            [
+                [
+                    'name' => 'nom',
+                    'type' => 'text',
+                    'attributes' => [
+                        'id' => 'critere-nom',
+                        'maxlength' => '30',
+                        'class' => 'sbm-width-30c'
+                    ],
+                    'options' => [
+                        'label' => 'Nom',
+                        'label_attributes' => [
+                            'class' => 'sbm-first'
+                        ],
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ],
+                [
+                    'type' => 'Zend\Form\Element\Checkbox',
+                    'name' => 'selection',
+                    'attributes' => [
+                        'useHiddenElement' => false,
+                        'options' => [
+                            'checkedValue' => false,
+                            'uncheckedValue' => true
+                        ],
+                        'class' => 'sbm-checkbox'
+                    ],
+                    'options' => [
+                        'label' => 'Sélectionnés',
+                        'label_attributes' => [
+                            'class' => ''
+                        ],
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]
+            ]);
+        if ($args instanceof Response)
+            return $args;
+        
+        return new ViewModel(
+            [
+                'data' => $this->db_manager->get('Sbm\Db\Table\Rpi')->fetchAll(
+                    $args['where']),
+                'criteres_form' => $args['form']
+            ]);
+    }
+
+    public function rpiAjoutAction()
+    {
+        $form = $this->form_manager->get(Rpi::class);
+        $params = [
+            'data' => [
+                'table' => 'rpi',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Rpi'
+            ],
+            'form' => $form
+        ];
+        $table = $this->db_manager->get($params['data']['alias']);
+        $r = $this->addData($this->db_manager, $params, null, 
+            function ($args) use($table, $form) {
+                $form->setValueOptions('niveau', $table::getNiveaux());
+            });
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmadmin', 
+                    [
+                        'action' => 'rpi-liste'
+                    ]);
+                break;
+            default:
+                return new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'rpiId' => null
+                    ]);
+                break;
+        }
+    }
+
+    public function rpiEditAction()
+    {
+        $form = $this->form_manager->get(Rpi::class);
+        $params = [
+            'data' => [
+                'table' => 'rpi',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Rpi',
+                'id' => 'rpiId'
+            ],
+            'form' => $form
+        ];
+        $tRpi = $this->db_manager->get($params['data']['alias']);
+        $tRpiClasses = $this->db_manager->get('Sbm\Db\Table\RpiClasses');
+        $tRpiCommunes = $this->db_manager->get('Sbm\Db\Table\RpiCommunes');
+        
+        $tRpiEtablissements = $this->db_manager->get('Sbm\Db\Table\RpiEtablissements');
+        $r = $this->editData($this->db_manager, $params, null, 
+            function ($args) use($form, $tRpiClasses, $tRpi, $tRpiCommunes, 
+            $tRpiEtablissements) {
+                $form->setValueOptions('niveau', $tRpi::getNiveaux());
+            });
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmadmin', 
+                        [
+                            'action' => 'rpi-liste'
+                        ]);
+                    break;
+                default:
+                    $structure = [
+                        'communes' => [],
+                        'etablissements' => []
+                    ];
+                    $rcommunes = $tRpiCommunes->getCommunes($r->getPost()['rpiId']);
+                    foreach ($rcommunes as $row) {
+                        $structure['communes'][] = $row;
+                    }
+                    $retablissements = $tRpiEtablissements->getEtablissements(
+                        $r->getPost()['rpiId']);
+                    foreach ($retablissements as $row) {
+                        $structure['etablissements'][] = array_merge($row, 
+                            [
+                                'classes' => $tRpiClasses->getClasses(
+                                    $row['etablissementId'])
+                            ]);
+                    }
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'rpiId' => $r->getResult(),
+                            'structure' => $structure
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function rpiSupprAction()
+    {
+        $form = new ButtonForm([
+            'id' => null
+        ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm default',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm default',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        $params = [
+            'data' => [
+                'alias' => 'Sbm\Db\Table\Rpi',
+                'id' => 'rpiId'
+            ],
+            'form' => $form
+        ];
+        
+        $r = $this->supprData($this->db_manager, $params, 
+            function ($id, $tRpi) {
+                return [
+                    'id' => $id,
+                    'data' => $tRpi->getRecord($id)
+                ];
+            });
+        
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmadmin', 
+                        [
+                            'action' => 'rpi-liste'
+                        ]);
+                    break;
+                default:
+                    $data = StdLib::getParam('data', $r->getResult());
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'data' => $data,
+                            'rpiId' => StdLib::getParam('id', $r->getResult())
+                        ]);
+                    break;
+            }
+        }
+    }    
+
+    /**
+     * @TODO à finir
+     *
+     * @return Ambigous <\Zend\Http\PhpEnvironment\Response, \Zend\Http\Response>
+     */
+    public function rpiPdfAction()
+    {
+        $criteresObject = [];
+        // ObjectDataCriteres::class,
+        // [
+        // 'expressions' => [
+        // 'active' => 'Literal:active = 0'
+        // ]
+        // ]
+        
+        $criteresForm = [];
+        // CriteresForm::class,
+        // 'rpi'
+        
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmadmin',
+            'action' => 'rpi-liste'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
      * Gestion des secteurs scolaires des collèges publics
      */
     public function secteurScolaireListeAction()
@@ -303,7 +547,8 @@ class IndexController extends AbstractActionController
                     ->setValueOptions('communeId', 
                     $config['db_manager']->get('Sbm\Db\Select\Communes')
                         ->membres());
-            }, [
+            }, 
+            [
                 'etablissementId',
                 'communeId'
             ]);

@@ -16,6 +16,7 @@ use SbmCommun\Model\Db\Service\TableGateway\AbstractSbmTableGateway;
 
 class TestSbmTableGateway extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'test';

@@ -7,14 +7,17 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 6 juin 2018
+ * @version 2018-2.4.1
  */
 use SbmAdmin\Form;
 use SbmAdmin\Controller;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
 use SbmAdmin\Model\Db\Service\Libelle\Liste;
+use SbmAdmin\Model\View\Helper\RpiCommunes;
+use SbmAdmin\Model\View\Helper\RpiEtablissements;
+use SbmAdmin\Model\View\Helper\RpiClasses;
 use SbmCommun\Form\Responsable;
 
 return [
@@ -78,6 +81,13 @@ return [
                 ],
                 'may_terminate' => true
             ]
+        ]
+    ],
+    'view_helpers' => [
+        'invokables' => [
+            'rpiCommunes' => RpiCommunes::class,
+            'rpiEtablissements' => RpiEtablissements::class,
+            'rpiClasses' => RpiClasses::class
         ]
     ],
     'view_manager' => [

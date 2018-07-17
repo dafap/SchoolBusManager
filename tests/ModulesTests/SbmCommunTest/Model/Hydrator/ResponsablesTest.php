@@ -24,30 +24,33 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
     public function testSA()
     {
         $object = new ObjectData();
-        $object->exchangeArray([
-            'nom' => 'Délas',
-            'prenom' => 'Stéphane',
-            'nom2' => '',
-            'prenom2' => 'Marlène',
-            'adresseL1' => 'Rue de l\'église'
-        ]);
-        $object->setArrayMask([
-            'nom',
-            'prenom',
-            'nom2',
-            'prenom2',
-            'adresseL1',
-            'nomSA',
-            'prenomSA',
-            'nom2SA',
-            'prenom2SA'
-        ]);
-        $object->setCalculateFields([
-            'nomSA',
-            'prenomSA',
-            'nom2SA',
-            'prenom2SA'
-        ]);
+        $object->exchangeArray(
+            [
+                'nom' => 'Délas',
+                'prenom' => 'Stéphane',
+                'nom2' => '',
+                'prenom2' => 'Marlène',
+                'adresseL1' => 'Rue de l\'église'
+            ]);
+        $object->setArrayMask(
+            [
+                'nom',
+                'prenom',
+                'nom2',
+                'prenom2',
+                'adresseL1',
+                'nomSA',
+                'prenomSA',
+                'nom2SA',
+                'prenom2SA'
+            ]);
+        $object->setCalculateFields(
+            [
+                'nomSA',
+                'prenomSA',
+                'nom2SA',
+                'prenom2SA'
+            ]);
         
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -72,15 +75,17 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
     public function testDataCreation()
     {
         $object = new ObjectData();
-        $object->exchangeArray([
-            'nom' => 'Tartempion',
-            'prenom' => 'Marius'
-        ]);
-        $object->setArrayMask([
-            'nom',
-            'prenom',
-            'dateCreation'
-        ]);
+        $object->exchangeArray(
+            [
+                'nom' => 'Tartempion',
+                'prenom' => 'Marius'
+            ]);
+        $object->setArrayMask(
+            [
+                'nom',
+                'prenom',
+                'dateCreation'
+            ]);
         $object->addCalculateField('dateCreation');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -94,15 +99,17 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
     public function testDateModification()
     {
         $object = new ObjectData();
-        $object->exchangeArray([
-            'nom' => 'Tartempion',
-            'prenom' => 'Marius'
-        ]);
-        $object->setArrayMask([
-            'nom',
-            'prenom',
-            'dateModification'
-        ]);
+        $object->exchangeArray(
+            [
+                'nom' => 'Tartempion',
+                'prenom' => 'Marius'
+            ]);
+        $object->setArrayMask(
+            [
+                'nom',
+                'prenom',
+                'dateModification'
+            ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -112,21 +119,23 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($now->format('Y-m-d H:i:s'), $data['dateModification']);
         }
     }
-    
+
     public function testNouvelleDateModification()
     {
         $ancienne_date = '2016-06-01 10:23:11';
         $object = new ObjectData();
-        $object->exchangeArray([
-            'nom' => 'Tartempion',
-            'prenom' => 'Marius',
-            'dateModification' => $ancienne_date
-        ]);
-        $object->setArrayMask([
-            'nom',
-            'prenom',
-            'dateModification'
-        ]);
+        $object->exchangeArray(
+            [
+                'nom' => 'Tartempion',
+                'prenom' => 'Marius',
+                'dateModification' => $ancienne_date
+            ]);
+        $object->setArrayMask(
+            [
+                'nom',
+                'prenom',
+                'dateModification'
+            ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);

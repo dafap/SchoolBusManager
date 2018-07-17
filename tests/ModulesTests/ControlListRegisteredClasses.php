@@ -22,10 +22,10 @@ class ControlListRegisteredClasses
 {
 
     private $service_manager;
-    
+
     /**
      * Liste des classes à sauter dans le contrôle (Abtract, Interface, Trait, Exception etc)
-     * 
+     *
      * @var string[]
      */
     private $skip = [];
@@ -34,7 +34,7 @@ class ControlListRegisteredClasses
     {
         $this->service_manager = Bootstrap::getServiceManager();
     }
-    
+
     public function setSkip(array $array)
     {
         $this->skip = $array;

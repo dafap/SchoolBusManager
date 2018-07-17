@@ -28,7 +28,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp()
     {
-        $this->setApplicationConfig(Bootstrap::getServiceManager()->get('ApplicationConfig'));
+        $this->setApplicationConfig(
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }

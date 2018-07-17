@@ -8,10 +8,12 @@
  * @filesource Rpi.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
+
+use SbmCommun\Model\Strategy\Niveau as NiveauStrategy;
 
 class Rpi extends AbstractSbmTable
 {
@@ -25,5 +27,41 @@ class Rpi extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Rpi';
         $this->id_name = 'rpiId';
+    }
+    
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \SbmCommun\Model\Db\Table\AbstractTable::setStrategies()
+     */
+    protected function setStrategies()
+    {
+        $this->hydrator->addStrategy('niveau', new NiveauStrategy());
+    }
+    
+    public static function getNiveaux()
+    {
+        return [
+            NiveauStrategy::CODE_NIVEAU_MATERNELLE => 'maternelle',
+            NiveauStrategy::CODE_NIVEAU_ELEMENTAIRE => 'élémentaire'
+        ];
+    }
+    
+    
+    /**
+     * Coche ou décoche la sélection
+     *
+     * @param int $rpiId
+     * @param bool $selection
+     */
+    public function setSelection($rpiId, $selection)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray(
+            [
+                'rpiId' => $rpiId,
+                'selection' => $selection
+            ]);
+        parent::saveRecord($oData);
     }
 }

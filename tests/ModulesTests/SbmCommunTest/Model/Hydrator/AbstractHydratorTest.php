@@ -19,7 +19,7 @@ use ModulesTests\SbmCommunTest\Model\TestAsset;
 
 class AbstractHydratorTest extends PHPUnit_Framework_TestCase
 {
-
+    
     // l'objet n'a pas de méthode getArrayCopy()
     public function testWithNullObject()
     {
@@ -32,10 +32,12 @@ class AbstractHydratorTest extends PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Zend\Hydrator\Exception\BadMethodCallException', $e);
         }
     }
-    
+
     public function testWithArray()
     {
-        $object = ['id' => 123];
+        $object = [
+            'id' => 123
+        ];
         try {
             $hydrator = new TestAsset\HydratorNeutre($object);
             $array = $hydrator->extract($object);
@@ -44,8 +46,8 @@ class AbstractHydratorTest extends PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Zend\Hydrator\Exception\BadMethodCallException', $e);
         }
     }
-    
-    public function  testWithInvalidClass()
+
+    public function testWithInvalidClass()
     {
         $object = new \stdClass();
         try {
@@ -74,6 +76,7 @@ class AbstractHydratorTest extends PHPUnit_Framework_TestCase
             $this->assertFalse(true, 'N\'aurait du provoquer une exception !!!');
         }
     }
+
     public function testCorrectWithObjectSbmObjectData()
     {
         $data = [
@@ -90,5 +93,5 @@ class AbstractHydratorTest extends PHPUnit_Framework_TestCase
         } catch (\Exception $e) {
             $this->assertFalse(true, 'N\'aurait du provoquer une exception !!!');
         }
-    }    
+    }
 }

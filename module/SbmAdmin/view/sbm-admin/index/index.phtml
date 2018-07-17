@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 8 mai 2018
+ * @version 2018-2.4.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_pdf_liste = $this->url('sbmpdf', [
@@ -25,6 +25,9 @@ $url_secteurs_scolaires_liste = $this->url('sbmadmin',
     [
         'action' => 'secteur-scolaire-liste'
     ]);
+$url_rpi_liste = $this->url('sbmadmin', [
+    'action' => 'rpi-liste'
+]);
 $url_gestion = $this->url('sbmgestion');
 $url_export = $this->url('sbmadmin', [
     'action' => 'export'
@@ -50,6 +53,8 @@ echo $this->flashMessenger()->render('default');
 					des utilisateurs</a></li>
 			<li><a href="<?php echo $url_export; ?>"><i class="fam-bullet-go"></i>Exportation
 					des données géolocalisées</a></li>
+			<li><a href="<?php echo $url_rpi_liste; ?>"><i class="fam-bullet-go"></i>Gestion
+					des RPI</a></li>
 			<li><a href="<?php echo $url_secteurs_scolaires_liste; ?>"><i
 					class="fam-bullet-go"></i>Gestion des secteurs scolaires des
 					collèges publics</a></li>

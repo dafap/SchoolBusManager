@@ -18,20 +18,22 @@ use SbmBase\Model\StdLib;
 
 class SessionTest extends TestCase
 {
+
     private $namespace;
-    
+
     public function setUp()
     {
         $this->namespace = 'azerty';
         Session::set('test', 'valeur', $this->namespace);
     }
-    
+
     public function testGet()
     {
         $this->assertEquals('valeur', Session::get('test', 'default', $this->namespace));
-        $this->assertEquals('default', Session::get('inconnu', 'default', $this->namespace));
+        $this->assertEquals('default', 
+            Session::get('inconnu', 'default', $this->namespace));
     }
-    
+
     public function testRemove()
     {
         Session::remove('inconnu', $this->namespace);

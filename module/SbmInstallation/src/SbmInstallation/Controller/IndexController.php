@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2018
+ * @date 23 mai 2018
  * @version 2018-2.4.1
  */
 namespace SbmInstallation\Controller;
@@ -483,6 +483,11 @@ class IndexController extends AbstractActionController
         return $this->redirect()->toRoute('sbminstall');
     }
 
+    public function updateHostnameValidatorAction()
+    {
+        return [];
+    }
+    
     public function majdistanceAction()
     {
         $millesime = Session::get('millesime');

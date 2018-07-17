@@ -20,15 +20,17 @@ use SbmGestion\Controller\ConfigController;
 
 class ConfigControllerTest extends AbstractHttpControllerTestCase
 {
+
     private $serviceManager;
+
     private $controller;
+
     protected $traceError = true;
-    
+
     public function setUp()
     {
         $this->setApplicationConfig(
-            Bootstrap::getServiceManager()->get('ApplicationConfig')
-        );
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
         $controller_manager = $this->serviceManager->get('ControllerManager');
@@ -37,26 +39,31 @@ class ConfigControllerTest extends AbstractHttpControllerTestCase
 
     public function testEmailChangeActionResponse()
     {
-        //$this->assertInstanceOf(Response::class, $this->controller->emailChangeAction());
+        // $this->assertInstanceOf(Response::class, $this->controller->emailChangeAction());
     }
+
     public function testIndexChangeActionResponse()
     {
-        //$this->assertInstanceOf(Response::class, $this->controller->indexChangeAction());
+        // $this->assertInstanceOf(Response::class, $this->controller->indexChangeAction());
     }
+
     public function testLocalisationActionResponse()
     {
-        //$this->assertInstanceOf(Response::class, $this->controller->localisationAction());
+        // $this->assertInstanceOf(Response::class, $this->controller->localisationAction());
     }
+
     public function testMdpChangeActionResponse()
     {
-        //$this->assertInstanceOf(Response::class, $this->controller->mdpChangeAction());
+        // $this->assertInstanceOf(Response::class, $this->controller->mdpChangeAction());
     }
+
     public function testMessageActionResponse()
     {
-        //$this->assertInstanceOf(Response::class, $this->controller->messageAction());
+        // $this->assertInstanceOf(Response::class, $this->controller->messageAction());
     }
+
     public function testModifCompteActionResponse()
     {
-        //$this->assertInstanceOf(Response::class, $this->controller->modifCompteAction());
+        // $this->assertInstanceOf(Response::class, $this->controller->modifCompteAction());
     }
 }

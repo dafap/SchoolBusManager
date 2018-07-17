@@ -10,8 +10,8 @@
  * @filesource EtablissementsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 11 juin 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -109,6 +109,30 @@ class EtablissementsForSelect implements FactoryInterface
         $select = $this->sql->select(
             $this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('statut = 1 AND niveau = 4');
+        $select->columns(
+            [
+                'etablissementId',
+                'commune',
+                'nom'
+            ]);
+        $select->order([
+            'commune',
+            'nom'
+        ]);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
+        }
+        return $array;
+    }
+    
+    public function enRpi()
+    {
+        $select = $this->sql->select(
+            $this->db_manager->getCanonicName('etablissements', 'vue'));
+        $select->where('regrPeda = 1 AND niveau <= 3');
         $select->columns(
             [
                 'etablissementId',

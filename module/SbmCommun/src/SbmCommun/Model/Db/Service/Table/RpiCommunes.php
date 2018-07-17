@@ -8,12 +8,13 @@
  * @filesource RpiCommunes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use Zend\Db\Sql\Where;
+use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 
 class RpiCommunes extends AbstractSbmTable
 {
@@ -59,7 +60,8 @@ class RpiCommunes extends AbstractSbmTable
 
     /**
      * Renvoie un tableau de communeId correspondant aux communes du même RPI que le
-     * paramètre indiqué. Si cette commune n'est pas en RPI, renvoie un tableau composé
+     * paramètre indiqué.
+     * Si cette commune n'est pas en RPI, renvoie un tableau composé
      * de cette $communeId.
      *
      * @param string $communeId            
@@ -83,6 +85,60 @@ class RpiCommunes extends AbstractSbmTable
             return $result;
         } catch (Exception $e) {
             return (array) $communeId;
+        }
+    }
+
+    /**
+     * Renvoie un tableau
+     *
+     * @param int $rpiId            
+     * @return array|multitype:
+     */
+    public function getCommunes($rpiId)
+    {
+        $t = $this->db_manager->getCanonicName($this->table_name, $this->table_type);
+        $select = clone $this->obj_select;
+        $select->columns([
+            'communeId'
+        ])
+            ->join(
+            [
+                'com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], "$t.communeId = com.communeId", 
+            [
+                'nom' => 'nom'
+            ])
+            ->where($select->where->equalTo('rpiId', $rpiId));
+        $statement = $this->table_gateway->getSql()->prepareStatementForSqlObject($select);
+        try {
+            return iterator_to_array($statement->execute());
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Insère l'ObjectData passé en paramètre dans la table.
+     * Retourne le nombre de lignes insérées ou false en cas d'exception.
+     * Retourne 0 si la commune était déjà présente.
+     *
+     * @param ObjectDataInterface $data
+     *            objet de données à insérer
+     *            
+     * @return int|boolean 
+     */
+    public function insertRecord(ObjectDataInterface $obj_data)
+    {
+        try {
+            return $this->table_gateway->insert($obj_data->getArrayCopy());
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            if ($e->getPrevious()->getCode() == 23000) {
+                return 0;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }

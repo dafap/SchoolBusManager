@@ -254,11 +254,20 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Renvoie la requête obj_select sous forme d'une chaine de caractères
+     * Renvoie la requête sous forme d'une chaine de caractères.
+     * La requête est $select ou obj_select si $select est null.
+     *
+     *
+     * @param \Zend\Db\Sql\Select $select            
+     *
+     * @return string
      */
-    public function getSqlString()
+    public function getSqlString($select = null)
     {
-        return $this->obj_select->getSqlString(
+        if (is_null($select)) {
+            $select = $this->obj_select;
+        }
+        return $select->getSqlString(
             $this->db_manager->getDbAdapter()
                 ->getPlatform());
     }

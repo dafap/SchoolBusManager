@@ -21,18 +21,19 @@ use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 
 class CarteControllerTest extends AbstractHttpControllerTestCase
 {
+
     private $serviceManager;
+
     protected $traceError = true;
-    
+
     public function setUp()
     {
         $this->setApplicationConfig(
-            Bootstrap::getServiceManager()->get('ApplicationConfig')
-        );
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }
-    
+
     public function testCarteControllerFactory()
     {
         $controller_manager = $this->serviceManager->get('ControllerManager');

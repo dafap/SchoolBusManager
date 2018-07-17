@@ -15,7 +15,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juin 2018
+ * @date 11 juin 2018
  * @version 2018-2.4.1
  */
 namespace SbmParent\Controller;
@@ -160,7 +160,7 @@ class IndexController extends AbstractActionController
         $form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setData(
             [
@@ -291,7 +291,7 @@ class IndexController extends AbstractActionController
         $form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setValueOptions('communeId', 
             $this->db_manager->get('Sbm\Db\Select\Communes')
@@ -729,7 +729,7 @@ class IndexController extends AbstractActionController
                 $this->db_manager->get('Sbm\Db\Select\Etablissements')
                     ->visibles())
                 ->setValueOptions('classeId', 
-                $this->db_manager->get('Sbm\Db\Select\Classes'))
+                $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
                 ->setValueOptions('joursTransport', Semaine::getJours())
                 ->setValueOptions('communeId', 
                 $this->db_manager->get('Sbm\Db\Select\Communes')

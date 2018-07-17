@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 11 juin 2018
+ * @version 2018-2.4.1
  */
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Service\CalculDroits;
@@ -161,7 +161,7 @@ return [
             'Sbm\Db\VueGateway\Transporteurs' => TableGateway\Vue\TableGatewayTransporteurs::class,
             
             'Sbm\Db\Select\Bordereaux' => Select\BordereauxForSelect::class,
-            'Sbm\Db\Select\Classes' => Select\Classes::class,
+            'Sbm\Db\Select\Classes' => Select\ClassesForSelect::class,
             'Sbm\Db\Select\Communes' => Select\CommunesForSelect::class,
             'Sbm\Db\Select\DatesCartes' => Select\DatesCartes::class,
             'Sbm\Db\Select\Etablissements' => Select\EtablissementsForSelect::class,
@@ -201,6 +201,7 @@ return [
             Form\Organisme::class => Form\Organisme::class,
             Form\Responsable::class => Form\Responsable::class,
             Form\ResponsableVerrouille::class => Form\ResponsableVerrouille::class,
+            Form\Rpi::class => Form\Rpi::class,
             Form\SecteurScolaire::class => Form\SecteurScolaire::class,
             Form\Service::class => Form\Service::class,
             Form\Station::class => Form\Station::class,

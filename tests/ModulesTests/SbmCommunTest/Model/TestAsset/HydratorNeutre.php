@@ -16,6 +16,7 @@ use SbmCommun\Model\Hydrator\AbstractHydrator;
 
 class HydratorNeutre extends AbstractHydrator
 {
+
     protected function calculate($object)
     {
         return $object;

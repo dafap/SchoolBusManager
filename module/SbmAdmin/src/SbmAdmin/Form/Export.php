@@ -9,8 +9,8 @@
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 11 juin 2018
+ * @version 2018-2.4.1
  */
 namespace SbmAdmin\Form;
 
@@ -162,7 +162,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     'empty_option' => 'Toutes',
                     'allow_empty' => true,
                     'disable_inarray_validator' => false,
-                    'value_options' => $this->sm->get('Sbm\Db\Select\Classes')
+                    'value_options' => $this->sm->get('Sbm\Db\Select\Classes')->tout()
                 ]
             ]);
         $this->add(

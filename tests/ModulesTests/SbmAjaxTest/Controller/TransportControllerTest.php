@@ -20,18 +20,19 @@ use SbmCommun\Model\Db\Service\DbManager;
 
 class TransportControllerTest extends AbstractHttpControllerTestCase
 {
+
     private $serviceManager;
+
     protected $traceError = true;
-    
+
     public function setUp()
     {
         $this->setApplicationConfig(
-            Bootstrap::getServiceManager()->get('ApplicationConfig')
-        );
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }
-    
+
     public function testTransportControllerFactory()
     {
         $controller_manager = $this->serviceManager->get('ControllerManager');

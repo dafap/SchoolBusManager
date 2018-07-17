@@ -1,0 +1,175 @@
+<?php
+
+/**
+ * Page de modification d'un rpi
+ *
+ * Réservé à l'administrateur
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource rpi-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 6 juin 2018
+ * @version 2018-2.4.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile(
+    $this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/rpi/edit.js'));
+$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
+$this->headScript()->captureStart();
+?>
+multicheckbox_actions.init("classe-edit-niveau");
+<?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+
+<?php
+$this->inlineScript()->captureEnd();
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'rpi-liste'
+]);
+$url_ajout_commune = $this->url('sbmadmin', [
+    'action' => 'rpi-commune-ajout'
+]);
+$url_ajout_ecole = $this->url('sbmadmin', [
+    'action' => 'rpi-etablissement-ajout'
+]);
+$url_ajout_classe = $this->url('sbmadmin', [
+    'action' => 'rpi-classe-ajout'
+]);
+$url_suppr_commune = $this->url('sbmadmin', [
+    'action' => 'rpi-commune-suppr'
+]);
+$url_suppr_ecole = $this->url('sbmadmin', [
+    'action' => 'rpi-etablissement-suppr'
+]);
+$url_suppr_classe = $this->url('sbmadmin', [
+    'action' => 'rpi-classe-suppr'
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+$hiddensAjoutCommune = [
+    'rpiId' => $this->rpiId
+];
+$actionsAjoutCommune = [
+    'ajout-commune' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajout_commune,
+        'title' => 'Ajouter une commune'
+    ]
+];
+$hiddensAjoutEcole = [
+    'rpiId' => $this->rpiId
+];
+$actionsAjoutEcole = [
+    'ajout-ecole' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajout_ecole,
+        'title' => 'Ajouter une école'
+    ]
+];
+$hiddensAjoutClasse = [
+    'rpiId' => $this->rpiId,
+    'etablissementId' => null
+];
+$actionsAjoutClasse = [
+    'ajout-classe' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajout_classe,
+        'title' => 'Ajouter une classe'
+    ]
+];
+?>
+<div id="winpopup"></div>
+<h1>Composition d'un RPI</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="menu float-left">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+		<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+	    </div>
+	</div>
+	<div id="fiche-inner">
+	    <?= $this->form()->openTag($this->form);?>
+	    <?= $this->formHidden($this->form->get('rpiId'));?>
+	    <?= $this->formHidden($this->form->get('csrf'));?>
+        <fieldset class="page1">
+			<div class="row-inner"><?= $this->formRow($this->form->get('nom'));?></div>
+			<div class="row-inner"><?= $this->formRow($this->form->get('libelle'));?></div>
+			<div id="classe-edit-niveau" class="row-inner edit">
+			<?= $this->formRow($this->form->get('niveau')); ?></div>
+			<div class="row-inner">
+				<table>
+					<tr>
+						<td style='vertical-align: top; width: 25em'>
+							<fieldset>
+								<legend>Communes du RPI</legend>
+								<table id="rpi-communes">									
+<?= $this->rpiCommunes($this->structure['communes']);?>
+								</table>
+								<p class="sbm-description"
+									style="border-top: 1px solid #fdddcc;">
+									<b>Note:</b></br> <i class="fam-add"></i> pour ajouter une
+									commune.<br> <i class="fam-delete"></i> pour supprimer une
+									commune.
+								</p>
+							</fieldset>
+						</td>
+						<td>
+							<fieldset>
+								<legend>Écoles et classes concernées</legend>
+								<table id="rpi-etablissements">
+<?php
+echo $this->rpiEtablissements($this->structure['etablissements'],  
+    function ($view, $etablissement) {
+        $etablissementId = $etablissement['etablissementId'];
+        $lignesClasses = $view->rpiClasses($etablissement);
+        return <<<EOT
+<table id="rpi-classes-$etablissementId">
+    $lignesClasses
+</table>
+EOT;
+    });
+?>
+				                        
+								</table>
+								<p class="sbm-description"
+									style="border-top: 1px solid #fdddcc;">
+									<b>Note:</b></br> <i class="fam-add"></i> pour ajouter une
+									école ou une classe.<br> <i class="fam-delete"></i> pour
+									supprimer un établissement ou une classe.<br> La suppression
+									d'un établissement supprime aussi les classes.
+								</p>
+							</fieldset>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="secteur-scolaire-buttons" class="row-inner">  
+            <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
+            </div>
+		</fieldset>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

@@ -22,24 +22,26 @@ use SbmAuthentification\Authentication\AuthenticationServiceFactory;
 
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
+
     private $serviceManager;
+
     protected $traceError = true;
-    
+
     public function setUp()
     {
         $this->setApplicationConfig(
-            Bootstrap::getServiceManager()->get('ApplicationConfig')
-        );
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }
-    
+
     public function testIndexControllerFactory()
     {
         $controller_manager = $this->serviceManager->get('ControllerManager');
         $controller = $controller_manager->get(IndexController::class);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, $controller->authenticate);
+        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+            $controller->authenticate);
         $this->assertInstanceOf(Acl::class, $controller->acl);
         $this->assertTrue(is_array($controller->client));
         $this->assertTrue(is_array($controller->mail_config));

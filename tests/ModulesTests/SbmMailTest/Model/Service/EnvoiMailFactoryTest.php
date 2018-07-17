@@ -22,13 +22,15 @@ class EnvoiMailFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testCreateService()
     {
-        $message = __METHOD__ . ' - EnvoiMailFactory ne renvoie pas un objet de type EnvoiMail.';
+        $message = __METHOD__ .
+             ' - EnvoiMailFactory ne renvoie pas un objet de type EnvoiMail.';
         $serviceLocator = new ServiceManager();
-        $serviceLocator->setService('SbmMail\Config', [
-            'transport' => [],
-            'message' => [],
-            'destinataires' => []
-        ]);
+        $serviceLocator->setService('SbmMail\Config', 
+            [
+                'transport' => [],
+                'message' => [],
+                'destinataires' => []
+            ]);
         $envoiMailFactory = new EnvoiMailFactory();
         $envoiMail = $envoiMailFactory->createService($serviceLocator);
         $this->assertInstanceOf(EnvoiMail::class, $envoiMail, $message);

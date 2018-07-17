@@ -1,0 +1,183 @@
+<?php
+
+/**
+ * Liste des rpi
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource rpi-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
+ */
+function renderCheckbox($view, $name, $id, $value, $disabled = false)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+        ->setAttribute('id', $id)
+        ->setValue($value);
+    if ($disabled) {
+        $element->setAttribute('disabled', 'disabled');
+    }
+    return $view->formCheckbox($element);
+}
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$jsTrigger = '';
+$jsCallback = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxadmin/'+action+'selectionrpi/rpiId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+
+$url_ajouter = $this->url('sbmadmin', 
+    [
+        'action' => 'rpi-ajout',
+        'page' => $this->page
+    ]);
+$url_edit = $this->url('sbmadmin', 
+    [
+        'action' => 'rpi-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmadmin', 
+    [
+        'action' => 'rpi-suppr',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmadmin', 
+    [
+        'action' => 'rpi-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmadmin');
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmadmin', [
+        'action' => 'rpi-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouveau RPI'
+    ]
+];
+?>
+<h1>Liste des RPI</h1>
+<div id="liste-wrapper">
+<?php if ($this->etablissementId):?>
+	<div id="liste-title">
+		<ul>
+			<li><?php echo $this->escapeHtml($this->etablissement->commune); ?></li>
+			<li><?php echo $this->escapeHtml($this->etablissement->nom); ?></li>
+		</ul>
+	</div>
+<?php endif;?>
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+	    </div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner rpi">
+			<tbody>
+				<tr>
+					<th>Code du RPI</th>
+					<th>Libellé</th>
+					<th>Maternelle</th>
+					<th>Élémentaire</th>
+					<th>Sélection</th>
+					<th></th>
+				</tr>
+            <?php foreach($this->data as $test => $row): ?>
+            <?php
+                // construction du JS pour selection
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $row->rpiId);
+                $jsCallback .= sprintf("$modele\n", $row->rpiId, $row->rpiId);
+                // niveau
+                if (is_array($row->niveau)) {
+                    $maternelle = in_array(1, $row->niveau);
+                    $elementaire = in_array(2, $row->niveau);
+                }
+                ?>
+                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="nom"><?= $this->escapeHtml($row->nom); ?></td>
+					<td class="libelle"><?= $this->escapeHtml($row->libelle); ?></td>
+					<td class="centre">
+					<?= renderCheckbox($this, 'maternelle', 'maternelle' . $row->rpiId, $maternelle, true)?>
+					</td>
+					<td class="centre">
+					<?= renderCheckbox($this, 'elementaire', 'elementaire' . $row->rpiId, $elementaire, true)?>
+					</td>
+					<td class="centre">
+					<?= renderCheckbox($this, 'selection', 'chk' . $row->rpiId, $row->selection)?>
+					</td>
+					<td class="boutons">
+					<?php
+                $hiddens = [
+                    'rpiId' => $row->rpiId
+                ];
+                $buttons = [
+                    'modifier' => [
+                        'class' => 'fam-pencil',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier'
+                    ],
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'Supprimer'
+                    ]
+                ];
+                echo $this->listeLigneActions($row->rpiId, $hiddens, $buttons);
+                ?>
+					</td>
+				</tr>         
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"></div>
+		<div class="criteres-wrapper">
+        <?php echo $this->form()->openTag($this->criteres_form);?>
+        <?php echo $this->formCollection($this->criteres_form, true);?>
+        <?php echo $this->form()->closeTag();?>
+        </div>
+	</div>
+</div>
+<?php
+// Mise en place du JS pour selection
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?= $jsTrigger;?>}
+<?= $jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();
