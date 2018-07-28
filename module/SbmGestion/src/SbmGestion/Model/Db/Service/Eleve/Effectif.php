@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -214,8 +214,16 @@ class Effectif extends AbstractQuery implements FactoryInterface
         
         // calcul du nombre d'élèves
         foreach ($result as $key => &$value) {
-            $value['total']['demandes'] = array_sum($value['demandes']);
-            $value['total']['transportes'] = array_sum($value['transportes']);
+            if (isset($value['demandes'])) {
+                $value['total']['demandes'] = array_sum($value['demandes']);
+            } else {
+                $value['total']['demandes'] = 0;
+            }
+            if (isset($value['transportes'])) {
+                $value['total']['transportes'] = array_sum($value['transportes']);
+            } else {
+                $value['total']['transportes'] = 0;
+            }
         }
         return $result;
     }
