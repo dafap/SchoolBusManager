@@ -28,8 +28,8 @@
  * @filesource view/sbm-gestion/transport/commune-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 use SbmBase\Model\StdLib;
 
@@ -118,6 +118,8 @@ echo $this->flashMessenger()->render('default');
 					<th>Membre</th>
 					<th>Desservie</th>
 					<th>Visible</th>
+					<th>Inscription<br>en ligne</th>
+					<th>Paiement<br>en ligne</th>
 					<th title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
 					<th>Sélect.</th>
 					<th></th>
@@ -153,6 +155,8 @@ echo $this->flashMessenger()->render('default');
 					<td class="centre membre"><?php echo $commune->membre ? 'X' : ''; ?></td>
 					<td class="centre desservie"><?php echo $commune->desservie ? 'X' : ''; ?></td>
 					<td class="centre visible"><?php echo $commune->visible ? 'X' : ''; ?></td>
+					<td class="centre visible"><?php echo $commune->inscriptionenligne ? 'X' : ''; ?></td>
+					<td class="centre visible"><?php echo $commune->paiementenligne ? 'X' : ''; ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $commune->communeId, $commune->selection)?></td>
 					<td class="boutons">

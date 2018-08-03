@@ -7,8 +7,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2018
- * @version 2018-2.4.1
+ * @date 30 juillet 2018
+ * @version 2018-2.4.2
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
@@ -298,8 +298,8 @@ echo $this->flashMessenger()->render('default');
 		<p class="sbm-description">Vous allez recevoir les cartes de transport
 			par courrier courant août.</p>
 <?php else :?>
-        <p class="sbm-description">Vous allez recevoir la carte de transport
-			par courrier courant août.</p>
+        <p class="sbm-description">Vous allez recevoir la carte de
+			transport par courrier courant août.</p>
 <?php endif;?>
 <?php endif;?>			
 		<p class="sbm-description">Les circuits et horaires seront
@@ -365,7 +365,7 @@ echo $this->flashMessenger()->render('default');
                         'value' => 'Supprimer'
                     ]
                 ];
-                if ($peutPayer) {
+                if ($peutPayer && $this->paiementenligne) {
                     $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement*';
                     $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
                          $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
@@ -412,7 +412,7 @@ echo $this->flashMessenger()->render('default');
                 'value' => 'Inscrire un autre enfant'
             ]
         ];
-        if ($montantTotal > 0) {
+        if ($montantTotal > 0 && $this->paiementenligne) {
             if ($enAttente) {
                 $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
             } else {
@@ -455,7 +455,12 @@ EOT;
                 break;
         }
         ?>
-        <?php if ($montantTotal > 0) : ?>
+        <?php if (! $this->paiementenligne && $montantTotal > 0) : ?>
+        <p class="sbm-description">
+			Les habitants de votre commune ne peuvent pas payer en ligne. Prenez contact avec le service 
+			Transport pour connaitre la marche à suivre pour votre cas particulier.
+		</p>
+        <?php elseif ($montantTotal > 0) : ?>
 		<p class="sbm-description">
 			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?php echo $msg;?>
 		</p>

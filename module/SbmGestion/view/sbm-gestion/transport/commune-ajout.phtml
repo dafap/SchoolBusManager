@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/commune-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -54,6 +54,8 @@ echo $this->formHidden($this->form->get('csrf'));
 			<div id="commune-ajout-membre" class="row-inner ajout"><?php echo $this->formRow($this->form->get('membre')); ?></div>
 			<div id="commune-ajout-desservie" class="row-inner ajout"><?php echo $this->formRow($this->form->get('desservie')); ?></div>
 			<div id="commune-ajout-visible" class="row-inner ajout"><?php echo $this->formRow($this->form->get('visible')); ?></div>
+			<div id="commune-ajout-inscriptionenligne" class="row-inner ajout"><?php echo $this->formRow($this->form->get('inscriptionenligne')); ?></div>
+			<div id="commune-ajout-paiementenligne" class="row-inner ajout"><?php echo $this->formRow($this->form->get('paiementenligne')); ?></div>
 			<div id="commune-ajout-buttons" class="row-inner ajout">
         <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

@@ -10,8 +10,8 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 namespace SbmFront\Model\Responsable;
 
@@ -78,14 +78,14 @@ class Responsable
 
     public function __set($name, $value)
     {
-        $this->responsable['name'] = $value;
+        $this->responsable[$name] = $value;
         Session::set('responsable', $this->responsable, 
             self::SESSION_RESPONSABLE_NAMESPACE);
     }
 
     public function __unset($name)
     {
-        unset($this->responsable['name']);
+        unset($this->responsable[$name]);
         Session::set('responsable', $this->responsable, 
             self::SESSION_RESPONSABLE_NAMESPACE);
     }

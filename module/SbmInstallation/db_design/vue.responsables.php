@@ -143,8 +143,7 @@ return [
             'table' => 'responsables', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
             'alias' => 'res'
-        ] // optionnel
-,
+        ], // optionnel
         'join' => [
             [
                 'table' => 'communes', // obligatoire mais peut être une vue
@@ -155,6 +154,12 @@ return [
                     [
                         'field' => 'nom',
                         'alias' => 'commune'
+                    ],
+                    [
+                        'field' => 'inscriptionenligne'
+                    ],
+                    [
+                        'field' => 'paiementenligne'
                     ]
                 ]
             ],

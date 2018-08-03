@@ -15,8 +15,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 30 juillet 2018
+ * @version 2018-2.4.2
  */
 namespace SbmParent\Controller;
 
@@ -99,6 +99,7 @@ class IndexController extends AbstractActionController
         return new ViewModel(
             [
                 'etatSite' => $tCalendar->etatDuSite(),
+                'paiementenligne' => $responsable->paiementenligne,
                 'permanences' => $tCalendar->getPermanences($responsable->commune),
                 'inscrits' => $query->getElevesInscrits($responsable->responsableId),
                 'preinscrits' => $query->getElevesPreinscrits($responsable->responsableId),

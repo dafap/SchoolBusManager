@@ -1,0 +1,48 @@
+<?php
+/**
+ * Page reçue par les parents habitant hors zone autorisée.
+ * 
+ * @project sbm
+ * @package SbmFront/view/sbm-front/index
+ * @filesource hors-zone.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 juil. 2018
+ * @version 2018-2.4.2
+ */
+$format = <<<EOT
+<p>Vous habitez dans la commune de %s.</p>
+<p>Les inscriptions en ligne ne sont pas autorisées pour les habitants de cette commune.</p>
+<p>Remplissez votre demande sur un formulaire papier et transmettez le au service Transport à l'adresse :</p>
+<div class="centre">
+<a href="%s" class="accueil">%s</a><br>
+%s<br>
+%s<br>
+%s %s<br>
+Tél : %s<br>
+Mail : %s</br>
+</div>
+EOT;
+
+?>
+<h1>Inscription en ligne non autorisée</h1>
+<div class="fiche-wrapper">
+	<div class="zone-actions"></div>
+	<div class="flashMessenger float-right">
+<?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+</div>
+	<div class="explication">
+<?php
+
+echo sprintf($format, $this->commune, $this->accueil, $this->client['name'], 
+    $this->client['adresse'][0], $this->client['adresse'][1], $this->client['code_postal'], 
+    $this->client['commune'], $this->telephone($this->client['telephone']), 
+    $this->client['email']);
+?>
+</div>

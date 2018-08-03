@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 namespace SbmCommun\Form;
 
@@ -382,6 +382,46 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 ],
                 'options' => [
                     'label' => 'Visibles',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'inscriptionenligne',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Inscription en ligne',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'paiementenligne',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Paiement en ligne',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]

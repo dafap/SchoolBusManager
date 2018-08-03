@@ -1,16 +1,14 @@
 <?php
 /**
  * Controller pour les actions d'authentification
- *
- * Description longue du fichier s'il y en a une
  * 
  * @project sbm
  * @package SbmFront\Controller
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
- * @version 2018-2.4.1
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 namespace SbmFront\Controller;
 
@@ -178,6 +176,26 @@ class LoginController extends AbstractActionController
                         } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
                             throw $e->getPrevious();
                         }
+                        // contrôle de la commune
+                        // @todo à compléter
+                        if (! $responsable->inscriptionenligne) {
+                            // page d'information indiquant que les inscriptions en ligne
+                            // ne sont pas autorisées pour les parents de cette commune.
+                            $commune = $responsable->commune;
+                            $this->flashMessenger()->addErrorMessage(
+                                'Vous ne pouvez pas inscrire vos enfants par cette applicattion en ligne.');
+                            $this->logout();
+                            return $this->redirect()->toRoute('home', 
+                                [
+                                    'action' => 'hors-zone',
+                                    'id' => $commune
+                                ]);
+                        }
+                        if (! $responsable->paiementenligne) {
+                            // indiquer que les préinscriptions sont autorisées mais que
+                            // le paiement en ligne n'est pas permi pour les parents de
+                            // cette commune
+                        }
                         // contrôle de position géographique
                         $point = new Point($responsable->x, $responsable->y);
                         $pt = $this->oDistanceMatrix->getProjection()->xyzVersgRGF93(
@@ -241,12 +259,7 @@ class LoginController extends AbstractActionController
         }
     }
 
-    /**
-     * Déconnexion
-     *
-     * @return \Zend\Http\Response
-     */
-    public function logoutAction()
+    private function logout()
     {
         try {
             $this->responsable->get()->clear();
@@ -254,6 +267,16 @@ class LoginController extends AbstractActionController
         $auth = $this->authenticate->by();
         $auth->clearIdentity();
         Session::remove('millesime');
+    }
+
+    /**
+     * Déconnexion
+     *
+     * @return \Zend\Http\Response
+     */
+    public function logoutAction()
+    {
+        $this->logout();
         return $this->redirect()->toRoute('home');
     }
 

@@ -9,8 +9,8 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2018
- * @version 2018-2.4.0
+ * @date 30 juillet 2018
+ * @version 2018-2.4.2
  */
 namespace SbmFront\Controller;
 
@@ -42,7 +42,6 @@ class IndexController extends AbstractActionController
                 'permanences' => $tCalendar->getPermanences(),
                 'url_ts_region' => $this->url_ts_region
             ]);
-        //die(var_dump($tCalendar->etatDuSite()['etat']));
         switch ($tCalendar->etatDuSite()['etat']) {
             case 0:
                 $view->setTemplate('sbm-front/index/index-avant.phtml');
@@ -53,10 +52,19 @@ class IndexController extends AbstractActionController
             default:
                 $view->setTemplate('sbm-front/index/index-apres.phtml');
                 break;
-        }        
+        }
         return $view;
     }
-    
+
+    public function horsZoneAction()
+    {
+        return new ViewModel(
+            [
+                'accueil' => $this->accueil,
+                'client' => $this->client,
+                'commune' => $this->params('id')
+            ]);
+    }
     /*
      * public function testAction()
      * {

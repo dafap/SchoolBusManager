@@ -8,8 +8,8 @@
  * @filesource table.communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 ini_set('memory_limit', '-1');
 
@@ -33,6 +33,8 @@ return [
             'membre' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'desservie' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'inscriptionenligne' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'paiementenligne' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'population' => 'mediumint(8) UNSIGNED NOT NULL DEFAULT "0"'
         ],
