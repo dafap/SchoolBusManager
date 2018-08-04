@@ -1561,16 +1561,18 @@ class EleveController extends AbstractActionController
             $tUsers = $db_manager->get('Sbm\Db\Table\Users');
             try {
                 $user = $tUsers->getRecordByEmail($email);
-                Session::set('user', $user);
+                Session::set('user', $user, $sessionNameSpace);
             } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
-                Session::set('user', false);
+                Session::set('user', false, $sessionNameSpace);
             }
+        } else {
+            Session::set('user', false, $sessionNameSpace);
         }
     }
 
     private function updateUserCompte($db_manager, $email_new, $sessionNameSpace)
     {
-        $user = Session::get('user', $this->getSessionNamespace());
+        $user = Session::get('user', false, $this->getSessionNamespace());
         if ($user && $user->email != $email_new) {
             $tUsers = $db_manager->get('Sbm\Db\Table\Users');
             $oData = $tUsers->getObjData()
@@ -2017,18 +2019,13 @@ class EleveController extends AbstractActionController
                 $mailTemplate = new MailTemplate(null, 'layout', 
                     [
                         'file_name' => $logo_bas_de_mail,
-                        'path' => StdLib::getParamR(
-                            [
-                                'img',
-                                'path'
-                            ], $this->config),
+                        'path' => StdLib::getParam('path', $this->img),
                         'img_attributes' => StdLib::getParamR(
                             [
-                                'img',
                                 'administrer',
                                 $logo_bas_de_mail
-                            ], $this->config),
-                        'client' => StdLib::getParam('client', $this->config)
+                            ], $this->img),
+                        'client' => $this->client
                     ]);
                 $params = [
                     'to' => [
@@ -2153,18 +2150,13 @@ class EleveController extends AbstractActionController
                         $mailTemplate = new MailTemplate('ouverture-compte', 'layout', 
                             [
                                 'file_name' => $logo_bas_de_mail,
-                                'path' => StdLib::getParamR(
-                                    [
-                                        'img',
-                                        'path'
-                                    ], $this->config),
+                                'path' => StdLib::getParam('path', $this->img),
                                 'img_attributes' => StdLib::getParamR(
                                     [
-                                        'img',
                                         'administrer',
                                         $logo_bas_de_mail
-                                    ], $this->config),
-                                'client' => StdLib::getParam('client', $this->config)
+                                    ], $this->img),
+                                'client' => $this->client
                             ]);
                         $params = [
                             'to' => [
@@ -2189,8 +2181,7 @@ class EleveController extends AbstractActionController
                                             [
                                                 'force_canonical' => true
                                             ]),
-                                        'client' => StdLib::getParam('client', 
-                                            $this->config)
+                                        'client' => $this->client
                                     ])
                             ]
                         ];
