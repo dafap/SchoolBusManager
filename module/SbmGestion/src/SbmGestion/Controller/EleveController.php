@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juillet 2018
- * @version 2018-2.4.1
+ * @date 4 août 2018
+ * @version 2018-2.4.2
  */
 namespace SbmGestion\Controller;
 
@@ -92,7 +92,9 @@ class EleveController extends AbstractActionController
         $criteres_form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout());
+            ->setValueOptions('classeId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
         // créer un objectData qui contient la méthode getWhere() adhoc
         $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves(
             $criteres_form->getElementNames());
@@ -196,8 +198,7 @@ class EleveController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // entrée lors d'un retour éventuel par F5 ou back en 22
-            $prg = Session::get('post', false, 
-                $this->getSessionNamespace('ajout', 1));
+            $prg = Session::get('post', false, $this->getSessionNamespace('ajout', 1));
         }
         $args = (array) $prg;
         if (array_key_exists('ajouter', $args)) {
@@ -219,8 +220,7 @@ class EleveController extends AbstractActionController
         }
         if (array_key_exists('cancel', $args)) {
             Session::remove('post', $this->getSessionNamespace('ajout', 1));
-            Session::remove('responsableId', 
-                $this->getSessionNamespace('ajout', 1));
+            Session::remove('responsableId', $this->getSessionNamespace('ajout', 1));
             $this->flashMessenger()->addInfoMessage('Saisie abandonnée.');
             try {
                 return $this->redirectToOrigin()->back();
@@ -320,8 +320,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || ! array_key_exists('eleveId', $prg)) {
-            $prg = Session::get('post', false, 
-                $this->getSessionNamespace('ajout', 2));
+            $prg = Session::get('post', false, $this->getSessionNamespace('ajout', 2));
             if ($prg === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite.');
                 try {
@@ -477,7 +476,9 @@ class EleveController extends AbstractActionController
             ->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
+            ->setValueOptions('classeId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->bind($tableScolarites->getObjData());
         if ($ispost) {
@@ -648,7 +649,10 @@ class EleveController extends AbstractActionController
                 'millesime' => $millesime,
                 'eleveId' => $eleveId
             ]);
-        $subventions = ['R1' => $odata1->subventionR1, 'R2' =>$odata1->subventionR2];
+        $subventions = [
+            'R1' => $odata1->subventionR1,
+            'R2' => $odata1->subventionR2
+        ];
         if ($odata1->inscrit) {
             $inscrit = $odata1->paiement;
             $inscrit |= $odata1->fa;
@@ -834,8 +838,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $prg = Session::get('post', false, 
-                $this->getSessionNamespace('ajout', 2));
+            $prg = Session::get('post', false, $this->getSessionNamespace('ajout', 2));
             if ($prg == false) {
                 try {
                     return $this->redirectToOrigin()->back();
@@ -947,7 +950,8 @@ class EleveController extends AbstractActionController
                 'responsable2Id', $responsableId);
             $or = true;
         }
-        $oEleve = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord($args['eleveId']);
+        $oEleve = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord(
+            $args['eleveId']);
         $viewmodel = new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesEleveGroup(
@@ -956,9 +960,9 @@ class EleveController extends AbstractActionController
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
                 'criteres_form' => null,
                 'groupe' => $args['op'],
-                'eleve' => sprintf('%s %s',$oEleve->prenom, $oEleve->nom)
+                'eleve' => sprintf('%s %s', $oEleve->prenom, $oEleve->nom)
             ]);
-        //$viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
+        // $viewmodel->setTemplate('sbm-gestion/eleve/eleve-liste.phtml');
         return $viewmodel;
     }
 
@@ -1514,6 +1518,9 @@ class EleveController extends AbstractActionController
                     $this->db_manager->get('Sbm\Db\table\Communes')->setVisible(
                         $oData->communeId);
                 }
+                // on synchronise l'email du compte user
+                $this->updateUserCompte($this->db_manager, $oData->email, 
+                    $this->getSessionNamespace());
                 $this->flashMessenger()->addSuccessMessage(
                     "Les modifications ont été enregistrées.");
                 try {
@@ -1531,6 +1538,8 @@ class EleveController extends AbstractActionController
         } else {
             $array_data = $tableResponsables->getRecord($responsableId)->getArrayCopy();
             $form->setData($array_data);
+            $this->hasUserCompte($this->db_manager, $array_data['email'], 
+                $this->getSessionNamespace());
             $demenagement = $array_data['demenagement'];
             $identite = $array_data['titre'] . ' ' . $array_data['nom'] . ' ' .
                  $array_data['prenom'];
@@ -1543,6 +1552,42 @@ class EleveController extends AbstractActionController
                 'identite' => $identite,
                 'demenagement' => $demenagement
             ]);
+    }
+
+    private function hasUserCompte($db_manager, $email, $sessionNameSpace)
+    {
+        Session::remove('user', $sessionNameSpace);
+        if ($email) {
+            $tUsers = $db_manager->get('Sbm\Db\Table\Users');
+            try {
+                $user = $tUsers->getRecordByEmail($email);
+                Session::set('user', $user);
+            } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                Session::set('user', false);
+            }
+        }
+    }
+
+    private function updateUserCompte($db_manager, $email_new, $sessionNameSpace)
+    {
+        $user = Session::get('user', $this->getSessionNamespace());
+        if ($user && $user->email != $email_new) {
+            $tUsers = $db_manager->get('Sbm\Db\Table\Users');
+            $oData = $tUsers->getObjData()
+            ->exchangeArray(
+                [
+                    'userId' => $user->userId,
+                    'token' => null,
+                    'tokenalive' => 0,
+                    'active' => 1,
+                    'email' => $email_new,
+                    'dateModification' => null,
+                    'note' => null
+                ])
+                ->addNote('Email changé le ' . date('d/m/y') . ' par le gestionnaire')
+                ->completeToModif();
+            $tUsers->saveRecord($oData);
+        }
     }
 
     public function responsableGroupAction()
@@ -1847,7 +1892,8 @@ class EleveController extends AbstractActionController
                     'inscrits' => 'Literal:0',
                     'preinscrit' => 'Literal:0',
                     'localisation' => sprintf($pasLocalisaton, $rangeX['gestion'][0], 
-                        $rangeX['gestion'][1], $rangeY['gestion'][0], $rangeY['gestion'][1])
+                        $rangeX['gestion'][1], $rangeY['gestion'][0], 
+                        $rangeY['gestion'][1])
                 ]
             ]
         ];
@@ -1903,8 +1949,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $destinataire = Session::get('destinataire', [], 
-                $this->getSessionNamespace());
+            $destinataire = Session::get('destinataire', [], $this->getSessionNamespace());
             $args = [];
         } else {
             $args = $prg;
@@ -1917,8 +1962,7 @@ class EleveController extends AbstractActionController
                     'email' => $args['email'],
                     'responsable' => StdLib::getParam('responsable', $args)
                 ];
-                Session::set('destinataire', $destinataire, 
-                    $this->getSessionNamespace());
+                Session::set('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['email'], $args['responsable']);
             } elseif (array_key_exists('ecrirer1', $args) &&
                  array_key_exists('emailr1', $args)) {
@@ -1926,8 +1970,7 @@ class EleveController extends AbstractActionController
                     'email' => $args['emailr1'],
                     'responsable' => StdLib::getParam('responsabler1', $args)
                 ];
-                Session::set('destinataire', $destinataire, 
-                    $this->getSessionNamespace());
+                Session::set('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['emailr1'], $args['responsabler1']);
             } elseif (array_key_exists('ecrirer2', $args) &&
                  array_key_exists('emailr2', $args)) {
@@ -1935,8 +1978,7 @@ class EleveController extends AbstractActionController
                     'email' => $args['emailr2'],
                     'responsable' => StdLib::getParam('responsabler2', $args)
                 ];
-                Session::set('destinataire', $destinataire, 
-                    $this->getSessionNamespace());
+                Session::set('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['emailr2'], $args['responsabler2']);
             } else {
                 $destinataire = Session::get('destinataire', [], 
