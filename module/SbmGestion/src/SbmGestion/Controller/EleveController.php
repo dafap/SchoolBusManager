@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2018
+ * @date 9 août 2018
  * @version 2018-2.4.2
  */
 namespace SbmGestion\Controller;
@@ -1501,6 +1501,22 @@ class EleveController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire et on l'adapte
         $form = new FormResponsable();
+        // validateur permettant de s'assurer que l'email proposé n'existe pas
+        $validator = new \Zend\Validator\Db\NoRecordExists(
+            [
+                'table' => $this->db_manager->getCanonicName('responsables', 'table'),
+                'adapter' => $this->db_manager->getDbAdapter(),
+                'field' => 'email',
+                'exclude' => [
+                    'field' => 'responsableId',
+                    'value' => $responsableId
+                ]
+            ]);
+        $form->getInputFilter()
+            ->get('email')
+            ->getValidatorChain()
+            ->attach($validator);
+        // remplissage des listes des éléments select et longueurs maxi des inputs
         $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
@@ -1575,20 +1591,26 @@ class EleveController extends AbstractActionController
         $user = Session::get('user', false, $this->getSessionNamespace());
         if ($user && $user->email != $email_new) {
             $tUsers = $db_manager->get('Sbm\Db\Table\Users');
-            $oData = $tUsers->getObjData()
-            ->exchangeArray(
-                [
-                    'userId' => $user->userId,
-                    'token' => null,
-                    'tokenalive' => 0,
-                    'active' => 1,
-                    'email' => $email_new,
-                    'dateModification' => null,
-                    'note' => null
-                ])
-                ->addNote('Email changé le ' . date('d/m/y') . ' par le gestionnaire')
-                ->completeToModif();
-            $tUsers->saveRecord($oData);
+            if ($email_new) {
+                // met à jour l'email dans le compte user
+                $oData = $tUsers->getObjData()
+                    ->exchangeArray(
+                    [
+                        'userId' => $user->userId,
+                        'token' => null,
+                        'tokenalive' => 0,
+                        'active' => 1,
+                        'email' => $email_new,
+                        'dateModification' => null,
+                        'note' => null
+                    ])
+                    ->addNote('Email changé le ' . date('d/m/y') . ' par le gestionnaire')
+                    ->completeToModif();
+                $tUsers->saveRecord($oData);
+            } elseif ($user->categorieId == 1) {
+                // supprime le compte user
+                $tUsers->deleteRecord($u->userId);
+            }
         }
     }
 
