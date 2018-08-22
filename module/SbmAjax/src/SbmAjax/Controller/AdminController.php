@@ -9,8 +9,8 @@
  * @filesource AdminController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 namespace SbmAjax\Controller;
 
@@ -124,6 +124,46 @@ class AdminController extends AbstractActionController
         }
     }
 
+    /**
+     * Renvoie le code html du tableau des classes
+     *
+     * @return \Zend\StdLib\Response
+     */
+    public function rpiclassetableAction()
+    {
+        $etablissementId = $this->params('etablissementId');
+        $vEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
+        $oEtablissement = $vEtablissements->getRecord($etablissementId);
+        $tRpiClasses = $this->db_manager->get('Sbm\Db\Table\RpiClasses');
+        $rclasses = $tRpiClasses->getClasses($etablissementId);
+        $structure = [
+            'etablissementId' => $etablissementId,
+            'nom' => $oEtablissement->nom,
+            'commune' => $oEtablissement->commune,
+            'classes' => []
+        ];
+        foreach ($rclasses as $row) {
+            $structure['classes'][] = $row;
+        }
+        // utilisation particulière du viewhelper rpiCommunes dans le controller
+        $rpiClasses = $this->viewHelperManager->get('rpiClasses');
+        $content = str_replace('etablissementId:?', "etablissementId:$etablissementId", 
+            $rpiClasses($structure));
+        // construction et renvoi d'une réponse html
+        try {
+            $response = $this->getResponse();
+        } catch (\Exception $e) {
+            $response = new \Zend\StdLib\Response();
+        }
+        $response->setContent($content);
+        return $response;
+    }
+
+    /**
+     * Prépare le formulaire de saisie d'une classe
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function rpiclasseformAction()
     {
         $op = $this->params('op');
@@ -136,7 +176,8 @@ class AdminController extends AbstractActionController
             [
                 'op' => $op,
                 'classeId' => $this->params('classeId'),
-                'etablissementId' => $this->params('etablissementId')
+                'etablissementId' => $this->params('etablissementId'),
+                'niveau' => $this->params('niveau')
             ]);
         return new ViewModel(
             [
@@ -151,9 +192,80 @@ class AdminController extends AbstractActionController
 
     public function rpiclassevalidateAction()
     {
-        ;
+        $request = $this->getRequest();
+        $response = $this->getResponse();
+        
+        if ($request->isPost()) {
+            if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
+                $messages = 'Abandon action (add ou delete classe d\'un établissement).';
+                $success = 2;
+            } else {
+                $op = $request->getPost('op');
+                $niveau = json_decode($request->getPost('niveau'));
+                $form = $this->getFormRpiClasse($niveau, $op);
+                $form->setData($request->getPost());
+                if ($form->isValid()) {
+                    $tRpiClasses = $this->db_manager->get('Sbm\Db\Table\RpiClasses');
+                    $oData = $tRpiClasses->getObjData();
+                    $oData->exchangeArray($form->getData());
+                    try {
+                        switch ($op) {
+                            case 'add':
+                                $result = $tRpiClasses->insertRecord($oData);
+                                if ($result === false) {
+                                    $messages = 'Erreur lors de l\'insertion.';
+                                    $success = 0;
+                                    break;
+                                } elseif ($result) {
+                                    $messages = 'Classe insérée dans cet établissement.';
+                                    $success = 1;
+                                } else {
+                                    $messages = 'Classe déjà présente dans cet établissement.';
+                                    $success = 0;
+                                }
+                                break;
+                            case 'delete':
+                                $tRpiClasses->deleteRecord($oData);
+                                $messages = 'Classe retirée de cet établissement.';
+                                $success = 1;
+                                break;
+                            default:
+                                $messages = 'Demande incorrecte.';
+                                $success = 0;
+                                break;
+                        }
+                    } catch (\Exception $e) {
+                        $messages = 'Une erreur s\'est produite pendant le traitement de la demande.';
+                        $success = 0;
+                    }
+                } else {
+                    $messages = $this->getFormErrorMessages($form->getMessages());
+                    $success = 0;
+                }
+            }
+        } else {
+            $messages = 'Pas de post !';
+            $success = 0;
+        }
+        $response->setContent(
+            Json::encode(
+                [
+                    'cr' => $messages,
+                    'success' => $success
+                ]));
+        return $response;
     }
 
+    /**
+     * Renvoie un formulaire adapté à l'action passée en paramètre
+     *
+     * @param array $niveau
+     *            table des niveaux concernés pour ce rpi
+     * @param string $op
+     *            'add' pour ajout, 'delete' pour suppression
+     *            
+     * @return \SbmAjax\Form\RpiClasse
+     */
     private function getFormRpiClasse($niveau, $op = 'add')
     {
         $form = new Form\RpiClasse($op);
@@ -171,6 +283,11 @@ class AdminController extends AbstractActionController
         return $form;
     }
 
+    /**
+     * Renvoie le code html du tableau des communes
+     *
+     * @return \Zend\StdLib\Response
+     */
     public function rpicommunetableAction()
     {
         $rpiId = $this->params('rpiId');
@@ -180,14 +297,24 @@ class AdminController extends AbstractActionController
         foreach ($rcommunes as $row) {
             $structure[] = $row;
         }
-        $view = new ViewModel([
-            'rpiId' => $rpiId
-        ]);
-        $content = $view->rpiCommunes($structure);
-        $response = $this->getResponse();
+        // utilisation particulière du viewhelper rpiCommunes dans le controller
+        $rpiCommunes = $this->viewHelperManager->get('rpiCommunes');
+        $content = str_replace('rpiId:?', "rpiId:$rpiId", $rpiCommunes($structure));
+        // construction et renvoi d'une réponse html
+        try {
+            $response = $this->getResponse();
+        } catch (\Exception $e) {
+            $response = new \Zend\StdLib\Response();
+        }
         $response->setContent($content);
+        return $response;
     }
 
+    /**
+     * Prépare le formulaire de saisi d'une commune
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function rpicommuneformAction()
     {
         $op = $this->params('op');
@@ -210,6 +337,11 @@ class AdminController extends AbstractActionController
             ]);
     }
 
+    /**
+     * Traitement d'une action demandée sur une commune (ajout ou suppression)
+     *
+     * @return \Zend\Stdlib\ResponseInterface
+     */
     public function rpicommunevalidateAction()
     {
         $request = $this->getRequest();
@@ -275,6 +407,14 @@ class AdminController extends AbstractActionController
         return $response;
     }
 
+    /**
+     * Renvoie un formulaire adapté à l'action passée en paramètre
+     *
+     * @param string $op
+     *            'add' pour ajout, 'delete' pour suppression
+     *            
+     * @return \SbmAjax\Form\RpiCommune
+     */
     private function getFormRpiCommune($op = 'add')
     {
         $form = new Form\RpiCommune($op);
@@ -291,6 +431,54 @@ class AdminController extends AbstractActionController
         return $form;
     }
 
+    /**
+     * Renvoie le code html du tableau des communes
+     *
+     * @return \Zend\StdLib\Response
+     */
+    public function rpietablissementtableAction()
+    {
+        $rpiId = $this->params('rpiId');
+        $tRpiEtablissements = $this->db_manager->get('Sbm\Db\Table\RpiEtablissements');
+        $tRpiClasses = $this->db_manager->get('Sbm\Db\Table\RpiClasses');
+        $retablissements = $tRpiEtablissements->getEtablissements($rpiId);
+        $structure = [];
+        foreach ($retablissements as $row) {
+            $structure[] = array_merge($row, 
+                [
+                    'classes' => $tRpiClasses->getClasses($row['etablissementId'])
+                ]);
+            ;
+        }
+        // utilisation particulière du viewhelper rpiCommunes dans le controller
+        $rpiEtablissements = $this->viewHelperManager->get('rpiEtablissements');
+        $viewHelperRpiClasses = $this->viewHelperManager->get('rpiClasses');
+        $content = str_replace('rpiId:?', "rpiId:$rpiId", 
+            $rpiEtablissements($structure, 
+                function ($etablissement) use($viewHelperRpiClasses) {
+                    $etablissementId = $etablissement['etablissementId'];
+                    $lignesClasses = $viewHelperRpiClasses($etablissement);
+                    return <<<EOT
+<table id="rpi-classes-$etablissementId">
+    $lignesClasses
+</table>
+EOT;
+                }));
+        // construction et renvoi d'une réponse html
+        try {
+            $response = $this->getResponse();
+        } catch (\Exception $e) {
+            $response = new \Zend\StdLib\Response();
+        }
+        $response->setContent($content);
+        return $response;
+    }
+
+    /**
+     * Prépare le formulaire de saisie d'un établissement scolaire
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function rpietablissementformAction()
     {
         $op = $this->params('op');
@@ -301,6 +489,7 @@ class AdminController extends AbstractActionController
         $form = $this->getFormRpiEtablissement($op);
         $form->setData(
             [
+                'op' => $op,
                 'rpiId' => $rpiId,
                 'etablissementId' => $etablissementId
             ]);
@@ -316,9 +505,78 @@ class AdminController extends AbstractActionController
 
     public function rpietablissementvalidateAction()
     {
-        ;
+        $request = $this->getRequest();
+        $response = $this->getResponse();
+        
+        if ($request->isPost()) {
+            if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
+                $messages = 'Abandon action (add ou delete etablissement pour un rpi).';
+                $success = 2;
+            } else {
+                $op = $request->getPost('op');
+                $form = $this->getFormRpiEtablissement($op);
+                $form->setData($request->getPost());
+                if ($form->isValid()) {
+                    $tRpiEtablissements = $this->db_manager->get(
+                        'Sbm\Db\Table\RpiEtablissements');
+                    $oData = $tRpiEtablissements->getObjData();
+                    $oData->exchangeArray($form->getData());
+                    try {
+                        switch ($op) {
+                            case 'add':
+                                $result = $tRpiEtablissements->insertRecord($oData);
+                                if ($result === false) {
+                                    $messages = 'Erreur lors de l\'insertion.';
+                                    $success = 0;
+                                    break;
+                                } elseif ($result) {
+                                    $messages = 'Établissement inséré dans ce RPI.';
+                                    $success = 1;
+                                } else {
+                                    $messages = 'Établissement déjà présent dans ce RPI.';
+                                    $success = 0;
+                                }
+                                break;
+                            case 'delete':
+                                $tRpiEtablissements->deleteRecord($oData);
+                                $messages = 'Établissement retiré du RPI.';
+                                $success = 1;
+                                break;
+                            default:
+                                $messages = 'Demande incorrecte.';
+                                $success = 0;
+                                break;
+                        }
+                    } catch (\Exception $e) {
+                        $messages = 'Une erreur s\'est produite pendant le traitement de la demande.';
+                        $success = 0;
+                    }
+                } else {
+                    $messages = $this->getFormErrorMessages($form->getMessages());
+                    $success = 0;
+                }
+            }
+        } else {
+            $messages = 'Pas de post !';
+            $success = 0;
+        }
+        $response->setContent(
+            Json::encode(
+                [
+                    'cr' => $messages,
+                    'success' => $success
+                ]));
+        return $response;
     }
 
+    /**
+     * Renvoie un formulaire adapté à l'action passée en paramètre
+     *
+     * @param string $op
+     *            'add' pour ajout, 'delete' pour suppression
+     *            
+     * @return \SbmAjax\Form\RpiCommune
+     */
     private function getFormRpiEtablissement($op = 'add')
     {
         $form = new Form\RpiEtablissement($op);

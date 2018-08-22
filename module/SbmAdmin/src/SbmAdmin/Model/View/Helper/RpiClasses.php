@@ -8,22 +8,32 @@
  * @filesource RpiClasses.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 namespace SbmAdmin\Model\View\Helper;
 
 class RpiClasses extends AbstractHelper
 {
 
-    public function __invoke($etablissement)
+    /**
+     * Aide de vue renvoyant le tableau des classes d'un établissement
+     *
+     * @param array $aetablissement
+     *            structure décrivant un établissement.
+     *            Les index sont 'etablissementId', 'nom', 'commune, 'classes'.
+     *            L'index 'classes' est un tableau qui contient la liste des classes ('classeId', 'nom')
+     *            
+     * @return string
+     */
+    public function __invoke($aetablissement)
     {
-        $etablissementId = $etablissement['etablissementId'];
-        $nom = $etablissement['nom'];
-        $commune = $etablissement['commune'];
-        $aclasses = $etablissement['classes'];
+        $etablissementId = $aetablissement['etablissementId'];
+        $nom = $aetablissement['nom'];
+        $commune = $aetablissement['commune'];
+        $aclasses = $aetablissement['classes'];
         $this->button_name = 'btnclasse';
-        $rpiId = $this->getView()->rpiId;
+        // $rpiId = $this->getView()->rpiId;
         $html = sprintf('<tr><td>%s</td></tr>', 
             $this->btnAjout(
                 [

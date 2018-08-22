@@ -9,8 +9,8 @@
  * @filesource AdminControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 namespace SbmAjax\Controller\Service;
 
@@ -26,8 +26,10 @@ class AdminControllerFactory implements FactoryInterface
     {
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
+        $viewHelperManager = $sm->get('ViewHelperManager');        
         $config_controller = [
-            'db_manager' => $sm->get('Sbm\DbManager')
+            'db_manager' => $sm->get('Sbm\DbManager'),
+            'viewHelperManager' => $viewHelperManager
         ];
         return new AdminController($config_controller);
     }

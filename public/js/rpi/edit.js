@@ -5,8 +5,8 @@
  * @filesource rpi/edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 juin. 2018
- * @version 2018-2.4.1
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 var js_edit = (function() {
 	function showDialog(href, title) {
@@ -73,11 +73,29 @@ var js_edit = (function() {
 				}
 			});
 		},
-		"majTableauClasses" : function() {
-			alert('MAJ du tableau des classes');
+		"majTableauClasses" : function(etablissementId) {
+			$.ajax({
+				url:'/sbmajaxadmin/rpiclassetable/etablissementId:' + etablissementId,
+				dataType:'html',
+				success:function(data){
+					$('table#rpi-classes-'+etablissementId).empty().html(data);
+				},
+				error:function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + ' ' + thrownError);
+				}
+			});
 		},
-		"majTableauEtablissements" : function() {
-			alert('MAJ du tableau des écoles');
+		"majTableauEtablissements" : function(rpiId) {
+			$.ajax({
+				url:'/sbmajaxadmin/rpietablissementtable/rpiId:' + rpiId,
+				dataType:'html',
+				success:function(data){
+					$('table#rpi-etablissements').empty().html(data);
+				},
+				error:function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + ' ' + thrownError);
+				}
+			});
 		}
 	}
 })();

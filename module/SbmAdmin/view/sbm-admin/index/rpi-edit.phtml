@@ -10,8 +10,8 @@
  * @filesource rpi-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 juin 2018
- * @version 2018-2.4.1
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headLink()->prependStylesheet(
@@ -140,10 +140,11 @@ $actionsAjoutClasse = [
 								<legend>Écoles et classes concernées</legend>
 								<table id="rpi-etablissements">
 <?php
+$viewHelperRpiClasses = $this->getHelperPluginManager()->get('rpiClasses');
 echo $this->rpiEtablissements($this->structure['etablissements'],  
-    function ($view, $etablissement) {
+    function ($etablissement) use ($viewHelperRpiClasses) {
         $etablissementId = $etablissement['etablissementId'];
-        $lignesClasses = $view->rpiClasses($etablissement);
+        $lignesClasses = $viewHelperRpiClasses($etablissement);
         return <<<EOT
 <table id="rpi-classes-$etablissementId">
     $lignesClasses

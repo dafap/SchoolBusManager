@@ -8,12 +8,12 @@
  * @filesource RpiEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2018
- * @version 2018-2.4.1
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-class RpiEtablissements extends AbstractSbmTable
+class RpiEtablissements extends AbstractRpiTable
 {
 
     /**

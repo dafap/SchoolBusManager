@@ -9,8 +9,8 @@
  * @filesource ClassesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -172,7 +172,7 @@ class ClassesForSelect implements FactoryInterface
                     throw new \InvalidArgumentException(
                         'Argument invalide pour cet opérateur.');
                 }
-                $where->notIn('niveau', $params);
+                $where->notBetween('niveau', $params);
                 break;
             case '=':
             case '==':

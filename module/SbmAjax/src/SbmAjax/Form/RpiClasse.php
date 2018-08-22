@@ -9,8 +9,8 @@
  * @filesource RpiClasse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 22 août 2018
+ * @version 2018-2.4.2
  */
 namespace SbmAjax\Form;
 
@@ -31,6 +31,11 @@ class RpiClasse extends Form
         $this->add(
             [
                 'name' => 'op',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'niveau',
                 'type' => 'hidden'
             ]);
         if ($op == 'add') {

@@ -1,0 +1,54 @@
+<?php
+/**
+ * Formulaire d'ajout ou suppression d'une commune dans un RPI
+ *
+ * Ce formulaire s'ouvre en popup par le jQuery dialog dans la fiche d'un RPI
+ * 
+ * @project sbm
+ * @package SbmAjax/view/sbm-ajax/admin
+ * @filesource rpicommuneform.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 22 août 2018
+ * @version 2018-2.4.2
+ */
+?>
+<?php $this->headStyle()->captureStart(); ?>
+#rpietablissementform label.sbm-form-auto {
+    display: inline-block;
+    width: 150px;
+    margin-right: 5px;
+}
+#rpietablissementform label.sbm-form-auto:before {
+	content: "\A";
+	white-space: pre;
+	line-height: 1.5em;
+}
+#rpietablissementform input.button {
+    position: relative;
+    top: 1.5rem;
+}
+#rpietablissementform input.button.cancel {
+    margin-left: 100px;
+}
+#rpietablissementform input.button.submit {
+	margin-left: 15px;
+}
+<?php $this->headStyle()->captureEnd(); ?>
+<?= $this->headStyle();?>
+<?php //$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));?>
+<?php $this->headScript()->appendFile($this->basePath('js/ajax/formrpi.js'));?>
+<?= $this->headScript();?>
+<?php $this->inlineScript()->captureStart();?>
+affectation.init(<?= $this->is_xmlhttprequest; ?>);
+<?php $this->inlineScript()->captureEnd();?>
+<?php if ($this->op == 'delete'):?>
+<dl>
+	<dt><?= $this->etablissement;?></dt>
+	<dd><?= $this->commune;?></dd>
+</dl>
+<?php endif;?>
+<div id="rpietablissementform">
+<?= $this->form($this->form);?>
+</div>
+<div id="errors"></div>
