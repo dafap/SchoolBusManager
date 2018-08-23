@@ -9,8 +9,8 @@
  * @filesource Prepare.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 23 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
@@ -19,7 +19,6 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
 use SbmCommun\Model\Db\Service\DbManager;
-use SbmGestion\Model\Db\Service\Exception;
 
 class Prepare implements FactoryInterface
 {
@@ -121,7 +120,13 @@ class Prepare implements FactoryInterface
                 $scolarite->millesime = $cible;
                 $scolarite->classeId = $this->classeIds[$scolarite->classeId];
                 $this->eleveIds[] = $scolarite->eleveId;
-                $table->saveRecord($scolarite);
+                try {
+                    $table->saveRecord($scolarite);
+                } catch (\Exception $e) {
+                    $msg = $e->getMessage() .
+                         sprintf("\n%s - eleveId: %d\n", __METHOD__, $scolarite->eleveId);
+                    throw new Exception($msg, 0, $e);
+                }
             }
         }
     }
