@@ -8,8 +8,8 @@
  * @filesource TablePlugin.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmPaiement\Plugin\SystemPay\Db\Table;
 
@@ -125,6 +125,10 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
                      $item->getIdentifier() == 'vads_trans_date') {
                     $item->setLike(str_replace('-', '', $item->getLike()));
                 }
+                if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
+                    $item->getIdentifier() == 'vads_cust_name') {
+                        $item->setLike('%' . $item->getLike());
+                    }
             }
         }
     }
