@@ -7,14 +7,14 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 24 août 2018
+ * @version 2018-2.4.3
  */
 use SbmGestion\Controller;
 use SbmGestion\Controller\Service;
 use SbmGestion\Model\View\Helper as ViewHelper;
-use SbmGestion\Model\Db\Service\Simulation\Prepare;
 use SbmGestion\Form;
+use SbmGestion\Model\Db\Service as SbmGestionDbService;
 
 return [
     'acl' => [
@@ -74,10 +74,10 @@ return [
     ],
     'db_manager' => [
         'factories' => [
-            'Sbm\Db\Simulation\Prepare' => Prepare::class,
-            'Sbm\Db\Circuit\Liste' => 'SbmGestion\Model\Db\Service\Circuit\Liste',
-            'Sbm\Db\Eleve\Liste' => 'SbmGestion\Model\Db\Service\Eleve\Liste',
-            'Sbm\Db\Eleve\Effectif' => 'SbmGestion\Model\Db\Service\Eleve\Effectif'
+            'Sbm\Db\Simulation\Prepare' => SbmGestionDbService\Simulation\Prepare::class,
+            'Sbm\Db\Circuit\Liste' => SbmGestionDbService\Circuit\Liste::class,
+            'Sbm\Db\Eleve\Liste' => SbmGestionDbService\Eleve\Liste::class,
+            'Sbm\Db\Eleve\Effectif' => SbmGestionDbService\Eleve\Effectif::class
         ]
     ],
     'form_manager' => [

@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 23 août 2018
+ * @version 2018-2.4.3
  */
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Service\CalculDroits;
@@ -56,6 +56,7 @@ return [
             'Sbm\Db\ObjectData\Scolarite' => ObjectData\Scolarite::class,
             'Sbm\Db\ObjectData\SecteurScolaireClgPu' => ObjectData\SecteurScolaireClgPu::class,
             'Sbm\Db\ObjectData\Service' => ObjectData\Service::class,
+            'Sbm\Db\ObjectData\SimulationEtablissement' => ObjectData\SimulationEtablissement::class,
             'Sbm\Db\ObjectData\Station' => ObjectData\Station::class,
             'Sbm\Db\ObjectData\Tarif' => ObjectData\Tarif::class,
             'Sbm\Db\ObjectData\Transporteur' => ObjectData\Transporteur::class,
@@ -90,6 +91,7 @@ return [
             'Sbm\Db\Table\Scolarites' => Table\Scolarites::class,
             'Sbm\Db\Table\SecteursScolairesClgPu' => Table\SecteursScolairesClgPu::class,
             'Sbm\Db\Table\Services' => Table\Services::class,
+            'Sbm\Db\Table\SimulationEtablissements' => Table\SimulationEtablissements::class,
             'Sbm\Db\Table\Stations' => Table\Stations::class,
             'Sbm\Db\Table\Tarifs' => Table\Tarifs::class,
             'Sbm\Db\Table\Transporteurs' => Table\Transporteurs::class,
@@ -123,6 +125,7 @@ return [
             'Sbm\Db\TableGateway\Scolarites' => TableGateway\TableGatewayScolarites::class,
             'Sbm\Db\TableGateway\SecteursScolairesClgPu' => TableGateway\TableGatewaySecteursScolairesClgPu::class,
             'Sbm\Db\TableGateway\Services' => TableGateway\TableGatewayServices::class,
+            'Sbm\Db\TableGateway\SimulationEtablissements' => TableGateway\TableGatewaySimulationEtablissements::class,
             'Sbm\Db\TableGateway\Stations' => TableGateway\TableGatewayStations::class,
             'Sbm\Db\TableGateway\Tarifs' => TableGateway\TableGatewayTarifs::class,
             'Sbm\Db\TableGateway\Transporteurs' => TableGateway\TableGatewayTransporteurs::class,

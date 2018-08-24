@@ -20,8 +20,8 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2018
- * @version 2018-2.4.1
+ * @date 24 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmCommun\Model\Service;
 
@@ -89,7 +89,7 @@ class CalculDroits implements FactoryInterface
                 sprintf(_("CartographieManager attendu, doit contenir %s."), 
                     GoogleMaps\DistanceMatrix::class));
         }
-        $this->millesime = Session::get('millesime');
+        $this->setMillesime();
         $this->db_manager = $db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
@@ -98,6 +98,20 @@ class CalculDroits implements FactoryInterface
             'R2' => 0.0
         ];
         return $this;
+    }
+    
+    /**
+     * initialise la propriété 
+     * 
+     * @param string $millesime
+     */
+    public function setMillesime($millesime = null)
+    {
+        if (is_null($millesime)) {
+            $this->millesime = Session::get('millesime');
+        } else {
+            $this->millesime = $millesime;
+        }
     }
 
     /**

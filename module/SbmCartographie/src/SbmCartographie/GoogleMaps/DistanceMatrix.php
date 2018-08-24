@@ -7,8 +7,8 @@
  * @filesource DistanceMatrix.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mai 2018
- * @version 2018-2.4.1
+ * @date 24 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -96,10 +96,10 @@ class DistanceMatrix
         } catch (Exception $e) {
             ob_start();
             var_dump($origines);
-            $sOrigines = ob_get_clean();
+            $sOrigines = html_entity_decode(strip_tags(ob_get_clean()));
             ob_start();
             var_dump($destinations);
-            $sDestinations = ob_get_clean();
+            $sDestinations = html_entity_decode(strip_tags(ob_get_clean()));
             $msg = sprintf("%s(%s, %s) : %s", __METHOD__, $sOrigines, $sDestinations, 
                 $e->getTraceAsString());
             throw new Exception($msg, 0, $e);
@@ -224,7 +224,6 @@ class DistanceMatrix
         }
         $result = [];
         $obj = $this->getJsonResult($origines, $destination);
-        var_dump($obj);
         if ($obj) {
             if ($obj->status == 'OK') {
                 for ($j = 0; $j < count($obj->rows); $j ++) {
@@ -268,7 +267,6 @@ class DistanceMatrix
         }
         $result = [];
         $obj = $this->getJsonResult($origine, $destinations);
-        var_dump($obj);
         if ($obj) {
             if ($obj->status == 'OK') {
                 for ($j = 0; $j < count($obj->rows[0]->elements); $j ++) {

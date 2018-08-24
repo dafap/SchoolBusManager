@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
- * @version 2018-2.4.1
+ * @date 24 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmGestion\Controller;
 
@@ -244,6 +244,8 @@ class AnneeScolaireController extends AbstractActionController
                 if ($form->isValid()) {
                     $millesime = $prg['millesime'];
                     $this->db_manager->get('Sbm\Db\Simulation\Prepare')
+                        ->setMajDistances(
+                        $this->cartographie_manager->get('Sbm\CalculDroitsTransport'))
                         ->duplicateCircuits($millesime, self::SIMULATION)
                         ->duplicateEleves($millesime, self::SIMULATION);
                     $this->flashMessenger()->addSuccessMessage(
