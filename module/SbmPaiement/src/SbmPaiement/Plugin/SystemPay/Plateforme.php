@@ -17,8 +17,8 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -123,7 +123,8 @@ class Plateforme extends AbstractPlateforme
             $this->error_no = 2005;
             return false;
         }
-        if ($this->data['vads_trans_status'] != 'AUTHORISED') {
+        if ($this->data['vads_trans_status'] != 'AUTHORISED' &&
+             $this->data['vads_trans_status'] != 'CAPTURED') {
             $this->error_msg = '(trans_status)';
             $this->error_no = 2006;
             return false;
@@ -173,7 +174,7 @@ class Plateforme extends AbstractPlateforme
      * ATTENTION ! this->data est Zend\Stdlib\Parameters
      *
      * (non-PHPdoc)
-     * 
+     *
      * @see \SbmPaiement\Plugin\AbstractPlateforme::prepareData()
      */
     protected function prepareData()
@@ -291,7 +292,7 @@ class Plateforme extends AbstractPlateforme
      * par la méthode getUniqueId()
      *
      * (non-PHPdoc)
-     * 
+     *
      * @see \SbmPaiement\Plugin\PlateformeInterface::prepareAppel()
      */
     public function prepareAppel($params)
