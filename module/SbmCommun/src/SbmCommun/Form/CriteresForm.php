@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juillet 2018
- * @version 2018-2.4.2
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmCommun\Form;
 
@@ -682,7 +682,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-width-45c'
                 ],
                 'options' => [
-                    'label' => 'Etablissement',
+                    'label' => 'Établissement',
                     'label_attributes' => [
                         'class' => 'sbm-new-line'
                     ],
@@ -1677,7 +1677,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-width-45c'
                 ],
                 'options' => [
-                    'label' => 'Etablissement',
+                    'label' => 'Établissement',
                     'empty_option' => 'Tous',
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -1711,6 +1711,62 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ],
             'communeId' => [
                 'name' => 'communeId',
+                'required' => false
+            ]
+        ];
+    }
+    
+    private function formSimulationetablissements()
+    {
+        $this->add(
+            [
+                'name' => 'communeetaborigineId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'critere-origineId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Commune de l\'établissement d\'origine',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'empty_option' => 'Tous',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'suivantId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'critere-suivantId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Établissement suivant',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
+                    'empty_option' => 'Tous',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+    }
+    
+    private function formSimulationetablissementsSpecification()
+    {
+        return [
+            'communeetaborigineId' => [
+                'name' => 'origineId',
+                'required' => false
+            ],
+            'suivantId' => [
+                'name' => 'suivantId',
                 'required' => false
             ]
         ];
@@ -2248,7 +2304,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'value_options' => [
                         '1' => 'Parent',
                         '2' => 'Transporteur',
-                        '3' => 'Etablissement scolaire',
+                        '3' => 'Établissement scolaire',
                         '250' => 'Secrétariat',
                         '253' => 'Gestionnaire',
                         '254' => 'Administrateur'

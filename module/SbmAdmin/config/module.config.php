@@ -37,6 +37,7 @@ return [
         'count_per_page' => [
             'nb_libelles' => 15,
             'nb_secteurs-scolaires' => 20,
+            'nb_simulation-etablissements' => 15,
             'nb_users' => 20
         ]
     ],

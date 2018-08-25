@@ -1,0 +1,52 @@
+<?php
+/**
+ * Page de suppression d'une règle de correspondance pour le passage dans un établissement 
+ * de niveau supérieur
+ *
+ * Réservé à l'administrateur
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource simulation-etablissement-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 août 2018
+ * @version 2018-2.4.3
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_retour = $this->url('sbmadmin', 
+    [
+        'action' => 'simulation-etablissement-liste',
+        'page' => $this->page
+    ]);
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Suppression d'une règle de correspondance pour le passage dans un
+	établissement de niveau supérieur</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de la règle de correspondance
+		suivante :</p>
+	<div class="header-wrapper">
+		<dl>
+			<dt>Établissement d'origine</dt>
+			<dd>
+		<?= $this->escapeHtml($this->data['etablissementorigine'] . ' - ' . $this->data['communeetaborigine']); ?>
+		</dd>
+			<dt>Établissement suivant</dt>
+			<dd>
+		<?= $this->escapeHtml($this->data['etablissementsuivant'] . ' - ' . $this->data['communeetabsuivant']); ?>
+		</dd>
+		</dl>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

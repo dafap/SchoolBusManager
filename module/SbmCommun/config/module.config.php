@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2018
+ * @date 25 août 2018
  * @version 2018-2.4.3
  */
 use SbmCommun\Model\Db\Service\DbManager;
@@ -15,6 +15,7 @@ use SbmCommun\Model\Service\CalculDroits;
 use SbmCommun\Model\Service\MajDistances;
 use SbmCommun\Model\Service\FormManager;
 use SbmCommun\Model\Db\ObjectData;
+use SbmCommun\Model\Db\Service\Libelles;
 use SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\Service\TableGateway;
 use SbmCommun\Model\Db\Service\Select;
@@ -174,7 +175,7 @@ return [
             'Sbm\Db\Select\Stations' => Select\StationsForSelect::class,
             'Sbm\Db\Select\Transporteurs' => Select\Transporteurs::class,
             'Sbm\Db\Select\Libelles' => Select\LibellesForSelect::class,
-            'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
+            'Sbm\Libelles' => Libelles::class,
             
             'Sbm\Db\Query\Circuits' => Query\Circuit\Circuits::class,
             'Sbm\Db\Query\Eleves' => Query\Eleve\Eleves::class,
@@ -185,6 +186,7 @@ return [
             'Sbm\Db\Query\Etablissements' => Query\Etablissement\Etablissements::class,
             'Sbm\Db\Query\SecteursScolairesClgPu' => Query\Etablissement\SecteursScolairesClgPu::class,
             'Sbm\Db\Query\Services' => Query\Service\Services::class,
+            'Sbm\Db\Query\SimulationEtablissements' => Query\Etablissement\SimulationEtablissements::class,
             'Sbm\Db\Query\Stations' => Query\Station\Stations::class,
             'Sbm\Db\Query\Transporteurs' => Query\Transporteur\Transporteurs::class,
             'Sbm\Db\Query\History' => Query\History\History::class,
@@ -207,6 +209,7 @@ return [
             Form\Rpi::class => Form\Rpi::class,
             Form\SecteurScolaire::class => Form\SecteurScolaire::class,
             Form\Service::class => Form\Service::class,
+            Form\SimulationEtablissement::class => Form\SimulationEtablissement::class,
             Form\Station::class => Form\Station::class,
             Form\Tarif::class => Form\Tarif::class,
             Form\Transporteur::class => Form\Transporteur::class

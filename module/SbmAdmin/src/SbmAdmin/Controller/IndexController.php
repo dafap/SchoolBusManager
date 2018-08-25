@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2018
- * @version 2018-2.4.1
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmAdmin\Controller;
 
@@ -27,6 +27,7 @@ use SbmCommun\Model\Strategy\Niveau;
 use SbmCommun\Form\CriteresForm;
 use SbmCommun\Form\Rpi;
 use SbmCommun\Form\SecteurScolaire as FormSecteurScolaire;
+use SbmCommun\Form\SimulationEtablissement as FormSimulationEtablissement;
 use SbmCommun\Form\ButtonForm;
 use SbmAdmin\Form\Libelle as FormLibelle;
 use SbmAdmin\Form\User;
@@ -505,7 +506,7 @@ class IndexController extends AbstractActionController
                     break;
             }
         }
-    }    
+    }
 
     /**
      * @TODO à finir
@@ -642,7 +643,8 @@ class IndexController extends AbstractActionController
         $oRequete = $this->db_manager->get('Sbm\Db\Query\SecteursScolairesClgPu');
         try {
             $r = $this->supprData($this->db_manager, $params, 
-                function ($id, $tableClasses) use($oRequete) {
+                function ($id, $table) use($oRequete) {
+                    // ici $table n'est pas utilisée et est remplacée par $oRequete
                     return [
                         'id' => $id,
                         'data' => $oRequete->getRecord($id)
@@ -650,10 +652,10 @@ class IndexController extends AbstractActionController
                 });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage(
-                'Impossible de supprimer cette classe parce que certains élèves y sont inscrits.');
-            return $this->redirect()->toRoute('sbmgestion/transport', 
+                'Impossible de supprimer cette commune d\'un secteur scolaire.');
+            return $this->redirect()->toRoute('sbmadmin', 
                 [
-                    'action' => 'classe-liste',
+                    'action' => 'secteur-scolaire-liste',
                     'page' => $currentPage
                 ]);
         }
@@ -697,6 +699,172 @@ class IndexController extends AbstractActionController
         $retour = [
             'route' => 'sbmadmin',
             'action' => 'secteur-scolaire-liste'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * Gestion des règles de correspondances d'établissements pour une simulation
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
+     */
+    public function simulationEtablissementListeAction()
+    {
+        $args = $this->initListe('SimulationEtablissements', 
+            function ($config, $form) {
+                $form->setValueOptions('communeetaborigineId', 
+                    $config['db_manager']->get('Sbm\Db\Select\Communes')
+                        ->desservies())
+                    ->setValueOptions('suivantId', 
+                    $config['db_manager']->get('Sbm\Db\Select\Etablissements')
+                        ->tous());
+            }, [
+                'origineId',
+                'suivantId'
+            ]);
+        if ($args instanceof Response)
+            return $args;
+        
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get(
+                    'Sbm\Db\Query\SimulationEtablissements')->paginator($args['where'], 
+                    [
+                        'communeetaborigine',
+                        'niveauetaborigine',
+                        'etablissementorigine'
+                    ]),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage(
+                    'nb_simulation-etablissements', 20),
+                'criteres_form' => $args['form']
+            ]);
+    }
+
+    public function simulationEtablissementAjoutAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = $this->form_manager->get(FormSimulationEtablissement::class);
+        $form->setValueOptions('origineId', 
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('suivantId', 
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis());
+        $params = [
+            'data' => [
+                'table' => 'simulation-etablissements',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\SimulationEtablissements'
+            ],
+            'form' => $form
+        ];
+        $r = $this->addData($this->db_manager, $params);
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmadmin', 
+                    [
+                        'action' => 'simulation-etablissement-liste',
+                        'page' => $currentPage
+                    ]);
+                break;
+            default:
+                return new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'page' => $currentPage
+                    ]);
+                break;
+        }
+    }
+
+    public function simulationEtablissementSupprAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new ButtonForm([
+            'id' => null
+        ], 
+            [
+                'supproui' => [
+                    'class' => 'confirm default',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm default',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        $params = [
+            'data' => [
+                'alias' => 'Sbm\Db\Table\SimulationEtablissements',
+                'id' => 'origineId'
+            ],
+            'form' => $form
+        ];
+        $oRequete = $this->db_manager->get('Sbm\Db\Query\SimulationEtablissements');
+        try {
+            $r = $this->supprData($this->db_manager, $params, 
+                function ($id, $table) use($oRequete) {
+                    // ici $table n'est pas utilisée et est remplacée par $oRequete
+                    return [
+                        'id' => $id,
+                        'data' => $oRequete->getRecord($id)
+                    ];
+                });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer cette règle de passage dans un établissement de niveau supérieur.');
+            return $this->redirect()->toRoute('sbmadmin', 
+                [
+                    'action' => 'simulation-etablissement-liste',
+                    'page' => $currentPage
+                ]);
+        }
+        
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmadmin', 
+                        [
+                            'action' => 'simulation-etablissement-liste',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'origineId' => StdLib::getParam('id', $r->getResult())
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function simulationEtablissementPdfAction()
+    {
+        $criteresObject = [
+            ObjectDataCriteres::class
+        ];
+        $criteresForm = [
+            CriteresForm::class,
+            'SimulationEtablissements'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmadmin',
+            'action' => 'simulation-etablissement-liste'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }

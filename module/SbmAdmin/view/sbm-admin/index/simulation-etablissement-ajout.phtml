@@ -1,0 +1,55 @@
+<?php
+/**
+ * Page de création d'une règle de correspondance pour le passage dans un établissement 
+ * de niveau supérieur
+ *
+ * Destiné à l'administrateur
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource simulation-etablissement-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 août 2018
+ * @version 2018-2.4.3
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmadmin', 
+    [
+        'action' => 'simulation-etablissement-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+?>
+<h1>Ajout d'une règle de correspondance pour le passage dans un
+	établissement de niveau supérieur</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+	<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('csrf'));
+?>
+        <fieldset class="page1">
+			<div><?= $this->formRow($this->form->get('origineId'));?></div>
+			<div><?= $this->formRow($this->form->get('suivantId'));?></div>
+			<div id="simulation-etablissement-buttons">  
+        <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
+            </div>
+		</fieldset>
+	</div>
+	<div id="fiche-footer"></div>
+</div>
