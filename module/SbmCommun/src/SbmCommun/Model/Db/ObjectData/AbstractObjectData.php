@@ -8,8 +8,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource AbstractObjectData.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -50,6 +50,13 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      * @var string|array
      */
     private $id_field_name;
+    
+    /**
+     * Tableau des longueurs maxi des colonnes (à initialiser par le setter si besoin)
+     * 
+     * @var array
+     */
+    private $max_length_array = [];
 
     /**
      * Masque servant de modèle pour la composition de la donnée dans la méthode exchangeArray()
@@ -233,6 +240,17 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     {
         $this->id_field_name = $name;
     }
+    
+    /**
+     * Initialise la propriété max_length_array
+     * 
+     * @param array $aMaxLength
+     * @return \SbmCommun\Model\Db\ObjectData\AbstractObjectData
+     */
+    public function setMaxLengthArray($aMaxLength) {
+        $this->max_length_array = $aMaxLength;
+        return $this;
+    }
 
     /**
      * Enregistre le masque à utiliser pour la méthode exchangeArray().
@@ -359,6 +377,16 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
                 if (is_null($dataSource[$key])) {
                     unset($dataSource[$key]);
                 }
+            }
+        }
+        foreach ($this->max_length_array as $key => $length) {
+            if (!array_key_exists($key, $dataSource)){
+                continue;
+            }
+            if (empty($dataSource[$key])) {
+                continue;
+            } else {
+                $dataSource[$key] = substr($dataSource[$key], 0, $length);
             }
         }
         $this->dataSource = new ArrayIterator($dataSource);
