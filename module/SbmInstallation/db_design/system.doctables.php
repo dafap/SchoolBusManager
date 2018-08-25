@@ -8,8 +8,8 @@
  * @filesource system.doctables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
 return [
     'name' => 'doctables',
@@ -23,7 +23,7 @@ return [
             'documentId' => 'int(11) NOT NULL DEFAULT "1"',
             'ordinal_table' => 'int(11) NOT NULL DEFAULT "1"', // dans le cas où il y aurait plusieurs tables dans le même document
             'section' => 'char(5)', // prend les valeurs thead, tbody ou tfoot
-            'description' => 'varchar(255) NOT NULL',
+            'description' => 'varchar(255) NOT NULL DEFAULT ""',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'width' => 'varchar(4)', // null par défaut, prend la valeur auto ou un nombre de 1 à 100 (% de la largeur de la zone d'écriture)
             'row_height' => 'int(11) NOT NULL DEFAULT "6"',
