@@ -9,8 +9,8 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
- * @version 2018-2.4.1
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
 namespace SbmPdf\Controller;
 
@@ -146,6 +146,8 @@ class PdfController extends AbstractActionController
                     case 'Tabulaire':
                         $tDoctables = $this->db_manager->get('Sbm\Db\System\DocTables');
                         $oDoctable = $tDoctables->getObjData();
+                        $oDoctable->setMaxLengthArray(
+                            $this->db_manager->getMaxLengthArray('doctables', 'system'));
                         $defaults = include (__DIR__ .
                              '/../Model/default/doctables.inc.php');
                         foreach ([
