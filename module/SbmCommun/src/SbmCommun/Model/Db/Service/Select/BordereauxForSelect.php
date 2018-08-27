@@ -9,8 +9,8 @@
  * @filesource BordereauxForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 27 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -131,6 +131,6 @@ class BordereauxForSelect implements FactoryInterface
         return [
             'dateBordereau' => $parts[0],
             'codeModeDePaiement' => $parts[1]
-        );
+        ];
     }
 } 
