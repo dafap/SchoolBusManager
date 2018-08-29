@@ -8,8 +8,8 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 30 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -95,6 +95,8 @@ class Tarifs extends AbstractSbmTable
      * La grille 1 contient les tarifs d'inscription
      * - rythme = 1 : Tarif annuel
      * - rythme = 3 : 3e trimestre
+     * - mode = 2 : paiement en ligne
+     * - mode = 3 : paiement en chèques ou espèces
      * La grille 2 contient le tarif de duplicata (unique)
      *
      * @param string $choix            
@@ -104,6 +106,9 @@ class Tarifs extends AbstractSbmTable
     {
         $where = new Where();
         switch ($choix) {
+            case 'en ligne':
+                $where->literal('grille = 1')->literal('mode = 2');
+                break;
             case 'tarif1':
                 $where->literal('grille = 1')->literal('rythme = 1');
                 break;
@@ -132,21 +137,26 @@ class Tarifs extends AbstractSbmTable
     }
 
     /**
-     * Renvoie l'identifiant d'un tarif
+     * Renvoie l'identifiant d'un tarif.
+     * Pour 'tarif1' (annuel) et 'tarif2' (trimestriel) s'il y a plusieurs tarifs, 
+     * renvoie celui de plus petit montant
      *
-     * @param string $choix            
-     *
+     * @param string $choix
+     *            'en ligne' ou 'tarif1' (annuel) ou 'tarif2' (trimestriel)
+     *            
      * @return integer
      */
     public function getTarifId($choix)
     {
-        $resultset = $this->fetchAll($this->tarification($choix));
+        $resultset = $this->fetchAll($this->tarification($choix), 'montant');
         $row = $resultset->current();
         return $row->tarifId;
     }
 
     /**
      * Renvoie un tableau indexé [tarifId => montant, .
+     *
+     *
      * ..]
      *
      * @return array
