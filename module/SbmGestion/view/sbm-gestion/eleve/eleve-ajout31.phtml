@@ -20,8 +20,8 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 29 août 2018
+ * @version 2018-2.4.4
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -101,6 +101,9 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div id="wrapper-derogation" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('derogation'));?></div>
 						<div id="wrapper-motifDerogation"
 							class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('motifDerogation'));?></div>
+					</div>
+					<div id="wrapper-tarifId" class="row-inner edit">
+					<?= $this->formRow($this->form->get('tarifId'));?>
 					</div>
 				</div>
 				<div id="commun-col3" class="float-left left-10px">

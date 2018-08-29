@@ -244,13 +244,14 @@ class FinanceController extends AbstractActionController
              */
             $responsable = $this->db_manager->get('Sbm\Db\Query\Responsables')
                 ->withEffectifs($where, [
-                'responsableId'
-            ])
+                'responsableId', 
+            ], $responsableId)
                 ->current();
             $nomPrenom = sprintf('%s %s %s', $responsable['titre'], $responsable['nom'], 
                 $responsable['prenom']);
             $nbTarif1 = $responsable['nbTarif1'];
             $nbTarif2 = $responsable['nbTarif2'];
+            $montantInscriptions = $responsable['montant'];
             $nbDuplicata = $responsable['nbDuplicata'];
             // }
             
@@ -261,6 +262,7 @@ class FinanceController extends AbstractActionController
                     'criteres_form' => null,
                     'h2' => true,
                     'responsable' => $nomPrenom,
+                    'montantInscriptions' => $montantInscriptions,
                     'totalPaye' => $totalPaye,
                     'tarif1' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
                         'tarif1'),

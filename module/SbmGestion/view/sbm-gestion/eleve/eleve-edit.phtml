@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juillet 2018
- * @version 2018-2.4.1
+ * @date 28 août 2018
+ * @version 2018-2.4.4
  */
 use SbmBase\Model\DateLib;
 
@@ -90,9 +90,9 @@ multicheckbox_actions.init("wrapper-joursTransport");
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
-const ELEVE_ID = <?php echo $this->eleveId;?>;
-const IDENTITE = "<?php echo urlencode($this->identite)?>";
-const URL_ICI = "<?php echo $url_ici;?>";
+const ELEVE_ID = <?= $this->eleveId;?>;
+const IDENTITE = "<?= urlencode($this->identite)?>";
+const URL_ICI = "<?= $url_ici;?>";
 
 js_edit.init(<?= $disableAccordR1;?>, 
     <?= $disableAccordR2;?>, 
@@ -135,7 +135,7 @@ $actions = [
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">	    
@@ -147,47 +147,50 @@ echo $this->formHidden($this->form->get('csrf'));
         <fieldset class="sbm-page1">
 			<div id="commun" class="clearfix">
 				<div id="commun-col1" class="float-left">
-					<div id="wrapper-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom'));?></div>
-					<div id="wrapper-prenom" class="row-inner edit"><?php echo $this->formRow($this->form->get('prenom'));?></div>
-					<div id="wrapper-dateN" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateN'));?></div>
-					<div id="wrapper-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport'));?></div>
+					<div id="wrapper-nom" class="row-inner edit"><?= $this->formRow($this->form->get('nom'));?></div>
+					<div id="wrapper-prenom" class="row-inner edit"><?= $this->formRow($this->form->get('prenom'));?></div>
+					<div id="wrapper-dateN" class="row-inner edit"><?= $this->formRow($this->form->get('dateN'));?></div>
+					<div id="wrapper-joursTransport" class="row-inner edit"><?= $this->formRow($this->form->get('joursTransport'));?></div>
 				</div>
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner edit">
-					<?php echo $this->formRow($this->form->get('etablissementId'));?>
-					<br> <span class='annee-precedente etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
+					<?= $this->formRow($this->form->get('etablissementId'));?>
+					<br> <span class='annee-precedente etablissement-precedent'><?= $this->scolarite_precedente['etablissement']; ?></span>
 					</div>
 					<div id="wrapper-classeId" class="row-inner edit">
-					<?php echo $this->formRow($this->form->get('classeId'));?>
-					<span class='annee-precedente classe-precedente'><?php echo $this->scolarite_precedente['classe']; ?></span>
+					<?= $this->formRow($this->form->get('classeId'));?>
+					<span class='annee-precedente classe-precedente'><?= $this->scolarite_precedente['classe']; ?></span>
 					</div>
 					<div id="commun-col2-periode" class="clearfix">
-						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
-						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
-						<div id="wrapper-dateFin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateFin'));?></div>
+						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?= $this->formRow($this->form->get('anneeComplete'));?></div>
+						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?= $this->formRow($this->form->get('dateDebut'));?></div>
+						<div id="wrapper-dateFin" class="row-inner edit float-left"><?= $this->formRow($this->form->get('dateFin'));?></div>
 					</div>
 					<div id="commun-col2-derogation" class="clearfix">
-						<div id="wrapper-derogation" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('derogation'));?></div>
+						<div id="wrapper-derogation" class="row-inner edit float-left"><?= $this->formRow($this->form->get('derogation'));?></div>
 						<div id="wrapper-motifDerogation"
-							class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('motifDerogation'));?></div>
+							class="row-inner edit float-left"><?= $this->formRow($this->form->get('motifDerogation'));?></div>
+					</div>
+					<div id="wrapper-tarifId" class="row-inner edit">
+					<?= $this->formRow($this->form->get('tarifId'));?>
 					</div>
 				</div>
 				<div id="commun-col3" class="float-left left-10px">
 					<div id="wrapper-numero">
 						<div class="label">N° carte</div>
-						<div class="input"><?php echo $this->data['numero'];?></div>
+						<div class="input"><?= $this->data['numero'];?></div>
 					</div>
 					<div id="wrapper-inscrit">
 						<div class="label">Etat</div>
-						<div class="input"><?php echo $this->data['etat'] == 'Rayé' ? '<span style="color: red;">Rayé</span>' : $this->data['etat'];?></div>
+						<div class="input"><?= $this->data['etat'] == 'Rayé' ? '<span style="color: red;">Rayé</span>' : $this->data['etat'];?></div>
 					</div>
 					<div id="wrapper-paiement">
-						<div class="label"><?php echo $this->formRow($this->form->get('btnpaiement'));?></div>
-						<div class="input" id="inner-paiement"><?php echo $this->data['paiement'];?></div>
+						<div class="label"><?= $this->formRow($this->form->get('btnpaiement'));?></div>
+						<div class="input" id="inner-paiement"><?= $this->data['paiement'];?></div>
 					</div>
-					<div id="wrapper-district"><?php echo $this->formRow($this->form->get('district'));?></div>
-					<div id="wrapper-fa"><?php echo $this->formRow($this->form->get('fa'));?></div>
-					<div id="wrapper-ga"><?php echo $this->formRow($this->form->get('ga'));?></div>
+					<div id="wrapper-district"><?= $this->formRow($this->form->get('district'));?></div>
+					<div id="wrapper-fa"><?= $this->formRow($this->form->get('fa'));?></div>
+					<div id="wrapper-ga"><?= $this->formRow($this->form->get('ga'));?></div>
 				</div>
 			</div>
 			<div id="tabs" class="sbm-tabs-wrapper">
@@ -200,7 +203,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div id="tabs-1" class="sbm-tabs-container"><?php // Responsable 1?>
 				    <div id="tabs-1-r1" class="clearfix">
 						<div class="float-left edit-tab-col1">
-							<div id="wrapper-responsable1Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable1Id'));?></div>
+							<div id="wrapper-responsable1Id" class="row-inner edit"><?= $this->formRow($this->form->get('responsable1Id'));?></div>
 							<div id="wrapper-responsable1" class="wrapper-responsable">
 								<div id="r1-ligne1"></div>
 								<div id="r1-ligne2"></div>
@@ -209,16 +212,16 @@ echo $this->formHidden($this->form->get('csrf'));
 								<div id="r1-ligne5"></div>
 							</div>
 							<div class="clearfix">
-								<div id="wrapper-distanceR1" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR1'));?></div>
-								<div id="wrapper-demandeR1" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR1'));?></div>
+								<div id="wrapper-distanceR1" class="float-left top-18px"><?= $this->formRow($this->form->get('distanceR1'));?></div>
+								<div id="wrapper-demandeR1" class="row-inner edit float-left"><?= $this->formRow($this->form->get('demandeR1'));?></div>
 							</div>
 							<div id="block-demander1">
 								<div class="clearfix">
 									<div class="float-left">
-										<div id="wrapper-accordR1"><?php echo $this->formRow($this->form->get('accordR1'));?></div>
-										<div id="wrapper-subventionr1"><?php echo $this->formRow($this->form->get('subventionR1'));?></div>
+										<div id="wrapper-accordR1"><?= $this->formRow($this->form->get('accordR1'));?></div>
+										<div id="wrapper-subventionr1"><?= $this->formRow($this->form->get('subventionR1'));?></div>
 									</div>
-									<div id="wrapper-motifRefusr1" class="float-left"><?php echo $this->formRow($this->form->get('motifRefusR1'));?></div>
+									<div id="wrapper-motifRefusr1" class="float-left"><?= $this->formRow($this->form->get('motifRefusR1'));?></div>
 								</div>
 
 							</div>
@@ -227,7 +230,7 @@ echo $this->formHidden($this->form->get('csrf'));
 							<div id="block-affectationsr1" class="block-affectations">
 								<h3 id="h3-affectationsr1">
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
-										title="Ajouter une affectation pour <?php echo $this->identite;?>"
+										title="Ajouter une affectation pour <?= $this->identite;?>"
 										data-button="btnaffectation" data-trajet="1"
 										data-href="/op:add"></i>
 								</h3>
@@ -243,7 +246,7 @@ echo $this->formHidden($this->form->get('csrf'));
 				<div id="tabs-2" class="sbm-tabs-container">
 					<div id="tabs-2-r2" class="clearfix">
 						<div class="float-left edit-tab-col1">
-							<div id="wrapper-responsable2Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable2Id'));?></div>
+							<div id="wrapper-responsable2Id" class="row-inner edit"><?= $this->formRow($this->form->get('responsable2Id'));?></div>
 							<div id="wrapper-responsable2" class="wrapper-responsable">
 								<div id="r2-ligne1"></div>
 								<div id="r2-ligne2"></div>
@@ -252,16 +255,16 @@ echo $this->formHidden($this->form->get('csrf'));
 								<div id="r2-ligne5"></div>
 							</div>
 							<div class="clearfix">
-								<div id="wrapper-distanceR2" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR2'));?></div>
-								<div id="wrapper-demandeR2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR2'));?></div>
+								<div id="wrapper-distanceR2" class="float-left top-18px"><?= $this->formRow($this->form->get('distanceR2'));?></div>
+								<div id="wrapper-demandeR2" class="row-inner edit float-left"><?= $this->formRow($this->form->get('demandeR2'));?></div>
 							</div>
 							<div id="block-demander2">
 								<div class="clearfix">
 									<div class="float-left">
-										<div id="wrapper-accordR2"><?php echo $this->formRow($this->form->get('accordR2'));?></div>
-										<div id="wrapper-subventionr2"><?php echo $this->formRow($this->form->get('subventionR2'));?></div>
+										<div id="wrapper-accordR2"><?= $this->formRow($this->form->get('accordR2'));?></div>
+										<div id="wrapper-subventionr2"><?= $this->formRow($this->form->get('subventionR2'));?></div>
 									</div>
-									<div id="wrapper-motifRefusr2" class="float-left"><?php echo $this->formRow($this->form->get('motifRefusR2'));?></div>
+									<div id="wrapper-motifRefusr2" class="float-left"><?= $this->formRow($this->form->get('motifRefusR2'));?></div>
 								</div>
 							</div>
 						</div>
@@ -269,7 +272,7 @@ echo $this->formHidden($this->form->get('csrf'));
 							<div id="block-affectationsr2" class="block-affectations">
 								<h3 id="h3-affectationsr2">
 									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
-										title="Ajouter une affectation pour <?php echo $this->identite;?>"
+										title="Ajouter une affectation pour <?= $this->identite;?>"
 										data-button="btnaffectation" data-trajet="2"
 										data-href="/op:add" id="i-affectationsr2"></i>
 								</h3>
@@ -287,28 +290,28 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div id="tabs-3-col1" class="float-left">
 							<h3>Identité de l'élève</h3>
 							<div id="#eleve-dateCreation">
-								<div class="eleve-tabs-3-col-1-label">Date de création</div><?php echo formatDate($this->historique['eleve']['dateCreation']);?></div>
+								<div class="eleve-tabs-3-col-1-label">Date de création</div><?= formatDate($this->historique['eleve']['dateCreation']);?></div>
 							<div id="#eleve-dateModification">
-								<div class="eleve-tabs-3-col-1-label">Date de modification</div><?php echo formatDate($this->historique['eleve']['dateModification']);?></div>
+								<div class="eleve-tabs-3-col-1-label">Date de modification</div><?= formatDate($this->historique['eleve']['dateModification']);?></div>
 						</div>
 						<div id="tabs-3-col2" class="float-left left-10px">
 							<h3>Responsable 1</h3>
 							<div id="#responsable1-dateCreation">
-								<div class="eleve-tabs-3-col-2-label">Date de création</div><?php echo formatDate($this->historique['responsable1']['dateCreation']);?></div>
+								<div class="eleve-tabs-3-col-2-label">Date de création</div><?= formatDate($this->historique['responsable1']['dateCreation']);?></div>
 							<div id="#responsable1-dateModification">
-								<div class="eleve-tabs-3-col-2-label">Date de modification</div><?php echo formatDate($this->historique['responsable1']['dateModification']);?></div>
+								<div class="eleve-tabs-3-col-2-label">Date de modification</div><?= formatDate($this->historique['responsable1']['dateModification']);?></div>
 							<div id="#responsable1-dateDemenagement">
-								<div class="eleve-tabs-3-col-2-label">Date de déménagement</div><?php echo $this->historique['responsable1']['demenagement'] ? formatDate($this->historique['responsable1']['dateDemenagement'], false) : '';?></div>
+								<div class="eleve-tabs-3-col-2-label">Date de déménagement</div><?= $this->historique['responsable1']['demenagement'] ? formatDate($this->historique['responsable1']['dateDemenagement'], false) : '';?></div>
 						</div>
 				        <?php if (array_key_exists('responsable2', $this->historique)):?>
 				        <div id="tabs-3-col3" class="float-left left-10px">
 							<h3>Responsable 2</h3>
 							<div id="#responsable2-dateCreation">
-								<div class="eleve-tabs-3-col-3-label">Date de création</div><?php echo formatDate($this->historique['responsable2']['dateCreation']);?></div>
+								<div class="eleve-tabs-3-col-3-label">Date de création</div><?= formatDate($this->historique['responsable2']['dateCreation']);?></div>
 							<div id="#responsable2-dateModification">
-								<div class="eleve-tabs-3-col-3-label">Date de modification</div><?php echo formatDate($this->historique['responsable2']['dateModification']);?></div>
+								<div class="eleve-tabs-3-col-3-label">Date de modification</div><?= formatDate($this->historique['responsable2']['dateModification']);?></div>
 							<div id="#responsable2-dateDemenagement">
-								<div class="eleve-tabs-3-col-3-label">Date de déménagement</div><?php echo $this->historique['responsable2']['demenagement'] ? formatDate($this->historique['responsable2']['dateDemenagement'], false) : '';?></div>
+								<div class="eleve-tabs-3-col-3-label">Date de déménagement</div><?= $this->historique['responsable2']['demenagement'] ? formatDate($this->historique['responsable2']['dateDemenagement'], false) : '';?></div>
 						</div>
 				        <?php endif;?>
 				    </div>
@@ -316,21 +319,21 @@ echo $this->formHidden($this->form->get('csrf'));
 						<div id="tabs-3-col1" class="float-left">
 							<h3>Inscription cette année scolaire</h3>
 							<div id="#scolarite-modeInscription">
-								<div class="eleve-tabs-3-col-1-label">Mode d'inscription</div><?php echo $this->historique['scolarite']['internet'] ? 'par internet' : 'par formulaire papier';?></div>
+								<div class="eleve-tabs-3-col-1-label">Mode d'inscription</div><?= $this->historique['scolarite']['internet'] ? 'par internet' : 'par formulaire papier';?></div>
 							<div id="#scolarite-dateInscription">
-								<div class="eleve-tabs-3-col-1-label">Date d'inscription</div><?php echo formatDate($this->historique['scolarite']['dateInscription']);?></div>
+								<div class="eleve-tabs-3-col-1-label">Date d'inscription</div><?= formatDate($this->historique['scolarite']['dateInscription']);?></div>
 							<div id="#scolarite-dateModification">
-								<div class="eleve-tabs-3-col-1-label">Date de modification</div><?php echo formatDate($this->historique['scolarite']['dateModification']);?></div>
+								<div class="eleve-tabs-3-col-1-label">Date de modification</div><?= formatDate($this->historique['scolarite']['dateModification']);?></div>
 						</div>
 						<div id="tabs-3-col2" class="float-left left-10px">
-							<h3>Eléments facturés</h3>
-							<div id="#scolarite-tarif">
+							<h3>Duplicatas facturés</h3>
+							<!-- div id="#scolarite-tarif">
 								<div class="eleve-tabs-3-col-2-label">Droits d'inscription</div>
 								<span id="tabs-3-montant"></span>
-							</div>
+							</div -->
 							<div id="#scolarite-duplicata">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
-								<span id="nbduplicata" class="right-10px"><?php echo $this->historique['scolarite']['duplicata'];?></span>
+								<span id="nbduplicata" class="right-10px"><?= $this->historique['scolarite']['duplicata'];?></span>
 								<input name="duplicata-moins" type="button" value="-"
 									id="duplicatamoins">
 							</div>
@@ -340,15 +343,15 @@ echo $this->formHidden($this->form->get('csrf'));
 			</div>
 			<div id="wrapper-commentaire">
 				<div id="wrapper-notes-annuelles" class="row-inner edit top-6px">
-				<?php echo $this->formRow($this->form->get('commentaire'));?></div>
+				<?= $this->formRow($this->form->get('commentaire'));?></div>
 				<div id="wrapper-notes-permanentes" class="row-inner edit top-6px">
-				<?php echo $this->formRow($this->form->get('note'));?></div>
+				<?= $this->formRow($this->form->get('note'));?></div>
 			</div>
 		</fieldset>
 		<div id="eleve-edit-buttons" class="row-inner edit left-95px">
-            <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+            <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
         </div>
-<?php echo $this->form()->closeTag();?>
+<?= $this->form()->closeTag();?>
 	</div><?php // fiche_inner ?>
     <div id="fiche-footer"></div>
 </div>

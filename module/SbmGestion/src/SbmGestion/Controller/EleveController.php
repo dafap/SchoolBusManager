@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 août 2018
- * @version 2018-2.4.2
+ * @date 28 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmGestion\Controller;
 
@@ -479,6 +479,9 @@ class EleveController extends AbstractActionController
             ->setValueOptions('classeId', 
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
+            ->setValueOptions('tarifId', 
+            $this->db_manager->get('Sbm\Db\Select\Tarifs')
+                ->grille(1))
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->bind($tableScolarites->getObjData());
         if ($ispost) {
@@ -487,12 +490,13 @@ class EleveController extends AbstractActionController
                 $odata = $form->getData();
                 $odata->millesime = Session::get('millesime');
                 $odata->internet = 0;
-                $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
-                if ($odata->anneeComplete) {
-                    $odata->tarifId = $tTarifs->getTarifId('tarif1');
-                } else {
-                    $odata->tarifId = $tTarifs->getTarifId('tarif2');
-                }
+                /* modification du 28 août 2018 sur la gestion des tarifs */
+                // $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
+                // if ($odata->anneeComplete) {
+                // $odata->tarifId = $tTarifs->getTarifId('tarif1');
+                // } else {
+                // $odata->tarifId = $tTarifs->getTarifId('tarif2');
+                // }
                 // $odata->tarifId = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifId('inscription');
                 $tableScolarites->saveRecord($odata);
                 $viewModel = $this->eleveEditAction(
@@ -628,6 +632,8 @@ class EleveController extends AbstractActionController
         }
         $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        // Ces tarifId1 et tarifId2 servent au js pour donner une valeur par défaut
+        // lorsque la coche AnneeComplete est mise ou retirée
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $aTarifs = $tTarifs->getTarifs();
         $tarifId1 = $tTarifs->getTarifId('tarif1');
@@ -678,7 +684,7 @@ class EleveController extends AbstractActionController
         }
         $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
-        $historique['scolarite']['tarifs'] = json_encode($aTarifs);
+        $historique['scolarite']['tarifs'] = json_encode($aTarifs); // pour le js
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
         $historique['scolarite']['internet'] = $odata1->internet;
         
@@ -697,6 +703,9 @@ class EleveController extends AbstractActionController
             ->setValueOptions('responsable2Id', $respSelect)
             ->setValueOptions('etablissementId', $etabSelect)
             ->setValueOptions('classeId', $clasSelect)
+            ->setValueOptions('tarifId', 
+            $this->db_manager->get('Sbm\Db\Select\Tarifs')
+                ->grille(1))
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setMaxLength($this->db_manager->getMaxLengthArray('eleves', 'table'));
         if (array_key_exists('submit', $args)) {
@@ -741,11 +750,12 @@ class EleveController extends AbstractActionController
                 }
                 // enregistrement dans la table scolarites
                 $odata = $tScolarites->getObjData()->exchangeArray($dataValid);
-                if ($odata->anneeComplete) {
-                    $odata->tarifId = $tarifId1;
-                } else {
-                    $odata->tarifId = $tarifId2;
-                }
+                /* modification du 28 août 2018 sur la gestion des tarifs */
+                //if ($odata->anneeComplete) {
+                //    $odata->tarifId = $tarifId1;
+                //} else {
+                //    $odata->tarifId = $tarifId2;
+                //}
                 $recalcul = $tScolarites->saveRecord($odata);
                 // recalcul des droits et des distances en cas de modification de la destination ou d'une origine
                 if ($recalcul || $changeR1 || $changeR2) {

@@ -1294,6 +1294,9 @@ textarea.sbm-width-40c, textarea.sbm-width-45c, textarea.sbm-width-50c,
 	height: 4rem;
 }
 /*------------- Largeur des labels -----------------*/
+label[class^="sbm-label-"] {
+	display: inline-block
+}
 label.sbm-label-35dem {
 	width: 5em;
 }
@@ -1323,6 +1326,7 @@ label.sbm-label-245dem {
 }
 
 label.sbm-label-280dem {
+	/*display: inline-block;*/
 	width: 29.5em;
 }
 

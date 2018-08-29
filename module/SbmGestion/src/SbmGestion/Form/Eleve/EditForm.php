@@ -7,8 +7,8 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2018
- * @version 2018-2.4.1
+ * @date 28 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -325,6 +325,25 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                         'class' => 'sbm-error'
                     ],
                     'format' => 'Y-m-d'
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'tarifId',
+                'attributes' => [
+                    'id' => 'eleve-tarifId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Tarif',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un tarif',
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
                 ]
             ]);
         $this->add(

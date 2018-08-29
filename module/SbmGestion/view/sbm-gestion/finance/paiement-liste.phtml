@@ -75,7 +75,7 @@ echo $this->flashMessenger()->render('default');
 <?php if ($this->h2): ?>
         <h2>Paiements effectués par <?php echo $this->responsable; ?></h2>
         <?php
-    $totalDu = $this->nbTarif1 * $this->tarif1 + $this->nbTarif2 * $this->tarif2 +
+    $totalDu = $this->montantInscriptions + //$this->nbTarif1 * $this->tarif1 + $this->nbTarif2 * $this->tarif2 +
          $this->nbDuplicata * $this->duplicata;
     ?>
 		<p class="left-10px">Total du : <?php echo $fmt->formatCurrency($totalDu, 'EUR');?>

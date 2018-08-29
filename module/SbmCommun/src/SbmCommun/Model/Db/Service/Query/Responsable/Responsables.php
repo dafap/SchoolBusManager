@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 nov. 2017
- * @version 2017-2.3.14
+ * @date 29 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -19,12 +19,12 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Exception;
+use SbmCommun\Model\Db\Sql\Predicate;
 
 class Responsables implements FactoryInterface
 {
@@ -194,9 +194,9 @@ class Responsables implements FactoryInterface
      * @param array $order            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function withEffectifs($where, $order = null)
+    public function withEffectifs($where, $order = null, $responsableId)
     {
-        $select = $this->selectResponsables($where, $order);
+        $select = $this->selectResponsables($where, $order, $responsableId);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // die($this->getSqlString($select));
         return $statement->execute();
@@ -224,69 +224,51 @@ class Responsables implements FactoryInterface
      * @param array $order            
      * @return \Zend\Db\Sql\Select
      */
-    private function selectResponsables($where, $order)
+    private function selectResponsables($where, $order, $responsableId = null)
     {
+        $calculDroits = $this->db_manager->get('Sbm\Db\Query\Responsable\Montants');
+        $calculDroits->droitsInscription($responsableId);
         // préinscrits
-        $where1 = new Where();
-        $where1->literal('inscrit = 1')
-            ->literal('paiement = 0')
-            ->literal('fa = 0')
-            ->literal('gratuit = 0')
-            ->equalTo('millesime', $this->millesime);
+        $preinscrits = new Predicate\ElevesPreinscrits($this->millesime);
         $select1 = new Select();
         $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where1);
-        // inscrits payants (pas fa et direct ou par un organisme)
-        $where2 = new Where();
-        $where2->literal('inscrit = 1')
-            ->literal('fa = 0')
-            ->nest()
-            ->literal('paiement = 1')->or->literal('gratuit = 2')
-            ->unnest()
-            ->equalTo('millesime', $this->millesime);
+            ->where($preinscrits());
+        // payants inscrits (pas fa et direct ou par un organisme)
+        $payants = new Predicate\ElevesPayantsInscrits($this->millesime);
         $select2 = new Select();
         $select2->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where2);
-        // inscrits gratuits
-        $where3 = new Where();
-        $where3->literal('inscrit = 1')
-            ->literal('gratuit = 1')
-            ->equalTo('millesime', $this->millesime);
+            ->where($payants());
+        // gratuits
+        $gratuits = new Predicate\ElevesGratuits($this->millesime);
         $select3 = new Select();
         $select3->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where3);
-        // inscrits en famille d'accueil
-        $where4 = new Where();
-        $where4->literal('inscrit = 1')
-            ->literal('fa = 1')
-            ->equalTo('millesime', $this->millesime);
+            ->where($gratuits());
+        // en famille d'accueil
+        $enFA = new Predicate\ElevesEnFA($this->millesime);
         $select4 = new Select();
         $select4->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where4);
-        // duplicata
-        $where5 = new Where();
-        $where5->literal('inscrit = 1')
-            ->literal('duplicata > 0')
-            ->equalTo('millesime', $this->millesime);
+            ->where($enFA());
+        // avec duplicata
+        $avecDuplicatas = new Predicate\ElevesAvecDuplicatas($this->millesime);
         $select5 = new Select();
         $select5->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId',
             'duplicata'
         ])
-            ->where($where5);
+            ->where($avecDuplicatas());
         // tarif annuel
         $where6 = new Where();
         $where6->literal('inscrit = 1')
@@ -313,9 +295,16 @@ class Responsables implements FactoryInterface
             'eleveId'
         ])
             ->where($where7);
+        // montants
+        $select8 = $this->db_manager->get('Sbm\Db\Query\Responsable\Montants')->selectDroitsInscription();
         // requête principale
         $select = clone $this->select;
-        $select->join(
+        $select->join([
+            'mnt' => $select8
+        ], 'mnt.responsableId = res.responsableId', [
+            'montant'
+        ], $select::JOIN_LEFT)
+            ->join(
             [
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
             ], 

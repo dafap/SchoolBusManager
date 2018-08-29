@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2018
- * @version 2018-2.4.3
+ * @date 28 août 2018
+ * @version 2018-2.4.4
  */
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Service\CalculDroits;
@@ -173,6 +173,7 @@ return [
             'Sbm\Db\Select\Responsables' => Select\Responsables::class,
             'Sbm\Db\Select\Services' => Select\Services::class,
             'Sbm\Db\Select\Stations' => Select\StationsForSelect::class,
+            'Sbm\Db\Select\Tarifs' => Select\TarifsForSelect::class,
             'Sbm\Db\Select\Transporteurs' => Select\Transporteurs::class,
             'Sbm\Db\Select\Libelles' => Select\LibellesForSelect::class,
             'Sbm\Libelles' => Libelles::class,
@@ -183,6 +184,7 @@ return [
             'Sbm\Db\Query\ElevesScolarites' => Query\Eleve\ElevesScolarites::class,
             'Sbm\Db\Query\AffectationsServicesStations' => Query\Eleve\AffectationsServicesStations::class,
             'Sbm\Db\Query\Responsables' => Query\Responsable\Responsables::class,
+            'Sbm\Db\Query\Responsable\Montants' => Query\Responsable\CalculMontant::class,
             'Sbm\Db\Query\Etablissements' => Query\Etablissement\Etablissements::class,
             'Sbm\Db\Query\SecteursScolairesClgPu' => Query\Etablissement\SecteursScolairesClgPu::class,
             'Sbm\Db\Query\Services' => Query\Service\Services::class,

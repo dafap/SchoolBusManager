@@ -5,8 +5,8 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juillet 2018
- * @version 2018-2.4.1
+ * @date 28 août 2018
+ * @version 2018-2.4.4
  */
 
 var js_edit = (function() {
@@ -61,9 +61,11 @@ var js_edit = (function() {
 	function majMontantInscription(ancomplet) {
 		$("#tabs-3-montant").empty();
 		if (ancomplet) {
-			$("#tabs-3-montant").html(js_edit.tarifs[1] + ' €');
+			$("#eleve-tarifId").val(1);
+			//$("#tabs-3-montant").html(js_edit.tarifs[1] + ' €');
 		} else {
-			$("#tabs-3-montant").html(js_edit.tarifs[3] + ' €');
+			$("#eleve-tarifId").val(3);
+			//$("#tabs-3-montant").html(js_edit.tarifs[3] + ' €');
 		}
 	}
 	function montreMotifDerogation(derogation) {
@@ -445,7 +447,7 @@ var js_edit = (function() {
 			js_edit.tarifs = tarifs;
 			$("#tabs").tabs();
 			montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-			majMontantInscription($("#eleve-anneeComplete").is(":checked"));
+			//majMontantInscription($("#eleve-anneeComplete").is(":checked"));
 			montreMotifDerogation($("#eleve-derogation").is(":checked"));
 			montreOngletGa($("#eleve-ga").is(":checked"));
 			montreMotifRefus($("#eleve-accordR1").is(":checked"), $(
