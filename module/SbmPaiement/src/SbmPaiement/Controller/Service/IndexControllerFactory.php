@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 27 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmPaiement\Controller\Service;
 
@@ -45,7 +45,8 @@ class IndexControllerFactory implements FactoryInterface
                 [
                     'sbm',
                     'mail'
-                ], $sm->get('config'))
+                ], $sm->get('config')),
+            'csv' => StdLib::getParam('csv', $config_application)
         ];
         return new IndexController($config_controller);
     }

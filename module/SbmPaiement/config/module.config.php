@@ -16,8 +16,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 30 août 2018
+ * @version 2018-2.4.4
  */
 use SbmPaiement\Controller;
 use SbmPaiement\Listener;
@@ -105,5 +105,22 @@ return [
         'paiement' => [
             'path_filelog' => realpath(__DIR__ . '/../../../data/logs')
         ]
+    ],
+    'csv' => [
+        'path' => [
+            'tmpuploads' => realpath(__DIR__ . '/../../../data/tmpuploads')
+        ],
+        'parameters' => [
+            'firstline' => true,
+            'separator' => ';',
+            'enclosure' => '',
+            'escape' => '\\'
+        ]
+    ],
+    'view_manager' => [
+        'template_path_stack' => [
+            __DIR__ . '/../view'
+        ]
     ]
-];
+]
+;

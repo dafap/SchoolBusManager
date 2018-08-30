@@ -1,14 +1,16 @@
 <?php
 use Zend\View\Model\ViewModel;
+
 /**
  * Liste des paiements pour la table `systempay`
  *
  * @project sbm
+ *
  * @package SbmPaiement/Plugin/SystemPay/view
  * @filesource liste.phtml
- * @encodage UTF-8
+ *             @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
+ *         @date 5 avr. 2018
  * @version 2018-2.4.0
  */
 
@@ -22,11 +24,11 @@ function formatDate($date)
 }
 
 /**
- * 
- * @param ViewModel $view
- * @param string $name
- * @param string $id
- * @param unknown $value
+ *
+ * @param ViewModel $view            
+ * @param string $name            
+ * @param string $id            
+ * @param unknown $value            
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -62,11 +64,17 @@ $url_rapports = $this->url('sbmpaiement',
         'action' => 'pdf',
         'page' => $this->page
     ]);
-
+$url_rapprochement = $this->url('sbmpaiement', 
+    [
+        'action' => 'rapprochement',
+        'page' => $this->page
+    ]);
 $config = include __DIR__ . '/../config/systempay.config.php';
 $url_marchand = $config['url_marchand'];
 $retour = $this->url('sbmgestion/finance');
-$hiddens = [];
+$hiddens = [
+    'origine' => 'liste'
+];
 $menuImpression = $this->menuRapports('/paiement/liste', $url_rapports, 'fam-printer', 
     null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
@@ -81,6 +89,11 @@ $actions = [
         'class' => 'fam-house-link',
         'formaction' => $url_marchand,
         'title' => 'Systempay Back Office'
+    ],
+    'rapprochement' => [
+        'class' => 'fam-plugin-error',
+        'formaction' => $url_rapprochement,
+        'title' => 'Rapprochement avec les encaissements de Systempay Back Office'
     ]
 ];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);

@@ -17,8 +17,8 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2018
- * @version 2018-2.4.3
+ * @date 30 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -362,5 +362,78 @@ class Plateforme extends AbstractPlateforme
             return sprintf('MULTI:first=%d;count=%d;period=%d', $params['first'] * 100, 
                 $params['count'], $params['period']);
         }
+    }
+
+    /**
+     * Reçoit le nom d'un fichier csv.
+     * L'ouvre et recherche si ses lignes sont bien
+     * enregistrées dans la table systempay. Renvoie un tableau des lignes absentes.
+     *
+     * @param string $csvname            
+     * @param bool $firstline            
+     * @param string $separator            
+     * @param string $enclosure            
+     * @param string $escape            
+     *
+     * @return array
+     */
+    public function rapprochement($csvname, $firstline, $separator, $enclosure, $escape)
+    {
+        $tSystempay = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
+        $fcsv = fopen($csvname, 'r');
+        if ($firstline) {
+            fgets($fcsv);
+        }
+        $cr = [];
+        // die(var_dump($fcsv, 0, $separator, $enclosure, $escape));
+        while (($ligne = fgets($fcsv)) !== false) {
+            $data = explode($separator, $ligne);
+            array_walk($data, 
+                function (&$value, $key) use($enclosure) {
+                    $value = trim($value, $enclosure);
+                });
+            // die(var_dump($data));
+            $cust_id = $data[3];
+            $results = $tSystempay->fetchAll(
+                [
+                    'vads_cust_id' => $cust_id
+                ]);
+            $absent = true;
+            foreach ($results as $row) {
+                if ($row->vads_trans_id == $data[0]) {
+                    // présent dans la table, passer à la ligne suivante du csv
+                    $absent = false;
+                    break;
+                }
+            }
+            if ($absent) {
+                $cr[] = [
+                    $data[0],
+                    $data[1],
+                    $data[2],
+                    $data[3],
+                    $data[4]
+                ];
+            }
+        }
+        fclose($fcsv);
+        return $cr;
+    }
+
+    /**
+     * Renvoie l'entête des lignes d'un compte-rendu d'un rapprochement
+     * (doit avoir autant d'élément qu'une ligne de cr)
+     * 
+     * @return array
+     */
+    public function rapprochementCrHeader()
+    {
+        return [
+            'Transaction',
+            'Commande',
+            'Montant',
+            'Id acheteur',
+            'Acheteur'
+        ];
     }
 }

@@ -14,18 +14,21 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
- * @version 2018-2.4.1
+ * @date 30 août 2018
+ * @version 2018-2.4.4
  */
 namespace SbmPaiement\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Http\PhpEnvironment\Request;
 use Zend\View\Model\Zend\View\Model;
 use SbmBase\Model\StdLib;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmFront\Model\Responsable\Responsable;
+use SbmPaiement\Form\UploadCsv;
+use SbmPaiement\Model\RapprochementCR;
 
 class IndexController extends AbstractActionController
 {
@@ -208,8 +211,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            if (($notificationId = Session::get('notificationId', false)) ===
-                 false) {
+            if (($notificationId = Session::get('notificationId', false)) === false) {
                 return $this->redirect()->toRoute('login', 
                     [
                         'action' => 'logout'
@@ -252,5 +254,60 @@ class IndexController extends AbstractActionController
                 ->setContent($message)
                 ->setStatusCode(200);
         }
+    }
+
+    /**
+     * Charge un fichier csv de transactions remisées.
+     * Analyse le fichier (après contrôle) en le rapprochant des paiements enregistrés.
+     * Affiche le compte-rendu en indiquant la marche à suivre si des paiements sont absents.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response
+     */
+    public function rapprochementAction()
+    {
+        // formulaire d'upload servant à la fois à la saisie et à la validation
+        $config_plateforme = $this->plugin_plateforme->getPlateformeConfig();
+        $tmpuploads = $this->csv['path']['tmpuploads'];
+        $form = new UploadCsv('upload-form', 
+            [
+                'tmpuploads' => $tmpuploads
+            ]);
+        $tempFile = null;
+        
+        $prg = $this->fileprg($form);
+        if ($prg instanceof Response) {
+            // renvoie redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops = 1)
+            return $prg;
+        } elseif (is_array($prg) && ! array_key_exists('origine', $prg)) {
+            if (array_key_exists('cancel', $prg)) {
+                $this->flashMessenger()->addWarningMessage('Abandon de la demande');
+                return $this->redirect()->toRoute('sbmpaiement');
+            }
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $cr = $this->plugin_plateforme->rapprochement(
+                    $data['csvfile']['tmp_name'], $data['firstline'], $data['separator'], 
+                    $data['enclosure'], $data['escape']);
+                if (empty($cr)) {
+                    $this->flashMessenger()->addInfoMessage(
+                        'Tous les paiements sont présents.');
+                    return $this->redirect()->toRoute('sbmpaiement');
+                } else {
+                    // construction et envoi d'un CR en pdf pour pouvoir l'imprimer
+                    $pdf_doc = new RapprochementCR($cr, 
+                        $this->plugin_plateforme->rapprochementCrHeader());
+                    return $pdf_doc->render_cr();
+                }
+            }
+        } else {
+            // ce n'est pas un post. Afficher le formulaire d'upload d'un fichier
+            $form->get('csvfile')->setMessages([]);
+            $form->get('firstline')->setMessages([]);
+            $form->setData($this->csv['parameters']);
+        }
+        $view = new ViewModel([
+            'form' => $form
+        ]);
+        return $view;
     }
 }
