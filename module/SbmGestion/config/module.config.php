@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 12 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmGestion\Controller;
 use SbmGestion\Controller\Service;
@@ -95,7 +95,6 @@ return [
             Controller\EleveGestionController::class => Service\EleveGestionControllerFactory::class,
             Controller\FinanceController::class => Service\FinanceControllerFactory::class,
             Controller\IndexController::class => Service\IndexControllerFactory::class,
-            Controller\SimulationController::class => Service\SimulationControllerFactory::class,
             Controller\StatistiquesController::class => Service\StatistiquesControllerFactory::class,
             Controller\TransportController::class => Service\TransportControllerFactory::class
         ]
@@ -193,18 +192,6 @@ return [
                             ]
                         ]
                     ],
-                    'simul' => [ // simulation d'une nouvelle organisation
-                        'type' => 'segment',
-                        'options' => [
-                            'route' => '/simul',
-                            'defaults' => [
-                                'module' => 'SbmGestion',
-                                'controller' => Controller\SimulationController::class,
-                                'action' => 'index'
-                            ]
-                        ]
-                    ],
-                    
                     'statistiques' => [
                         'type' => 'segment',
                         'options' => [

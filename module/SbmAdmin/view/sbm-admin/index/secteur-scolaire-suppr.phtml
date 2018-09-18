@@ -9,15 +9,16 @@
  * @filesource secteur-scolaire-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_retour = $this->url('sbmadmin', [
-    'action' => 'secteur-scolaire-liste',
-    'page' => $this->page
-]);
+$url_retour = $this->url('sbmadmin',
+    [
+        'action' => 'secteur-scolaire-liste',
+        'page' => $this->page
+    ]);
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
@@ -28,16 +29,18 @@ $actions = [
 ?>
 <h1>Suppression dans un secteur scolaire de collège public</h1>
 <div id="suppr-wrapper">
-	<p>Vous avez demandé la suppression de la commune <b><?php echo $this->data['commune'];?></b> du secteur scolaire du collège :</p>
+	<p>
+		Vous avez demandé la suppression de la commune <b><?= $this->data['commune'];?></b>
+		du secteur scolaire du collège :
+	</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?php echo $this->escapeHtml($this->data['etablissement'] . ' - ' . $this->data['communeetab']); ?></li>
+			<li><?= $this->escapeHtml($this->data['etablissement'] . ' - ' . $this->data['communeetab']); ?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formCollection($this->form);?>
+	<?= $this->form()->closeTag();?>
+
 </div>

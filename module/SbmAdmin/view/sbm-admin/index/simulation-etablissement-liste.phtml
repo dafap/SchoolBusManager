@@ -1,0 +1,137 @@
+<?php
+/**
+ * Liste des règles de correspondance pour le passage dans un établissement de niveau supérieur
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource simulation-etablissement-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+
+$url_ajouter = $this->url('sbmadmin',
+    [
+        'action' => 'simulation-etablissement-ajout',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmadmin',
+    [
+        'action' => 'simulation-etablissement-suppr',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmadmin',
+    [
+        'action' => 'simulation-etablissement-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmadmin');
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmadmin', [
+        'action' => 'simulation-etablissement-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouvelle entrée'
+    ]
+];
+?>
+<h1>Liste des règles de correspondance pour le passage dans un
+	établissement de niveau supérieur</h1>
+<div id="liste-wrapper">
+<?php if ($this->origineId):?>
+	<div id="liste-title">
+		<ul>
+			<li><?= $this->escapeHtml($this->origine->commune); ?></li>
+			<li><?= $this->escapeHtml($this->origine->nom); ?></li>
+		</ul>
+	</div>
+<?php endif;?>
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left">
+		    <?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+	    </div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner simulation-etablissements">
+			<tbody>
+				<tr>
+					<th>Commune de l'établissement d'origine</th>
+					<th>Établissement origine</th>
+					<th>Communes de l'établissement suivant</th>
+					<th>Établissement suivant</th>
+					<th></th>
+				</tr>
+            <?php foreach($data as $row): ?>
+            	<?php
+                $hiddens = [
+                    'origineId' => $row->origineId,
+                    'suivantId' => $row->suivantId,
+                    'origine' => 'simulation-etablissement-liste'
+                ];
+                $buttons = [
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'Supprimer'
+                    ]
+                ];
+                ?>
+                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="communeetaborigine">
+					   <?= $this->escapeHtml($row->communeetaborigine); ?></td>
+					<td class="etablissementorigine">
+					   <?= $this->escapeHtml($row->etablissementorigine); ?></td>
+					<td class="communeetabsuivant">
+					   <?= $this->escapeHtml($row->communeetabsuivant); ?></td>
+					<td class="etablissementsuivant">
+					   <?= $this->escapeHtml($row->etablissementsuivant); ?></td>
+					<td class="boutons">
+						<?=$this->listeLigneActions($row->origineId .'|' .$row->suivantId,$hiddens,$buttons);?>
+					</td>
+				</tr>         
+            <?php endforeach;?>
+            </tbody>
+		</table>
+		<p class="sbm-description">Les règles de passage dans un établissement
+			de niveau supérieur sont appliquées en fonction de leur pertinence et
+			dans l'ordre :</p>
+		<ol class="sbm-description">
+			<li>la répartition des classes dans un RPI</li>
+			<li>la table de correspondance ici présente</li>
+			<li>les secteurs scolaires des collèges publics</li>
+		</ol>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+		    <?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="criteres-wrapper">
+            <?= $this->form()->openTag($this->criteres_form);?>
+            <?= $this->formCollection($this->criteres_form, true);?>
+            <?= $this->form()->closeTag();?>
+        </div>
+	</div>
+</div>

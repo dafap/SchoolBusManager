@@ -1,0 +1,29 @@
+<?php
+/**
+ * Page de suppression d'un rpi
+ *
+ * Réservé à l'administrateur
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource rpi-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
+ */
+?>
+<h1>Suppression d'un RPI</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du RPI :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?= $this->escapeHtml($this->data->nom); ?></li>
+			<li><?= $this->escapeHtml($this->data->libelle); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formCollection($this->form);?>
+	<?= $this->form()->closeTag();?>
+</div>

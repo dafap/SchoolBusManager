@@ -7,12 +7,12 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2016
- * @version 2016-2.1.4
+ * @date 18 sept.2018
+ * @version 2018-2.4.5
  */
-use SbmInstallation\Controller;
-use SbmInstallation\Model\Service;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Image\Image;
+use SbmInstallation\Controller;
 
 return [
     'acl' => [
@@ -45,7 +45,7 @@ return [
     'sbm' => [
         'img' => [
             'path' => [
-                'system' => realpath(__DIR__ . '/../../../public/img'),
+                'system' => realpath(StdLib::findParentPath(__DIR__, 'public/img')),
                 'tmpuploads' => './data/tmpuploads',
                 'url' => '/img/'
             ],

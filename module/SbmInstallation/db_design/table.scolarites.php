@@ -42,6 +42,7 @@ return array(
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'paiement' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'duplicata' => 'int(11) NOT NULL DEFAULT "0"',
             'fa' => 'tinyint(1) NOT NULL DEFAULT "0"', // famille d'accueil
             'anneeComplete' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'subventionR1' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -58,6 +59,7 @@ return array(
             'joursTransport' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
             'tarifId' => 'int(11) NOT NULL DEFAULT "0"',
+            'organismeId' => 'int(11) NOT NULL DEFAULT "0"',
             'regimeId' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'motifDerogation' => 'text NULL',
             'motifRefusR1' => 'text NULL',

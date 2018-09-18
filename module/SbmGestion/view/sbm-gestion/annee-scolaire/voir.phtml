@@ -9,28 +9,29 @@
  * @filesource voir.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 nov. 2014
- * @version 2014-1
+ * @date 13 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/anneescolaire');
-$url_ouvrir = $this->url('sbmgestion/anneescolaire', array(
+$url_ouvrir = $this->url('sbmgestion/anneescolaire', [
     'action' => 'ouvrir'
-));
-$hiddens = array(
+]);
+$hiddens = [
     'millesime' => $this->millesime
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 $etat = true;
 $ouvert = true;
 foreach ($this->table as $row) {
-    $etat &= ! is_null($row['dateDebut']) && ! is_null($row['dateFin']) && ! is_null($row['echeance']);
+    $etat &= ! is_null($row['dateDebut']) && ! is_null($row['dateFin']) &&
+        ! is_null($row['echeance']);
     $ouvert &= $row['ouvert'] == 1;
 }
 if ($etat) {
@@ -38,19 +39,19 @@ if ($etat) {
         if ($ouvert) {
             $msg = 'L\'année scolaire est ouverte.';
             $hiddens['ouvert'] = 0;
-            $actions['ouvrir'] = array(
+            $actions['ouvrir'] = [
                 'class' => 'fam-date-delete',
                 'formaction' => $url_ouvrir,
                 'title' => 'Fermer l\'année scolaire'
-            );
+            ];
         } else {
             $msg = 'L\'année scolaire est fermée.';
             $hiddens['ouvert'] = 1;
-            $actions['ouvrir'] = array(
+            $actions['ouvrir'] = [
                 'class' => 'fam-date-go',
                 'formaction' => $url_ouvrir,
                 'title' => 'Ouvrir l\'année scolaire'
-            );
+            ];
         }
     } else {
         if ($ouvert) {
@@ -65,22 +66,22 @@ if ($etat) {
 }
 
 ?>
-<h1>Edition de l'année scolaire <?php echo $this->as_libelle;?></h1>
+<h1>Edition de l'année scolaire <?= $this->as_libelle;?></h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="zone-actions">
-			<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+			<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		</div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
-	<?php echo $msg;?>
+	<?= $msg;?>
     <?php include 'calendar.inc.phtml';?>
     </div>
 </div>

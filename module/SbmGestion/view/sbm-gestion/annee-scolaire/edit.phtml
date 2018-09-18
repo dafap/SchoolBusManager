@@ -8,14 +8,14 @@
  * @filesource edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 nov. 2014
- * @version 2014-1
+ * @date 13 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 /*
- * On n'utilise pas le datepicker parce qu'il faudrait écrire les conversions de format de date 
+ * On n'utilise pas le datepicker parce qu'il faudrait écrire les conversions de format de date
  * à l'entrée et à la sortie. Sinon, le jquery fonctionne bien !
- * 
+ *
  * $this->headLink()->appendStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
  * $this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
  * $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
@@ -42,52 +42,51 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
  */
 
 $as_libelle = sprintf("%4d-%4d", $this->millesime, $this->millesime + 1);
-$url_retour = $this->url('sbmgestion/anneescolaire', array(
-    'action' => 'voir',
-    'millesime' => $this->millesime
-));
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmgestion/anneescolaire',
+    [
+        'action' => 'voir',
+        'millesime' => $this->millesime
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
-<h1>Modification d'un élément du calendrier de l'année scolaire <?php echo $as_libelle;?></h1>
+<h1>Modification d'un élément du calendrier de l'année scolaire <?= $as_libelle;?></h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-            <?php echo $this->listeZoneActions($hiddens, $actions);?>
+            <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('calendarId'));
-echo $this->formHidden($this->form->get('millesime'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formHidden($this->form->get('calendarId'));?>
+	<?= $this->formHidden($this->form->get('millesime'));?>
+	<?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="page1">
 			<div id="wrapper-nature">
-				<div class="label">Nature</div><?php echo $this->data['nature'];?></div>
+				<div class="label">Nature</div><?= $this->data['nature'];?></div>
 			<div id="wrapper-libelle">
-				<div class="label">Libellé</div><?php echo $this->data['libelle'];?></div>
+				<div class="label">Libellé</div><?= $this->data['libelle'];?></div>
 			<div id="wrapper-description" class="row-inner edit">
-			    <?php echo $this->formRow($this->form->get('description'));?></div>
+			    <?= $this->formRow($this->form->get('description'));?></div>
 			<div id="wrapper-dateDebut" class="row-inner edit">
-				<?php echo $this->formRowDate($this->form->get('dateDebut'));?></div>
+				<?= $this->formRowDate($this->form->get('dateDebut'));?></div>
 			<div id="wrapper-dateFin" class="row-inner edit">
-				<?php echo $this->formRowDate($this->form->get('dateFin'));?></div>
+				<?= $this->formRowDate($this->form->get('dateFin'));?></div>
 			<div id="wrapper-echeance" class="row-inner edit">
-				<?php echo $this->formRowDate($this->form->get('echeance'));?></div>
+				<?= $this->formRowDate($this->form->get('echeance'));?></div>
 			<div id="wrapper-exercice" class="row-inner edit">
-			    <?php echo $this->formRow($this->form->get('exercice'));?></div>
+			    <?= $this->formRow($this->form->get('exercice'));?></div>
 			<div id="wrapper-buttons" class="row-inner edit">
-                <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+                <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
             </div>
 		</fieldset>
-<?php echo $this->form()->closeTag();?>
+<?= $this->form()->closeTag();?>
     </div>
 </div>

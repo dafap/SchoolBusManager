@@ -8,11 +8,10 @@
  * @filesource system.documents.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 
-// $k_path_images = str_replace('\\', '/', dirname(__FILE__).'/../../../public/img/');
 return array(
     'name' => 'documents',
     'type' => 'system',

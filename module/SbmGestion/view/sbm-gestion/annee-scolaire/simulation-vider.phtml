@@ -8,25 +8,25 @@
  * @filesource simulation-vider.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 janv. 2016
- * @version 2016-1
+ * @date 13 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/anneescolaire');
-$hiddens = array();
-$actions = array(
-    'retour' => array(
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Effacer la simulation</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="zone-actions">
-			<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+			<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		</div>
 	</div>
 	<div id="suppr-wrapper">
@@ -35,10 +35,8 @@ $actions = array(
 			préparé dans la composition des circuits et dans l'inscription des
 			élèves.</p>
 		<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?>
+		<?= $this->form()->openTag($form);?>
+		<?= $this->formCollection($form);?>
+		<?= $this->form()->closeTag();?>
     </div>
 </div>

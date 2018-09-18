@@ -7,8 +7,8 @@
  * @filesource calendar.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 13 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmBase\Model\DateLib;
 
@@ -27,20 +27,24 @@ use SbmBase\Model\DateLib;
 			<th></th>
 		</tr>
     <?php foreach ($this->table as $element) : ?>
-    <?php $url_edit = $this->url('sbmgestion/anneescolaire', array('action' => 'edit', 'millesime' => $this->millesime, 'id' => $element['calendarId'])); ?>
-        <tr class="<?php echo $this->cycle(array(
-            "even",
-            "odd"
-        ))->next();?>">
-			<td><?php echo $element['ordinal'];?></td>
-			<td><?php echo $element['nature'];?></td>
-			<td><?php echo $element['libelle'];?></td>
-			<td><?php echo $element['description'];?></td>
-			<td><?php echo DateLib::formatDateFromMysql($element['dateDebut']);?></td>
-			<td><?php echo DateLib::formatDateFromMysql($element['dateFin']);?></td>
-			<td><?php echo DateLib::formatDateFromMysql($element['echeance']);?></td>
-			<td><?php echo $element['exercice'];?></td>
-			<td><a href="<?php echo $url_edit;?>" class="bouton" title="Editer"><i
+    <?php
+        $url_edit = $this->url('sbmgestion/anneescolaire',
+            [
+                'action' => 'edit',
+                'millesime' => $this->millesime,
+                'id' => $element['calendarId']
+            ]);
+        ?>
+        <tr class="<?=$this->cycle(["even","odd"])->next();?>">
+			<td><?= $element['ordinal'];?></td>
+			<td><?= $element['nature'];?></td>
+			<td><?= $element['libelle'];?></td>
+			<td><?= $element['description'];?></td>
+			<td><?= DateLib::formatDateFromMysql($element['dateDebut']);?></td>
+			<td><?= DateLib::formatDateFromMysql($element['dateFin']);?></td>
+			<td><?= DateLib::formatDateFromMysql($element['echeance']);?></td>
+			<td><?= $element['exercice'];?></td>
+			<td><a href="<?= $url_edit;?>" class="bouton" title="Editer"><i
 					class="fam-date-edit"></i></a></td>
 		</tr>
     <?php endforeach;?>

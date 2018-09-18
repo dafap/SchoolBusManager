@@ -1,0 +1,54 @@
+<?php
+/**
+ * Page de création d'un nouveau rpi
+ *
+ * Réservé à l'administrateur
+ * 
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource rpi-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'rpi-liste'
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+?>
+<h1>Ajout d'un nouveau RPI</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+	    <?= $this->form()->openTag($this->form);?>
+	    <?= $this->formHidden($this->form->get('csrf'));?>
+        <fieldset class="page1">
+			<div class="row-inner">
+				<?= $this->formRow($this->form->get('nom'));?></div>
+			<div class="row-inner">
+				<?= $this->formRow($this->form->get('libelle'));?></div>
+			<div id="classe-ajout-niveau" class="row-inner ajout">
+				<?= $this->formRow($this->form->get('niveau')); ?></div>
+			<div id="secteur-scolaire-buttons" class="row-inner">  
+            	<?= $this->formSubmit($this->form->get('submit'))?>
+            	<?= $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

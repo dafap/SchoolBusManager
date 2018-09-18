@@ -9,8 +9,8 @@
  * @filesource layout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 13 sept. 2018
+ * @version 2018-2.4.5
  */
 $url_img = $this->serverUrl($this->path['url'] . $this->file_name);
 $attributes = [];
@@ -18,11 +18,14 @@ if (is_array($this->client) && array_key_exists('name', $this->client)) {
     $attributes[] = sprintf('alt="%s"', $this->client['name']);
 }
 if (is_array($this->img_attributes)) {
-    if (array_key_exists('taille', $this->img_attributes) && $this->img_attributes['taille'] == 'fixed') {
-        if (array_key_exists('width', $this->img_attributes) && is_numeric($this->img_attributes['width'])) {
+    if (array_key_exists('taille', $this->img_attributes) &&
+        $this->img_attributes['taille'] == 'fixed') {
+        if (array_key_exists('width', $this->img_attributes) &&
+            is_numeric($this->img_attributes['width'])) {
             $attributes[] = sprintf('width="%d"', $this->img_attributes['width']);
         }
-        if (array_key_exists('height', $this->img_attributes) && is_numeric($this->img_attributes['height'])) {
+        if (array_key_exists('height', $this->img_attributes) &&
+            is_numeric($this->img_attributes['height'])) {
             $attributes[] = sprintf('height="%d"', $this->img_attributes['height']);
         }
     }
@@ -30,8 +33,7 @@ if (is_array($this->img_attributes)) {
 ?>
 <html>
 <body>
-<?php echo $this->content;?>
-<img src="<?php echo $url_img;?>"
-		<?php echo implode(' ', $attributes);?>>
+<?= $this->content;?>
+<img src="<?= $url_img;?>" <?= implode(' ', $attributes);?>>
 </body>
 </html>

@@ -7,30 +7,36 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
-use SbmAdmin\Form;
 use SbmAdmin\Controller;
+use SbmAdmin\Form;
+use SbmAdmin\Model\Db\Service\Libelle\Liste;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
-use SbmAdmin\Model\Db\Service\Libelle\Liste;
-use SbmCommun\Form\Responsable;
+use SbmAdmin\Model\View\Helper\RpiClasses;
+use SbmAdmin\Model\View\Helper\RpiCommunes;
+use SbmAdmin\Model\View\Helper\RpiEtablissements;
 
 return [
     'acl' => [
         'resources' => [
             'sbmadmin' => [
                 'allow' => [
-                    'roles' => ['admin', 'sadmin']
+                    'roles' => [
+                        'admin',
+                        'sadmin'
+                    ]
                 ]
             ]
-        ],
+        ]
     ],
     'paginator' => [
         'count_per_page' => [
             'nb_libelles' => 15,
             'nb_secteurs-scolaires' => 20,
+            'nb_simulation-etablissements' => 15,
             'nb_users' => 20
         ]
     ],
@@ -43,7 +49,7 @@ return [
     ],
     'form_manager' => [
         'invokables' => [
-            Form\Libelle::class => Form\Libelle::class,
+            Form\Libelle::class => Form\Libelle::class
         ],
         'factories' => [
             Form\Export::class => Form\Service\ExportFactory::class,
@@ -53,7 +59,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
         ]
     ],
     'router' => [
@@ -75,6 +81,13 @@ return [
                 ],
                 'may_terminate' => true
             ]
+        ]
+    ],
+    'view_helpers' => [
+        'invokables' => [
+            'rpiCommunes' => RpiCommunes::class,
+            'rpiEtablissements' => RpiEtablissements::class,
+            'rpiClasses' => RpiClasses::class
         ]
     ],
     'view_manager' => [

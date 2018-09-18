@@ -1,4 +1,6 @@
 <?php
+use SbmBase\Model\StdLib;
+
 /**
  * Paramètres de configuration des sessions
  *
@@ -89,7 +91,7 @@ return [
                 'cookie_lifetime' => 10800, // 3 heures
                 'gc_maxlifetime' => 3600, // 1 heure
                 'name' => 'SBM_SESSION',
-                'save_path' => realpath(__DIR__ . '/../../../data/session')
+                'save_path' => realpath(StdLib::findParentPath(__DIR__, 'data/session'))
             ]
         ],
         

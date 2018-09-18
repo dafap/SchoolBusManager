@@ -9,8 +9,8 @@
  * @filesource user-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmadmin', [
@@ -30,13 +30,14 @@ $actions = [
 <div id="fiche-wrapper">
 	<div id="fiche-header" class="clearfix">
 		<div class="menu float-left">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 		<div class="float-left">
 			<ul style="margin-top: 0;" class="gras">
-				<li><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
-				<li>Identifiant: <?php echo $this->user->email;?></li>
-				<li>Créé le: <?php echo $this->user->dateCreation;?> - Modifié le: <?php echo $this->user->dateModification;?></li>
+				<li><?= $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
+				<li>Identifiant: <?= $this->user->email;?></li>
+				<li>Créé le: 
+					<?= $this->user->dateCreation;?> - Modifié le: <?= $this->user->dateModification;?></li>
 			</ul>
 		</div>
 	</div>
@@ -49,38 +50,52 @@ $actions = [
     ?>
         <fieldset class="sbm-page1">
     <?php
-        echo $this->formHidden($this->form->get('csrf'));
-        echo $this->formHidden($this->form->get('userId'));
+    echo $this->formHidden($this->form->get('csrf'));
+    echo $this->formHidden($this->form->get('userId'));
     ?>
             <div id="user-etablissement-ajout-etablissementId"
-				class="row-inner ajout"><?php echo $this->formRow($this->form->get('etablissementId'));?></div>
+				class="row-inner ajout"><?= $this->formRow($this->form->get('etablissementId'));?></div>
 			<div id="classe-ajout-buttons" class="row-inner ajout">
-			    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+			    <?= $this->formSubmit($this->form->get('submit'));?>
+			    <?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
-    <?php echo $this->form()->closeTag();?>
+    <?= $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="page1">
 			<div>
-				<div class="label">Nom</div><?php echo $this->etablissement->nom; ?></div>
+				<div class="label">Nom</div>
+				<?= $this->etablissement->nom; ?></div>
 			<div>
-				<div class="label">Adresse</div><?php echo $this->etablissement->adresse1; ?></div>
+				<div class="label">Adresse</div>
+				<?= $this->etablissement->adresse1; ?></div>
 			<div>
-				<div class="label">Adresse</div><?php echo $this->etablissement->adresse2; ?></div>
+				<div class="label">Adresse</div>
+				<?= $this->etablissement->adresse2; ?></div>
 			<div>
-				<div class="label">Localité</div><?php echo $this->etablissement->codePostal . ' ' . $this->etablissement->commune; ?></div>
+				<div class="label">Localité</div>
+				<?= $this->etablissement->codePostal?>
+				<?= $this->etablissement->commune; ?></div>
 			<div>
-				<div class="label">Téléphone</div><?php echo $this->etablissement->telephone; ?></div>
+				<div class="label">Téléphone</div>
+				<?= $this->etablissement->telephone; ?></div>
 			<div>
-				<div class="label">Fax</div><?php echo $this->etablissement->fax; ?></div>
+				<div class="label">Fax</div>
+				<?= $this->etablissement->fax; ?></div>
 			<div>
-				<div class="label">Email</div><?php echo $this->etablissement->email; ?></div>
+				<div class="label">Email</div>
+				<?= $this->etablissement->email; ?></div>
 			<div>
-				<div class="label">Directeur</div><?php echo $this->etablissement->directeur; ?></div>
+				<div class="label">Directeur</div>
+				<?= $this->etablissement->directeur; ?></div>
 			<div>
-				<div class="label">Horaires du matin</div>de <?php echo $this->etablissement->hMatin; ?> à <?php echo $this->etablissement->hMidi; ?></div>
+				<div class="label">Horaires du matin</div>
+				de <?= $this->etablissement->hMatin; ?> 
+				à <?= $this->etablissement->hMidi; ?></div>
 			<div>
-				<div class="label">de l'après-midi</div>de <?php echo $this->etablissement->hAMidi; ?> à <?php echo $this->etablissement->hSoir; ?></div>
-				
+				<div class="label">de l'après-midi</div>
+				de <?= $this->etablissement->hAMidi; ?> 
+				à <?= $this->etablissement->hSoir; ?></div>
+
 		</fieldset>
 <?php endif;?>
     </div>

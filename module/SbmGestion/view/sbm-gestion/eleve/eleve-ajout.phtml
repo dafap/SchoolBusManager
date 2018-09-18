@@ -8,8 +8,8 @@
  * @filesource eleve-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 13 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -17,79 +17,88 @@ $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout.js'));
 $this->inlineScript()->captureStart();
 ?>
 js_ajout.montreGa();
-<?php 
+<?php
 $this->inlineScript()->captureEnd();
-//================= Fin JS =======================================================
+// ================= Fin JS =======================================================
 // le retour se fait dans l'action eleveAjoutAction() pour décharger le redirectorToOrigin()
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-ajout',
-    'page' => $this->page
-));
-$hiddens = array();
-$actions = array(
-    'cancel' => array(
+$url_ici = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-ajout',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
-        'formaction' => $url_ici, // traitement de cancel pour un redirectToOrigin()->back() proprement
+        'formaction' => $url_ici, // traitement de cancel pour un redirectToOrigin()->back()
+                                   // proprement
         'title' => 'Retour'
-    )
-);
+    ]
+];
 if (! $this->form instanceof \Zend\Form\FormInterface) {
     try {
         $responsable2Id = $this->data->responsable2Id;
     } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {
         $responsable2Id = null;
     }
-    $hiddens = array(
+    $hiddens = [
         'eleveId' => $this->data->eleveId,
         'nom' => $this->data->nom,
         'prenom' => $this->data->prenom,
         'dateN' => $this->data->dateN,
         'responsable1Id' => $this->data->responsable1Id,
         'responsable2Id' => $responsable2Id
-    );
-    $url_nouveau = $this->url('sbmgestion/eleve', array(
-        'action' => 'eleve-ajout22',
-        'page' => $this->page
-    ));
-    $url_reprise = $this->url('sbmgestion/eleve', array(
-        'action' => 'eleve-ajout21',
-        'page' => $this->page
-    ));
-    $actions['nouveau'] = array(
+    ];
+    $url_nouveau = $this->url('sbmgestion/eleve',
+        [
+            'action' => 'eleve-ajout22',
+            'page' => $this->page
+        ]);
+    $url_reprise = $this->url('sbmgestion/eleve',
+        [
+            'action' => 'eleve-ajout21',
+            'page' => $this->page
+        ]);
+    $actions['nouveau'] = [
         'class' => 'fam-basket-add',
         'formaction' => $url_nouveau,
         'title' => 'Nouvel élève'
-    );
+    ];
 }
 ?>
 <h1>Création d'un nouvel élève</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<?php if ($this->form instanceof \Zend\Form\FormInterface) :?>
 	<div id="fiche-inner">	
-<?php
-    echo $this->form()->openTag($this->form);
-    echo $this->formHidden($this->form->get('eleveId'));
-    echo $this->formHidden($this->form->get('csrf'));
-    ?>
+    <?= $this->form()->openTag($this->form);?>
+    <?= $this->formHidden($this->form->get('eleveId'));?>
+    <?= $this->formHidden($this->form->get('csrf'));?>    
         <fieldset id="commun" class="sbm-page1">
 			<div id="commun-col1">
-				<div id="wrapper-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom'));?></div>
-				<div id="wrapper-prenom" class="row-inner edit"><?php echo $this->formRow($this->form->get('prenom'));?></div>
-				<div id="wrapper-dateN" class="row-inner edit"><?php echo $this->formRow($this->form->get('dateN'));?></div>
-				<div id="wrapper-responsable1Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable1Id'));?></div>
-				<div id="wrapper-ga" class="row-inner edit"><?php echo $this->formRow($this->form->get('ga'));?></div>
-				<div id="wrapper-responsable2Id" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsable2Id'));?></div>
+				<div id="wrapper-nom" class="row-inner edit">
+				<?= $this->formRow($this->form->get('nom'));?></div>
+				<div id="wrapper-prenom" class="row-inner edit">
+				<?= $this->formRow($this->form->get('prenom'));?></div>
+				<div id="wrapper-dateN" class="row-inner edit">
+				<?= $this->formRow($this->form->get('dateN'));?></div>
+				<div id="wrapper-responsable1Id" class="row-inner edit">
+				<?= $this->formRow($this->form->get('responsable1Id'));?></div>
+				<div id="wrapper-ga" class="row-inner edit">
+				<?= $this->formRow($this->form->get('ga'));?></div>
+				<div id="wrapper-responsable2Id" class="row-inner edit">
+				<?= $this->formRow($this->form->get('responsable2Id'));?></div>
 				<div id="eleve-edit-buttons" class="row-inner edit">
-                    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+                    <?= $this->formSubmit($this->form->get('submit'))?>
+                    <?= $this->formSubmit($this->form->get('cancel'));?>
                 </div>
 			</div>
 		</fieldset>
-<?php echo $this->form()->closeTag();?>
+<?= $this->form()->closeTag();?>
     </div>
     <?php else :?>
     <div id="liste-inner">
@@ -106,28 +115,30 @@ if (! $this->form instanceof \Zend\Form\FormInterface) {
 					<th>Commune</th>
 					<th></th>
 				</tr>
-			<?php foreach($eleves as $test => $eleve): ?>
-				<tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-					<td class="numero"><?php echo $eleve['numero']; ?></td>
-					<td class="nom"><?php echo $this->escapeHtml($eleve['nom']); ?></td>
-					<td class="prenom"><?php echo $this->escapeHtml($eleve['prenom']); ?></td>
-					<td class="dateN"><?php echo $this->escapeHtml($eleve['dateN']); ?></td>
-					<td class="responsable1"><?php echo $this->escapehtml($eleve['responsable1NomPrenom']); ?></td>
-					<td class="commune1"><?php echo $this->escapehtml($eleve['communeR1']); ?></td>
-					<td class="responsable2"><?php echo $this->escapehtml($eleve['responsable2NomPrenom']); ?></td>
-					<td class="commune2"><?php echo $this->escapeHtml($eleve['communeR2']);?></td>
+			<?php foreach($this->eleves as $eleve): ?>
+				<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="numero"><?= $eleve['numero']; ?></td>
+					<td class="nom"><?= $this->escapeHtml($eleve['nom']); ?></td>
+					<td class="prenom"><?= $this->escapeHtml($eleve['prenom']); ?></td>
+					<td class="dateN"><?= $this->escapeHtml($eleve['dateN']); ?></td>
+					<td class="responsable1"><?= $this->escapehtml($eleve['responsable1NomPrenom']); ?></td>
+					<td class="commune1"><?= $this->escapehtml($eleve['communeR1']); ?></td>
+					<td class="responsable2"><?= $this->escapehtml($eleve['responsable2NomPrenom']); ?></td>
+					<td class="commune2"><?= $this->escapeHtml($eleve['communeR2']);?></td>
 					<td><?php
         $info = $eleve['nom'] . ' ' . $eleve['prenom'];
-        echo $this->listeLigneActions($eleve['eleveId'], array(
-            'eleveId' => $eleve['eleveId'],
-            'info' => $info
-        ), array(
-            'reprendre' => array(
-                'class' => 'fam-basket-put',
-                'formaction' => $url_reprise,
-                'title' => 'Choisir ' . $info
-            )
-        ));
+        echo $this->listeLigneActions($eleve['eleveId'],
+            [
+                'eleveId' => $eleve['eleveId'],
+                'info' => $info
+            ],
+            [
+                'reprendre' => [
+                    'class' => 'fam-basket-put',
+                    'formaction' => $url_reprise,
+                    'title' => 'Choisir ' . $info
+                ]
+            ]);
         ?></td>
 				</tr>
 			<?php endforeach;?>

@@ -16,9 +16,10 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2015
- * @version 2015-1
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
+use SbmBase\Model\StdLib;
 use SbmPaiement\Controller;
 use SbmPaiement\Listener;
 
@@ -31,7 +32,9 @@ return array(
         'resources' => array(
             'sbmpaiement' => array(
                 'allow' => array(
-                    'roles' => array('parent')
+                    'roles' => array(
+                        'parent'
+                    )
                 ),
                 'actions' => array(
                     'notification' => array(
@@ -57,7 +60,7 @@ return array(
                     )
                 )
             )
-        ),
+        )
     ),
     'paginator' => array(
         'count_per_page' => array(
@@ -101,7 +104,7 @@ return array(
     ),
     'sbm' => array(
         'paiement' => array(
-            'path_filelog' => realpath(__DIR__ . '/../../../data/logs')
+            'path_filelog' => realpath(StdLib::findParentPath(__DIR__, 'data/logs'))
         )
     )
 );

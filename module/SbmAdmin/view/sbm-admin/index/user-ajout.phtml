@@ -9,8 +9,8 @@
  * @filesource user-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -32,30 +32,35 @@ $actions = [
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-	<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('userId'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
+    	<?= $this->form()->openTag($this->form);?>
+    	<?= $this->formHidden($this->form->get('userId'));?>
+    	<?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset id="user" class="page1">
 			<div class="clearfix">
-				<div class="float-left col1"><?php echo $this->formRow($this->form->get('titre'));?></div>
-				<div class="float-left colsuiv"><?php echo $this->formRow($this->form->get('nom'));?></div>
-				<div class="float-left colsuiv"><?php echo $this->formRow($this->form->get('prenom'));?></div>
+				<div class="float-left col1"><?= $this->formRow($this->form->get('titre'));?></div>
+				<div class="float-left colsuiv"><?= $this->formRow($this->form->get('nom'));?></div>
+				<div class="float-left colsuiv"><?= $this->formRow($this->form->get('prenom'));?></div>
 			</div>
-			<div class="col1"><?php echo $this->formRow($this->form->get('email'));?></div>
-			<div class="col1"><?php echo $this->formRow($this->form->get('categorieId'));?></div>
-			<div class="col1"><?php echo $this->formRow($this->form->get('tokenalive'));?></div>
-			<div class="col1"><?php echo $this->formRow($this->form->get('confirme'));?></div>
-			<div class="col1"><?php echo $this->formRow($this->form->get('active'));?></div>
-			<div class="col1"><?php echo $this->formRow($this->form->get('selection'));?></div>
-			<div id="wrapper-commentaire"><?php echo $this->formRow($this->form->get('note'));?></div>
+			<div class="col1">
+				<?= $this->formRow($this->form->get('email'));?></div>
+			<div class="col1">
+				<?= $this->formRow($this->form->get('categorieId'));?></div>
+			<div class="col1">
+				<?= $this->formRow($this->form->get('tokenalive'));?></div>
+			<div class="col1">
+				<?= $this->formRow($this->form->get('confirme'));?></div>
+			<div class="col1">
+				<?= $this->formRow($this->form->get('active'));?></div>
+			<div class="col1">
+				<?= $this->formRow($this->form->get('selection'));?></div>
+			<div id="wrapper-commentaire"><?= $this->formRow($this->form->get('note'));?></div>
 			<div id="user-buttons">  
-        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+        		<?= $this->formSubmit($this->form->get('submit'));?>
+        		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
 	</div>
 	<div id="fiche-footer"></div>
