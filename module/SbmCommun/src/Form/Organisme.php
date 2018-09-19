@@ -8,8 +8,8 @@
  * @filesource Organisme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -22,252 +22,266 @@ class Organisme extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('organisme');
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'name' => 'organismeId',
             'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-nom',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Nom de l\'organisme',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresse1',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-adresseL1',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Adresse',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'adresse2',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-adresseL2',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Adresse (suite)',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'codePostal',
-            'type' => 'SbmCommun\Form\Element\CodePostal',
-            'attributes' => array(
-                'id' => 'organisme-codepostal',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code postal',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'communeId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'organisme-communeId',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une commune',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'telephone',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-telephone',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Téléphone',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'fax',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-fax',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Fax',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'email',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-email',
-                'class' => 'sbm-width-50c'
-            ),
-            'options' => array(
-                'label' => 'Email',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'siret',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-siret',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'SIRET',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'naf',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-naf',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'NAF',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'tvaIntraCommunautaire',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'organisme-tvaIntraCommunautaire',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'TVA intra communautaire',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'organisme-submit',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'organisme-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-nom',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Nom de l\'organisme',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresse1',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-adresseL1',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresse2',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-adresseL2',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Adresse (suite]',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'codePostal',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'organisme-codepostal',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'organisme-communeId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une commune',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'telephone',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-telephone',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Téléphone',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'fax',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-fax',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Fax',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'email',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-email',
+                    'class' => 'sbm-width-50c'
+                ],
+                'options' => [
+                    'label' => 'Email',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'siret',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-siret',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'SIRET',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'naf',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-naf',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'NAF',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'tvaIntraCommunautaire',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'organisme-tvaIntraCommunautaire',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'TVA intra communautaire',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'organisme-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'organisme-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'nom' => array(
+        return [
+            'nom' => [
                 'name' => 'nom',
                 'required' => true
-            ),
-            'codePostal' => array(
+            ],
+            'codePostal' => [
                 'name' => 'codePostal',
                 'required' => true
-            ),
-            'communeId' => array(
+            ],
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => true
-            ),
-             'telephone' => array(
+            ],
+            'telephone' => [
                 'name' => 'telephone',
                 'required' => true
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'name' => 'email',
                 'required' => true
-            )
-        );
+            ]
+        ];
     }
 }

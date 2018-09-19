@@ -8,54 +8,57 @@
  * @package SbmPortail/config
  * @filesource module.config.php
  * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2015
- * @version 2015-1
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmPortail\Controller;
 
-return array(
-    'acl' => array(
-        'resources' => array(
-            'sbmportail' => array(
-                'allow' => array(
-                    'roles' => array(
-                        'transporteur', 'etablissement', 'secretariat', 'gestion'
-                    )
-                )
-            )
-        )
-    ),
-    'controllers' => array(
-        'factories' => array(
+return [
+    'acl' => [
+        'resources' => [
+            'sbmportail' => [
+                'allow' => [
+                    'roles' => [
+                        'transporteur',
+                        'etablissement',
+                        'secretariat',
+                        'gestion'
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'controllers' => [
+        'factories' => [
             Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'sbmportail' => array(
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'sbmportail' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/portail[/:action[/:page][/:id]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',
                         'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmPortail',
                         'controller' => Controller\IndexController::class,
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            )
-        )
-    ),
-    'view_manager' => array(
-        'template_map' => array(),
-        'template_path_stack' => array(
+            ]
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [],
+        'template_path_stack' => [
             __DIR__ . '/../view'
-        )
-    )
-);
+        ]
+    ]
+];

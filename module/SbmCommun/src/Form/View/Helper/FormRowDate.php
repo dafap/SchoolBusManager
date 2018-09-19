@@ -3,7 +3,7 @@
  * ViewHelper permettant d'afficher un label suivi d'un DateSelect avec les 
  * messages d'erreurs, sans fieldset, à déclarer dans module.config.php comme 
  * ceci : 
- * 'view_helpers' => array('invokables' => array('formRowDate' => 'SbmCommun\Form\View\Helper\FormRowDate'),)
+ * 'view_helpers' => ['invokables' => ['formRowDate' => 'SbmCommun\Form\View\Helper\FormRowDate'),)
  *
  * Usage dans une vue : echo $this->formRowDate($elementDate);
  * 

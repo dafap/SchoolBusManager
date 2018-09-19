@@ -15,7 +15,7 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_retour = $this->url('sbmgestion/gestioneleve');
-$hiddens = array();
+$hiddens =[];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -90,7 +90,7 @@ echo $this->flashMessenger()->render('default');
         );
         ?>
                 <tr
-					class="<?php echo $this->cycle(array('even', 'odd'))->next(); ?>">
+					class="<?php echo $this->cycle(['even', 'odd'))->next(); ?>">
 					<td><?php echo $this->escapeHtml($row['nom'] . ' ' . $row['prenom']);?></td>
 					<td><?php echo $this->escapeHtml($row['etablissement'] . ' - ' . $row['communeEtablissement']);?></td>
 					<td><?php echo implode('<br>', array($this->escapeHtml($row['adresseR1L1']), $this->escapeHtml($row['adresseR1L2'])));?></td>

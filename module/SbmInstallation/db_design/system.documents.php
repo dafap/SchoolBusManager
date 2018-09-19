@@ -130,6 +130,6 @@ return array(
         'collate' => 'utf8_unicode_ci'
     ),
     //'data' => include __DIR__ . '/data/data.system.documents.php'
-    //'data' => array('after' => array(), 'include' => __DIR__ . '/data/data.documents.php')
+    //'data' => array('after' =>[], 'include' => __DIR__ . '/data/data.documents.php')
     'data' => __DIR__ . '/data/data.system.documents.php'
 );

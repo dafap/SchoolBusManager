@@ -8,8 +8,8 @@
  * @filesource EtablissementService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2015
- * @version 2015-1
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -29,110 +29,118 @@ class EtablissementService extends AbstractSbmForm
         $this->select = $select;
         parent::__construct($param);
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add([
             'name' => 'origine',
             'type' => 'hidden'
-        ));
+        ]);
         if ($select == 'service') {
-            $this->add(array(
-                'name' => 'etablissementId',
-                'type' => 'hidden',
-                'attributes' => array(
-                    'id' => 'etablissementIdElement'
-                )    
-            ));
-            $this->add(array(
-                'name' => 'serviceId',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => array(
-                    'id' => 'serviceIdElement',
-                    'autofocus' => 'autofocus',
-                    'class' => 'sbm-width-45c'
-                ),
-                'options' => array(
-                    'label' => 'Service',
-                    'label_attributes' => array(
-                        'class' => 'sbm-label'
-                    ),
-                    'empty_option' => 'Choisissez un service',
-                    'error_attributes' => array(
-                        'class' => 'sbm-error'
-                    )
-                )
-            ));
+            $this->add(
+                [
+                    'name' => 'etablissementId',
+                    'type' => 'hidden',
+                    'attributes' => [
+                        'id' => 'etablissementIdElement'
+                    ]
+                ]);
+            $this->add(
+                [
+                    'name' => 'serviceId',
+                    'type' => 'Zend\Form\Element\Select',
+                    'attributes' => [
+                        'id' => 'serviceIdElement',
+                        'autofocus' => 'autofocus',
+                        'class' => 'sbm-width-45c'
+                    ],
+                    'options' => [
+                        'label' => 'Service',
+                        'label_attributes' => [
+                            'class' => 'sbm-label'
+                        ],
+                        'empty_option' => 'Choisissez un service',
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]);
         } else {
-            $this->add(array(
-                'name' => 'serviceId',
-                'type' => 'hidden',
-                'attributes' => array(
-                    'id' => 'serviceIdElement'
-                )
-            ));
-            $this->add(array(
-                'name' => 'etablissementId',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => array(
-                    'id' => 'etablissementIdElement',
-                    'autofocus' => 'autofocus',
-                    'class' => 'sbm-width-45c'
-                ),
-                'options' => array(
-                    'label' => 'Etablissement',
-                    'label_attributes' => array(
-                        'class' => 'sbm-label'
-                    ),
-                    'empty_option' => 'Choisissez un établissement',
-                    'error_attributes' => array(
-                        'class' => 'sbm-error'
-                    )
-                )
-            ));
+            $this->add(
+                [
+                    'name' => 'serviceId',
+                    'type' => 'hidden',
+                    'attributes' => [
+                        'id' => 'serviceIdElement'
+                    ]
+                ]);
+            $this->add(
+                [
+                    'name' => 'etablissementId',
+                    'type' => 'Zend\Form\Element\Select',
+                    'attributes' => [
+                        'id' => 'etablissementIdElement',
+                        'autofocus' => 'autofocus',
+                        'class' => 'sbm-width-45c'
+                    ],
+                    'options' => [
+                        'label' => 'Etablissement',
+                        'label_attributes' => [
+                            'class' => 'sbm-label'
+                        ],
+                        'empty_option' => 'Choisissez un établissement',
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]);
         }
-        $this->add(array(
-            'name' => 'stationId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'stationIdElement',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Station desservant l\'établissement',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une station',
-                'disable_inarray_validator' => true,
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'station-submit',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'station-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'stationId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'stationIdElement',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Station desservant l\'établissement',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une station',
+                    'disable_inarray_validator' => true,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'station-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'station-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 }

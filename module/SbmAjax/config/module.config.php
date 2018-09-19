@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2016
- * @version 2016-2
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 use SbmAjax\Controller\Service;
 
@@ -20,7 +20,6 @@ $controllers = [
     \SbmAjax\Controller\TransportController::ROUTE => Service\TransportControllerFactory::class,
     \SbmAjax\Controller\FinanceController::ROUTE => Service\FinanceControllerFactory::class,
     \SbmAjax\Controller\ParentController::ROUTE => Service\ParentControllerFactory::class
-    
 ];
 $routes = [];
 foreach ($controllers as $key => $value) {
@@ -41,38 +40,51 @@ foreach ($controllers as $key => $value) {
         'may_terminate' => false
     ];
 }
+unset($value);
+
 return [
     'acl' => [
         'resources' => [
             \SbmAjax\Controller\AdminController::ROUTE => [
                 'allow' => [
-                    'roles' => ['admin']
+                    'roles' => [
+                        'admin'
+                    ]
                 ]
             ],
             \SbmAjax\Controller\EleveController::ROUTE => [
                 'allow' => [
-                    'roles' => ['parent']
+                    'roles' => [
+                        'parent'
+                    ]
                 ]
             ],
             \SbmAjax\Controller\FinanceController::ROUTE => [
                 'allow' => [
-                    'roles' => ['gestion']
+                    'roles' => [
+                        'gestion'
+                    ]
                 ]
             ],
             \SbmAjax\Controller\TransportController::ROUTE => [
                 'allow' => [
-                    'roles' => ['gestion']
+                    'roles' => [
+                        'gestion'
+                    ]
                 ]
             ],
             \SbmAjax\Controller\ParentController::ROUTE => [
                 'allow' => [
-                    'roles' => ['parent']
+                    'roles' => [
+                        'parent'
+                    ]
                 ]
             ]
-        ],
+        ]
     ],
     'controllers' => [
-        // de préférence dans ce module, commencer les noms par sbmajax (pour des routes commençant par ajax) et les laisser en minuscules
+        // de préférence dans ce module, commencer les noms par sbmajax (pour des routes commençant
+        // par ajax) et les laisser en minuscules
         'factories' => $controllers
     ],
     'router' => [
@@ -82,9 +94,9 @@ return [
         'template_map' => [],
         'template_path_stack' => [
             __DIR__ . '/../view'
-        ],
-        //'strategies' => [
-        //    'ViewJsonStrategy'
-        //]
+        ]
+        // 'strategies' => [
+        // 'ViewJsonStrategy'
+        // ]
     ]
 ];

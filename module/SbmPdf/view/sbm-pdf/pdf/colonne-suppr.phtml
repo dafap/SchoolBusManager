@@ -7,8 +7,8 @@
  * @filesource colonne-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2015
- * @version 2015-1
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 ?>
 <h1>Suppression d'une colonne dans un document Pdf</h1>
@@ -16,16 +16,14 @@
 	<p>Vous avez demandé la suppression de la colonne suivante :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li>Colonne n° : <?php echo $this->data->ordinal_position; ?></li>
-			<li>En-tête de la colonne : <?php echo $this->escapeHtml($this->data->thead); ?></li>
-			<li>Contenu de la colonne : <?php echo $this->escapeHtml($this->data->tbody); ?></li>
-			<li>Dans la dernière ligne: <?php echo $this->escapeHtml($this->data->tfoot); ?></li>
+			<li>Colonne n° : <?= $this->data->ordinal_position; ?></li>
+			<li>En-tête de la colonne : <?= $this->escapeHtml($this->data->thead); ?></li>
+			<li>Contenu de la colonne : <?= $this->escapeHtml($this->data->tbody); ?></li>
+			<li>Dans la dernière ligne: <?= $this->escapeHtml($this->data->tfoot); ?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
 </div>

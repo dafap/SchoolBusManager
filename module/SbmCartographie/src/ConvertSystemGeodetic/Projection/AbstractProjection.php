@@ -15,14 +15,14 @@
  * @filesource AbstractProjection.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mars 2015
- * @version 2015-1
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
+use SbmCartographie\ConvertSystemGeodetic\Exception;
 use SbmCartographie\ConvertSystemGeodetic\Ellipsoide\Ellipsoide;
 use SbmCartographie\Model\Point;
-use SbmCartographie\ConvertSystemGeodetic\Exception;
 
 abstract class AbstractProjection
 {
@@ -45,10 +45,10 @@ abstract class AbstractProjection
      *
      * @var array
      */
-    protected $axe = array(
+    protected $axe = [
         'longitude' => 'est',
         'latitude' => 'nord'
-    );
+    ];
 
     /**
      * Nom de la projection
@@ -74,7 +74,8 @@ abstract class AbstractProjection
     protected $latitude_of_origin;
 
     /**
-     * Longitude en unités indiquées du centre de la projection par rapport au méridien origine (Greenwich)
+     * Longitude en unités indiquées du centre de la projection par rapport au méridien origine
+     * (Greenwich)
      *
      * @var float
      */
@@ -176,7 +177,7 @@ abstract class AbstractProjection
      *
      * @var array
      */
-    protected $paramsToWgs84 = array(
+    protected $paramsToWgs84 = [
         0,
         0,
         0,
@@ -184,10 +185,11 @@ abstract class AbstractProjection
         0,
         0,
         0
-    );
+    ];
 
     /**
-     * Position du méridien d'origine par rapport au méridien de Greenwich (exprimé en degrés décimaux)
+     * Position du méridien d'origine par rapport au méridien de Greenwich (exprimé en degrés
+     * décimaux)
      *
      * @var float
      */
@@ -196,7 +198,7 @@ abstract class AbstractProjection
     /**
      * Place l'ellipsoide sur laquelle porte les calculs de la projection
      *
-     * @param Ellipsoide $e            
+     * @param Ellipsoide $e
      */
     protected function setEllipsoide(Ellipsoide $e)
     {
@@ -356,18 +358,19 @@ abstract class AbstractProjection
     }
 
     /**
-     * Initialise, si nécessaire, les propriétés lambda_0, phi_0, phi_1 et phi_2 en radians en tenant compte de l'unité de la projection.
+     * Initialise, si nécessaire, les propriétés lambda_0, phi_0, phi_1 et phi_2 en radians en
+     * tenant compte de l'unité de la projection.
      *
      * @throws Exception
      */
     private function initUniteDGR()
     {
-        $prp = array(
+        $prp = [
             'central_meridian' => 'lambda_0',
             'latitude_of_origin' => 'phi_0',
             'standard_parallel_1' => 'phi_1',
             'standard_parallel_2' => 'phi_2'
-        );
+        ];
         foreach ($prp as $vu => $vr) {
             if (! isset($this->{$vu}))
                 continue;
@@ -382,7 +385,9 @@ abstract class AbstractProjection
                     $this->{$vr} = $this->{$vu};
                     break;
                 default:
-                    throw new Exception(__METHOD__ . ' - Unité non conforme. On attend degré, grade ou radian.');
+                    throw new Exception(
+                        __METHOD__ .
+                        ' - Unité non conforme. On attend degré, grade ou radian.');
                     break;
             }
         }
@@ -393,7 +398,8 @@ abstract class AbstractProjection
     }
 
     /**
-     * Calcul de la latitude isométrique sur un ellipsoïde de première excentricité e au point de latitude $phi
+     * Calcul de la latitude isométrique sur un ellipsoïde de première excentricité e au point de
+     * latitude $phi
      *
      * @param float $phi
      *            $phi est en radians
@@ -450,7 +456,8 @@ abstract class AbstractProjection
     }
 
     /**
-     * Transformation de coordonnées géographiques en coordonnées en projection conique conforme de Lambert
+     * Transformation de coordonnées géographiques en coordonnées en projection conique conforme de
+     * Lambert
      *
      * @param float $lambda
      *            en radians
@@ -464,14 +471,16 @@ abstract class AbstractProjection
         $li = $this->alg0001($phi);
         $c_exp_n_li = $this->getC() * exp(- $this->getN() * $li);
         $n_lambda_lambdaC = $this->getN() * ($lambda - $this->getLambdaC());
-        return new Point($this->getXs() + $c_exp_n_li * sin($n_lambda_lambdaC), $this->getYs() - $c_exp_n_li * cos($n_lambda_lambdaC));
+        return new Point($this->getXs() + $c_exp_n_li * sin($n_lambda_lambdaC),
+            $this->getYs() - $c_exp_n_li * cos($n_lambda_lambdaC));
     }
 
     /**
-     * Transformation de coordonnées en projection conique conforme de Lambert, en coordonnées géographiques
+     * Transformation de coordonnées en projection conique conforme de Lambert, en coordonnées
+     * géographiques
      *
-     * @param float $x            
-     * @param float $y            
+     * @param float $x
+     * @param float $y
      *
      * @return \SbmCartographie\Model\Point
      */
@@ -482,7 +491,8 @@ abstract class AbstractProjection
         $R = sqrt($x1 * $x1 + $y1 * $y1);
         $gama = atan2($x1, $y1);
         $li = - log(abs($R / $this->getC())) / $this->getN();
-        return new Point($this->getLambdaC() + $gama / $this->getN(), $this->alg0002($li), 0, 'radian');
+        return new Point($this->getLambdaC() + $gama / $this->getN(), $this->alg0002($li),
+            0, 'radian');
     }
 
     /**
@@ -500,16 +510,18 @@ abstract class AbstractProjection
     public function alg0009($lambda, $phi, $he = 0)
     {
         $grdNormale = $this->alg0021($phi);
-        return new Point(($grdNormale + $he) * cos($phi) * cos($lambda), ($grdNormale + $he) * cos($phi) * sin($lambda), ($grdNormale * (1 - $this->getECarre()) + $he) * sin($phi));
+        return new Point(($grdNormale + $he) * cos($phi) * cos($lambda),
+            ($grdNormale + $he) * cos($phi) * sin($lambda),
+            ($grdNormale * (1 - $this->getECarre()) + $he) * sin($phi));
     }
 
     /**
      * Transformation, pour un ellipsoïde donné, des coordonnées cartésiennes d’un point
      * en coordonnées géographiques ellipsoïdales par la méthode de Heiskanen-Moritz-Boucher.
      *
-     * @param float $x            
-     * @param float $y            
-     * @param float $z            
+     * @param float $x
+     * @param float $y
+     * @param float $z
      *
      * @return \SbmCartographie\Model\Point
      */
@@ -517,16 +529,20 @@ abstract class AbstractProjection
     {
         $lambda = atan2($y, $x);
         $module_xy = sqrt($x * $x + $y * $y);
-        $phi = atan2($z, $module_xy * (1 - $this->getA() * $this->getECarre() / sqrt($x * $x + $y * $y + $z * $z)));
+        $phi = atan2($z,
+            $module_xy *
+            (1 - $this->getA() * $this->getECarre() / sqrt($x * $x + $y * $y + $z * $z)));
         $delta = 1 + $eps;
         while ($delta > $eps) {
             $phi_1 = $phi;
             $tmp = sin($phi_1);
             $tmp = sqrt(1 - $this->getECarre() * $tmp * $tmp); // racine(1 - e² sin²($phi_1))
-            $phi = atan2($z * $tmp, $module_xy * $tmp - $this->getA() * $this->getECarre() * cos($phi_1));
+            $phi = atan2($z * $tmp,
+                $module_xy * $tmp - $this->getA() * $this->getECarre() * cos($phi_1));
             $delta = abs($phi - $phi_1);
         }
-        $he = $module_xy / cos($phi) - $this->getA() / sqrt(1 - $this->getECarre() * sin($phi) * sin($phi));
+        $he = $module_xy / cos($phi) -
+            $this->getA() / sqrt(1 - $this->getECarre() * sin($phi) * sin($phi));
         return new Point($lambda, $phi, $he, 'radian');
     }
 
@@ -552,15 +568,17 @@ abstract class AbstractProjection
      *            
      * @return \SbmCartographie\Model\Point
      */
-    public function alg0013(Point $point, $tx = 0, $ty = 0, $tz = 0, $k = 0, $rx = 0, $ry = 0, $rz = 0)
+    public function alg0013(Point $point, $tx = 0, $ty = 0, $tz = 0, $k = 0, $rx = 0, $ry = 0,
+        $rz = 0)
     {
         return $point->translate($tx, $ty, $tz);
-            //->ajoute($point->dilate(1 + $k))
-            //->ajoute($point->rotate($rx, $ry, $rz));
+        // ->ajoute($point->dilate(1 + $k))
+        // ->ajoute($point->rotate($rx, $ry, $rz));
     }
 
     /**
-     * Détermination des paramètres de calcul d’une projection Lambert conique conforme dans le cas tangent,
+     * Détermination des paramètres de calcul d’une projection Lambert conique conforme dans le cas
+     * tangent,
      * avec ou sans facteur d'échelle en fonction des paramètres de définition usuels
      *
      * Utilise les propriétés k0 et phi_0 de l'objet (ainsi que lambda_0, x0 et y0).
@@ -570,11 +588,14 @@ abstract class AbstractProjection
     public function alg0019()
     {
         $this->initUniteDGR();
-        if (!isset($this->k0) || !isset($this->phi_0) || !isset($this->lambda_0) || !isset($this->x0) || !isset($this->y0)) {
+        if (! isset($this->k0) || ! isset($this->phi_0) || ! isset($this->lambda_0) ||
+            ! isset($this->x0) || ! isset($this->y0)) {
             ob_start();
             var_dump($this);
             $dump_obj = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(__METHOD__ . " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas tangent.\n$dump_obj");
+            throw new Exception(
+                __METHOD__ .
+                " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas tangent.\n$dump_obj");
         }
         $this->lambda_c = $this->lambda_0;
         $this->n = sin($this->phi_0);
@@ -587,7 +608,7 @@ abstract class AbstractProjection
     /**
      * Calcul de la grande normale de l’ellipsoïde
      *
-     * @param float $phi            
+     * @param float $phi
      * @return float
      */
     public function alg0021($phi)
@@ -597,7 +618,8 @@ abstract class AbstractProjection
     }
 
     /**
-     * Détermination des paramètres de calcul d'une projection Lambert conique conforme dans le cas sécant.
+     * Détermination des paramètres de calcul d'une projection Lambert conique conforme dans le cas
+     * sécant.
      *
      * Utilise les propriétés phi_0, phi_1 et phi_2 de l'objet (ainsi que lambda_0, x0 et y0).
      *
@@ -606,12 +628,15 @@ abstract class AbstractProjection
     public function alg0054()
     {
         $this->initUniteDGR();
-        
-        if (!isset($this->phi_0) || !isset($this->phi_1) || !isset($this->phi_2) || !isset($this->lambda_0) || !isset($this->x0) || !isset($this->y0)) {
+
+        if (! isset($this->phi_0) || ! isset($this->phi_1) || ! isset($this->phi_2) ||
+            ! isset($this->lambda_0) || ! isset($this->x0) || ! isset($this->y0)) {
             ob_start();
             var_dump($this);
             $dump_obj = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(__METHOD__ . " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas sécant.\n$dump_obj");
+            throw new Exception(
+                __METHOD__ .
+                " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas sécant.\n$dump_obj");
         }
         $this->lambda_c = $this->lambda_0;
         $n1cos1 = $this->alg0021($this->phi_1) * cos($this->phi_1);
@@ -624,7 +649,8 @@ abstract class AbstractProjection
         if (abs($this->phi_0 - pi() / 2) < 1e-13) {
             $this->Ys = $this->y0;
         } else {
-            $this->Ys = $this->y0 + $this->C * exp(- $this->n * $this->alg0001($this->phi_0));
+            $this->Ys = $this->y0 +
+                $this->C * exp(- $this->n * $this->alg0001($this->phi_0));
         }
     }
 }

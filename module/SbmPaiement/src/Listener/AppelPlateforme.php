@@ -104,7 +104,7 @@ class AppelPlateforme implements ListenerAggregateInterface
         /*
          * // appel en post
          * $ch = curl_init($objectPlateforme->getUrl());
-         * $options = array(
+         * $options = [
          * CURLOPT_POST => 1,
          * CURLOPT_POSTFIELDS => $objectPlateforme->prepareAppel($params),
          * CURLOPT_HEADER => 0,

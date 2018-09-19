@@ -7,11 +7,13 @@
  * @filesource existe.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juin 2016
- * @version 2016-2.1.5
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
-$url_create = $this->url('sbmparentconfig', ['action' => 'create']);
-$id_ligne = 1; 
+$url_create = $this->url('sbmparentconfig', [
+    'action' => 'create'
+]);
+$id_ligne = 1;
 $boutons_ligne = [
     'cmoi' => [
         'class' => 'button ligne',
@@ -27,12 +29,11 @@ $bouton_autre = [
     ]
 ];
 $autre = [
-    'titre' => $identity['titre'],
-    'nom' => $identity['nom'],
-    'prenom' => $identity['prenom'],
-    'email' => $identity['email']
-]
-?>
+    'titre' => $this->identity['titre'],
+    'nom' => $this->identity['nom'],
+    'prenom' => $this->identity['prenom'],
+    'email' => $this->identity['email']
+]?>
 <h1>Création de la fiche du responsable</h1>
 <div id="liste-wrapper">
 	<div id="liste-header"></div>
@@ -40,40 +41,40 @@ $autre = [
 		<table>
 			<tbody>
 	        <?php foreach ($this->data as $responsable):?>
-	        <?php 
-	            $hiddens = [
-	                'responsableId' => $responsable->responsableId,
-	                'userId' => $responsable->userId,
-	                'nature' => $responsable->nature,
-	                'titre' => $responsable->titre,
-	                'nom' => $responsable->nom,
-	                'prenom' => $responsable->prenom,
-	                'titre2' => $responsable->titre2,
-	                'nom2' => $responsable->nom2,
-	                'prenom2' => $responsable->prenom2,
-	                'adresseL1' => $responsable->adresseL1,
-	                'adresseL2' => $responsable->adresseL2,
-	                'codePostal' => $responsable->codePostal,
-	                'communeId' => $responsable->communeId,
-	                'telephoneF' => $responsable->telephoneF,
-	                'telephoneP' => $responsable->telephoneP,
-	                'telephoneT' => $responsable->telephoneT,
-	                'email' => $this->identity['email']
-	            ];	            
-	        ?>
-	            <tr class='<?php echo $this->cycle(['even', 'odd'])->next();?>'>
+	        <?php
+            $hiddens = [
+                'responsableId' => $responsable->responsableId,
+                'userId' => $responsable->userId,
+                'nature' => $responsable->nature,
+                'titre' => $responsable->titre,
+                'nom' => $responsable->nom,
+                'prenom' => $responsable->prenom,
+                'titre2' => $responsable->titre2,
+                'nom2' => $responsable->nom2,
+                'prenom2' => $responsable->prenom2,
+                'adresseL1' => $responsable->adresseL1,
+                'adresseL2' => $responsable->adresseL2,
+                'codePostal' => $responsable->codePostal,
+                'communeId' => $responsable->communeId,
+                'telephoneF' => $responsable->telephoneF,
+                'telephoneP' => $responsable->telephoneP,
+                'telephoneT' => $responsable->telephoneT,
+                'email' => $this->identity['email']
+            ];
+            ?>
+	            <tr class='<?= $this->cycle(['even', 'odd'])->next();?>'>
 					<td>
-	                <?php echo sprintf('%s %s %s', $responsable->titre, $responsable->nom, $responsable->prenom);?>
+	                <?= sprintf('%s %s %s', $responsable->titre, $responsable->nom, $responsable->prenom);?>
 	                <br>
 	                <?php $adresse = implode(' ', [$responsable->adresseL1, $responsable->adresseL2]);?>
-	                <?php echo sprintf('%s %s %s', $adresse, $responsable->codePostal, $responsable->commune);?>
+	                <?= sprintf('%s %s %s', $adresse, $responsable->codePostal, $responsable->commune);?>
 	                </td>
-					<td><?php echo $this->listeLigneActions($id_ligne++, $hiddens, $boutons_ligne);?></td>
+					<td><?= $this->listeLigneActions($id_ligne++, $hiddens, $boutons_ligne);?></td>
 				</tr>
 	        <?php endforeach;?>
 	        </tbody>
 		</table>
-		<p><?php echo $this->listeLigneActions($id_ligne++, $autre, $bouton_autre);?></p>
+		<p><?= $this->listeLigneActions($id_ligne++, $autre, $bouton_autre);?></p>
 	</div>
 	<div id="liste-footer"></div>
 </div>

@@ -9,20 +9,30 @@
  * @filesource mdp-change.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 févr. 2015
- * @version 2015-1
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('csrf'));
-echo '<fieldset class="sbm-page1">';
-echo '<div id="commun-edit-mdp-old" class="row-inner edit">' . $this->formRow($this->form->get('mdp_old')) . '</div>';
-echo '<div id="commun-edit-mdp-new" class="row-inner edit">' . $this->formRow($this->form->get('mdp_new')) . '</div>';
-echo '<div id="commun-edit-mdp-ctrl" class="row-inner edit">' . $this->formRow($this->form->get('mdp_ctrl')) . '</div>';
-echo '<div id="commun-edit-buttons" class="row-inner edit">' . $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')) .'</div>';
-echo '</fieldset>';
-echo $this->form()->closeTag();
 ?>
+<?= $this->form()->openTag($this->form);?>
+<?= $this->formHidden($this->form->get('csrf'));?>
+<fieldset class="sbm-page1">
+	';
+	<div id="commun-edit-mdp-old" class="row-inner edit">
+		<?= $this->formRow($this->form->get('mdp_old'));?></div>
+	<div id="commun-edit-mdp-new" class="row-inner edit">
+		<?= $this->formRow($this->form->get('mdp_new'));?></div>
+	<div id="commun-edit-mdp-ctrl" class="row-inner edit">
+		<?= $this->formRow($this->form->get('mdp_ctrl'));?></div>
+	<div id="commun-edit-buttons" class="row-inner edit">
+		<?= $this->formSubmit($this->form->get('submit'));?>
+		<?= $this->formSubmit($this->form->get('cancel'));?></div>
+</fieldset>
+';
+<?= $this->form()->closeTag();?>
 <div class="sbm-description">
-  <p>Donnez d'abord votre mot de passe actuel, puis le nouveau mot de passe que vous souhaitez. Confirmez-le en l'écrivant à nouveau.</p>
-  <p class="important">Le mot de passe doit avoir au moins 6 caractères, au moins une lettre en majuscule, au moins une lettre en minuscule et au moins un chiffre.</p>
+	<p>Donnez d'abord votre mot de passe actuel, puis le nouveau mot de
+		passe que vous souhaitez. Confirmez-le en l'écrivant à nouveau.</p>
+	<p class="important">Le mot de passe doit avoir au moins 6 caractères,
+		au moins une lettre en majuscule, au moins une lettre en minuscule et
+		au moins un chiffre.</p>
 </div>

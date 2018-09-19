@@ -8,23 +8,25 @@
  * @filesource Affectation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2015
- * @version 2015-1
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
 class Affectation extends AbstractObjectData
 {
+
     public function __construct()
     {
         $this->setObjName(__CLASS__);
-        $this->setIdFieldName(array(
-            'millesime',
-            'eleveId',
-            'trajet',
-            'jours',
-            'sens',
-            'correspondance'
-        ));
+        $this->setIdFieldName(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'sens',
+                'correspondance'
+            ]);
     }
 }

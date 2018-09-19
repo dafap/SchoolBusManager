@@ -4,16 +4,16 @@
  *
  * Le fichier de configuration de ce module contient les paramètres de session dans un tableau 
  * de forme suivante :
- * array(
- *   'dafap_session' => array(
- *      'config' => array(
+ * [
+ *   'dafap_session' => [
+ *      'config' => [
  *         'classe => string,   // soit Zend\Session\Config\StandardConfig (par défaut), 
  *                              // soit Zend\Session\Config\SessionConfig
- *         'options' => array() // description de la configuration des sessions
+ *         'options' =>[] // description de la configuration des sessions
  *         ),
  *      'storage' => string,    // alias ou nom de classe enregistrée comme storage dans le service manager
  *      'save_handler' => null, // ou un \Zend\Session\SaveHandler\SaveHandlerInterface si nécessaire
- *      'validators' => array() // nom des classes enregistrées comme session validator
+ *      'validators' =>[] // nom des classes enregistrées comme session validator
  *   )
  * )
  *
@@ -22,7 +22,7 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 18 sept. 2018
  * @version 2018-2.4.5
  */
 namespace SbmAuthentification;

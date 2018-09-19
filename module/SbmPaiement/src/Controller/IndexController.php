@@ -7,14 +7,14 @@
  * contrôle du montant du (montant reçu en post = montant à payer pour les eleveIds enregistrés dans `appels`)
  * 
  * Modification le 10 mars 2017 dans formulaireAction() pour tenir compte de la tarification anneeComplete
- * ou 3eme trimestre. Changement de style des array().
+ * ou 3eme trimestre. Changement de style des[].
  * 
  * @project sbm
  * @package SbmPaiement/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 sept. 2018
+ * @date 18 sept. 2018
  * @version 2018-2.4.5
  */
 namespace SbmPaiement\Controller;

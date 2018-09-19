@@ -117,7 +117,7 @@ $data = $this->paginator->getCurrentItems();
     }
     $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
     ?>
-			    <tr class="<?php echo $this->cycle(array("even", "odd"));?>">
+			    <tr class="<?php echo $this->cycle(["even", "odd"));?>">
 					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $this->escapeHtml($row['nom']);?></td>
 					<td><?php echo $this->escapeHtml($row['prenom']);?></td>
@@ -136,6 +136,6 @@ $data = $this->paginator->getCurrentItems();
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 	</div>
 </div> 

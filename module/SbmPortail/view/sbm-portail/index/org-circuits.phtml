@@ -7,23 +7,24 @@
  * @filesource org-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2017
- * @version 2017-2.3.6
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_retour = $this->url('sbmportail');
-$url_ici = $this->url();
-$url_circuits = $this->url('sbmportail', array('action' => 'tr-circuits'));
+$url_circuits = $this->url('sbmportail', [
+    'action' => 'tr-circuits'
+]);
 
-$hiddens = array();
-$actions = array(
-    'cancel' => array(
+$hiddens = [];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 
 $this->paginator->setDefaultItemCountPerPage(6);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -32,14 +33,14 @@ $services = $this->paginator->getCurrentItems();
 <h1>Liste des circuits</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="services">
@@ -54,51 +55,57 @@ echo $this->flashMessenger()->render('default');
 					<th>Etablissements desservis</th>
 					<th></th>
 				</tr>
-        <?php foreach($services as $serviceId => $service): ?>
-        <?php
+        		<?php foreach($services as $serviceId => $service): ?>
+        		<?php
             // etablissements
-            $cr = array_walk($service['etablissements'], function(&$item, $key){
-                $item = implode (' - ', $item);
-            });
+            array_walk($service['etablissements'],
+                function (&$item, $key) {
+                    $item = implode(' - ', $item);
+                });
             $etablissements = implode("\n", $service['etablissements']);
-                          // tr css
-            $tr_css = $this->cycle(array(
+            // tr css
+            $tr_css = $this->cycle([
                 "even",
                 "odd"
-            ))->next();
-            ?>
-         <tr class="<?php echo $tr_css;?>">
-					<td class="serviceId"><?php echo $this->escapeHtml($serviceId); ?></td>
-					<td class="nom"><?php echo $this->escapeHtml($service['nom']); ?></td>
-					<td class="transporteur"><?php echo $this->escapeHtml($service['transporteur']); ?></td>
-					<td class="operateur"><?php echo $this->escapeHtml($service['operateur']); ?></td>
-					<td class="nb-places"><?php echo $service['nbPlaces'];?></td>
-					<td class="effectif"><?php echo empty($this->statServices[$serviceId]['total']) ? 0 : $this->statServices[$serviceId]['total'];?></td>
-					<td class="etablissements"><?php echo nl2br($this->escapeHtml($etablissements));?></td>
-					<td class="boutons">
-            <?php
-            $hiddens = array(
+            ])->next();
+            $hiddens = [
                 'serviceId' => $serviceId,
                 'info' => $serviceId . ' - ' . $service['nom'],
                 'origine' => 'org-circuits'
-            );
-            $buttons = array(
-                'horaires' => array(
+            ];
+            $buttons = [
+                'horaires' => [
                     'class' => 'fam-clock-red',
                     'formaction' => $url_circuits,
-                    'title' => 'Fiche horaires et informations',
-                )
-            );
-            echo $this->listeLigneActions($serviceId, $hiddens, $buttons);
+                    'title' => 'Fiche horaires et informations'
+                ]
+            ];
             ?>
-				</td>
+         		<tr class="<?= $tr_css;?>">
+					<td class="serviceId">
+						<?= $this->escapeHtml($serviceId); ?></td>
+					<td class="nom">
+						<?= $this->escapeHtml($service['nom']); ?></td>
+					<td class="transporteur">
+						<?= $this->escapeHtml($service['transporteur']); ?></td>
+					<td class="operateur">
+						<?= $this->escapeHtml($service['operateur']); ?></td>
+					<td class="nb-places">
+						<?= $service['nbPlaces'];?></td>
+					<td class="effectif">
+						<?= empty($this->statServices[$serviceId]['total']) ? 0 : $this->statServices[$serviceId]['total'];?></td>
+					<td class="etablissements">
+						<?= nl2br($this->escapeHtml($etablissements));?></td>
+					<td class="boutons">
+						<?= $this->listeLigneActions($serviceId, $hiddens, $buttons);?></td>
 				</tr>         
         <?php endforeach;?>
     </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 		<div class="criteres-wrapper"></div>
 	</div>
 </div>

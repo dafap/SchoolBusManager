@@ -27,84 +27,84 @@ if (! defined('MODULE_PAIEMENT_PATH')) {
     define('MODULE_PAIEMENT_PATH', dirname(__DIR__));
     // define('ROOT_PATH', dirname(dirname(MODULE_PATH)));
 }
-return array(
-    'acl' => array(
-        'resources' => array(
-            'sbmpaiement' => array(
-                'allow' => array(
-                    'roles' => array(
+return [
+    'acl' => [
+        'resources' => [
+            'sbmpaiement' => [
+                'allow' => [
+                    'roles' => [
                         'parent'
-                    )
-                ),
-                'actions' => array(
-                    'notification' => array(
-                        'allow' => array(
-                            'roles' => array(
+                    ]
+                ],
+                'actions' => [
+                    'notification' => [
+                        'allow' => [
+                            'roles' => [
                                 'guest'
-                            )
-                        )
-                    ),
-                    'liste' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'liste' => [
+                        'allow' => [
+                            'roles' => [
                                 'secretariat'
-                            )
-                        )
-                    ),
-                    'voir' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'voir' => [
+                        'allow' => [
+                            'roles' => [
                                 'secretariat'
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    ),
-    'paginator' => array(
-        'count_per_page' => array(
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'paginator' => [
+        'count_per_page' => [
             'nb_notifications' => 15
-        )
-    ),
-    'service_manager' => array(
-        'invokables' => array(
+        ]
+    ],
+    'service_manager' => [
+        'invokables' => [
             'Sbm\AppelPaiement' => 'SbmPaiement\Service\Trigger'
-        ),
-        'factories' => array(
+        ],
+        'factories' => [
             Listener\PaiementOK::class => Listener\Service\PaiementOKFactory::class,
             Listener\ScolariteOK::class => Listener\Service\ScolariteOKFactory::class
-        )
-    ),
-    'controllers' => array(
-        'factories' => array(
+        ]
+    ],
+    'controllers' => [
+        'factories' => [
             Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'sbmpaiement' => array(
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'sbmpaiement' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/paiement[/:action[/page/:page[/id/:id]]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',
                         'id' => '[0-9]+'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => 'SbmPaiement',
                         'controller' => Controller\IndexController::class,
                         'action' => 'liste'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            )
-        )
-    ),
-    'sbm' => array(
-        'paiement' => array(
+            ]
+        ]
+    ],
+    'sbm' => [
+        'paiement' => [
             'path_filelog' => realpath(StdLib::findParentPath(__DIR__, 'data/logs'))
-        )
-    )
-);
+        ]
+    ]
+];

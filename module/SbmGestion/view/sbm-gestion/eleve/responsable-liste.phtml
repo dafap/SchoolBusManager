@@ -83,7 +83,7 @@ $url_mail = $this->url('sbmgestion/eleve', array(
     'action' => 'responsable-mail'
 ));
 $url_retour = $this->url('sbmgestion');
-$hiddens = array();
+$hiddens =[];
 $menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
     'action' => 'responsable-liste'
 )), $url_rapports, 'fam-printer', null, $hiddens);
@@ -144,7 +144,7 @@ echo $this->flashMessenger()->render('default');
             $jsCallback .= sprintf("$modele\n", $responsable['responsableId'], $responsable['responsableId']);
             ?>
          <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"))->next();?>">
 					<td>
 					<?php if (!$ptOk) : ?>
 					   <i class="fam-error"></i>
@@ -235,7 +235,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 		<div class="criteres-wrapper responsables">
 <?php echo $this->form()->openTag($this->criteres_form);?>
 <?php echo $this->formCollection($this->criteres_form, true);?>

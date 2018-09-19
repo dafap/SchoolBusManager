@@ -72,11 +72,11 @@ $actions = array(
 					<th></th>
 				</tr>
             <?php foreach($this->data as $test => $service): ?>
-            <?php $nbInscrits = StdLib::getParamR(array($service['serviceId'], 'total'), $this->t_nb_inscrits, 0); ?>
+            <?php $nbInscrits = StdLib::getParamR([$service['serviceId'], 'total'), $this->t_nb_inscrits, 0); ?>
             <?php $exces = $service['nbPlaces'] < $nbInscrits; ?>
                 <tr
 					class="<?php
-                echo $this->cycle(array(
+                echo $this->cycle([
                     "even",
                     "odd"
                 ))->next();

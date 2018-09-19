@@ -53,7 +53,7 @@ class DocTables extends AbstractSbmTable
      * @throws Exception s'il n'y a pas d'enregistrement pour de $documentId
      *        
      * @param array $documentId
-     *            array('thead' => enregistrement, 'tbody' => enregistrement, 'tfoot' =>
+     *            ['thead' => enregistrement, 'tbody' => enregistrement, 'tfoot' =>
      *            enregistrement) où enregistrement est un tableau
      */
     public function getConfig($documentId, $ordinal_table)

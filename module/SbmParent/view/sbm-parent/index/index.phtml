@@ -7,14 +7,16 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmBase\Model\DateLib;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headScript()->appendFile(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $this->headScript()->captureStart();
 ?>
 $(document).ready(function($){
@@ -56,7 +58,9 @@ $url_payer = $this->url('sbmpaiement', [
 $url_horaires = $this->url('sbmparent', [
     'action' => 'horaires'
 ]);
-$url_modif_adresse = $this->url('sbmparentconfig',['action' => 'modif-adresse']);
+$url_modif_adresse = $this->url('sbmparentconfig', [
+    'action' => 'modif-adresse'
+]);
 $boutons_horaires = [
     'horaires' => [
         'class' => 'button ligne',
@@ -70,60 +74,64 @@ $boutons_horaires = [
 		style="margin-left: 30px; margin-right: 30px;"></div>
 </div>
 <div class="flashMessenger float-right">
-<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+	<?= $this->flashMessenger()->render('success');?>
+	<?= $this->flashMessenger()->render('warning');?>
+	<?= $this->flashMessenger()->render('error');?>
+	<?= $this->flashMessenger()->render('info');?>
+	<?= $this->flashMessenger()->render('default');?>
 </div>
 <h1>Espace parent</h1>
 <?php if ($nbInscrits == 0 && $nbPreinscrits == 0) : ?>
 <div id="parent-wrapper" class="explication">
 	<?php if ($etat == 0) :?>
 	<p>Vos enfants ne sont pas inscrits pour l'année scolaire prochaine.</p>
-	<p>Vous pourrez inscire vos enfants entre le <?php echo $this->etatSite['dateDebut']->format('d/m/Y');?> et le <?php echo $this->etatSite['dateFin']->format('d/m/Y');?>.</p>
-	<?php elseif ($etat == 1) :?>
+	<p>Vous pourrez inscire vos enfants entre le <?= $this->etatSite['dateDebut']->format('d/m/Y');?> 
+		et le <?= $this->etatSite['dateFin']->format('d/m/Y');?>.</p>
+<?php elseif ($etat == 1) :?>
 	<p>Vous n'avez pas encore d'enfant inscrit.</p>
-	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires puis effectuez le paiement en ligne ou adressez votre paiment au service transport de School Bus Manager avant le <?php echo $dateLimite; ?> afin de recevoir votre carte par courrier. Sinon, venez payer et retirer votre carte lors des permanences.</p>
+	<p>Inscrivez tous vos enfants qui doivent utiliser le service de transports scolaires 
+		puis effectuez le paiement en ligne ou adressez votre paiment au service transport 
+		de School Bus Manager avant le <?= $dateLimite; ?> afin de recevoir votre carte par courrier. 
+		Sinon, venez payer et retirer votre carte lors des permanences.</p>
 	<ul>
     <?php foreach ($this->permanences as $row) :?>
-        <li><?php echo "Pour les habitants de $row";?></li>
+        <li><?= "Pour les habitants de $row";?></li>
     <?php endforeach;?>
     </ul>
 	<p>
-		<b>Quelque soit votre moyen de paiement, les inscriptions ne seront prises en compte qu'une fois le paiement
-			enregistré.</b>
+		<b>Quelque soit votre moyen de paiement, les inscriptions ne seront
+			prises en compte qu'une fois le paiement enregistré.</b>
 	</p>
 	<p>
-		<b><i>Vérifiez votre adresse et vos numéros de téléphone</i></b> puis cliquez sur le bouton <b><i>Inscrire
-				un enfant</i></b> pour commencer les inscriptions.
+		<b><i>Vérifiez votre adresse et vos numéros de téléphone</i></b> puis
+		cliquez sur le bouton <b><i>Inscrire un enfant</i></b> pour commencer
+		les inscriptions.
 	</p>
 	<blockquote>
-	<?php echo implode('<br>', $this->adresse);?>
+	<?= implode('<br>', $this->adresse);?>
 	</blockquote>
 	<div class="menu clearfix">
     <?php
-        echo $this->listeZoneActions([], [
-            'modif-adresse' => [
-                'class' => 'accueil default',
-                'formaction' => $url_modif_adresse,
-                'value' => 'Modifier adresse ou téléphone'
-            ],
-            'inscrire' => [
-                'class' => 'accueil default',
-                'formaction' => $url_ajoutEleve,
-                'value' => 'Inscrire un enfant'
-            ]
-        ]);
+        echo $this->listeZoneActions([],
+            [
+                'modif-adresse' => [
+                    'class' => 'accueil default',
+                    'formaction' => $url_modif_adresse,
+                    'value' => 'Modifier adresse ou téléphone'
+                ],
+                'inscrire' => [
+                    'class' => 'accueil default',
+                    'formaction' => $url_ajoutEleve,
+                    'value' => 'Inscrire un enfant'
+                ]
+            ]);
         ?>
     </div>	
     <?php else :?>
     <p>Vous n'avez pas d'enfant inscrit.</p>
 	<p>Les inscriptions en ligne sont fermées.</p>
 	<p>Pour inscrire un enfant, prenez contact avec le service transport de
-		<?php echo $this->client['name'];?>. Au delà du <?php echo $dateLimite;?> les
+		<?= $this->client['name'];?>. Au delà du <?= $dateLimite;?> les
 		places seront attribuées à la rentrée en fonction des disponibilités
 		dans les cars.</p>
 	<?php endif;?>
@@ -154,22 +162,29 @@ echo $this->flashMessenger()->render('default');
             if ($nbAffectations) {
                 // construction des tableaux $service, $station et $circuit sans doublons
                 foreach ($reseau as $transport) {
-                    $service_transporteur = $transport['service1Id'] . ' - ' . $transport['transporteur1'];
-                    $station_commune = $transport['station1'] . ' - ' . $transport['commune1'];
+                    $service_transporteur = $transport['service1Id'] . ' - ' .
+                        $transport['transporteur1'];
+                    $station_commune = $transport['station1'] . ' - ' .
+                        $transport['commune1'];
                     $circuitId = $transport['circuit1Id'];
-                    $key = md5(sprintf('%s;%s;%d', $service_transporteur, $station_commune, $circuitId));
+                    $key = md5(
+                        sprintf('%s;%s;%d', $service_transporteur, $station_commune,
+                            $circuitId));
                     $service[$key] = $service_transporteur;
                     $station[$key] = $station_commune;
                     $circuit[$key] = $circuitId;
-                    $correspondance = ! empty($transport['service2Id']) || ! empty($transport['station2Id']);
+                    $correspondance = ! empty($transport['service2Id']) ||
+                        ! empty($transport['station2Id']);
                     if ($correspondance) {
                         if (! empty($transport['service2Id'])) {
-                            $service_transporteur = $transport['service2Id'] . ' - ' . $transport['transporteur2'];
+                            $service_transporteur = $transport['service2Id'] . ' - ' .
+                                $transport['transporteur2'];
                         } else {
                             $service_transporteur = '';
                         }
                         if (! empty($transport['station2Id'])) {
-                            $station_commune = $transport['station2'] . ' - ' . $transport['commune2'];
+                            $station_commune = $transport['station2'] . ' - ' .
+                                $transport['commune2'];
                         } else {
                             $station_commune = '';
                         }
@@ -178,7 +193,9 @@ echo $this->flashMessenger()->render('default');
                         } else {
                             $circuitId = 0;
                         }
-                        $key = md5(sprintf('%s;%s;%d', $service_transporteur, $station_commune, $circuitId));
+                        $key = md5(
+                            sprintf('%s;%s;%d', $service_transporteur, $station_commune,
+                                $circuitId));
                         $service[$key] = $service_transporteur;
                         $station[$key] = $station_commune;
                         $circuit[$key] = $circuitId;
@@ -194,10 +211,13 @@ echo $this->flashMessenger()->render('default');
             ])->next();
             $colonne1_4 = '<td %s' . $nbAffectations . '>' . $row['nom'] . '</td>';
             $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
-            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] . '</td>';
-            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['communeEtablissement'] . '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] .
+                '</td>';
+            $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['communeEtablissement'] .
+                '</td>';
             $nbCircuits = count($circuit);
-            // on prépare le code HTML avant pour ajuster les "rowspan" et les hiddens si nécessaire
+            // on prépare le code HTML avant pour ajuster les "rowspan" et les hiddens si
+            // nécessaire
             switch ($nbCircuits) {
                 case 0:
                     $colonne1_4 = str_replace(' %s' . $nbAffectations, '', $colonne1_4);
@@ -214,14 +234,17 @@ echo $this->flashMessenger()->render('default');
                             'circuit1Id' => $circuit[0],
                             'etablissementId' => $row['etablissementId']
                         ];
-                        $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
+                        $code_boutons = $this->listeLigneActions($row['eleveId'],
+                            $hiddens_horaires, $boutons_horaires);
                     }
                     $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité, scolarité
-                    $ligneHtml .= '<td>' . $service[0] . '</td><td>' . $station[0] . '</td>';
+                    $ligneHtml .= '<td>' . $service[0] . '</td><td>' . $station[0] .
+                        '</td>';
                     $ligneHtml .= '<td>' . $code_boutons . "</td></tr>\n";
                     break;
                 default:
-                    $colonne1_4 = str_replace('%s', 'rowspan="' . $nbCircuits . '"', $colonne1_4);
+                    $colonne1_4 = str_replace('%s', 'rowspan="' . $nbCircuits . '"',
+                        $colonne1_4);
                     $lignesTableau = [
                         ''
                     ];
@@ -233,8 +256,10 @@ echo $this->flashMessenger()->render('default');
                             $hiddens_horaires['circuit' . ($i + 1) . 'Id'] = $circuit[$i];
                         }
                         $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_4;
-                        $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' . $station[$i] . '</td>';
-                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les hiddens
+                        $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' .
+                            $station[$i] . '</td>';
+                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les
+                        // hiddens
                         if ($i > 0) {
                             $lignesTableau[$i] .= "</tr>\n";
                         }
@@ -244,9 +269,12 @@ echo $this->flashMessenger()->render('default');
                     if (empty($hiddens_horaires)) {
                         $lignesTableau[0] .= "<td></td></tr>\n"; // pas de bouton
                     } else {
-                        $hiddens_horaires['etablissementId'] = $row['etablissementId']; // ajout de l'etablissementId
-                        $code_boutons = $this->listeLigneActions($row['eleveId'], $hiddens_horaires, $boutons_horaires);
-                        $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' . $code_boutons . "</td></tr>\n";
+                        $hiddens_horaires['etablissementId'] = $row['etablissementId']; // ajout de
+                                                                                        // l'etablissementId
+                        $code_boutons = $this->listeLigneActions($row['eleveId'],
+                            $hiddens_horaires, $boutons_horaires);
+                        $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' .
+                            $code_boutons . "</td></tr>\n";
                     }
                     $ligneHtml = implode('', $lignesTableau);
                     break;
@@ -276,16 +304,21 @@ echo $this->flashMessenger()->render('default');
 					</tr>
             <?php
         foreach ($this->preinscrits as $row) {
-            $peutPayer = max($row['distanceR1'], $row['distanceR2']) >= 1.0 && ($row['district'] == 1 || $row['derogation'] == 1);
+            $peutPayer = max($row['distanceR1'], $row['distanceR2']) >= 1.0 &&
+                ($row['district'] == 1 || $row['derogation'] == 1);
             if ($row['selectionScolarite']) {
                 $montantUnitaire = 'en attente';
                 $enAttente = true;
             } elseif ($peutPayer) {
-                $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']], 'EUR');
+                $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']],
+                    'EUR');
                 $montantTotal += $this->tarifs[$row['tarifId']];
             } else {
-                $montantUnitaire = '<span class="exces" title="Prenez contact avec le service des transports de ';
-                $montantUnitaire .= $this->client['name'] . '">pas de droit au transport scolaire</span>';
+                $tmp = <<<EOT
+<span class="exces" title="Prenez contact avec le service des transports de %s>
+    pas de droit au transport scolaire</span>
+EOT;
+                $montantUnitaire = sprintf($tmp, $this->client['name']);
                 $enAttente = true;
             }
             $url_edit = $this->url('sbmparent', [
@@ -317,7 +350,8 @@ echo $this->flashMessenger()->render('default');
                 ];
                 if ($peutPayer) {
                     $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente';
-                    $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' . $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
+                    $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
+                        $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
                     $attenteTitle .= ' la liste des inscriptions à payer';
                     $buttons['attente'] = [
                         'class' => 'button default left-10px',
@@ -330,18 +364,28 @@ echo $this->flashMessenger()->render('default');
                 $buttons = [];
             }
             $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
-            $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>';
+            $modeleligne = <<<EOT
+<tr class="%s">
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+</tr>
+EOT;
             echo sprintf($modeleligne, $this->cycle([
                 "odd",
                 "even"
-            ])->next(), $row['nom'], $row['prenom'], $row['etablissement'], $row['communeEtablissement'], $montantUnitaire, $btligne);
+            ])->next(), $row['nom'], $row['prenom'], $row['etablissement'],
+                $row['communeEtablissement'], $montantUnitaire, $btligne);
         }
         ?>
             </tbody>
 				<tfoot>
 					<tr>
 						<th colspan="4">Total à payer</th>
-						<th><?php echo $fmt->formatCurrency($montantTotal, 'EUR'); ?></th>
+						<th><?= $fmt->formatCurrency($montantTotal, 'EUR'); ?></th>
 					</tr>
 				</tfoot>
 			</table>
@@ -384,7 +428,8 @@ echo $this->flashMessenger()->render('default');
                 break;
             case 1:
                 $msg = "N'oubliez pas de payer ou d'envoyer votre paiement avant le $dateLimite pour recevoir la carte de transport par la poste.";
-                $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " . $this->permanences[0] . '.';
+                $msg .= " Sinon, rendez-vous à la Communauté de communes. Pour les habitant de " .
+                    $this->permanences[0] . '.';
                 break;
             default:
                 $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
@@ -394,25 +439,29 @@ echo $this->flashMessenger()->render('default');
         ?>
         <?php if ($montantTotal > 0) : ?>
 		<p class="sbm-description">
-			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?php echo $msg;?>
+			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?= $msg;?>
 		</p>
 		<?php endif;?>
 		<div id="help-preinscrits-content" class="invisible">
 			<p>Vous pouvez :</p>
 			<ul>
-				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire avant le <?php echo $dateLimite;?>. Vous recevrez
-					alors la carte de transport par la poste.</li>
-				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à l'adresse ci-dessous avant le <?php echo $dateLimite;?>. 
-				Vous recevrez alors la carte de transport par la poste.</li>
-				<li>vous rendre à la Communauté de communes (pour les habitant de <?php echo $this->permanences[0];?>) 
-				pour payer en espèces ou par chèque et retirer la carte de transport.</li>
+				<li style="margin-bottom: 0.4rem;">
+					payer en ligne à l'aide d'une carte bancaire avant le <?= $dateLimite;?>. 
+					Vous recevrez alors la carte de transport par la poste.</li>
+				<li style="margin-bottom: 0.4rem;">
+					adresser un chèque du montant indiqué à l'adresse ci-dessous avant le <?= $dateLimite;?>. 
+					Vous recevrez alors la carte de transport par la poste.</li>
+				<li>
+					vous rendre à la Communauté de communes (pour les habitant de 
+					<?= $this->permanences[0];?>) pour payer en espèces ou par chèque 
+					et retirer la carte de transport.</li>
 			</ul>
 			<div class="centre">   
-				<?php echo $this->client['name'];?><br>
-				<?php echo $this->client['adresse'][0]; ?><br>
-				<?php echo $this->client['adresse'][1]; ?><br>
-				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
-				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
+				<?= $this->client['name'];?><br>
+				<?= $this->client['adresse'][0]; ?><br>
+				<?= $this->client['adresse'][1]; ?><br>
+				<?= $this->client['code_postal']; ?> <?= $this->client['commune']; ?><br> 
+				Tél. <?= $this->telephone($this->client['telephone']); ?>
 		    </div>
 		</div>
     <?php endif;?>
@@ -428,12 +477,14 @@ echo $this->flashMessenger()->render('default');
 						<th>Moyen de paiement</th>
 						<th>Montant</th>
 					</tr>
-            <?php
-        foreach ($this->paiements as $row) {
-            echo '<tr><td>' . DateLib::formatDateTimeFromMysql($row->datePaiement) . '</td><td>' . $row->modeDePaiement . '</td><td>' . $row->montant . '</td></tr>';
-        }
-        ?>
-            </tbody>
+            		<?php foreach ($this->paiements as $row) : ?>
+            		<tr>
+						<td><?= DateLib::formatDateTimeFromMysql($row->datePaiement);?></td>
+						<td><?=  $row->modeDePaiement;?></td>
+						<td><?= $row->montant;?></td>
+					</tr>';?>
+        			<?php endforeach;?>        
+            	</tbody>
 			</table>
 		</fieldset>
     <?php endif; ?>

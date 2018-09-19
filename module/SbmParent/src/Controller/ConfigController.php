@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmParent\Controller;
 
@@ -32,9 +32,9 @@ class ConfigController extends AbstractActionController
 
     public function messageAction()
     {
-        $retour = $this->url()->fromRoute('login', array(
+        $retour = $this->url()->fromRoute('login', [
             'action' => 'home-page'
-        ));
+        ]);
         return $this->redirectToOrigin()
             ->setBack($retour)
             ->toRoute('SbmMail');
@@ -45,9 +45,9 @@ class ConfigController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
         } catch (\Exception $e) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
-            ));
+            ]);
         }
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -58,10 +58,9 @@ class ConfigController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('cancel', $args)) {
-                return $this->redirect()->toRoute('login',
-                    array(
-                        'action' => 'home-page'
-                    ));
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'home-page'
+                ]);
             }
         }
         // ici on a le tableau d'initialisation du formulaire dans $args
@@ -91,20 +90,20 @@ class ConfigController extends AbstractActionController
                 $responsable->refresh();
                 $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
                 return $this->redirect()->toRoute('login',
-                    array(
+                    [
                         'action' => 'synchro-compte'
-                    ));
+                    ]);
             }
             $this->flashMessenger()->addWarningMessage('Données invalides');
         }
         return new ViewModel(
-            array(
+            [
                 'hasEnfantInscrit' => $hasEnfantInscrit,
                 'form' => $form->prepare(),
                 'responsableId' => $responsableId,
                 'responsable' => $responsable->getArrayCopy(),
                 'demenagement' => StdLib::getParam('demenagement', $args, false)
-            ));
+            ]);
     }
 
     /**
@@ -115,9 +114,9 @@ class ConfigController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
         } catch (\Exception $e) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
-            ));
+            ]);
         }
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -128,10 +127,9 @@ class ConfigController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('cancel', $args)) {
-                return $this->redirect()->toRoute('login',
-                    array(
-                        'action' => 'home-page'
-                    ));
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'home-page'
+                ]);
             }
             if (array_key_exists('modif-adresse', $args)) {
                 $args = $responsable->getArrayCopy();
@@ -157,9 +155,9 @@ class ConfigController extends AbstractActionController
                 $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
                 if ($changeAdresse) {
                     return $this->redirect()->toRoute('sbmparentconfig',
-                        array(
+                        [
                             'action' => 'localisation'
-                        ));
+                        ]);
                 }
             } else {
                 $this->flashMessenger()->addWarningMessage('Données inchangées');
@@ -167,26 +165,26 @@ class ConfigController extends AbstractActionController
             return $this->redirect()->toRoute('sbmparent');
         }
         return new ViewModel(
-            array(
+            [
                 'form' => $form->prepare(),
                 'responsableId' => $responsableId,
                 'responsable' => $responsable->getArrayCopy(),
                 'demenagement' => StdLib::getParam('demenagement', $args, false)
-            ));
+            ]);
     }
 
     public function mdpChangeAction()
     {
-        return $this->redirect()->toRoute('login', array(
+        return $this->redirect()->toRoute('login', [
             'action' => 'mdp-change'
-        ));
+        ]);
     }
 
     public function emailChangeAction()
     {
-        return $this->redirect()->toRoute('login', array(
+        return $this->redirect()->toRoute('login', [
             'action' => 'email-change'
-        ));
+        ]);
     }
 
     /**
@@ -247,21 +245,20 @@ class ConfigController extends AbstractActionController
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('login',
-                        array(
-                            'action' => 'home-page'
-                        ));
+                    return $this->redirect()->toRoute('login', [
+                        'action' => 'home-page'
+                    ]);
                 }
             }
             $this->flashMessenger()->addWarningMessage('Données invalides');
         }
         return new ViewModel(
-            array(
+            [
                 'form' => $form->prepare(),
                 'responsableId' => $responsableId,
                 'identity' => $identity,
                 'demenagement' => false
-            ));
+            ]);
     }
 
     public function localisationAction()
@@ -269,9 +266,9 @@ class ConfigController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
         } catch (\Exception $e) {
-            return $this->redirect()->toRoute('login', array(
+            return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
-            ));
+            ]);
         }
         // nécessaire pour valider lat et lng
         $configCarte = StdLib::getParam('parent',
@@ -303,52 +300,50 @@ class ConfigController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('cancel', $args)) {
-                return $this->redirect()->toRoute('login',
-                    array(
-                        'action' => 'home-page'
-                    ));
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'home-page'
+                ]);
             } elseif (array_key_exists('lng', $args) && array_key_exists('lat', $args)) {
                 $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
             } else {
-                return $this->redirect()->toRoute('login', array(
+                return $this->redirect()->toRoute('login', [
                     'action' => 'logout'
-                ));
+                ]);
             }
         }
         // ici, le pt est initialisé en lat, lng, degré
-        $form = new LatLngForm(
-            array(
-                'responsableId' => array(
-                    'id' => 'responsableId'
-                )
-            ),
-            array(
-                'submit' => array(
+        $form = new LatLngForm([
+            'responsableId' => [
+                'id' => 'responsableId'
+            ]
+        ],
+            [
+                'submit' => [
                     'class' => 'button default submit left-95px',
                     'value' => 'Enregistrer la localisation'
-                ),
-                'cancel' => array(
+                ],
+                'cancel' => [
                     'class' => 'button default cancel left-10px',
                     'value' => 'Abandonner'
-                )
-            ), $configCarte['valide']);
+                ]
+            ], $configCarte['valide']);
         $form->setAttribute('action',
             $this->url()
-                ->fromRoute('sbmparentconfig', array(
+                ->fromRoute('sbmparentconfig', [
                 'action' => 'localisation'
-            )));
+            ]));
         $form->setData(
-            array(
+            [
                 'responsableId' => $responsable->responsableId,
                 'lat' => $pt->getLatitude(),
                 'lng' => $pt->getLongitude()
-            ));
+            ]);
         if (array_key_exists('submit', $args)) {
             if ($args['responsableId'] != $responsable->responsableId) {
                 // usurpation d'identité
-                return $this->redirect()->toRoute('login', array(
+                return $this->redirect()->toRoute('login', [
                     'action' => 'logout'
-                ));
+                ]);
             }
             // On vérifie qu'on a cliqué dans un rectangle autorisé
             $form->setData($args);
@@ -357,30 +352,29 @@ class ConfigController extends AbstractActionController
                 $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
                 $oData = $tableResponsables->getObjData();
                 $oData->exchangeArray(
-                    array(
+                    [
                         'responsableId' => $responsable->responsableId,
                         'x' => $point->getX(),
                         'y' => $point->getY()
-                    ));
+                    ]);
                 $tableResponsables->saveRecord($oData);
                 $responsable->refresh();
                 $this->cartographie_manager->get('Sbm\MajDistances')->pour(
                     $responsable->responsableId);
                 $this->flashMessenger()->addSuccessMessage(
                     'La localisation du domicile est enregistrée.');
-                return $this->redirect()->toRoute('login',
-                    array(
-                        'action' => 'home-page'
-                    ));
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'home-page'
+                ]);
             }
         }
 
         return new ViewModel(
-            array(
+            [
                 'responsable' => $responsable,
                 'form' => $form->prepare(),
                 'config' => $configCarte,
                 'url_api' => $this->cartographie_manager->get('google_api')['js']
-            ));
+            ]);
     }
 } 

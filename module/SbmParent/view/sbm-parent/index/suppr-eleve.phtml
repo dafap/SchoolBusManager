@@ -9,8 +9,8 @@
  * @filesource suppr-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2015
- * @version 2015-1
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 ?>
 <h1>Suppression de l'inscription d'un enfant</h1>
@@ -18,13 +18,14 @@
 	<p>Vous avez demandé la suppression de l'inscription de :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?php echo $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
-			<li>Scolarisé à <?php echo $this->eleve['etablissement'] . ' - ' . $this->eleve['communeEtablissement']; ?></li>
+			<li><?= $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
+			<li>Scolarisé à <?= $this->eleve['etablissement'];?> 
+				- <?= $this->eleve['communeEtablissement'];?></li>
 	        <?php if ($this->affectations->count() > 0) : ?>
 	        <li>Affecté sur :
 				<ul>
 	            <?php foreach ($this->affectations as $affectation) :?>
-	               <li><?php echo $affectation['service1Id'] . ' (' . $affectation['transporteur1'] . ')'; ?></li>
+	               <li><?= $affectation['service1Id'] . ' (' . $affectation['transporteur1'] . ')'; ?></li>
 	            <?php endforeach; ?>
 	            </ul>
 			</li>
@@ -32,9 +33,7 @@
         </ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
 </div>

@@ -2,8 +2,8 @@
 /**
  * ViewHelper permettant d'afficher un label suivi d'un DateTimeSelect avec les messages d'erreurs, 
  * sans fieldset, à déclarer dans module.config.php comme ceci : 
- * 'view_helpers' => array(
- *      'invokables' => array(
+ * 'view_helpers' => [
+ *      'invokables' => [
  *          'formRowDateTime' => 'SbmCommun\Form\View\Helper\FormRowDateTime'
  *      ),
  *  )

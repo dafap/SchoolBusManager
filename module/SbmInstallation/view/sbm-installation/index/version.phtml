@@ -7,21 +7,22 @@
  * @filesource version.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2017
- * @version 2017-2.3.13
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 use Zend\Version\Version;
 use Zend\Json\Json;
 
-define('SBM_VERSION', '2.3.13');
+define('SBM_VERSION', '2.4.5');
 
 function versionTcpdfGitHub()
 {
-    $context = stream_context_create([
-        'http' => [
-            'user_agent' => sprintf('Sbm/%s', SBM_VERSION)
-        ]
-    ]);
+    $context = stream_context_create(
+        [
+            'http' => [
+                'user_agent' => sprintf('Sbm/%s', SBM_VERSION)
+            ]
+        ]);
     $url = 'https://api.github.com/repos/tecnickcom/TCPDF/tags';
     $apiResponse = file_get_contents($url, false, $context);
     $decodedResponse = Json::decode($apiResponse, Json::TYPE_ARRAY);

@@ -9,8 +9,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 sept. 2016
- * @version 2016-2.2.0
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmAjax\Controller;
 
@@ -21,7 +21,7 @@ class AbstractActionController extends ZendAbstractActionController
 
     /**
      * Conteneur des paramètres passés dans args
-     * 
+     *
      * @var array
      */
     private $args = null;
@@ -36,7 +36,7 @@ class AbstractActionController extends ZendAbstractActionController
     /**
      * Renvoie la valeur associée à la clé $param de la propriété $config
      *
-     * @param string $param            
+     * @param string $param
      *
      * @throws Exception
      *
@@ -47,7 +47,9 @@ class AbstractActionController extends ZendAbstractActionController
         if (array_key_exists($param, $this->config)) {
             return $this->config[$param];
         }
-        $message = sprintf('Le paramètre %s n\'est pas une propriété définie par le ControllerFactory.', $param);
+        $message = sprintf(
+            'Le paramètre %s n\'est pas une propriété définie par le ControllerFactory.',
+            $param);
         throw new Exception($message);
     }
 
@@ -58,14 +60,14 @@ class AbstractActionController extends ZendAbstractActionController
      * - sinon la méthode parent est appelée (et vraisemblablement renvoie $default)
      *
      * (non-PHPdoc)
-     * 
+     *
      * @see \Zend\Mvc\Controller\AbstractController::params($param, $default)
      */
     public function params($param, $default = null)
     {
         if (is_null($this->args)) {
-            $this->args = array();
-            $result = parent::params('args', array());
+            $this->args = [];
+            $result = parent::params('args', []);
             if (! empty($result)) {
                 $aResult = explode('/', $result);
                 foreach ($aResult as $item) {

@@ -1,6 +1,4 @@
 <?php
-use SbmBase\Model\StdLib;
-
 /**
  * Paramètres de configuration des sessions
  *
@@ -78,9 +76,11 @@ use SbmBase\Model\StdLib;
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2016
- * @version 2016-2.2.0
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
+use SbmBase\Model\StdLib;
+
 return [
     'sbm_session' => [
         'config' => [
@@ -94,7 +94,7 @@ return [
                 'save_path' => realpath(StdLib::findParentPath(__DIR__, 'data/session'))
             ]
         ],
-        
+
         'storage' => 'Zend\Session\Storage\SessionArrayStorage',
         'save_handler' => null,
         'validators' => [

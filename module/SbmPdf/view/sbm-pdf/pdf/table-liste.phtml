@@ -16,81 +16,81 @@
  * @filesource table-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $js = 'window.document.getElementById(\'op\').value=%s;';
 
-$url_cancel = $this->url('sbmpdf', array(
+$url_cancel = $this->url('sbmpdf', [
     'action' => 'pdf-liste',
     'page' => $this->page
-));
-$url_edit = $this->url('sbmpdf', array(
+]);
+$url_edit = $this->url('sbmpdf', [
     'action' => 'table-edit',
     'page' => $this->page
-));
-$url_colonne = $this->url('sbmpdf', array(
+]);
+$url_colonne = $this->url('sbmpdf', [
     'action' => 'colonne-liste',
     'page' => $this->page
-));
-$retour = $this->url('sbmpdf', array(
+]);
+$retour = $this->url('sbmpdf', [
     'action' => 'pdf-edit',
     'page' => $this->page
-));
+]);
 
-$hiddens = array(
+$hiddens = [
     'documentId' => $this->document['documentId'],
     'name' => $this->document['name'],
     'ordinal_table' => $this->document['ordinal_table'],
     'recordSource' => $this->document['recordSource']
-);
-$actions = array(
-    'homepdf' => array(
+];
+$actions = [
+    'homepdf' => [
         'class' => 'fam-door-out',
         'formaction' => $url_cancel,
         'title' => 'Liste des documents',
         'onclick' => sprintf($js, "'retour'")
-    ),
-    'retour' => array(
+    ],
+    'retour' => [
         'class' => 'fam-book-previous',
         'formaction' => $retour,
         'title' => 'Configuration du document'
-    ),
-    'colonnes' => array(
+    ],
+    'colonnes' => [
         'formaction' => $url_colonne,
         'class' => 'button default',
         'value' => 'Liste des colonnes',
         'title' => 'Définition et mise en forme des colonnes'
-    )
-);
-$buttons = array(
-    'modifier' => array(
+    ]
+];
+$buttons = [
+    'modifier' => [
         'class' => 'fam-pencil',
         'formaction' => $url_edit,
         'title' => 'modifier'
-    )
-);
+    ]
+];
 ?>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="float-left">
 			<h1>Liste des sections d'un tableau pour un document pdf</h1>
 			<ul>
-				<li>Document: <?php echo $this->document['name'];?></li>
-				<li>Numéro du tableau: <?php echo $this->document['ordinal_table'];?></li>
-				<li>Source du document: <?php echo $this->document['recordSource'];?></li>
+				<li>Document: <?= $this->document['name'];?></li>
+				<li>Numéro du tableau: <?= $this->document['ordinal_table'];?></li>
+				<li>Source du document: <?= $this->document['recordSource'];?></li>
 			</ul>
-            <div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-        </div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+			<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="pdf">
@@ -104,28 +104,33 @@ echo $this->flashMessenger()->render('default');
 					</th>
 					<th></th>
 				</tr>
-            <?php foreach($data as $section => $row): ?>
-                <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-					<td class="section"><?php echo $this->escapeHtml($row['section']); ?></td>
-					<td class="description"><?php echo $this->escapeHtml($row['description']); ?></td>
-					<td class="visible"><?php echo $row['visible'] ? 'Oui' : 'Non'; ?></td>
-					<td class="width"><?php echo $row['width']; ?></td>
-					<td class="row_height"><?php echo $row['row_height']; ?></td>
-					<td class="boutons">
-            <?php
-                $hiddens = array(
+            <?php foreach($data as $row): ?>
+            	<?php
+                $hiddens = [
                     'doctableId' => $row['doctableId'],
                     'documentId' => $row['documentId'],
                     'name' => $this->document['name'],
                     'ordinal_table' => $row['ordinal_table'],
                     'recordSource' => $this->document['recordSource']
-                );
-                echo $this->listeLigneActions($row['doctableId'], $hiddens, $buttons);
+                ];
                 ?>
+                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="section">
+						<?= $this->escapeHtml($row['section']); ?></td>
+					<td class="description">
+						<?= $this->escapeHtml($row['description']); ?></td>
+					<td class="visible">
+						<?= $row['visible'] ? 'Oui' : 'Non'; ?></td>
+					<td class="width">
+						<?= $row['width']; ?></td>
+					<td class="row_height">
+						<?= $row['row_height']; ?></td>
+					<td class="boutons">
+						<?= $this->listeLigneActions($row['doctableId'], $hiddens, $buttons);?>
+                
 				    </td>
 				</tr>         
-        <?php endforeach;?>
+        	<?php endforeach;?>
             </tbody>
 		</table>
 	</div>

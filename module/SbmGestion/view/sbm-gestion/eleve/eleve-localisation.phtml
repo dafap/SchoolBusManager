@@ -16,7 +16,7 @@ use SbmBase\Model\StdLib;
 
 $nomEleve =  implode(' ', array($this->eleve['nom'], $this->eleve['prenom']));
 // calcul du contenu de l'infobulle
-$description = array();
+$description =[];
 $description[] = '<b>' . $nomEleve . '</b>';
 
 // mise en place des JS de googleMaps
@@ -57,7 +57,7 @@ $this->inlineScript()->captureEnd();
     <?php echo $this->form()->closeTag();?>
 <?php if ($this->form->getMessages()) {
     $msg = $this->form->getMessages();
-    if (StdLib::array_keys_exists(array('lat', 'notBetween'), $msg) || StdLib::array_keys_exists(array('lng', 'notBetween'), $msg)) {
+    if (StdLib::array_keys_exists(['lat', 'notBetween'), $msg) || StdLib::array_keys_exists(['lng', 'notBetween'), $msg)) {
 ?>
             <p class="sbm-description important">La position indiquée n'est pas dans la zone géographique de l'organisateur.</p>
 <?php             

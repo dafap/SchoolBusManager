@@ -9,8 +9,8 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2016
- * @version 2016-2.2.1
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 namespace SbmFront\Controller;
 
@@ -24,23 +24,25 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $form = $this->login_form;
-        $form->setAttribute('action', $this->url()
-            ->fromRoute('login', array(
-            'action' => 'login'
-        )));
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('login', [
+                'action' => 'login'
+            ]));
         $tCalendar = $this->config['db_manager']->get('Sbm\Db\System\Calendar');
-        return new ViewModel([
-            'form' => $form->prepare(),
-            'client' => $this->client,
-            'accueil' => $this->accueil,
-            'as' => Session::get('as')['libelle'],
-            'etat' => $tCalendar->etatDuSite(),
-            'permanences' => $tCalendar->getPermanences()
-        ]);
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'client' => $this->client,
+                'accueil' => $this->accueil,
+                'as' => Session::get('as')['libelle'],
+                'etat' => $tCalendar->etatDuSite(),
+                'permanences' => $tCalendar->getPermanences()
+            ]);
     }
 
     public function testAction()
-    {    
+    {
         return new ViewModel([]);
     }
 }

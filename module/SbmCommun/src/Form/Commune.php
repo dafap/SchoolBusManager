@@ -8,8 +8,8 @@
  * @filesource Commune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -22,419 +22,436 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('commune');
         $this->setAttribute('method', 'post');
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'communeId',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-codeid',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code INSEE de la commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-nom',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom de la commune en majuscules',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom_min',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-nom-min',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom de la commune en minuscules',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'alias',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-alias',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Autre nom (en majuscules)',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'alias_min',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-alias-min',
-                'class' => 'sbm-width-30c'
-            ),
-            'options' => array(
-                'label' => 'Autre nom (en minuscules)',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'aliasCG',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-aliascg',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom CG',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'codePostal',
-            'type' => 'SbmCommun\Form\Element\CodePostal',
-            'attributes' => array(
-                'id' => 'commune-codepostal',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code postal',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'departement',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-departement',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code du département',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'canton',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-canton',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Code du canton',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'population',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-population',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Population',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'membre',
-            'attributes' => array(
-                'id' => 'commune-membre',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Commune membre',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'desservie',
-            'attributes' => array(
-                'id' => 'commune-desservie',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Commune desservie',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'visible',
-            'attributes' => array(
-                'id' => 'commune-visible',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Visible',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'commune-submit',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'commune-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-codeid',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code INSEE de la commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-nom',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom de la commune en majuscules',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom_min',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-nom-min',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom de la commune en minuscules',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'alias',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-alias',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Autre nom (en majuscules)',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'alias_min',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-alias-min',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Autre nom (en minuscules)',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'aliasCG',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-aliascg',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom CG',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'codePostal',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'commune-codepostal',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'departement',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-departement',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code du département',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'canton',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-canton',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code du canton',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'population',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-population',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Population',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'membre',
+                'attributes' => [
+                    'id' => 'commune-membre',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Commune membre',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'desservie',
+                'attributes' => [
+                    'id' => 'commune-desservie',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Commune desservie',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'visible',
+                'attributes' => [
+                    'id' => 'commune-visible',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Visible',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'commune-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'commune-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
-    
+
     public function getInputFilterSpecification()
     {
-        return array(
-            'communeId' => array(
+        return [
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'StringLength',
-                        'options' => array(
+                        'options' => [
                             'min' => 5,
                             'max' => 6
-                        )
-                    )
-                )
-            ),
-            'nom' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'nom' => [
                 'name' => 'nom',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringToUpper'
-                    )
-                )
-            ),
-            'nom_min' => array(
+                    ]
+                ]
+            ],
+            'nom_min' => [
                 'name' => 'nom_min',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'alias' => array(
+                    ]
+                ]
+            ],
+            'alias' => [
                 'name' => 'alias',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringToUpper'
-                    )
-                )
-            ),
-            'alias_min' => array(
+                    ]
+                ]
+            ],
+            'alias_min' => [
                 'name' => 'alias_min',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'aliasCG' => array(
+                    ]
+                ]
+            ],
+            'aliasCG' => [
                 'name' => 'aliasCG',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'codePostal' => array(
+                    ]
+                ]
+            ],
+            'codePostal' => [
                 'name' => 'codePostal',
                 'required' => true
-            ),
-            'departement' => array(
+            ],
+            'departement' => [
                 'name' => 'departement',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-                'validators' => array(
-                    array(
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'StringLength',
-                        'options' => array(
+                        'options' => [
                             'min' => 2,
                             'max' => 3
-                        )
-                    )
-                )
-            ),
-            'canton' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'canton' => [
                 'name' => 'canton',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Digits'
-                    )
-                )
-            ),
-            'population' => array(
+                    ]
+                ]
+            ],
+            'population' => [
                 'name' => 'population',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'Digits'
-                    )
-                )
-            ),
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     public function modifFormForEdit()
     {
         $this->remove('communeId');
         $this->get('nom')->setAttribute('autofocus', 'autofocus');
-        $this->add(array(
+        $this->add([
             'name' => 'communeId',
             'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'communeInsee',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'commune-codeid',
-                'disabled' => 'disabled',
-                'class' => 'form commune codeid'
-            ),
-            'options' => array(
-                'label' => 'Code INSEE de la commune',
-                'label_attributes' => array(
-                    'class' => 'form commune label label-codeid'
-                ),
-                'error_attributes' => array(
-                    'class' => 'form commune error error-codeid'
-                )
-            )
-        ));
+        ]);
+        $this->add(
+            [
+                'name' => 'communeInsee',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-codeid',
+                    'disabled' => 'disabled',
+                    'class' => 'form commune codeid'
+                ],
+                'options' => [
+                    'label' => 'Code INSEE de la commune',
+                    'label_attributes' => [
+                        'class' => 'form commune label label-codeid'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'form commune error error-codeid'
+                    ]
+                ]
+            ]);
         return $this;
     }
 

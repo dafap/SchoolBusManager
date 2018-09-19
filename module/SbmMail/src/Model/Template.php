@@ -72,7 +72,7 @@ class Template
      *
      * @param array $data
      *            tableau des variables à passer au 'template'
-     *            ou array('body' => contenu) si le 'template' est null
+     *            ou ['body' => contenu) si le 'template' est null
      *            
      * @return string
      */

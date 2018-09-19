@@ -7,8 +7,8 @@
  * @filesource LatLng.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juin 2015
- * @version 2015-1
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -35,11 +35,13 @@ class LatLng extends ButtonForm implements InputFilterProviderInterface
      * Constructeur d'un ButtonForm avec les paramètres de validation de lat et lng
      *
      * @param array $hiddens
-     *            tableau des éléments inputs de type hidden, autres que lat et lng servant notamment à passer les id
+     *            tableau des éléments inputs de type hidden, autres que lat et lng servant
+     *            notamment à passer les id
      * @param array $submits
      *            tableau décrivant les boutons
      * @param array $valide
-     *            tableau dont les clés 'lat' et 'lng' sont associées à un tableau à 2 réels array(min, max)
+     *            tableau dont les clés 'lat' et 'lng' sont associées à un tableau à 2 réels [min,
+     *            max)
      */
     public function __construct(array $hiddens, array $submits, array $valide)
     {
@@ -58,53 +60,56 @@ class LatLng extends ButtonForm implements InputFilterProviderInterface
         if (! $ok) {
             ob_start();
             var_dump($valide);
-            throw new Exception(__METHOD__ . " - Le paramètre \"valide\" est incorrect.\n" . ob_get_clean());
+            throw new Exception(
+                __METHOD__ . " - Le paramètre \"valide\" est incorrect.\n" . ob_get_clean());
         }
         $this->latRange = $valide['lat'];
         $this->lngRange = $valide['lng'];
-        $hiddens['lat'] = array(
+        $hiddens['lat'] = [
             'id' => 'lat',
-            'options' => array(
-                'error_attributes' => array(
+            'options' => [
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        );
-        $hiddens['lng'] = array(
+                ]
+            ]
+        ];
+        $hiddens['lng'] = [
             'id' => 'lng',
-            'options' => array(
-                'error_attributes' => array(
+            'options' => [
+                'error_attributes' => [
                     'class' => 'sbm-error'
-                )
-            )
-        );
+                ]
+            ]
+        ];
         parent::__construct($hiddens, $submits);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'lat' => array(
+        return [
+            'lat' => [
                 'name' => 'lat',
                 'required' => true,
-                'validators' => array(
-                    new \Zend\Validator\Between(array(
-                        'min' => $this->latRange[0],
-                        'max' => $this->latRange[1]
-                    ))
-                )
-            ),
-            'lng' => array(
+                'validators' => [
+                    new \Zend\Validator\Between(
+                        [
+                            'min' => $this->latRange[0],
+                            'max' => $this->latRange[1]
+                        ])
+                ]
+            ],
+            'lng' => [
                 'name' => 'lng',
                 'required' => true,
-                'validators' => array(
-                    new \Zend\Validator\Between(array(
-                        'min' => $this->lngRange[0],
-                        'max' => $this->lngRange[1]
-                    ))
-                )
-            )
-        );
+                'validators' => [
+                    new \Zend\Validator\Between(
+                        [
+                            'min' => $this->lngRange[0],
+                            'max' => $this->lngRange[1]
+                        ])
+                ]
+            ]
+        ];
     }
 
     public function isValid()
@@ -112,15 +117,17 @@ class LatLng extends ButtonForm implements InputFilterProviderInterface
         $valid = parent::isValid();
         if ($valid)
             return true;
-            // il y a une erreur sur lat ou lng
+        // il y a une erreur sur lat ou lng
         $lat = $this->get('lat');
-        $lat->setMessages(array(
-            'Le lieu indiqué n\'est pas dans la zone géographique de l\'organisateur.'
-        ));
+        $lat->setMessages(
+            [
+                'Le lieu indiqué n\'est pas dans la zone géographique de l\'organisateur.'
+            ]);
         $lng = $this->get('lng');
-        $lng->setMessages(array(
-            'Utilisez le zoom ou la molette de la souris pour mieux voir sur la carte.'
-        ));
+        $lng->setMessages(
+            [
+                'Utilisez le zoom ou la molette de la souris pour mieux voir sur la carte.'
+            ]);
         return false;
     }
 }

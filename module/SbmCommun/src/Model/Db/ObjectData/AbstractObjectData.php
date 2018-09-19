@@ -60,7 +60,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
 
     /**
      * Tableau des champs qui doivent être null lorsqu'ils sont vides
-     * Ce tableau est de la forme array('field_name' => boolean,)
+     * Ce tableau est de la forme ['field_name' => boolean,)
      * où boolean est vrai si le champ doit être null lorsqu'il est vide
      * pour tous les champs de l'objectdata
      *

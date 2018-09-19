@@ -86,7 +86,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Services</th>
 					<th></th>
 				</tr>
-			<?php $services = array();?>
+			<?php $services =[];?>
 			<?php foreach ($data as $row):?>
 			<?php
     $services = implode('<br>', array($row['service1Id'], $row['service2Id']));
@@ -113,7 +113,7 @@ echo $this->flashMessenger()->render('default');
     $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
     ?>
 			    <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"))->next();?>">
 					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $this->escapeHtml($row['nom']);?></td>
 					<td><?php echo $this->escapeHtml($row['prenom']);?></td>

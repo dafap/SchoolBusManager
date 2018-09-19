@@ -7,42 +7,44 @@
  * @filesource tr-circuit-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2015
- * @version 2015-1
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmportail', array(
-    'action' => empty($this->origine) ? 'tr-circuits' : $this->origine,
-    'page' => $this->page
-));
-$hiddens = array(
+$url_retour = $this->url('sbmportail',
+    [
+        'action' => empty($this->origine) ? 'tr-circuits' : $this->origine,
+        'page' => $this->page
+    ]);
+$hiddens = [
     'circuitId' => $this->circuit->circuitId,
     'serviceId' => $this->serviceId
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Groupe des élèves inscrits sur un point d'arrêt d'un circuit</h1>
 <div id="liste-wrapper">
 	<div id="liste-title">
 		<ul>
-			<li>Circuit : <?php echo $this->escapeHtml($this->circuit->serviceId); ?></li>
-			<li>Arrêt : <?php echo $this->escapeHtml($this->circuit->station . ' - ' . $this->circuit->communeStation); ?></li>
-			<li>Type d'arrêt : <?php echo $this->escapeHtml($this->circuit->typeArret); ?></li>
-			<li>Commentaire aller : <?php echo $this->escapeHtml($this->circuit->commentaire1); ?></li>
-			<li>Commentaire retour : <?php echo $this->escapeHtml($this->circuit->commentaire2); ?></li>
+			<li>Circuit : <?= $this->escapeHtml($this->circuit->serviceId); ?></li>
+			<li>Arrêt : 
+				<?= $this->escapeHtml($this->circuit->station . ' - ' . $this->circuit->communeStation); ?>
+				</li>
+			<li>Type d'arrêt : <?= $this->escapeHtml($this->circuit->typeArret); ?></li>
+			<li>Commentaire aller : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
+			<li>Commentaire retour : <?= $this->escapeHtml($this->circuit->commentaire2); ?></li>
 		</ul>
 	</div>
 	<div id="liste-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?= count($this->data); ?> élèves.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -58,21 +60,19 @@ $actions = array(
 					<th>Etablissement</th>
 					<th>Classe</th>
 				</tr>
-			<?php
-foreach ($this->data as $row) {
-    echo '<tr class="' . $this->cycle(array("even", "odd"))->next() . '">';
-    foreach ($row as $item) {
-        echo '<td>' . $item . '</td>';
-    }
-    echo '</tr>';
-}
-?>
+			<?php foreach ($this->data as $row) : ?>
+				<?= '<tr class="' . $this->cycle(['even', 'odd'])->next() . '">';?>
+				<?php foreach ($row as $item) : ?>
+					<?= '<td>' . $item . '</td>';?>
+				<?php endforeach;?>
+				<?= '</tr>';?>
+			<?php endforeach;?>
 			</tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?= count($this->data); ?> élèves.</em>
 		</p>
 	</div>
-</div> 
+</div>

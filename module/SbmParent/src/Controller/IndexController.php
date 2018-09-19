@@ -444,7 +444,7 @@ class IndexController extends AbstractActionController
      * - identifiant : 'SbmPaiement\AppelPlateforme'
      * - évènement : 'appelPaiement'
      * - target : objet enregistré sous 'SbmPaiement\Plugin\Plateforme'
-     * - params : array(
+     * - params : [
      * 'montant' => ..., // en euros
      * 'count' => 1, // 1 pour un règlement comptant (sinon, le nombre d'échéances)
      * 'first' => montant, // égal au montant en euros pour un paiement comptant
@@ -453,7 +453,7 @@ class IndexController extends AbstractActionController
      * 'responsableId' => ...,
      * 'nom' => ..., // du responsable
      * 'prenom' => ..., // du responsable
-     * 'eleveIds' => array(eleveId, eleveId, ...) // tableau simple des eleveId concernés
+     * 'eleveIds' => [eleveId, eleveId, ...) // tableau simple des eleveId concernés
      * )
      *
      * @return \Zend\Http\PhpEnvironment\Response
@@ -474,7 +474,7 @@ class IndexController extends AbstractActionController
             return $this->redirect()->toRoute('sbmparent');
         }
         $args = (array) $prg;
-        // args = array('montant' => ..., 'payer' => ...)
+        // args = ['montant' => ..., 'payer' => ...)
         $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
             $responsable->responsableId);
         $elevesIds = [];

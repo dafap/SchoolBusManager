@@ -180,7 +180,7 @@
  * @filesource DistanceEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 18 sept. 2018
  * @version 2018-2.4.5
  */
 namespace SbmCartographie\GoogleMaps;
@@ -447,7 +447,7 @@ class DistanceEtablissements
      *            y aura conversion)
      *            
      * @throws Exception
-     * @return array tableau simple de tableaux associatifs array('etablissementId' => ...,
+     * @return array tableau simple de tableaux associatifs ['etablissementId' => ...,
      *         'distance' => ...)
      */
     public function ecolesPrisesEnCompte($niveau, Point $domicile)
@@ -535,7 +535,7 @@ class DistanceEtablissements
      *            y aura conversion)
      *            
      * @throws Exception
-     * @return array tableau simple de tableaux associatifs array('etablissementId' => ...,
+     * @return array tableau simple de tableaux associatifs ['etablissementId' => ...,
      *         'distance' => ...)
      */
     public function collegesPrisEnCompte(Point $domicile)
@@ -619,7 +619,7 @@ class DistanceEtablissements
      * @param array $domiciles
      * @param Point $college
      *
-     * @return array tableau associatif de la forme array('droit' => boolean, 'distances' => [])
+     * @return array tableau associatif de la forme ['droit' => boolean, 'distances' => [])
      */
     public function domicilesCollege($domiciles, $college)
     {
@@ -725,7 +725,7 @@ class DistanceEtablissements
      * @param array $domiciles
      * @param Point $ecole
      *
-     * @return array tableau associatif de la forme array('droit' => boolean, 'distances' => [])
+     * @return array tableau associatif de la forme ['droit' => boolean, 'distances' => [])
      */
     public function domicilesEcole($niveau, $domiciles, $ecole)
     {

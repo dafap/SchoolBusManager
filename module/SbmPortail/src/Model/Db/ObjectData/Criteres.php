@@ -7,7 +7,7 @@
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
+ * @date 18 sept. 2018
  * @version 2016-2.4.5
  */
 namespace SbmPortail\Model\Db\ObjectData;
@@ -77,8 +77,8 @@ class Criteres extends SbmCommunCriteres
     /**
      * Prépare et renvoie un Where à partir des données de l'objet.
      * Le tableau $descripteur est structuré de la façon suivante :<ul>
-     * <li>'strict' => array(liste de champs ...)</li>
-     * <li>'expressions' => array(liste de champs)</li></ul>
+     * <li>'strict' => [liste de champs ...]</li>
+     * <li>'expressions' => [liste de champs]</li></ul>
      *
      * En fait, cette méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé
      * dans le tableau 'expressions'.
@@ -184,8 +184,8 @@ class Criteres extends SbmCommunCriteres
     /**
      * Prépare et renvoie un Where à partir des données de l'objet.
      * Le tableau $descripteur est structuré de la façon suivante :<ul>
-     * <li>'strict' => array(liste de champs ...)</li>
-     * <li>'expressions' => array(liste de champs)</li></ul>
+     * <li>'strict' => [liste de champs ...]</li>
+     * <li>'expressions' => [liste de champs]</li></ul>
      *
      * En fait, cette méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé
      * dans le tableau 'expressions'.

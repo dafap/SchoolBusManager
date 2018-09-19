@@ -73,7 +73,7 @@ class Semaine extends AbstractPower2
      */
     public static function getJours()
     {
-        /*return  array(
+        /*return  [
             self::CODE_SEMAINE_LUNDI => 'lun',
             self::CODE_SEMAINE_MARDI => 'mar',
             self::CODE_SEMAINE_MERCREDI => 'mer',

@@ -7,7 +7,7 @@
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 18 sept. 2018
  * @version 2018-2.4.5
  */
 namespace SbmCartographie\GoogleMaps;
@@ -90,7 +90,7 @@ class Geocoder
      *
      * @throws Exception
      *
-     * @return array Tableau associatif de la forme array('numero' => , 'rue' => , 'lieu-dit' =>
+     * @return array Tableau associatif de la forme ['numero' => , 'rue' => , 'lieu-dit' =>
      *         ,'code_postal' => , 'commune' => , 'departement' => , 'region' => , 'pays' => )
      */
     public function reverseGeocoding($lat, $lng)

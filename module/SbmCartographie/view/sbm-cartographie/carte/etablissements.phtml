@@ -12,8 +12,8 @@
  * @filesource etablissements.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -21,22 +21,22 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->headScript()->appendFile($this->url_api);
 $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->appendFile('/js/maps/carte.js');
-// préparation du script 
+// préparation du script
 $i = 0;
 $tMarkers = "[\n";
 foreach ($this->ptEtablissements as $pt) {
     $e = $pt->getAttribute('etablissement');
     $niveau = array_sum($e->niveau);
-    if ($niveau <4) {
-        //$color = "#ffff00";
+    if ($niveau < 4) {
+        // $color = "#ffff00";
         $lettre = "E";
         $nature = "Ecole";
     } elseif ($niveau == 4) {
-        //$color = "#fc6700";
+        // $color = "#fc6700";
         $lettre = "C";
         $nature = "Collège";
     } else {
-        //$color = "#e5c3d0";
+        // $color = "#e5c3d0";
         $lettre = "L";
         $nature = "Lycée";
     }
@@ -47,52 +47,58 @@ foreach ($this->ptEtablissements as $pt) {
         $color = "#ff0000";
         $nature .= " non desservie";
     }
-    $d = array(
+    $d = [
         '<b>' . $this->escapeHtml($e->nom) . '</b>',
-        trim(implode(" - ", array(
+        trim(implode(" - ", [
             $e->adresse1,
             $e->adresse2
-        )), " -"),
-        implode(' ', array(
+        ]), " -"),
+        implode(' ', [
             $e->codePostal,
             $e->commune
-        )),
-        'Tél. ' . $e->telephone,
-    );
+        ]),
+        'Tél. ' . $e->telephone
+    ];
     $tmp = $e->email;
-    if (!empty($tmp)) {
+    if (! empty($tmp)) {
         $d[] = 'Email : ' . $e->email;
     }
     $d[] = $nature;
-    
-    $tMarkers .= '{"lat":' . $pt->getLatitude() .',"lng":' . $pt->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre. '","title":"' . $e->nom .'","info":"' . implode('<br>', $d) ."\"},\n";
 
+    $tMarkers .= '{"lat":' . $pt->getLatitude() . ',"lng":' . $pt->getLongitude() .
+        ',"color":"' . $color . '","text":"' . $lettre . '","title":"' . $e->nom .
+        '","info":"' . implode('<br>', $d) . "\"},\n";
 }
 $tMarkers .= ']';
 // lancement du script
 $this->inlineScript()->captureStart();
 ?>
-const CENTRE_LAT = <?php echo $this->config['centre']['lat']; ?>;
-const CENTRE_LNG = <?php echo $this->config['centre']['lng']; ?>;
-const INI_ZOOM = <?php echo $this->config['zoom']; ?>;
-initialiser(<?php echo $tMarkers;?>);
-<?php 
-$this->inlineScript()->captureEnd(); 
+const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
+const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
+const INI_ZOOM = <?= $this->config['zoom']; ?>;
+initialiser(<?= $tMarkers;?>);
+<?php
+$this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
 ?>
 <h1>Ecoles et établissements scolaires</h1>
 <div id="carte-wrapper">
 	<div id="carte-header" class="clearfix">
 		<div class="menu float-left"><?php
-echo $this->listeZoneActions(array(), array(
-    'cancel' => array(
-        'class' => 'fam-door-out',
-        'title' => 'Retour'
-    )
-));
+echo $this->listeZoneActions([],
+    [
+        'cancel' => [
+            'class' => 'fam-door-out',
+            'title' => 'Retour'
+        ]
+    ]);
 ?></div>
-        <div class="float-right right-10px"><span style="background-color:#ff0000; font-weight:bold;">En rouge</span> les écoles et les établissements non desservis.
-        <span style="background-color:#00ff00; font-weight:bold;">En vert</span> les écoles et les établissements desservis.</div>
+		<div class="float-right right-10px">
+			<span style="background-color: #ff0000; font-weight: bold;">En rouge</span>
+			les écoles et les établissements non desservis. <span
+				style="background-color: #00ff00; font-weight: bold;">En vert</span>
+			les écoles et les établissements desservis.
+		</div>
 	</div>
 	<div id="carte-inner"
 		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>

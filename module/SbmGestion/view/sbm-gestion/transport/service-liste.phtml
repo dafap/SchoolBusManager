@@ -68,7 +68,7 @@ $url_group = $this->url('sbmgestion/transport', array(
     'action' => 'service-group',
     'id' => $this->page
 ));
-$hiddens = array();
+$hiddens =[];
 $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
     'action' => 'service-liste'
 )), $url_rapports, 'fam-printer', null, $hiddens);
@@ -115,7 +115,7 @@ echo $this->flashMessenger()->render('default');
 				</tr>
             <?php foreach($services as $test => $service): ?>
             <?php
-                $nbInscrits = StdLib::getParamR(array(
+                $nbInscrits = StdLib::getParamR([
                     $service->serviceId,
                     'total'
                 ), $this->t_nb_inscrits, 0);
@@ -127,7 +127,7 @@ echo $this->flashMessenger()->render('default');
                 <tr
 					class="<?php
                 
-echo $this->cycle(array(
+echo $this->cycle([
                     "even",
                     "odd"
                 ))->next();
@@ -179,7 +179,7 @@ echo $this->cycle(array(
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 		<div class="criteres-wrapper">
 	    <?php echo $this->form()->openTag($this->criteres_form);?>
 	    <?php echo $this->formCollection($this->criteres_form, true);?>

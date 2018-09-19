@@ -8,40 +8,38 @@
  * @filesource AbstractModule.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2016
- * @version 2016-2.2.0
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmBase;
 
+use SbmBase\Model\StdLib;
+use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
-use Zend\EventManager\EventInterface;
-use Zend\Session\SessionManager;
 use Zend\Session\Container;
-use SbmBase\Model\StdLib;
+use Zend\Session\SessionManager;
 
-class Module implements 
-    AutoloaderProviderInterface, 
-    BootstrapListenerInterface, 
+class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
     ServiceProviderInterface
 {
 
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
-                )
-            )
-        );
+                ]
+            ]
+        ];
     }
 
     public function getServiceConfig()
     {
-        return array(
-            'factories' => array(
+        return [
+            'factories' => [
                 'SbmAuthentificationManager' => function ($sm) {
                     $config = $sm->get('config');
                     if (isset($config['sbm_session'])) {
@@ -60,18 +58,20 @@ class Module implements
                         }
                         $sessionSaveHandler = null;
                         if (isset($session['save_handler'])) {
-                            // cette classe doit être récupérée par le service manager car son constructeur a des arguments
+                            // cette classe doit être récupérée par le service manager car son
+                            // constructeur a des arguments
                             $sessionSaveHandler = $sm->get($session['save_handler']);
                         }
-                        $sessionManager = new SessionManager($sessionConfig, $sessionStorage, $sessionSaveHandler);
+                        $sessionManager = new SessionManager($sessionConfig,
+                            $sessionStorage, $sessionSaveHandler);
                     } else {
                         $sessionManager = new SessionManager();
                     }
                     Container::setDefaultManager($sessionManager);
                     return $sessionManager;
                 }
-            )
-        );
+            ]
+        ];
     }
 
     public function onBootstrap(EventInterface $e)
@@ -82,7 +82,7 @@ class Module implements
     /**
      * Mise en place des sessions
      *
-     * @param EventInterface $e            
+     * @param EventInterface $e
      */
     private function bootstrapSession(EventInterface $e)
     {
@@ -95,7 +95,7 @@ class Module implements
             $session->expireSessionCookie();
             $session->start();
         }
-        
+
         $container = new Container('initialized');
         if (! isset($container->init)) {
             $serviceManager = $e->getApplication()->getServiceManager();
@@ -104,13 +104,13 @@ class Module implements
                 $session->regenerateId(true);
             } catch (\Exception $e) {
                 // try catch nécessaire pour les tests unitaires avec AbstractControllerTestCase
-            }            
+            }
             $container->init = 1;
             if ($request instanceof \Zend\Http\PhpEnvironment\Request) {
                 $container->remoteAddr = $request->getServer()->get('REMOTE_ADDR');
                 $container->httpUserAgent = $request->getServer()->get('HTTP_USER_AGENT');
             }
-            
+
             $config = $serviceManager->get('config');
             if (! StdLib::array_keys_exists([
                 'sbm_session',
@@ -118,7 +118,7 @@ class Module implements
             ], $config)) {
                 return;
             }
-            
+
             $validators = $config['sbm_session']['validators'];
             $chain = $session->getValidatorChain();
             foreach ($validators as $validator) {
@@ -132,10 +132,10 @@ class Module implements
                     default:
                         $validator = new $validator();
                 }
-                $chain->attach('session.validate', array(
+                $chain->attach('session.validate', [
                     $validator,
                     'isValid'
-                ));
+                ]);
             }
         }
     }

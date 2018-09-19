@@ -14,7 +14,7 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport', array('action'=> 'service-liste', 'page' => $this->page));
-$hiddens = array();
+$hiddens =[];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',

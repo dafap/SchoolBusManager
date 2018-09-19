@@ -7,27 +7,24 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
+use SbmPdf\Controller;
 use SbmPdf\Service;
-use SbmPdf\Model\Service as PdfService;
-use SbmPdf\Listener\Service\PdfListenerFactory;
-use SbmPdf\Listener\PdfListener;
-use SbmPdf\Model\Filter\Service\NomTableFactory;
-use SbmPdf\Model\Filter\NomTable;
-use SbmPdf\Form\Service\DocumentPdfFactory as FormDocumentPdfFactory;
-use SbmPdf\Form\DocTable as FormDocTable;
+use SbmPdf\Form\DocAffectation as FormDocAffectation;
 use SbmPdf\Form\DocColumn as FormDocColumn;
 use SbmPdf\Form\DocField as FormDocField;
 use SbmPdf\Form\DocLabel as FormDocLabel;
-use SbmPdf\Form\DocAffectation as FormDocAffectation;
+use SbmPdf\Form\DocTable as FormDocTable;
+use SbmPdf\Form\Service\DocumentPdfFactory as FormDocumentPdfFactory;
+use SbmPdf\Listener\PdfListener;
+use SbmPdf\Listener\Service\PdfListenerFactory;
+use SbmPdf\Model\Columns;
+use SbmPdf\Model\Service as PdfService;
+use SbmPdf\Model\Tcpdf;
 use SbmPdf\Model\Service\ColumnsFactory;
 use SbmPdf\Model\Service\TcpdfFactory;
-use SbmPdf\Model\Columns;
-use SbmPdf\Model\Tcpdf;
-use SbmPdf\Controller;
-
 
 return [
     'tcpdf' => [],

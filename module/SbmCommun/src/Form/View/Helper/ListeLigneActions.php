@@ -2,8 +2,8 @@
 /**
  * ViewHelper permettant d'afficher le formulaire d'actions en bout de ligne dans une liste, 
  * à déclarer dans module.config.php comme ceci : 
- * 'view_helpers' => array(
- *          'invokables' => array(
+ * 'view_helpers' => [
+ *          'invokables' => [
  *                      'listeLigneActions' =>'SbmCommun\Form\View\Helper\ListeLigneActions',)
  * )
  * 
@@ -47,7 +47,7 @@ class ListeLigneActions extends AbstractHelper
      *            La référence unique des données de la ligne (composé par exemple à partir
      *            de la <i>primary_key</i> ou d'une <i>key unique</i>).
      * @param array $hiddens
-     *            Tableau indexé array(name => value, ...). S'il n'y a pas de valeur mettre
+     *            Tableau indexé [name => value, ...). S'il n'y a pas de valeur mettre
      *            <b>null</b>.
      * @param array $attributes
      *            Ce sont les attributs du formulaires. En voici la liste (HTML5):<br><ul>

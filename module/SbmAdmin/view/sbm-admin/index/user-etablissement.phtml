@@ -9,7 +9,7 @@
  * @filesource user-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
+ * @date 19 sept. 2018
  * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -45,21 +45,17 @@ $actions = [
 <?php if ($this->etablissement === false) :?>
         <p class="left-10px">Il n'y a pas de etablissement associé à ce
 			compte d'utilisateur.</p>
-		<?php
-    echo $this->form()->openTag($this->form);
-    ?>
+    	<?= $this->form()->openTag($this->form);?>
         <fieldset class="sbm-page1">
-    <?php
-    echo $this->formHidden($this->form->get('csrf'));
-    echo $this->formHidden($this->form->get('userId'));
-    ?>
+            <?= $this->formHidden($this->form->get('csrf'));?>
+            <?= $this->formHidden($this->form->get('userId'));?>
             <div id="user-etablissement-ajout-etablissementId"
 				class="row-inner ajout"><?= $this->formRow($this->form->get('etablissementId'));?></div>
 			<div id="classe-ajout-buttons" class="row-inner ajout">
 			    <?= $this->formSubmit($this->form->get('submit'));?>
 			    <?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
-    <?= $this->form()->closeTag();?>
+    	<?= $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="page1">
 			<div>

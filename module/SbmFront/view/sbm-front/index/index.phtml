@@ -8,13 +8,13 @@
  * @filesource view/sbm-front/index/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2014
- * @version 2014-1
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 $url_gestion = $this->url('sbmgestion');
 $url_install = $this->url('sbminstall');
 $url_admin = $this->url('sbmadmin');
-$url_carte = $this->url('sbmcarte', array('action' => 'etablissements'));
+$url_carte = $this->url('sbmcarte', ['action' => 'etablissements']);
 
 if ($this->etat['etat'] == 0) {
     // avant le début de la période d'inscription
@@ -65,39 +65,42 @@ EOT;
 <div class="table-page1">
 	<div class="row">
 		<div class="column1">
-		    <?php echo $msg; ?>
+		    <?= $msg; ?>
 			<div class="centre">
-				<a href="<?php echo $this->accueil;?>" class="accueil"><?php echo $this->client['name'];?></a><br>
-				<?php echo $this->client['adresse'][0]; ?><br>
-				<?php if (!empty($this->client['adresse'][1])) echo $this->client['adresse'][1] . '<br>'; ?>
-				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
-				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
+				<a href="<?= $this->accueil;?>" class="accueil"><?= $this->client['name'];?></a><br>
+				<?= $this->client['adresse'][0]; ?><br>
+				<?php if (!empty($this->client['adresse'][1])) :?>
+					<?= $this->client['adresse'][1]; ?>
+					<br>
+				<?php endif;?>
+				<?= $this->client['code_postal']; ?> 
+				<?= $this->client['commune']; ?>
+				<br>
+				Tél. <?= $this->telephone($this->client['telephone']); ?>
 			</div>
 		</div>
 		<div class="column2">
 		    <div class="flashMessenger">
-		    <?php 
-		    echo $this->flashMessenger()->render('success');
-		    echo $this->flashMessenger()->render('warning');
-		    echo $this->flashMessenger()->render('error');
-		    echo $this->flashMessenger()->render('info');
-		    echo $this->flashMessenger()->render('default');
-		    ?>
+		    	<?= $this->flashMessenger()->render('success');?>
+		    	<?= $this->flashMessenger()->render('warning');?>
+		    	<?= $this->flashMessenger()->render('error');?>
+		    	<?= $this->flashMessenger()->render('info');?>
+		    	<?= $this->flashMessenger()->render('default');?>
 		    </div>
-		    <?php echo $this->form()->openTag($this->form); ?>
+		    <?= $this->form()->openTag($this->form); ?>
 		    <fieldset class="sbm-page1">
 				<div class="centre">
 					<h3>Identifiez-vous</h3>
 					<div class="sbm-description">(si vous avez déjà créé votre compte)</div>
 				</div>	
-		    <?php echo $this->formRow($this->form->get('email')); ?>
+		    <?= $this->formRow($this->form->get('email')); ?>
 		    <br>
-		    <?php echo $this->formRow($this->form->get('mdp')); ?>
+		    <?= $this->formRow($this->form->get('mdp')); ?>
 		    <br>
-				<div class="centre"><?php echo $this->formSubmit($this->form->get('signin')); ?></div>
+				<div class="centre"><?= $this->formSubmit($this->form->get('signin')); ?></div>
 				<div class="centre top-6px">
 					<a
-						href="<?php echo $this->url('login', array('action' => 'mdp-demande')); ?>">Mot
+						href="<?= $this->url('login', ['action' => 'mdp-demande']); ?>">Mot
 						de passe oublié ?</a>
 				</div>
 			</fieldset>
@@ -107,13 +110,13 @@ EOT;
 			<div class="centre">
 					<h3>Nouvel utilisateur</h3>
 					<div class="sbm-description">(si vous n'avez pas de compte)</div>
-					<div class="centre"><?php echo $this->formSubmit($this->form->get('signup')); ?></div>
+					<div class="centre"><?= $this->formSubmit($this->form->get('signup')); ?></div>
 				</div>
 			</fieldset>
 			<p></p>
 			<?php endif;?>
-			<?php echo $this->form()->closeTag(); ?>
-			<div class="sbm-page1"><a href="<?php echo $url_carte;?>"><img alt="carte des établissements desservis" src="img/logocarteetablissements.png"></a></div>
+			<?= $this->form()->closeTag(); ?>
+			<div class="sbm-page1"><a href="<?= $url_carte;?>"><img alt="carte des établissements desservis" src="img/logocarteetablissements.png"></a></div>
 		</div>
 	</div>
 </div>

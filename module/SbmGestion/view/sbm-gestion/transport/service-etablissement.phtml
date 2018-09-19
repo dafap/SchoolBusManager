@@ -99,12 +99,12 @@ echo $this->flashMessenger()->render('default');
 				</tr>
             <?php foreach($this->data as $test => $etablissement): ?>
             <?php $fmt?>
-            <?php $nbInscrits = StdLib::getParamR(array($etablissement->etablissementId, 'total'), $this->t_nb_inscrits, 0); ?>
+            <?php $nbInscrits = StdLib::getParamR([$etablissement->etablissementId, 'total'), $this->t_nb_inscrits, 0); ?>
             <?php $exces = $etablissement->serv_nbPlaces < $nbInscrits; ?>
                 <tr
 					class="<?php
                 
-                echo $this->cycle(array(
+                echo $this->cycle([
                     "even",
                     "odd"
                 ))->next();

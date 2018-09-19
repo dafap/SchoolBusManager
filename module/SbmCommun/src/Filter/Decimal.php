@@ -36,7 +36,7 @@ class Decimal extends AbstractFilter implements FilterInterface
         if (! is_array($options)) {
             throw new \Exception(
                 __CLASS__ .
-                " - Le séparateur décimal est donné dans un tableau options => array('separateur' => ',')");
+                " - Le séparateur décimal est donné dans un tableau options => ['separateur' => ',')");
         }
         $this->car2sep = StdLib::getParam('car2sep', $options, false);
         $this->setOptions($options);

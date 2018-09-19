@@ -12,37 +12,36 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2015
- * @version 2015-1
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_horaires = $this->url('sbmdocument', array(
+$url_horaires = $this->url('sbmdocument', [
     'action' => 'horaires'
-));
-$url_eleves = $this->url('sbmportail', array(
+]);
+$url_eleves = $this->url('sbmportail', [
     'action' => 'tr-eleves'
-));
-$url_circuits = $this->url('sbmportail', array(
+]);
+$url_circuits = $this->url('sbmportail', [
     'action' => 'tr-circuits'
-));
-$url_carte_stations = $this->url('sbmportail', array(
+]);
+$url_carte_stations = $this->url('sbmportail', [
     'action' => 'tr-carte-stations'
-));
-$url_carte_etablissements = $this->url('sbmportail', array(
-    'action' => 'tr-carte-etablissements'
-));
+]);
+$url_carte_etablissements = $this->url('sbmportail',
+    [
+        'action' => 'tr-carte-etablissements'
+    ]);
 
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
-	<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+	<?= $this->flashMessenger()->render('success');?>
+	<?= $this->flashMessenger()->render('warning');?>
+	<?= $this->flashMessenger()->render('error');?>
+	<?= $this->flashMessenger()->render('info');?>
+	<?= $this->flashMessenger()->render('default');?>
     </div>
 	<h1>Portail des transports scolaires</h1>
 	<!-- h3>Pour les transporteurs</h3-->
@@ -52,7 +51,7 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves transportés</td>
-					<td class="effectif"><?php echo $this->elevesTransportes ?:0;?></td>
+					<td class="effectif"><?= $this->elevesTransportes ?:0;?></td>
 				</tr>
 			</tbody>
 		</table>
@@ -63,24 +62,25 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<?php foreach ($this->services as $service):?>
 				    <?php
-        $hiddens = array(
+        $hiddens = [
             'serviceId' => $service['serviceId']
-        );
-        $buttons = array(
-            'horaires' => array(
+        ];
+        $buttons = [
+            'horaires' => [
                 'class' => 'fam-clock-red',
                 'formaction' => $url_circuits,
                 'title' => 'Fiche horaires et informations'
-            )
-        );
+            ]
+        ];
         ?>
 				<tr>
-					<td><?php echo $service['serviceId'];?></td>
-					<td><?php echo $service['nom'];?></td>
-					<td><?php echo $service['operateur'];?></td>
-					<td><?php echo $service['transporteur'];?></td>
-					<td class="effectif"><?php echo empty($this->statServices[$service['serviceId']]['total']) ? 0 : $this->statServices[$service['serviceId']]['total'];?></td>
-					<td><?php echo $this->listeLigneActions($service['serviceId'], $hiddens, $buttons);?></td>
+					<td><?= $service['serviceId'];?></td>
+					<td><?= $service['nom'];?></td>
+					<td><?= $service['operateur'];?></td>
+					<td><?= $service['transporteur'];?></td>
+					<td class="effectif">
+						<?= empty($this->statServices[$service['serviceId']]['total']) ? 0 : $this->statServices[$service['serviceId']]['total'];?></td>
+					<td><?= $this->listeLigneActions($service['serviceId'], $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>				
 			</tbody>
@@ -93,13 +93,13 @@ echo $this->flashMessenger()->render('default');
 		</div>
 		<div id="menugeneral-inner">
 			<ul>
-				<li><a href="<?php echo $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
+				<li><a href="<?= $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
 						des élèves</a></li>
-				<li><a href="<?php echo $url_horaires; ?>"><i class="fam-bullet-go"></i>Fiches
+				<li><a href="<?= $url_horaires; ?>"><i class="fam-bullet-go"></i>Fiches
 						horaires des circuits</a></li>
-				<li><a href="<?php echo $url_carte_stations; ?>"><i
-						class="fam-bullet-go"></i>Carte des points d'arrêts</a></li>
-				<li><a href="<?php echo $url_carte_etablissements; ?>"><i
+				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
+						des points d'arrêts</a></li>
+				<li><a href="<?= $url_carte_etablissements; ?>"><i
 						class="fam-bullet-go"></i>Carte des établissements scolaires</a></li>
 			</ul>
 		</div>

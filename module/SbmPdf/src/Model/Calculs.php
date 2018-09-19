@@ -18,12 +18,12 @@
  *   
  * Exemple d'utilisation :
  * echo '<h1>Functions</h1><pre>';
- * $data = array(
- *  array( 1,  2, 12),
- *  array(12,  6,  7),
- *  array(14, 15, 12),
- *  array(20,  7, 18),
- *  array(17, 16, 18)
+ * $data = [
+ *  [ 1,  2, 12),
+ *  [12,  6,  7),
+ *  [14, 15, 12),
+ *  [20,  7, 18),
+ *  [17, 16, 18)
  * );
  * $f1 = 'Nombre: %compte% lignes - Total col1: %moyenne(1)% col2: %moyenne(2)% col3: %moyenne(3)%';
  * $oCalculs = new Calculs($data);

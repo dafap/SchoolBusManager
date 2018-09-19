@@ -27,7 +27,7 @@ $url_retour = $this->url('sbmgestion/transport', array(
     'action' => 'station-liste',
     'page' => $this->page
 ));
-$hiddens = array();
+$hiddens =[];
 $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
     'action' => 'stations-non-desservies'
 )), $url_rapports, 'fam-printer', null, $hiddens);
@@ -65,10 +65,10 @@ echo $this->flashMessenger()->render('default');
 					<th>Inscrits</th>
 				</tr>
             <?php foreach($this->data as $test => $station): ?>
-            <?php $nbInscrits = StdLib::getParamR(array($station['stationId'], 'total'), $this->t_nb_inscrits, 0); ?>
+            <?php $nbInscrits = StdLib::getParamR([$station['stationId'], 'total'), $this->t_nb_inscrits, 0); ?>
             <?php $exces = $nbInscrits > 0; ?>
                 <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next(); if ($exces) echo ' exces';?>">
+					class="<?php echo $this->cycle(["even", "odd"))->next(); if ($exces) echo ' exces';?>">
 					<td class="commune"><?php echo $this->escapeHtml($station['commune']); ?></td>
 					<td class="nom"><?php echo $this->escapeHtml($station['nom']); ?></td>
 					<td class="visible"><?php echo $station['visible'] ? 'Oui' : 'Non'; ?></td>

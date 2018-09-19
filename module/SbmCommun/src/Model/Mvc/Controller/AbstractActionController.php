@@ -220,9 +220,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
     /**
      * initListe est une méthode de contrôle d'entrée dans les xxxListeAction()
      * - si c'est un post, renvoie une redirection 303
-     * - si c'est un get ou un retour d'action, renvoie array(paginator, form, retour) à partir des
+     * - si c'est un get ou un retour d'action, renvoie [paginator, form, retour) à partir des
      * paramètres en session
-     * - si c'est une redirection 303, renvoie array(paginator, form, retour) à partir du post
+     * - si c'est une redirection 303, renvoie [paginator, form, retour) à partir du post
      * initial
      *
      * @param string $formName
@@ -243,7 +243,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *     
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
      *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme
-     *         array('paginator' => ..., 'form' => ..., 'retour' => boolean)
+     *         ['paginator' => ..., 'form' => ..., 'retour' => boolean)
      */
     protected function initListe($formName, $initForm = null, $strictWhere = [], $aliasWhere = [])
     {

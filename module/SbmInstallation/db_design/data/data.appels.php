@@ -14,4 +14,4 @@
  * @version 2015-1
  */
 
-return array();
+return[];

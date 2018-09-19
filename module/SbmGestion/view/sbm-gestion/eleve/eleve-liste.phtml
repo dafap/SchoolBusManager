@@ -138,7 +138,7 @@ if (! empty($this->groupe)) {
         'op' => $this->groupe
     ); // pour passer les éléments à prendre en compte pour eleve-groupe
 } else {
-    $hiddens = array();
+    $hiddens =[];
 }
 $menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
     'action' => 'eleve-liste'
@@ -292,7 +292,7 @@ echo $this->flashMessenger()->render('default');
             $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve['eleveId']);
             $js_chkCallback .= sprintf($modele_chkCallback, $eleve['eleveId'], $eleve['eleveId']);
             // tr css
-            $tr_css = $this->cycle(array(
+            $tr_css = $this->cycle([
                 "even",
                 "odd"
             ))->next();
@@ -393,7 +393,7 @@ echo $this->flashMessenger()->render('default');
 		<?php endif; ?>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 		<div class="criteres-wrapper">
 		<?php
 

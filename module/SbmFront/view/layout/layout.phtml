@@ -11,8 +11,8 @@
  * @package module/SbmFront
  * @filesource view/layout/layout.phtml
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmBase\Model\StdLib;
 
@@ -26,7 +26,7 @@ echo $this->doctype();
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<base href="<?php echo $this->basePath(); ?>" />
+<base href="<?= $this->basePath(); ?>" />
 <?php
 echo $this->headTitle('SBM ' . $appl_name)
     ->setSeparator(' - ')
@@ -39,55 +39,60 @@ echo $this->headMeta()
     ->setName('language', 'fr') . PHP_EOL;
 
 // headLink : Le favicon et les styles
-$this->headLink(array(
-    'rel' => 'shortcut icon',
-    'type' => 'image/vnd.microsoft.icon',
-    'href' => $this->basePath(StdLib::getParam('favicon', $layoutParameters))
-));
-foreach (StdLib::getParamR(array(
+$this->headLink(
+    [
+        'rel' => 'shortcut icon',
+        'type' => 'image/vnd.microsoft.icon',
+        'href' => $this->basePath(StdLib::getParam('favicon', $layoutParameters))
+    ]);
+foreach (StdLib::getParamR([
     'css',
     'append'
-), $layoutParameters, array()) as $css_file) {
+], $layoutParameters, []) as $css_file) {
     if (is_string($css_file)) {
         $this->headLink()->appendStylesheet($this->basePath($css_file));
     } elseif (is_array($css_file)) {
         $href = StdLib::getParam('href', $css_file);
-        $media = StdLib::getParam('media', $css_file) ?  : 'all';
-        $conditionalStylesheet = StdLib::getParam('conditionalStylesheet', $css_file) ?  : true;
-        $extras = StdLib::getParam('extras', $css_file) ?  : array();
+        $media = StdLib::getParam('media', $css_file) ?: 'all';
+        $conditionalStylesheet = StdLib::getParam('conditionalStylesheet', $css_file) ?: true;
+        $extras = StdLib::getParam('extras', $css_file) ?: [];
         if (! is_null($href)) {
-            $this->headLink()->appendStylesheet($this->basePath($href), $media, $conditionalStylesheet, $extras);
+            $this->headLink()->appendStylesheet($this->basePath($href), $media,
+                $conditionalStylesheet, $extras);
         }
     } else {
-        throw new Exception('Erreur de structure pour la définition des fichiers css dans la section append.');
+        throw new Exception(
+            'Erreur de structure pour la définition des fichiers css dans la section append.');
     }
 }
-foreach (StdLib::getParamR(array(
+foreach (StdLib::getParamR([
     'css',
     'prepend'
-), $layoutParameters, array()) as $css_file) {
+], $layoutParameters, []) as $css_file) {
     if (is_string($css_file)) {
         $this->headLink()->prependStylesheet($this->basePath($css_file));
     } elseif (is_array($css_file)) {
         $href = StdLib::getParam('href', $css_file);
-        $media = StdLib::getParam('media', $css_file) ?  : 'all';
-        $conditionalStylesheet = StdLib::getParam('conditionalStylesheet', $css_file) ?  : true;
-        $extras = StdLib::getParam('extras', $css_file) ?  : array();
+        $media = StdLib::getParam('media', $css_file) ?: 'all';
+        $conditionalStylesheet = StdLib::getParam('conditionalStylesheet', $css_file) ?: true;
+        $extras = StdLib::getParam('extras', $css_file) ?: [];
         if (! is_null($href)) {
-            $this->headLink()->prependStylesheet($this->basePath($href), $media, $conditionalStylesheet, $extras);
+            $this->headLink()->prependStylesheet($this->basePath($href), $media,
+                $conditionalStylesheet, $extras);
         }
     } else {
-        throw new Exception('Erreur de structure pour la définition des fichiers css dans la section prepend.');
+        throw new Exception(
+            'Erreur de structure pour la définition des fichiers css dans la section prepend.');
     }
 }
 echo $this->headLink();
 
 // headScript : les scripts
-foreach (StdLib::getParamR(array(
+foreach (StdLib::getParamR([
     'js',
     'file',
     'prepend'
-), $layoutParameters, array()) as $js_file) {
+], $layoutParameters, []) as $js_file) {
     if (is_string($js_file)) {
         $this->headScript()->prependFile($this->basePath($js_file));
     } elseif (is_array($js_file)) {
@@ -95,17 +100,19 @@ foreach (StdLib::getParamR(array(
         $type = StdLib::getParam('type', $js_file);
         $attrs = StdLib::getParam('attrs', $js_file);
         if (! is_null($src)) {
-            $head_script = $this->headScript()->prependFile($this->basePath($src), $type, $attrs);
+            $head_script = $this->headScript()->prependFile($this->basePath($src), $type,
+                $attrs);
         }
     } else {
-        throw new Exception('Erreur de structure pour la définition des fichiers js dans la section prepend.');
+        throw new Exception(
+            'Erreur de structure pour la définition des fichiers js dans la section prepend.');
     }
 }
-foreach (StdLib::getParamR(array(
+foreach (StdLib::getParamR([
     'js',
     'file',
     'append'
-), $layoutParameters, array()) as $js_file) {
+], $layoutParameters, []) as $js_file) {
     if (is_string($js_file)) {
         $this->headScript()->appendFile($this->basePath($js_file));
     } elseif (is_array($js_file)) {
@@ -113,17 +120,19 @@ foreach (StdLib::getParamR(array(
         $type = StdLib::getParam('type', $js_file);
         $attrs = StdLib::getParam('attrs', $js_file);
         if (! is_null($src)) {
-            $head_script = $this->headScript()->appendFile($this->basePath($src), $type, $attrs);
+            $head_script = $this->headScript()->appendFile($this->basePath($src), $type,
+                $attrs);
         }
     } else {
-        throw new Exception('Erreur de structure pour la définition des fichiers js dans la section append.');
+        throw new Exception(
+            'Erreur de structure pour la définition des fichiers js dans la section append.');
     }
 }
-foreach (StdLib::getParamR(array(
+foreach (StdLib::getParamR([
     'js',
     'script',
     'prepend'
-), $layoutParameters, array()) as $js_script) {
+], $layoutParameters, []) as $js_script) {
     if (is_string($js_script)) {
         $this->headScript()->prependScript($js_script);
     } elseif (is_array($js_script)) {
@@ -134,14 +143,15 @@ foreach (StdLib::getParamR(array(
             $this->headScript()->prependScript($template, $type, $attrs);
         }
     } else {
-        throw new Exception('Erreur de structure pour la définition d\'un script dans la section prepend');
+        throw new Exception(
+            'Erreur de structure pour la définition d\'un script dans la section prepend');
     }
 }
-foreach (StdLib::getParamR(array(
+foreach (StdLib::getParamR([
     'js',
     'script',
     'append'
-), $layoutParameters, array()) as $js_script) {
+], $layoutParameters, []) as $js_script) {
     if (is_string($js_script)) {
         $this->headScript()->appendScript($js_script);
     } elseif (is_array($js_script)) {
@@ -152,7 +162,8 @@ foreach (StdLib::getParamR(array(
             $this->headScript()->appendScript($template, $type, $attrs);
         }
     } else {
-        throw new Exception('Erreur de structure pour la définition d\'un script dans la section append');
+        throw new Exception(
+            'Erreur de structure pour la définition d\'un script dans la section append');
     }
 }
 echo $this->headScript();
@@ -160,31 +171,33 @@ echo $this->headScript();
 </head>
 <body id="main_body">
 	<div id="container-general">
-		<?php echo $this->partial('layout/header', StdLib::getParam('header', $layoutParameters));?>
+		<?= $this->partial('layout/header', StdLib::getParam('header', $layoutParameters));?>
 		<!-- conteneur de la page -->
 		<div id="container-interface"
-			class="<?php echo StdLib::getParam('page', $layoutParameters, 'page1'); ?>">
+			class="<?= StdLib::getParam('page', $layoutParameters, 'page1'); ?>">
 			<!-- header -->
 			<div id="header">
 				<div class="container_banner">
-					<!-- a href="<?php echo StdLib::getParam('accueil', $layoutParameters, ''); ?>" title="Retour à l'accueil"-->
-						<div id="bandeau" class="<?php echo StdLib::getParam('page', $layoutParameters, 'page1'); ?>"></div><!--/a-->
+					<!-- a href="<?= StdLib::getParam('accueil', $layoutParameters, ''); ?>" title="Retour à l'accueil"-->
+					<div id="bandeau"
+						class="<?= StdLib::getParam('page', $layoutParameters, 'page1'); ?>"></div>
+					<!--/a-->
 				</div>
 			</div>
 			<!-- bienvenue  -->
-			<?php echo $this->bienvenue(); ?>
+			<?= $this->bienvenue(); ?>
 			<!-- corps de page -->
 			<div class="content">
 			<?php  //echo $this->navigation('navigation')->menu()->setPartial('menu')->render(); //test menu dynamique ?> 
-			<?php echo $this->layout()->content; ?>
+			<?= $this->layout()->content; ?>
 			</div>
 
 		</div>
 		<!-- Footer -->
-		<?php echo $this->partial('layout/footer', StdLib::getParam('footer', $layoutParameters));?>
+		<?= $this->partial('layout/footer', StdLib::getParam('footer', $layoutParameters));?>
 	</div>
 	<!-- Statistiques (comme par exemple Google Analytics) -->
-	<?php  echo $this->partial('layout/stats'); ?>
+	<?= $this->partial('layout/stats'); ?>
 	<!-- Scripts éventuels de validation -->
-	<?php echo $this->inlineScript(); ?>
+	<?= $this->inlineScript(); ?>
 </body>

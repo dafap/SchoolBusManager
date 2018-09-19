@@ -7,22 +7,20 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmFront\Controller;
-use SbmFront\Model\Responsable\Responsable;
-use SbmFront\Model\Responsable\Service\ResponsableManager;
-use SbmFront\Form\Service\CreerCompteFactory;
-use SbmFront\Form\CreerCompte;
-use SbmFront\Form\Service\EmailChangeFactory;
-use SbmFront\Form\EmailChange;
-use SbmFront\Form\Service\LoginFactory;
-use SbmFront\Form\Login;
-use SbmFront\Form\Service\MdpDemandeFactory;
-use SbmFront\Form\MdpDemande;
 use SbmFront\Form;
-
+use SbmFront\Form\CreerCompte;
+use SbmFront\Form\EmailChange;
+use SbmFront\Form\Login;
+use SbmFront\Form\MdpDemande;
+use SbmFront\Form\Service\CreerCompteFactory;
+use SbmFront\Form\Service\EmailChangeFactory;
+use SbmFront\Form\Service\LoginFactory;
+use SbmFront\Form\Service\MdpDemandeFactory;
+use SbmFront\Model\Responsable\Service\ResponsableManager;
 
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
@@ -32,99 +30,111 @@ if (! defined('APPL_NAME')) {
     define('APPL_NAME', 'School Bus Manager');
 }
 
-return array(
-    'acl' => array(
-        'resources' => array(
-            'login' => array(
-                'actions' => array(
-                    'annuler' => array(
-                        'allow' => array(
-                            'roles' => array(
+return [
+    'acl' => [
+        'resources' => [
+            'login' => [
+                'actions' => [
+                    'annuler' => [
+                        'allow' => [
+                            'roles' => [
                                 'guest'
-                            )
-                        )
-                    ),
-                    'confirm' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'confirm' => [
+                        'allow' => [
+                            'roles' => [
                                 'guest'
-                            )
-                        )
-                    ),
-                    'creer-compte' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'creer-compte' => [
+                        'allow' => [
+                            'roles' => [
                                 'guest'
-                            )
-                        )
-                    ),
-                    'login' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'login' => [
+                        'allow' => [
+                            'roles' => [
                                 'guest'
-                            )
-                        )
-                    ),
-                    'home-page' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'home-page' => [
+                        'allow' => [
+                            'roles' => [
                                 'guest'
-                            )
-                        )
-                    ),
-                    'mdp-demande' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'mdp-demande' => [
+                        'allow' => [
+                            'roles' => [
                                 'guest'
-                            )
-                        )
-                    ),
-                    'email-change' => array(
-                        'allow' => array(
-                            'roles' => array(
-                                'parent', 'secretariat', 'transporteur', 'etablissement'
-                            )
-                        )
-                    ),
-                    'logout' => array(
-                        'allow' => array(
-                            'roles' => array(
-                                'parent', 'secretariat', 'transporteur', 'etablissement'
-                            )
-                        )
-                    ),
-                    'mdp-change' => array(
-                        'allow' => array(
-                            'roles' => array(
-                                'parent', 'secretariat', 'transporteur', 'etablissement'
-                            )
-                        )
-                    ),
-                    'mdp-reset' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'email-change' => [
+                        'allow' => [
+                            'roles' => [
+                                'parent',
+                                'secretariat',
+                                'transporteur',
+                                'etablissement'
+                            ]
+                        ]
+                    ],
+                    'logout' => [
+                        'allow' => [
+                            'roles' => [
+                                'parent',
+                                'secretariat',
+                                'transporteur',
+                                'etablissement'
+                            ]
+                        ]
+                    ],
+                    'mdp-change' => [
+                        'allow' => [
+                            'roles' => [
+                                'parent',
+                                'secretariat',
+                                'transporteur',
+                                'etablissement'
+                            ]
+                        ]
+                    ],
+                    'mdp-reset' => [
+                        'allow' => [
+                            'roles' => [
                                 'parent'
-                            )
-                        )
-                    ),
-                    'modif-compte' => array(
-                        'allow' => array(
-                            'roles' => array(
-                                'parent', 'secretariat', 'transporteur', 'etablissement'
-                            )
-                        )
-                    ),
-                    'synchro-compte' => array(
-                        'allow' => array(
-                            'roles' => array(
+                            ]
+                        ]
+                    ],
+                    'modif-compte' => [
+                        'allow' => [
+                            'roles' => [
+                                'parent',
+                                'secretariat',
+                                'transporteur',
+                                'etablissement'
+                            ]
+                        ]
+                    ],
+                    'synchro-compte' => [
+                        'allow' => [
+                            'roles' => [
                                 'parent'
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    ),
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
     'form_manager' => [
         'invokables' => [
             Form\MdpChange::class => Form\MdpChange::class,
@@ -142,69 +152,69 @@ return array(
         'invokables' => [],
         'factories' => [
             SbmFront\Form\Login::class => SbmFront\Form\Service\LoginFactory::class,
-            ResponsableManager::class => ResponsableManager::class,           
+            ResponsableManager::class => ResponsableManager::class
         ]
     ],
-    'router' => array(
-        'routes' => array(
-            'home' => array(
+    'router' => [
+        'routes' => [
+            'home' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/[:action]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => __NAMESPACE__,
                         'controller' => Controller\IndexController::class,
                         'action' => 'index'
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true
-            ),
-            'login' => array(
+            ],
+            'login' => [
                 'type' => 'segment',
-                'options' => array(
+                'options' => [
                     'route' => '/login[/:action[/:id]]',
-                    'constraints' => array(
+                    'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id' => '[a-f0-9]{32}'
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'module' => __NAMESPACE__,
                         'controller' => Controller\LoginController::class,
                         'action' => 'login'
-                    )
-                )
-            )
-        )
-    ),
-    'controllers' => array(
-        'factories' => array(
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'controllers' => [
+        'factories' => [
             Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
             Controller\LoginController::class => Controller\Service\LoginControllerFactory::class
-        )
-    ),
-    'view_helpers' => array(
-        'factories' => array(
+        ]
+    ],
+    'view_helpers' => [
+        'factories' => [
             'bienvenue' => 'SbmFront\Factory\View\Helper\BienvenueFactory'
-        )
-    ),
-    'view_manager' => array(
+        ]
+    ],
+    'view_manager' => [
         'display_not_found_reason' => true,
         'display_exceptions' => true,
         'not_found_template' => 'error/404',
         'exception_template' => 'error/index',
-        'template_map' => array(
+        'template_map' => [
             'layout/layout' => MODULE_PATH . '/view/layout/layout.phtml',
             'layout/header' => MODULE_PATH . '/view/layout/header.phtml',
             'layout/footer' => MODULE_PATH . '/view/layout/footer.phtml',
             'layout/stats' => MODULE_PATH . '/view/layout/stats.phtml',
             'error/404' => MODULE_PATH . '/view/error/404.phtml',
             'error/index' => MODULE_PATH . '/view/error/index.phtml'
-        ),
-        'template_path_stack' => array(
+        ],
+        'template_path_stack' => [
             MODULE_PATH . DIRECTORY_SEPARATOR . 'view'
-        )
-    )
-);
+        ]
+    ]
+];

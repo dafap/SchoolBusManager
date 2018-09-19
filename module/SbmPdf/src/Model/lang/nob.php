@@ -28,7 +28,7 @@
 // Norwegian Bokmål
 
 global $l;
-$l = Array();
+$l =[];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

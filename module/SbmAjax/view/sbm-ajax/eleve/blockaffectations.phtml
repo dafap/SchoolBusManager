@@ -12,16 +12,17 @@
  * @filesource blockaffectations.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2015
- * @version 2015-1
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 ?>
 <h3>
 	Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
-		title="Ajouter une affectation pour <?php echo $this->identite;?>"
-		data-button="btnaffectation" data-trajet="<?php echo $this->trajet?>" data-href="/op:add"></i>
+		title="Ajouter une affectation pour <?= $this->identite;?>"
+		data-button="btnaffectation" data-trajet="<?= $this->trajet?>"
+		data-href="/op:add"></i>
 </h3>
-<?php 
+<?php
 if (isset($this->structure)) {
     echo $this->affectations($this->trajet, $this->structure);
 }

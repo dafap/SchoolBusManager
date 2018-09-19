@@ -52,7 +52,7 @@ $url_rapports = $this->url('sbmgestion/transport', array(
     'page' => $this->page
 ));
 $url_retour = $this->url('sbmgestion/transport');
-$hiddens = array();
+$hiddens =[];
 $menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
     'action' => 'classe-liste'
 )), $url_rapports, 'fam-printer', null, $hiddens);
@@ -97,14 +97,14 @@ echo $this->flashMessenger()->render('default');
         <?php foreach($classes as $test => $classe): ?>
         <?php
             
-$nbInscrits = StdLib::getParamR(array($classe->classeId, 'transportes'), $this->t_nb_inscrits, 0) . ' / ';
-$nbInscrits.= StdLib::getParamR(array($classe->classeId, 'demandes'), $this->t_nb_inscrits, 0);
+$nbInscrits = StdLib::getParamR([$classe->classeId, 'transportes'), $this->t_nb_inscrits, 0) . ' / ';
+$nbInscrits.= StdLib::getParamR([$classe->classeId, 'demandes'), $this->t_nb_inscrits, 0);
             // construction des JS pour selection            
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $classe->classeId);
             $jsCallback .= sprintf("$modele\n", $classe->classeId, $classe->classeId);
             ?>
             <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+					class="<?php echo $this->cycle(["even", "odd"))->next();?>">
 					<td class="nom"><?php echo $this->escapeHtml($classe->nom); ?></td>
 					<td class="aliascg invisible"><?php echo $this->escapeHtml($classe->aliasCG); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
@@ -153,7 +153,7 @@ $nbInscrits.= StdLib::getParamR(array($classe->classeId, 'demandes'), $this->t_n
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 		<div class="criteres-wrapper">
         <?php echo $this->form()->openTag($this->criteres_form);?>
         <?php echo $this->formCollection($this->criteres_form, true);?>

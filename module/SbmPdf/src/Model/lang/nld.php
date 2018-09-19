@@ -28,7 +28,7 @@
 // Dutch
 
 global $l;
-$l = Array();
+$l =[];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

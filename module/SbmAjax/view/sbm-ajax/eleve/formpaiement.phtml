@@ -9,30 +9,30 @@
  * @filesource formpaiement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 // style css utilisés dans le formulaire
 $this->headStyle()->captureStart();
 ?>
-#formpaiement<?php echo $this->trajet;?> label.sbm-form-auto {
+#formpaiement<?= $this->trajet;?> label.sbm-form-auto {
     display: inline-block;
     width: 150px;
     margin-right: 5px;
 }
-#formpaiement<?php echo $this->trajet;?> label.sbm-form-auto:before {
+#formpaiement<?= $this->trajet;?> label.sbm-form-auto:before {
 	content: "\A";
 	white-space: pre;
 	line-height: 1.5em;
 }
-#formpaiement<?php echo $this->trajet;?> input.button {
+#formpaiement<?= $this->trajet;?> input.button {
     position: relative;
     top: 1.5rem;
 }
-#formpaiement<?php echo $this->trajet;?> input.button.cancel {
+#formpaiement<?= $this->trajet;?> input.button.cancel {
     margin-left: 100px;
 }
-#formpaiement<?php echo $this->trajet;?> input.button.submit {
+#formpaiement<?= $this->trajet;?> input.button.submit {
 	margin-left: 15px;
 }
 <?php
@@ -42,8 +42,8 @@ echo $this->headStyle();
 // scripts js utilisés dans cette page
 $this->headScript()->captureStart();
 ?>
-var is_xmlhttprequest = <?php echo $this->is_xmlhttprequest; ?>;
-var urlform = '<?php echo $this->form->getAttribute('action'); ?>';
+var is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
+var urlform = '<?= $this->form->getAttribute('action'); ?>';
 var btnclick;
 $(function() {
   $("#formpaiement input[name=cancel]").click(function(){btnclick='cancel';});
@@ -89,16 +89,18 @@ $this->inlineScript()->captureEnd();
 echo $this->inlineScript();
 ?>
 <div id="formpaiement">
-<?php 
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('eleveId'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
-<div id="formpaiement-gratuit" class="row-inner"><?php echo $this->formRow($this->form->get('gratuit'));?></div>
-<div id="formpaiement-organismeId" class="row-inner" style="display: none;"><?php echo $this->formRow($this->form->get('organismeId'));?></div>
-<div id="formpaiement-buttons" class="row-inner edit left-95px">
-<?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
-</div>
-<?php echo $this->form()->closeTag();?>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formHidden($this->form->get('eleveId'));?>
+	<?= $this->formHidden($this->form->get('csrf'));?>
+	<div id="formpaiement-gratuit" class="row-inner">
+		<?= $this->formRow($this->form->get('gratuit'));?></div>
+	<div id="formpaiement-organismeId" class="row-inner"
+		style="display: none;">
+		<?= $this->formRow($this->form->get('organismeId'));?></div>
+	<div id="formpaiement-buttons" class="row-inner edit left-95px">
+		<?= $this->formSubmit($this->form->get('submit'));?>
+		<?= $this->formSubmit($this->form->get('cancel'));?>
+	</div>
+	<?= $this->form()->closeTag();?>
 </div>
 <div id="errors"></div>

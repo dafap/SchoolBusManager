@@ -8,8 +8,8 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juin 2017
- * @version 2017-2.3.4
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -22,449 +22,468 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('circuit');
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'name' => 'circuitId',
             'type' => 'hidden'
-        ));
-        $this->add(array(
+        ]);
+        $this->add([
             'name' => 'millesime',
             'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'serviceId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'circuit-serviceId',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
-                'label' => 'Service',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Quel service ?',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'stationId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'circuit-stationId',
-                'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
-                'label' => 'Point d\'arrêt',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Quel point d\'arrêt ?',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'passage',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'circuit-passage',
-                'class' => 'sbm-width-5c'
-            ),
-            'options' => array(
-                'label' => 'Passage',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'value_options' => array(
-                    '1' => '1',
-                    '2' => '2',
-                    '3' => '3',
-                    '4' => '4'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'semaine',
-            'type' => 'Zend\Form\Element\MultiCheckbox',
-            'attributes' => array(
-                'id' => 'circuit-semaine',
-                'class' => 'sbm-multicheckbox'
-            ),
-            'options' => array(
-                'label' => 'Jours de passage',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-semaine'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'm1',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'circuit-m1',
-                'title' => 'Lundi, mardi, jeudi, vendredi. Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Lu Ma Je Ve',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 's1',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'circuit-s1',
-                'title' => 'Lundi, mardi, jeudi, vendredi. Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Lu Ma Je Ve',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'm2',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'circuit-m2',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Mercredi',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 's2',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'circuit-s2',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Mercredi',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'm3',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'circuit-m3',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Samedi',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 's3',
-            'type' => 'SbmCommun\Form\Element\Time',
-            'attributes' => array(
-                'id' => 'circuit-s3',
-                'title' => 'Format hh:mm',
-                'class' => 'sbm-width-10c',
-                'min' => '00:00',
-                'max' => '29:59',
-                'step' => '60'
-            ),
-            'options' => array(
-                'format' => 'H:i',
-                'label' => 'Samedi',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'distance',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'circuit-distance',
-                'class' => 'sbm-width-10c'
-            ),
-            'options' => array(
-                'label' => 'Distance',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'montee',
-            'type' => 'Zend\Form\Element\Checkbox',
-            'attributes' => array(
-                'id' => 'circuit-montee',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Point de montée',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'descente',
-            'type' => 'Zend\Form\Element\Checkbox',
-            'attributes' => array(
-                'id' => 'circuit-descente',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Point de descente',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'typeArret',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'circuit-typeArret',
-                'class' => 'sbm-width-55c'
-            ),
-            'options' => array(
-                'label' => 'Type d\'arrêt',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'commentaire1',
-            'type' => 'textarea',
-            'attributes' => array(
-                'id' => 'circuit-commentaire1',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Commentaire aller',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-top'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'commentaire2',
-            'type' => 'textarea',
-            'attributes' => array(
-                'id' => 'circuit-commentaire2',
-                'class' => 'sbm-width-40c'
-            ),
-            'options' => array(
-                'label' => 'Commentaire retour',
-                'label_attributes' => array(
-                    'class' => 'sbm-label-top'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'station-submit',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'station-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'serviceId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'circuit-serviceId',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Service',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel service ?',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'stationId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'circuit-stationId',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Point d\'arrêt',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel point d\'arrêt ?',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'passage',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'circuit-passage',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Passage',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'value_options' => [
+                        '1' => '1',
+                        '2' => '2',
+                        '3' => '3',
+                        '4' => '4'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'semaine',
+                'type' => 'Zend\Form\Element\MultiCheckbox',
+                'attributes' => [
+                    'id' => 'circuit-semaine',
+                    'class' => 'sbm-multicheckbox'
+                ],
+                'options' => [
+                    'label' => 'Jours de passage',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-semaine'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'm1',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'circuit-m1',
+                    'title' => 'Lundi, mardi, jeudi, vendredi. Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Lu Ma Je Ve',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 's1',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'circuit-s1',
+                    'title' => 'Lundi, mardi, jeudi, vendredi. Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Lu Ma Je Ve',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'm2',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'circuit-m2',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Mercredi',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 's2',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'circuit-s2',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Mercredi',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'm3',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'circuit-m3',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Samedi',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 's3',
+                'type' => 'SbmCommun\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'circuit-s3',
+                    'title' => 'Format hh:mm',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00',
+                    'max' => '29:59',
+                    'step' => '60'
+                ],
+                'options' => [
+                    'format' => 'H:i',
+                    'label' => 'Samedi',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'distance',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'circuit-distance',
+                    'class' => 'sbm-width-10c'
+                ],
+                'options' => [
+                    'label' => 'Distance',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'montee',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'circuit-montee',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Point de montée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'descente',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'circuit-descente',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Point de descente',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'typeArret',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'circuit-typeArret',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Type d\'arrêt',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'commentaire1',
+                'type' => 'textarea',
+                'attributes' => [
+                    'id' => 'circuit-commentaire1',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Commentaire aller',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-top'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'commentaire2',
+                'type' => 'textarea',
+                'attributes' => [
+                    'id' => 'circuit-commentaire2',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Commentaire retour',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-top'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'station-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'station-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'serviceId' => array(
+        return [
+            'serviceId' => [
                 'name' => 'serviceId',
                 'required' => true
-            ),
-            'stationId' => array(
+            ],
+            'stationId' => [
                 'name' => 'stationId',
                 'required' => true
-            ),
-            'semaine' => array(
+            ],
+            'semaine' => [
                 'name' => 'semaine',
                 'required' => true
-            ),
-            'm1' => array(
+            ],
+            'm1' => [
                 'name' => 'm1',
                 'required' => false
-            ),
-            's1' => array(
+            ],
+            's1' => [
                 'name' => 's1',
                 'required' => false
-            ),
-            'm2' => array(
+            ],
+            'm2' => [
                 'name' => 'm2',
                 'required' => false
-            ),
-            's2' => array(
+            ],
+            's2' => [
                 'name' => 's2',
                 'required' => false
-            ),
-            'm3' => array(
+            ],
+            'm3' => [
                 'name' => 'm3',
                 'required' => false
-            ),
-            's3' => array(
+            ],
+            's3' => [
                 'name' => 's3',
                 'required' => false
-            ),
-            'distance' => array(
+            ],
+            'distance' => [
                 'name' => 'distance',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'typeArret' => array(
+                    ]
+                ]
+            ],
+            'typeArret' => [
                 'name' => 'typeArret',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            ),
-            'commentaire' => array(
+                    ]
+                ]
+            ],
+            'commentaire' => [
                 'name' => 'commentaire',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     public function setData($data)
     {
         // adapte le format des time pour les éléments DateTimeLocal du formulaire
-        $elementsTime = array(
+        $elementsTime = [
             'm1',
             'm2',
             'm3',
             's1',
             's2',
             's3'
-        );
+        ];
         for ($i = 0; $i < count($elementsTime); $i ++) {
             if (isset($data[$elementsTime[$i]])) {
                 $dte = new \DateTime($data[$elementsTime[$i]]);
@@ -478,15 +497,15 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
     public function setValueOptions($element, array $values_options)
     {
         if ($element == 'semaine') {
-            $values_options_semaine = array();
+            $values_options_semaine = [];
             foreach ($values_options as $key => $value) {
-                $values_options_semaine[] = array(
+                $values_options_semaine[] = [
                     'value' => $key,
                     'label' => $value,
-                    'attributes' => array(
+                    'attributes' => [
                         'id' => 'semaine-' . $value
-                    )
-                );
+                    ]
+                ];
             }
             $values_options = $values_options_semaine;
         }

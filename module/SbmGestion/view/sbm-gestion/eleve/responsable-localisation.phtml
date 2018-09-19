@@ -13,7 +13,7 @@
  * @version 2016-2.2.2
  */
 // calcul du contenu de l'infobulle
-$description = array();
+$description =[];
 $description[] = $domicile = '<b>' . implode(' ', array(
     $this->responsable->titre,
     $this->responsable->nom,
@@ -32,7 +32,7 @@ $cp_ville = implode(' ', array(
 ));
 $description[] = $cp_ville;
 $domicile .= ' ' . $cp_ville;
-$telephone = array();
+$telephone =[];
 $tmp = $this->responsable->telephoneF;
 if (! empty($tmp)) {
     $telephone[] = $this->responsable->telephoneF;

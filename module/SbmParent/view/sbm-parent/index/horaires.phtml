@@ -9,18 +9,18 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juill. 2016
- * @version 2016-2.1.10
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 $url_retour = $this->url('sbmparent');
-$url_horaires = $this->url('sbmdocument', array(
+$url_horaires = $this->url('sbmdocument', [
     'action' => 'horaires'
-));
-$h3contentG = array();
-$h3contentD = array();
-$aller = array();
-$retour = array();
-$data = array();
+]);
+$h3contentG = [];
+$h3contentD = [];
+$aller = [];
+$retour = [];
+$data = [];
 foreach ($this->circuits as $obj) {
     $data[$obj->circuitId] = $obj;
 }
@@ -28,31 +28,33 @@ $data = array_values($data);
 $nbCircuits = count($data);
 for ($i = 0; $i < $nbCircuits; $i ++) {
     if ($i < $nbCircuits) { // sans doublons
-        $h3contentG[$data[$i]->serviceId] = 'Circuit n° ' . $data[$i]->serviceId . ' - car ' . $data[$i]->transporteur;
-        $h3contentD[$data[$i]->transporteurId] = 'Tél. ' . $data[$i]->transporteur . ' : ' . $this->telephone($data[$i]->telephoneTransporteur);
+        $h3contentG[$data[$i]->serviceId] = 'Circuit n° ' . $data[$i]->serviceId .
+            ' - car ' . $data[$i]->transporteur;
+        $h3contentD[$data[$i]->transporteurId] = 'Tél. ' . $data[$i]->transporteur . ' : ' .
+            $this->telephone($data[$i]->telephoneTransporteur);
     }
-    $aller[$i] = array(
+    $aller[$i] = [
         $data[$i]->m1,
         $data[$i]->station,
         $data[$i]->typeArret,
         empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
         empty($this->t_nb_inscrits[$i]) ? '' : '(voir tableau ci-dessous)',
         $data[$i]->commentaire1
-    );
+    ];
 }
 for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
-    $retour[$j] = array(
+    $retour[$j] = [
         $data[$i]->s2 . '<br>' . $data[$i]->s1,
         $data[$i]->station,
         $data[$i]->typeArret,
         empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
         empty($this->eleves[$i]) ? '' : implode('<br>', $this->eleves[$i]),
         $data[$i]->commentaire2
-    );
+    ];
 }
 ?>
 <div id="fiche-wrapper" class="parent horaires">
-	<h1>Transport de <?php echo $this->enfant;?></h1>
+	<h1>Transport de <?= $this->enfant;?></h1>
 	<div id="fiche-header">
 		<div class="clearfix">
 			<div class="float-left">
@@ -66,8 +68,8 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 			</div>
 		</div>
 		<div class="clearfix">
-			<h3 class="float-left"><?php echo implode('<br>', $h3contentG); ?></h3>
-			<h3 class="float-right"><?php echo implode('<br>', $h3contentD); ?></h3>
+			<h3 class="float-left"><?= implode('<br>', $h3contentG); ?></h3>
+			<h3 class="float-right"><?= implode('<br>', $h3contentD); ?></h3>
 		</div>
 	</div>
 	<div id=fiche-inner>
@@ -85,9 +87,9 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 						<th>Remarques</th>
 					</tr>
 	                <?php for ($i = 0; $i < count($data); $i ++):?>
-	                <?php $css = $this->cycle(array('odd', 'even'))->next();?>
-	                <tr class="<?php echo $css;?>">
-						<td><?php echo implode('</td><td>', $aller[$i]);?></td>
+	                <?php $css = $this->cycle(['odd', 'even'])->next();?>
+	                <tr class="<?= $css;?>">
+						<td><?= implode('</td><td>', $aller[$i]);?></td>
 					</tr>
 	                <?php endfor;?>
 				</tbody>
@@ -108,18 +110,19 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 						<th>Remarques</th>
 					</tr>
 	                <?php for ($i = 0; $i < count($data); $i ++):?>
-	                <?php $css = $this->cycle(array('odd', 'even'))->next();?>
-	                <tr class="<?php echo $css;?>">
-						<td><?php echo implode('</td><td>', $retour[$i]);?></td>
+	                <?php $css = $this->cycle(['odd', 'even'])->next();?>
+	                <tr class="<?= $css;?>">
+						<td><?= implode('</td><td>', $retour[$i]);?></td>
 					</tr>
 	                <?php endfor;?>
 				</tbody>
 			</table>
 		</fieldset>
 		<div class="left-95px top-6px">
-			<form method="post" action="<?php echo $url_retour;?>">
-			    <input type="submit" class="default" name="horaires" value="Imprimer" formaction="<?php echo $url_horaires;?>">
-				<input type="submit" class="default" name="cancel" value="Retour">
+			<form method="post" action="<?= $url_retour;?>">
+				<input type="submit" class="default" name="horaires"
+					value="Imprimer" formaction="<?= $url_horaires;?>"> <input
+					type="submit" class="default" name="cancel" value="Retour">
 			</form>
 		</div>
 	</div>

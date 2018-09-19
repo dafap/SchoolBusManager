@@ -114,7 +114,7 @@ $actions = array(
     }
     $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
     ?>
-			    <tr class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
+			    <tr class="<?php echo $this->cycle(["even", "odd"))->next();?>">
 					<td><?php echo $this->pictogrammes();?></td>
 					<td><?php echo $this->escapeHtml($row['nom']);?></td>
 					<td><?php echo $this->escapeHtml($row['prenom']);?></td>

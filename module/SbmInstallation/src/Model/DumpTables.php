@@ -9,7 +9,7 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
+ * @date 18 sept. 2018
  * @version 2018-2.4.5
  */
 namespace SbmInstallation\Model;
@@ -38,7 +38,7 @@ class DumpTables
  * @date %s
  * @version 2014-1
  */
-return array(
+return [
 ";
 
     private $tables = [];
@@ -106,7 +106,7 @@ return array(
                     $aujourdhui));
             // lecture de la table
             foreach ($table->fetchAll() as $row) {
-                $ligne = "\n    array(";
+                $ligne = "\n    [";
                 foreach ($row->getArrayCopy() as $key => $column) {
                     if (is_numeric($column)) {
                         if (substr($column, 0, 1) == 0 && strlen(trim($column)) > 1) {
@@ -169,10 +169,10 @@ return array(
 
                     $ligne .= "\n        '$key' => $val, ";
                 }
-                $ligne .= "\n    ),";
+                $ligne .= "\n    ],";
                 $this->fputs($fp, $ligne);
             }
-            $this->fputs($fp, "\n);");
+            $this->fputs($fp, "\n];");
             // fermeture du fichier
             fclose($fp);
         }

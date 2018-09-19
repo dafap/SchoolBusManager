@@ -9,28 +9,28 @@
  * @filesource affectation-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmpdf', array(
+$url_retour = $this->url('sbmpdf', [
     'action' => 'pdf-liste',
     'page' => $this->page
-));
-$hiddens = array(
+]);
+$hiddens = [
     'documentId' => $this->document['documentId'],
     'name' => $this->document['name'],
     'recordSource' => $this->document['recordSource']
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Liste des documents',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 
 if (strlen($this->document['recordSource']) > 450) {
     $sourceDocument = substr($this->document['recordSource'], 0, 450) . '...';
@@ -40,33 +40,30 @@ if (strlen($this->document['recordSource']) > 450) {
 ?>
 <h1>Placement d'un document pdf dans un menu</h1>
 <ul>
-	<li>Document: <?php echo $this->document['name'];?></li>
-	<li>Source du document: <?php echo $sourceDocument;?></li>
+	<li>Document: <?= $this->document['name'];?></li>
+	<li>Source du document: <?= $sourceDocument;?></li>
 </ul>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner" class="clearfix">
 		<fieldset class="sbm-page1">
-	   <?php
-    echo $this->form()->openTag($this->form);
-    echo $this->formHidden($this->form->get('docaffectationId'));
-    echo $this->formHidden($this->form->get('documentId'));
-    echo $this->formHidden($this->form->get('name'));
-    echo $this->formHidden($this->form->get('recordSource'));
-    echo $this->formHidden($this->form->get('csrf'));
-    ?>
- 			<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('libelle'));?></div>
-			<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('ordinal_position'));?></div>
-			<div class="row-inner label-240"><?php echo $this->formRow($this->form->get('route'));?></div>
+    		<?= $this->form()->openTag($this->form);?>
+    		<?= $this->formHidden($this->form->get('docaffectationId'));?>
+    		<?= $this->formHidden($this->form->get('documentId'));?>
+    		<?= $this->formHidden($this->form->get('name'));?>
+    		<?= $this->formHidden($this->form->get('recordSource'));?>
+    		<?= $this->formHidden($this->form->get('csrf'));?>    
+ 			<div class="row-inner label-240"><?= $this->formRow($this->form->get('libelle'));?></div>
+			<div class="row-inner label-240"><?= $this->formRow($this->form->get('ordinal_position'));?></div>
+			<div class="row-inner label-240"><?= $this->formRow($this->form->get('route'));?></div>
 			<div class="row-inner">
-	    <?php echo $this->formSubmit($this->form->get('submit')); ?>
-	    <?php echo $this->formSubmit($this->form->get('cancel')); ?>
-        </div>
-        <?php echo $this->form()->closeTag(); ?>
+	    		<?= $this->formSubmit($this->form->get('submit')); ?>
+	    		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
+        	<?= $this->form()->closeTag(); ?>
         </fieldset>
 	</div>
 	<div id="fiche-footer"></div>

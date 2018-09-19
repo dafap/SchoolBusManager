@@ -7,25 +7,25 @@
  * @filesource field-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2016
- * @version 2016-2.1.5
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
-
 ?>
-<h1>Suppression d'un champ dans un document Pdf (hors présentation tabulaire)</h1>
+<h1>Suppression d'un champ dans un document Pdf (hors présentation
+	tabulaire)</h1>
 <div id="suppr-wrapper">
 	<p>Vous avez demandé la suppression du champ suivant :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li>Champ n° : <?php echo $this->data->ordinal_position; ?></li>
-			<li>Champ : <?php echo $this->escapeHtml($this->data->fieldname); ?></li>
-			<li>Libellé : <?php echo $this->data->label ?$this->escapeHtml($this->data->label) : '(sans étiquette)'; ?></li>
+			<li>Champ n° : <?= $this->data->ordinal_position; ?></li>
+			<li>Champ : <?= $this->escapeHtml($this->data->fieldname); ?></li>
+			<li>
+			Libellé : <?= $this->data->label ?$this->escapeHtml($this->data->label) : '(sans étiquette)'; ?>
+			</li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
 </div>

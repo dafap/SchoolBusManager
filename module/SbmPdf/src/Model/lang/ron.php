@@ -28,7 +28,7 @@
 // Romanian, Moldavian, Moldovan
 
 global $l;
-$l = Array();
+$l =[];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

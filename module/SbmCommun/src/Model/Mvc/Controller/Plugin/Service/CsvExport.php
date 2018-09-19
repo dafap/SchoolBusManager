@@ -6,7 +6,7 @@
  * Usage simple dans un controller : 
  *   return $this->csvExport('foo.csv', $header, $records); 
  *   - nom du fichier produit: foo.csv
- *   - ligne d'en-tête (ex: array('Nom', 'Prénom', 'Date de naissance') )
+ *   - ligne d'en-tête (ex: ['Nom', 'Prénom', 'Date de naissance') )
  *   - données sous forme de tableau (ex: iterator_to_array($resultset))
  *   - pas de fonction callback
  *   - le délimiteur par défaut est ';'

@@ -8,8 +8,8 @@
  * @filesource Station.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2016
- * @version 2016-2
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -22,256 +22,267 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('station');
         $this->setAttribute('method', 'post');
-        $this->add(array(
+        $this->add([
             'name' => 'stationId',
             'type' => 'hidden'
-        ));
-        $this->add(array(
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => array(
-                'csrf_options' => array(
-                    'timeout' => 180
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'communeId',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'id' => 'station-communeId',
-                'autofocus' => 'autofocus',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Commune',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'empty_option' => 'Choisissez une commune',
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'nom',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'station-nom',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom de la station',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'aliasCG',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'station-aliasCG',
-                'class' => 'sbm-width-45c'
-            ),
-            'options' => array(
-                'label' => 'Nom CG',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'codeCG',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'station-codeCG',
-                'class' => 'sbm-width-15c'
-            ),
-            'options' => array(
-                'label' => 'Code CG',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'x',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'station-x',
-                'class' => 'sbm-width-20c'
-            ),
-            'options' => array(
-                'label' => 'X',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'y',
-            'type' => 'text',
-            'attributes' => array(
-                'id' => 'station-y',
-                'class' => 'sbm-width-20c'
-            ),
-            'options' => array(
-                'label' => 'Y',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'visible',
-            'attributes' => array(
-                'id' => 'station-visible',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Visible',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Checkbox',
-            'name' => 'ouverte',
-            'attributes' => array(
-                'id' => 'station-ouverte',
-                'class' => 'sbm-checkbox'
-            ),
-            'options' => array(
-                'label' => 'Ouverte',
-                'label_attributes' => array(
-                    'class' => 'sbm-label'
-                ),
-                'error_attributes' => array(
-                    'class' => 'sbm-error'
-                )
-            )
-        ));
-        $this->add(array(
-            'name' => 'submit',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'station-submit',
-                'class' => 'button default submit'
-            )
-        ));
-        $this->add(array(
-            'name' => 'cancel',
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'station-cancel',
-                'class' => 'button default cancel'
-            )
-        ));
+        ]);
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'station-communeId',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une commune',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'station-nom',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom de la station',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'aliasCG',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'station-aliasCG',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom CG',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'codeCG',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'station-codeCG',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Code CG',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'x',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'station-x',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'X',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'y',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'station-y',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'Y',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'visible',
+                'attributes' => [
+                    'id' => 'station-visible',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Visible',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'ouverte',
+                'attributes' => [
+                    'id' => 'station-ouverte',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Ouverte',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'station-submit',
+                    'class' => 'button default submit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'station-cancel',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'communeId' => array(
+        return [
+            'communeId' => [
                 'name' => 'communeId',
                 'required' => true
-            ),
-            'nom' => array(
+            ],
+            'nom' => [
                 'name' => 'nom',
                 'required' => true,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-            ),
-            'aliasCG' => array(
+                    ]
+                ]
+            ],
+            'aliasCG' => [
                 'name' => 'aliasCG',
-                'required' => false, 
-                'filters' => array(
-                    array(
+                'required' => false,
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-            ),
-            'codeCG' => array(
+                    ]
+                ]
+            ],
+            'codeCG' => [
                 'name' => 'codeCG',
-                'required' => false, 
-                'filters' => array(
-                    array(
+                'required' => false,
+                'filters' => [
+                    [
                         'name' => 'StripTags'
-                    ),
-                    array(
+                    ],
+                    [
                         'name' => 'StringTrim'
-                    )
-                ),
-            ),
-            'x' => array(
+                    ]
+                ]
+            ],
+            'x' => [
                 'name' => 'x',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            ),
-            'y' => array(
+                    ]
+                ]
+            ],
+            'y' => [
                 'name' => 'y',
                 'required' => false,
-                'filters' => array(
-                    array(
+                'filters' => [
+                    [
                         'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => array(
+                        'options' => [
                             'separateur' => '.',
                             'car2sep' => ','
-                        )
-                    )
-                ),
-                'validators' => array(
-                    array(
+                        ]
+                    ]
+                ],
+                'validators' => [
+                    [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 }

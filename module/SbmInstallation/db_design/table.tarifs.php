@@ -8,8 +8,8 @@
  * @filesource table.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 févr. 2014
- * @version 2014-1
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 
 /**
@@ -64,6 +64,6 @@ return array(
     ),
     
     // 'data' => include __DIR__ . '/data/data.tarifs.php'
-    //'data' => array('after' => array(),'include' => __DIR__ . '/data/data.tarifs.php')
+    //'data' => array('after' =>[],'include' => __DIR__ . '/data/data.tarifs.php')
     'data' => __DIR__ . '/data/data.tarifs.php'
 );

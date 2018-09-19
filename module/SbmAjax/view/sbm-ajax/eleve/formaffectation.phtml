@@ -9,8 +9,8 @@
  * @filesource formaffectation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2017
- * @version 2017-2.3.11
+ * @date 19 sept.2018
+ * @version 2018-2.4.5
  */
 
 /* Pour DEBUG
@@ -28,35 +28,35 @@
  $msg_alert .= '+"\nservice1: "+$("#affectation-service1Id option:selected").val()';
  
  /* et ajouter la ligne qui suit dans inlineScript()->captureStart()
- alert(<?php echo $msg_alert;?>);
+ alert(<?= $msg_alert;?>);
  */
 ?>
 <?php $this->headStyle()->captureStart(); ?>
-#formaffectation<?php echo $this->trajet;?> label.sbm-form-auto {
+#formaffectation<?= $this->trajet;?> label.sbm-form-auto {
     display: inline-block;
     width: 150px;
     margin-right: 5px;
 }
-#formaffectation<?php echo $this->trajet;?> label.sbm-form-auto:before {
+#formaffectation<?= $this->trajet;?> label.sbm-form-auto:before {
 	content: "\A";
 	white-space: pre;
 	line-height: 1.5em;
 }
-#formaffectation<?php echo $this->trajet;?> input.button {
+#formaffectation<?= $this->trajet;?> input.button {
     position: relative;
     top: 1.5rem;
 }
-#formaffectation<?php echo $this->trajet;?> input.button.cancel {
+#formaffectation<?= $this->trajet;?> input.button.cancel {
     margin-left: 100px;
 }
-#formaffectation<?php echo $this->trajet;?> input.button.submit {
+#formaffectation<?= $this->trajet;?> input.button.submit {
 	margin-left: 15px;
 }
 <?php $this->headStyle()->captureEnd(); ?>
-<?php echo $this->headStyle();?>
+<?= $this->headStyle();?>
 <?php $this->headScript()->captureStart();?>
-var is_xmlhttprequest = <?php echo $this->is_xmlhttprequest; ?>;
-var urlform = '<?php echo $this->form->getAttribute('action'); ?>';
+var is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
+var urlform = '<?= $this->form->getAttribute('action'); ?>';
 var btnclick;
 var affectation = (function() {
   function setStationsValueOptions(valeur) {
@@ -78,32 +78,32 @@ var affectation = (function() {
 				}
 	    });
   }
-  $("#formaffectation<?php echo $this->trajet;?> input[name=cancel]").click(function(){btnclick='cancel';});
-  $("#formaffectation<?php echo $this->trajet;?> input[name=submit]").click(function(){btnclick='submit';});
+  $("#formaffectation<?= $this->trajet;?> input[name=cancel]").click(function(){btnclick='cancel';});
+  $("#formaffectation<?= $this->trajet;?> input[name=submit]").click(function(){btnclick='submit';});
   $("form#decision").submit(
     function() {
 	    // if not call by ajax submit to showformAction
 	    if (is_xmlhttprequest == 0)
             return true;
 		// if by ajax check by ajax : formaffectationvalidateAction
-		var trajet = $('#formaffectation<?php echo $this->trajet;?> input[name=trajet]').val();
+		var trajet = $('#formaffectation<?= $this->trajet;?> input[name=trajet]').val();
 		var demande = 'demandeR'+trajet;
 		var data = {
-		    'csrf' : $('#formaffectation<?php echo $this->trajet;?> input[name=csrf]').val(),
-			'eleveId' : $('#formaffectation<?php echo $this->trajet;?> input[name=eleveId]').val(),
-			'millesime' : $('#formaffectation<?php echo $this->trajet;?> input[name=millesime]').val(),
+		    'csrf' : $('#formaffectation<?= $this->trajet;?> input[name=csrf]').val(),
+			'eleveId' : $('#formaffectation<?= $this->trajet;?> input[name=eleveId]').val(),
+			'millesime' : $('#formaffectation<?= $this->trajet;?> input[name=millesime]').val(),
 			'trajet' : trajet,
-			'jours' : $('#formaffectation<?php echo $this->trajet;?> input[name=jours]').val(),
-			'sens' : $('#formaffectation<?php echo $this->trajet;?> input[name=sens]').val(),
-			'correspondance' : $('#formaffectation<?php echo $this->trajet;?> input[name=correspondance]').val(),
-			'responsableId' : $('#formaffectation<?php echo $this->trajet;?> input[name=responsableId]').val(),
-			'demandeR1' : $('#formaffectation<?php echo $this->trajet;?> input[name=demandeR1]').val(),
-			'demandeR2' : $('#formaffectation<?php echo $this->trajet;?> input[name=demandeR2]').val(),
-			'service1Id' : $('#formaffectation<?php echo $this->trajet;?> select[name=service1Id]').val(),
-			'service2Id' : $('#formaffectation<?php echo $this->trajet;?> select[name=service2Id]').val(),
-			'station1Id' : $('#formaffectation<?php echo $this->trajet;?> select[name=station1Id]').val(),
-			'station2Id' : $('#formaffectation<?php echo $this->trajet;?> select[name=station2Id]').val(),
-			'op' : $('#formaffectation<?php echo $this->trajet;?> input[name=op]').val(),
+			'jours' : $('#formaffectation<?= $this->trajet;?> input[name=jours]').val(),
+			'sens' : $('#formaffectation<?= $this->trajet;?> input[name=sens]').val(),
+			'correspondance' : $('#formaffectation<?= $this->trajet;?> input[name=correspondance]').val(),
+			'responsableId' : $('#formaffectation<?= $this->trajet;?> input[name=responsableId]').val(),
+			'demandeR1' : $('#formaffectation<?= $this->trajet;?> input[name=demandeR1]').val(),
+			'demandeR2' : $('#formaffectation<?= $this->trajet;?> input[name=demandeR2]').val(),
+			'service1Id' : $('#formaffectation<?= $this->trajet;?> select[name=service1Id]').val(),
+			'service2Id' : $('#formaffectation<?= $this->trajet;?> select[name=service2Id]').val(),
+			'station1Id' : $('#formaffectation<?= $this->trajet;?> select[name=station1Id]').val(),
+			'station2Id' : $('#formaffectation<?= $this->trajet;?> select[name=station2Id]').val(),
+			'op' : $('#formaffectation<?= $this->trajet;?> input[name=op]').val(),
 			'submit' : btnclick	
 		}
 		$.post(urlform, data, function(itemJson) {		
@@ -127,12 +127,12 @@ var affectation = (function() {
 	}
 })();
 <?php $this->headScript()->captureEnd();?>
-<?php echo $this->headScript();?>
+<?= $this->headScript();?>
 <?php $this->inlineScript()->captureStart();?>
 affectation.init();
 <?php $this->inlineScript()->captureEnd();?>
-<div id="formaffectation<?php echo $this->trajet;?>">
-<?php echo $this->form($this->form);?>
+<div id="formaffectation<?= $this->trajet;?>">
+<?= $this->form($this->form);?>
 </div>
 <div id="errors"></div>
-<?php echo $this->inlineScript();?>
+<?= $this->inlineScript();?>

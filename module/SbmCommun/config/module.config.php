@@ -7,14 +7,14 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2016
- * @version 2016-2.1.10
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
+use SbmCommun\Form;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Service\CalculDroits;
-use SbmCommun\Model\Service\MajDistances;
 use SbmCommun\Model\Service\FormManager;
-use SbmCommun\Form;
+use SbmCommun\Model\Service\MajDistances;
 
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
@@ -91,7 +91,7 @@ return [
             'Sbm\Db\System\DocTables' => 'SbmCommun\Model\Db\Service\Table\Sys\DocTables',
             'Sbm\Db\System\DocTables\Columns' => 'SbmCommun\Model\Db\Service\Table\Sys\DocColumns',
             'Sbm\Db\System\Libelles' => 'SbmCommun\Model\Db\Service\Table\Sys\Libelles',
-            
+
             'Sbm\Db\TableGateway\Affectations' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayAffectations',
             'Sbm\Db\TableGateway\Appels' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayAppels',
             'Sbm\Db\TableGateway\Circuits' => 'SbmCommun\Model\Db\Service\TableGateway\TableGatewayCircuits',
@@ -120,7 +120,7 @@ return [
             'Sbm\Db\SysTableGateway\DocLabels' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocLabels',
             'Sbm\Db\SysTableGateway\DocTables' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayDocTables',
             'Sbm\Db\SysTableGateway\Libelles' => 'SbmCommun\Model\Db\Service\TableGateway\Sys\TableGatewayLibelles',
-            
+
             'Sbm\Db\Vue\Circuits' => 'SbmCommun\Model\Db\Service\Table\Vue\Circuits',
             'Sbm\Db\Vue\Classes' => 'SbmCommun\Model\Db\Service\Table\Vue\Classes',
             'Sbm\Db\Vue\Etablissements' => 'SbmCommun\Model\Db\Service\Table\Vue\Etablissements',
@@ -131,7 +131,7 @@ return [
             'Sbm\Db\Vue\Services' => 'SbmCommun\Model\Db\Service\Table\Vue\Services',
             'Sbm\Db\Vue\Stations' => 'SbmCommun\Model\Db\Service\Table\Vue\Stations',
             'Sbm\Db\Vue\Transporteurs' => 'SbmCommun\Model\Db\Service\Table\Vue\Transporteurs',
-            
+
             'Sbm\Db\VueGateway\Circuits' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayCircuits',
             'Sbm\Db\VueGateway\Classes' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayClasses',
             'Sbm\Db\VueGateway\Etablissements' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayEtablissements',
@@ -142,7 +142,7 @@ return [
             'Sbm\Db\VueGateway\Services' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayServices',
             'Sbm\Db\VueGateway\Stations' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayStations',
             'Sbm\Db\VueGateway\Transporteurs' => 'SbmCommun\Model\Db\Service\TableGateway\Vue\TableGatewayTransporteurs',
-            
+
             'Sbm\Db\Select\Bordereaux' => 'SbmCommun\Model\Db\Service\Select\BordereauxForSelect',
             'Sbm\Db\Select\Classes' => 'SbmCommun\Model\Db\Service\Select\Classes',
             'Sbm\Db\Select\Communes' => 'SbmCommun\Model\Db\Service\Select\CommunesForSelect',
@@ -155,7 +155,7 @@ return [
             'Sbm\Db\Select\Transporteurs' => 'SbmCommun\Model\Db\Service\Select\Transporteurs',
             'Sbm\Db\Select\Libelles' => 'SbmCommun\Model\Db\Service\Select\LibellesForSelect',
             'Sbm\Libelles' => '\SbmCommun\Model\Db\Service\Libelles',
-            
+
             'Sbm\Db\Query\Circuits' => 'SbmCommun\Model\Db\Service\Query\Circuit\Circuits',
             'Sbm\Db\Query\Eleves' => 'SbmCommun\Model\Db\Service\Query\Eleve\Eleves',
             'Sbm\Db\Query\ElevesResponsables' => 'SbmCommun\Model\Db\Service\Query\Eleve\ElevesResponsables',
@@ -191,8 +191,6 @@ return [
             Form\Transporteur::class => Form\Transporteur::class
         ],
         'factories' => []
-
-        
     ],
     'cartographie_manager' => [
         'factories' => [

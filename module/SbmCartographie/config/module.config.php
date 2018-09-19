@@ -9,14 +9,13 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 2 mai 2016
- * @version 2016-2.1.1
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmCartographie\Controller;
-use SbmCartographie\Model\Service\CartographieManager;
-use SbmCartographie\GoogleMaps\DistanceEtablissements;
 use SbmCartographie\GoogleMaps\Service\DistanceEtablissementsFactory;
 use SbmCartographie\GoogleMaps\Service\GeocoderFactory;
+use SbmCartographie\Model\Service\CartographieManager;
 use SbmCartographie\Model\Service\ProjectionFactory;
 
 return [
@@ -47,7 +46,7 @@ return [
             ]
         ]
     ],
-    
+
     'cartographie_manager' => [
         'factories' => [
             'SbmCarto\DistanceEtablissements' => DistanceEtablissementsFactory::class,
@@ -60,7 +59,7 @@ return [
                 'distancematrix' => 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=car&language=fr-FR&sensor=false',
                 'geocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?address=%s',
                 'reversegeocoder' => 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=true'
-            ],
+            ]
         ]
     ],
     'service_manager' => [

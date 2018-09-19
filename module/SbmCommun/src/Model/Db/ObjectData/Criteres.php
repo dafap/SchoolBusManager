@@ -157,8 +157,8 @@ class Criteres implements ArraySerializableInterface
     /**
      * Prépare et renvoie un Where à partir des données de l'objet.
      * Le tableau $descripteur est structuré de la façon suivante :
-     * 'strict' => array(liste de champs ...)
-     * 'expressions' => array(liste de champs)
+     * 'strict' => [liste de champs ...)
+     * 'expressions' => [liste de champs)
      *
      * En fait, cette méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé
      * dans le tableau 'expressions'.

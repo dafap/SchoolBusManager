@@ -16,7 +16,7 @@ $this->headLink()->prependStylesheet($this->basepath('/js/jquery-ui-1.11.4.custo
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
 $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $retour = $this->url('sbmgestion/eleve', array('action'=> 'responsable-liste', 'page' => $this->page));
-$hiddens = array();
+$hiddens =[];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',

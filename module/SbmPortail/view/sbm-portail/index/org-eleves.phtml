@@ -9,16 +9,12 @@
  * @filesource org-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 18 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-
-// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
-// (ne pas mettre de guillemet dans la chaine)
-$js_op = 'window.document.getElementById(\'op%s%s\').value=\'%s\';';
 
 // le paginateur
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
@@ -32,87 +28,60 @@ try {
 <div id="liste-wrapper">
 	<div id="liste-inner">
 		<pre>
-	  <?php echo $e->getMessage();?>
+	  <?= $e->getMessage();?>
 	</pre>
 	</div>
 	<div id="liste-footer">
 		<div class="criteres-wrapper">
-<?php
-    if (! is_null($this->criteres_form)) {
-        echo $this->form()->openTag($this->criteres_form);
-        echo $this->formCollection($this->criteres_form, true);
-        echo $this->form()->closeTag();
-        return;
-    }
-    ?>
+		<?php if (! is_null($this->criteres_form)) : ?>
+        <?= $this->form()->openTag($this->criteres_form);?>
+        <?= $this->formCollection($this->criteres_form, true);?>
+        <?= $this->form()->closeTag();?>
+        <?php endif;?>
         </div>
 	</div>
 </div>
 <?php
     // fin du catch (affichage d'une page d'erreur)
+    return;
 }
 
 // les url à utiliser
-$url_ici = $this->url('sbmportail', 
-    array(
-        'action' => 'org-eleves',
-        'page' => $this->page
-    ));
-$url_responsable = $this->url('sbmportail', 
-    array(
-        'action' => 'org-responsable',
-        'page' => $this->page
-    ));
-$url_group = $this->url('sbmportail', 
-    array(
-        'action' => 'org-famille',
-        'page' => $this->page
-    ));
-$url_rapports = $this->url('sbmportail', 
-    array(
-        'action' => 'org-pdf',
-        'page' => $this->page
-    ));
-$url_map = $this->url('sbmcarte', 
-    array(
-        'action' => 'eleves',
-        'page' => $this->page
-    ));
-$url_retour = $this->url('sbmportail', array(
-    'action' => 'retour'
-));
-$url_telephones = $this->url('sbmportail', 
-    array(
-        'action' => 'tr-extraction-telephones',
-        'page' => $this->page
-    ));
+$url_ici = $this->url('sbmportail', [
+    'action' => 'org-eleves',
+    'page' => $this->page
+]);
+$url_rapports = $this->url('sbmportail', [
+    'action' => 'org-pdf',
+    'page' => $this->page
+]);
 
 // le formulaire des actions du haut de page - aide de vue listeZoneActions()
-$hiddens = array();
-$actions = array(
-    'cancel' => array(
+$hiddens = [];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_ici,
         'title' => 'Retour'
-    ),
-    'rapports' => array(
+    ],
+    'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $url_rapports,
         'title' => 'Liste à imprimer'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des élèves</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+        <?= $this->flashMessenger()->render('success');?>
+        <?= $this->flashMessenger()->render('warning');?>
+        <?= $this->flashMessenger()->render('error');?>
+        <?= $this->flashMessenger()->render('info');?>
+        <?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="eleves">
@@ -129,7 +98,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Arrêts</th>
 					<th>État</th>
 				</tr>
-        <?php foreach($eleves as $test => $eleve): ?>
+        <?php foreach($eleves as $eleve): ?>
         <?php
             // echo '<pre>';
             // die(print_r($eleve));
@@ -139,8 +108,8 @@ echo $this->flashMessenger()->render('default');
             $arrets = [];
             if ($eleve['responsable1']) {
                 $r[] = htmlspecialchars(
-                    str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES, 
-                    'utf-8', false);
+                    str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES, 'utf-8',
+                    false);
                 $circuitR1 = $eleve['service1IdR1'];
                 if ($eleve['service2IdR1']) {
                     $circuitR1 .= '<br/>' . $eleve['service2IdR1'];
@@ -154,8 +123,8 @@ echo $this->flashMessenger()->render('default');
             }
             if ($eleve['responsable2']) {
                 $r[] = htmlspecialchars(
-                    str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES, 
-                    'utf-8', false);
+                    str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES, 'utf-8',
+                    false);
                 $circuitR2 = $eleve['service1IdR2'];
                 if ($eleve['service2IdR2']) {
                     $circuitR2 .= '<br/>' . $eleve['service2IdR2'];
@@ -168,11 +137,10 @@ echo $this->flashMessenger()->render('default');
                 $arrets[] = $arretR2;
             }
             $nbResponsables = count($r);
-            $tr_css = $this->cycle(
-                array(
-                    "even",
-                    "odd"
-                ))->next();
+            $tr_css = $this->cycle([
+                "even",
+                "odd"
+            ])->next();
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
@@ -182,36 +150,36 @@ echo $this->flashMessenger()->render('default');
                 $message = 'Préinscrit';
             }
             ?>
-                <tr class="<?php echo $tr_css;?>">
+                <tr class="<?= $tr_css;?>">
 					<td class="numero align-right"
-						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?php echo $eleve['numero']; ?></td>
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $eleve['numero']; ?></td>
 					<td class="nom"
-						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?php echo $this->escapeHtml($eleve['nom']); ?></td>
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['nom']); ?></td>
 					<td class="nom"
-						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?php echo $this->escapeHtml($eleve['prenom']); ?></td>
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['prenom']); ?></td>
 					<td class="dateN"
-						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?php echo DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
 					<td class="responsables">
-					<?php echo $r[0]; ?></td>
+					<?= $r[0]; ?></td>
 					<td class="etablissement"
-						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?php echo $this->escapeHtml($eleve['etablissement'] /*. ' - ' . $eleve['communeEtablissement']*/);?></td>
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['etablissement'] /*. ' - ' . $eleve['communeEtablissement']*/);?></td>
 					<td class="classe"
-						<?php echo $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?php echo $this->escapeHtml($eleve['classe']);?></td>
-					<td><?php echo $circuits[0];?></td>
-					<td><?php echo $arrets[0];?></td>
-					<td class="centre"><?php echo $message;?></td>
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['classe']);?></td>
+					<td><?= $circuits[0];?></td>
+					<td><?= $arrets[0];?></td>
+					<td class="centre"><?= $message;?></td>
 					<?php if ($nbResponsables == 2) :?>
 				</tr>
-				<tr class="<?php echo $tr_css;?>">
-					<td><?php echo $r[1]; ?></td>
-					<td><?php echo $circuits[1];?></td>
-					<td><?php echo $arrets[1];?></td>	
+				<tr class="<?= $tr_css;?>">
+					<td><?= $r[1]; ?></td>
+					<td><?= $circuits[1];?></td>
+					<td><?= $arrets[1];?></td>	
 					<?php endif;?>
 				</tr>         
         <?php endforeach;?>
@@ -219,16 +187,13 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 		<div class="criteres-wrapper">
-		<?php
-
-if (! is_null($this->criteres_form)) {
-    echo $this->form()->openTag($this->criteres_form);
-    echo $this->formCollection($this->criteres_form, true);
-    echo $this->form()->closeTag();
-}
-?>
+		<?php if (! is_null($this->criteres_form)) : ?>
+    		<?= $this->form()->openTag($this->criteres_form);?>
+    		<?= $this->formCollection($this->criteres_form, true);?>
+    		<?= $this->form()->closeTag();?>
+		<?php endif;?>
 	    </div>
 	</div>
 </div>

@@ -5,7 +5,7 @@
  * ==============================================
  * Usage :
  * $where = new Where();
- * $where->notIn('id', array(1, 2));
+ * $where->notIn('id', [1, 2));
  * $where->equalTo('name', 'Foo');
  * 
  * $select = new Select('tbl_');

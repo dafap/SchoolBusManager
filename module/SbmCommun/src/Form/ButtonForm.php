@@ -8,8 +8,8 @@
  * @filesource ButtonForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2014
- * @version 2014-1
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -21,17 +21,17 @@ class ButtonForm extends Form
     /**
      * Constructeur du formulaire
      *
-     * @param array() $hiddens
+     * @param[] $hiddens
      *            Le tableau $hiddens est de la forme <pre>
-     *            array(
+     *            [
      *            'name-hidden1' => 'valeur-hidden1' ou 'name-hidden1' => attributes (où attributes est un tableau d'attributs : id =>..., value =>...)
      *            ...
      *            )
      *            </pre>
-     * @param array() $submits
+     * @param[] $submits
      *            Le tableau $submits est de la forme <pre>
-     *            array(
-     *            'name-button1' => array(validTagAttribute => valeur de l'attribut, ...)
+     *            [
+     *            'name-button1' => [validTagAttribute => valeur de l'attribut, ...)
      *            ...
      *            )
      *            </pre>
@@ -44,22 +44,23 @@ class ButtonForm extends Form
         $this->setAttribute('method', 'post');
         // le Csrf
         if ($avecCsrf) {
-            $this->add(array(
-                'name' => 'csrf',
-                'type' => 'Zend\Form\Element\Csrf',
-                'options' => array(
-                    'csrf_options' => array(
-                        'timeout' => 180
-                    )
-                )
-            ));
+            $this->add(
+                [
+                    'name' => 'csrf',
+                    'type' => 'Zend\Form\Element\Csrf',
+                    'options' => [
+                        'csrf_options' => [
+                            'timeout' => 180
+                        ]
+                    ]
+                ]);
         }
         // les hiddens
         foreach ($hiddens as $name => $value) {
-            $description = array(
+            $description = [
                 'name' => $name,
                 'type' => 'hidden'
-            );
+            ];
             if (is_array($value)) {
                 $description['attributes'] = $value;
             } elseif (! is_null($value)) {
@@ -69,12 +70,12 @@ class ButtonForm extends Form
         }
         // les boutons submits
         foreach ($submits as $name => $options) {
-            $description = array(
+            $description = [
                 'name' => $name,
-                'attributes' => array(
+                'attributes' => [
                     'type' => 'submit'
-                )
-            );
+                ]
+            ];
             foreach ($options as $option => $value) {
                 if (is_array($value)) {
                     $value = implode(' ', $value);

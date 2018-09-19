@@ -12,8 +12,8 @@
  * @filesource field-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()
     ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
@@ -28,76 +28,91 @@ $this->inlineScript()->captureStart();
 $this->inlineScript()->captureEnd();
 // =============================================================================================
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmpdf', array(
+$url_retour = $this->url('sbmpdf', [
     'action' => 'field-liste',
     'page' => $this->page
-));
-$hiddens = array(
+]);
+$hiddens = [
     'documentId' => $this->document['documentId'],
     'name' => $this->document['name'],
     'recordSource' => $this->document['recordSource']
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Définition d'un champ d'un document</h1>
 <ul>
-	<li>Document: <?php echo $this->document['name'];?></li>
-	<li>Source du document: <?php echo $this->document['recordSource'];?></li>
+	<li>Document: <?= $this->document['name'];?></li>
+	<li>Source du document: <?= $this->document['recordSource'];?></li>
 </ul>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
 		<fieldset class="sbm-page1">
-	   <?php
-    echo $this->form()->openTag($this->form); // le formulaire doit avoir id="accordion" pour que ça marche
-    echo $this->formHidden($this->form->get('docfieldId'));
-    echo $this->formHidden($this->form->get('documentId'));
-    echo $this->formHidden($this->form->get('name'));
-    echo $this->formHidden($this->form->get('recordSource'));
-    echo $this->formHidden($this->form->get('csrf'));
-    ?>
-
+	   		<?php // le formulaire doit avoir id="accordion" pour que ça marche ?>
+    		<?= $this->form()->openTag($this->form);?>
+    		<?= $this->formHidden($this->form->get('docfieldId'));?>
+    		<?= $this->formHidden($this->form->get('documentId'));?>
+    		<?= $this->formHidden($this->form->get('name'));?>
+    		<?= $this->formHidden($this->form->get('recordSource'));?>
+    		<?= $this->formHidden($this->form->get('csrf'));?>
 			<div id="accordion">
 				<h3>Définition et configuration du champ</h3>
 				<div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('ordinal_position'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('fieldname'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('fieldname_width'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('fieldname_align'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('fieldname_stretch'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('fieldname_precision'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('fieldname_completion'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('filter'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('is_date'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('format'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('ordinal_position'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('fieldname'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('fieldname_width'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('fieldname_align'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('fieldname_stretch'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('fieldname_precision'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('fieldname_completion'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('filter'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('is_date'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('format'));?></div>
 				</div>
 				<h3>Contexte et position</h3>
 				<div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('style'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('height'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('label'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('label_space'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('label_width'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('label_align'));?></div>
-					<div class="sbm-document-table"><?php echo $this->formRow($this->form->get('label_stretch'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('style'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('height'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('label'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('label_space'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('label_width'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('label_align'));?></div>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('label_stretch'));?></div>
 				</div>
 			</div>
 			<div id="pdf-edit-buttons" class="row-inner edit">
-	    <?php echo $this->formSubmit($this->form->get('submit')); ?>
-	    <?php echo $this->formSubmit($this->form->get('cancel')); ?>
-        </div>
-        <?php echo $this->form()->closeTag(); ?>
+	    		<?= $this->formSubmit($this->form->get('submit')); ?>
+	    		<?= $this->formSubmit($this->form->get('cancel')); ?>
+        	</div>
+        	<?= $this->form()->closeTag(); ?>
         </fieldset>
 	</div>
 	<div id="fiche-footer"></div>

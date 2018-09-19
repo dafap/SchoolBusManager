@@ -140,7 +140,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      *            
      * @throws \SbmCommun\Model\Db\Exception si la table n'existe pas
      *        
-     * @return array(colName => tailleColonne, ...)
+     * @return array de la forme [colName => tailleColonne, ...]
      */
     public function getMaxLengthArray($tableName, $type)
     {
@@ -196,7 +196,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      *            
      * @throws \SbmCommun\Model\Db\Exception si la table n'existe pas
      *        
-     * @return array(colName => tailleColonne, ...)
+     * @return array de la forme [colName => tailleColonne, ...]
      */
     public function getColumnDefaults($tableName, $type)
     {

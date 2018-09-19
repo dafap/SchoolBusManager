@@ -1,8 +1,8 @@
 <?php
 /**
  * ViewHelper permettant d'afficher une barre de menu, à déclarer dans module.config.php comme ceci : 
- * 'view_helpers' => array(
- *      'invokables' => array(
+ * 'view_helpers' => [
+ *      'invokables' => [
  *              'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',)
  * )
  *
@@ -45,10 +45,10 @@ class ListeZoneActions extends AbstractHelper
      * Crée le code d'un formulaire d'actions à utiliser au-dessus d'une liste.
      *
      * @param array $hiddens
-     *            Tableau indexé array(name => value, ...). S'il n'y a pas de valeur mettre
+     *            Tableau indexé [name => value, ...). S'il n'y a pas de valeur mettre
      *            <b>null</b>.
      * @param array $buttons
-     *            Tableau indexé array(name => [], ...)
+     *            Tableau indexé [name => [], ...)
      * @param array $attributes
      *            Ce sont les attributs du formulaires. En voici la liste (HTML5):<br><ul>
      *            <li><b>accept-charset</b> : Une liste des ensembles de caractères que le serveur
@@ -134,7 +134,7 @@ class ListeZoneActions extends AbstractHelper
      * Renvoie le code de la barre de menu
      *
      * @param array $buttons
-     *            Ce tableau a la structure la suivante : array(name => attributes, ...) où
+     *            Ce tableau a la structure la suivante : [name => attributes, ...) où
      *            attributes est un tableau
      *            (voir getMenuOnglet ou getButton pour la structure de attributes)
      *            
@@ -209,7 +209,7 @@ class ListeZoneActions extends AbstractHelper
      * Construit un menu à placer dans un onglet
      *
      * @param array $menu
-     *            Ce tableau a la structure la suivante : array(name => attributes, ...) où
+     *            Ce tableau a la structure la suivante : [name => attributes, ...) où
      *            attributes est un tableau
      *            (voir getButton pour la structure de attributes)
      *            

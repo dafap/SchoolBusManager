@@ -13,98 +13,99 @@
  * @filesource colonne-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2015
- * @version 2015-1
+ * @date 19 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_cancel = $this->url('sbmpdf', array(
+$url_cancel = $this->url('sbmpdf', [
     'action' => 'pdf-liste',
     'page' => $this->page
-));
-$url_ajout = $this->url('sbmpdf', array(
+]);
+$url_ajout = $this->url('sbmpdf', [
     'action' => 'colonne-ajout',
     'page' => $this->page
-));
-$url_edit = $this->url('sbmpdf', array(
+]);
+$url_edit = $this->url('sbmpdf', [
     'action' => 'colonne-edit',
     'page' => $this->page
-));
-$url_dupliquer = $this->url('sbmpdf', array(
-    'action' => 'colonne-dupliquer',
-    'page' => $this->page
-));
-$url_suppr = $this->url('sbmpdf', array(
+]);
+$url_dupliquer = $this->url('sbmpdf',
+    [
+        'action' => 'colonne-dupliquer',
+        'page' => $this->page
+    ]);
+$url_suppr = $this->url('sbmpdf', [
     'action' => 'colonne-suppr',
     'page' => $this->page
-));
-$url_retour = $this->url('sbmpdf', array(
+]);
+$url_retour = $this->url('sbmpdf', [
     'action' => 'table-liste',
     'page' => $this->page
-));
+]);
 
-$hiddens = array(
+$hiddens = [
     'documentId' => $this->document['documentId'],
     'name' => $this->document['name'],
     'ordinal_table' => $this->document['ordinal_table'],
     'recordSource' => $this->document['recordSource'],
     'new_position' => count($this->data) + 1
-);
+];
 
-$actions = array(
-    'homepdf' => array(
+$actions = [
+    'homepdf' => [
         'class' => 'fam-door-out',
         'formaction' => $url_cancel,
         'title' => 'Liste des documents'
-    ),
-    'retour' => array(
+    ],
+    'retour' => [
         'class' => 'fam-book-previous',
         'formaction' => $url_retour,
         'title' => 'Configuration du tableau'
-    ),
-    'ajouter' => array(
+    ],
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajout,
         'title' => 'Nouvelle colonne'
-    )
-);
+    ]
+];
 
-$buttons = array(
-    'modifier' => array(
+$buttons = [
+    'modifier' => [
         'class' => 'fam-pencil',
         'formaction' => $url_edit,
         'title' => 'modifier la colonne'
-    ),
-    'dupliquer' => array(
+    ],
+    'dupliquer' => [
         'class' => 'fam-page-copy',
         'formaction' => $url_dupliquer,
         'title' => 'dupliquer la colonne'
-    ),
-    'supprimer' => array(
+    ],
+    'supprimer' => [
         'class' => 'fam-delete',
         'formaction' => $url_suppr,
         'title' => 'supprimer la colonne'
-    )
-);
+    ]
+];
 ?>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="float-left">
 			<h1>Liste des colonnes d'un tableau pour un document pdf</h1>
 			<ul>
-				<li>Document: <?php echo $this->document['name'];?></li>
-				<li>Numéro du tableau: <?php echo $this->document['ordinal_table'];?></li>
-				<li>Source du document: <?php echo $this->document['recordSource'];?></li>
+				<li>Document: <?= $this->document['name'];?></li>
+				<li>Numéro du tableau: <?= $this->document['ordinal_table'];?></li>
+				<li>Source du document: <?= $this->document['recordSource'];?></li>
 			</ul>
-			<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+			<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		</div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="pdf">
@@ -118,20 +119,22 @@ echo $this->flashMessenger()->render('default');
 					<th></th>
 				</tr>
             <?php foreach($data as $row): ?>
-                <tr
-					class="<?php echo $this->cycle(array("even", "odd"))->next();?>">
-					<td class="ordinal_position"><?php echo $row['ordinal_position']; ?></td>
-					<td class="thead"><?php echo $this->escapeHtml($row['thead']); ?></td>
-					<td class="tbody"><?php echo $this->escapeHtml($row['tbody']); ?></td>
-					<td class="tfoot"><?php echo $this->escapeHtml($row['tfoot']); ?></td>
-					<td class="width"><?php echo $row['width']; ?></td>
-					<td class="boutons">
-            <?php
+            	<?php
                 $hiddens['doccolumnId'] = $row['doccolumnId'];
                 $hiddens['ordinal_position'] = $row['ordinal_position'];
-                echo $this->listeLigneActions($row['doccolumnId'], $hiddens, $buttons);
                 ?>
-				    </td>
+                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="ordinal_position"><?= $row['ordinal_position']; ?></td>
+					<td class="thead">
+						<?= $this->escapeHtml($row['thead']); ?></td>
+					<td class="tbody">
+						<?= $this->escapeHtml($row['tbody']); ?></td>
+					<td class="tfoot">
+						<?= $this->escapeHtml($row['tfoot']); ?></td>
+					<td class="width">
+						<?= $row['width']; ?></td>
+					<td class="boutons">
+						<?= $this->listeLigneActions($row['doccolumnId'], $hiddens, $buttons);?></td>
 				</tr>
         <?php endforeach;?>
             </tbody>

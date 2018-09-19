@@ -19,7 +19,7 @@ $this->paginator->setCurrentPageNumber($this->page);
 $data = $this->paginator->getCurrentItems();
 
 $url_retour = $this->url('sbmgestion/gestioneleve');
-$hiddens = array();
+$hiddens =[];
 $actions = array(
     'retour' => array(
         'class' => 'fam-door-out',
@@ -91,7 +91,7 @@ echo $this->flashMessenger()->render('default');
         ));
         ?>
             <tr
-					class="<?php echo $tr_css . ' ' . $this->cycle(array('even', 'odd'))->next(); ?>">
+					class="<?php echo $tr_css . ' ' . $this->cycle(['even', 'odd'))->next(); ?>">
 					<td><?php echo $this->escapeHtml($row['nom']); ?></td>
 					<td><?php echo $this->escapeHtml($row['prenom']); ?></td>
 					<td><?php echo implode('<br/>', array($this->escapeHtml($row['adresseL1']), $this->escapeHtml($row['adresseL2']))); ?></td>
@@ -106,7 +106,7 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', array()); ?></div>
+		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
 		<div class="clearfix">
 			<div class="criteres-wrapper float-left">
 				<div class="clearfix">
