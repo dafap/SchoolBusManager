@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2018
- * @version 2018-2.4.4
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmGestion\Controller;
 
@@ -817,8 +817,8 @@ class EleveController extends AbstractActionController
             $historique['responsable2']['demenagement'] = $r->demenagement;
         }
         $affectations = [
-            'annee_courante' => null,
-            'annee_precedente' => null
+            'annee_courante' => [],
+            'annee_precedente' => []
         ];
         foreach ($qAffectations->getAffectations($eleveId) as $row) {
             $affectations['annee_courante'][] = $row;
