@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juillet 2018
- * @version 2018-2.4.2
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -1031,6 +1031,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParClasse()
     {
+        $result = ['annee_courante' => [], 'annee_precedente' => []];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParClasse($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1201,6 +1202,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCommune()
     {
+        $result = ['annee_courante' => [], 'annee_precedente' => []];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCommune($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1406,6 +1408,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCircuit()
     {
+        $result = ['annee_courante' => [], 'annee_precedente' => []];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCircuit($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1569,6 +1572,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParEtablissement()
     {
+        $result = ['annee_courante' => [], 'annee_precedente' => []];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParEtablissement($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1720,6 +1724,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCommuneCircuit()
     {
+        $result = ['annee_courante' => [], 'annee_precedente' => []];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCommuneCircuit($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1900,6 +1905,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCircuitCommune()
     {
+        $result = ['annee_courante' => [], 'annee_precedente' => []];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCircuitCommune($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -2093,7 +2099,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
             $this->selectStatistiquesParEtablissementClasse($this->millesime - 1));
         $annee_precedente = iterator_to_array($statement->execute());
         // résultat par alignement des tableaux
-        $result = [];
+        $result = ['annee_courante' => [], 'annee_precedente' => []];
         for ($etablissementId = '', $ic = 0, $ip = 0; $ic < count($annee_courante) ||
              $ip < count($annee_precedente);) {
             if (empty($etablissementId)) {
@@ -2417,7 +2423,7 @@ public function statistiquesParClasseEtablissement()
         $this->selectStatistiquesParClasseEtablissement($this->millesime - 1));
     $annee_precedente = iterator_to_array($statement->execute());
     // résultat par alignement des tableaux
-    $result = [];
+    $result = ['annee_courante' => [], 'annee_precedente' => []];
     for ($classe = '', $ic = 0, $ip = 0; $ic < count($annee_courante) ||
          $ip < count($annee_precedente);) {
         if (empty($classe)) {
