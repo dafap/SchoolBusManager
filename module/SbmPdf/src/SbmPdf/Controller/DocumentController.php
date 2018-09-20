@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmPdf\Controller;
 
@@ -221,7 +221,7 @@ class DocumentController extends AbstractActionController
                 'nom',
                 'prenom'
             ]);
-        $arret['effectif'] = count($liste);
+        $arret['effectif'] = $liste->count();
         $arret['liste'] = [];
         foreach ($liste as $eleve) {
             $arret['liste'][] = $eleve['nom'] . ' ' . $eleve['prenom'] . ' - ' .
