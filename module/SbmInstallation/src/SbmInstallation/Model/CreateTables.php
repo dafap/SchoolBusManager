@@ -277,7 +277,7 @@ class CreateTables
         // ajout des index nécessaires pour les foreign key référençant cette table
         if (StdLib::array_keys_exists(
             [
-                'foreign_key',
+                'foreign key',
                 $entityType,
                 $entityName
             ], $this->queue)) {
@@ -285,13 +285,13 @@ class CreateTables
             foreach ($this->queue['foreign key'][$entityType][$entityName] as $fk) {
                 $fk_str = implode('`,`', $fk);
                 // vérifier si la pk est suffisante
-                if (isset($pk_str) && mb_strcut($pk_str, 0, mb_strlen($id_str)) == $id_str)
+                if (isset($pk_str) && mb_strcut($pk_str, 0, mb_strlen($fk_str)) == $fk_str)
                     continue;
                 $trouve = false;
                 if (isset($keys_str)) {
                     // vérifier les autres keys
                     foreach ($keys_str as $key) {
-                        $trouve |= mb_strcut($key, 0, mb_strlen($id_str)) == $id_str;
+                        $trouve |= mb_strcut($key, 0, mb_strlen($fk_str)) == $fk_str;
                     }
                     if ($trouve)
                         continue;
