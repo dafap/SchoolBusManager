@@ -11,8 +11,8 @@
  * @filesource RpiEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 août 2018
- * @version 2018-2.4.2
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmAdmin\Model\View\Helper;
 
@@ -23,10 +23,12 @@ class RpiEtablissements extends AbstractHelper
      * Aide de vue renvoyant le tableau des établissements et de leurs classes
      *
      * @param array $aetablissements
-     *            Chaque ligne de ce tableau est un tableau décrivant les établissements et leurs classes. 
+     *            Chaque ligne de ce tableau est un tableau décrivant les établissements et leurs
+     *            classes.
      *            Les index de chaque ligne sont 'etablissementId', 'nom', 'commune' et 'classes'
-     *            L'index 'classes' est un tableau qui contient la liste des classes ('classeId', 'nom')
-     * @param function $fncTableClasses
+     *            L'index 'classes' est un tableau qui contient la liste des classes ('classeId',
+     *            'nom')
+     * @param callable $fncTableClasses
      *            aide de vue renvoyant le tableau des classes pour un établissement donné
      *            
      * @return string
@@ -35,9 +37,9 @@ class RpiEtablissements extends AbstractHelper
     {
         $this->button_name = 'btnecole';
         $rpiId = $this->getView()->rpiId;
-        $html = sprintf('<tr><td>%s</td></tr>', 
+        $html = sprintf('<tr><td>%s</td></tr>',
             $this->btnAjout([
-                'rpiId' => $rpiId ?  : '?'
+                'rpiId' => $rpiId ?: '?'
             ], 'école'));
         foreach ($aetablissements as $etablissement) {
             $html .= '<tr style="border-bottom: 1px solid #fdddcc;">';
@@ -48,7 +50,7 @@ class RpiEtablissements extends AbstractHelper
             $html .= '<td style="vertical-align: top; border-right: 1px solid #fdddcc;">';
             $html .= $this->btnSuppr(
                 [
-                    'rpiId' => $rpiId ?  : '?',
+                    'rpiId' => $rpiId ?: '?',
                     'etablissementId' => $etablissement['etablissementId'],
                     'etablissement' => urlencode($etablissement['nom']),
                     'commune' => urlencode($etablissement['commune'])

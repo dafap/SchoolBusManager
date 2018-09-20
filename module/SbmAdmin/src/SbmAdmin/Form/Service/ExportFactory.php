@@ -11,15 +11,14 @@
  * @filesource ExportFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmAdmin\Form\Service;
 
+use SbmAdmin\Form\Export;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmAdmin\Form\Export;
-use SbmAdmin\Form\Exception;
 
 class ExportFactory implements FactoryInterface
 {
@@ -34,7 +33,7 @@ class ExportFactory implements FactoryInterface
      * Crée le service en initialisant le db_manager
      *
      * (non-PHPdoc)
-     * 
+     *
      * @see \Zend\ServiceManager\FactoryInterface::createService()
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
@@ -61,7 +60,7 @@ class ExportFactory implements FactoryInterface
             $this->source = $source;
             $this->form = new Export($source, $this->db_manager);
         }
-        
+
         return $this->form;
     }
 }

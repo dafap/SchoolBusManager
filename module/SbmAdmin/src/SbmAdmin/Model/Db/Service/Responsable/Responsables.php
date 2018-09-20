@@ -9,19 +9,19 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmAdmin\Model\Db\Service\Responsable;
 
+use SbmBase\Model\Session;
+use SbmCommun\Model\Db\Exception;
+use SbmCommun\Model\Db\Service\DbManager;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
-use SbmCommun\Model\Db\Service\DbManager;
-use SbmBase\Model\Session;
 
 class Responsables implements FactoryInterface
 {
@@ -55,7 +55,7 @@ class Responsables implements FactoryInterface
      *
      * @param \Zend\Db\Sql\Select $select            
      *
-     * @return \Zend\Db\Adapter\mixed
+     * @return string
      */
     public function getSqlString($select)
     {
@@ -84,21 +84,18 @@ class Responsables implements FactoryInterface
     {
         $where = new Where();
         $where->isNull('u.userId')->isNotNull('r.email');
-        $select = $this->sql->select(
-            [
-                'r' => $this->db_manager->getCanonicName('responsables', 'table')
-            ])
-            ->columns(
-            [
-                'titre' => 'titre',
-                'nom' => 'nom',
-                'prenom' => 'prenom',
-                'email' => 'email'
-            ])
-            ->join(
-            [
-                'u' => $this->db_manager->getCanonicName('users', 'table')
-            ], 'u.email = r.email', [], Select::JOIN_LEFT)
+        $select = $this->sql->select([
+            'r' => $this->db_manager->getCanonicName('responsables', 'table')
+        ])
+            ->columns([
+            'titre' => 'titre',
+            'nom' => 'nom',
+            'prenom' => 'prenom',
+            'email' => 'email'
+        ])
+            ->join([
+            'u' => $this->db_manager->getCanonicName('users', 'table')
+        ], 'u.email = r.email', [], Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();

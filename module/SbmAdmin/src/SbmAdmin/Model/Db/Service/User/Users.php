@@ -9,18 +9,18 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2016
- * @version 2016-2
+ * @date 9 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmAdmin\Model\Db\Service\User;
 
+use SbmCommun\Model\Db\Exception;
+use SbmCommun\Model\Db\Service\DbManager;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
-use Zend\Db\Adapter\Adapter;
-use SbmCommun\Model\Db\Service\DbManager;
 
 class Users implements FactoryInterface
 {
