@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmBase\Model\StdLib;
 
@@ -171,7 +171,7 @@ echo $this->flashMessenger()->render('default');
             $url_group = $this->url('sbmgestion/transport', 
                 [
                     'action' => 'circuit-group',
-                    'page' => $this->page
+                    'id' => $this->page
                 ]);
             $hiddens = [
                 'circuitId' => $circuit->circuitId

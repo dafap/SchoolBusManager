@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', 
@@ -20,21 +20,27 @@ $url_retour = $this->url('sbmgestion/transport',
 $url_rapports = $this->url('sbmgestion/transport', 
     [
         'action' => 'circuit-group-pdf',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_group = $this->url('sbmgestion/transport', 
     [
         'action' => $this->origine ? $this->origine . '-group' : 'circuit-group',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_edit = $this->url('sbmgestion/eleve', 
     [
         'action' => 'eleve-edit',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
-$url_mail = $this->url('sbmgestion/eleve', [
-    'action' => 'responsable-mail'
-]);
+$url_mail = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-mail',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
 $hiddens = [
     'circuitId' => $this->circuitId
 ];
@@ -78,7 +84,7 @@ echo $this->flashMessenger()->render('default');
 	<div id="liste-header">
 		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?php echo $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -138,7 +144,7 @@ echo $this->flashMessenger()->render('default');
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?php echo $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 </div>
