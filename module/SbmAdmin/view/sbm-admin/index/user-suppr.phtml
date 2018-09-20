@@ -9,8 +9,8 @@
  * @filesource user-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $acategories = [
@@ -21,11 +21,10 @@ $acategories = [
     2 => 'Transporteur',
     3 => 'Etablissement'
 ];
-$url_retour = $this->url('sbmadmin', 
-    [
-        'action' => 'user-liste',
-        'page' => $this->page
-    ]);
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'user-liste',
+    'page' => $this->page
+]);
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
@@ -39,22 +38,20 @@ $actions = [
 	<p>Vous avez demandé la suppression du compte :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?php echo $this->escapeHtml($this->data->titre . ' ' . $this->data->nom . ' ' . $this->data->prenom); ?></li>
-			<li><?php echo $this->data->email; ?></li>
-			<li><?php echo $this->escapeHtml($acategories[$this->data->categorieId]); ?></li>
+			<li><?= $this->escapeHtml($this->data->titre . ' ' . $this->data->nom . ' ' . $this->data->prenom);?></li>
+			<li><?= $this->data->email;?></li>
+			<li><?= $this->escapeHtml($acategories[$this->data->categorieId]);?></li>
 		</ul>
 		<p>.</p>
 	</div>
-	<?php if ($this->autorise) : ?>
+<?php if ($this->autorise) : ?>
 	<p>Confirmez-vous ?</p>
-<?php
-    echo $this->form()->openTag($form);
-    echo $this->formCollection($form);
-    echo $this->form()->closeTag();
-    ?> 
-    <?php else :?>
+    <?= $this->form()->openTag($this->form);?>
+    <?= $this->formCollection($this->form);?>
+    <?= $this->form()->closeTag();?>    
+<?php else :?>
     <p>Ce compte est celui d'un responsable. Pour supprimer ce compte,
 		vous devez d'abord supprimer le responsable associé.</p>
-	<div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions);?></div>
-    <?php endif;?>
+	<div class="menu clearfix"><?= $this->listeZoneActions([], $actions);?></div>
+<?php endif;?>
 </div>

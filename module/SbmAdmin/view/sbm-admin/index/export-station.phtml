@@ -9,8 +9,8 @@
  * @filesource export-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 ?>
@@ -18,28 +18,26 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 <div id="fiche-wrapper">
 	<div id="fiche-header" class="clearfix">
 		<div class="flashMessenger float-right">
-	<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+    	<?= $this->flashMessenger()->render('success');?>
+    	<?= $this->flashMessenger()->render('warning');?>
+    	<?= $this->flashMessenger()->render('error');?>
+    	<?= $this->flashMessenger()->render('info');?>
+    	<?= $this->flashMessenger()->render('default');?>
         </div>
 		<h1>Exportation des stations</h1>
 	</div>
 	<div id="fiche-inner">
-	<?php echo $this->form()->openTag($this->form);?>
+	<?= $this->form()->openTag($this->form);?>
 	    <fieldset class="sbm-page1">
-			<div class="row-inner label-120"><?php echo $this->formRow($this->form->get('stationId'));?></div>
-			<div class="row-inner label-120"><?php echo $this->formRow($this->form->get('communeId'));?></div>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('visible'));?></div>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('ouverte'));?></div>
+			<div class="row-inner label-120"><?= $this->formRow($this->form->get('stationId'));?></div>
+			<div class="row-inner label-120"><?= $this->formRow($this->form->get('communeId'));?></div>
+			<div class="row-inner"><?= $this->formRow($this->form->get('visible'));?></div>
+			<div class="row-inner"><?= $this->formRow($this->form->get('ouverte'));?></div>
 			<div class="row-inner">
-			<?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
-			</div>
+				<?= $this->formSubmit($this->form->get('submit'));?>
+				<?=$this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
-	<?php echo $this->form()->closeTag();?>
+	<?= $this->form()->closeTag();?>
 	</div>
 	<div id="fiche-footer"></div>
 </div>

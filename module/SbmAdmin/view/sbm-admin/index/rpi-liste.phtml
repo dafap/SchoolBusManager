@@ -8,8 +8,8 @@
  * @filesource rpi-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2018
- * @version 2018-2.4.1
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 function renderCheckbox($view, $name, $id, $value, $disabled = false)
 {
@@ -41,32 +41,27 @@ $("#chk%d").change(function() {
   });
 EOT;
 
-$url_ajouter = $this->url('sbmadmin', 
-    [
-        'action' => 'rpi-ajout',
-        'page' => $this->page
-    ]);
-$url_edit = $this->url('sbmadmin', 
-    [
-        'action' => 'rpi-edit',
-        'page' => $this->page
-    ]);
-$url_delete = $this->url('sbmadmin', 
-    [
-        'action' => 'rpi-suppr',
-        'page' => $this->page
-    ]);
-$url_rapports = $this->url('sbmadmin', 
-    [
-        'action' => 'rpi-pdf',
-        'page' => $this->page
-    ]);
+$url_ajouter = $this->url('sbmadmin', [
+    'action' => 'rpi-ajout',
+    'page' => $this->page
+]);
+$url_edit = $this->url('sbmadmin', [
+    'action' => 'rpi-edit',
+    'page' => $this->page
+]);
+$url_delete = $this->url('sbmadmin', [
+    'action' => 'rpi-suppr',
+    'page' => $this->page
+]);
+$url_rapports = $this->url('sbmadmin', [
+    'action' => 'rpi-pdf',
+    'page' => $this->page
+]);
 $url_retour = $this->url('sbmadmin');
 $hiddens = [];
-$menuImpression = $this->menuRapports(
-    $this->url('sbmadmin', [
-        'action' => 'rpi-liste'
-    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$menuImpression = $this->menuRapports($this->url('sbmadmin', [
+    'action' => 'rpi-liste'
+]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 $actions = [
     'retour' => [
@@ -87,13 +82,13 @@ $actions = [
 <?php if ($this->etablissementId):?>
 	<div id="liste-title">
 		<ul>
-			<li><?php echo $this->escapeHtml($this->etablissement->commune); ?></li>
-			<li><?php echo $this->escapeHtml($this->etablissement->nom); ?></li>
+			<li><?= $this->escapeHtml($this->etablissement->commune); ?></li>
+			<li><?= $this->escapeHtml($this->etablissement->nom); ?></li>
 		</ul>
 	</div>
 <?php endif;?>
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
 		<?= $this->flashMessenger()->render('success');?>
 		<?= $this->flashMessenger()->render('warning');?>
@@ -113,7 +108,7 @@ $actions = [
 					<th>Sélection</th>
 					<th></th>
 				</tr>
-            <?php foreach($this->data as $test => $row): ?>
+            <?php foreach($this->data as $row): ?>
             <?php
                 // construction du JS pour selection
                 $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $row->rpiId);
@@ -123,21 +118,6 @@ $actions = [
                     $maternelle = in_array(1, $row->niveau);
                     $elementaire = in_array(2, $row->niveau);
                 }
-                ?>
-                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
-					<td class="nom"><?= $this->escapeHtml($row->nom); ?></td>
-					<td class="libelle"><?= $this->escapeHtml($row->libelle); ?></td>
-					<td class="centre">
-					<?= renderCheckbox($this, 'maternelle', 'maternelle' . $row->rpiId, $maternelle, true)?>
-					</td>
-					<td class="centre">
-					<?= renderCheckbox($this, 'elementaire', 'elementaire' . $row->rpiId, $elementaire, true)?>
-					</td>
-					<td class="centre">
-					<?= renderCheckbox($this, 'selection', 'chk' . $row->rpiId, $row->selection)?>
-					</td>
-					<td class="boutons">
-					<?php
                 $hiddens = [
                     'rpiId' => $row->rpiId
                 ];
@@ -153,8 +133,21 @@ $actions = [
                         'title' => 'Supprimer'
                     ]
                 ];
-                echo $this->listeLigneActions($row->rpiId, $hiddens, $buttons);
                 ?>
+                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="nom"><?= $this->escapeHtml($row->nom); ?></td>
+					<td class="libelle"><?= $this->escapeHtml($row->libelle); ?></td>
+					<td class="centre">
+					<?= renderCheckbox($this, 'maternelle', 'maternelle' . $row->rpiId, $maternelle, true)?>
+					</td>
+					<td class="centre">
+					<?= renderCheckbox($this, 'elementaire', 'elementaire' . $row->rpiId, $elementaire, true)?>
+					</td>
+					<td class="centre">
+					<?= renderCheckbox($this, 'selection', 'chk' . $row->rpiId, $row->selection)?>
+					</td>
+					<td class="boutons">
+					<?= $this->listeLigneActions($row->rpiId, $hiddens, $buttons);?>
 					</td>
 				</tr>         
             <?php endforeach;?>
@@ -164,9 +157,9 @@ $actions = [
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix"></div>
 		<div class="criteres-wrapper">
-        <?php echo $this->form()->openTag($this->criteres_form);?>
-        <?php echo $this->formCollection($this->criteres_form, true);?>
-        <?php echo $this->form()->closeTag();?>
+        <?= $this->form()->openTag($this->criteres_form);?>
+        <?= $this->formCollection($this->criteres_form, true);?>
+        <?= $this->form()->closeTag();?>
         </div>
 	</div>
 </div>

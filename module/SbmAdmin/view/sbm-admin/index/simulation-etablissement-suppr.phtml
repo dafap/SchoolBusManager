@@ -10,23 +10,9 @@
  * @filesource simulation-etablissement-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2018
- * @version 2018-2.4.3
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
-$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-
-$url_retour = $this->url('sbmadmin', 
-    [
-        'action' => 'simulation-etablissement-liste',
-        'page' => $this->page
-    ]);
-$actions = [
-    'retour' => [
-        'class' => 'fam-door-out',
-        'formaction' => $url_retour,
-        'title' => 'Retour'
-    ]
-];
 ?>
 <h1>Suppression d'une règle de correspondance pour le passage dans un
 	établissement de niveau supérieur</h1>
@@ -37,16 +23,16 @@ $actions = [
 		<dl>
 			<dt>Établissement d'origine</dt>
 			<dd>
-		<?= $this->escapeHtml($this->data['etablissementorigine'] . ' - ' . $this->data['communeetaborigine']); ?>
+		<?= $this->escapeHtml($this->data['etablissementorigine'] . ' - ' . $this->data['communeetaborigine']);?>
 		</dd>
 			<dt>Établissement suivant</dt>
 			<dd>
-		<?= $this->escapeHtml($this->data['etablissementsuivant'] . ' - ' . $this->data['communeetabsuivant']); ?>
+		<?= $this->escapeHtml($this->data['etablissementsuivant'] . ' - ' . $this->data['communeetabsuivant']);?>
 		</dd>
 		</dl>
 	</div>
 	<p>Confirmez-vous ?</p>
-	<?= $this->form()->openTag($form);?>
-	<?= $this->formCollection($form);?>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formCollection($this->form);?>
 	<?= $this->form()->closeTag();?>
 </div>

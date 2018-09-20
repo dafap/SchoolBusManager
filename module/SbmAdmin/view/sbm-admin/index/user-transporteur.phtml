@@ -9,16 +9,15 @@
  * @filesource user-transporteur.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 8 avr. 2016
+ * @version 2016-2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmadmin', 
-    [
-        'action' => 'user-liste',
-        'page' => $this->page
-    ]);
-$url_suppr = $this->url('sbmadmin', 
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'user-liste',
+    'page' => $this->page
+]);
+$url_suppr = $this->url('sbmadmin',
     [
         'action' => 'user-transporteur-suppr',
         'page' => $this->page
@@ -44,59 +43,67 @@ $actions = [
 <div id="fiche-wrapper">
 	<div id="fiche-header" class="clearfix">
 		<div class="menu">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
 		<div class="float-left">
 			<fieldset style="margin-top: 0;" class="sbm-page1 gras">
 				<legend>Utilisateur</legend>
-				<div><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?><br>&nbsp;
+				<div><?= $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?><br>&nbsp;
 				</div>
-				<div>Identifiant: <?php echo $this->user->email;?><br>&nbsp;
+				<div>Identifiant: <?= $this->user->email;?><br>&nbsp;
 				</div>
-				<div>Créé le: <?php echo $this->user->dateCreation;?></div>
-				<div>Modifié le: <?php echo $this->user->dateModification;?></div>
+				<div>Créé le: <?= $this->user->dateCreation;?></div>
+				<div>Modifié le: <?= $this->user->dateModification;?></div>
 			</fieldset>
 		</div>
 		<div class="float-left">
 <?php if ($this->transporteur === false) :?>
         <p class="left-10px">Il n'y a pas de transporteur associé à ce
 				compte d'utilisateur.</p>
-		<?php
-    echo $this->form()->openTag($this->form);
-    ?>
+		<?= $this->form()->openTag($this->form);?>
         <fieldset class="sbm-page1">
-    <?php
-    echo $this->formHidden($this->form->get('csrf'));
-    echo $this->formHidden($this->form->get('userId'));
-    ?>
+    		<?= $this->formHidden($this->form->get('csrf'));?>
+    		<?= $this->formHidden($this->form->get('userId'));?>
             <div id="user-transporteur-ajout-transporteurId"
-					class="row-inner ajout"><?php echo $this->formRow($this->form->get('transporteurId'));?></div>
-				<div id="classe-ajout-buttons" class="row-inner ajout">
-			    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-			</fieldset>
-    <?php echo $this->form()->closeTag();?>
+					class="row-inner ajout">
+            <?= $this->formRow($this->form->get('transporteurId'));?>
+            </div>
+			<div id="classe-ajout-buttons" class="row-inner ajout">
+			    <?= $this->formSubmit($this->form->get('submit'));?>
+			    <?= $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+    	<?= $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="sbm-page1">
-				<legend>Transporteur</legend>
-				<div>
-					<div class="label">Nom</div><?php echo $this->transporteur->nom; ?></div>
-				<div>
-					<div class="label">Adresse</div><?php echo $this->transporteur->adresse1; ?></div>
-				<div>
-					<div class="label">Adresse</div><?php echo $this->transporteur->adresse2; ?></div>
-				<div>
-					<div class="label">Localité</div><?php echo $this->transporteur->codePostal . ' ' . $this->transporteur->commune; ?></div>
-				<div>
-					<div class="label">Téléphone</div><?php echo $this->transporteur->telephone; ?></div>
-				<div>
-					<div class="label">Fax</div><?php echo $this->transporteur->fax; ?></div>
-				<div>
-					<div class="label">Email</div><?php echo $this->transporteur->email; ?></div>
-				<div>
-					<div class="label">SIRET</div><?php echo $this->transporteur->siret; ?></div>
-			</fieldset>
+			<legend>Transporteur</legend>
+			<div>
+				<div class="label">Nom</div>
+				<?= $this->transporteur->nom; ?></div>
+			<div>
+				<div class="label">Adresse</div>
+				<?= $this->transporteur->adresse1; ?></div>
+			<div>
+				<div class="label">Adresse</div>
+				<?= $this->transporteur->adresse2; ?></div>
+			<div>
+				<div class="label">Localité</div>
+				<?= $this->transporteur->codePostal;?>
+				<?= $this->transporteur->commune; ?></div>
+			<div>
+				<div class="label">Téléphone</div>
+				<?= $this->transporteur->telephone; ?></div>
+			<div>
+				<div class="label">Fax</div>
+				<?= $this->transporteur->fax; ?></div>
+			<div>
+				<div class="label">Email</div>
+				<?= $this->transporteur->email; ?></div>
+			<div>
+				<div class="label">SIRET</div>
+				<?= $this->transporteur->siret; ?></div>
+		</fieldset>
 <?php endif;?>
         </div>
 	</div>

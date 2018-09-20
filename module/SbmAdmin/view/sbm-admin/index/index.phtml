@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2018
- * @version 2018-2.4.3
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_pdf_liste = $this->url('sbmpdf', [
@@ -21,11 +21,11 @@ $url_libelle_liste = $this->url('sbmadmin', [
 $url_droits = $this->url('sbmadmin', [
     'action' => 'user-liste'
 ]);
-$url_secteurs_scolaires_liste = $this->url('sbmadmin', 
+$url_secteurs_scolaires_liste = $this->url('sbmadmin',
     [
         'action' => 'secteur-scolaire-liste'
     ]);
-$url_simulation_etablissement_liste = $this->url('sbmadmin', 
+$url_simulation_etablissement_liste = $this->url('sbmadmin',
     [
         'action' => 'simulation-etablissement-liste'
     ]);
@@ -43,13 +43,11 @@ $url_images = $this->url('sbminstall', [
 <h1>Espace d'administration</h1>
 <div id="menugeneral">
 	<div class="flashMessenger">
-	<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+    	<?= $this->flashMessenger()->render('success');?>
+    	<?= $this->flashMessenger()->render('warning');?>
+    	<?= $this->flashMessenger()->render('error');?>
+    	<?= $this->flashMessenger()->render('info');?>
+    	<?= $this->flashMessenger()->render('default');?>
     </div>
 	<div id="menugeneral-inner">
 		<ul>

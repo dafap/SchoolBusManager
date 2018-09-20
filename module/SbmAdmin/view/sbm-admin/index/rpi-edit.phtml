@@ -10,8 +10,8 @@
  * @filesource rpi-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 août 2018
- * @version 2018-2.4.2
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headLink()->prependStylesheet(
@@ -35,24 +35,6 @@ $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmadmin', [
     'action' => 'rpi-liste'
 ]);
-$url_ajout_commune = $this->url('sbmadmin', [
-    'action' => 'rpi-commune-ajout'
-]);
-$url_ajout_ecole = $this->url('sbmadmin', [
-    'action' => 'rpi-etablissement-ajout'
-]);
-$url_ajout_classe = $this->url('sbmadmin', [
-    'action' => 'rpi-classe-ajout'
-]);
-$url_suppr_commune = $this->url('sbmadmin', [
-    'action' => 'rpi-commune-suppr'
-]);
-$url_suppr_ecole = $this->url('sbmadmin', [
-    'action' => 'rpi-etablissement-suppr'
-]);
-$url_suppr_classe = $this->url('sbmadmin', [
-    'action' => 'rpi-classe-suppr'
-]);
 $hiddens = [];
 $actions = [
     'retour' => [
@@ -60,37 +42,6 @@ $actions = [
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    ]
-];
-$hiddensAjoutCommune = [
-    'rpiId' => $this->rpiId
-];
-$actionsAjoutCommune = [
-    'ajout-commune' => [
-        'class' => 'fam-add',
-        'formaction' => $url_ajout_commune,
-        'title' => 'Ajouter une commune'
-    ]
-];
-$hiddensAjoutEcole = [
-    'rpiId' => $this->rpiId
-];
-$actionsAjoutEcole = [
-    'ajout-ecole' => [
-        'class' => 'fam-add',
-        'formaction' => $url_ajout_ecole,
-        'title' => 'Ajouter une école'
-    ]
-];
-$hiddensAjoutClasse = [
-    'rpiId' => $this->rpiId,
-    'etablissementId' => null
-];
-$actionsAjoutClasse = [
-    'ajout-classe' => [
-        'class' => 'fam-add',
-        'formaction' => $url_ajout_classe,
-        'title' => 'Ajouter une classe'
     ]
 ];
 ?>
@@ -114,22 +65,24 @@ $actionsAjoutClasse = [
 	    <?= $this->formHidden($this->form->get('rpiId'));?>
 	    <?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="page1">
-			<div class="row-inner"><?= $this->formRow($this->form->get('nom'));?></div>
-			<div class="row-inner"><?= $this->formRow($this->form->get('libelle'));?></div>
+			<div class="row-inner">
+				<?= $this->formRow($this->form->get('nom'));?></div>
+			<div class="row-inner">
+				<?= $this->formRow($this->form->get('libelle'));?></div>
 			<div id="classe-edit-niveau" class="row-inner edit">
-			<?= $this->formRow($this->form->get('niveau')); ?></div>
+				<?= $this->formRow($this->form->get('niveau')); ?></div>
 			<div class="row-inner">
 				<table>
 					<tr>
 						<td style='vertical-align: top; width: 25em'>
 							<fieldset>
 								<legend>Communes du RPI</legend>
-								<table id="rpi-communes">									
-<?= $this->rpiCommunes($this->structure['communes']);?>
+								<table id="rpi-communes">
+								<?= $this->rpiCommunes($this->structure['communes']);?>
 								</table>
 								<p class="sbm-description"
 									style="border-top: 1px solid #fdddcc;">
-									<b>Note:</b></br> <i class="fam-add"></i> pour ajouter une
+									<b>Note:</b><br> <i class="fam-add"></i> pour ajouter une
 									commune.<br> <i class="fam-delete"></i> pour supprimer une
 									commune.
 								</p>
@@ -141,7 +94,7 @@ $actionsAjoutClasse = [
 								<table id="rpi-etablissements">
 <?php
 $viewHelperRpiClasses = $this->getHelperPluginManager()->get('rpiClasses');
-echo $this->rpiEtablissements($this->structure['etablissements'],  
+echo $this->rpiEtablissements($this->structure['etablissements'],
     function ($etablissement) use ($viewHelperRpiClasses) {
         $etablissementId = $etablissement['etablissementId'];
         $lignesClasses = $viewHelperRpiClasses($etablissement);
@@ -156,10 +109,10 @@ EOT;
 								</table>
 								<p class="sbm-description"
 									style="border-top: 1px solid #fdddcc;">
-									<b>Note:</b></br> <i class="fam-add"></i> pour ajouter une
-									école ou une classe.<br> <i class="fam-delete"></i> pour
-									supprimer un établissement ou une classe.<br> La suppression
-									d'un établissement supprime aussi les classes.
+									<b>Note:</b><br> <i class="fam-add"></i> pour ajouter une école
+									ou une classe.<br> <i class="fam-delete"></i> pour supprimer un
+									établissement ou une classe.<br> La suppression d'un
+									établissement supprime aussi les classes.
 								</p>
 							</fieldset>
 						</td>
@@ -168,8 +121,8 @@ EOT;
 				</table>
 			</div>
 			<div id="secteur-scolaire-buttons" class="row-inner">  
-            <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
-            </div>
+            	<?= $this->formSubmit($this->form->get('submit'));?>
+            	<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
 	</div>
 	<div id="fiche-footer"></div>

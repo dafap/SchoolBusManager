@@ -10,23 +10,9 @@
  * @filesource user-prepare-nouveaux-comptes.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
-$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-
-$url_retour = $this->url('sbmadmin', 
-    [
-        'action' => 'user-liste',
-        'page' => $this->page
-    ]);
-$actions = [
-    'retour' => [
-        'class' => 'fam-door-out',
-        'formaction' => $url_retour,
-        'title' => 'Retour'
-    ]
-];
 ?>
 <h1>Préparation des nouveaux comptes d'utilisateurs pour les parents</h1>
 <div id="suppr-wrapper">
@@ -42,9 +28,7 @@ $actions = [
 			l'année.</p>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-    ?> 
+    <?= $this->form()->openTag($form);?>
+    <?= $this->formCollection($form);?>
+    <?= $this->form()->closeTag();?> 
 </div>

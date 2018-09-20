@@ -7,8 +7,8 @@
  * @filesource libelle-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 janv. 2015
- * @version 2015-1
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 ?>
 <h1>Suppression d'un libellé</h1>
@@ -16,16 +16,15 @@
 	<p>Vous avez demandé la suppression du libellé :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?php echo $this->escapeHtml($this->data->nature); ?></li>
-			<li><?php echo $this->data->code; ?></li>
-			<li><?php echo $this->escapeHtml($this->data->libelle); ?></li>
+			<li><?= $this->escapeHtml($this->data->nature); ?></li>
+			<li><?= $this->data->code; ?></li>
+			<li><?= $this->escapeHtml($this->data->libelle); ?></li>
 		</ul>
-		<p>Dans le paramétrage actuel, c'est un libellé <?php echo $this->data->ouvert ? 'employé' : 'inemployé'; ?> dans l'application.</p>
+		<p>Dans le paramétrage actuel, c'est un libellé 
+			<?= $this->data->ouvert ? 'employé' : 'inemployé'; ?> dans l'application.</p>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?> 
+		<?= $this->form()->openTag($this->form);?> 
+		<?= $this->formCollection($this->form);?> 
+		<?= $this->form()->closeTag();?> 
 </div>

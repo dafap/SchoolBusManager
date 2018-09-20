@@ -9,15 +9,14 @@
  * @filesource user-link.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmadmin', 
-    [
-        'action' => 'user-liste',
-        'page' => $this->page
-    ]);
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'user-liste',
+    'page' => $this->page
+]);
 $hiddens = [];
 $actions = [
     'retour' => [
@@ -31,13 +30,13 @@ $actions = [
 <div id="fiche-wrapper">
 	<div id="fiche-header" class="clearfix">
 		<div class="menu float-left">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
-        </div>
+        	<?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="float-left">
 			<ul style="margin-top: 0;" class="gras">
-				<li><?php echo $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
-				<li>Identifiant: <?php echo $this->user->email;?></li>
-				<li>Créé le: <?php echo $this->user->dateCreation;?> - Modifié le: <?php echo $this->user->dateModification;?></li>
+				<li><?= $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
+				<li>Identifiant: <?= $this->user->email;?></li>
+				<li>Créé le: <?= $this->user->dateCreation;?> 
+					- Modifié le: <?= $this->user->dateModification;?></li>
 			</ul>
 		</div>
 	</div>
@@ -48,32 +47,44 @@ $actions = [
 <?php else :?>
         <fieldset id="user" class="page1">
 			<div>
-				<div class="label">Titre</div><?php echo $this->responsable->titre; ?></div>
+				<div class="label">Titre</div>
+				<?= $this->responsable->titre; ?></div>
 			<div>
-				<div class="label">Nom</div><?php echo $this->responsable->nom; ?></div>
+				<div class="label">Nom</div>
+				<?= $this->responsable->nom; ?></div>
 			<div>
-				<div class="label">Prénom</div><?php echo $this->responsable->prenom; ?></div>
+				<div class="label">Prénom</div>
+				<?= $this->responsable->prenom; ?></div>
 			<div>
-				<div class="label">Adresse</div><?php echo $this->responsable->adresseL1; ?></div>
+				<div class="label">Adresse</div>
+				<?= $this->responsable->adresseL1; ?></div>
 			<div>
-				<div class="label">Adresse</div><?php echo $this->responsable->adresseL2; ?></div>
+				<div class="label">Adresse</div>
+				<?= $this->responsable->adresseL2; ?></div>
 			<div>
-				<div class="label">Localité</div><?php echo $this->responsable->codePostal . ' ' . $this->responsable->commune; ?></div>
+				<div class="label">Localité</div>
+				<?= $this->responsable->codePostal . ' ' . $this->responsable->commune; ?></div>
 			<div>
-				<div class="label">Téléphone</div><?php echo $this->responsable->telephoneF; ?></div>
+				<div class="label">Téléphone</div>
+				<?= $this->responsable->telephoneF; ?></div>
 			<div>
-				<div class="label">Téléphone</div><?php echo $this->responsable->telephoneP; ?></div>
+				<div class="label">Téléphone</div>
+				<?= $this->responsable->telephoneP; ?></div>
 			<div>
-				<div class="label">Téléphone</div><?php echo $this->responsable->telephoneT; ?></div>
+				<div class="label">Téléphone</div>
+				<?= $this->responsable->telephoneT; ?></div>
 			<div>
-				<div class="label">Email</div><?php echo $this->responsable->email; ?></div>
+				<div class="label">Email</div>
+				<?= $this->responsable->email; ?></div>
 			<div>
-				<div class="label">Créé le</div><?php echo $this->responsable->dateCreation; ?></div>
+				<div class="label">Créé le</div>
+				<?= $this->responsable->dateCreation; ?></div>
 			<div>
-				<div class="label">Modifié le</div><?php echo $this->responsable->dateModification; ?></div>
+				<div class="label">Modifié le</div>
+				<?= $this->responsable->dateModification; ?></div>
 			<div class="clearfix">
 				<div class="label float-left">Commentaires</div>
-				<div class="float-left" style="width: 750px;"><?php echo $this->responsable->note; ?></div>
+				<div class="float-left" style="width: 750px;"><?= $this->responsable->note; ?></div>
 			</div>
 		</fieldset>
 <?php endif;?>

@@ -8,8 +8,8 @@
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -50,32 +50,27 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $users = $this->paginator->getCurrentItems();
-$url_edit = $this->url('sbmadmin', 
-    [
-        'action' => 'user-edit',
-        'page' => $this->page
-    ]);
-$url_delete = $this->url('sbmadmin', 
-    [
-        'action' => 'user-suppr',
-        'page' => $this->page
-    ]);
-$url_group = $this->url('sbmadmin', 
-    [
-        'action' => 'user-link',
-        'page' => $this->page
-    ]);
-$url_ajouter = $this->url('sbmadmin', 
-    [
-        'action' => 'user-ajout',
-        'page' => $this->page
-    ]);
-$url_rapports = $this->url('sbmadmin', 
-    [
-        'action' => 'user-pdf',
-        'page' => $this->page
-    ]);
-$url_creer_comptes_parent = $this->url('sbmadmin', 
+$url_edit = $this->url('sbmadmin', [
+    'action' => 'user-edit',
+    'page' => $this->page
+]);
+$url_delete = $this->url('sbmadmin', [
+    'action' => 'user-suppr',
+    'page' => $this->page
+]);
+$url_group = $this->url('sbmadmin', [
+    'action' => 'user-link',
+    'page' => $this->page
+]);
+$url_ajouter = $this->url('sbmadmin', [
+    'action' => 'user-ajout',
+    'page' => $this->page
+]);
+$url_rapports = $this->url('sbmadmin', [
+    'action' => 'user-pdf',
+    'page' => $this->page
+]);
+$url_creer_comptes_parent = $this->url('sbmadmin',
     [
         'action' => 'user-prepare-nouveaux-comptes',
         'page' => $this->page
@@ -109,14 +104,14 @@ $actions = [
 <h1>Liste des utilisateurs</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+    	<?= $this->flashMessenger()->render('success');?>
+    	<?= $this->flashMessenger()->render('warning');?>
+    	<?= $this->flashMessenger()->render('error');?>
+    	<?= $this->flashMessenger()->render('info');?>
+    	<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="users">
@@ -131,24 +126,12 @@ echo $this->flashMessenger()->render('default');
 					<th>Actif</th>
 					<th>Sélection</th>
 				</tr>
-          <?php foreach($users as $test => $user): ?>
+          <?php foreach($users as $user): ?>
           <?php
             // construction du JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $user->userId);
             $jsCallback .= sprintf("$modele\n", $user->userId, $user->userId);
-            ?>
-                <tr
-					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
-					<td class="nom"><?php echo $this->escapeHtml($user->nom); ?></td>
-					<td class="prenom"><?php echo $this->escapeHtml($user->prenom); ?></td>
-					<td class="email"><?php echo $this->escapeHtml($user->email); ?></td>
-					<td class="categorieId"><?php echo $this->escapeHtml($acategories[$user->categorieId]); ?></td>
-					<td class="tokenalive centre"><?php echo $user->categorieId == 255 ? '' : ($user->tokenalive ? 'Oui' : ''); ?></td>
-					<td class="confirme centre"><?php echo $user->categorieId == 255 ? '' : ($user->confirme ? '' : 'Non'); ?></td>
-					<td class="active centre"><?php echo $user->categorieId == 255 ? '' : ($user->active ? '' : 'Non'); ?></td>
-					<td class="selection centre"><?php echo $user->categorieId == 255 ? '' : renderCheckbox($this, 'selection', 'chk' . $user->userId, $user->selection)?></td>
-					<td class="boutons">
-            <?php
+            // préparation des boutons de la ligne
             $hiddens = [
                 'userId' => $user->userId,
                 'email' => $user->email
@@ -170,9 +153,26 @@ echo $this->flashMessenger()->render('default');
                     'title' => 'fiche du compte associé (responsable, transporteur ou établissement)'
                 ]
             ];
-            echo $user->categorieId == 255 ? '' : $this->listeLigneActions(
-                $hiddens['userId'], $hiddens, $buttons);
             ?>
+                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="nom">
+						<?= $this->escapeHtml($user->nom); ?></td>
+					<td class="prenom">
+						<?= $this->escapeHtml($user->prenom); ?></td>
+					<td class="email">
+						<?= $this->escapeHtml($user->email); ?></td>
+					<td class="categorieId">
+						<?= $this->escapeHtml($acategories[$user->categorieId]); ?></td>
+					<td class="tokenalive centre">
+						<?= $user->categorieId == 255 ? '' : ($user->tokenalive ? 'Oui' : ''); ?></td>
+					<td class="confirme centre">
+						<?= $user->categorieId == 255 ? '' : ($user->confirme ? '' : 'Non'); ?></td>
+					<td class="active centre">
+						<?= $user->categorieId == 255 ? '' : ($user->active ? '' : 'Non'); ?></td>
+					<td class="selection centre">
+						<?= $user->categorieId == 255 ? '' : renderCheckbox($this, 'selection', 'chk' . $user->userId, $user->selection)?></td>
+					<td class="boutons">
+            			<?= $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);?>
 				    </td>
 				</tr>         
         <?php endforeach;?>
@@ -180,11 +180,12 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
-        <?php echo $this->form()->openTag($this->criteres_form);?>
-        <?php echo $this->formCollection($this->criteres_form, true);?>
-        <?php echo $this->form()->closeTag();?>
+        <?= $this->form()->openTag($this->criteres_form);?>
+        <?= $this->formCollection($this->criteres_form, true);?>
+        <?= $this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -194,8 +195,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?php echo $jsTrigger;?>}
-<?php echo $jsCallback;?>
+<?= $jsTrigger;?>}
+<?= $jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

@@ -7,8 +7,8 @@
  * @filesource secteur-scolaire-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2018
- * @version 2018-2.4.1
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
@@ -17,17 +17,17 @@ $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $data = $this->paginator->getCurrentItems();
 
-$url_ajouter = $this->url('sbmadmin', 
+$url_ajouter = $this->url('sbmadmin',
     [
         'action' => 'secteur-scolaire-ajout',
         'page' => $this->page
     ]);
-$url_delete = $this->url('sbmadmin', 
+$url_delete = $this->url('sbmadmin',
     [
         'action' => 'secteur-scolaire-suppr',
         'page' => $this->page
     ]);
-$url_rapports = $this->url('sbmadmin', 
+$url_rapports = $this->url('sbmadmin',
     [
         'action' => 'secteur-scolaire-pdf',
         'page' => $this->page
@@ -58,20 +58,19 @@ $actions = [
 <?php if ($this->etablissementId):?>
 	<div id="liste-title">
 		<ul>
-			<li><?php echo $this->escapeHtml($this->etablissement->commune); ?></li>
-			<li><?php echo $this->escapeHtml($this->etablissement->nom); ?></li>
+			<li><?= $this->escapeHtml($this->etablissement->commune); ?></li>
+			<li><?= $this->escapeHtml($this->etablissement->nom); ?></li>
 		</ul>
 	</div>
 <?php endif;?>
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+    	<?= $this->flashMessenger()->render('success');?>
+    	<?= $this->flashMessenger()->render('warning');?>
+    	<?= $this->flashMessenger()->render('error');?>
+    	<?= $this->flashMessenger()->render('info');?>
+    	<?= $this->flashMessenger()->render('default');?>
 	    </div>
 	</div>
 	<div id="liste-inner">
@@ -83,21 +82,8 @@ echo $this->flashMessenger()->render('default');
 					<th>Communes du secteur scolaire</th>
 					<th></th>
 				</tr>
-            <?php foreach($data as $test => $row): ?>
-                <tr
-					class="<?php
-                
-                echo $this->cycle(
-                    [
-                        "even",
-                        "odd"
-                    ])->next();
-                ?>">
-					<td class="communeetab"><?php echo $this->escapeHtml($row->communeetab); ?></td>
-					<td class="etablissement"><?php echo $this->escapeHtml($row->etablissement); ?></td>
-					<td class="commune"><?php echo $this->escapeHtml($row->commune); ?></td>
-					<td class="boutons">
-					<?php
+            <?php foreach($data as $row): ?>
+				<?php
                 $hiddens = [
                     'etablissementId' => $row->etablissementId,
                     'communeId' => $row->communeId,
@@ -110,21 +96,25 @@ echo $this->flashMessenger()->render('default');
                         'title' => 'Supprimer'
                     ]
                 ];
-                echo $this->listeLigneActions(
-                    $row->communeId . '|' . $row->etablissementId, $hiddens, $buttons);
                 ?>
-					</td>
+                <tr class="<?=$this->cycle(["even", "odd"])->next();?>">
+					<td class="communeetab"><?= $this->escapeHtml($row->communeetab); ?></td>
+					<td class="etablissement"><?= $this->escapeHtml($row->etablissement); ?></td>
+					<td class="commune"><?= $this->escapeHtml($row->commune); ?></td>
+					<td class="boutons">
+						<?= $this->listeLigneActions($this->serviceId, $hiddens, $buttons);?></td>
 				</tr>         
             <?php endforeach;?>
             </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
-        <?php echo $this->form()->openTag($this->criteres_form);?>
-        <?php echo $this->formCollection($this->criteres_form, true);?>
-        <?php echo $this->form()->closeTag();?>
+        <?= $this->form()->openTag($this->criteres_form);?>
+        <?= $this->formCollection($this->criteres_form, true);?>
+        <?= $this->form()->closeTag();?>
         </div>
 	</div>
 </div>

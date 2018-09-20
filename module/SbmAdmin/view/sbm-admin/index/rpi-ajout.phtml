@@ -9,8 +9,8 @@
  * @filesource rpi-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 août 2018
- * @version 2018-2.4.2
+ * @date 16 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
@@ -39,13 +39,15 @@ $actions = [
 	    <?= $this->form()->openTag($this->form);?>
 	    <?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="page1">
-			<div class="row-inner"><?= $this->formRow($this->form->get('nom'));?></div>
-			<div class="row-inner"><?= $this->formRow($this->form->get('libelle'));?></div>
+			<div class="row-inner">
+				<?= $this->formRow($this->form->get('nom'));?></div>
+			<div class="row-inner">
+				<?= $this->formRow($this->form->get('libelle'));?></div>
 			<div id="classe-ajout-niveau" class="row-inner ajout">
-			<?= $this->formRow($this->form->get('niveau')); ?></div>
+				<?= $this->formRow($this->form->get('niveau')); ?></div>
 			<div id="secteur-scolaire-buttons" class="row-inner">  
-            <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
-            </div>
+            	<?= $this->formSubmit($this->form->get('submit'))?>
+            	<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
 	</div>
 	<div id="fiche-footer"></div>
