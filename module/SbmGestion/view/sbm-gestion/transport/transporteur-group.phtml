@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/transporteur-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', 
@@ -78,7 +78,7 @@ echo $this->flashMessenger()->render('default');
 	<div id="liste-header">
 		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo $this->paginator->getAdapter()->count(); ?> prises en charge.</em>
+			<em>Il y a <?php echo $this->paginator->getTotalItemCount(); ?> prises en charge.</em>
 		</p>
 	</div>
 	<div id="liste-inner">

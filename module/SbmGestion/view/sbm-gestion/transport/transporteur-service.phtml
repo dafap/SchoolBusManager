@@ -7,8 +7,8 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 use SbmBase\Model\StdLib;
 
@@ -64,7 +64,7 @@ $data = $this->paginator->getCurrentItems();
 	<div id="liste-header" class="clearfix">
 		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo $this->paginator->getAdapter()->count(); ?> services.</em>
+			<em>Il y a <?php echo $this->paginator->getTotalItemCount(); ?> services.</em>
 		</p>
 	</div>
 	<div id="liste-inner">

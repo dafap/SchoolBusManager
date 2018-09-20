@@ -9,8 +9,8 @@
  * @filesource ga-localisation-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -37,7 +37,7 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
-<?php if (count($data)) :?>
+<?php if ($data->count()) :?>
     <div id="liste-inner">
 		<table class="data">
 			<tbody>
