@@ -8,8 +8,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
- * @version 2018-2.4.1
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -199,11 +199,16 @@ abstract class AbstractActionController extends ZendAbstractActionController
             die();
         } catch (\Exception $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
-            return $this->redirect()->toRoute($retour['route'], 
-                [
+            $routeParams = [
                     'action' => $retour['action'],
                     'page' => $this->params('page', 1)
-                ]);
+                ];
+            $id = $this->params('id');
+            if ($id) {
+                $routeParams['id'] = $id;
+            }
+            
+            return $this->redirect()->toRoute($retour['route'], $routeParams);
         }
     }
 
