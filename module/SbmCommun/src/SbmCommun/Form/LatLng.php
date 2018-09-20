@@ -7,8 +7,8 @@
  * @filesource LatLng.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2018
- * @version 2018-2.4.0
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Form;
 
@@ -39,12 +39,12 @@ class LatLng extends ButtonForm implements InputFilterProviderInterface
      * @param array $submits
      *            tableau décrivant les boutons
      * @param array $valide
-     *            tableau dont les clés 'lat' et 'lng' sont associées à un tableau à 2 réels [min, max)
+     *            tableau dont les clés 'lat' et 'lng' sont associées à un tableau à 2 réels [min, max]
      */
     public function __construct(array $hiddens, array $submits, array $valide)
     {
-        $ok = array_key_exists('lat', $valide);
-        $ok &= array_key_exists('lng', $valide);
+        $ok = array_key_exists('lat', $valide) && is_array($valide['lat']);
+        $ok &= array_key_exists('lng', $valide) && is_array($valide['lng']);
         if ($ok) {
             $ok &= count($valide['lat']) == 2;
             $ok &= count($valide['lng']) == 2;
