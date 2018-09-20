@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 20 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmGestion\Controller;
 
@@ -433,6 +433,7 @@ class TransportController extends AbstractActionController
                     ]),
                 'circuit' => $circuit,
                 'page' => $currentPage,
+                'pageRetour' => $this->params('id', 1),
                 'circuitId' => $circuitId
             ]);
     }
