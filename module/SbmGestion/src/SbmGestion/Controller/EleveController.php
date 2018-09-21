@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
+ * @date 21 sept. 2018
  * @version 2018-2.4.5
  */
 namespace SbmGestion\Controller;
@@ -1894,12 +1894,11 @@ class EleveController extends AbstractActionController
                     'lat' => $pt->getLatitude(),
                     'lng' => $pt->getLongitude()
                 ]);
+            $form->isValid();
         }
         return new ViewModel(
             [
-                'point' => $pt,
                 'form' => $form->prepare(),
-                'responsableId' => $args['responsableId'],
                 'responsable' => $responsable,
                 'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
                 'config' => $configCarte
