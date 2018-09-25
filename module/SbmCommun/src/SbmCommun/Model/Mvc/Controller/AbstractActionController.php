@@ -15,8 +15,6 @@ namespace SbmCommun\Model\Mvc\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController as ZendAbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
-use Zend\View\Model\ViewModel;
-use Zend\Db\Sql\Ddl\Column\Boolean;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Form\CriteresForm;
@@ -35,7 +33,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
     /**
      * Booléen qui prend sa valeur lors de l'utilisation de postRedirectGet dans les méthode initListe, initAjout, initEdit, initSuppr
      *
-     * @var Boolean
+     * @var boolean
      */
     protected $sbm_isPost;
 
