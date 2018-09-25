@@ -320,7 +320,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || ! array_key_exists('eleveId', $prg)) {
-            $prg = Session::get('post', false, $this->getSessionNamespace('ajout', 2));
+           $prg = Session::get('post', false, $this->getSessionNamespace( 'ajout', 2));
             if ($prg === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite.');
                 try {
@@ -1246,7 +1246,7 @@ class EleveController extends AbstractActionController
                     $pointEtablissement);
                 try {
                     $d = $oDistanceMatrix->calculDistance($pt, $ptetab);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $d = 99000;
                     $this->flashMessenger()->addWarningMessage(
                         "Google Maps API ne répond pas. Mettre à jour manuellement la distance entre le domicile et l'établissement.");
