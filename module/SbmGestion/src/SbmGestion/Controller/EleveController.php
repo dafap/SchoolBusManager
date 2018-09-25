@@ -1619,7 +1619,7 @@ class EleveController extends AbstractActionController
                 $tUsers->saveRecord($oData);
             } elseif ($user->categorieId == 1) {
                 // supprime le compte user
-                $tUsers->deleteRecord($u->userId);
+                $tUsers->deleteRecord($user->userId);
             }
         }
     }
