@@ -8,18 +8,15 @@
  * @filesource CommandSql.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 10 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Db;
 
-use SbmCommun\Model\Db\Exception;
 use SbmBase\Model\StdLib;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Ddl;
-use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
 
 abstract class CommandSql
 {
@@ -27,7 +24,7 @@ abstract class CommandSql
     /**
      * Renvoie une requete SELECT pour créer une VIEW
      *
-     * @param Adapter $dbadapter            
+     * @param \Zend\Db\Adapter\Adapter $dbadapter
      * @param array $structure
      *            (description de la structure dans SbmInstallation/config/db_design/README.txt)
      *            
@@ -35,10 +32,11 @@ abstract class CommandSql
      */
     public static function getSelectForCreateView($dbadapter, $prefix, $structure)
     {
-        self::isValidDbDesignStructureView($structure); // lance une exception si la structure n'est pas bonne
+        self::isValidDbDesignStructureView($structure); // lance une exception si la structure
+                                                        // n'est pas bonne
         $sql = new Select();
-        $table = StdLib::entityName($structure['from']['table'], 
-            array_key_exists('type', $structure['from']) ? $structure['from']['type'] : 'table', 
+        $table = StdLib::entityName($structure['from']['table'],
+            array_key_exists('type', $structure['from']) ? $structure['from']['type'] : 'table',
             $prefix);
         $table = array_key_exists('alias', $structure['from']) ? [
             $structure['from']['alias'] => $table
@@ -47,7 +45,7 @@ abstract class CommandSql
         $sql->columns(self::getColumnsFromDbDesignFields($structure['fields']));
         if (array_key_exists('join', $structure)) {
             foreach ($structure['join'] as $join) {
-                $table = StdLib::entityName($join['table'], 
+                $table = StdLib::entityName($join['table'],
                     array_key_exists('type', $join) ? $join['type'] : 'table', $prefix);
                 $table = array_key_exists('alias', $join) ? [
                     $join['alias'] => $table
@@ -93,8 +91,8 @@ abstract class CommandSql
     public static function isValidDbDesignStructureView($structure)
     {
         $ok = is_array($structure) && array_key_exists('fields', $structure) &&
-             is_array($structure['fields']) && array_key_exists('from', $structure) &&
-             array_key_exists('table', $structure['from']);
+            is_array($structure['fields']) && array_key_exists('from', $structure) &&
+            array_key_exists('table', $structure['from']);
         if ($ok) {
             $ok = self::isValidDbDesignFields($structure['fields']);
         }
@@ -131,6 +129,7 @@ abstract class CommandSql
             if (! $ok) {
                 break;
             }
+            $j ++;
         }
         return $ok;
     }
@@ -139,14 +138,15 @@ abstract class CommandSql
      * Vérifie la validité de la structure définisant une liste de champs
      *
      * @param array $fields
-     *            (description de la structure de ce tableau dans SbmInstallation/config/db_design/README.txt)
+     *            (description de la structure de ce tableau dans
+     *            SbmInstallation/config/db_design/README.txt)
      * @return boolean
      */
     private static function isValidDbDesignFields($fields)
     {
         $ok = false;
         foreach ($fields as $field) {
-            $ok = array_key_exists('field', $field) || (array_key_exists('expression', 
+            $ok = array_key_exists('field', $field) || (array_key_exists('expression',
                 $field) && array_key_exists('alias', $field));
             if (! $ok) {
                 break;
@@ -194,7 +194,7 @@ abstract class CommandSql
                     $result = $result->between($identifier, $minValue, $maxValue);
                     break;
                 case 'expression':
-                    list ($expression, $parameter) = $arguments;
+                    list ($expression, $parameters) = $arguments;
                     $result = $result->expression($expression, $parameters);
                     break;
                 case 'in':
@@ -240,8 +240,7 @@ abstract class CommandSql
                 case '!=':
                     if (count($arguments) == 4) {
                         list ($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->notEqualTo($left, $right, $leftType, 
-                            $rightType);
+                        $result = $result->notEqualTo($left, $right, $leftType, $rightType);
                     } else {
                         list ($left, $right) = $arguments;
                         $result = $result->notEqualTo($left, $right);
@@ -261,7 +260,7 @@ abstract class CommandSql
                 case '<=':
                     if (count($arguments) == 4) {
                         list ($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->lessThanOrEqualTo($left, $right, $leftType, 
+                        $result = $result->lessThanOrEqualTo($left, $right, $leftType,
                             $rightType);
                     } else {
                         list ($left, $right) = $arguments;
@@ -272,7 +271,7 @@ abstract class CommandSql
                 case '>':
                     if (count($arguments) == 4) {
                         list ($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->greaterThan($left, $right, $leftType, 
+                        $result = $result->greaterThan($left, $right, $leftType,
                             $rightType);
                     } else {
                         list ($left, $right) = $arguments;
@@ -283,7 +282,7 @@ abstract class CommandSql
                 case '>=':
                     if (count($arguments) == 4) {
                         list ($left, $right, $leftType, $rightType) = $arguments;
-                        $result = $result->greaterThanOrEqualTo($left, $right, $leftType, 
+                        $result = $result->greaterThanOrEqualTo($left, $right, $leftType,
                             $rightType);
                     } else {
                         list ($left, $right) = $arguments;
@@ -292,7 +291,7 @@ abstract class CommandSql
                     break;
                 default:
                     $msg = sprintf(
-                        " : La clé `%s` du tableau passé en paramètre est inconnue.", 
+                        " : La clé `%s` du tableau passé en paramètre est inconnue.",
                         $predicate);
                     throw new Exception(__METHOD__ . $msg);
                     break;
