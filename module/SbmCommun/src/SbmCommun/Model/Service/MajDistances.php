@@ -7,19 +7,17 @@
  * @filesource MajDistances.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2018
- * @version 2018-2.4.0
+ * @date 27 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Service;
 
+use SbmBase\Model\Session;
+use SbmCartographie\GoogleMaps;
+use SbmCartographie\Model\Exception;
+use SbmCartographie\Model\Point;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Sql\Where;
-use SbmBase\Model\Session;
-use SbmCartographie\Model\Point;
-use SbmCartographie\Model\Service\CartographieManager;
-use SbmCartographie\Model\Exception;
-use SbmCartographie\GoogleMaps;
 
 class MajDistances implements FactoryInterface
 {
@@ -62,7 +60,7 @@ class MajDistances implements FactoryInterface
     {
         if (! $serviceLocator->has(GoogleMaps\DistanceMatrix::class)) {
             throw new Exception(
-                sprintf(_("CartographieManagerattendu, doit contenir %s."), 
+                sprintf(_("CartographieManagerattendu, doit contenir %s."),
                     GoogleMaps\DistanceMatrix::class));
         }
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
@@ -83,7 +81,7 @@ class MajDistances implements FactoryInterface
      * L'enregistrement est fait dans la table scolarites, pour le millesime en cours.
      * (Un seul appel à l'API de google)
      *
-     * @param int $responsableId            
+     * @param int $responsableId
      *
      * @return string|null renvoie null en cas de succès ou le message d'erreur en cas d'échec
      */
@@ -93,7 +91,7 @@ class MajDistances implements FactoryInterface
         $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
             $responsableId);
         $this->domicile = new Point($responsable->x, $responsable->y);
-        
+
         // liste des élèves et des établissements à prendre en compte
         $destinations = [];
         for ($i = 1; $i <= 2; $i ++) {
@@ -101,7 +99,7 @@ class MajDistances implements FactoryInterface
                 $responsableId, $i);
             foreach ($rowset as $row) {
                 $this->famille['enfants'][$i][$row['eleveId']] = $row['etablissementId'];
-                if (array_key_exists($row['etablissementId'], 
+                if (array_key_exists($row['etablissementId'],
                     $this->famille['etablissements']))
                     continue;
                 $this->famille['etablissements'][$row['etablissementId']] = [
@@ -117,13 +115,14 @@ class MajDistances implements FactoryInterface
                 // appel de l'API
                 $result = $this->oDistanceMatrix->uneOriginePlusieursDestinations(
                     $this->domicile, $destinations);
-                
-                // analyse du résultat. On n'a qu'un domicile donc qu'une distance par établissement. Cette distance est en mètres.
+
+                // analyse du résultat. On n'a qu'un domicile donc qu'une distance par
+                // établissement. Cette distance est en mètres.
                 $j = 0;
                 foreach ($this->famille['etablissements'] as $etablissementId => &$array) {
                     $array['distance'] = $result[$j ++];
                 }
-                
+                unset($array);
                 // maj table scolarites (conversion des distances en km)
                 $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                 $oData = $tScolarites->getObjData();
@@ -135,7 +134,7 @@ class MajDistances implements FactoryInterface
                                 'eleveId' => $eleveId,
                                 'distanceR' . $i => round(
                                     $this->famille['etablissements'][$etablissementId]['distance'] /
-                                         1000, 1)
+                                    1000, 1)
                             ]);
                         $tScolarites->saveRecord($oData);
                     }

@@ -20,22 +20,19 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 août 2018
- * @version 2018-2.4.3
+ * @date 27 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Service;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Sql\Where;
 use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Exception;
 use SbmCartographie\Model\Point;
-use SbmCartographie\Model\Service\CartographieManager;
 use SbmCommun\Model\Strategy\Niveau;
-use SbmCommun\Model\Db\Service\DbManager;
-use SbmCartographie\Model\SbmCartographie\Model;
+use Zend\Db\Sql\Where;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class CalculDroits implements FactoryInterface
 {
@@ -55,7 +52,8 @@ class CalculDroits implements FactoryInterface
     private $tScolarites;
 
     /**
-     * objet permettant d'obtenir les collèges ou les écoles prise en compte pour un niveau et un point géographique donnés
+     * objet permettant d'obtenir les collèges ou les écoles prise en compte pour un niveau et un
+     * point géographique donnés
      *
      * @var \SbmCartographie\GoogleMaps\DistanceMatrix
      */
@@ -63,20 +61,22 @@ class CalculDroits implements FactoryInterface
 
     /**
      *
-     * @var DbManager
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
     private $db_manager;
 
     /**
      *
-     * @var \array
+     * @var array
      */
     private $compte_rendu = [];
 
     /**
      * Les distances en km des domiciles de l'élève à son établissement scolaire.
-     * Lorsque l'élève a une résidence différente de celles de ses responsable, elle remplace la résidence du responsable n°1.
-     * Cette propriété mise à jour dans la méthode district et est reprise dans les méthodes saveAcquisition() et saveAcquisitionPerte()
+     * Lorsque l'élève a une résidence différente de celles de ses responsable, elle remplace la
+     * résidence du responsable n°1.
+     * Cette propriété mise à jour dans la méthode district et est reprise dans les méthodes
+     * saveAcquisition() et saveAcquisitionPerte()
      *
      * @var array of float
      */
@@ -86,11 +86,11 @@ class CalculDroits implements FactoryInterface
     {
         if (! $serviceLocator->has(GoogleMaps\DistanceMatrix::class)) {
             throw new Exception(
-                sprintf(_("CartographieManager attendu, doit contenir %s."), 
+                sprintf(_("CartographieManager attendu, doit contenir %s."),
                     GoogleMaps\DistanceMatrix::class));
         }
         $this->setMillesime();
-        $this->db_manager = $db_manager = $serviceLocator->get('Sbm\DbManager');
+        $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
         $this->distance = [
@@ -99,10 +99,10 @@ class CalculDroits implements FactoryInterface
         ];
         return $this;
     }
-    
+
     /**
-     * initialise la propriété 
-     * 
+     * initialise la propriété
+     *
      * @param string $millesime
      */
     public function setMillesime($millesime = null)
@@ -134,8 +134,8 @@ class CalculDroits implements FactoryInterface
      * 3/ l'élève est scolarisé dans un établissement autorisé pour son adresse personnelle
      * Le droit va permettre de mettre à jour le champ district de la table scolarites
      *
-     * @param int $eleveId            
-     * @param bool $gardeDistance            
+     * @param int $eleveId
+     * @param bool $gardeDistance
      *
      * @return boolean
      */
@@ -163,8 +163,9 @@ class CalculDroits implements FactoryInterface
         }
         $strategieNiveau = new Niveau();
         $niveau = $strategieNiveau->extract($niveau);
-        
+
         // domiciles
+        $domiciles = [];
         $elv = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord($eleveId);
         // résidence du 1er responsable
         $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
@@ -311,8 +312,8 @@ class CalculDroits implements FactoryInterface
      * Pour le public, collège du secteur scolaire de la commune du domicile
      * Pour le privé, collège de la commune le plus proche ou collège le plus proche
      *
-     * @param array(Point) $domiciles            
-     * @param Point $college            
+     * @param array(Point) $domiciles
+     * @param Point $college
      *
      * @return array tableau associatif de la forme
      *         ['droit' => boolean, 'distances' => [], 'message' => string]
@@ -349,7 +350,7 @@ class CalculDroits implements FactoryInterface
             $estDeLaCommune = false;
             foreach ($domiciles as $pt) {
                 $estDeLaCommune |= $pt->getAttribute('communeId') ==
-                     $college->getAttribute('communeId');
+                    $college->getAttribute('communeId');
             }
             // liste des collèges privés
             $tClg = $this->db_manager->get('Sbm\Db\Table\Etablissements');
@@ -367,12 +368,6 @@ class CalculDroits implements FactoryInterface
                     'message' => ''
                 ];
             } else {
-                $droit = false;
-                // on initialise $distances afin d'éviter une décalage si la réponse de distanceMatrix
-                // est invalide pour le premier domicile ($element->status != OK).
-                $distances = [
-                    0
-                ];
                 // tableau de Point
                 $aDestinations = [];
                 // il y en a plusieurs, recherche du collège privé le plus proche
@@ -394,21 +389,15 @@ class CalculDroits implements FactoryInterface
      * Pour le public, école publique de la commune la plus proche ou école publique la plus proche
      * Pour le privé, école privée de la commune la plus proche ou école privée la plus proche
      *
-     * @param int $niveau            
-     * @param array(Point) $domiciles            
-     * @param Point $ecole            
+     * @param int $niveau
+     * @param array(Point) $domiciles
+     * @param Point $ecole
      *
      * @return array tableau associatif de la forme
      *         ['droit' => ..., 'distances' => ..., 'etablissementsAyantDroit' => [int]]
      */
     private function domicilesEcole($niveau, $domiciles, $ecole)
     {
-        $droit = false;
-        // on initialise $distances afin d'éviter une décalage si la réponse de distanceMatrix
-        // est invalide pour le premier domicile ($element->status != OK).
-        $distances = [
-            0
-        ];
         // L'école est-elle de la commune d'un domicile ?
         $estDeLaCommune = false;
         $tRpiCommunes = $this->db_manager->get('Sbm\Db\Table\RpiCommunes');
@@ -420,10 +409,10 @@ class CalculDroits implements FactoryInterface
         }
         // liste des écoles ayant le statut de l'$ecole
         if ($estDeLaCommune) {
-            $aDestinations = $this->prepareListeEcolesZone($niveau, 
+            $aDestinations = $this->prepareListeEcolesZone($niveau,
                 $ecole->getAttribute('statut'), $communesEcole);
         } else {
-            $aDestinations = $this->prepareListeEcolesZone($niveau, 
+            $aDestinations = $this->prepareListeEcolesZone($niveau,
                 $ecole->getAttribute('statut'));
         }
         // calcul des distances (plusieurs origines, plusieurs destinations)
@@ -434,9 +423,9 @@ class CalculDroits implements FactoryInterface
      * Cette méthode construit une structure donnant un tableau de Points des établissements
      * avec en attribut : etablissementId, communeId, statut
      *
-     * @param int $niveau            
-     * @param int $statut            
-     * @param array|string|null $communeId            
+     * @param int $niveau
+     * @param int $statut
+     * @param array|string|null $communeId
      *
      * @return array tableau de Point
      */
@@ -459,8 +448,8 @@ class CalculDroits implements FactoryInterface
      * est assurée dans cet établissement
      * sinon, renvoi l'identifiant de l'établissement du RPI qui assure cette classe
      *
-     * @param int $etablissementId            
-     * @param int $classeId            
+     * @param int $etablissementId
+     * @param int $classeId
      *
      * @return boolean|int
      */
@@ -479,10 +468,9 @@ class CalculDroits implements FactoryInterface
                 return $etablissementId;
             } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                 // il faut chercher quel établissement du RPI assure cette classe
-                $resultset = $tRpiEtablissements->fetchAll(
-                    [
-                        'rpiId' => $rpiId
-                    ]);
+                $resultset = $tRpiEtablissements->fetchAll([
+                    'rpiId' => $rpiId
+                ]);
                 foreach ($resultset as $row) {
                     try {
                         $tRpiClasses->getRecord(
@@ -494,7 +482,7 @@ class CalculDroits implements FactoryInterface
                     } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {}
                 }
                 $msg = sprintf(
-                    'Cette classe (classeId = %d) n\'est pas assurée dans ce RPI (rpiId = %d).', 
+                    'Cette classe (classeId = %d) n\'est pas assurée dans ce RPI (rpiId = %d).',
                     $classeId, $rpiId);
                 throw new Exception($msg);
             }
@@ -506,28 +494,29 @@ class CalculDroits implements FactoryInterface
     /**
      * fncDistanceMatrix, plusieurs origines, plusieurs destinations
      *
-     * @param Point $etablissement
+     * @param Point $ptEtablissement
      *            établissement où l'élève est inscrit
-     * @param array(Point) $aOrigines
+     * @param array(Point) $aPtOrigines
      *            liste des domiciles de l'élève
-     * @param array(Point) $aDestinations
+     * @param array(Point) $aPtDestinations
      *            liste des établissements du niveau de l'élève (parfois restreints dans un RPI)
      *            
      * @return array Tableau de la forme
      *         ['droit' => ..., 'distances' => ..., 'etablissementsAyantDroit' => [int]]
      *        
-     * @throws \SbmCartographie\GoogleMaps\ExceptionNoAnwser ou \Exception
+     * @throws \SbmCartographie\GoogleMaps\ExceptionNoAnswer ou \Exception
      */
-    private function fncDistanceMatrix($etablissement, $aOrigines, $aDestinations)
+    private function fncDistanceMatrix($ptEtablissement, $aPtOrigines, $aPtDestinations)
     {
         $droit = false;
+        $aEtablissementsAyantDroit = [];
         // on initialise $distances afin d'éviter une décalage si la réponse de distanceMatrix
         // est invalide pour la première origine ($element->status != OK).
         $distances = [
             0
         ];
         try {
-            $obj = $this->oDistanceMatrix->getJsonResult($aOrigines, $aDestinations);
+            $obj = $this->oDistanceMatrix->getJsonResult($aPtOrigines, $aPtDestinations);
             if ($obj) {
                 if ($obj->status == 'OK') {
                     $i = 0;
@@ -538,15 +527,15 @@ class CalculDroits implements FactoryInterface
                         foreach ($row->elements as $element) {
                             if ($element->status == 'OK') {
                                 // on récupère la distance entre le domicile et l'ecole
-                                if ($aDestinations[$j]->getAttribute('etablissementId') ==
-                                     $etablissement->getAttribute('etablissementId')) {
+                                if ($aPtDestinations[$j]->getAttribute('etablissementId') ==
+                                    $ptEtablissement->getAttribute('etablissementId')) {
                                     $distances[$i] = $element->distance->value;
                                 }
                                 // on met à jour la distance minimale $dmin
                                 // et on mémorise l'établissement le plus proche
                                 if ($dmin > $element->distance->value) {
                                     $dmin = $element->distance->value;
-                                    $procheEtablissementId = $aDestinations[$j]->getAttribute(
+                                    $procheEtablissementId = $aPtDestinations[$j]->getAttribute(
                                         'etablissementId');
                                 }
                             }
@@ -557,17 +546,17 @@ class CalculDroits implements FactoryInterface
                         // et si la classe n'est pas ouverte dans l'établissement le plus
                         // proche
                         $procheEtablissementId = $this->getEtablissementId(
-                            $procheEtablissementId, 
-                            $etablissement->getAttribute('classeId'));
-                        $droit |= $etablissement->getAttribute('etablissementId') ==
-                             $procheEtablissementId;
-                        $etablissementsAyantDroit[] = $procheEtablissementId;
+                            $procheEtablissementId,
+                            $ptEtablissement->getAttribute('classeId'));
+                        $droit |= $ptEtablissement->getAttribute('etablissementId') ==
+                            $procheEtablissementId;
+                        $aEtablissementsAyantDroit[] = $procheEtablissementId;
                         $i ++;
                     }
                     return [
                         'droit' => $droit,
                         'distances' => $distances,
-                        'etablissementsAyantDroit' => $etablissementsAyantDroit
+                        'etablissementsAyantDroit' => $aEtablissementsAyantDroit
                     ];
                 } else {
                     throw new GoogleMaps\Exception(
@@ -577,17 +566,17 @@ class CalculDroits implements FactoryInterface
                 throw new GoogleMaps\ExceptionNoAnswer('GoogleMaps API ne répond pas.');
             }
         } catch (\Exception $e) {
-            throw new \Exception('Calcul de distances impossible dans ' . __METHOD__, 0, 
-                $e);
+            throw new \Exception('Calcul de distances impossible dans ' . __METHOD__, 0, $e);
         }
     }
 
     /**
-     * Méthode à utiliser en début d'année ou en cours d'année s'il n'y a pas de changement d'établissement scolaire.
+     * Méthode à utiliser en début d'année ou en cours d'année s'il n'y a pas de changement
+     * d'établissement scolaire.
      * Cette méthode permet de ne pas perdre les droits acquis en cours d'année.
      *
-     * @param int $eleveId            
-     * @param bool $gardeDistance            
+     * @param int $eleveId
+     * @param bool $gardeDistance
      */
     public function majDistancesDistrictSansPerte($eleveId, $gardeDistance = true)
     {
@@ -608,8 +597,8 @@ class CalculDroits implements FactoryInterface
     /**
      * Méthode à utiliser s'il y a changement d'établissement scolaire en cours d'année.
      *
-     * @param int $eleveId            
-     * @param bool $gardeDistance            
+     * @param int $eleveId
+     * @param bool $gardeDistance
      */
     public function majDistancesDistrict($eleveId, $gardeDistance = true)
     {
@@ -631,14 +620,14 @@ class CalculDroits implements FactoryInterface
      * Renvoie un boolean indiquant si une préincription est en attente
      *
      * @param array $row
-     *            tableau décrivant la scolarité d'un élève avec au moins les champs suivants : distanceR1, distanceR2, district, derogation, selectionScolarite
+     *            tableau décrivant la scolarité d'un élève avec au moins les champs suivants :
+     *            distanceR1, distanceR2, district, derogation, selectionScolarite
      *            
      * @return boolean
      */
     public function estEnAttente($row)
     {
-        $maxDistance = max($row['distanceR1'], $row['distanceR2']);
         return max($row['distanceR1'], $row['distanceR2']) < 1 ||
-             ($row['district'] == 0 && $row['derogation'] == 0);
+            ($row['district'] == 0 && $row['derogation'] == 0);
     }
 }
