@@ -9,8 +9,8 @@
  * @filesource Image.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 27 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Image;
 
@@ -49,7 +49,7 @@ class Image
     {
         $this->width = $width;
         $this->height = $height;
-        $this->taille = $taille;
+        $this->taille = $size;
         $this->setType($type);
     }
 
