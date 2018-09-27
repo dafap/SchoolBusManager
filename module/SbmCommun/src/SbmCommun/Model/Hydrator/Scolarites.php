@@ -10,8 +10,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Hydrator;
 
@@ -30,7 +30,7 @@ class Scolarites extends AbstractHydrator
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
-                    '%s : On attend un SbmCommun\Model\Db\ObjectData\Scolarite et on a reçu un %s', 
+                    '%s : On attend un SbmCommun\Model\Db\ObjectData\Scolarite et on a reçu un %s',
                     __METHOD__, gettype($object)));
         }
         $calculate_fields = $object->getCalculateFields();

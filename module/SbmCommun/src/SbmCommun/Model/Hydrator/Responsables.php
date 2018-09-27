@@ -13,16 +13,16 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Hydrator;
 
-use SbmCommun\Model\Db\ObjectData\Responsable as ObjectData;
-use SbmCommun\Filter\SansAccent;
-use Zend\Authentication\Storage\Session;
 use SbmAuthentification\Authentication\AuthenticationService;
 use SbmAuthentification\Authentication\AuthenticationServiceFactory;
+use SbmCommun\Filter\SansAccent;
+use SbmCommun\Model\Db\ObjectData\Responsable as ObjectData;
+use Zend\Authentication\Storage\Session;
 
 class Responsables extends AbstractHydrator
 {
@@ -37,7 +37,7 @@ class Responsables extends AbstractHydrator
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
-                    '%s : On attend un SbmCommun\Model\Db\ObjectData\Responsable et on a reçu un %s', 
+                    '%s : On attend un SbmCommun\Model\Db\ObjectData\Responsable et on a reçu un %s',
                     __METHOD__, gettype($object)));
         }
         $calculate_fields = $object->getCalculateFields();

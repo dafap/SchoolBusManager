@@ -13,8 +13,8 @@
  * @filesource AbstractHydrator.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 2 août 2016
+ * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Hydrator;
 
@@ -41,7 +41,7 @@ abstract class AbstractHydrator extends ArraySerializable
     /**
      * L'objet doit implémenter la méthode getArrayCopy()
      *
-     * @param object $object            
+     * @param object $object
      *
      * @return object
      */
