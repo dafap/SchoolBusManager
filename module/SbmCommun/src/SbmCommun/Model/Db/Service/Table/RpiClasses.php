@@ -8,8 +8,8 @@
  * @filesource RpiClasses.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 août 2018
- * @version 2018-2.4.2
+ * @date 27 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -84,7 +84,7 @@ class RpiClasses extends AbstractRpiTable
                 'nom' => 'nom',
                 'commune' => 'commune'
             ])
-            ->where($select->where->equalTo('etablissementId', $etablissementId));
+            ->where($select->where->equalTo('classeId', $classeId));
         $statement = $this->table_gateway->getSql()->prepareStatementForSqlObject($select);
         try {
             return iterator_to_array($statement->execute());

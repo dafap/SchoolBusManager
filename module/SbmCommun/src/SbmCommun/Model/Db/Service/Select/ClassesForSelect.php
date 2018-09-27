@@ -9,20 +9,19 @@
  * @filesource ClassesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 août 2018
- * @version 2018-2.4.2
+ * @date 26 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
+use SbmCommun\Filter\MbUcfirst;
+use SbmCommun\Model\Db\Exception;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Strategy\Niveau;
+use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Where;
-use SbmCommun\Model\Strategy\Niveau;
-use SbmCommun\Filter\MbUcfirst;
-use SbmCommun\Model\Db\Service\DbManager;
-use SbmCommun\Model\Db\Exception;
 
 class ClassesForSelect implements FactoryInterface
 {
@@ -57,22 +56,37 @@ class ClassesForSelect implements FactoryInterface
         return $this;
     }
 
+    /**
+     * Renvoie un tableau structuré
+     * [
+     * [
+     * <niveau> => [
+     * 'label' => '<nom du niveau>',
+     * 'options' => [
+     * <classeId> => '<nom de la classe>',
+     * ...
+     * ]
+     * ]
+     * ],
+     * ...
+     * ]
+     *
+     * @return array
+     */
     public function tout()
     {
         $mbUcfirst = new MbUcfirst();
         $select = $this->sql->select($this->table_name);
-        $select->columns(
-            [
-                'classeId',
-                'nom',
-                'niveau'
-            ]);
-        $select->order(
-            [
-                'niveau',
-                'rang',
-                'nom'
-            ]);
+        $select->columns([
+            'classeId',
+            'nom',
+            'niveau'
+        ]);
+        $select->order([
+            'niveau',
+            'rang',
+            'nom'
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];
@@ -97,8 +111,9 @@ class ClassesForSelect implements FactoryInterface
      *            mots parmis '=', '==', '<', '<=', '>', '>=', '<>', 'in', 'between'
      * @param mixed $params
      *            int ou array, selon op
-     * @throws Exception
-     * @return Ambigous <multitype:multitype:multitype:unknown mixed , unknown>
+     * @throws \InvalidArgumentException
+     *
+     * @return array
      */
     public function niveau($params, $op = '=')
     {
@@ -182,19 +197,17 @@ class ClassesForSelect implements FactoryInterface
         }
         $mbUcfirst = new MbUcfirst();
         $select = $this->sql->select($this->table_name)
-            ->columns(
-            [
-                'classeId',
-                'nom',
-                'niveau'
-            ])
+            ->columns([
+            'classeId',
+            'nom',
+            'niveau'
+        ])
             ->where($where)
-            ->order(
-            [
-                'niveau',
-                'rang',
-                'nom'
-            ]);
+            ->order([
+            'niveau',
+            'rang',
+            'nom'
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];
