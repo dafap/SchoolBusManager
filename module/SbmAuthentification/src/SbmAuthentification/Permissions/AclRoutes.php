@@ -13,18 +13,18 @@
  * @filesource AclRoutes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 10 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmAuthentification\Permissions;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Permissions\Acl\Acl;
+use SbmBase\Model\StdLib;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\Router\RouteMatch as BaseRouteMatch;
 use Zend\Mvc\Router\Http\RouteMatch;
-use SbmBase\Model\StdLib;
+use Zend\Permissions\Acl\Acl;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class AclRoutes implements FactoryInterface
 {
@@ -97,7 +97,7 @@ class AclRoutes implements FactoryInterface
             }
         }
         if ($this->authenticationService->hasIdentity() &&
-             array_key_exists('redirectTo', $this->acl_config)) {
+            array_key_exists('redirectTo', $this->acl_config)) {
             $key = $this->authenticationService->getCategorieId();
             if (array_key_exists($key, $this->roleId)) {
                 $this->redirectTo = $this->acl_config['redirectTo'][$this->roleId[$key]];
@@ -113,15 +113,16 @@ class AclRoutes implements FactoryInterface
         $routeMatch = $e->getRouteMatch();
         if ($routeMatch instanceof RouteMatch) {
             $this->build($routeMatch);
-            
+
             // Récupération du rôle de l'utilisateur courant
             if (! $this->authenticationService->hasIdentity()) {
                 $role = self::DEFAULT_ROLE;
             } else {
                 $role = $this->roleId[$this->authenticationService->getCategorieId()];
             }
-            
-            // Si l'utilisateur n'est pas autorisé, on le redirige vers la page par défaut, ou une autre page si elle a été spécifiée
+
+            // Si l'utilisateur n'est pas autorisé, on le redirige vers la page par défaut, ou une
+            // autre page si elle a été spécifiée
             // dans le fichier de configuration
             $matchedRouteName = $e->getRouteMatch()->getMatchedRouteName();
             $resource = $matchedRouteName . '::' . $e->getRouteMatch()->getParam('action');
@@ -133,8 +134,8 @@ class AclRoutes implements FactoryInterface
 
     /**
      *
-     * @param \Zend\Mvc\MvcEvent $e            
-     * @param string $route            
+     * @param \Zend\Mvc\MvcEvent $e
+     * @param string $route
      */
     private function redirect(MvcEvent $e, $route)
     {
@@ -152,7 +153,7 @@ class AclRoutes implements FactoryInterface
      * Le nom de la resource est matchedRouteName::action
      * On va construire toutes les resources parents avec leurs droits
      *
-     * @param \Zend\Mvc\Router\RouteMatch $routeMatch            
+     * @param \Zend\Mvc\Router\RouteMatch $routeMatch
      * @return mixed
      */
     private function build(BaseRouteMatch $routeMatch)
@@ -169,7 +170,8 @@ class AclRoutes implements FactoryInterface
             $resourceNameParts[] = $routePart;
             $resourceName = implode('/', $resourceNameParts);
             $this->acl->addResource($resourceName, $parentName);
-            // Par défaut, on interdit l'accès à toute ressource dont l'ACL racine n'a pas été défini
+            // Par défaut, on interdit l'accès à toute ressource dont l'ACL racine n'a pas été
+            // défini
             if (is_null($parentName) && ! array_key_exists($routePart, $resources)) {
                 $this->acl->deny(self::DEFAULT_ROLE, $routePart);
                 $resources = [];
@@ -199,7 +201,7 @@ class AclRoutes implements FactoryInterface
                     $resources = [];
                 }
             } else {
-                $resource = [];
+                $resources = [];
             }
             $parentName = $resourceName;
         }
@@ -228,7 +230,7 @@ class AclRoutes implements FactoryInterface
 
     /**
      *
-     * @param array $resourcePart            
+     * @param array $resourcePart
      * @return null
      */
     private function buildAssertion(array $resourcePart)
@@ -236,7 +238,7 @@ class AclRoutes implements FactoryInterface
         if (isset($resourcePart['assertion'])) {
             return new $resourcePart['assertion']();
         }
-        
+
         return null;
     }
 }
