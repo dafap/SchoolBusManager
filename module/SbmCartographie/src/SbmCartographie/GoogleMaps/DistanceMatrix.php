@@ -122,7 +122,7 @@ class DistanceMatrix
         } else {
             throw new Exception(
                 'Type incorrect : SbmCartographie\Model\Point ou tableau de SbmCartographie\Model\Point attendu. On a reçu un ' .
-                     gettype($point));
+                     gettype($points));
         }
         return $sLatLngParam;
     }
