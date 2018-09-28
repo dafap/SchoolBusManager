@@ -346,6 +346,7 @@ class EleveController extends AbstractActionController
 
     public function formpaiementAction()
     {
+        $response = $this->getResponse();
         $eleveId = $this->params('eleveId', 0);
         if ($eleveId) {
             $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
