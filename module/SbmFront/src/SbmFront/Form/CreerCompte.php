@@ -10,8 +10,8 @@
  * @filesource CreerCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 sept. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmFront\Form;
 
@@ -205,7 +205,7 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
             if ($resultset->count()) {
                 $u = $resultset->current();
                 $msg = 'Vous avez déjà créé un compte avec l\'email ' . $u->email .
-                     ". Si vous ne vous connaissez pas le mot de passe, cliquez sur le lien `Mot de passe oublié` de la page d'accueil.\n";
+                     ". Si vous ne connaissez pas le mot de passe, cliquez sur le lien `Mot de passe oublié` de la page d'accueil.\n";
                 $msg .= 'Si vous n\'avez plus accès à cet email rapprochez vous des services de la Communauté de communes pour faire modifier votre compte.';
                 $e = $this->get('prenom');
                 $e->setMessages([
