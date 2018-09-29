@@ -35,7 +35,7 @@ return [
             'nom' => 'varchar(30) NOT NULL',
             'prenom' => 'varchar(30) NOT NULL DEFAULT ""',
             'email' => 'varchar(80) NOT NULL',
-            'mdp' => 'varchar(60) NOT NULL DEFAULT ""', // mot de passe crypté par SbmFront\Model\Mdp::create()
+            'mdp' => 'varchar(60) NOT NULL DEFAULT ""', // mot de passe crypté par SbmAuthentification\Model\Mdp::crypteMdp()
             'gds' => 'varchar(8) NOT NULL', // grain de sel - mot aléatoire de 8 caractères enregistré lors de la création, puis inchangé
             'note' => 'text NULL'
         ],
