@@ -7,8 +7,8 @@
  * @filesource hors-zone.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2018
- * @version 2018-2.4.2
+ * @date 29 sept. 2018
+ * @version 2018-2.4.5
  */
 $format = <<<EOT
 <p>Vous habitez dans la commune de %s.</p>
@@ -38,11 +38,11 @@ echo $this->flashMessenger()->render('default');
 ?>
 </div>
 	<div class="explication">
-<?php
-
-echo sprintf($format, $this->commune, $this->accueil, $this->client['name'], 
-    $this->client['adresse'][0], $this->client['adresse'][1], $this->client['code_postal'], 
-    $this->client['commune'], $this->telephone($this->client['telephone']), 
-    $this->client['email']);
-?>
+    <?php
+    echo sprintf($format, $this->commune, $this->accueil, $this->client['name'], 
+        $this->client['adresse'][0], $this->client['adresse'][1], 
+        $this->client['code_postal'], $this->client['commune'], 
+        $this->telephone($this->client['telephone']), $this->client['email']);
+    ?>
+    </div>
 </div>
