@@ -9,7 +9,7 @@
  * @filesource affecter-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
+ * @date 1 oct. 2018
  * @version 2018-2.4.5
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -40,7 +40,7 @@ echo $this->flashMessenger()->render('info');
 echo $this->flashMessenger()->render('default');
 ?></div>
 	</div>
-<?php if ($this->getCurrentItemCount()): ?>
+<?php if ($this->paginator->getCurrentItemCount()): ?>
 	<div id="liste-inner">
 		<table class="data">
 			<tbody>
