@@ -71,7 +71,7 @@ class DistanceMatrix
     /**
      * Renvoie l'objet Projection configuré
      *
-     * @return \SbmCartographie\GoogleMaps\SbmCartographie\Projection\ProjectionInterface
+     * @return \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface
      */
     public function getProjection()
     {
