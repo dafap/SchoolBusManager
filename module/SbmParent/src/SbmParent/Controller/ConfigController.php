@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2018
- * @version 2018-2.4.1
+ * @date 4 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmParent\Controller;
 
@@ -147,8 +147,6 @@ class ConfigController extends AbstractActionController
         // ici on a le tableau d'initialisation du formulaire dans $args
         $responsableId = StdLib::getParam('responsableId', $args, 
             $responsable->responsableId);
-        $hasEnfantInscrit = $this->db_manager->get('Sbm\Db\Query\Responsables')->hasEnfantInscrit(
-            $responsableId);
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(ModifAdresse::class);
@@ -156,7 +154,6 @@ class ConfigController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->membres())
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
-        unset($value_options);
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
         if (array_key_exists('submit', $args)) {
