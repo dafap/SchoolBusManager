@@ -10,8 +10,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2018
- * @version 2018-2.4.4
+ * @date 4 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmParent\Model;
 
@@ -96,7 +96,7 @@ class OutilsInscription
                         'millesime' => $this->millesime - 1,
                         'eleveId' => $this->eleveId
                     ])->getArrayCopy();
-            } catch (Exception $e) {
+            } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                 $this->scolariteAnneePrecedente = [];
             }
         } else {
@@ -308,7 +308,7 @@ class OutilsInscription
             $oData->district = $oDataPrecedent->district;
             // enregistrement
             $tScolarites->updateRecord($oData);
-        } catch (Exception $e) {}
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {}
     }
 
     /**
