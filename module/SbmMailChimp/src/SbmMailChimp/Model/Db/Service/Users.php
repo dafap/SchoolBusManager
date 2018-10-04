@@ -7,8 +7,8 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 4 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmMailChimp\Model\Db\Service;
 
@@ -21,6 +21,7 @@ use Zend\Db\Sql\Having;
 use Zend\Db\Sql\Expression;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\DbManager;
+use SbmMailChimp\Model\Exception;
 
 class Users implements FactoryInterface
 {
