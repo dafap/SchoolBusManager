@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmPdf\Model;
 
@@ -895,7 +895,7 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', 
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, $barcode_width, 
                 (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
@@ -1045,7 +1045,7 @@ class Tcpdf extends \TCPDF
         $t = $titre . '_line';
         if ($this->getConfig('document', $t, 0)) {
             $t .= '_color';
-            $syle = [
+            $style = [
                 'color' => $this->convertColor($this->getConfig('document', $t, 'black'))
             ];
             $this->SetLineStyle($style);
@@ -1599,7 +1599,6 @@ class Tcpdf extends \TCPDF
                     ], $recordSource);
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 try {
-                    $sql = new Sql($dbAdapter);
                     $select = new Select($recordSource);
                     $select->columns($columns)
                         ->where($this->getWhere())
@@ -2080,6 +2079,7 @@ class Tcpdf extends \TCPDF
             // partie texte - etiquetteData est indexé à partir de 0
             for ($i = 0; $i < count($etiquetteData); $i ++) {
                 $this->setStyle($descripteur[$i]['style']);
+                $txt = [];
                 $txtLabel = $descripteur[$i]['label'];
                 if (! empty($txtLabel)) {
                     $txt[] = $txtLabel;
@@ -2232,7 +2232,7 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', 
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, $barcode_width, 
                 (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
