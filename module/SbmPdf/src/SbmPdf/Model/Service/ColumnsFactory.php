@@ -9,8 +9,8 @@
  * @filesource ColumnsFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmPdf\Model\Service;
 
@@ -26,7 +26,7 @@ class ColumnsFactory implements FactoryInterface
     {
         if (! ($serviceLocator instanceof PdfManager)) {
             $message = 'PdfManager attendu. On a reçu un %s.';
-            throw new Exception(sprintf($message, gettype($pdfManager)));
+            throw new Exception(sprintf($message, gettype($serviceLocator)));
         }
         $db_manager = $serviceLocator->get('Sbm\DbManager');
         $auth_userId = $serviceLocator->get('SbmAuthentification\Authentication')
