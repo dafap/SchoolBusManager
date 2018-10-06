@@ -7,8 +7,8 @@
  * @filesource Columns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmPdf\Model;
 
@@ -49,7 +49,7 @@ class Columns
     {
         if (! ($db_manager instanceof DbManager)) {
             $message = 'DbManager attendu. On a reçu un %s.';
-            throw new Exception(sprintf($message, gettype($pdfManager)));
+            throw new Exception(sprintf($message, gettype($db_manager)));
         }
         $this->db_manager = $db_manager;
         $this->auth_userId = $auth_userId;
