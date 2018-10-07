@@ -1,0 +1,145 @@
+<?php
+/**
+ * Modèle servant à définir le corps de document de la liste des élèves pour le portail organisateur
+ * 
+ * Utilisation dans Tcpdf::templateDocBodyMethod6() comme layout recevant la propriété `eleves`
+ *
+ * Attention, ne pas utiliser HeadStyle pour placer les styles horaires 
+ * car ils seraient dans la section head du document Html et ne seraient
+ * pas interprétés dans Tcpdf.
+ * 
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/layout
+ * @filesource org-pdf.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
+ */
+use SbmBase\Model\DateLib;
+
+?>
+<style>
+table.eleves {
+	margin: 0;
+	padding: 1px;
+	border-collapse: collapse;
+	border: 1px solid black;
+}
+
+table.eleves th {
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	border: 1px solid black;
+}
+
+table.eleves td {
+	border: 1px solid black;
+}
+
+table.eleves td.centre {
+	text-align: center;
+}
+</style>
+
+<table class="eleves">
+	<tbody>
+		<tr>
+			<th>N° carte</th>
+			<th>Nom</th>
+			<th>Prénom</th>
+			<th>Né(e) le</th>
+			<th>Responsables</th>
+			<th>Etablissement scolaire</th>
+			<th>Classe</th>
+			<th>Circuits</th>
+			<th>Arrêts</th>
+			<th>État</th>
+		</tr>
+        <?php foreach($this->eleves as $test => $eleve): ?>
+        <?php
+            $r = [];
+            $circuits = [];
+            $arrets = [];
+            if ($eleve['responsable1']) {
+                $r[] = htmlspecialchars(
+                    str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES, 'utf-8',
+                    false);
+                $circuitR1 = $eleve['service1IdR1'];
+                if ($eleve['service2IdR1']) {
+                    $circuitR1 .= '<br/>' . $eleve['service2IdR1'];
+                }
+                $arretR1 = $eleve['station1r1'];
+                if ($eleve['station2r1']) {
+                    $arretR1 .= '<br/>' . $eleve['station2r1'];
+                }
+                $circuits[] = $circuitR1;
+                $arrets[] = $arretR1;
+            }
+            if ($eleve['responsable2']) {
+                $r[] = htmlspecialchars(
+                    str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES, 'utf-8',
+                    false);
+                $circuitR2 = $eleve['service1IdR2'];
+                if ($eleve['service2IdR2']) {
+                    $circuitR2 .= '<br/>' . $eleve['service2IdR2'];
+                }
+                $arretR2 = $eleve['station1r2'];
+                if ($eleve['station2r2']) {
+                    $arretR2 .= '<br/>' . $eleve['station2r2'];
+                }
+                $circuits[] = $circuitR2;
+                $arrets[] = $arretR2;
+            }
+            $nbResponsables = count($r);
+            $tr_css = $this->cycle([
+                "even",
+                "odd"
+            ])->next();
+            if (! $eleve['inscrit']) {
+                $tr_css .= ' barre';
+            }
+            if ($eleve['paiement'] || $eleve['fa'] || $eleve['gratuit'] > 0) {
+                $message = 'Inscrit';
+            } else {
+                $message = 'Préinscrit';
+            }
+            ?>
+        <tr class="<?= $tr_css;?>">
+			<td class="numero align-right">
+					<?= $eleve['numero']; ?></td>
+			<td class="nom">
+					<?= $this->escapeHtml($eleve['nom']); ?></td>
+			<td class="prenom">
+					<?= $this->escapeHtml($eleve['prenom']); ?></td>
+			<td class="dateN">
+					<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
+			<td class="responsables">
+					<?= $r[0]; ?></td>
+			<td class="etablissement">
+					<?= $this->escapeHtml($eleve['etablissement']);?></td>
+			<td class="classe">
+					<?= $this->escapeHtml($eleve['classe']);?></td>
+			<td><?= $circuits[0];?></td>
+			<td><?= $arrets[0];?></td>
+			<td class="centre"><?= $message;?></td>
+					<?php if ($nbResponsables == 2) :?>
+		</tr>
+		<tr class="<?= $tr_css;?>">
+			<td class="numero align-right">
+					<?= $eleve['numero']; ?></td>
+			<td class="nom"></td>
+			<td class="prenom"></td>
+			<td class="dateN"></td>
+			<td class="responsables"><?= $r[1]; ?></td>
+			<td class="etablissement"></td>
+			<td class="classe"></td>
+			<td><?= $circuits[1];?></td>
+			<td><?= $arrets[1];?></td>
+			<td class="centre"></td>
+					<?php endif;?>
+		</tr>         
+        <?php endforeach;?>
+			</tbody>
+</table>
