@@ -196,7 +196,8 @@ class DocumentController extends AbstractActionController
                     })
             ];
         }
-        $this->pdf_manager->get(Tcpdf::class)
+        if (count($ahoraires)) {
+            $this->pdf_manager->get(Tcpdf::class)
             ->setParams(
             [
                 'documentId' => 'Horaires détaillés',
@@ -204,6 +205,10 @@ class DocumentController extends AbstractActionController
             ])
             ->setData($ahoraires)
             ->run();
+        } else {
+            $this->flashMessenger()->addInfoMessage('Rien à imprimer');
+            return $this->redirect()->toRoute('login', ['action' => 'homepage']);
+        }       
     }
 
     private function detailHoraireArret($arret, $qListe, $millesime)
