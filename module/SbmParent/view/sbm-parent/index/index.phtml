@@ -456,10 +456,9 @@ EOT;
         }
         ?>
         <?php if (! $this->paiementenligne && $montantTotal > 0) : ?>
-        <p class="sbm-description">
-			Les habitants de votre commune ne peuvent pas payer en ligne. Prenez contact avec le service 
-			Transport pour connaitre la marche à suivre pour votre cas particulier.
-		</p>
+        <p class="sbm-description">Les habitants de votre commune ne
+			peuvent pas payer en ligne. Prenez contact avec le service Transport
+			pour connaitre la marche à suivre pour votre cas particulier.</p>
         <?php elseif ($montantTotal > 0) : ?>
 		<p class="sbm-description">
 			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?php echo $msg;?>
