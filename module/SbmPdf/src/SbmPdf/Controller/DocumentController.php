@@ -198,17 +198,20 @@ class DocumentController extends AbstractActionController
         }
         if (count($ahoraires)) {
             $this->pdf_manager->get(Tcpdf::class)
-            ->setParams(
-            [
-                'documentId' => 'Horaires détaillés',
-                'layout' => 'sbm-pdf/layout/horaires.phtml'
-            ])
-            ->setData($ahoraires)
-            ->run();
+                ->setParams(
+                [
+                    'documentId' => 'Horaires détaillés',
+                    'layout' => 'sbm-pdf/layout/horaires.phtml'
+                ])
+                ->setData($ahoraires)
+                ->run();
         } else {
             $this->flashMessenger()->addInfoMessage('Rien à imprimer');
-            return $this->redirect()->toRoute('login', ['action' => 'homepage']);
-        }       
+            return $this->redirect()->toRoute('login', 
+                [
+                    'action' => 'home-page'
+                ]);
+        }
     }
 
     private function detailHoraireArret($arret, $qListe, $millesime)
