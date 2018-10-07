@@ -1696,16 +1696,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.1.3",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "46bc69aa91fc4ab78a96ce67873a6b0c148fd48c"
+                "reference": "367e689b2fdc19965be435337b50bc8adf2746c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/46bc69aa91fc4ab78a96ce67873a6b0c148fd48c",
-                "reference": "46bc69aa91fc4ab78a96ce67873a6b0c148fd48c",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/367e689b2fdc19965be435337b50bc8adf2746c9",
+                "reference": "367e689b2fdc19965be435337b50bc8adf2746c9",
                 "shasum": ""
             },
             "require": {
@@ -1751,20 +1751,20 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2018-07-26T11:24:31+00:00"
+            "time": "2018-10-02T16:36:10+00:00"
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.2.17",
+            "version": "6.2.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "64fc19439863e1b1314487a72a74d9bfd0b55a53"
+                "reference": "a5135e2cf02f8c935b71e9e7d676f0f1d31b1b9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/64fc19439863e1b1314487a72a74d9bfd0b55a53",
-                "reference": "64fc19439863e1b1314487a72a74d9bfd0b55a53",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/a5135e2cf02f8c935b71e9e7d676f0f1d31b1b9d",
+                "reference": "a5135e2cf02f8c935b71e9e7d676f0f1d31b1b9d",
                 "shasum": ""
             },
             "require": {
@@ -1813,7 +1813,7 @@
                 "pdf417",
                 "qrcode"
             ],
-            "time": "2018-02-24T11:48:20+00:00"
+            "time": "2018-09-23T07:52:24+00:00"
         },
         {
             "name": "true/punycode",
@@ -2782,17 +2782,17 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "1.8.5",
+            "version": "1.8.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "becd633f9b53dd51ea2c10cda989e528cdac443b"
+                "reference": "ba36b4523ad05bbf133a2fa0b0ca4e0b3dd927c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.8.5-8442b4.zip",
-                "reference": "becd633f9b53dd51ea2c10cda989e528cdac443b",
-                "shasum": "8b3cdbc319954fe07d2ac3f48db38d31a2a5a4fc"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-diactoros-1.8.6-bafec2.zip",
+                "reference": "ba36b4523ad05bbf133a2fa0b0ca4e0b3dd927c1",
+                "shasum": "5a3466dacd17e0b59b60561a4074ce6c067e1dea"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -2804,6 +2804,7 @@
             "require-dev": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
+                "php-http/psr7-integration-tests": "dev-master",
                 "phpunit/phpunit": "^5.7.16 || ^6.0.8 || ^7.2.7",
                 "zendframework/zend-coding-standard": "~1.0"
             },
@@ -2871,7 +2872,7 @@
                 "issues": "https://github.com/zendframework/zend-diactoros/issues",
                 "source": "https://github.com/zendframework/zend-diactoros"
             },
-            "time": "2018-08-10T14:16:32+00:00"
+            "time": "2018-09-05T19:29:37+00:00"
         },
         {
             "name": "zendframework/zend-dom",
@@ -6205,17 +6206,17 @@
         },
         {
             "name": "zendframework/zenddiagnostics",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDiagnostics.git",
-                "reference": "3c36735090169a072ca20e81629b8c236970e989"
+                "reference": "9f52c6bef941212aac6086dcce56ebe0cf2b2931"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zenddiagnostics-v1.3.0-bb74ab.zip",
-                "reference": "3c36735090169a072ca20e81629b8c236970e989",
-                "shasum": "352ddfc7d3c8cb79065cc3e4882410d8770f3dfb"
+                "url": "https://packages.zendframework.com/composer/zendframework-zenddiagnostics-v1.3.1-b3a4d9.zip",
+                "reference": "9f52c6bef941212aac6086dcce56ebe0cf2b2931",
+                "shasum": "d28f617cab0646391e514d239a3b7ca5829cfc67"
             },
             "require": {
                 "php": "^5.6 || ^7.0"
@@ -6295,7 +6296,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2018-07-30T20:31:14+00:00"
+            "time": "2018-09-17T16:14:52+00:00"
         },
         {
             "name": "zendframework/zendframework",

@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2018
- * @version 2018-2.4.3
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmAdmin\Controller;
 
@@ -925,7 +925,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } else {
-            $args = (array) $prg;
+            $args = $prg ?  : [];
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Création abandonnée.');
                 return $this->redirect()->toRoute('sbmadmin', 
@@ -1228,7 +1228,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (! array_key_exists('userId', $args) ||
              ! array_key_exists('transporteurId', $args)) {
             return $this->redirect()->toRoute('sbmadmin', 
@@ -1258,7 +1258,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } else {
-            $args = (array) $prg;
+            $args = $prg ?  : [];
             if (array_key_exists('supprnon', $args)) {
                 return $this->redirect()->toRoute('sbmadmin', 
                     [

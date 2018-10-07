@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2018
- * @version 2018-2.4.1
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmGestion\Controller;
 
@@ -243,9 +243,10 @@ class FinanceController extends AbstractActionController
              * } else {
              */
             $responsable = $this->db_manager->get('Sbm\Db\Query\Responsables')
-                ->withEffectifs($where, [
-                'responsableId', 
-            ], $responsableId)
+                ->withEffectifs($where, 
+                [
+                    'responsableId'
+                ], $responsableId)
                 ->current();
             $nomPrenom = sprintf('%s %s %s', $responsable['titre'], $responsable['nom'], 
                 $responsable['prenom']);
@@ -363,8 +364,7 @@ class FinanceController extends AbstractActionController
                 // validation des paiements dans les fiches scolarites
                 if (! empty($args['eleveId'])) {
                     $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-                    $tScolarites->setPaiement(Session::get('millesime'), 
-                        $args['eleveId']);
+                    $tScolarites->setPaiement(Session::get('millesime'), $args['eleveId']);
                 }
                 // retour à la liste
                 $this->flashMessenger()->addSuccessMessage(
@@ -579,7 +579,7 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } else {
-            $args = (array) $prg;
+            $args = $prg ?  : [];
             $page = $this->params('page', 1);
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Action abandonnée.');
@@ -776,7 +776,7 @@ class FinanceController extends AbstractActionController
         }
         $page = $this->params('page', 1);
         $id = $this->params('id', 1);
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (! array_key_exists('editer', $args)) {
             $this->flashMessenger()->addWarningMessage('Action abandonnée.');
             return $this->redirect()->toRoute('sbmgestion/finance', 
@@ -1074,8 +1074,7 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -1094,7 +1093,8 @@ class FinanceController extends AbstractActionController
                     Session::get('millesime'), 
                     [
                         'tarifId' => $tarifId
-                    ], [
+                    ], 
+                    [
                         'nom',
                         'prenom'
                     ]),
@@ -1336,8 +1336,7 @@ class FinanceController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = Session::get('pageRetour', 1, 
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
@@ -1357,7 +1356,8 @@ class FinanceController extends AbstractActionController
                 paginator(Session::get('millesime'), 
                     [
                         'organismeId' => $organismeId
-                    ], [
+                    ], 
+                    [
                         'nom',
                         'prenom'
                     ]),

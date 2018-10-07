@@ -15,8 +15,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juillet 2018
- * @version 2018-2.4.2
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmParent\Controller;
 
@@ -144,7 +144,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmparent');
         }
@@ -161,7 +161,9 @@ class IndexController extends AbstractActionController
         $form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
+            ->setValueOptions('classeId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setData(
             [
@@ -292,7 +294,9 @@ class IndexController extends AbstractActionController
         $form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
+            ->setValueOptions('classeId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setValueOptions('communeId', 
             $this->db_manager->get('Sbm\Db\Select\Communes')
@@ -435,7 +439,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('id', $args) && array_key_exists('attente', $args)) {
             // effectuer le changement
             $tscolarite = $this->db_manager->get('Sbm\Db\Table\Scolarites');
@@ -553,7 +557,7 @@ class IndexController extends AbstractActionController
         } elseif ($prg === false) {
             return $this->redirect()->toRoute('sbmparent');
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         // args = ['montant' => ..., 'payer' => ...]
         $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
             $responsable->responsableId);
@@ -730,7 +734,8 @@ class IndexController extends AbstractActionController
                 $this->db_manager->get('Sbm\Db\Select\Etablissements')
                     ->visibles())
                 ->setValueOptions('classeId', 
-                $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
+                $this->db_manager->get('Sbm\Db\Select\Classes')
+                    ->tout())
                 ->setValueOptions('joursTransport', Semaine::getJours())
                 ->setValueOptions('communeId', 
                 $this->db_manager->get('Sbm\Db\Select\Communes')
@@ -814,7 +819,7 @@ class IndexController extends AbstractActionController
                         $this->warningDerogationNecessaire($cr);
                     }
                     return $this->redirect()->toRoute('sbmparent');
-                } 
+                }
                 // $form->isValid() a échoué
                 $responsable2 = Session::get('responsable2', null, 
                     $this->getSessionNamespace());

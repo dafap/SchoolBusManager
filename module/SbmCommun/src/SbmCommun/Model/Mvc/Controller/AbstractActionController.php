@@ -8,7 +8,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
+ * @date 7 oct. 2018
  * @version 2018-2.4.5
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -129,7 +129,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             if ($prg instanceof Response) {
                 return $prg;
             } else {
-                $args = (array) $prg;
+                $args = $prg ?  : [];
                 if (! array_key_exists('documentId', $args)) {
                     $this->flashMessenger()->addErrorMessage(
                         'Le document à imprimer n\'a pas été indiqué.');
@@ -198,9 +198,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
         } catch (\Exception $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
             $routeParams = [
-                    'action' => $retour['action'],
-                    'page' => $this->params('page', 1)
-                ];
+                'action' => $retour['action'],
+                'page' => $this->params('page', 1)
+            ];
             $id = $this->params('id');
             if ($id) {
                 $routeParams['id'] = $id;
@@ -213,29 +213,29 @@ abstract class AbstractActionController extends ZendAbstractActionController
     /**
      * initListe est une méthode de contrôle d'entrée dans les xxxListeAction()
      * - si c'est un post, renvoie une redirection 303
-     * - si c'est un get ou un retour d'action, renvoie [paginator, form, retour] à 
-     *   partir des paramètres en session
-     * - si c'est une redirection 303, renvoie [paginator, form, retour] à partir du 
-     *   post initial
+     * - si c'est un get ou un retour d'action, renvoie [paginator, form, retour] à
+     * partir des paramètres en session
+     * - si c'est une redirection 303, renvoie [paginator, form, retour] à partir du
+     * post initial
      *
      * @param string $formName
-     *            string : Le nom du formulaire est le nom de la table (ou de la vue) sur 
+     *            string : Le nom du formulaire est le nom de la table (ou de la vue) sur
      *            laquelle il porte.
      *            array : Tableau de définition des éléments à créer dans le formulaire
      * @param closure $initForm
-     *            Fonction anonyme lancée juste après la création du formulaire avec comme 
+     *            Fonction anonyme lancée juste après la création du formulaire avec comme
      *            paramètres le service manager et le formulaire.
-     *            Elle sert à initialiser les champs du formulaire, en particulier les 
+     *            Elle sert à initialiser les champs du formulaire, en particulier les
      *            listes déroulantes.
      * @param array $strictWhere
-     *            Liste des champs du formulaire pour lesquels l'égalité est recherché. 
+     *            Liste des champs du formulaire pour lesquels l'égalité est recherché.
      *            Pour les autres, on fait un Like
      * @param array $aliasWhere
      *            Liste des champs du formulaire qui sont des alias
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere() pour plus d'explications.
      *     
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
-     *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme 
+     *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme
      *         ['paginator' => ..., 'form' => ..., 'retour' => boolean]
      */
     protected function initListe($formName, $initForm = null, $strictWhere = [], 

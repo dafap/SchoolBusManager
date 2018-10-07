@@ -9,8 +9,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2018
- * @version 2018-2.4.1
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmGestion\Controller;
 
@@ -231,7 +231,8 @@ class EleveGestionController extends AbstractActionController
             ->current();
         $formDecision->setData(array_merge($eleve, $args));
         
-        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $point = new Point($eleve['x'], $eleve['y']);
         $ptElv = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
         $point = new Point($eleve['xeta'], $eleve['yeta']);
@@ -290,7 +291,8 @@ class EleveGestionController extends AbstractActionController
                     ]);
             }
         }
-        $oDistanceMatrix = $this->cartographie_manager->get(GoogleMaps\DistanceMatrix::class);
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $responsableId = $args['responsableId'];
         $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // nécessaire pour valider lat et lng
@@ -409,7 +411,7 @@ class EleveGestionController extends AbstractActionController
             return $prg;
         }
         $vue = true;
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmgestion/eleve', 
                 [
@@ -539,12 +541,11 @@ class EleveGestionController extends AbstractActionController
             return $prg;
         }
         $vue = true;
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('origine', $args)) {
             Session::set('origine', $args['origine'], $this->getSessionNamespace());
         } else {
-            $args['origine'] = Session::get('origine', null, 
-                $this->getSessionNamespace());
+            $args['origine'] = Session::get('origine', null, $this->getSessionNamespace());
         }
         if (array_key_exists('cancel', $args) || ! array_key_exists('eleveId', $args)) {
             return $this->redirect()->toUrl($args['origine']);

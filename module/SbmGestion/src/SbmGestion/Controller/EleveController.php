@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 sept. 2018
+ * @date 7 oct. 2018
  * @version 2018-2.4.5
  */
 namespace SbmGestion\Controller;
@@ -133,7 +133,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmgestion/eleve', 
                 [
@@ -200,7 +200,7 @@ class EleveController extends AbstractActionController
             // entrée lors d'un retour éventuel par F5 ou back en 22
             $prg = Session::get('post', false, $this->getSessionNamespace('ajout', 1));
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('ajouter', $args)) {
             if (array_key_exists('responsableId', $args)) {
                 $responsableId = $args['responsableId'];
@@ -320,7 +320,7 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || ! array_key_exists('eleveId', $prg)) {
-           $prg = Session::get('post', false, $this->getSessionNamespace( 'ajout', 2));
+            $prg = Session::get('post', false, $this->getSessionNamespace('ajout', 2));
             if ($prg === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite.');
                 try {
@@ -751,11 +751,11 @@ class EleveController extends AbstractActionController
                 // enregistrement dans la table scolarites
                 $odata = $tScolarites->getObjData()->exchangeArray($dataValid);
                 /* modification du 28 août 2018 sur la gestion des tarifs */
-                //if ($odata->anneeComplete) {
-                //    $odata->tarifId = $tarifId1;
-                //} else {
-                //    $odata->tarifId = $tarifId2;
-                //}
+                // if ($odata->anneeComplete) {
+                // $odata->tarifId = $tarifId1;
+                // } else {
+                // $odata->tarifId = $tarifId2;
+                // }
                 $recalcul = $tScolarites->saveRecord($odata);
                 // recalcul des droits et des distances en cas de modification de la destination ou d'une origine
                 if ($recalcul || $changeR1 || $changeR2) {

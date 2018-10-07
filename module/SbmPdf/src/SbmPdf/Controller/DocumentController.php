@@ -49,14 +49,15 @@ class DocumentController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         $millesime = Session::get('millesime');
         // on doit être authentifié
         $auth = $this->authenticate->by('email');
         if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
+            return $this->redirect()->toRoute('login', 
+                [
+                    'action' => 'home-page'
+                ]);
         }
         $userId = $auth->getUserId();
         $this->categorie = $auth->getCategorieId();
@@ -64,11 +65,12 @@ class DocumentController extends AbstractActionController
         switch ($this->categorie) {
             case 1: // parent
                 try {
-                    $responsable = $this->responsable->get();
+                    $responsable = $this->responsable_manager->get();
                 } catch (\Exception $e) {
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'logout'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'logout'
+                        ]);
                 }
                 try {
                     $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll(
@@ -90,9 +92,10 @@ class DocumentController extends AbstractActionController
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Vos enfants n\'ont pas été affectés sur un circuit.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             case 2: // transporteur
@@ -110,9 +113,10 @@ class DocumentController extends AbstractActionController
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Pas d\'enfants affectés sur vos circuits.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             case 3: // établissement
@@ -131,9 +135,10 @@ class DocumentController extends AbstractActionController
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Aucun service dessert votre établissement.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             case 200: // secrétariat
@@ -149,17 +154,19 @@ class DocumentController extends AbstractActionController
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Impossible d\'obtenir la liste des services.');
-                    return $this->redirect()->toRoute('login', [
-                        'action' => 'home-page'
-                    ]);
+                    return $this->redirect()->toRoute('login', 
+                        [
+                            'action' => 'home-page'
+                        ]);
                 }
                 break;
             default:
                 $this->flashMessenger()->addErrorMessage(
                     'La catégorie de cet utilisateur est inconnue.');
-                return $this->redirect()->toRoute('login', [
-                    'action' => 'logout'
-                ]);
+                return $this->redirect()->toRoute('login', 
+                    [
+                        'action' => 'logout'
+                    ]);
                 break;
         }
         if (array_key_exists('serviceId', $args)) {
@@ -179,12 +186,12 @@ class DocumentController extends AbstractActionController
         $ahoraires = []; // c'est un tableau
         foreach ($services as $serviceId) {
             $ahoraires[$serviceId] = [
-                'aller' => $qCircuits->complet($serviceId, 'matin',
-                    function ($arret) use ($qListe, $millesime) {
+                'aller' => $qCircuits->complet($serviceId, 'matin', 
+                    function ($arret) use($qListe, $millesime) {
                         return $this->detailHoraireArret($arret, $qListe, $millesime);
                     }),
-                'retour' => $qCircuits->complet($serviceId, 'soir',
-                    function ($arret) use ($qListe, $millesime) {
+                'retour' => $qCircuits->complet($serviceId, 'soir', 
+                    function ($arret) use($qListe, $millesime) {
                         return $this->detailHoraireArret($arret, $qListe, $millesime);
                     })
             ];
@@ -202,9 +209,10 @@ class DocumentController extends AbstractActionController
     private function detailHoraireArret($arret, $qListe, $millesime)
     {
         // pour les parents, on ne montre que les inscrits
-        $liste = $qListe->query($millesime,
-            FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'],
-                $this->categorie == 1), [
+        $liste = $qListe->query($millesime, 
+            FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'], 
+                $this->categorie == 1), 
+            [
                 'nom',
                 'prenom'
             ]);
@@ -212,7 +220,7 @@ class DocumentController extends AbstractActionController
         $arret['liste'] = [];
         foreach ($liste as $eleve) {
             $arret['liste'][] = $eleve['nom'] . ' ' . $eleve['prenom'] . ' - ' .
-                $eleve['classe'];
+                 $eleve['classe'];
         }
         return $arret;
     }
@@ -226,7 +234,7 @@ class DocumentController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         $millesime = Session::get('millesime');
         // on doit être authentifié
         $auth = $this->authenticate->by('email');
@@ -246,7 +254,9 @@ class DocumentController extends AbstractActionController
         $criteres_form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
+            ->setValueOptions('classeId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('serviceId', 
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId', 

@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
+ * @date 7 oct. 2018
  * @version 2018-2.4.5
  */
 namespace SbmGestion\Controller;
@@ -304,7 +304,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmgestion/transport', 
                 [
@@ -356,7 +356,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmgestion/transport', 
                 [
@@ -495,7 +495,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         $millesime = Session::get('millesime');
         $form = new ButtonForm([
             'id' => null
@@ -608,7 +608,10 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Classes')->paginator(
-                    $args['where'], ['niveau', 'rang']),
+                    $args['where'], [
+                        'niveau',
+                        'rang'
+                    ]),
                 't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byClasse(),
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_classes', 15),
@@ -627,7 +630,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
-            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout());
+            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
         $params = [
             'data' => [
                 'table' => 'classes',
@@ -750,7 +754,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
-            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout());
+            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
         $params = [
             'data' => [
                 'table' => 'classes',
@@ -2653,7 +2658,7 @@ class TransportController extends AbstractActionController
             $cancel = true;
             $args = [];
         } else {
-            $args = (array) $prg;
+            $args = $prg ?  : [];
             $isPost1 = array_key_exists('phase', $args);
             $isPost2 = array_key_exists('csrf', $args);
             $cancel = StdLib::getParam('cancel', $args, false);
@@ -3169,7 +3174,7 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $arg = (array) $prg;
+        $arg = $prg ?  : [];
         $stationsDesservies = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
         $form = new StationDoublon();
         $form->setValueOptions('stationASupprId', $stationsDesservies)->setValueOptions(

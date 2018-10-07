@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mai 2018
- * @version 2018-2.4.1
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmInstallation\Controller;
 
@@ -56,7 +56,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbminstall');
         }
@@ -248,7 +248,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         $config = $this->img;
         $files = scandir($config['path']['system']);
         $file_names = [];
@@ -299,7 +299,7 @@ class IndexController extends AbstractActionController
                         'action' => 'gestion-images'
                     ]);
             }
-
+            
             $label = $prg['label'];
             $image = StdLib::concatPath($this->img['path']['url'], $prg['fname']);
             $descriptif = $prg;
@@ -487,7 +487,7 @@ class IndexController extends AbstractActionController
     {
         return [];
     }
-    
+
     public function majdistanceAction()
     {
         $millesime = Session::get('millesime');

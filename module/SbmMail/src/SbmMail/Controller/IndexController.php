@@ -11,8 +11,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmMail\Controller;
 
@@ -39,7 +39,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg?:[];
         if (array_key_exists('cancel', $args)) {
             $this->flashMessenger()->addWarningMessage('Aucun message envoyé.');
             try {

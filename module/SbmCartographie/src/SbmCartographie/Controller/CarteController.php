@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2018
- * @version 2018-2.4.1
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmCartographie\Controller;
 
@@ -34,7 +34,7 @@ class CarteController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('back', $args)) {
             $this->redirectToOrigin()->setBack($args['back']);
         }
@@ -66,7 +66,7 @@ class CarteController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (array_key_exists('back', $args)) {
             $this->redirectToOrigin()->setBack($args['back']);
         }

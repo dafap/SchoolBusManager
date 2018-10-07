@@ -7,8 +7,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juillet 2018
- * @version 2018-2.4.2
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmFront\Controller;
 
@@ -292,7 +292,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (\array_key_exists('cancel', $args)) {
             $this->flashMessenger()->addErrorMessage('Demande abandonnée.');
             return $this->redirect()->toRoute('home');
@@ -395,7 +395,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         $form = $this->form_manager->get(Form\MdpChange::class);
         $form->setAttribute('action', 
             $this->url()
@@ -465,7 +465,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         $auth = $this->authenticate->by('email');
         $identity = $auth->getIdentity();
         $email_old = $identity['email'];
@@ -541,7 +541,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?  : [];
         if (\array_key_exists('cancel', $args)) {
             $this->flashMessenger()->addErrorMessage('Création abandonnée.');
             return $this->redirect()->toRoute('home');
@@ -644,7 +644,7 @@ class LoginController extends AbstractActionController
             if ($prg instanceof Response) {
                 return $prg;
             }
-            $args = (array) $prg;
+            $args = $prg ?  : [];
             if (\array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Modification abandonnée.');
                 return $this->homePageAction();

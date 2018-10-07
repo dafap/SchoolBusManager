@@ -14,8 +14,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2018
- * @version 2018-2.4.4
+ * @date 7 oct. 2018
+ * @version 2018-2.4.5
  */
 namespace SbmPaiement\Controller;
 
@@ -50,7 +50,7 @@ class IndexController extends AbstractActionController
             return $this->redirect()->toRoute('sbmparent');
         }
         // prg contient le post ['montant' => ..., 'payer' => ...)
-        $args = (array) $prg;
+        $args = $prg ?:[];
         
         // préparation des données
         $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
