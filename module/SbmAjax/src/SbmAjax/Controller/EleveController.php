@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2018
- * @version 2018-2.4.0
+ * @date 31 déc. 2018
+ * @version 2018-2.4.6
  */
 namespace SbmAjax\Controller;
 
@@ -502,10 +502,11 @@ class EleveController extends AbstractActionController
                         'success' => 1
                     ]));
         } catch (\Exception $e) {
-            $response->setContent(               
+            $response->setContent(
                 Json::encode(
                     [
-                        'cr' => sprintf("%s\n%s", $e->getMessage(), $e->getTraceAsString()),
+                        'cr' => sprintf("%s\n%s", $e->getMessage(), 
+                            $e->getTraceAsString()),
                         'success' => 0
                     ]));
         }
@@ -716,6 +717,116 @@ class EleveController extends AbstractActionController
                         'cr' => $e->getMessage(),
                         'success' => 0
                     ]));
+        }
+    }
+
+    /**
+     * Reçoie en POST les données du formulaire \SbmCommun\Model\Photo\Photo::getForm()<ul>
+     * <li>eleveId (post)</li>
+     * <li>filephoto (files)</li></ul>
+     * Vérifie si elles sont valide et les enregistre dans la table `elevesphotos`
+     * Renvoie un compte rendu :<ul>
+     * <li>success = 1 et src = la chaine src à placer dans la balise `img`</li>
+     * <li>success = 10x et cr = la chaine à afficher en cas d'erreur</li></ul>
+     *
+     * @return \Zend\Stdlib\mixed
+     */
+    public function savephotoAction()
+    {
+        $request = $this->getRequest();
+        if (! $request->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => 'Action incorrecte.',
+                        'success' => 102
+                    ]));
+        }
+        $post = array_merge_recursive($request->getPost()->toArray(), 
+            $request->getFiles()->toArray());
+        
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        $form = $ophoto->getFormWithInputFilter($this->img['path']['tmpuploads'])->prepare();
+        $form->setData($post);
+        if ($form->isValid()) {
+            $data = $form->getData();
+            $source = $data['filephoto']['tmp_name'];
+            
+            try {
+                $blob = $ophoto->getImageJpegAsString($source);
+                unlink($source);
+            } catch (\Exception $e) {
+                // problème de fichier, de format de fichier ou d'image dont le format n'est pas traité
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'cr' => $e->getMessage(),
+                            'success' => 101
+                        ]));
+            }
+        } else {
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => implode(', ', $ophoto->getMessagesFilePhotoElement()),
+                        'success' => 100
+                    ]));
+        }
+        
+        // base de données
+        $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+        $odata = $tPhotos->getObjData();
+        $odata->exchangeArray(
+            [
+                'eleveId' => $data['eleveId'],
+                'photo' => addslashes($blob)
+            ]);
+        $tPhotos->saveRecord($odata);
+        return $this->getResponse()->setContent(
+            Json::encode(
+                [
+                    'src' => $ophoto->img_src($blob),
+                    'success' => 1
+                ]));
+    }
+
+    /**
+     * Reçoie en POST le paramètre eleveId et supprime la photo dans la table ElevesPhotos.
+     * Renvoie un compte rendu : <ul>
+     * <li>success = 1 et src = sans photo gif</li>
+     * <li>success = 20x et cr = message d'erreur à afficher en cas d'erreur</li></ul>
+     * @return \Zend\Stdlib\mixed
+     */
+    public function supprphotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => 'Action incorrecte.',
+                        'success' => 202
+                    ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $success = $tPhotos->deleteRecord($eleveId);
+            if ($success) {
+                $ophoto = new \SbmCommun\Model\Photo\Photo();
+                return $this->getResponse()->setContent(Json::encode(
+                    [
+                        'src' => $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif'),
+                        'success' => 1
+                    ]));
+            } else {
+                return $this->getResponse()->setContent(Json::encode(
+                    [
+                        'cr' => 'Impossible de supprimer cette photo',
+                        'success' => 201
+                    ]));
+            }
+            ;
         }
     }
 }

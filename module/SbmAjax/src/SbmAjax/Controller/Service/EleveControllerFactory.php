@@ -9,8 +9,8 @@
  * @filesource EleveControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 29 déc. 2018
+ * @version 2018-2.4.6
  */
 namespace SbmAjax\Controller\Service;
 
@@ -29,7 +29,12 @@ class EleveControllerFactory implements FactoryInterface
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
-            'cartographie_manager' => $sm->get('Sbm\CartographieManager')
+            'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
+            'img' => StdLib::getParamR(
+                [
+                    'sbm',
+                    'img'
+                ], $config_application)
         ];
         return new EleveController($config_controller);
     }

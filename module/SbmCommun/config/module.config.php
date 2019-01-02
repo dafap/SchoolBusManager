@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2018
- * @version 2018-2.4.4
+ * @date 27 déc. 2018
+ * @version 2018-2.4.6
  */
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Service\CalculDroits;
@@ -45,6 +45,7 @@ return [
             'Sbm\Db\ObjectData\Classe' => ObjectData\Classe::class,
             'Sbm\Db\ObjectData\Commune' => ObjectData\Commune::class,
             'Sbm\Db\ObjectData\Eleve' => ObjectData\Eleve::class,
+            'Sbm\Db\ObjectData\ElevePhoto' => ObjectData\ElevePhoto::class,
             'Sbm\Db\ObjectData\Etablissement' => ObjectData\Etablissement::class,
             'Sbm\Db\ObjectData\EtablissementService' => ObjectData\EtablissementService::class,
             'Sbm\Db\ObjectData\Organisme' => ObjectData\Organisme::class,
@@ -80,6 +81,7 @@ return [
             'Sbm\Db\Table\Classes' => Table\Classes::class,
             'Sbm\Db\Table\Communes' => Table\Communes::class,
             'Sbm\Db\Table\Eleves' => Table\Eleves::class,
+            'Sbm\Db\Table\ElevesPhotos' => Table\ElevesPhotos::class,
             'Sbm\Db\Table\Etablissements' => Table\Etablissements::class,
             'Sbm\Db\Table\EtablissementsServices' => Table\EtablissementsServices::class,
             'Sbm\Db\Table\Organismes' => Table\Organismes::class,
@@ -114,6 +116,7 @@ return [
             'Sbm\Db\TableGateway\Classes' => TableGateway\TableGatewayClasses::class,
             'Sbm\Db\TableGateway\Communes' => TableGateway\TableGatewayCommunes::class,
             'Sbm\Db\TableGateway\Eleves' => TableGateway\TableGatewayEleves::class,
+            'Sbm\Db\TableGateway\ElevesPhotos' => TableGateway\TableGatewayElevesPhotos::class,
             'Sbm\Db\TableGateway\Etablissements' => TableGateway\TableGatewayEtablissements::class,
             'Sbm\Db\TableGateway\EtablissementsServices' => TableGateway\TableGatewayEtablissementsServices::class,
             'Sbm\Db\TableGateway\Organismes' => TableGateway\TableGatewayOrganismes::class,

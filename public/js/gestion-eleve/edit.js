@@ -5,8 +5,8 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2018
- * @version 2018-2.4.4
+ * @date 2 jan. 2019
+ * @version 2018-2.4.6
  */
 
 var js_edit = (function() {
@@ -15,6 +15,7 @@ var js_edit = (function() {
 	var disableAccordR2;
 	var subventionR1;
 	var subventionR2;
+	var hasPhoto;
 	function initAccord() {
 		$("input[name=subventionR1][type=hidden]").val(js_edit.subventionR1);
 		$("input[name=subventionR2][type=hidden]").val(js_edit.subventionR2);
@@ -49,6 +50,14 @@ var js_edit = (function() {
 			$("#eleve-subventionR2").attr("disabled", true);
 		}
 	}
+	function montreBtnEnvoiPhoto(voir) {
+		var d = $("button[name=envoiphoto]");
+		if (voir) {
+			d.show();
+		} else {
+			d.hide();
+		}
+	}
 	function montreDebutFin(ancomplet) {
 		if (ancomplet) {
 			$("#wrapper-dateDebut").hide();
@@ -62,10 +71,10 @@ var js_edit = (function() {
 		$("#tabs-3-montant").empty();
 		if (ancomplet) {
 			$("#eleve-tarifId").val(1);
-			//$("#tabs-3-montant").html(js_edit.tarifs[1] + ' €');
+			// $("#tabs-3-montant").html(js_edit.tarifs[1] + ' €');
 		} else {
 			$("#eleve-tarifId").val(3);
-			//$("#tabs-3-montant").html(js_edit.tarifs[3] + ' €');
+			// $("#tabs-3-montant").html(js_edit.tarifs[3] + ' €');
 		}
 	}
 	function montreMotifDerogation(derogation) {
@@ -128,6 +137,19 @@ var js_edit = (function() {
 			$("#block-affectations" + r + " i").show();
 		} else {
 			$("#block-affectations" + r + " i").hide();
+		}
+	}
+	function montrePhoto(data, success) {
+		// vide les 2 controles en même temps
+		$("input[type=file][name=filephoto]").val('');
+		// cache le bouton envoi
+		montreBtnEnvoiPhoto(false);
+		// supprime le message d'erreur
+		$("#wrapper-filephoto ul").remove();
+		if (success == 1) {
+			$("#wrapper-photo img").attr('src', data);
+		} else {
+			$("#wrapper-filephoto").append('<ul><li>' + data + '</li></ul>');
 		}
 	}
 	function montreResponsable(r, data) {
@@ -383,6 +405,90 @@ var js_edit = (function() {
 														}
 													});
 										});
+						$("input[type=file][name=filephoto]").change(
+								function() {
+									if ($(this).val()) {
+										montreBtnEnvoiPhoto(true);
+									} else {
+										montreBtnEnvoiPhoto(false);
+									}
+								});
+						$("#photo-form-modele").dialog({
+							modal : true,
+							autoOpen : false,
+							heigth : 400,
+							width : 600,
+							resizable : false,
+							title : $("#photo-form-modele").attr('data-title')
+						});
+						$("button[name=opendialog]").click(function(event) {
+							$("#photo-form-modele").dialog('open');
+							event.preventDefault();
+						});
+						$("button[name=closedialog]").click(function(event) {
+							$("#photo-form-modele").dialog('close');
+							event.preventDefault();
+						});
+						$("button[type=button][name=envoiphoto]").click(
+								function() {
+									var eleveid = $(
+											"input[type=hidden][name=eleveId]")
+											.val();
+									var fd = new FormData(document
+											.querySelector("#formphoto"));
+									$.ajax({
+										url : '/sbmajaxeleve/savephoto',
+										data : fd,
+										processData : false,
+										contentType : false,
+										type : 'post',
+										success : function(data) {
+											var retour = $.parseJSON(data);
+											if (retour.success == 1) {
+												montrePhoto(retour.src, true);
+												js_edit.setHasPhoto(true);
+											} else {
+												montrePhoto(retour.cr, false);
+											}
+											$("#photo-form-modele").dialog('close');
+										},
+										error : function(xhr, ajaxOptions,
+												thrownError) {
+											alert(xhr.status + " "
+													+ thrownError);
+										}
+									});
+								});
+						$("button[type=button][name=supprphoto]").click(
+								function() {
+									var eleveid = $(
+											"input[type=hidden][name=eleveId]")
+											.val();
+									var fd = new FormData();
+									fd.append('eleveId', eleveid);
+									$.ajax({
+										url : '/sbmajaxeleve/supprphoto',
+										data : fd,
+										processData : false,
+										contentType : false,
+										type : 'post',
+										success : function(data) {
+											var retour = $.parseJSON(data);
+											if (retour.success == 1) {
+												montrePhoto(retour.src, true);
+												js_edit.setHasPhoto(false);
+											} else {
+												montrePhoto(retour.cr, false);
+											}
+
+										},
+										error : function(xhr, ajaxOptions,
+												thrownError) {
+											alert(xhr.status + " "
+													+ thrownError);
+										}
+									});
+								});
 						$("#tabs")
 								.on(
 										'click',
@@ -438,8 +544,9 @@ var js_edit = (function() {
 										});
 					});
 	return {
-		"init" : function(disableAccordR1, disableAccordR2,
-				subventionR1, subventionR2, tarifs) {
+		"init" : function(disableAccordR1, disableAccordR2, subventionR1,
+				subventionR2, tarifs, hasPhoto) {
+			js_edit.setHasPhoto(hasPhoto);
 			js_edit.setDisableAccordR1(disableAccordR1);
 			js_edit.setDisableAccordR2(disableAccordR2);
 			js_edit.setSubventionR1(subventionR1);
@@ -447,7 +554,7 @@ var js_edit = (function() {
 			js_edit.tarifs = tarifs;
 			$("#tabs").tabs();
 			montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-			//majMontantInscription($("#eleve-anneeComplete").is(":checked"));
+			// majMontantInscription($("#eleve-anneeComplete").is(":checked"));
 			montreMotifDerogation($("#eleve-derogation").is(":checked"));
 			montreOngletGa($("#eleve-ga").is(":checked"));
 			montreMotifRefus($("#eleve-accordR1").is(":checked"), $(
@@ -458,6 +565,7 @@ var js_edit = (function() {
 			// montreBlockAffectation($("#eleve-accordR2").is(":checked"),'r2');
 			montreDemande('r1');
 			montreDemande('r2');
+			montreBtnEnvoiPhoto(false);
 			initAccord();
 			$.ajax({
 				url : '/sbmajaxeleve/getresponsable/responsableId:'
@@ -493,7 +601,6 @@ var js_edit = (function() {
 		"setAccordR1" : function(accordR1) {
 			$("input[name=accordR1][type=hidden]").val(Number(accordR1));
 		},
-
 		"setAccordR2" : function(accordR2) {
 			$("input[name=accordR2][type=hidden]").val(Number(accordR2));
 		},
@@ -506,6 +613,14 @@ var js_edit = (function() {
 			subventionR2 = Number(subventionR2);
 			js_edit.subventionR2 = subventionR2;
 			$("input[name=subventionR2][type=hidden]").val(subventionR2);
+		},
+		"setHasPhoto" : function(hasPhoto) {
+			js_edit.hasPhoto = hasPhoto;
+			if (hasPhoto) {
+				$("button[name=supprphoto]").show();
+			} else {
+				$("button[name=supprphoto]").hide();
+			}
 		},
 		"majBlockAffectations" : function(trajet) {
 			$('html', 'body').css('cursor', 'auto');

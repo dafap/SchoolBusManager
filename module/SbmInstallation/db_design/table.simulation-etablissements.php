@@ -13,9 +13,9 @@
 return [
     'name' => 'simulation-etablissements',
     'type' => 'table',
-    'drop' => true,
-    'edit_entity' => true,
-    'add_data' => true,
+    'drop' => false,
+    'edit_entity' => false,
+    'add_data' => false,
     'structure' => [
         'fields' => [
             'origineId' => 'char(8) NOT NULL',

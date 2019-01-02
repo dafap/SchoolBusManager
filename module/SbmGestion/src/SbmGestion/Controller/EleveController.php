@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 31 déc. 2018
+ * @version 2018-2.4.6
  */
 namespace SbmGestion\Controller;
 
@@ -525,6 +525,13 @@ class EleveController extends AbstractActionController
                 'demandeR1' => 1,
                 'demandeR2' => 0
             ]);
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        try {
+            $ophoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord($eleveId);
+            $dataphoto = $ophoto->image_src($ophoto->photo, 'jpeg');
+        } catch(\Exception $e) {
+            $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
+        }
         return new ViewModel(
             [
                 'page' => $page,
@@ -532,7 +539,9 @@ class EleveController extends AbstractActionController
                 'info' => $info,
                 'data' => $data,
                 'scolarite_precedente' => $this->db_manager->get(
-                    'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
+                    'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId),
+                'dataphoto' => $dataphoto
+                
             ]);
     }
 
@@ -826,6 +835,15 @@ class EleveController extends AbstractActionController
         foreach ($qAffectations->getAffectations($eleveId, null, true) as $row) {
             $affectations['annee_precedente'][] = $row;
         }
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        try {
+            $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord($eleveId);
+            $dataphoto = $ophoto->img_src(stripslashes($elevephoto->photo), 'jpeg');
+            $flashMessage = '';
+        } catch(\Exception $e) {
+            $flashMessage = 'Pas de photo pour cet élève.';
+            $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
+        }
         return new ViewModel(
             [
                 'form' => $form->prepare(),
@@ -838,7 +856,10 @@ class EleveController extends AbstractActionController
                 'affectations' => $affectations,
                 'subventions' => $subventions,
                 'scolarite_precedente' => $this->db_manager->get(
-                    'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId)
+                    'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId),
+                'dataphoto' => $dataphoto,
+                'formphoto' => (new \SbmCommun\Model\Photo\Photo())->getForm(),
+                'flashMessage' => $flashMessage,
             ]);
     }
 

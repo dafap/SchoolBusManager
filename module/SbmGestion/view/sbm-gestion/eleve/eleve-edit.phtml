@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2018
- * @version 2018-2.4.4
+ * @date 2 jan. 2019
+ * @version 2018-2.4.6
  */
 use SbmBase\Model\DateLib;
 
@@ -98,7 +98,8 @@ js_edit.init(<?= $disableAccordR1;?>,
     <?= $disableAccordR2;?>, 
     <?= $this->subventions['R1'];?>, 
     <?= $this->subventions['R2'];?>, 
-    <?= $this->historique['scolarite']['tarifs'];?>);
+    <?= $this->historique['scolarite']['tarifs'];?>,
+    <?= $this->flashMessage ? 0 : 1;?>);
 <?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -133,9 +134,16 @@ $actions = [
 <div id="winpopup"></div>
 <h1>Modification d'un élève</h1>
 <div id="fiche-wrapper">
-	<div id="fiche-header">
-		<div class="menu clearfix">
+	<div id="fiche-header" class="clearfix">
+		<div class="menu flaot-left">
         <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+		<div class="flashMessenger float-right orange">
+        <?php if ($this->flashMessage) :?>
+            <ul class="warning">
+				<li><?= $this->flashMessage; ?></li>
+			</ul>            
+        <?php endif;?>
         </div>
 	</div>
 	<div id="fiche-inner">	    
@@ -197,8 +205,8 @@ echo $this->formHidden($this->form->get('csrf'));
 				<ul>
 					<li><a href="#tabs-1">Responsable</a></li>
 					<li><a href="#tabs-2">Garde alternée</a></li>
-					<li><a href="#tabs-3">Historique</a>
-				
+					<li><a href="#tabs-3">Historique</a></li>
+					<li><a href="#tabs-4">Photo</a></li>
 				</ul>
 				<div id="tabs-1" class="sbm-tabs-container"><?php // Responsable 1?>
 				    <div id="tabs-1-r1" class="clearfix">
@@ -340,6 +348,27 @@ echo $this->formHidden($this->form->get('csrf'));
 						</div>
 					</div>
 				</div>
+				<div id="tabs-4" class="sbm-tabs-container">
+					<div class="clearfix">
+						<div id="wrapper-photo" class="float-left">
+							<img src=<?= $this->dataphoto;?> height="180" />
+						</div>
+						<!-- Provisoirement, pour les tests -->
+						<div id="wrapper-filephoto"
+							class="float-left left-10px top-18px row-inner">
+				            <div id="btnphoto" style="display: inline">
+				                <?php
+                    $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
+                    $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
+                    $btnSupprPhoto = new \Zend\Form\Element\Button('supprphoto');
+                    $btnSupprPhoto->setLabelOption('disable_html_escape', 'on');
+                    ?>
+				                <?= $this->formButton($btnOpenDialog, '<i class="fam-camera-edit"></i> Envoyer une photo');?>
+				                <?= $this->formButton($btnSupprPhoto, '<i class="fam-camera-delete"></i> Supprimer la photo');?>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div id="wrapper-commentaire">
 				<div id="wrapper-notes-annuelles" class="row-inner edit top-6px">
@@ -365,4 +394,22 @@ echo $this->formHidden($this->form->get('csrf'));
  * var_dump($this->form->getMessages());
  * }
  */
+
+// formulaire invisible de l'envoi d'une photo
+$this->formphoto->setAttribute('action', 
+    $this->url('sbmajaxeleve', [
+        'action' => 'savephoto'
+    ]))->prepare();
+$this->formphoto->get('eleveId')->setValue($this->eleveId);
+$btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 ?>
+<div id="photo-form-modele" class="invisible" data-title="Envoi d'une photo">
+<?= $this->form()->openTag($this->formphoto);?>
+<?= $this->formHidden($this->formphoto->get('eleveId'));?>
+<?= $this->formRow($this->formphoto->get('filephoto')); ?>
+<div style="display: inline;">
+<?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
+</div>
+<div><?= $this->formButton($btnCloseDialog, 'Abandonner'); ?></div>
+<?= $this->form()->closeTag();?>
+</div>
