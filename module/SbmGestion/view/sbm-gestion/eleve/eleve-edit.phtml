@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 jan. 2019
- * @version 2018-2.4.6
+ * @date 3 jan. 2019
+ * @version 2019-2.4.6
  */
 use SbmBase\Model\DateLib;
 
@@ -356,7 +356,7 @@ echo $this->formHidden($this->form->get('csrf'));
 						<!-- Provisoirement, pour les tests -->
 						<div id="wrapper-filephoto"
 							class="float-left left-10px top-18px row-inner">
-				            <div id="btnphoto" style="display: inline">
+							<div id="btnphoto" style="display: inline">
 				                <?php
                     $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
                     $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
@@ -399,17 +399,25 @@ echo $this->formHidden($this->form->get('csrf'));
 $this->formphoto->setAttribute('action', 
     $this->url('sbmajaxeleve', [
         'action' => 'savephoto'
-    ]))->prepare();
+    ]))
+    ->prepare();
 $this->formphoto->get('eleveId')->setValue($this->eleveId);
 $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 ?>
-<div id="photo-form-modele" class="invisible" data-title="Envoi d'une photo">
-<?= $this->form()->openTag($this->formphoto);?>
-<?= $this->formHidden($this->formphoto->get('eleveId'));?>
-<?= $this->formRow($this->formphoto->get('filephoto')); ?>
-<div style="display: inline;">
-<?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
-</div>
-<div><?= $this->formButton($btnCloseDialog, 'Abandonner'); ?></div>
+<div id="photo-form-modele" class="invisible"
+	data-title="Envoi d'une photo">
+    <?= $this->form()->openTag($this->formphoto);?>
+    <?= $this->formHidden($this->formphoto->get('eleveId'));?>
+    <?= $this->formRow($this->formphoto->get('filephoto')); ?>
+    <div style="display: inline;">
+    <?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
+    </div>
+	<div class="photo-progress" style="display: none;">
+		<div class="photo-msg">Envoi en cours ...</div>
+		<div style="margin-left: 40px; margin-bottom: 10px; height:20px; width: 100px; border: 1px solid blue;">
+			<div class="photo-progressbar" style="background-color: lightgrey;"></div>
+		</div>
+	</div>
+	<div><?= $this->formButton($btnCloseDialog, 'Abandonner'); ?></div>
 <?= $this->form()->closeTag();?>
 </div>

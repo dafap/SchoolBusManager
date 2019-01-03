@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 déc. 2018
- * @version 2018-2.4.6
+ * @date 3 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmAjax\Controller;
 
@@ -19,6 +19,7 @@ use Zend\Json\Json;
 use SbmBase\Model\Session;
 use SbmCartographie\Model\Point;
 use SbmCartographie\GoogleMaps;
+use SbmBase\Model\StdLib;
 
 class EleveController extends AbstractActionController
 {
@@ -744,15 +745,13 @@ class EleveController extends AbstractActionController
                     ]));
         }
         $post = array_merge_recursive($request->getPost()->toArray(), 
-            $request->getFiles()->toArray());
-        
+            $request->getFiles()->toArray());        
         $ophoto = new \SbmCommun\Model\Photo\Photo();
-        $form = $ophoto->getFormWithInputFilter($this->img['path']['tmpuploads'])->prepare();
+        $form = $ophoto->getFormWithInputFilter($this->img['path']['tmpuploads'])->prepare();        
         $form->setData($post);
         if ($form->isValid()) {
             $data = $form->getData();
-            $source = $data['filephoto']['tmp_name'];
-            
+            $source = $data['filephoto']['tmp_name'];           
             try {
                 $blob = $ophoto->getImageJpegAsString($source);
                 unlink($source);
@@ -772,8 +771,7 @@ class EleveController extends AbstractActionController
                         'cr' => implode(', ', $ophoto->getMessagesFilePhotoElement()),
                         'success' => 100
                     ]));
-        }
-        
+        }        
         // base de données
         $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
         $odata = $tPhotos->getObjData();
