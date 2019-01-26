@@ -8,8 +8,8 @@
  * @filesource vue.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 26 janv. 2019
+ * @version 2019-2.4.6
  */
 return [
     'name' => 'services',
@@ -47,6 +47,9 @@ return [
             ],
             [
                 'field' => 'kmEnCharge'
+            ],
+            [
+                'field' => 'natureCarte'
             ]
         ],
         'from' => [

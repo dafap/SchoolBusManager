@@ -9,14 +9,14 @@
  * @filesource table.elevesphotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 déc. 2018
- * @version 2018-2.4.6
+ * @date 26 janv. 2019
+ * @version 2019-2.4.6
  */
 return [
     'name' => 'elevesphotos',
     'type' => 'table',
-    'drop' => true,
-    'edit_entity' => true,
+    'drop' => false,
+    'edit_entity' => false,
     'add_data' => false,
     'structure' => [
         'fields' => [
