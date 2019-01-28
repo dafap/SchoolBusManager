@@ -2,7 +2,8 @@
 /**
  * Hydrator pour tenir à jour la modification d'une fiche Eleve dans la table `eleves`
  *
- * Cet hydrator, déclaré dans SbmCommun\Model\Db\Service\Table\Eleves::init(),
+ * Cet hydrator, déclaré dans 
+ * SbmCommun\Model\Db\Service\TableGateway\TableGateway::init(),
  * sera utilisé dans SbmCommun\Model\Db\Service\Table\Eleves::saveRecord()
  * 
  * @project sbm
@@ -10,8 +11,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2016
- * @version 2016-2.1.10
+ * @date 28 janv. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Hydrator;
 
