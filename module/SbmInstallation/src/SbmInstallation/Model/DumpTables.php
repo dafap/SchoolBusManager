@@ -9,19 +9,22 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 janv. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmInstallation\Model;
 
 use SbmCommun\Model\Db\Service\DbManager;
-use SbmCommun\Model\Strategy\Niveau;
-use SbmCommun\Model\Strategy\Semaine;
+use SbmCommun\Model\Strategy;
 use SbmCommun\Model\Strategy\TarifAttributs;
 
 class DumpTables
 {
 
+    /**
+     *
+     * @var DbManager
+     */
     private $db_manager;
 
     private $template_head = <<<EOT
@@ -97,7 +100,7 @@ EOT;
                 $template_head_1 = 'table';
                 $file_name = 'data.' . $table_name . '.php';
             }
-            
+            $columns = $this->db_manager->getColumnTypes($table_name, $table_type);
             // ouverture du fichier
             $fp = fopen($path . $file_name, 'w');
             $this->fputs($fp, 
@@ -107,7 +110,10 @@ EOT;
             foreach ($table->fetchAll() as $row) {
                 $ligne = "\n    array(";
                 foreach ($row->getArrayCopy() as $key => $column) {
-                    if (is_numeric($column)) {
+                    if ($columns[$key] == 'blob') {
+                        $val = "addslashes(base64_decode('" .
+                             base64_encode(stripslashes($column)) . "'))";
+                    } elseif (is_numeric($column)) {
                         if (substr($column, 0, 1) == 0 && strlen(trim($column)) > 1) {
                             $val = "'$column'"; // 0 à gauche
                         } else {
@@ -119,14 +125,18 @@ EOT;
                         $val = $column ? 'true' : 'false';
                     } elseif (is_array($column)) {
                         switch ($key) {
+                            case 'natureCarte':
+                                $strategie = new Strategy\NatureCarte();
+                                $val = $strategie->extract($column);
+                                break;
                             case 'niveau':
-                                $strategie = new Niveau();
+                                $strategie = new Strategy\Niveau();
                                 $val = $strategie->extract($column);
                                 break;
                             case 'semaine':
                             case 'jOuverture':
                             case 'joursTransport':
-                                $strategie = new Semaine();
+                                $strategie = new Strategy\Semaine();
                                 $val = $strategie->extract($column);
                                 break;
                             default:

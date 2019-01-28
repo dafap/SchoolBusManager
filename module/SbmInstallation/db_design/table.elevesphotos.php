@@ -9,21 +9,22 @@
  * @filesource table.elevesphotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 janv. 2019
+ * @date 28 janv. 2019
  * @version 2019-2.4.6
  */
 return [
     'name' => 'elevesphotos',
     'type' => 'table',
-    'drop' => false,
-    'edit_entity' => false,
-    'add_data' => false,
+    'drop' => true,
+    'edit_entity' => true,
+    'add_data' => true,
     'structure' => [
         'fields' => [
             'eleveId' => 'int(11) NOT NULL',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'dateCreation' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
+            'dateExtraction' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'type' => 'varchar(25) NOT NULL DEFAULT "JPEG"',
             'description' => 'varchar(100) NULL',
             'photo' => 'blob NOT NULL'
