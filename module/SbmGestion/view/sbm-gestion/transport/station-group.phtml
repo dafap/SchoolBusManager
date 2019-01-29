@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/station-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 jan. 2019
+ * @version 2019-2.4.6
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 // die(var_dump(iterator_to_[$this->data)));
@@ -31,6 +31,18 @@ $url_edit = $this->url('sbmgestion/eleve',
 $url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
 ]);
+$url_mark_selection = $this->url('sbmgestion/transport', 
+    [
+        'action' => 'station-group-selection',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_add_photo = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
 $hiddens = [
     'stationId' => $this->stationId
 ];
@@ -48,7 +60,12 @@ $actions = [
         'title' => 'Retour',
         'onclick' => $js_retour
     ],
-    'rapports' => $menuImpression['content']
+    'rapports' => $menuImpression['content'],
+    'marquer' => [
+        'class' => 'fam-basket-add',
+        'formaction' => $url_mark_selection,
+        'title' => 'Sélectionner toutes les fiches de cette liste'
+    ]
 ];
 ?>
 <h1>Groupe des élèves inscrits sur une station</h1>
@@ -100,6 +117,7 @@ echo $this->flashMessenger()->render('default');
         ]);
     $hiddens = [
         'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
@@ -111,6 +129,13 @@ echo $this->flashMessenger()->render('default');
             'title' => 'Modifier'
         ]
     ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
     if (! empty($row['email'])) {
         $buttons['ecrire'] = [
             'class' => 'fam-email',
@@ -118,8 +143,9 @@ echo $this->flashMessenger()->render('default');
             'title' => 'Envoyer un email'
         ];
     }
-    $this->pictogrammes('init')->addPreinscrit(
-        $row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+    $this->pictogrammes('init')
+        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto']);
     ?>
 			    <tr class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td><?php echo $this->pictogrammes();?></td>

@@ -8,8 +8,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2018
- * @version 2018-2.4.1
+ * @date 9 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -332,6 +332,14 @@ class ElevesResponsables implements FactoryInterface
             [
                 'affecte' => new Expression('count(aff.eleveId) > 0')
             ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId', 
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], $select::JOIN_LEFT)
             ->group('ele.eleveId');
         if (! is_null($order)) {
             $select->order($order);
@@ -504,11 +512,19 @@ class ElevesResponsables implements FactoryInterface
         ], 'ele.eleveId = s.eleveId', 
             [
                 'scolarise' => new Expression('s.eleveId IS NOT NULL')
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId', 
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
             ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
         }
-        //die($this->getSqlString($select->where($where)));
+        // die($this->getSqlString($select->where($where)));
         return $select->where($where);
     }
 

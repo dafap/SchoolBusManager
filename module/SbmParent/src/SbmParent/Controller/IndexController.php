@@ -8,6 +8,8 @@
  * Version 2.3.1 du 10 mars 2017 : adaptation pour tarif annuel ou 3e trimestre. Dans l'inscription
  * en ligne on applique toujours le tarif annuel. Voir la classe SbmParent\Model\OutilsInscription
  * pour plus de détail.
+ * 
+ * Version 2.4.6 du 3 janvier 2019 : ajout de la gestion des photos
  *
  *
  * @project sbm
@@ -15,8 +17,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 6 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmParent\Controller;
 
@@ -415,13 +417,27 @@ class IndexController extends AbstractActionController
                 $this->db_manager->get('Sbm\Db\Select\Communes')
                     ->visibles());
         } catch (\Zend\Form\Exception\InvalidElementException $e) {}
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        try {
+            $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
+                $eleveId);
+            $dataphoto = $ophoto->img_src(stripslashes($elevephoto->photo), 'jpeg');
+            $flashMessage = '';
+        } catch (\Exception $e) {
+            $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
+            $flashMessage = 'Pas de photo d\'identité.';
+        }
         return new ViewModel(
             [
                 'form' => $form->prepare(),
                 'formga' => $formga->prepare(),
                 'responsable' => $auth_responsable,
                 'hasGa' => $hasGa,
-                'responsable2' => $responsable2
+                'responsable2' => $responsable2,
+                'eleveId' => $eleveId,
+                'formphoto' => $ophoto->getForm(),
+                'dataphoto' => $dataphoto,
+                'flashMessage' => $flashMessage
             ]);
     }
 
@@ -709,6 +725,10 @@ class IndexController extends AbstractActionController
             $hasGa = false;
             $form = null;
             $formga = null;
+            $dataphoto = null;
+            $formphoto = null;
+            $eleveId = null;
+            $flashMessage = null;
         } else {
             $aReinscrire = [];
             $isPost = array_key_exists('submit', $args);
@@ -901,6 +921,17 @@ class IndexController extends AbstractActionController
                     $this->db_manager->get('Sbm\Db\Select\Communes')
                         ->visibles());
             } catch (\Zend\Form\Exception\InvalidElementException $e) {}
+            $ophoto = new \SbmCommun\Model\Photo\Photo();
+            try {
+                $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
+                    $eleveId);
+                $dataphoto = $ophoto->img_src(stripslashes($elevephoto->photo), 'jpeg');
+                $flashMessage = '';
+            } catch (\Exception $e) {
+                $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
+                $flashMessage = 'Pas de photo d\'identité.';
+            }
+            $formphoto = $ophoto->getForm();
         }
         return new ViewModel(
             [
@@ -911,7 +942,65 @@ class IndexController extends AbstractActionController
                 'hasGa' => $hasGa,
                 'form' => $form ? $form->prepare() : $form,
                 'formga' => $formga ? $formga->prepare() : $formga,
-                'sansDateN' => $sansDateN
+                'sansDateN' => $sansDateN,
+                'eleveId' => $eleveId,
+                'formphoto' => $formphoto,
+                'dataphoto' => $dataphoto,
+                'flashMessage' => $flashMessage
             ]);
+    }
+
+    public function envoiphotoAction()
+    {
+        $eleveId = $this->getRequest()->getPost('eleveId');
+        if (! $eleveId) {
+            $this->flashMessenger()->addErrorMessage('Pas d\'identifiant pour l\'élève.');
+            $this->redirect()->toRoute('sbmparent');
+        }
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        $form = $ophoto->getForm()
+            ->setAttribute('action', '/parent/savephoto')
+            ->setData([
+            'eleveId' => $eleveId
+        ]);
+        return new ViewModel([
+            'formphoto' => $form->prepare()
+        ]);
+    }
+
+    public function savephotoAction()
+    {
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        $form = $ophoto->getFormWithInputFilter($this->tmpuploads);
+        $prg = $this->fileprg($form);
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif (is_array($prg)) {
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $source = $data['filephoto']['tmp_name'];
+                try {
+                    $blob = $ophoto->getImageJpegAsString($source);
+                    unlink($source);
+                    // base de données
+                    $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+                    $odata = $tPhotos->getObjData();
+                    $odata->exchangeArray(
+                        [
+                            'eleveId' => $data['eleveId'],
+                            'photo' => addslashes($blob)
+                        ]);
+                    $tPhotos->saveRecord($odata);
+                    $this->flashMessenger()->addSuccessMessage('La photo a été enregistrée.');
+                } catch (\Exception $e) {
+                    // problème de fichier, de format de fichier ou d'image dont le format n'est pas traité
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
+                }
+            } else {
+                $this->flashMessenger()->addErrorMessage(
+                    implode(', ', $ophoto->getMessagesFilePhotoElement()));
+            }
+        }
+        return $this->redirect()->toRoute('sbmparent');
     }
 } 

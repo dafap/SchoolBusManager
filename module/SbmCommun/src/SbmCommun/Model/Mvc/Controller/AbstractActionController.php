@@ -8,18 +8,21 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 11 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController as ZendAbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\View\Model\ViewModel;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Form\CriteresForm;
+use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Model\Exception;
+use SbmGestion\Model\Db\Filtre\Eleve\Filtre;
 
 /**
  * Quelques méthodes utiles
@@ -84,6 +87,119 @@ abstract class AbstractActionController extends ZendAbstractActionController
     {
         $uri = $this->getRequest()->getUri();
         return sprintf('%s://%s', $uri->getScheme(), $uri->getHost());
+    }
+
+    /**
+     * Cette procédure marque des fiches élèves 'selection = 1' à partir d'actions
+     * présentant un groupe d'élèves.
+     * L'appel doit nécessairement se faire depuis un `entityGroupSelectionAction()` car
+     * les paramètres sont récupérés en session depuis le namespace `entityGroupAction()`.
+     * La procédure présente d'abord une page de confirmation puis marque les fiches si
+     * la demande est confirmée.
+     *
+     * @param string $query
+     *            nom de la requête (méthode de \SbmGestion\Model\Db\Service\Eleve\Liste)
+     * @param string $filtre
+     *            nom de la requête (méthode de \SbmGestion\Model\Db\Filtre\Eleve\Filtre)
+     * @param string|array $idField
+     *            nom(s) de(s) id de sélection pour le filtre. C'est un scalaire ou un tableau.
+     * @param array $retour
+     *            de la forme ['route' => ..., 'action' => ...]
+     * @param array $keys_hiddens
+     *            liste des noms des hiddens à passer dans le formulaire (reçoivent leur valeur par post)
+     *            
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    protected function markSelectionEleves($query, $filtre, $idField, $retour, 
+        $keys_hiddens = [])
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+            if (empty($args)) {
+                return $this->redirect()->toRoute($retour['route'], 
+                    [
+                        'action' => $retour['action'],
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $hiddens = [];
+        foreach ($keys_hiddens as $key) {
+            $hiddens[$key] = StdLib::getParam($key, $args);
+        }
+        $form = new ButtonForm($hiddens, 
+            [
+                'confirmer' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer',
+                    'title' => 'Sélectionner les fiches élèves'
+                ],
+                'cancel' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ], 'Confirmation', true);
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute($retour['route'], 
+                [
+                    'action' => $retour['action'],
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        if (array_key_exists('confirmer', $args)) {
+            // on marque les fiches demandées
+            $form->setData($args);
+            // uniquement pour vérifier le Csrf
+            if ($form->isValid()) {
+                // on reprend les critères en session de `entityGroupAction`
+                $ns = substr($this->getSessionNamespace(), 0, - strlen('-selection'));
+                $post = Session::get('post', [], $ns);
+                if (is_array($idField)) {
+                    $id = [];
+                    foreach ($idField as $value) {
+                        $id[$value] = StdLib::getParam($value, $post, 
+                            StdLib::getParam($value, $args, null));
+                        if (is_null($id[$value])) {
+                            throw new \Exception("$value n'a pas été trouvé.");
+                        }
+                    }
+                } else {
+                    $id = StdLib::getParam($idField, $post, null);
+                    if (is_null($id)) {
+                        throw new \Exception("$idField n'a pas été trouvé.");
+                    }
+                }
+                
+                // liste des eleveId à sélectionner
+                $rowset = $this->db_manager->get('Sbm\Db\Eleve\Liste')->{$query}(
+                    Session::get('millesime'), Filtre::{$filtre}($id));
+                $ids = [];
+                foreach ($rowset as $row) {
+                    $ids[] = $row['eleveId'];
+                }
+                // enregistrement de la sélection
+                $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+                $tEleves->clearSelection();
+                $affectedRows = $tEleves->markSelection($ids);
+                $this->flashMessenger()->addInfoMessage(
+                    "$affectedRows fiches élèves sélectionnnées");
+                return $this->redirect()->toRoute($retour['route'], 
+                    [
+                        'action' => $retour['action'],
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+        }
+        // on affiche le formulaire de confirmation
+        return new ViewModel([
+            'form' => $form
+        ]);
     }
 
     /**

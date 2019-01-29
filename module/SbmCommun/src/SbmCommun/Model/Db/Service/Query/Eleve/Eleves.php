@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -156,6 +156,14 @@ class Eleves implements FactoryInterface
                 'cla' => $this->db_manager->getCanonicName('classes', 'table')
             ], 'cla.classeId = sco.classeId', [
                 'classe' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId', 
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));

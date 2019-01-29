@@ -11,8 +11,8 @@
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmPdf\Model;
 
@@ -113,13 +113,21 @@ class Etiquette
     }
 
     /**
-     * Donne le nombre de lignes d'écriture dans une étiquette
+     * Donne le nombre de lignes d'écriture dans une étiquette.
+     * On ne compte pas les photos
      *
      * @return int
      */
     public function lineCount()
     {
-        return count($this->config['docfields']);
+        //return count($this->config['docfields']);
+        $n = 0;
+        foreach ($this->config['docfields'] as $docfield) {
+            if ($docfield['nature'] < 2) {
+                $n++;
+            }
+        }
+        return $n;
     }
 
     public function labelHeight()
@@ -364,6 +372,19 @@ class Etiquette
         return (float) $this->config['docfields'][$rang]['label_space'];
     }
 
+    public function parametresPhoto($rang)
+    {
+        return [
+            'x' => $this->config['docfields'][$rang]['photo_x'],
+            'y' => $this->config['docfields'][$rang]['photo_y'],
+            'w' => $this->config['docfields'][$rang]['photo_w'],
+            'h' => $this->config['docfields'][$rang]['photo_h'],
+            'type' => $this->config['docfields'][$rang]['photo_type'],
+            'align' => $this->config['docfields'][$rang]['photo_align'],
+            'resize' => $this->config['docfields'][$rang]['photo_resize']
+        ];
+    }
+
     /**
      * Renvoie un tableau indexé à partir de 0
      *
@@ -376,7 +397,7 @@ class Etiquette
             'filter',
             'format',
             'label',
-            'is_date',
+            'nature',
             'style'
         ];
         $result = [];

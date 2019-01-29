@@ -8,8 +8,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 27 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -194,35 +194,6 @@ class Scolarites extends AbstractSbmTable
             ]);
         $rowset = $this->table_gateway->selectWith($select);
         return $rowset->current()->lastDateCarte;
-    }
-
-    /**
-     * Enregistre la date-temps actuelle dans dateCarte pour toutes les fiches dont dateCarte est antérieur à dateDebut
-     *
-     * @param string $dateDebut
-     *            date au format Y-m-d H:i:s
-     *            
-     * @return int
-     */
-    public function prepareDateCarteForNewEdition($millesime, $dateDebut)
-    {
-        $where1 = new Where();
-        $where1->expression('millesime = ?', $millesime);
-        $select = new Select($this->db_manager->getCanonicName('affectations', 'table'));
-        $select->columns([
-            'eleveId'
-        ])
-            ->where($where1)
-            ->quantifier(Select::QUANTIFIER_DISTINCT);
-        $now = DateLib::nowToMysql();
-        $where = new Where();
-        $where->expression('millesime = ?', $millesime)
-            ->lessThan('dateCarte', $dateDebut)
-            ->in('eleveId', $select);
-        return $this->getTableGateway()->update(
-            [
-                'dateCarte' => $now
-            ], $where);
     }
 
     /**

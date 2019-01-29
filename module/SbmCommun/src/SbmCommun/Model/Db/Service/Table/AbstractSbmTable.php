@@ -10,8 +10,8 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2018
- * @version 2018-2.4.1
+ * @date 26 janv. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -62,7 +62,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Cette propriété est définie dans AbstractSbmTableGateway.
      * Sa méthode extract() est utilisée dans saveRecord().
      *
-     * @var HydratorInterface
+     * @var \Zend\Hydrator\HydratorInterface
      */
     protected $hydrator = null;
 
@@ -193,7 +193,7 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Renvoie l'objet $table_gateway
      *
-     * @return TableGateway
+     * @return \Zend\Db\TableGateway\TableGateway
      */
     public function getTableGateway()
     {
@@ -238,7 +238,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      * @param array|string|null $order            
      * @return Zend\Db\Sql\Select
      */
-    private function select($where_obj = null, $order = null)
+    public function select($where_obj = null, $order = null)
     {
         if (! is_null($where_obj)) {
             if ($where_obj instanceof Where) {

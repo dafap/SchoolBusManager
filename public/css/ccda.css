@@ -146,6 +146,10 @@ i.fam-help:hover {
 	margin-bottom: 3px;
 }
 
+.petit {
+	font-size: 80%;
+}
+
 .sbm-description {
 	font-size: 80%;
 	color: #999;
@@ -171,6 +175,10 @@ p.important {
 
 .top-6px {
 	margin-top: 6px;
+}
+
+.top-12px {	
+	margin-top: 12px;
 }
 
 .top-18px {

@@ -8,10 +8,15 @@
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 02 mai 2018
- * @version 2018-2.4.1
+ * @date 6 jan. 2019
+ * @version 2019-2.4.6
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->prependStylesheet(
+    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
 $this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile(
+    $this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
 $this->headScript()->appendFile($this->basepath('/js/parent/edit-eleve.js'));
 $texteDemandeR2 = <<<EOT
 La Communauté de communes vous informe que le transport pour cette 2ème adresse ne sera 
@@ -23,8 +28,10 @@ $texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2);
 <?php $this->headScript()->captureStart();?>
 texteDemandeR2 = "<?= $texteDemandeR2; ?>";
 <?php $this->headScript()->captureEnd(); ?>
+<?php $this->inlineScript()->captureStart();?>
+js_photo.init(<?= $this->flashMessage ? 0 : 1;?>);
+<?php $this->inlineScript()->captureEnd();?>
 <?php
-
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre, 
     $this->responsable->nom, $this->responsable->prenom);
 if ($this->hasGa) {
@@ -46,15 +53,24 @@ $label_attributes = $this->form->get('commentaire')->getLabelAttributes();
 $label_attributes['style'] = 'width:100%';
 $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 ?>
-<h1>Modification des informations concernant un enfant</h1>
-
+<div class="clearfix">
+	<div class="float-left">
+		<h1>Modification des informations</h1>
+	</div>
+	<div id="flashMessenger" class="flashMessenger float-right orange top-12px" 
+	   <?php $this->flashMessage ? 'style="display: none;"' : ''?>>
+        <ul class="warning">
+			<li>Une photo d'identité est nécessaire pour obtenir la carte de transport.</li>
+		</ul>
+    </div>
+</div>
 <div id="fiche-wrapper">
 	<div id="fiche-header"></div>
 	<div id="fiche-inner">
 <?php
 echo $this->form()->openTag($this->form);
 echo $this->formHidden($this->form->get('eleveId'));
-echo $this->formHidden($this->form->get('responsable1Id'));    
+echo $this->formHidden($this->form->get('responsable1Id'));
 echo $this->formHidden($this->form->get('organismeId'));
 echo $this->formHidden($this->form->get('regimeId'));
 echo $this->formHidden($this->form->get('csrf'));
@@ -73,7 +89,7 @@ echo $this->formHidden($this->form->get('csrf'));
 			</div>
 			<div id="wrapper-zone2" class="clearfix">
 				<div id="zonne2-col-gauche" class="float-left"
-					style="min-width: 45%">
+					style="min-width: 39%">
 					<div id="enfant-edit-nom" class="row-inner edit">
 				        <?= $this->formRow($this->form->get('nom')); ?></div>
 					<div id="enfant-edit-prenom" class="row-inner edit">
@@ -81,11 +97,26 @@ echo $this->formHidden($this->form->get('csrf'));
 					<div id="enfant-edit-dateN" class="row-inner edit">
 					   <?= $this->formRowDate($this->form->get('dateN')); ?></div>
 				</div>
+				<div id="wrapper-photo" class="float-left"
+					style="margin-left: 10px; margin-right: 10px;">
+					<img height="70" alt="photo" src="<?= $this->dataphoto;?>" />
+				</div>
 				<div id="zonne2-col-droite" class="float-left">
 					<div id="enfant-edit-etablissementId" class="row-inner edit">
 					   <?= $this->formRow($this->form->get('etablissementId')); ?></div>
 					<div id="enfant-edit-classeId" class="row-inner edit">
 					   <?= $this->formRow($this->form->get('classeId')); ?></div>
+					<div id="wrapper-filephoto" style="display: inline;">
+					<?php
+    $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
+    $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
+    $btnSupprPhoto = new \Zend\Form\Element\Button('supprphoto');
+    $btnSupprPhoto->setLabelOption('disable_html_escape', 'on');
+    $btnDialogLabel = $this->flashMessage ? "Envoyer une photo" : "Changer la photo";
+    ?>
+					<?= $this->formButton($btnOpenDialog, "<i class=\"fam-camera-edit\"></i> $btnDialogLabel");?>
+				    <?= $this->formButton($btnSupprPhoto, '<i class="fam-camera-delete"></i> Supprimer la photo');?>
+					</div>
 				</div>
 			</div>
 			<div id="wrapper-zone3" class="clearfix">
@@ -99,7 +130,7 @@ echo $this->formHidden($this->form->get('csrf'));
 					<div id="z3cd-r1"></div>
 					<div id="enfant_ga"></div>
 				</div>
-			</div>			
+			</div>
 			<div id="user">
 				<div id="wrapper-commentaire"><?= $this->formRow($this->form->get('commentaire'));?></div>
 			</div>
@@ -121,6 +152,39 @@ echo $this->formHidden($this->form->get('csrf'));
  */
 ?>
 <div style="display: none;">
+    <div id="photo-form-modele" data-title="Envoi d'une photo">
+		<?php 
+		$this->formphoto->setAttribute('action',
+		$this->url('sbmajaxeleve', [
+			'action' => 'savephoto'
+		]))
+		->prepare();
+		$this->formphoto->get('eleveId')->setValue($this->eleveId);
+		$btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
+		?>
+		<p>
+			En envoyant une photo, je donne mon autorisation pour son archivage
+			numérique durant la scolarité de mon enfant.<br>Cette démarche est
+			utile en cas de demande de duplicata et lors de la réinscription.<br>A
+			l'expiration de la scolarité la photo est effacée.<br>Si vous envoyez
+			une nouvelle photo, l'ancienne est détruite automatiquement.
+		</p>
+		<?= $this->form()->openTag($this->formphoto);?>
+		<?= $this->formHidden($this->formphoto->get('eleveId'));?>
+		<?= $this->formRow($this->formphoto->get('filephoto')); ?>
+		<div style="display: inline;">
+		<?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
+		</div>
+			<div class="photo-progress" style="display: none;">
+				<div class="photo-msg">Envoi en cours ...</div>
+				<div style="margin-left: 40px; margin-bottom: 10px; height:20px; width: 100px; border: 1px solid blue;">
+					<div class="photo-progressbar" style="background-color: lightgrey;"></div>
+				</div>
+		</div>
+		<div class="top-6px">
+		<?= $this->formButton($btnCloseDialog, 'Abandonner'); ?></div>
+		<?= $this->form()->closeTag();?>
+	</div>
 	<div id="content_responsable1" class="row-inner">
 		<fieldset>
 			<div>
@@ -193,4 +257,5 @@ echo $this->formHidden($this->form->get('csrf'));
 		</fieldset>
 <?php endif; ?>
     </div>
+	
 </div>

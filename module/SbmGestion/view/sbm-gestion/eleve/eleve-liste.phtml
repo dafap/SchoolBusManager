@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 jan. 2019
+ * @version 2019-2.4.6
  */
 use SbmBase\Model\DateLib;
 
@@ -130,6 +130,11 @@ $url_map = $this->url('sbmgestion/eleve',
         'action' => 'responsable-localisation',
         'page' => $this->page
     ]);
+$url_photos = $this->url('sbmgestion/gestioneleve', 
+    [
+        'action' => 'photos',
+        'page' => $this->page
+    ]);
 $url_cartes = $this->url('sbmgestion/gestioneleve', 
     [
         'action' => 'cartes',
@@ -138,6 +143,11 @@ $url_cartes = $this->url('sbmgestion/gestioneleve',
 $url_duplicata = $this->url('sbmgestion/gestioneleve', 
     [
         'action' => 'duplicata-carte',
+        'page' => $this->page
+    ]);
+$url_add_photo = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'envoiphoto',
         'page' => $this->page
     ]);
 $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
@@ -168,6 +178,11 @@ $actions = [
         'class' => 'fam-vcard',
         'formaction' => $url_cartes,
         'title' => 'Edition des cartes'
+    ],
+    'photos' => [
+        'class' => 'fam-photos',
+        'formaction' => $url_photos,
+        'title' => 'Extraction d\un fichier de photos'
     ],
     'gestion' => [
         'class' => 'fam-application-side-expand',
@@ -347,6 +362,7 @@ echo $this->flashMessenger()->render('default');
             $this->pictogrammes('init')
                 ->addPreinscrit(! $inscrit)
                 ->addSansAffectation($eleve['affecte'])
+                ->addSansPhoto($eleve['sansphoto'])
                 ->addDistanceZero($eleve['demandeR1'], $eleve['distanceR1'], 
                 $eleve['demandeR2'], $eleve['distanceR2']);
             ?>
@@ -388,6 +404,11 @@ echo $this->flashMessenger()->render('default');
                     'title' => 'supprimer',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'supprimer')
                 ],
+                'addphoto' => [
+                    'class' => 'fam-camera-add',
+                    'formaction' => $url_add_photo,
+                    'title' => 'Envoyer une photo'
+                ],
                 'duplicata' => [
                     'class' => 'fam-vcard-add',
                     'formaction' => $url_duplicata,
@@ -403,6 +424,9 @@ echo $this->flashMessenger()->render('default');
                         '|')
                 ]
             ];
+            if (! $eleve['sansphoto']) {
+                unset($buttons['addphoto']);
+            }
             echo $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);
             ?>
 				</td>

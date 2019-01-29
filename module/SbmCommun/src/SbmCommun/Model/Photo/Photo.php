@@ -1,6 +1,6 @@
 <?php
 /**
- * Outis de retouche et de normalisation des photois d'identité
+ * Outis de retouche et de normalisation des photos d'identité
  * 
  * La photo d'identité est ramenée à une résolution de 150 ou 300 dpi.
  * La photo d'identité est ramenée à la taille 3,5 x 4,5 cm par un découpage
@@ -14,8 +14,8 @@
  * @filesource Photo.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 déc. 2018
- * @version 2018-2.4.6
+ * @date 9 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Photo;
 
@@ -76,8 +76,9 @@ class Photo
         $this->form->setAttribute('method', 'post');
          
         $file_element = new Form\Element\File('filephoto');
-        $file_element->setLabel('Choisissez le fichier image')
+        $file_element->setLabel('Choisissez le fichier image (JPEG, PNG ou GIF)')
         ->setAttribute('id', 'filephoto')
+        ->setLabelAttributes(['class' => 'right-10px'])
         ->setOption('error_attributes',
             [
                 'class' => 'sbm-error'
@@ -129,7 +130,11 @@ class Photo
         $textDomain = \Zend\Validator\AbstractValidator::getDefaultTranslatorTextDomain();
         $messagesToPrint = [];
         $messageCallback = function ($item) use (&$messagesToPrint, $translator, $textDomain) {
-            $messagesToPrint[] = $translator->translate($item, $textDomain);
+            $msg = $translator->translate($item, $textDomain);
+            if ($msg == 'Une valeur est requise et ne peut être vide') {
+                $msg = 'Le fichier n\'a pas été transmis (trop gros).';
+            }
+            $messagesToPrint[] = $msg;
         };
         array_walk_recursive($messages, $messageCallback);
         return $messagesToPrint;
@@ -184,6 +189,7 @@ class Photo
         }
         $mime_type = mime_content_type($source);
         if (substr($mime_type, 0, strlen('image/')) != 'image/') {
+            unlink($source);
             throw new Exception(
                 sprintf("Le fichier source n'est pas reconnu comme un fichier image. %s", $mime_type));
         }
@@ -194,7 +200,8 @@ class Photo
         } elseif ($mime_type == 'image/png') {
             $image = imagecreatefrompng($source);
         } else {
-            throw new Exception("Ce format image n'est pas traité.");
+            unlink($source);
+            throw new Exception("Ce format image n'est pas accepté (JPEG, PNG ou GIF uniquement).");
         }
         // mise à la bonne taille de l'image, rognage si nécessaire
         list ($modwidth, $modheight) = $this->modele_size();

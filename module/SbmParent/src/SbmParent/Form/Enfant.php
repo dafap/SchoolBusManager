@@ -12,14 +12,15 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 02 mai 2018
- * @version 2018-2.4.1
+ * @date 27 déc. 2018
+ * @version 2018-2.4.6
  */
 namespace SbmParent\Form;
 
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Db\Sql\Where;
+use SbmBase\Model\Session;
 use SbmCommun\Form\AbstractSbmForm;
 use SbmCommun\Filter\SansAccent;
 use SbmCommun\Model\Strategy\Semaine;
@@ -37,6 +38,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function __construct($db_manager)
     {
+        $as = Session::get('as')['libelle'];
         $this->db_manager = $db_manager;
         parent::__construct('enfant');
         $this->setAttribute('method', 'post');
@@ -249,7 +251,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Etablissement fréquenté l\'année prochaine',
+                    'empty_option' => 'Etablissement fréquenté en ' . $as,
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -264,7 +266,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
-                    'label' => 'Classe suivie l\'année prochaine',
+                    'label' => 'Classe suivie en ' . $as,
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],

@@ -5,8 +5,8 @@
  * @filesource edit-eleve.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 mai 2018
- * @version 2018-2.4.1
+ * @date 6 jan. 2019
+ * @version 2019-2.4.6
  */
 var texteDemandeR2;
 function phraseDemandeR2(state) {
@@ -157,3 +157,151 @@ $(function() {
 		phraseDemandeR2(true);
 	}
 });
+
+// Gestion des photos
+var js_photo = (function() {
+	var hasPhoto;
+	function setBtnDialogLabel() {
+		var label = '<i class="fam-camera-edit"></i> ';
+		if (hasPhoto) {
+			label = label + 'Changer la photo';
+		} else {
+			label = label + 'Envoyer une photo';
+		}
+		$("button[type=button][name=opendialog]").html(label);
+	}
+	function setHasPhoto(value) {
+		hasPhoto = value;
+		if (value) {
+			$("button[name=supprphoto]").show();
+			$("#flashMessenger").hide();
+		} else {
+			$("button[name=supprphoto]").hide();
+			$("#flashMessenger").show();
+		}
+		setBtnDialogLabel();
+	}
+	function montreBtnEnvoiPhoto(voir) {
+		var d = $("button[name=envoiphoto]");
+		if (voir) {
+			d.show();
+		} else {
+			d.hide();
+		}
+	}
+	function montrePhoto(data, success) {
+		$("input[type=file][name=filephoto]").val('');
+		montreBtnEnvoiPhoto(false);
+		$("#wrapper-filephoto ul").remove();
+		if (success == 1) {
+			$("#wrapper-photo img").attr('src', data);
+		} else {
+			$("#wrapper-filephoto").append('<ul class="input-error"><li>' + data + '</li></ul>');
+		}
+	}
+	$(document).ready(function($) {
+		$("input[type=file][name=filephoto]").change(function() {
+			if ($(this).val()) {
+				montreBtnEnvoiPhoto(true);
+			} else {
+				montreBtnEnvoiPhoto(false);
+			}
+		});
+		$("#photo-form-modele").dialog({
+			modal : true,
+			autoOpen : false,
+			heigth : 400,
+			width : 600,
+			resizable : false,
+			title : $("#photo-form-modele").attr('data-title')
+		});
+		$("button[name=opendialog]").click(function(event) {
+			$("#photo-form-modele").dialog('open');
+			event.preventDefault();
+		});
+		$("button[name=closedialog]").click(function(event) {
+			$("#photo-form-modele").dialog('close');
+			event.preventDefault();
+		});
+		$("button[type=button][name=envoiphoto]").click(function() {
+			var eleveid = $("input[type=hidden][name=eleveId]").val();
+			var fd = new FormData(document.querySelector("#formphoto"));
+			var containerprogress = $(".photo-progress");
+			var progressbar = $('.photo-progressbar');
+			containerprogress.show();
+			progressbar.css('width','0');
+			$.ajax({
+				xhr: function()
+				  {
+				    var xhr = new window.XMLHttpRequest();
+				    //Upload progress
+				    xhr.upload.addEventListener("progress", function(evt){
+				      if (evt.lengthComputable) {
+				        var percentComplete = parseInt(100 * evt.loaded / evt.total);
+				        progressbar.css('width', percentComplete + '%');
+				        progressbar.text(percentComplete + '%');
+				      }
+				    }, false);
+				    //Download progress
+				    xhr.addEventListener("progress", function(evt){
+				      if (evt.lengthComputable) {
+				        var percentComplete = evt.loaded / evt.total;
+				        //Do something with download progress
+				        console.log(percentComplete);
+				      }
+				    }, false);
+				    return xhr;
+				  },
+				url : '/sbmajaxeleve/savephoto',
+				data : fd,
+				processData : false,
+				contentType : false,
+				type : 'post',
+				success : function(data) {
+							var retour = $.parseJSON(data);
+							if (retour.success == 1) {
+								montrePhoto(retour.src, true);
+								setHasPhoto(true);
+							} else {
+								montrePhoto(retour.cr, false);
+							}
+							$("#photo-form-modele").dialog('close');
+							containerprogress.hide();
+						},
+				error : function(xhr, ajaxOptions, thrownError) {
+							alert(xhr.status + " " + thrownError);
+						}
+			});
+		});
+		$("button[type=button][name=supprphoto]").click(function() {
+			var eleveid = $("input[type=hidden][name=eleveId]").val();
+			var fd = new FormData();
+			fd.append('eleveId', eleveid);
+			$.ajax({
+				url : '/sbmajaxeleve/supprphoto',
+				data : fd,
+				processData : false,
+				contentType : false,
+				type : 'post',
+				success : function(data) {
+							var retour = $.parseJSON(data);
+							if (retour.success == 1) {
+								montrePhoto(retour.src, true);
+								setHasPhoto(false);
+							} else {
+								montrePhoto(retour.cr, false);
+							}
+						},
+				error : function(xhr, ajaxOptions, thrownError) {
+							alert(xhr.status + " " + thrownError);
+						}
+			});
+		});
+	});
+	return {
+		"init" : function(hasPhoto) {
+			setHasPhoto(hasPhoto);
+			montreBtnEnvoiPhoto(false);
+		}
+	}
+})();

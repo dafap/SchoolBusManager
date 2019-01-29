@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 26 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmPdf\Model;
 
@@ -895,8 +895,9 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, $barcode_width, 
-                (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, 
+                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style, 
+                '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {
@@ -1828,10 +1829,27 @@ class Tcpdf extends \TCPDF
         $descripteur = $label->descripteurData();
         $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            $lignes = $etiquetteData['lignes'];
+            $photos = $etiquetteData['photos'];
             $page_vide = false;
-            for ($j = 0; $j < count($etiquetteData); $j ++) {
+            // partie graphique : photos
+            $origine = [
+                $this->x,
+                $this->y
+            ];
+            foreach ($photos as $rang => $img) {
+                list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
+                    $label->parametresPhoto($rang));
+                $x += $origine[0];
+                $y += $origine[1];
+                $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
+            }
+            // partie texte - etiquetteData est indexé à partir de 0
+            list ($x, $y) = $origine;
+            $this->SetXY($x, $y);
+            for ($j = 0; $j < count($lignes); $j ++) {
                 $this->setStyle($descripteur[$j]['style']);
-                $txt = $etiquetteData[$j];
+                $txt = $lignes[$j];
                 $txtLabel = $descripteur[$j]['label'];
                 if (! empty($txtLabel)) {
                     $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0, 
@@ -1856,10 +1874,36 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie un tableau de données pour les étiquettes.
+     * Renvoie un tableau indexé de données pour les étiquettes.
+     * Chaque enregistrement du tableau correspond au contenu d'une étiquette sous la
+     * forme d'un tableau associatif
+     * [
+     * 'lignes' => [tableau indexé des lignes de l'étiquette (1)],
+     * 'photos' => false ou tableau indexé de tableaux associatifs de la photo et de ses
+     * paramètres (2). Autant de photos que le descripteur l'indique
+     * ]
+     * (1) Chaque ligne de ce tableau est une chaine de caractères correctement formatée
+     * pour être directement "écrite" dans la page PDF.
+     * (2) Si le descripteur indique qu'il s'agit d'une photo :
+     * 'photos' =>[
+     * [
+     * img => @imagedata où imagedata est le décodage de la colonne photo
+     * x => abscisse du coin supérieur gauche ('' par défaut)
+     * y => ordonnée du coin supérieur gauche ('' par défaut)
+     * w => largeur de l'image dans la page (0 par défaut)
+     * h => hauteur de l'image dans la page (0 par défaut)
+     * type => typephoto (JPEG ou PNG ou GIF - '' par défaut)
+     * align => T ou M ou B ou N ('' par défaut)
+     * resize => true (false par défaut)
+     * dpi => résolution de l'image (300 par défaut)
+     * ], ...
+     * ]
+     * Sinon, 'photo' => []
      *
      * @param array $descripteur
-     *            décrit chaque ligne dans un tableau avec les clés 'fieldname', 'filter', 'format', 'label'
+     *            tableau de descripteurs des champs
+     *            chaque champ est décrit dans un tableau avec les clés
+     *            'fieldname', 'filter', 'format', 'label', 'nature', 'style', 'data'
      * @param bool $force
      *            force l'initialisation des données par lecture de la base
      *            
@@ -1888,26 +1932,46 @@ class Tcpdf extends \TCPDF
                 $table = $this->getRecordSourceTable();
                 // lecture des données et application du filtre et du format
                 foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
-                    $ligne = [];
-                    foreach ($descripteur as $column) {
+                    $lignes = [];
+                    $photos = [];
+                    foreach ($descripteur as $rang => $column) {
                         $value = StdLib::translateData($row->{$column['fieldname']}, 
                             $column['filter']);
-                        if ($column['is_date']) {
-                            if (! empty($column['format']) &&
-                                 stripos('h', $column['format']) !== false) {
-                                $value = DateLib::formatDateTimeFromMysql($value);
-                            } else {
-                                $value = DateLib::formatDateFromMysql($value);
-                            }
-                        } elseif (! empty($column['format'])) {
-                            $value = sprintf($column['format'], $value);
+                        switch ($column['nature']) {
+                            case 2:
+                                if ($value) {
+                                    $photos[$rang] = '@' . stripslashes($value);
+                                }
+                                break;
+                            case 1:
+                                if (! empty($column['format']) &&
+                                     stripos('h', $column['format']) !== false) {
+                                    $value = DateLib::formatDateTimeFromMysql($value);
+                                } else {
+                                    $value = DateLib::formatDateFromMysql($value);
+                                }
+                                break;
+                            default:
+                                $value = sprintf($column['format'], $value);
+                                break;
                         }
-                        $ligne[] = $value;
+                        $lignes[] = $value;
                     }
-                    $this->data[] = $ligne;
+                    if ($photos == []) {
+                        $photos = false;
+                    }
+                    $this->data[] = [
+                        'lignes' => $lignes,
+                        'photos' => $photos
+                    ];
                 }
             } else {
-                // c'est une requête Sql. S'il n'y a pas de description des colonnes dans la table doccolumns alors on en crée une par défaut.
+                /**
+                 * c'est une requête Sql.
+                 *
+                 * S'il n'y a pas de description des colonnes dans la table doccolumns
+                 * alors on en crée une par défaut.
+                 */
                 $sql = $this->getConfig('document', 'recordSource', '');
                 // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
                 $sql = str_replace(
@@ -1985,7 +2049,8 @@ class Tcpdf extends \TCPDF
                     if ($rowset->count()) {
                         foreach ($rowset as $row) {
                             // $row est un ArrayObject
-                            $etiquette = [];
+                            $lignes = [];
+                            $photos = [];
                             for ($key = 0; $key < count($descripteur); $key ++) {
                                 if (empty($descripteur[$key]['fieldname'])) {
                                     $value = '';
@@ -1993,22 +2058,38 @@ class Tcpdf extends \TCPDF
                                     $value = StdLib::translateData(
                                         $row[$descripteur[$key]['fieldname']], 
                                         $descripteur[$key]['filter']);
-                                    if ($descripteur[$key]['is_date']) {
-                                        if (! empty($descripteur[$key]['format']) && stripos(
-                                            'h', $descripteur[$key]['format']) !== false) {
-                                            $value = DateLib::formatDateTimeFromMysql(
-                                                $value);
-                                        } else {
-                                            $value = DateLib::formatDateFromMysql($value);
-                                        }
-                                    } elseif (! empty($descripteur[$key]['format'])) {
-                                        $value = sprintf($descripteur[$key]['format'], 
-                                            $value);
+                                    switch ($descripteur[$key]['nature']) {
+                                        case 2:
+                                            if ($value) {
+                                                $photos[$key] = '@' . stripslashes($value);
+                                            }
+                                            break;
+                                        case 1:
+                                            if (! empty($descripteur[$key]['format']) &&
+                                                 stripos('h', 
+                                                    $descripteur[$key]['format']) !== false) {
+                                                $value = DateLib::formatDateTimeFromMysql(
+                                                    $value);
+                                            } else {
+                                                $value = DateLib::formatDateFromMysql(
+                                                    $value);
+                                            }
+                                            $lignes[] = $value;
+                                            break;
+                                        default:
+                                            if (! empty($descripteur[$key]['format'])) {
+                                                $value = sprintf(
+                                                    $descripteur[$key]['format'], $value);
+                                            }
+                                            $lignes[] = $value;
+                                            break;
                                     }
                                 }
-                                $etiquette[] = $value;
                             }
-                            $this->data[] = $etiquette;
+                            $this->data[] = [
+                                'lignes' => $lignes,
+                                'photos' => $photos
+                            ];
                         }
                     }
                 } catch (\Exception $e) {
@@ -2057,6 +2138,8 @@ class Tcpdf extends \TCPDF
         $duplicata = $this->getParam('duplicata', false);
         $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            $lignes = $etiquetteData['lignes'];
+            $photos = (array) $etiquetteData['photos'];
             $page_vide = false;
             // partie graphique
             $origine = [
@@ -2074,10 +2157,18 @@ class Tcpdf extends \TCPDF
                 $this->Titre(1, 'DUPLICATA', 'L');
                 $this->StopTransform();
             }
+            // partie photos
+            foreach ($photos as $rang => $img) {
+                list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
+                    $label->parametresPhoto($rang));
+                $x += $origine[0];
+                $y += $origine[1];
+                $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
+            }
+            // partie texte - etiquetteData est indexé à partir de 0
             list ($x, $y) = $origine;
             $this->SetXY($x, $y);
-            // partie texte - etiquetteData est indexé à partir de 0
-            for ($i = 0; $i < count($etiquetteData); $i ++) {
+            for ($i = 0; $i < count($lignes); $i ++) {
                 $this->setStyle($descripteur[$i]['style']);
                 $txt = [];
                 $txtLabel = $descripteur[$i]['label'];
@@ -2085,7 +2176,7 @@ class Tcpdf extends \TCPDF
                     $txt[] = $txtLabel;
                 }
                 if ($descripteur[$i]['data']) {
-                    $txt[] = $etiquetteData[$i];
+                    $txt[] = $lignes[$i];
                 }
                 $this->SetX($label->X($i));
                 $this->Cell($label->wCell($i), $label->hCell($i), implode(' ', $txt), 0, 
@@ -2232,8 +2323,9 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, $barcode_width, 
-                (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, 
+                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style, 
+                '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {

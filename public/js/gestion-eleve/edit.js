@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2019
+ * @date 30 jan. 2019
  * @version 2019-2.4.6
  */
 
@@ -217,6 +217,22 @@ var js_edit = (function() {
 								}
 						});
 			});
+			$("#duplicataplus").click(function() {
+				$.ajax({
+					url : '/sbmajaxeleve/incrementeduplicata/eleveId:'
+															+ ELEVE_ID,
+					dataType : 'json',
+					success : function(data) {
+									var myid = "#nbduplicata";
+									var duplicata = data.duplicata;
+									$(myid).empty();
+									$(myid).append(duplicata.toString());
+							},
+					error : function(xhr,ajaxOptions,thrownError) {
+									alert(xhr.status+ ' ' + thrownError);
+							}
+					});
+		    });
 			$("#eleve-anneeComplete").click(function() {
 						montreDebutFin($(this).is(":checked"));
 						majMontantInscription($(this).is(":checked"));

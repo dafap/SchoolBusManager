@@ -1,0 +1,56 @@
+<?php
+/**
+ * Formulaire d'envoi d'une photo
+ * Le JavaScript est le même que pour l'envoi d'une photo par un parent.
+ * 
+ * @project sbm
+ * @package SbmParent/view/sbm-gestion/eleve/index
+ * @filesource envoiphoto.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 janv. 2019
+ * @version 2019-2.4.6
+ */
+$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/envoiphoto.js'));
+$this->inlineScript()->captureStart();
+?>
+js_envoi.init("<?= $this->url_retour;?>");
+<?php $this->inlineScript()->captureEnd();?>
+<?php
+
+$this->formphoto->setAttribute('action', 
+    $this->url('sbmajaxeleve', [
+        'action' => 'savephoto'
+    ]))
+    ->prepare();
+?>
+<h1>Envoi d'une photo d'identité</h1>
+<div>
+	<div>
+		<fieldset class="sbm-page1">
+		    <h3><?= $this->info; ?></h3>
+			<p class="info">En envoyant une photo, vous déclarez avoir obtenu
+				l'autorisation pour son archivage numérique durant la scolarité de
+				l'enfant.</p>
+            <?= $this->form()->openTag($this->formphoto);?>
+            <?= $this->formHidden($this->formphoto->get('eleveId'));?>
+            <?= $this->formRow($this->formphoto->get('filephoto')); ?>
+            <div style="display: inline;">
+            <?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
+            <?= $this->formButton(new \Zend\Form\Element\Button('cancel'), 'Quitter');?>
+            </div>
+			<div class="photo-progress" style="display: none;">
+				<div class="photo-msg">Envoi en cours ...</div>
+				<div
+					style="margin-left: 40px; margin-bottom: 10px; height: 20px; width: 100px; border: 1px solid blue;">
+					<div class="photo-progressbar" style="background-color: lightgrey;"></div>
+				</div>
+			</div>
+			<div id="wrapper-img" style="display: none;">
+				<img src="" height="180" />
+			</div>
+			<div id="error" class="input-error"></div>
+		</fieldset>
+	</div>
+</div>

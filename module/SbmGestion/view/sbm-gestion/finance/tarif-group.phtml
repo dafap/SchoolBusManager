@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 26 jan. 2019
+ * @version 2019-2.4.6
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/finance', 
@@ -35,6 +35,12 @@ $url_edit = $this->url('sbmgestion/eleve',
 $url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
 ]);
+$url_add_photo = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
 $hiddens = [
     'tarifId' => $this->tarifId
 ];
@@ -104,6 +110,7 @@ echo $this->flashMessenger()->render('default');
 			<?php
     $hiddens = [
         'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
@@ -115,6 +122,13 @@ echo $this->flashMessenger()->render('default');
             'title' => 'Modifier'
         ]
     ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
     if (! empty($row['email'])) {
         $buttons['ecrire'] = [
             'class' => 'fam-email',
@@ -123,7 +137,8 @@ echo $this->flashMessenger()->render('default');
         ];
     }
     $this->pictogrammes('init')->addPreinscrit(
-        $row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+        $row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto']);
     ?>
 			    <tr class="<?php echo $this->cycle(["even", "odd"]);?>">
 					<td><?php echo $this->pictogrammes();?></td>

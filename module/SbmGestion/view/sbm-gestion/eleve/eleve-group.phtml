@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2018
- * @version 2018-2.4.1
+ * @date 9 jan. 2019
+ * @version 2019-2.4.6
  */
 use SbmBase\Model\DateLib;
 
@@ -111,6 +111,7 @@ $actions = [
             "even",
             "odd"
         ])->next();
+        $this->pictogrammes('init')->addSansPhoto($eleve['sansphoto']);
         if (! $eleve['inscrit'] || ! $eleve['scolarise']) {
             $tr_css .= ' barre';
         }
@@ -128,7 +129,7 @@ $actions = [
         $derniereAs = $eleve['max_millesime'] . '-' . ($eleve['max_millesime'] + 1);
         ?>
 					<tr class="<?php echo $tr_css;?>">
-						<td class="pictogramme"></td>
+						<td class="pictogramme"><?= $this->pictogrammes(); ?></td>
 						<td class="centre"><?=  $derniereAs;?></td>
 						<td class="numero"><?= $eleve['numero'];?></td>
 						<td class="nom"><?= $this->escapeHtml($eleve['nom']);?></td>

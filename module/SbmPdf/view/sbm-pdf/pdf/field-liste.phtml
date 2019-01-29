@@ -13,8 +13,8 @@
  * @filesource field-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 26 jan. 2019
+ * @version 2019-2.4.6
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -94,10 +94,10 @@ $buttons = [
 			<h1>Liste des champs contenus dans un document pdf (hors présentation
 				tabulaire)</h1>
 			<ul>
-				<li>Document: <?php echo $this->document['name'];?></li>
-				<li>Source du document: <?php echo $this->document['recordSource'];?></li>
+				<li>Document: <?= $this->document['name'];?></li>
+				<li>Source du document: <?= $this->document['recordSource'];?></li>
 			</ul>
-			<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+			<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		</div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
@@ -113,6 +113,7 @@ echo $this->flashMessenger()->render('default');
 				<tr>
 					<th>N°</th>
 					<th>Champ</th>
+					<th>Nature</th>
 					<th>Largeur</th>
 					<th>Alignement</th>
 					<th>Libellé</th>
@@ -122,16 +123,30 @@ echo $this->flashMessenger()->render('default');
 					<th></th>
 				</tr>
             <?php foreach($data as $row): ?>
+            <?php
+                switch ($row['nature']) {
+                    case 2:
+                        $nature = 'photo';
+                        break;
+                    case 1:
+                        $nature = 'date';
+                        break;
+                    default:
+                        $nature = 'alphanumérique';
+                        break;
+                }
+                ?>
                 <tr
-					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
-					<td class="ordinal_position"><?php echo $row['ordinal_position']; ?></td>
-					<td class="fieldname"><?php echo $this->escapeHtml($row['fieldname']); ?></td>
-					<td class="fieldname_width"><?php echo $row['fieldname_width']; ?></td>
-					<td class="fieldname_align"><?php echo $row['fieldname_align']; ?></td>
-					<td class="label"><?php echo $this->escapeHtml($row['label']); ?></td>
-					<td class="label_width"><?php echo $row['label_width']; ?></td>
-					<td class="height"><?php echo $row['height']; ?></td>
-					<td class="style"><?php echo $this->escapeHtml($row['style']); ?></td>
+					class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="ordinal_position"><?= $row['ordinal_position']; ?></td>
+					<td class="fieldname"><?= $this->escapeHtml($row['fieldname']); ?></td>
+					<td class="nature"><?= $nature ?></td>
+					<td class="fieldname_width centre"><?= $row['fieldname_width']; ?></td><td
+						class="fieldname_align centre"><?= $row['fieldname_align']; ?></td>
+					<td class="label"><?= $this->escapeHtml($row['label']); ?></td>
+					<td class="label_width centre"><?= $row['label_width']; ?></td>
+					<td class="height centre"><?= $row['height']; ?></td>
+					<td class="style"><?= $this->escapeHtml($row['style']); ?></td>
 					<td class="boutons">
             <?php
                 $hiddens['docfieldId'] = $row['docfieldId'];

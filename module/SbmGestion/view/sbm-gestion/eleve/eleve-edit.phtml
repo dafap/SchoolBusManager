@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2019
+ * @date 30 jan. 2019
  * @version 2019-2.4.6
  */
 use SbmBase\Model\DateLib;
@@ -301,6 +301,8 @@ echo $this->formHidden($this->form->get('csrf'));
 								<div class="eleve-tabs-3-col-1-label">Date de création</div><?= formatDate($this->historique['eleve']['dateCreation']);?></div>
 							<div id="#eleve-dateModification">
 								<div class="eleve-tabs-3-col-1-label">Date de modification</div><?= formatDate($this->historique['eleve']['dateModification']);?></div>
+							<div id="#elevephoto-dateExtraction">
+								<div class="eleve-tabs-3-col-1-label">Date du lot de photos</div><?= formatDate($this->historique['photo']['dateExtraction']);?></div>
 						</div>
 						<div id="tabs-3-col2" class="float-left left-10px">
 							<h3>Responsable 1</h3>
@@ -332,6 +334,8 @@ echo $this->formHidden($this->form->get('csrf'));
 								<div class="eleve-tabs-3-col-1-label">Date d'inscription</div><?= formatDate($this->historique['scolarite']['dateInscription']);?></div>
 							<div id="#scolarite-dateModification">
 								<div class="eleve-tabs-3-col-1-label">Date de modification</div><?= formatDate($this->historique['scolarite']['dateModification']);?></div>
+							<div id="#scolarite-dateCarte">
+								<div class="eleve-tabs-3-col-1-label">Date du lot de carte</div><?= formatDate($this->historique['scolarite']['dateCarte']);?></div>
 						</div>
 						<div id="tabs-3-col2" class="float-left left-10px">
 							<h3>Duplicatas facturés</h3>
@@ -342,8 +346,14 @@ echo $this->formHidden($this->form->get('csrf'));
 							<div id="#scolarite-duplicata">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
 								<span id="nbduplicata" class="right-10px"><?= $this->historique['scolarite']['duplicata'];?></span>
-								<input name="duplicata-moins" type="button" value="-"
-									id="duplicatamoins">
+								<button name="duplicata-moins" type="button"
+									title="Supprimer un duplicata" id="duplicatamoins">
+									<i class="fam-delete"></i>
+								</button>
+								<button name="duplicata-plus" type="button"
+									title="Ajouter un duplicata" id="duplicataplus">
+									<i class="fam-add"></i>
+								</button>
 							</div>
 						</div>
 					</div>
@@ -414,7 +424,8 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
     </div>
 	<div class="photo-progress" style="display: none;">
 		<div class="photo-msg">Envoi en cours ...</div>
-		<div style="margin-left: 40px; margin-bottom: 10px; height:20px; width: 100px; border: 1px solid blue;">
+		<div
+			style="margin-left: 40px; margin-bottom: 10px; height: 20px; width: 100px; border: 1px solid blue;">
 			<div class="photo-progressbar" style="background-color: lightgrey;"></div>
 		</div>
 	</div>

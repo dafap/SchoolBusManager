@@ -7,14 +7,16 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 24 août 2018
- * @version 2018-2.4.3
+ * @date 28 janv. 2019
+ * @version 2019-2.4.6
  */
 use SbmGestion\Controller;
 use SbmGestion\Controller\Service;
 use SbmGestion\Model\View\Helper as ViewHelper;
 use SbmGestion\Form;
 use SbmGestion\Model\Db\Service as SbmGestionDbService;
+use SbmGestion\Model\Cartes;
+use SbmGestion\Model\Photos;
 
 return [
     'acl' => [
@@ -77,7 +79,9 @@ return [
             'Sbm\Db\Simulation\Prepare' => SbmGestionDbService\Simulation\Prepare::class,
             'Sbm\Db\Circuit\Liste' => SbmGestionDbService\Circuit\Liste::class,
             'Sbm\Db\Eleve\Liste' => SbmGestionDbService\Eleve\Liste::class,
-            'Sbm\Db\Eleve\Effectif' => SbmGestionDbService\Eleve\Effectif::class
+            'Sbm\Db\Eleve\Effectif' => SbmGestionDbService\Eleve\Effectif::class,
+            Cartes\Cartes::class => Cartes\CartesFactory::class,
+            Photos\Photos::class => Photos\PhotosFactory::class
         ]
     ],
     'form_manager' => [

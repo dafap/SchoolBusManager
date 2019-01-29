@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2018
- * @version 2018-2.4.1
+ * @date 6 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -164,7 +164,17 @@ class ElevesScolarites implements FactoryInterface
             ], 'eta.communeId = com.communeId', 
             [
                 'communeEtablissement' => 'nom'
-            ]);
+            ])
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ],
+                'photos.eleveId = ele.eleveId',
+                [
+                    'hasphoto' => new Expression('CASE WHEN isnull(photos.eleveId) THEN FALSE ELSE TRUE END')
+                ],
+                Select::JOIN_LEFT
+            );
         return $this;
     }
 
@@ -249,7 +259,7 @@ class ElevesScolarites implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
-
+    
     public function getMontantElevesInscrits($responsableId)
     {
         $select = $this->sql->select()

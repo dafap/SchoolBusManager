@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 26 janv. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmGestion\Controller;
 
@@ -589,6 +589,30 @@ class TransportController extends AbstractActionController
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
+    public function circuitGroupSelectionAction()
+    {
+        $query = 'query';
+        $filtre = 'byCircuit';
+        $idFields = [
+            'serviceId',
+            'stationId'
+        ];
+        $hiddens = [
+            'serviceId',
+            'stationId'
+        ];
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'circuit-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idFields, $retour, 
+            $hiddens);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
+    }
+
     /**
      * =============================================== CLASSES ==================================================
      */
@@ -608,7 +632,8 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Classes')->paginator(
-                    $args['where'], [
+                    $args['where'], 
+                    [
                         'niveau',
                         'rang'
                     ]),
@@ -630,7 +655,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
-            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')
+            'suivantId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout());
         $params = [
             'data' => [
@@ -754,7 +780,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = new FormClasse();
         $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
-            'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')
+            'suivantId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout());
         $params = [
             'data' => [
@@ -884,6 +911,22 @@ class TransportController extends AbstractActionController
             'action' => 'classe-group'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function classeGroupSelectionAction()
+    {
+        $query = 'query';
+        $filtre = 'byClasse';
+        $idField = 'classeId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'classe-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
     }
 
     /**
@@ -1175,6 +1218,22 @@ class TransportController extends AbstractActionController
             'action' => 'commune-group'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function communeGroupSelectionAction()
+    {
+        $query = 'query';
+        $filtre = 'byCommune';
+        $idField = 'communeId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'commune-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
     }
 
     /**
@@ -1525,56 +1584,6 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * lance la création d'une liste se services desservant l'établissementId reçu en post
-     */
-    public function etablissementServicePdfAction()
-    {
-        $criteresObject = [
-            'SbmCommun\Model\Db\ObjectData\Criteres',
-            null,
-            function ($where, $args) {
-                $where->equalTo('etablissementId', 
-                    StdLib::getParam('etablissementId', $args, - 1));
-                return $where;
-            }
-        ];
-        $criteresForm = 'SbmCommun\Form\CriteresForm';
-        $documentId = null;
-        $retour = [
-            'route' => 'sbmgestion/transport',
-            'action' => 'etablissement-service'
-        ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
-    }
-
-    /**
-     * lance la création d'une liste d'élève avec comme filtre le couple (etablissementId, serviceId) reçu en post
-     */
-    public function etablissementServiceGroupPdfAction()
-    {
-        $criteresObject = [
-            'SbmCommun\Model\Db\ObjectData\Criteres',
-            null,
-            function ($where, $args) {
-                $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
-                $serviceId = StdLib::getParam('serviceId', $args, - 1);
-                $where = new Where();
-                $where->equalTo('millesime', Session::get('millesime'))
-                    ->equalTo('etablissementId', $etablissementId)
-                    ->equalTo('serviceId', $serviceId);
-                return $where;
-            }
-        ];
-        $criteresForm = 'SbmCommun\Form\CriteresForm';
-        $documentId = null;
-        $retour = [
-            'route' => 'sbmgestion/transport',
-            'action' => 'etablissement-service-group'
-        ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
-    }
-
-    /**
      * Localisation d'un établissement sur la carte et enregistrement de ses coordonnées
      */
     public function etablissementLocalisationAction($etablissementId = null, $currentPage = 1)
@@ -1727,6 +1736,22 @@ class TransportController extends AbstractActionController
             ]);
     }
 
+    public function etablissementGroupSelectionAction()
+    {
+        $query = 'query';
+        $filtre = 'byEtablissement';
+        $idField = 'etablissementId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
+    }
+
     /**
      * ========================================== ETABLISSEMENTS-SERVICES ========================================
      */
@@ -1789,6 +1814,75 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'etablissementId' => $etablissementId
             ]);
+    }
+
+    /**
+     * lance la création d'une liste se services desservant l'établissementId reçu en post
+     */
+    public function etablissementServicePdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) {
+                $where->equalTo('etablissementId', 
+                    StdLib::getParam('etablissementId', $args, - 1));
+                return $where;
+            }
+        ];
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-service'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    /**
+     * lance la création d'une liste d'élève avec comme filtre le couple (etablissementId, serviceId) reçu en post
+     */
+    public function etablissementServiceGroupPdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) {
+                $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
+                $serviceId = StdLib::getParam('serviceId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('millesime', Session::get('millesime'))
+                    ->equalTo('etablissementId', $etablissementId)
+                    ->equalTo('serviceId', $serviceId);
+                return $where;
+            }
+        ];
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-service-group'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function etablissementServiceGroupSelectionAction()
+    {
+        $query = 'byEtablissementService';
+        $filtre = 'byEtablissementService';
+        $idFields = [
+            'etablissementId',
+            'serviceId'
+        ];
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'etablissement-service-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idFields, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
     }
 
     /**
@@ -2061,7 +2155,8 @@ class TransportController extends AbstractActionController
             [
                 'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByEtablissementService(
-                    Session::get('millesime'), $etablissementId, $serviceId, 
+                    Session::get('millesime'), 
+                    FiltreEleve::byEtablissementService($etablissementId, $serviceId), 
                     [
                         'nom',
                         'prenom'
@@ -2109,7 +2204,8 @@ class TransportController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
                 'criteres_form' => $args['form'],
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService()
+                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService(),
+                'natureCartes' => $this->db_manager->get('Sbm\Db\Vue\Services')->getNatureCartes()
             ]);
     }
 
@@ -2126,7 +2222,10 @@ class TransportController extends AbstractActionController
         $form->modifFormForEdit()
             ->setValueOptions('transporteurId', 
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
-            ->setValueOptions('operateur', $this->operateurs);
+            ->setValueOptions('operateur', $this->operateurs)
+            ->setValueOptions('natureCarte', 
+            $this->db_manager->get('Sbm\Db\Table\Services')
+                ->getNatureCartes());
         $params = [
             'data' => [
                 'table' => 'services',
@@ -2252,7 +2351,10 @@ class TransportController extends AbstractActionController
         $form = new FormService();
         $form->setValueOptions('transporteurId', 
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
-            ->setValueOptions('operateur', $this->operateurs);
+            ->setValueOptions('operateur', $this->operateurs)
+            ->setValueOptions('natureCarte', 
+            $this->db_manager->get('Sbm\Db\Table\Services')
+                ->getNatureCartes());
         $params = [
             'data' => [
                 'table' => 'services',
@@ -2409,6 +2511,22 @@ class TransportController extends AbstractActionController
             'action' => 'service-group'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function serviceGroupSelectionAction()
+    {
+        $query = 'query';
+        $filtre = 'byService';
+        $idField = 'serviceId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'service-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
     }
 
     /**
@@ -2939,6 +3057,25 @@ class TransportController extends AbstractActionController
         return $view;
     }
 
+    public function stationServiceGroupSelectionAction()
+    {
+        $query = 'query';
+        $filtre = 'byCircuit';
+        $idFields = [
+            'serviceId',
+            'stationId'
+        ];
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'station-service-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idFields, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
+    }
+
     /**
      * envoie un evenement contenant les paramètres de création d'un document pdf
      * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
@@ -3021,6 +3158,22 @@ class TransportController extends AbstractActionController
             'action' => 'station-group'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function stationGroupSelectionAction()
+    {
+        $query = 'query';
+        $filtre = 'byStation';
+        $idField = 'stationId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'station-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
     }
 
     /**
@@ -3576,5 +3729,21 @@ class TransportController extends AbstractActionController
             'action' => 'transporteur-service'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function transporteurGroupSelectionAction()
+    {
+        $query = 'byTransporteur';
+        $filtre = 'byTransporteur';
+        $idField = 'transporteurId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'transporteur-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
     }
 }

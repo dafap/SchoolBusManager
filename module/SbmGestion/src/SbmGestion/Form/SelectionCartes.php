@@ -7,8 +7,8 @@
  * @filesource SelectionCartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 27 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmGestion\Form;
 
@@ -106,32 +106,9 @@ class SelectionCartes extends Form implements InputFilterProviderInterface
                     'class' => 'sbm-radio'
                 ],
                 'options' => [
-                    'label' => 'Quels document voulez-vous créer ?',
+                    'label' => 'Que voulez-vous obtenir ?',
                     'label_attributes' => [
                         'class' => 'sbm-label-radio'
-                    ],
-                    'value_options' => [
-                        'carte' => [
-                            'value' => 'Cartes',
-                            'label' => 'Cartes',
-                            'attributes' => [
-                                'id' => 'documentradio0'
-                            ]
-                        ],
-                        'etiquette' => [
-                            'value' => 'Etiquettes pour les cartes',
-                            'label' => 'Etiquettes',
-                            'attributes' => [
-                                'id' => 'documentradio1'
-                            ]
-                        ],
-                        'liste' => [
-                            'value' => 'Liste de contrôle des cartes',
-                            'label' => 'Liste de contrôle',
-                            'attributes' => [
-                                'id' => 'documentradio2'
-                            ]
-                        ]
                     ]
                 ]
             ]);
@@ -211,5 +188,18 @@ class SelectionCartes extends Form implements InputFilterProviderInterface
             }
         }
         return $ok;
+    }
+
+    public function setDocumentValueOptions($aDocumentNames, $db_manager)
+    {
+        $document = $this->get('document');
+        $tDocument = $db_manager->get('Sbm\Db\System\Documents');
+        $value_options = [];
+        foreach ($aDocumentNames as $array) {
+            $name = $array['libelle'];
+            $id = $tDocument->getDocumentId($name);
+            $value_options[$name] = $tDocument->getRecord($id)->title;
+        }
+        $document->setValueOptions($value_options);
     }
 }

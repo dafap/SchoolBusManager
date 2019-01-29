@@ -9,8 +9,8 @@
  * @filesource DocField.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 26 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmPdf\Form;
 
@@ -193,15 +193,29 @@ class DocField extends Form implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'is_date',
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'nature',
                 'attributes' => [
-                    'id' => 'field-is_date'
+                    'id' => 'field-nature'
                 ],
                 'options' => [
-                    'label' => 'Est-ce une date ?',
+                    'label' => 'Nature du champ',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'value_options' => [
+                        '2' => [
+                            'label' => 'Photo',
+                            'value' => 2
+                        ],
+                        '1' => [
+                            'label' => 'Date',
+                            'value' => 1
+                        ],
+                        '0' => [
+                            'label' => 'Autre texte',
+                            'value' => 0
+                        ]
                     ],
                     'error_options' => [
                         'class' => 'sbm-error'
@@ -349,6 +363,155 @@ class DocField extends Form implements InputFilterProviderInterface
                 'options' => [
                     'label' => 'Hauteur des cellules (label et donnée)',
                     'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'photo_x',
+                'attributes' => [
+                    'id' => 'field-x'
+                ],
+                'options' => [
+                    'label' => 'Abscisse du coin supérieur gauche de la photo par rapport à zone d\'écriture',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'photo_y',
+                'attributes' => [
+                    'id' => 'field-y'
+                ],
+                'options' => [
+                    'label' => 'Ordonnée du coin supérieur gauche de la photo par rapport à la zone d\'écriture',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'photo_w',
+                'attributes' => [
+                    'id' => 'field-w'
+                ],
+                'options' => [
+                    'label' => 'Largeur de la photo',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'photo_h',
+                'attributes' => [
+                    'id' => 'field-h'
+                ],
+                'options' => [
+                    'label' => 'Hauteur de la photo',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'photo_type',
+                'attributes' => [
+                    'id' => 'field-type'
+                ],
+                'options' => [
+                    'label' => 'Format numérique',
+                    'label_attributes' => [],
+                    'empty_option' => 'Choisissez dans la liste',
+                    'value_options' => [
+                        'jpg' => [
+                            'label' => 'JPEG',
+                            'value' => 'JPEG'
+                        ],
+                        'png' => [
+                            'label' => 'PNG',
+                            'value' => 'PNG'
+                        ],
+                        'gif' => [
+                            'label' => 'GIF',
+                            'value' => 'GIF'
+                        ]
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'photo_align',
+                'attributes' => [
+                    'id' => 'field-align'
+                ],
+                'options' => [
+                    'label' => 'Alignement vertical',
+                    'label_attributes' => [],
+                    'empty_option' => 'Choisissez dans la liste',
+                    'value_options' => [
+                        'top' => [
+                            'label' => 'Aligné en haut',
+                            'value' => 'T'
+                        ],
+                        'middle' => [
+                            'label' => 'Aligné au milieu',
+                            'value' => 'M'
+                        ],
+                        'bottom' => [
+                            'label' => 'Aligné en bas',
+                            'value' => 'B'
+                        ]
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'photo_resize',
+                'attributes' => [
+                    'id' => 'field-resize'
+                ],
+                'options' => [
+                    'label' => 'Redimentionnement',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'value_options' => [
+                        '1' => [
+                            'label' => 'Proportionnel',
+                            'value' => 1
+                        ],
+                        '0' => [
+                            'label' => 'Découpage',
+                            'value' => 0
+                        ]
+                    ],
                     'error_options' => [
                         'class' => 'sbm-error'
                     ]
@@ -511,9 +674,56 @@ class DocField extends Form implements InputFilterProviderInterface
                         'name' => 'SbmCommun\Model\Validator\Decimal'
                     ]
                 ]
+            ],
+            'photo_x' => [
+                'name' => 'photo_x',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'Zend\Filter\ToInt'
+                    ]
+                ]
+            ],
+            'photo_y' => [
+                'name' => 'photo_y',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'Zend\Filter\ToInt'
+                    ]
+                ]
+            ],
+            'photo_w' => [
+                'name' => 'photo_w',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'Zend\Filter\Digits'
+                    ]
+                ]
+            ],
+            'photo_h' => [
+                'name' => 'photo_h',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'Zend\Filter\Digits'
+                    ]
+                ]
+            ],
+            'photo_type' => [
+                'name' => 'photo_type',
+                'required' => false
+            ],
+            'photo_align' => [
+                'name' => 'photo_align',
+                'required' => false
+            ],
+            'photo_resize' => [
+                'name' => 'photo_resize',
+                'required' => false
             ]
-        ]
-        ;
+        ];
     }
 
     public function setMaxLength(array $array)

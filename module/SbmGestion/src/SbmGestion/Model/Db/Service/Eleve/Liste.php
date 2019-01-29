@@ -9,8 +9,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 11 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -20,6 +20,7 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use SbmCommun\Model\Db\Service\DbManager;
@@ -152,7 +153,15 @@ class Liste extends AbstractQuery implements FactoryInterface
             [
                 'sta2' => $this->db_manager->getCanonicName('stations', 'table')
             ], 'sta2.stationId=aff.station2Id', 
-            empty($columns['sta2']) ? [] : $columns['sta2'], Select::JOIN_LEFT);
+            empty($columns['sta2']) ? [] : $columns['sta2'], Select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId', 
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], $select::JOIN_LEFT);
         if (! empty($columns['ele'])) {
             $select->columns($columns['ele']);
         }
@@ -234,8 +243,7 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function paginator($millesime, $filtre, 
-        $order = ['commune', 'nom', 'prenom'])
+    public function paginator($millesime, $filtre, $order = ['commune', 'nom', 'prenom'])
     {
         $select = $this->selectForGroup($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
@@ -251,25 +259,21 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function byEtablissementService($millesime, $etablissementId, $serviceId, 
-        $order = ['nom', 'prenom'])
+    public function byEtablissementService($millesime, $filtre, $order = ['nom', 'prenom'])
     {
-        $select = $this->selectByEtablissementService($millesime, $etablissementId, 
-            $serviceId, $order);
+        $select = $this->selectByEtablissementService($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
-    public function paginatorByEtablissementService($millesime, $etablissementId, 
-        $serviceId, $order = ['nom', 'prenom'])
+    public function paginatorByEtablissementService($millesime, $filtre, 
+        $order = ['nom', 'prenom'])
     {
-        $select = $this->selectByEtablissementService($millesime, $etablissementId, 
-            $serviceId, $order);
+        $select = $this->selectByEtablissementService($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
-    private function selectByEtablissementService($millesime, $etablissementId, $serviceId, 
-        $order)
+    private function selectByEtablissementService($millesime, $filtre, $order)
     {
         $tableAffectations = $this->db_manager->getCanonicName('affectations', 'table');
         $select1 = new Select();
@@ -338,10 +342,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->where($where2);
         
         $where = new Where();
-        $where->equalTo('s.millesime', $millesime)
-            ->literal('inscrit = 1')
-            ->equalTo('s.etablissementId', $etablissementId)
-            ->equalTo('a.serviceId', $serviceId);
+        $where->equalTo('s.millesime', $millesime);
         $select = $this->sql->select();
         $select->from(
             [
@@ -373,9 +374,10 @@ class Liste extends AbstractQuery implements FactoryInterface
             ])
             ->join([
             'a' => $select1->combine($select2)
-        ], 'a.millesime=s.millesime And e.eleveId=a.eleveId', [
-            'serviceId'
-        ])
+        ], 'a.millesime=s.millesime And e.eleveId=a.eleveId', 
+            [
+                'serviceId'
+            ])
             ->join(
             [
                 'r' => $this->db_manager->getCanonicName('responsables', 'table')
@@ -410,7 +412,15 @@ class Liste extends AbstractQuery implements FactoryInterface
             [
                 'station' => 'nom'
             ])
-            ->where($where)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = e.eleveId', 
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], $select::JOIN_LEFT)
+            ->where($this->arrayToWhere($where, $filtre))
             ->order($order)
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(
@@ -572,9 +582,18 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'ser' => $this->db_manager->getCanonicName('services', 'table')
-            ], 'ser.serviceId = a.serviceId', [
+            ], 'ser.serviceId = a.serviceId', 
+            [
                 'serviceId'
             ])
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = e.eleveId', 
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], $select::JOIN_LEFT)
             ->where($this->arrayToWhere($where, $filtre))
             ->order($order)
             ->quantifier(Select::QUANTIFIER_DISTINCT)
@@ -597,7 +616,7 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @param \Zend\Db\Sql\Select $select            
      *
-     * @return \Zend\Db\Adapter\mixed
+     * @return string
      */
     public function getSqlString($select)
     {

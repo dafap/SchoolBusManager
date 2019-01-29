@@ -8,13 +8,13 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 11 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use Zend\Db\Sql\Where;
-use Zend\Db\Sql\Predicate\PredicateSet;
+use Zend\Db\Sql\Predicate\In;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\ObjectData\Exception as ExceptionObjectData;
 
@@ -148,6 +148,25 @@ class Eleves extends AbstractSbmTable
                 'selection' => $selection
             ]);
         parent::saveRecord($oData);
+    }
+
+    /**
+     * Marque les fiches dont les eleveId sont dans le tableau $arrayId
+     * selection = 1
+     *
+     * @param array $arrayId
+     *            tableau des valeurs de eleveId à traiter
+     */
+    public function markSelection($arrayId)
+    {
+        try {
+            return $this->table_gateway->update(
+                [
+                    'selection' => 1
+                ], new In('eleveId', $arrayId));
+        } catch (\Exception $e) {
+            throw new Exception(print_r($arrayId, true), 0, $e);
+        }
     }
 
     /**

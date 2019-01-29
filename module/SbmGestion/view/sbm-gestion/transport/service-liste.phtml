@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 26 janv. 2019
+ * @version 2019-2.4.6
  */
 use SbmBase\Model\StdLib;
 
@@ -21,6 +21,7 @@ function renderCheckbox($view, $name, $id, $value)
         ->setValue($value);
     return $view->formCheckbox($element);
 }
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
@@ -115,6 +116,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Alias</th>
 					<th>Transporteur</th>
 					<th>Opérateur</th>
+					<th>Cartes</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
 					<th>Sélect.</th>
@@ -122,6 +124,10 @@ echo $this->flashMessenger()->render('default');
 				</tr>
             <?php foreach($services as $test => $service): ?>
             <?php
+                $nomCartes = [];
+                foreach ($service->natureCarte as $nature) {
+                    $nomCartes[] = $this->natureCartes[$nature];
+                }
                 $nbInscrits = StdLib::getParamR(
                     [
                         $service->serviceId,
@@ -135,7 +141,7 @@ echo $this->flashMessenger()->render('default');
                     $service->serviceId);
                 ?>
                 <tr
-					class="<?php
+					class="petit <?php
                 
                 echo $this->cycle(
                     [
@@ -150,6 +156,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="aliascg"><?php echo $this->escapeHtml($service->aliasCG); ?></td>
 					<td class="transporteur"><?php echo $this->escapeHtml($service->transporteur); ?></td>
 					<td class="operateur"><?php echo $this->escapeHtml($service->operateur); ?></td>
+					<td class="natureCarte"><?= implode(' et ', $nomCartes);?></td>
 					<td class="nbplaces"><?php echo $this->escapeHtml($service->nbPlaces); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $service->serviceId, $service->selection)?></td>

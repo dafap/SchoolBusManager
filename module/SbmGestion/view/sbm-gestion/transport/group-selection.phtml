@@ -1,0 +1,25 @@
+<?php
+/**
+ * Page de confirmation de remise à zéro des sélections
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource group-selection.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 10 jan. 2019
+ * @version 2019-2.4.6
+ */
+?>
+<h1>Marquer les fiches sélectionnées</h1>
+<div id="suppr-wrapper">
+<p>Vous souhaitez sélectionner toutes les fiches élèves que vous venez d'afficher à l'écran.</p>
+<p>La sélection précédente sera effacée et remplacée par cette sélection.</p>
+<p>Confirmez-vous ?</p>
+<?php
+
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+</div>

@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
- * @version 2018-2.4.5
+ * @date 9 jan. 2019
+ * @version 2019-2.4.6
  */
 use SbmBase\Model\Session;
 
@@ -53,6 +53,11 @@ $url_raye = $this->url('sbmgestion/eleve',
 $url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
 ]);
+$url_add_photo = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page
+    ]);
 $hiddens = [
     'origine' => $url_origine,
     'responsableId' => $this->responsableId
@@ -160,7 +165,6 @@ echo $this->flashMessenger()->render('default');
 				</tr>
 			    <?php foreach ($liste as $row) : ?>
 			    <?php
-            $pictogrammes = [];
             $ga = is_null($row['responsable2Id']);
             if (array_key_exists('mailchimp', $row)) {
                 $nePasRelancer = $row['mailchimp'] == 0;
@@ -179,12 +183,20 @@ echo $this->flashMessenger()->render('default');
                         'formaction' => $url_raye,
                         'title' => $row['inscrit'] ? 'Rayer' : 'Activer'
                     ],
+                    'addphoto' => [
+                        'class' => 'fam-camera-add',
+                        'formaction' => $url_add_photo,
+                        'title' => 'Envoyer une photo'
+                    ],
                     'duplicata' => [
                         'class' => 'fam-vcard-add',
                         'formaction' => $url_duplicata,
                         'title' => 'duplicata de la carte de transport'
                     ]
                 ];
+                if (!$row['sansphoto']) {
+                    unset($buttons['addphoto']);
+                }
                 $inscrit = $row['paiement'] == 1;
                 $inscrit |= $row['fa'] == 1;
                 $inscrit |= $row['gratuit'] > 0;
@@ -192,8 +204,9 @@ echo $this->flashMessenger()->render('default');
                      $row['subventionR1'] == 1);
                 $inscrit |= ($row['demandeR2'] == 2 && $row['accordR2'] == 0 &&
                      $row['subventionR2'] == 1);
-                $this->pictogrammes('init')->addPreinscrit(
-                    $row['inscrit'] == 1 && ! $inscrit);
+                $this->pictogrammes('init')
+                    ->addPreinscrit($row['inscrit'] == 1 && ! $inscrit)
+                    ->addSansPhoto($row['sansphoto']);
                 $tr_css = 'noir';
             } else {
                 $url_edit = $this->url('sbmgestion/eleve', 

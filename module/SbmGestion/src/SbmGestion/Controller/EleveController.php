@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 déc. 2018
- * @version 2018-2.4.6
+ * @date 29 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmGestion\Controller;
 
@@ -527,9 +527,10 @@ class EleveController extends AbstractActionController
             ]);
         $ophoto = new \SbmCommun\Model\Photo\Photo();
         try {
-            $ophoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord($eleveId);
+            $ophoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
+                $eleveId);
             $dataphoto = $ophoto->image_src($ophoto->photo, 'jpeg');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
         }
         return new ViewModel(
@@ -541,7 +542,6 @@ class EleveController extends AbstractActionController
                 'scolarite_precedente' => $this->db_manager->get(
                     'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId),
                 'dataphoto' => $dataphoto
-                
             ]);
     }
 
@@ -693,6 +693,7 @@ class EleveController extends AbstractActionController
         }
         $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
+        $historique['scolarite']['dateCarte'] = $odata1->dateCarte;
         $historique['scolarite']['tarifs'] = json_encode($aTarifs); // pour le js
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
         $historique['scolarite']['internet'] = $odata1->internet;
@@ -837,11 +838,14 @@ class EleveController extends AbstractActionController
         }
         $ophoto = new \SbmCommun\Model\Photo\Photo();
         try {
-            $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord($eleveId);
+            $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
+                $eleveId);
+            $historique['photo']['dateExtraction'] = $elevephoto->dateExtraction;
             $dataphoto = $ophoto->img_src(stripslashes($elevephoto->photo), 'jpeg');
             $flashMessage = '';
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $flashMessage = 'Pas de photo pour cet élève.';
+            $historique['photo']['dateExtraction'] = '';
             $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
         }
         return new ViewModel(
@@ -858,8 +862,8 @@ class EleveController extends AbstractActionController
                 'scolarite_precedente' => $this->db_manager->get(
                     'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId),
                 'dataphoto' => $dataphoto,
-                'formphoto' => (new \SbmCommun\Model\Photo\Photo())->getForm(),
-                'flashMessage' => $flashMessage,
+                'formphoto' => $ophoto->getForm(),
+                'flashMessage' => $flashMessage
             ]);
     }
 
@@ -2261,6 +2265,50 @@ class EleveController extends AbstractActionController
                 'info' => $args['info'],
                 'msg' => $msg,
                 'page' => $this->params('page', 1)
+            ]);
+    }
+
+    /**
+     * GESTION DES PHOTOS
+     * Cette méthode affiche le formulaire.
+     * Le traitement se fait en AJAX pour
+     * - afficher un progressbar
+     * - afficher la photo après succès pendant 3 secondes
+     * - afficher un message pendant 3 secondes si il y a une erreur
+     * - quitter si on clique sur le bouton Abandonner
+     *
+     * La méthode envoiphotoAction() doit récupérer les paramètres POST suivants :
+     * - eleveId
+     * - info : nom prénom de l'élève (optionnel)
+     * - origine ou group : au choix, adresse de retour après envoi (succès ou échec)
+     * Les autres paramètres POST ne servent pas :
+     * - op : optionnel, vide, ne sert pas
+     * - email : optionnel, ne sert pas
+     * - responsable : optionnel, ne sert pas
+     *
+     * Elle dispose en GET de :
+     * - page : pas utile puisque c'est déjà dans origine ou dans group
+     * - id : optionnel, pas utile non plus
+     */
+    public function envoiphotoAction()
+    {
+        $request = $this->getRequest();
+        $eleveId = $request->getPost('eleveId');
+        if (! $eleveId) {
+            $this->flashMessenger()->addErrorMessage('Pas d\'identifiant pour l\'élève.');
+            $this->redirect()->toRoute('sbmparent');
+        }
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        $form = $ophoto->getForm()->setData(
+            [
+                'eleveId' => $eleveId
+            ]);
+        return new ViewModel(
+            [
+                'formphoto' => $form->prepare(),
+                'info' => $request->getPost('info', ''),
+                'url_retour' => $request->getPost('group') ?  : $request->getPost(
+                    'origine')
             ]);
     }
 }

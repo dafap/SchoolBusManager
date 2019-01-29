@@ -9,7 +9,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2019
+ * @date 30 jan. 2019
  * @version 2019-2.4.6
  */
 namespace SbmAjax\Controller;
@@ -704,6 +704,34 @@ class EleveController extends AbstractActionController
             if ($odata->duplicata > 0) {
                 $odata->duplicata --;
             }
+            $tScolarites->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'duplicata' => $odata->duplicata,
+                        'success' => 1
+                    ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => $e->getMessage(),
+                        'success' => 0
+                    ]));
+        }
+    }
+    
+    public function incrementeduplicataAction()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+            $odata = $tScolarites->getRecord(
+                [
+                    'millesime' => Session::get('millesime'),
+                    'eleveId' => $eleveId
+                ]);
+            $odata->duplicata ++;
             $tScolarites->saveRecord($odata);
             return $this->getResponse()->setContent(
                 Json::encode(
