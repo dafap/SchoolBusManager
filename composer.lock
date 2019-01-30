@@ -1696,16 +1696,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.2.1",
+            "version": "v4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "c41175c801e3edfda90f32e292619d10c27103d7"
+                "reference": "d0aa6c0ea484087927b49fd513383a7d36190ca6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/c41175c801e3edfda90f32e292619d10c27103d7",
-                "reference": "c41175c801e3edfda90f32e292619d10c27103d7",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/d0aa6c0ea484087927b49fd513383a7d36190ca6",
+                "reference": "d0aa6c0ea484087927b49fd513383a7d36190ca6",
                 "shasum": ""
             },
             "require": {
@@ -1751,7 +1751,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2018-11-11T19:52:12+00:00"
+            "time": "2019-01-03T09:07:35+00:00"
         },
         {
             "name": "tecnickcom/tcpdf",
@@ -3464,17 +3464,17 @@
         },
         {
             "name": "zendframework/zend-http",
-            "version": "2.8.2",
+            "version": "2.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-http.git",
-                "reference": "436eea2f4636fc77145d2677d6003519d453f8bf"
+                "reference": "0157773f2701008bc1962e28b99a867e8866bec2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-http-2.8.2-1b5c3c.zip",
-                "reference": "436eea2f4636fc77145d2677d6003519d453f8bf",
-                "shasum": "44a86b791007f5580b07a0493230cdaeb87a79b9"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-http-2.8.3-a1eb51.zip",
+                "reference": "0157773f2701008bc1962e28b99a867e8866bec2",
+                "shasum": "c915a8988e74b74236d208073d3b4c83aa82bf4f"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -3545,7 +3545,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2018-08-13T18:47:03+00:00"
+            "time": "2019-01-08T15:55:38+00:00"
         },
         {
             "name": "zendframework/zend-hydrator",
@@ -3781,17 +3781,17 @@
         },
         {
             "name": "zendframework/zend-inputfilter",
-            "version": "2.9.0",
+            "version": "2.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-inputfilter.git",
-                "reference": "dc9c9c2608680ba92f0977e96cfde7531e9850d0"
+                "reference": "673a3d492ec479a679728ca94e91dc2eb9d645c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-inputfilter-2.9.0-06a470.zip",
-                "reference": "dc9c9c2608680ba92f0977e96cfde7531e9850d0",
-                "shasum": "34060485937e628a42697a3a521d6763d8f48b1f"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-inputfilter-2.9.1-436bb9.zip",
+                "reference": "673a3d492ec479a679728ca94e91dc2eb9d645c7",
+                "shasum": "d80758077e93604c35d480d1cbb840006805bb21"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -3864,7 +3864,7 @@
                 "slack": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/expressive"
             },
-            "time": "2018-12-17T21:30:06+00:00"
+            "time": "2019-01-07T17:52:18+00:00"
         },
         {
             "name": "zendframework/zend-json",
@@ -6218,17 +6218,17 @@
         },
         {
             "name": "zendframework/zenddiagnostics",
-            "version": "v1.3.1",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDiagnostics.git",
-                "reference": "9f52c6bef941212aac6086dcce56ebe0cf2b2931"
+                "reference": "af2d5c018914799751c8c580699ba99b2e0860fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zenddiagnostics-v1.3.1-b3a4d9.zip",
-                "reference": "9f52c6bef941212aac6086dcce56ebe0cf2b2931",
-                "shasum": "d28f617cab0646391e514d239a3b7ca5829cfc67"
+                "url": "https://packages.zendframework.com/composer/zendframework-zenddiagnostics-v1.4.0-ec41aa.zip",
+                "reference": "af2d5c018914799751c8c580699ba99b2e0860fa",
+                "shasum": "42af6a700e39e4f2d3da3f5e1923d323d126cc49"
             },
             "require": {
                 "php": "^5.6 || ^7.0"
@@ -6240,7 +6240,7 @@
                 "php-amqplib/php-amqplib": "^2.0",
                 "phpunit/phpunit": "^5.7.27 || 6.5.8 || ^7.1.2",
                 "predis/predis": "^1.0",
-                "sensiolabs/security-checker": "^1.3",
+                "sensiolabs/security-checker": "^5.0",
                 "symfony/yaml": "^2.7 || ^3.0 || ^4.0",
                 "zendframework/zend-coding-standard": "~1.0.0",
                 "zendframework/zend-loader": "^2.0"
@@ -6257,8 +6257,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3.x-dev",
-                    "dev-develop": "1.4.x-dev"
+                    "dev-master": "1.4.x-dev",
+                    "dev-develop": "1.5.x-dev"
                 }
             },
             "autoload": {
@@ -6308,7 +6308,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2018-09-17T16:14:52+00:00"
+            "time": "2019-01-09T18:24:40+00:00"
         },
         {
             "name": "zendframework/zendframework",
@@ -6406,17 +6406,17 @@
         },
         {
             "name": "zendframework/zendxml",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendXml.git",
-                "reference": "a392f11d486646d7205e8e41f8e62e94a775c1b2"
+                "reference": "13afa8d45f2a74104ae94a6333d1b15b678e8bb2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendxml-1.1.0-c178fe.zip",
-                "reference": "a392f11d486646d7205e8e41f8e62e94a775c1b2",
-                "shasum": "1836a02fef439546bda3b7be812f41a23b440a01"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendxml-1.2.0-3a3fc9.zip",
+                "reference": "13afa8d45f2a74104ae94a6333d1b15b678e8bb2",
+                "shasum": "888074c3ed59b6aaf0bd37d1323d6d4e111f0b2d"
             },
             "require": {
                 "php": "^5.6 || ^7.0"
@@ -6428,8 +6428,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev",
-                    "dev-develop": "1.2.x-dev"
+                    "dev-master": "1.2.x-dev",
+                    "dev-develop": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -6477,7 +6477,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2018-04-30T15:11:04+00:00"
+            "time": "2019-01-22T19:42:14+00:00"
         },
         {
             "name": "zendframework/zftool",
