@@ -8,21 +8,23 @@
  * @filesource AbstractModule.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 15 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmBase;
 
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
+use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
+use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use SbmBase\Model\StdLib;
 
 class Module implements AutoloaderProviderInterface, BootstrapListenerInterface, 
-    ServiceProviderInterface
+    ConfigProviderInterface, ServiceProviderInterface
 {
 
     public function getAutoloaderConfig()
@@ -34,6 +36,11 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                 ]
             ]
         ];
+    }
+
+    public function getConfig()
+    {
+        return include __DIR__ . '/config/module.config.php';
     }
 
     public function getServiceConfig()

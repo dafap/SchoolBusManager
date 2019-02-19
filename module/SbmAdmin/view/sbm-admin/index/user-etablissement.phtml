@@ -9,10 +9,11 @@
  * @filesource user-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
- * @version 2018-2.4.5
+ * @date 18 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page
@@ -22,7 +23,8 @@ $actions = [
     'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
-        'title' => 'Retour'
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
     ]
 ];
 ?>
@@ -73,10 +75,10 @@ $actions = [
 				<?= $this->etablissement->commune; ?></div>
 			<div>
 				<div class="label">Téléphone</div>
-				<?= $this->etablissement->telephone; ?></div>
+				<?= $this->telephone($this->etablissement->telephone); ?></div>
 			<div>
 				<div class="label">Fax</div>
-				<?= $this->etablissement->fax; ?></div>
+				<?= $this->telephone($this->etablissement->fax); ?></div>
 			<div>
 				<div class="label">Email</div>
 				<?= $this->etablissement->email; ?></div>

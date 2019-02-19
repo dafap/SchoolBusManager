@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 jan. 2019
- * @version 2019-2.4.6
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmAjax\Controller;
 
@@ -249,8 +249,8 @@ class EleveController extends AbstractActionController
                             'success' => 1
                         ]));
             } else {
-                $form = $this->getFormAffectationDecision($request->getPost('trajet'));
-                $form->setData($request->getPost());
+                $form = $this->getFormAffectationDecision($request->getPost('trajet'))
+                    ->setData($request->getPost());
                 if (! $form->isValid()) {
                     $errors = $form->getMessages();
                     $messages = '';
@@ -720,7 +720,7 @@ class EleveController extends AbstractActionController
                     ]));
         }
     }
-    
+
     public function incrementeduplicataAction()
     {
         try {
@@ -773,13 +773,13 @@ class EleveController extends AbstractActionController
                     ]));
         }
         $post = array_merge_recursive($request->getPost()->toArray(), 
-            $request->getFiles()->toArray());        
+            $request->getFiles()->toArray());
         $ophoto = new \SbmCommun\Model\Photo\Photo();
-        $form = $ophoto->getFormWithInputFilter($this->img['path']['tmpuploads'])->prepare();        
+        $form = $ophoto->getFormWithInputFilter($this->img['path']['tmpuploads'])->prepare();
         $form->setData($post);
         if ($form->isValid()) {
             $data = $form->getData();
-            $source = $data['filephoto']['tmp_name'];           
+            $source = $data['filephoto']['tmp_name'];
             try {
                 $blob = $ophoto->getImageJpegAsString($source);
                 unlink($source);
@@ -799,7 +799,7 @@ class EleveController extends AbstractActionController
                         'cr' => implode(', ', $ophoto->getMessagesFilePhotoElement()),
                         'success' => 100
                     ]));
-        }        
+        }
         // base de données
         $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
         $odata = $tPhotos->getObjData();
@@ -822,6 +822,7 @@ class EleveController extends AbstractActionController
      * Renvoie un compte rendu : <ul>
      * <li>success = 1 et src = sans photo gif</li>
      * <li>success = 20x et cr = message d'erreur à afficher en cas d'erreur</li></ul>
+     * 
      * @return \Zend\Stdlib\mixed
      */
     public function supprphotoAction()
@@ -840,17 +841,20 @@ class EleveController extends AbstractActionController
             $success = $tPhotos->deleteRecord($eleveId);
             if ($success) {
                 $ophoto = new \SbmCommun\Model\Photo\Photo();
-                return $this->getResponse()->setContent(Json::encode(
-                    [
-                        'src' => $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif'),
-                        'success' => 1
-                    ]));
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'src' => $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 
+                                'gif'),
+                            'success' => 1
+                        ]));
             } else {
-                return $this->getResponse()->setContent(Json::encode(
-                    [
-                        'cr' => 'Impossible de supprimer cette photo',
-                        'success' => 201
-                    ]));
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'cr' => 'Impossible de supprimer cette photo',
+                            'success' => 201
+                        ]));
             }
             ;
         }

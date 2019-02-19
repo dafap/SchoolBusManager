@@ -9,8 +9,8 @@
  * @filesource RpiEtablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 13 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmAjax\Form;
 
@@ -21,7 +21,7 @@ class RpiEtablissement extends Form
 
     public function __construct($op = 'add')
     {
-        parent::__construct('rpi-etablissement');
+        parent::__construct('rpietablissement-form');
         $this->setAttribute('method', 'post');
         $this->add(
             [
@@ -39,7 +39,7 @@ class RpiEtablissement extends Form
                     'name' => 'etablissementId',
                     'type' => 'Zend\Form\Element\Select',
                     'attributes' => [
-                        'id' => 'rpi-etablissement-etablissementId',
+                        'id' => 'rpietablissement-etablissementId',
                         'class' => 'sbm-width-45c'
                     ],
                     'options' => [
@@ -66,7 +66,7 @@ class RpiEtablissement extends Form
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Abandonner',
-                    'id' => 'decision-cancel',
+                    'id' => 'rpietablissement-cancel',
                     'autofocus' => 'autofocus',
                     'class' => 'button default cancel'
                 ]
@@ -77,7 +77,7 @@ class RpiEtablissement extends Form
                 'attributes' => [
                     'type' => 'submit',
                     'value' => $op == 'add' ? 'Ajouter' : 'Supprimer',
-                    'id' => 'decision-submit',
+                    'id' => 'rpietablissement-submit',
                     'class' => 'button default submit'
                 ]
             ]);

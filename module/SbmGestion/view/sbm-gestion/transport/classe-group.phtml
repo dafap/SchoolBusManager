@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/classe-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 jan. 2019
- * @version 2019-2.4.6
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', 
@@ -20,17 +20,20 @@ $url_retour = $this->url('sbmgestion/transport',
 $url_rapports = $this->url('sbmgestion/transport', 
     [
         'action' => 'classe-group-pdf',
-        'page' => $this->page
+        'page' => $this->page,
+        'pr' => $this->pageRetour
     ]);
 $url_group = $this->url('sbmgestion/transport', 
     [
         'action' => 'classe-group',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_edit = $this->url('sbmgestion/eleve', 
     [
         'action' => 'eleve-edit',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
@@ -39,7 +42,7 @@ $url_mark_selection = $this->url('sbmgestion/transport',
     [
         'action' => 'classe-group-selection',
         'page' => $this->page,
-        'id' => $this->pageRetour
+        'pr' => $this->pageRetour
     ]);
 $url_add_photo = $this->url('sbmgestion/eleve', 
     [

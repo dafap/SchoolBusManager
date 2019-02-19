@@ -9,8 +9,8 @@
  * @filesource localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2018
- * @version 2018-2.4.1
+ * @date 4 fév. 2019
+ * @version 2019-2.4.7
  */
 // calcul du contenu de l'infobulle et du libellé du domicile
 $description = [];
@@ -34,22 +34,14 @@ $cp_commune = implode(' ',
     ]);
 $description[] = $cp_commune;
 $domicile .= ' ' . $cp_commune;
-$telephone = [];
-$tmp = $this->responsable->telephoneF;
-if (! empty($tmp)) {
-    $telephone[] = $this->telephone($this->responsable->telephoneF);
-}
-$tmp = $this->responsable->telephoneP;
-if (! empty($tmp)) {
-    $telephone[] = $this->telephone($this->responsable->telephoneP);
-}
-$tmp = $this->responsable->telephoneT;
-if (! empty($tmp)) {
-    $telephone[] = $this->telephone($this->responsable->telephoneT);
-}
-$tel = implode(' ', $telephone);
-if (! empty($tel)) {
-    $description[] = 'Tél. ' . $tel;
+$telephones = array_filter(
+    [
+        $this->telephone($this->responsable->telephoneF),
+        $this->telephone($this->responsable->telephoneP),
+        $this->telephone($this->responsable->telephoneT)
+    ]);
+if (! empty($telephones)) {
+    $description[] = 'Tél.' . implode(' - ', $telephones);
 }
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps

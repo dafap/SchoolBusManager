@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\StdLib;
 
@@ -22,8 +22,8 @@ function renderCheckbox($view, $name, $id, $value)
     return $view->formCheckbox($element);
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
-$this->headScript()->appendFile($this->basePath() . '/js/gestion-circuit/liste.js');
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath() . '/js/gestion-transport/circuit-liste.js');
 $jsCallback = '';
 $jsTrigger = '';
 // modèle de jsCallback pour selection
@@ -218,6 +218,8 @@ $actions_selection = [
 ?>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
+			<div class="sbm-description float-left">Pour décaler des horaires, sélectionner
+				les arrêts concernés.</div>
 			<div class="selection">
 				Pour les fiches sélectionnées :
 				<div class="menu float-right">

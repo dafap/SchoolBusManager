@@ -7,38 +7,13 @@
  * @filesource view/sbm-front/index/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2018
- * @version 2018-2.4.1
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
- 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
-$this->headScript()->captureStart();
-?>
-$(document).ready(function($){
-$("#help-delai").on("click", function(){
-	$("#help-delai").hide();
-    $("#help-delai-content").show();
-});
-$("#help-delai-content").on("click", function(){
-	$("#help-delai-content").hide();
-	$("#help-delai").show();
-});
-$("#help-autre").on("click", function(){
-	$("#inscription").hide();
-    $("#help-autre-content").show();
-});
-$("#help-retour").on("click", function(){
-	$("#help-autre-content").hide();
-	$("#inscription").show();
-});
-});
-<?php 
-$this->headScript()->captureEnd();
+$this->jQuery();
+$this->headScript()->appendFile($this->basepath('/js/front/index.js'));
 
-$url_gestion = $this->url('sbmgestion');
-$url_install = $this->url('sbminstall');
-$url_admin = $this->url('sbmadmin');
 $url_carte = $this->url('sbmcarte', [
     'action' => 'etablissements'
 ]);
@@ -95,39 +70,23 @@ Mail : %s</br>
 </div>
 EOT;
 
-$msg = sprintf($format, 
-    $this->as, 
-    $this->etat['dateDebut']->format('d/m/Y'), 
-    $this->etat['dateFin']->format('d/m/Y'), 
-    $this->etat['echeance']->format('d/m/Y'),
-    count($this->communes_membres),
-    $this->client['name'],
-    $communes_membres,
-    $this->permanences[0], 
-    $this->permanences[1], 
-    $this->permanences[2], 
-    $this->permanences[3], 
-    $this->permanences[4],
-    count($this->communes_membres),
-    $this->telephone($this->client['telephone']),
-    $this->client['email'],
-    $this->client['name'],
-    $this->client['adresse'][0],
-    $this->client['adresse'][1],
-    $this->client['code_postal'],
-    $this->client['commune'],
-    count($this->communes_membres),
-    $this->url_ts_region,
-    $this->url_ts_region
-    );
+$msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), 
+    $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), 
+    count($this->communes_membres), $this->client['name'], $communes_membres, 
+    $this->permanences[0], $this->permanences[1], $this->permanences[2], 
+    $this->permanences[3], $this->permanences[4], count($this->communes_membres), 
+    $this->telephone($this->client['telephone']), $this->client['email'], 
+    $this->client['name'], $this->client['adresse'][0], $this->client['adresse'][1], 
+    $this->client['code_postal'], $this->client['commune'], count($this->communes_membres), 
+    $this->url_ts_region, $this->url_ts_region);
 ?>
 <div class="table-page1">
 	<div class="row">
 		<div class="column1 compressed">
-<div class="centre">
-	<h1>Transports scolaires</h1>
-	<h3 class="accueil">Inscription et paiement en ligne</h3>
-</div>
+			<div class="centre">
+				<h1>Transports scolaires</h1>
+				<h3 class="accueil">Inscription et paiement en ligne</h3>
+			</div>
 		    <?php echo $msg; ?>
 		</div>
 		<div class="column2">

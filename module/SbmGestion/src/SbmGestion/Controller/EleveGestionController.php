@@ -9,8 +9,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 jan. 2019
- * @version 2019-2.4.6
+ * @date 4 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmGestion\Controller;
 
@@ -102,15 +102,18 @@ class EleveGestionController extends AbstractActionController
 
     /**
      * Le paramètre 'op' de POST prend les valeurs 1 ou 2.
-     * 1 : entrée dans le processus d'affectation. On prépare un formulaire formDecision et les points ptElv et ptEta
+     * 1 : entrée dans le processus d'affectation. On prépare un formulaire formDecision et les
+     * points ptElv et ptEta
      * 2 : sortie par post du formulaire formDecision
      * - cancel : retour à affecter-liste
-     * - submit : traitement du formulaire, enregistrement de la décision et passage au formulaire formAffectation
+     * - submit : traitement du formulaire, enregistrement de la décision et passage au formulaire
+     * formAffectation
      * - ni l'un, ni l'autre : F5 ou back() de l'internaute
      * 3 : sortie du formulaire formAffectation
      * - cancel : retour à affecter-liste
      * - back : passage au cas n°2
-     * - submit : traitement du formulaire, enregistrement de l'affectation et retour à affecter-liste
+     * - submit : traitement du formulaire, enregistrement de l'affectation et retour à
+     * affecter-liste
      * - aucun ce ceux la : F5 ou back() de l'internaute
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
@@ -188,7 +191,8 @@ class EleveGestionController extends AbstractActionController
                                 'page' => $page
                             ]);
                     } else {
-                        // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase 2. Pour le moment, mettre la décision en session
+                        // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase 2.
+                        // Pour le moment, mettre la décision en session
                         Session::set('decision', $decision);
                         $formDecision = new AffectationDecision($args['trajet'], 2);
                         $values_options1 = $this->db_manager->get(
@@ -254,9 +258,11 @@ class EleveGestionController extends AbstractActionController
 
     public function gaLocalisationListeAction()
     {
+        $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->paginatorDemandeGaDistanceR2Zero();
         return new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getDemandeGaDistanceR2Zero(),
+                'paginator' => $paginator,
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
                 'page' => $this->params('page', 1)
             ]);
     }
@@ -379,12 +385,18 @@ class EleveGestionController extends AbstractActionController
                 'lat' => $pt->getLatitude(),
                 'lng' => $pt->getLongitude()
             ]);
-        $point = new Point($args['x1'], $args['y1']);
-        $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
-        $pt->setAttribute('description', $args['description']);
+        // localisation du R1
+        $point = new Point($args['xr1'], $args['yr1']);
+        $ptR1 = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
+        $ptR1->setAttribute('description', $args['descriptionr1']);
+        // localisation de l'établissement
+        $point = new Point($args['xeta'], $args['yeta']);
+        $ptEta = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
+        $ptEta->setAttribute('description', $args['descriptioneta']);
         return new ViewModel(
             [
-                'ptR1' => $pt,
+                'ptR1' => $ptR1,
+                'ptEta' => $ptEta,
                 'form' => $form->prepare(),
                 'description' => $description,
                 'responsable' => [

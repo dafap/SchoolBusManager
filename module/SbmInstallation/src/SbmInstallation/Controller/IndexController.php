@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 12 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmInstallation\Controller;
 
@@ -48,7 +48,13 @@ class IndexController extends AbstractActionController
     }
 
     public function versionAction()
-    {}
+    {
+        return new ViewModel(
+            [
+                'url_maps_api' => StdLib::getParam('js', 
+                    $this->cartographie_manager->get('google_api_browser'))
+            ]);
+    }
 
     public function fichierslogAction()
     {

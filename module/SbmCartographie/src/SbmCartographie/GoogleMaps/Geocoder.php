@@ -7,8 +7,8 @@
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2018
- * @version 2018-2.4.1
+ * @date 17 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -44,19 +44,23 @@ class Geocoder
      */
     private $context;
 
-    public function __construct($projection, $google_api)
+    public function __construct($projection, $google_api, $scheme = null)
     {
         $this->projection = $projection;
         $this->google_geocoder_url = StdLib::getParam('geocoder', $google_api);
         $this->google_reversegeocoder_url = StdLib::getParam('reversegeocoder', 
             $google_api);
-        $cafile = __DIR__ . '/../../../config/cacert.pem';
-        $this->context = stream_context_create(
-            [
-                'ssl' => [
-                    'cafile' => $cafile
-                ]
-            ]);
+        if (is_null($scheme) || $scheme == 'http') {
+            $this->context = null;
+        } else {
+            $cafile = __DIR__ . '/../../../config/cacert.pem';
+            $this->context = stream_context_create(
+                [
+                    'ssl' => [
+                        'cafile' => $cafile
+                    ]
+                ]);
+        }
     }
 
     /**

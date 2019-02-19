@@ -8,8 +8,8 @@
  * @filesource service-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\StdLib;
 
@@ -21,27 +21,31 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $url_ajouter = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service-ajout', // voir si on peut faire une seule action
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_rapports = $this->url('sbmgestion/transport', 
     [
         'action' => 'service-etablissement-pdf',
-        'page' => $this->page
+        'page' => $this->page,
+        'pr' => $this->pageRetour
     ]);
 $url_retour = $this->url('sbmgestion/transport', 
     [
         'action' => 'service-etablissement',
-        'page' => $this->page
+        'page' => $this->pageRetour
     ]);
 $url_delete = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service-suppr',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_group = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service-group',
-        'id' => $this->page
+        'pr' => $this->page,
+        'id' => $this->pageRetour
     ]);
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
@@ -109,7 +113,7 @@ echo $this->flashMessenger()->render('default');
             <?php $nbInscrits = StdLib::getParamR([$etablissement->etablissementId, 'total'], $this->t_nb_inscrits, 0); ?>
             <?php $exces = $etablissement->serv_nbPlaces < $nbInscrits; ?>
                 <tr
-					class="<?php
+					class="petit <?php
                 
                 echo $this->cycle(
                     [
@@ -123,7 +127,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="nom"><?php echo $this->escapeHtml($etablissement->etab_nom); ?></td>
 					<td class="commune"><?php echo $this->escapeHtml($etablissement->etab_commune); ?></td>
 					<td class="codepostal"><?php echo $this->escapeHtml($etablissement->etab_codePostal); ?></td>
-					<td class="telephone"><?php echo $this->escapeHtml($etablissement->etab_telephone); ?></td>
+					<td class="telephone"><?php echo $this->telephone($etablissement->etab_telephone); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($etablissement->etab_email); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="station"><?php echo $this->escapeHtml($etablissement->sta_nom);?></td>

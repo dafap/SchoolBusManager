@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 jan. 2019
- * @version 2019-2.4.6
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmGestion\Controller;
 
@@ -1391,7 +1391,13 @@ class EleveController extends AbstractActionController
         $rangeY = $projection->getRangeY();
         $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
         
-        $args = $this->initListe('responsables', null, 
+        $args = $this->initListe('responsables', function($config, $form){
+            $form->get('demenagement')->setUseHiddenElement(false);
+            $form->get('inscrits')->setUseHiddenElement(false);
+            $form->get('preinscrits')->setUseHiddenElement(false);
+            $form->get('localisation')->setUseHiddenElement(false);
+            $form->get('selection')->setUseHiddenElement(false);
+        }, 
             [
                 'nbEnfants',
                 'nbInscrits',
@@ -1946,9 +1952,8 @@ class EleveController extends AbstractActionController
                     'selection'
                 ],
                 'expressions' => [
-                    'nbEnfants' => 'Expression:nbEleves = ?',
-                    'inscrits' => 'Literal:0',
-                    'preinscrit' => 'Literal:0',
+                    'inscrits' => 'Literal:nbInscrits > 0',
+                    'preinscrits' => 'Literal:nbPreinscrits > 0',
                     'localisation' => sprintf($pasLocalisaton, $rangeX['gestion'][0], 
                         $rangeX['gestion'][1], $rangeY['gestion'][0], 
                         $rangeY['gestion'][1])

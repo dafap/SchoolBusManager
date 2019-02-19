@@ -1000,6 +1000,7 @@ class IndexController extends AbstractActionController
                 $this->flashMessenger()->addErrorMessage(
                     implode(', ', $ophoto->getMessagesFilePhotoElement()));
             }
+
         }
         return $this->redirect()->toRoute('sbmparent');
     }

@@ -9,8 +9,8 @@
  * @filesource ga-localisation-bymap.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 4 fév. 2019
+ * @version 2019-2.4.7
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
@@ -19,10 +19,16 @@ $this->headScript()->appendFile('/js/maps/localisation.js');
 // préparation du script
 $i = 0;
 $tMarkers = "[";
+// marqueur vert pour le R1
 $tMarkers .= '{"lat":' . $this->ptR1->getLatitude() . ',"lng":' .
      $this->ptR1->getLongitude() .
-     ',"color":"#00ff00","text":"S","title":"Autre responsable","info":"' .
+     ',"color":"#00ff00","text":"R","title":"Autre responsable","info":"' .
      $this->ptR1->getAttribute('description') . "\"},";
+     // marqueur jaune pour l'établissement scolaire
+$tMarkers .= '{"lat":' . $this->ptEta->getLatitude() . ',"lng":' .
+    $this->ptEta->getLongitude() .
+    ',"color":"#ffff00","text":"E","title":"Établissement scolaire","info":"' .
+    $this->ptEta->getAttribute('description') . "\"},";
 $tMarkers .= ']';
 // lancement du script (sera affiché dans le layout à la fin de la page
 $this->inlineScript()->captureStart();

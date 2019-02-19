@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 28 janv. 2019
- * @version 2019-2.4.6
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmGestion\Controller;
 use SbmGestion\Controller\Service;
@@ -168,10 +168,11 @@ return [
                     'transport' => [ // gestion des données du réseau de transport
                         'type' => 'segment',
                         'options' => [
-                            'route' => '/transport[/:action[/page/:page][/id/:id]]',
+                            'route' => '/transport[/:action[/page/:page][/pr/:pr][/id/:id]]',
                             'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
+                                'pr' => '[0-9]+',
                                 'id' => '[0-9]+'
                             ],
                             'defaults' => [

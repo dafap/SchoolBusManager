@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 jan. 2019
- * @version 2019-2.4.6
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\DateLib;
 
@@ -23,9 +23,8 @@ function renderCheckbox($view, $name, $id, $value)
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-
 // gestion des checkbox selection
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $js_chkCallback = '';
 $js_chkTrigger = '';
 // selection

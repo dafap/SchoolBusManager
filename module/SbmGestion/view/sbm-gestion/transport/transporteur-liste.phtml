@@ -18,8 +18,8 @@
  * @filesource view/sbm-gestion/transport/transporteur-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 15 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\StdLib;
 
@@ -32,7 +32,7 @@ function renderCheckbox($view, $name, $id, $value)
     return $view->formCheckbox($element);
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modèle de jsCallback pour selection
@@ -139,12 +139,12 @@ echo $this->flashMessenger()->render('default');
                     $transporteur->transporteurId);
                 ?>
                 <tr
-					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
+					class="petit <?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="nom"><?php echo $this->escapeHtml($transporteur->nom); ?></td>
 					<td class="commune"><?php echo $this->escapeHtml($transporteur->commune); ?></td>
 					<td class="codepostal"><?php echo $this->escapeHtml($transporteur->codePostal); ?></td>
-					<td class="telephone"><?php echo $this->escapeHtml($transporteur->telephone); ?></td>
-					<td class="fax"><?php echo $this->escapeHtml($transporteur->fax); ?></td>
+					<td class="telephone"><?php echo $this->telephone($transporteur->telephone); ?></td>
+					<td class="fax"><?php echo $this->telephone($transporteur->fax); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($transporteur->email); ?></td>
 					<td class="nbinscrits"><?php echo StdLib::getParamR([$transporteur->transporteurId, 'total'], $this->t_nb_inscrits, 0); ?></td>
 					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $transporteur->transporteurId, $transporteur->selection)?></td>

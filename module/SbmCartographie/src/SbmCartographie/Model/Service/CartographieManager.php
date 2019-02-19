@@ -9,8 +9,8 @@
  * @filesource CartographieManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 17 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmCartographie\Model\Service;
 
@@ -30,6 +30,10 @@ class CartographieManager implements FactoryInterface
             new Config($serviceLocator->get('config')['cartographie_manager']));
         $this->cartographie_manager->setService('Sbm\DbManager', 
             $serviceLocator->get('Sbm\DbManager'));
+        $this->cartographie_manager->setService('scheme', 
+            $serviceLocator->get('request')
+                ->getUri()
+                ->getScheme());
         return $this->cartographie_manager;
     }
 }

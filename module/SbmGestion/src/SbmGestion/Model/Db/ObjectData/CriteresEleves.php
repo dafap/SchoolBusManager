@@ -15,8 +15,8 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 jan. 2019
- * @version 2019-2.4.6
+ * @date 4 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -46,7 +46,7 @@ class CriteresEleves extends SbmCommunCriteres
      *
      * $strict et $alias sont inutiles et ne sont gardés que pour la compatibilité stricte des appels
      *
-     * @see \SbmCommun\Model\Db\ObjectData\CriteresEleves::getWhere()
+     * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere()
      */
     public function getWhere($strict = [], $alias = [])
     {

@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2018
- * @version 2018-2.4.1
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmCartographie\Model\Point;
 
@@ -23,7 +23,7 @@ function renderCheckbox($view, $name, $id, $value)
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modèle pour le jsCallback de selection

@@ -1812,6 +1812,7 @@ class TransportController extends AbstractActionController
                 't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement(
                     $etablissementId),
                 'page' => $currentPage,
+                'pageRetour' => $pageRetour,
                 'etablissementId' => $etablissementId
             ]);
     }

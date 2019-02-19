@@ -1463,6 +1463,8 @@ dl.statistiques dd {
 /*---------------- Espace parents ---------------------------*/
 div#parent-wrapper {
 	min-height: 400px;
+	position: relative;
+	z-index: 10;
 }
 
 .parent h3, .parent p {

@@ -16,10 +16,7 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
  * On n'utilise pas le datepicker parce qu'il faudrait écrire les conversions de format de date
  * à l'entrée et à la sortie. Sinon, le jquery fonctionne bien !
  *
- * $this->headLink()->appendStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
- * $this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
- * $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
- * $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/datepicker-fr.js'));
+ * $this->jQuery('jquery-ui');
  * $this->headScript()->captureStart();
  * ?>
  * $(document).ready(function($){

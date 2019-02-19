@@ -76,9 +76,11 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2016
- * @version 2016-2.2.0
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
+use SbmBase\Model\View\Helper;
+
 return [
     'sbm_session' => [
         'config' => [
@@ -99,5 +101,15 @@ return [
             'Zend\Session\Validator\RemoteAddr',
             'Zend\Session\Validator\HttpUserAgent'
         ]
+    ],
+    'view_helpers' => [
+        'aliases' => [
+            'jQuery' => Helper\JQuery::class,
+            'jquery' => Helper\JQuery::class,
+            'JQuery' => Helper\JQuery::class
+        ],
+        'factories' => [
+            Helper\JQuery::class => Helper\JQueryFactory::class
+        ],
     ]
 ];

@@ -7,8 +7,8 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
- * @version 2018-2.4.5
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\StdLib;
 
@@ -16,7 +16,8 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $url_rapports = $this->url('sbmgestion/transport', 
     [
         'action' => 'station-service-pdf',
-        'page' => $this->page
+        'page' => $this->page,
+        'pr' => $this->pageRetour
     ]);
 $url_retour = $this->url('sbmgestion/transport', 
     [
@@ -26,7 +27,8 @@ $url_retour = $this->url('sbmgestion/transport',
 $url_group = $this->url('sbmgestion/transport', 
     [
         'action' => 'station-service-group',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';

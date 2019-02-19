@@ -9,8 +9,8 @@
  * @filesource formpaiement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2018
- * @version 2018-2.4.1
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 // style css utilisés dans le formulaire
 $this->headStyle()->captureStart();
@@ -37,21 +37,16 @@ $this->headStyle()->captureStart();
 }
 <?php $this->headStyle()->captureEnd(); ?>
 <?= $this->headStyle();?>
-<?php $this->headScript()->appendFile($this->basePath('js/ajax/formpaiement.js'));?>
-<?= $this->headScript();?>
 <?php $this->inlineScript()->captureStart();?>
 is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
 urlform = '<?= $this->form->getAttribute('action'); ?>';
-if ($('#formpaiement input[name=gratuit]:checked').val()==2){
-  $("#formpaiement-organismeId").show();
-}
+priseenchargepaiement().init(is_xmlhttprequest, urlform);
 <?php $this->inlineScript()->captureEnd();?>
 <?= $this->inlineScript();?>
 <div id="formpaiement">
 <?= $this->form()->openTag($this->form);?>
 <?= $this->formHidden($this->form->get('eleveId'));?>
 <?= $this->formHidden($this->form->get('csrf'));?>
-?>
 <div id="formpaiement-gratuit" class="row-inner"><?= $this->formRow($this->form->get('gratuit'));?></div>
 	<div id="formpaiement-organismeId" class="row-inner"
 		style="display: none;"><?= $this->formRow($this->form->get('organismeId'));?></div>

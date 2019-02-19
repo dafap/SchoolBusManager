@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 jan. 2019
- * @version 2019-2.4.6
+ * @date 4 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -168,13 +168,11 @@ class ElevesScolarites implements FactoryInterface
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ],
-                'photos.eleveId = ele.eleveId',
-                [
-                    'hasphoto' => new Expression('CASE WHEN isnull(photos.eleveId) THEN FALSE ELSE TRUE END')
-                ],
-                Select::JOIN_LEFT
-            );
+            ], 'photos.eleveId = ele.eleveId', 
+            [
+                'hasphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN FALSE ELSE TRUE END')
+            ], Select::JOIN_LEFT);
         return $this;
     }
 
@@ -259,7 +257,7 @@ class ElevesScolarites implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();
     }
-    
+
     public function getMontantElevesInscrits($responsableId)
     {
         $select = $this->sql->select()
@@ -377,18 +375,18 @@ class ElevesScolarites implements FactoryInterface
     public function getInscritsNonAffectes()
     {
         $statement = $this->sql->prepareStatementForSqlObject(
-            $this->sqlInscritsNonAffectes());
+            $this->selectInscritsNonAffectes());
         return $statement->execute();
     }
 
     public function paginatorInscritsNonAffectes()
     {
         return new Paginator(
-            new DbSelect($this->sqlInscritsNonAffectes(), 
+            new DbSelect($this->selectInscritsNonAffectes(), 
                 $this->db_manager->getDbAdapter()));
     }
 
-    private function sqlInscritsNonAffectes()
+    private function selectInscritsNonAffectes()
     {
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
@@ -456,18 +454,18 @@ class ElevesScolarites implements FactoryInterface
     public function getPreinscritsNonAffectes()
     {
         $statement = $this->sql->prepareStatementForSqlObject(
-            $this->sqlPreinscritsNonAffectes());
+            $this->selectPreinscritsNonAffectes());
         return $statement->execute();
     }
 
     public function paginatorPreinscritsNonAffectes()
     {
         return new Paginator(
-            new DbSelect($this->sqlPreinscritsNonAffectes(), 
+            new DbSelect($this->selectPreinscritsNonAffectes(), 
                 $this->db_manager->getDbAdapter()));
     }
 
-    private function sqlPreinscritsNonAffectes()
+    private function selectPreinscritsNonAffectes()
     {
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
@@ -539,6 +537,20 @@ class ElevesScolarites implements FactoryInterface
 
     public function getDemandeGaDistanceR2Zero()
     {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectDemandeGaDistanceR2Zero());
+        return $statement->execute();
+    }
+
+    public function paginatorDemandeGaDistanceR2Zero()
+    {
+        return new Paginator(
+            new DbSelect($this->selectDemandeGaDistanceR2Zero(), 
+                $this->db_manager->getDbAdapter()));
+    }
+
+    private function selectDemandeGaDistanceR2Zero()
+    {
         $select = clone $this->select;
         $select->columns(
             [
@@ -565,8 +577,8 @@ class ElevesScolarites implements FactoryInterface
                 'responsable1' => new Expression('CONCAT(r1.nom, " ", r1.prenom)'),
                 'adresseR1L1' => 'adresseL1',
                 'adresseR1L2' => 'adresseL2',
-                'x1' => 'x',
-                'y1' => 'y'
+                'xr1' => 'x',
+                'yr1' => 'y'
             ])
             ->join(
             [
@@ -597,8 +609,7 @@ class ElevesScolarites implements FactoryInterface
             ->isNotNull('responsable2Id')
             ->literal('demandeR2 = 1')
             ->literal('distanceR2 = 0');
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        return $select->where($where);
     }
 
     public function getEnfants($responsableId, $ga = 1)

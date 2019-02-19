@@ -7,40 +7,15 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 jan. 2019
- * @version 2019-2.4.6
+ * @date 18 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet(
-    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
-$this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
-$this->headScript()->appendFile(
-    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
-$this->headScript()->captureStart();
-?>
-$(document).ready(function($){
-$("#help-preinscrits").trigger("click");
-$("#help-preinscrits").on("click", function(){
-    var content = $("#help-preinscrits-content").html();
-    $("#winpopup").dialog({
-            draggable:true,
-            modal: true,
-            autoOpen: false,
-            height:400,
-            width:610,
-            resizable: false,
-            title: $(this).attr('title')
-            //appendTo: content
-        });
-    $("#winpopup-content").html(content);
-    $("#winpopup").dialog("open");
-});
-});
-<?php
-$this->headScript()->captureEnd();
+$this->jQuery('jquery-ui');
+$this->headScript()->appendFile($this->basePath('/js/parent/index.js'));
 
 $montantTotal = 0;
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
@@ -324,7 +299,8 @@ echo $this->flashMessenger()->render('default');
                         $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_4;
                         $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' .
                              $station[$i] . '</td>';
-                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les hiddens
+                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les
+                        // hiddens
                         if ($i > 0) {
                             $lignesTableau[$i] .= "</tr>\n";
                         }
@@ -456,7 +432,7 @@ echo $this->flashMessenger()->render('default');
                 $pasdephoto = ' Pas de photo';
             }
             $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
-            $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="alert">%s</td></tr>';    
+            $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="alert">%s</td></tr>';
             echo sprintf($modeleligne, 
                 $this->cycle(
                     [

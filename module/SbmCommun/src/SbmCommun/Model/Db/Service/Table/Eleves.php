@@ -8,8 +8,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 jan. 2019
- * @version 2019-2.4.6
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -156,17 +156,24 @@ class Eleves extends AbstractSbmTable
      *
      * @param array $arrayId
      *            tableau des valeurs de eleveId à traiter
+     *            
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception
+     *
+     * @return boolean|integer Nombre de lignes sélectionnées
      */
     public function markSelection($arrayId)
     {
-        try {
-            return $this->table_gateway->update(
-                [
-                    'selection' => 1
-                ], new In('eleveId', $arrayId));
-        } catch (\Exception $e) {
-            throw new Exception(print_r($arrayId, true), 0, $e);
+        if ($arrayId) {
+            try {
+                return $this->table_gateway->update(
+                    [
+                        'selection' => 1
+                    ], new In('eleveId', $arrayId));
+            } catch (\Exception $e) {
+                throw new Exception(print_r($arrayId, true), 0, $e);
+            }
         }
+        return 0;
     }
 
     /**
@@ -202,7 +209,8 @@ class Eleves extends AbstractSbmTable
     }
 
     /**
-     * Liste des élèves ayant la personne d'identifiant $responsableId comme responsable (1, 2 ou financier)
+     * Liste des élèves ayant la personne d'identifiant $responsableId comme responsable (1, 2 ou
+     * financier)
      *
      * @param long $responsableId            
      * @return \SbmCommun\Model\Db\Service\Table\ResultSet

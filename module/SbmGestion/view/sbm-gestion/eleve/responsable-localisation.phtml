@@ -9,8 +9,8 @@
  * @filesource responsable-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 4 fév. 2019
+ * @version 2018-2.4.7
  */
 // calcul du contenu de l'infobulle
 $description = [];
@@ -34,22 +34,14 @@ $cp_ville = implode(' ',
     ]);
 $description[] = $cp_ville;
 $domicile .= ' ' . $cp_ville;
-$telephone = [];
-$tmp = $this->responsable->telephoneF;
-if (! empty($tmp)) {
-    $telephone[] = $this->responsable->telephoneF;
-}
-$tmp = $this->responsable->telephoneP;
-if (! empty($tmp)) {
-    $telephone[] = $this->responsable->telephoneP;
-}
-$tmp = $this->responsable->telephoneT;
-if (! empty($tmp)) {
-    $telephone[] = $this->responsable->telephoneT;
-}
-$tel = implode(' ', $telephone);
-if (! empty($tel)) {
-    $description[] = 'Tél.' . $tel;
+$telephones = array_filter(
+    [
+        $this->telephone($this->responsable->telephoneF),
+        $this->telephone($this->responsable->telephoneP),
+        $this->telephone($this->responsable->telephoneT)
+    ]);
+if (! empty($telephones)) {
+    $description[] = 'Tél.' . implode(' - ', $telephones);
 }
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps

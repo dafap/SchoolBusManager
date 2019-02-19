@@ -12,8 +12,8 @@
  * @filesource etablissements.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 4 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -60,7 +60,7 @@ foreach ($this->ptEtablissements as $pt) {
                 $e->codePostal,
                 $e->commune
             ]),
-        'Tél. ' . $e->telephone
+        'Tél. ' . $this->telephone($e->telephone)
     ];
     $tmp = $e->email;
     if (! empty($tmp)) {

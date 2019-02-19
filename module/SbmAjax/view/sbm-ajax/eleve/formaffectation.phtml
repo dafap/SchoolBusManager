@@ -9,8 +9,8 @@
  * @filesource formaffectation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 
 /*
@@ -55,18 +55,16 @@
 }
 <?php $this->headStyle()->captureEnd(); ?>
 <?= $this->headStyle();?>
-<?php $this->headScript()->appendFile($this->basePath('js/ajax/formaffectation.js'));?>
-<?= $this->headScript();?>
 <?php $this->inlineScript()->captureStart();?>
-is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
-formaffectation = "#formaffectation<?= $this->trajet;?>";
+var is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
+var formaffectation = "#formaffectation<?= $this->trajet;?>";
 var urlform = '<?= $this->form->getAttribute('action'); ?>';
 var station1Id = <?= $this->station1Id ?:'null';?>;
 var station2Id = <?= $this->station2Id?:'null';?>;
-affectation.init(station1Id, station2Id);
+affectation().init(station1Id, station2Id, is_xmlhttprequest, formaffectation, urlform);
 <?php $this->inlineScript()->captureEnd();?>
+<?= $this->inlineScript();?>
 <div id="formaffectation<?= $this->trajet;?>">
 <?= $this->form($this->form);?>
 </div>
 <div id="errors"></div>
-<?= $this->inlineScript();?>

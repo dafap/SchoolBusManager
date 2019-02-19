@@ -18,41 +18,13 @@
  * @filesource etablissement-service-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 15 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()
-    ->appendFile($this->basePath() . '/js/jquery.min.js')
-    ->captureStart();
-?>
-$(document).ready(function($) {
-  // adapte le select aux stations de ce circuit
-  $("#serviceIdElement").change(function() {
-    var valeur = $(this).val();
-    if (valeur != '') {
-        $.ajax({
-				url : '/sbmajaxtransport/getcircuitstations/serviceId:' + valeur,
-				dataType: 'json',
-				success : function(dataJson) {
-					$('#stationId').empty();
-					if (dataJson.success==1) {
-					    $.each(dataJson.data, function(k, d) {
-	                        $('#stationIdElement').append('
-<option value="' + d + '">' + k + '</option>
-');
-	                    });
-	                }
-				},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-	}
-  });
-});
-<?php
-$this->headScript()->captureEnd();
+$this->jQuery();
+$this->headScript()->appendFile(
+    $this->basePath('/js/gestion-transport/etablissement-service-ajout.js'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport', 
     [

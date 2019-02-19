@@ -17,8 +17,8 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2018
- * @version 2018-2.4.1
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -32,7 +32,7 @@ function renderCheckbox($view, $name, $id, $value)
     return $view->formCheckbox($element);
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modèles de jsCallback pour selection, visible et desservie
@@ -198,7 +198,7 @@ echo $this->flashMessenger()->render('default');
             $jsCallback .= str_replace('%s', $etablissement->etablissementId, "$modele\n"); // , $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId, $etablissement->etablissementId);
             ?>
             <tr
-					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
+					class=" petit <?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td>
 					<?php if (!$ptOk) : ?>
 					   <i class="fam-error"></i>
@@ -208,7 +208,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="nom"><?php echo $this->escapeHtml($etablissement->nom); ?></td>
 					<td class="commune"><?php echo $this->escapeHtml($etablissement->commune); ?></td>
 					<td class="codepostal"><?php echo $this->escapeHtml($etablissement->codePostal); ?></td>
-					<td class="telephone"><?php echo $this->escapeHtml($etablissement->telephone); ?></td>
+					<td class="telephone"><?php echo $this->telephone($etablissement->telephone); ?></td>
 					<td class="email"><?php echo $this->escapeHtml($etablissement->email); ?></td>
 					<td class="nbinscrits"><?php echo $nbInscrits; ?></td>
 					<td class="centre desservi"><?php echo renderCheckbox($this, 'desservie', 'des' . $etablissement->etablissementId, $etablissement->desservie)?></td>

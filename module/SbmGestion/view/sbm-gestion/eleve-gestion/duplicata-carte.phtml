@@ -11,22 +11,11 @@
  * @filesource duplicata-carte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->captureStart();
-?>
-$(document).ready(function($) {
-$("#btcancel").click(function(){
-    var form = $("#duplicata");
-    form.removeAttr("target");
-    form.submit();
-});
-});
-<?php
-$this->headScript()->captureEnd();
+$this->jQuery();
 $hiddens = [
     'eleveId' => $this->eleveId,
     'origine' => $this->origine
@@ -47,24 +36,26 @@ $actions = [
 	<h1>Duplicata d'une carte de transport</h1>
 	<div id="fiche-header">
 		<div class="menu clearfix">
-	    <?php echo $this->listeZoneActions($hiddens, $actions);?>
+	    <?= $this->listeZoneActions($hiddens, $actions);?>
 	    </div>
 	</div>
 	<div id="fiche-inner">
-	    <?php echo $this->form()->openTag($this->form); ?>
-	    <?php echo $this->formHidden($this->form->get('eleveId'));?>
-	    <?php echo $this->formHidden($this->form->get('origine'));?>
+	    <?= $this->form()->openTag($this->form); ?>
+	    <?= $this->formHidden($this->form->get('eleveId'));?>
+	    <?= $this->formHidden($this->form->get('origine'));?>
 		<fieldset class="sbm-page1">
 			<div class="row-inner planche">
 	    <?php if ($this->form->hasPlanche()) :?>
 			Indiquez la position de l'étiquette dans la planche d'étiquettes
 	    <?php endif;?>
-            <?php echo $this->form->renderPlanche();?>
+            <?= $this->form->renderPlanche();?>
             </div>
-			<div class="row-inner"><?php echo $this->formRow($this->form->get('gratuit'));?></div>
+			<div class="row-inner"><?= $this->formRow($this->form->get('gratuit'));?></div>
 		</fieldset>
-		<div class="row-inner"><?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-		<?php echo $this->form()->closeTag(); ?>
+		<div class="row-inner">
+		    <?= $this->formSubmit($this->form->get('submit'));?>
+		    <?= $this->formSubmit($this->form->get('cancel')); ?></div>
+		<?= $this->form()->closeTag(); ?>
 	</div>
 	<div id="fiche-footer">
 		<p class="sbm-description">

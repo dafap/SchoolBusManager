@@ -7,8 +7,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 3 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmFront\Controller;
 
@@ -177,13 +177,15 @@ class LoginController extends AbstractActionController
                             throw $e->getPrevious();
                         }
                         // contrôle de la commune
-                        // @todo à compléter
                         if (! $responsable->inscriptionenligne) {
                             // page d'information indiquant que les inscriptions en ligne
                             // ne sont pas autorisées pour les parents de cette commune.
                             $commune = $responsable->commune;
-                            $this->flashMessenger()->addErrorMessage(
-                                'Vous ne pouvez pas inscrire vos enfants par cette applicattion en ligne.');
+                            $message = <<<EOT
+Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas ouvert aux habitants 
+de votre commune.
+EOT;
+                            $this->flashMessenger()->addErrorMessage($message);
                             $this->logout();
                             return $this->redirect()->toRoute('home', 
                                 [
@@ -195,6 +197,11 @@ class LoginController extends AbstractActionController
                             // indiquer que les préinscriptions sont autorisées mais que
                             // le paiement en ligne n'est pas permi pour les parents de
                             // cette commune
+                            $message = <<<EOT
+Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants 
+de votre commune.'
+EOT;
+                            $this->flashMessenger()->addInfoMessage($message);
                         }
                         // contrôle de position géographique
                         $point = new Point($responsable->x, $responsable->y);
@@ -284,7 +291,7 @@ class LoginController extends AbstractActionController
      * On demande l'email et on envoie un lien pour entrer.
      * A l'entrée on doit donner un nouveau mot de passe avant de continuer.
      *
-     * @return \SbmFront\Controller\ViewModel
+     * @return \Zend\View\Model\ViewModel
      */
     public function mdpDemandeAction()
     {
@@ -552,7 +559,7 @@ class LoginController extends AbstractActionController
             $form->bind($table_users->getObjData());
             $form->setData($args);
             if ($form->isValid()) {
-                // prépare data (c'est un SbmCommun\Model\Db\ObjectData\User qui possède des méthodes qui vont bien)
+                // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui possède des méthodes qui vont bien)
                 $odata = $form->getData()->completeToCreate();
                 $table_users->saveRecord($odata);
                 $this->flashMessenger()->addSuccessMessage('Création en cours...');
@@ -656,7 +663,7 @@ class LoginController extends AbstractActionController
             if (\array_key_exists('submit', $args)) {
                 $form->setData($args);
                 if ($form->isValid()) {
-                    // prépare data (c'est un SbmCommun\Model\Db\ObjectData\User qui possède des méthodes qui vont bien)
+                    // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui possède des méthodes qui vont bien)
                     $oUser = $form->getData()->completeToModif();
                     $table_users->saveRecord($oUser);
                     $auth->refreshIdentity();

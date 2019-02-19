@@ -12,8 +12,8 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -25,8 +25,8 @@ function renderCheckbox($view, $name, $id, $value)
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
 // modèle pour les jsCallback

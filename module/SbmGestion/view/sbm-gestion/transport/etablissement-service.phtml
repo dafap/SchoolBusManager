@@ -8,8 +8,8 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\StdLib;
 use SbmBase\Model\DateLib;
@@ -18,27 +18,31 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $url_ajouter = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service-ajout',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_rapports = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service-pdf',
-        'page' => $this->page
+        'page' => $this->page,
+        'pr' => $this->pageRetour
     ]);
 $url_retour = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service',
-        'page' => $this->page
+        'page' => $this->pageRetour
     ]);
 $url_delete = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service-suppr',
-        'page' => $this->page
+        'page' => $this->page,
+        'id' => $this->pageRetour
     ]);
 $url_group = $this->url('sbmgestion/transport', 
     [
         'action' => 'etablissement-service-group',
-        'id' => $this->page
+        'pr' => $this->page,
+        'id' => $this->pageRetour
     ]);
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';

@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 jan. 2019
- * @version 2019-2.4.6
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport', 
@@ -21,7 +21,7 @@ $url_rapports = $this->url('sbmgestion/transport',
     [
         'action' => 'circuit-group-pdf',
         'page' => $this->page,
-        'id' => $this->pageRetour
+        'pr' => $this->pageRetour
     ]);
 $url_group = $this->url('sbmgestion/transport', 
     [
@@ -45,7 +45,7 @@ $url_mark_selection = $this->url('sbmgestion/transport',
     [
         'action' => $this->origine ? $this->origine . '-group-selection' : 'circuit-group-selection',
         'page' => $this->page,
-        'id' => $this->pageRetour
+        'pr' => $this->pageRetour
     ]);
 $url_add_photo = $this->url('sbmgestion/eleve', 
     [

@@ -31,7 +31,7 @@ class Photo
     protected $rapport;
 
     private $photo;
-    
+
     private $form = null;
 
     public function __construct($quality = 70, $resolution = 150)
@@ -74,34 +74,35 @@ class Photo
     {
         $this->form = new Form\Form('formphoto');
         $this->form->setAttribute('method', 'post');
-         
+
         $file_element = new Form\Element\File('filephoto');
         $file_element->setLabel('Choisissez le fichier image (JPEG, PNG ou GIF)')
-        ->setAttribute('id', 'filephoto')
-        ->setLabelAttributes(['class' => 'right-10px'])
-        ->setOption('error_attributes',
-            [
-                'class' => 'sbm-error'
-            ]);
+            ->setAttribute('id', 'filephoto')
+            ->setLabelAttributes([
+            'class' => 'right-10px'
+        ])
+            ->setOption('error_attributes', [
+            'class' => 'sbm-error'
+        ]);
         $this->form->add($file_element);
         $this->form->add(new Form\Element\Hidden('eleveId'));
         $this->form->add(new Form\Element\Button('envoiphoto'));
-        //$this->form->add(new Form\Element\Button('supprphoto'));
+        // $this->form->add(new Form\Element\Button('supprphoto'));
     }
-    
+
     /**
      * Renvoie la propriété
-     * 
+     *
      * @return \Zend\Form\Form
      */
     public function getForm()
-    {        
+    {
         if (! $this->form) {
             $this->iniForm();
         }
         return $this->form;
     }
-    
+
     public function getFormWithInputFilter($tmpuploads)
     {
         $this->getForm();
@@ -117,10 +118,10 @@ class Photo
         $this->form->getInputFilter()->add($fi);
         return $this->form;
     }
-    
+
     /**
      * Renvoie un tableau de messages d'erreurs traduits dans la langue par défaut
-     * 
+     *
      * @return array(string)
      */
     public function getMessagesFilePhotoElement()
@@ -129,7 +130,8 @@ class Photo
         $translator = \Zend\Validator\AbstractValidator::getDefaultTranslator();
         $textDomain = \Zend\Validator\AbstractValidator::getDefaultTranslatorTextDomain();
         $messagesToPrint = [];
-        $messageCallback = function ($item) use (&$messagesToPrint, $translator, $textDomain) {
+        $messageCallback = function ($item) use (&$messagesToPrint, $translator,
+        $textDomain) {
             $msg = $translator->translate($item, $textDomain);
             if ($msg == 'Une valeur est requise et ne peut être vide') {
                 $msg = 'Le fichier n\'a pas été transmis (trop gros).';
@@ -138,13 +140,13 @@ class Photo
         };
         array_walk_recursive($messages, $messageCallback);
         return $messagesToPrint;
-    }  
-      
+    }
+
     /**
      * Taille de l'image en px selon la résolution.
      * Cette classe ne traite que 150 (par défaut) ou 300 dpi
      *
-     * @param number $resolution            
+     * @param number $resolution
      *
      * @return array[integer];
      */
@@ -173,10 +175,10 @@ class Photo
      * d'identité de 35 x 45 mm, à la résolution initialisée, de type JPEG.
      * Par défaut, la résolution est de 150 dpi.
      *
-     * Attention ! Pour l'enregistrer en base de données, penser à l'échapper 
+     * Attention ! Pour l'enregistrer en base de données, penser à l'échapper
      * par addslashes()
      *
-     * @param string $source            
+     * @param string $source
      *
      * @throws Exception
      *
@@ -191,7 +193,8 @@ class Photo
         if (substr($mime_type, 0, strlen('image/')) != 'image/') {
             unlink($source);
             throw new Exception(
-                sprintf("Le fichier source n'est pas reconnu comme un fichier image. %s", $mime_type));
+                sprintf("Le fichier source n'est pas reconnu comme un fichier image. %s",
+                    $mime_type));
         }
         if ($mime_type == 'image/jpeg') {
             $image = imagecreatefromjpeg($source);
@@ -201,7 +204,8 @@ class Photo
             $image = imagecreatefrompng($source);
         } else {
             unlink($source);
-            throw new Exception("Ce format image n'est pas accepté (JPEG, PNG ou GIF uniquement).");
+            throw new Exception(
+                "Ce format image n'est pas accepté (JPEG, PNG ou GIF uniquement).");
         }
         // mise à la bonne taille de l'image, rognage si nécessaire
         list ($modwidth, $modheight) = $this->modele_size();
@@ -223,7 +227,7 @@ class Photo
             $src_h = $info[1];
         }
         $photo = imagecreatetruecolor($modwidth, $modheight);
-        imagecopyresampled($photo, $image, 0, 0, $src_x, 0, $modwidth, $modheight, $src_w, 
+        imagecopyresampled($photo, $image, 0, 0, $src_x, 0, $modwidth, $modheight, $src_w,
             $src_h);
         imagedestroy($image);
         ob_start();
@@ -236,7 +240,7 @@ class Photo
      * Cette chaine est de la forme data:image/jpeg;base64,...
      * (jpeg peut être remplacé par un autre type)
      *
-     * @param string $imagebinary            
+     * @param string $imagebinary
      * @param string $imagetype
      *            'jpeg' ou 'gif' ou 'png'
      *            
@@ -261,7 +265,7 @@ class Photo
         $red = imagecolorallocate($image, 255, 0, 0);
         imagefill($image, 0, 0, $bgcolor);
         $fw = imagefontwidth(5);
-        imagestring($image, 5, $modwidth / 2 - 6 * $fw, 
+        imagestring($image, 5, $modwidth / 2 - 6 * $fw,
             $modheight / 2 - imagefontheight(5) / 2, 'Pas de photo', $red);
         imageline($image, 5, 5, $modwidth - 5, $modheight - 5, $red);
         imageline($image, 5, $modheight - 5, $modwidth - 5, 5, $red);
@@ -269,5 +273,4 @@ class Photo
         imagegif($image);
         return ob_get_clean();
     }
-
 }

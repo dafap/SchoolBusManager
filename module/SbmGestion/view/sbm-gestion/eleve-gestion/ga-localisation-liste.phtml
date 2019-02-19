@@ -1,18 +1,23 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Liste des élèves en garde alternée dont le responsable N°2 n'a pas de distance calculée.
  * 
- * @project project_name
- * @package package_name
+ * Cela vient souvent du fait que le responsable n°1 a saisi l'identité du responsable n°2 
+ * mais qu'il n'est pas localisé sur la carte.
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve-gestion
  * @filesource ga-localisation-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
 
 $url_retour = $this->url('sbmgestion/gestioneleve');
 $hiddens = [];
@@ -50,20 +55,27 @@ echo $this->flashMessenger()->render('default');
 					<th>D2</th>
 					<th></th>
 				</tr>
-<?php foreach ($this->data as $row): ?>
+<?php foreach ($data as $row): ?>
 <?php
 
         $hiddens = [
             'eleveId' => $row['eleveId'],
             'responsableId' => $row['responsable2Id'],
-            'x1' => $row['x1'],
-            'y1' => $row['y1'],
-            'description' => implode('<br>', 
+            'xr1' => $row['xr1'],
+            'yr1' => $row['yr1'],
+            'descriptionr1' => implode('<br>', 
                 [
                     $row['responsable1'],
                     $row['adresseR1L1'],
                     $row['adresseR1L2'],
                     $row['communeR1']
+                ]),
+            'xeta' => $row['xeta'],
+            'yeta' => $row['yeta'],
+            'descriptioneta' => implode('<br>', 
+                [
+                    $row['etablissement'],
+                    $row['communeEtablissement']
                 ])
         ];
         /*
@@ -109,7 +121,10 @@ echo $this->flashMessenger()->render('default');
 		   </tbody>
 		</table>
 	</div>
-	<div id="liste-footer"></div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+	</div>
 <?php else :?>
     <div id="liste-inner">
 		<i>Il n'y a pas de demande non localisée.</i>
@@ -117,6 +132,3 @@ echo $this->flashMessenger()->render('default');
 	<div id="liste-footer"></div>
 <?php endif;?>
 </div>
-<p>
-	<i>Il faut rajouter un paginateur</i>
-</p>

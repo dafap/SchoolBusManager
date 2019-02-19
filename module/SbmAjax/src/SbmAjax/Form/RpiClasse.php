@@ -9,8 +9,8 @@
  * @filesource RpiClasse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 août 2018
- * @version 2018-2.4.2
+ * @date 13 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmAjax\Form;
 
@@ -21,7 +21,7 @@ class RpiClasse extends Form
 
     public function __construct($op = 'add')
     {
-        parent::__construct('rpi-classe');
+        parent::__construct('rpiclasse-form');
         $this->setAttribute('method', 'post');
         $this->add(
             [
@@ -44,7 +44,7 @@ class RpiClasse extends Form
                     'name' => 'classeId',
                     'type' => 'Zend\Form\Element\Select',
                     'attributes' => [
-                        'id' => 'rpi-classe-classeId',
+                        'id' => 'rpiclasse-classeId',
                         'class' => 'sbm-width-45c'
                     ],
                     'options' => [
@@ -71,7 +71,7 @@ class RpiClasse extends Form
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Abandonner',
-                    'id' => 'decision-cancel',
+                    'id' => 'rpiclasse-cancel',
                     'autofocus' => 'autofocus',
                     'class' => 'button default cancel'
                 ]
@@ -82,7 +82,7 @@ class RpiClasse extends Form
                 'attributes' => [
                     'type' => 'submit',
                     'value' => $op == 'add' ? 'Ajouter' : 'Supprimer',
-                    'id' => 'decision-submit',
+                    'id' => 'rpiclasse-submit',
                     'class' => 'button default submit'
                 ]
             ]);

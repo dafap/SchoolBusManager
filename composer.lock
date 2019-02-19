@@ -1696,16 +1696,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.2.2",
+            "version": "v4.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "d0aa6c0ea484087927b49fd513383a7d36190ca6"
+                "reference": "d461670ee145092b7e2a56c1da7118f19cadadb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/d0aa6c0ea484087927b49fd513383a7d36190ca6",
-                "reference": "d0aa6c0ea484087927b49fd513383a7d36190ca6",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/d461670ee145092b7e2a56c1da7118f19cadadb0",
+                "reference": "d461670ee145092b7e2a56c1da7118f19cadadb0",
                 "shasum": ""
             },
             "require": {
@@ -1751,7 +1751,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2019-01-03T09:07:35+00:00"
+            "time": "2019-01-16T20:35:37+00:00"
         },
         {
             "name": "tecnickcom/tcpdf",
@@ -2310,7 +2310,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-code-2.6.3-4e231b.zip",
                 "reference": "64b26411a10563b2b86f35378777e4919fea78ec",
-                "shasum": "d2dbb0f908fb81df4e224073e1745b4df06daede"
+                "shasum": "f1ddf965369bf358b81fb861e22b5bb9bc375cbe"
             },
             "require": {
                 "php": "^5.5 || 7.0.0 - 7.0.4 || ^7.0.6",
@@ -2366,7 +2366,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-config-2.6.0-e2b849.zip",
                 "reference": "9dc083ce3341a12bfc1053df40b5f20e42b1f862",
-                "shasum": "328ed6f250bfe146ed438cd14b0df6cdf277e82f"
+                "shasum": "1013c99554bbafbd4f8d1c0702c8a7540e40a3b7"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -2509,7 +2509,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-crypt-2.6.0-301fd1.zip",
                 "reference": "bd3e33f22ba3add20992794702c76b1752107a4e",
-                "shasum": "401ca2b7be8d7b913161ea2d0b2ba6dd0902a557"
+                "shasum": "f49c350a41c63e84da8df14e9c678716a668e148"
             },
             "require": {
                 "container-interop/container-interop": "~1.0",
@@ -2741,7 +2741,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-di-2.6.1-fd29c3.zip",
                 "reference": "a178ee406945dced95d060bbdc052000b9ff6520",
-                "shasum": "0e371dcefd1d748d63cc048447aff3a41cda3da3"
+                "shasum": "a47c81ac65965539378fdfcde885c75c5c6fbe51"
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
@@ -3171,17 +3171,17 @@
         },
         {
             "name": "zendframework/zend-file",
-            "version": "2.8.2",
+            "version": "2.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-file.git",
-                "reference": "530da229760640e88c9c994ea60bf3d210d51ef8"
+                "reference": "3afda6f68a404aac40893e690a826c8158259760"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-file-2.8.2-fefced.zip",
-                "reference": "530da229760640e88c9c994ea60bf3d210d51ef8",
-                "shasum": "3a07ac8ea890e19e12f10dd9686e393cfc187669"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-file-2.8.3-f56b8a.zip",
+                "reference": "3afda6f68a404aac40893e690a826c8158259760",
+                "shasum": "8fb0925d77da1ddc5e43145830353fa9be0bda4e"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -3254,7 +3254,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2018-10-15T08:05:07+00:00"
+            "time": "2019-02-06T16:53:31+00:00"
         },
         {
             "name": "zendframework/zend-filter",
@@ -3464,17 +3464,17 @@
         },
         {
             "name": "zendframework/zend-http",
-            "version": "2.8.3",
+            "version": "2.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-http.git",
-                "reference": "0157773f2701008bc1962e28b99a867e8866bec2"
+                "reference": "91eca9e4e238d3d946cbdb26492d9e26552c8ff8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-http-2.8.3-a1eb51.zip",
-                "reference": "0157773f2701008bc1962e28b99a867e8866bec2",
-                "shasum": "c915a8988e74b74236d208073d3b4c83aa82bf4f"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-http-2.8.4-d9a174.zip",
+                "reference": "91eca9e4e238d3d946cbdb26492d9e26552c8ff8",
+                "shasum": "fee82d2ac4b3bc7e28df5938161a6765b5316957"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -3545,7 +3545,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2019-01-08T15:55:38+00:00"
+            "time": "2019-02-07T17:47:08+00:00"
         },
         {
             "name": "zendframework/zend-hydrator",
@@ -3553,13 +3553,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-hydrator.git",
-                "reference": "22652e1661a5a10b3f564cf7824a2206cf5a4a65"
+                "reference": "9caab439f08227d258507a933a9c0181c019c004"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-hydrator/zipball/22652e1661a5a10b3f564cf7824a2206cf5a4a65",
-                "reference": "22652e1661a5a10b3f564cf7824a2206cf5a4a65",
-                "shasum": ""
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-hydrator-1.1.0-24ca57.zip",
+                "reference": "9caab439f08227d258507a933a9c0181c019c004",
+                "shasum": "795b3af90b5e6d1268f20b39b80d29dc7b3520d4"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -3594,10 +3594,15 @@
                     "Zend\\Hydrator\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "ZendTest\\Hydrator\\": "test/"
+                }
+            },
             "license": [
                 "BSD-3-Clause"
             ],
+            "description": " ",
             "homepage": "https://github.com/zendframework/zend-hydrator",
             "keywords": [
                 "hydrator",
@@ -3781,17 +3786,17 @@
         },
         {
             "name": "zendframework/zend-inputfilter",
-            "version": "2.9.1",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-inputfilter.git",
-                "reference": "673a3d492ec479a679728ca94e91dc2eb9d645c7"
+                "reference": "aac73ab71b43a985ba4d2c83d3e8217d52d23e6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-inputfilter-2.9.1-436bb9.zip",
-                "reference": "673a3d492ec479a679728ca94e91dc2eb9d645c7",
-                "shasum": "d80758077e93604c35d480d1cbb840006805bb21"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-inputfilter-2.10.0-574cd1.zip",
+                "reference": "aac73ab71b43a985ba4d2c83d3e8217d52d23e6a",
+                "shasum": "2b11787f5dac383186d4e5dda439808271c5b490"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -3811,8 +3816,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9.x-dev",
-                    "dev-develop": "2.10.x-dev"
+                    "dev-master": "2.10.x-dev",
+                    "dev-develop": "2.11.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\InputFilter",
@@ -3864,7 +3869,7 @@
                 "slack": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/expressive"
             },
-            "time": "2019-01-07T17:52:18+00:00"
+            "time": "2019-01-30T16:58:51+00:00"
         },
         {
             "name": "zendframework/zend-json",
@@ -3878,7 +3883,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-json-2.6.1-c21fa8.zip",
                 "reference": "bac51ce54b880969f3e40713dcbdf6bce5927ed1",
-                "shasum": "83eadaadad7c4711e04aaa0f926891a52b129946"
+                "shasum": "4fb45431c74ae43bcf384d32a25acf567a5dc76a"
             },
             "require": {
                 "php": "^5.5 || ^7.0"
@@ -5049,13 +5054,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-psr7bridge.git",
-                "reference": "86c0b53b0c6381391c4add4a93a56e51d5c74605"
+                "reference": "26ab87f414e638633592a14407b3988a8f557266"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-psr7bridge/zipball/86c0b53b0c6381391c4add4a93a56e51d5c74605",
-                "reference": "86c0b53b0c6381391c4add4a93a56e51d5c74605",
-                "shasum": ""
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-psr7bridge-0.2.2-d15212.zip",
+                "reference": "26ab87f414e638633592a14407b3988a8f557266",
+                "shasum": "1ec47423555b8cd164fb0e7bd65ad295fb0cb7d3"
             },
             "require": {
                 "php": ">=5.5",
@@ -5079,7 +5084,11 @@
                     "Zend\\Psr7Bridge\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "ZendTest\\Psr7Bridge\\": "test/"
+                }
+            },
             "license": [
                 "BSD-3-Clause"
             ],
@@ -5090,6 +5099,10 @@
                 "psr",
                 "psr-7"
             ],
+            "support": {
+                "issues": "https://github.com/zendframework/zend-psr7bridge/issues",
+                "source": "https://github.com/zendframework/zend-psr7bridge"
+            },
             "time": "2016-05-10T21:44:39+00:00"
         },
         {
@@ -5509,7 +5522,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-stdlib-2.7.7-19d9a4.zip",
                 "reference": "baa65aec7bc75260254b5f03447f0c16360f9e59",
-                "shasum": "359141af3a31435fd312b0db47604a424bb113cf"
+                "shasum": "adb22f4ae76eaacb97d1918fac49dd6b41ae52df"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -5655,7 +5668,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-test-2.6.1-ba0c01.zip",
                 "reference": "942172f77260ddcba4bf4387d64e959f34675afa",
-                "shasum": "a59495d6cb99b006540bf6479c919d6946dc24a3"
+                "shasum": "95f3b7559027111f11fa3f3c3456a4e54067915b"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -5869,17 +5882,17 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "2.11.0",
+            "version": "2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "5e3bead30549fb2985a6279905e0a5f1fedf92c6"
+                "reference": "0bb5cc294139d4f3513470cdf95d931f5b67b5d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-validator-2.11.0-1eed1b.zip",
-                "reference": "5e3bead30549fb2985a6279905e0a5f1fedf92c6",
-                "shasum": "6f6d5489bb5fbaf0645726b1940ebce20c837839"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-validator-2.11.1-5d9172.zip",
+                "reference": "0bb5cc294139d4f3513470cdf95d931f5b67b5d6",
+                "shasum": "ed1fef4b71c255966025f9829cbc8e5789a77088"
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
@@ -5960,7 +5973,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2018-12-13T21:23:15+00:00"
+            "time": "2019-01-29T22:26:39+00:00"
         },
         {
             "name": "zendframework/zend-version",
@@ -5974,7 +5987,7 @@
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zend-version-2.5.1-45d110.zip",
                 "reference": "9635dd35e0e0d7b759c47c62a86ab3f558e58d4b",
-                "shasum": "d88ab97a91eab1665bf8051fe824ed9dab040790"
+                "shasum": "085974c0d82f9b03a32765371a7170d551a4e5b4"
             },
             "require": {
                 "php": ">=5.3.23",
@@ -6316,13 +6329,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zendframework.git",
-                "reference": "aeb432d59410cd9a4a68166738745387a9bf49ab"
+                "reference": "001c3e28c2f02a259c23c06ede356c1dc6203d14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zendframework/zipball/aeb432d59410cd9a4a68166738745387a9bf49ab",
-                "reference": "aeb432d59410cd9a4a68166738745387a9bf49ab",
-                "shasum": "4c8a239b2d7f3dd5e087432c3cb07e445a652373"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.5.3-f21828.zip",
+                "reference": "001c3e28c2f02a259c23c06ede356c1dc6203d14",
+                "shasum": "6f5bd5e234c57e8d93891849432cbde301d28ba9"
             },
             "require": {
                 "php": "^5.5 || ^7.0",
@@ -6491,7 +6504,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/zendframework/ZFTool/zipball/840c3eecd58454396983d84d1da293813af484af",
                 "reference": "840c3eecd58454396983d84d1da293813af484af",
-                "shasum": "e808b530e1b92348a1d4ebb7ef2f0a0dc3c9c55a"
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
@@ -6527,6 +6540,7 @@
                     "ZFTool\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],

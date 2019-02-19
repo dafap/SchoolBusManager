@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmGestion\Controller;
 
@@ -601,6 +601,7 @@ class FinanceController extends AbstractActionController
         }
         
         $form1 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        $form1->setAttribute('id', 'bordereau-en-cours');
         $form1->setValueOptions('bordereau', $bordereauxEnCours);
         $editerSubmit = $form1->get('editer');
         $editerSubmit->setAttribute('formaction', 
@@ -613,12 +614,14 @@ class FinanceController extends AbstractActionController
                 ]));
         
         $form2 = new \SbmGestion\Form\Finances\BordereauRemiseValeurCreer();
+        $form2->setAttribute('id', 'bordereau-preparer');
         $form2->setValueOptions('codeModeDePaiement', $nouveauxPossibles)->setValueOptions(
             'codeCaisse', 
             $this->db_manager->get('Sbm\Db\Select\Libelles')
                 ->caisse());
         
         $form3 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        $form3->setAttribute('id', 'bordereau-cloture');
         $form3->setValueOptions('bordereau', $bordereauxClotures);
         $editerSubmit = $form3->get('editer');
         $editerSubmit->setAttribute('formaction', 

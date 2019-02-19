@@ -7,8 +7,8 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
- * @version 2018-2.4.5
+ * @date 5 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\StdLib;
 
@@ -16,7 +16,8 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $url_rapports = $this->url('sbmgestion/transport', 
     [
         'action' => 'transporteur-service-pdf',
-        'page' => $this->page
+        'page' => $this->page,
+        'pr' => $this->pageRetour
     ]);
 $url_retour = $this->url('sbmgestion/transport', 
     [
@@ -26,7 +27,8 @@ $url_retour = $this->url('sbmgestion/transport',
 $url_group = $this->url('sbmgestion/transport', 
     [
         'action' => 'service-group',
-        'id' => $this->page
+        'pr' => $this->page,
+        'id' => $this->pageRetour
     ]);
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
@@ -56,10 +58,17 @@ $data = $this->paginator->getCurrentItems();
 ?>
 <h1>Liste des services d'un transporteur</h1>
 <div id="liste-wrapper">
-	<div id="liste-title">
-		<ul>
+	<div id="liste-title" class="clearfix">
+		<ul class="float-left">
 			<li><?php echo $this->escapeHtml($this->transporteur->nom); ?></li>
 		</ul>
+		<div class="flashMessenger float-right">
+		    <?= $this->flashMessenger()->render('success');?>
+		    <?= $this->flashMessenger()->render('warning');?>
+		    <?= $this->flashMessenger()->render('error');?>
+		    <?= $this->flashMessenger()->render('info');?>
+		    <?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-header" class="clearfix">
 		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>

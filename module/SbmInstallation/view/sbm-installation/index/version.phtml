@@ -7,13 +7,13 @@
  * @filesource version.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2018
- * @version 2018-2.4.4
+ * @date 15 fév. 2019
+ * @version 2019-2.4.7
  */
 use Zend\Version\Version;
 use Zend\Json\Json;
 
-define('SBM_VERSION', '2.4.6');
+define('SBM_VERSION', '2.4.7');
 
 function versionTcpdfGitHub()
 {
@@ -26,15 +26,29 @@ function versionTcpdfGitHub()
     $url = 'https://api.github.com/repos/tecnickcom/TCPDF/tags';
     $apiResponse = file_get_contents($url, false, $context);
     $decodedResponse = Json::decode($apiResponse, Json::TYPE_ARRAY);
-    return $decodedResponse[0]['name'];
+    $last_version = current($decodedResponse);
+    if ($last_version['name'] == 'OLDv6') {
+        $last_version = next($decodedResponse);
+    }
+    return $last_version['name'];
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+$this->headScript()->captureStart();
+?>
+function initMap() {
+    $("#maps").html(google.maps.version);
+}
+<?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->prependFile($this->url_maps_api . '&callback=initMap');
 $this->inlineScript()->captureStart();
 ?>
 $(function() {
     $("#jquery").html($.fn.jquery);
+    $("#tinymce").html(tinymce.majorVersion + '.' + tinymce.minorVersion);
 });
 <?php
 $this->inlineScript()->captureEnd();
@@ -64,14 +78,12 @@ if ($gdInfo['GIF Read Support']) {
 	<div id="version-header">
 		<div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions)?></div>
 	</div>
-	<div id="version-inner">
-		<dl>
+	<div id="version-inner" class="clearfix">
+		<dl class="float-left" style="width: 48%">
 			<dt>Version de School bus manager</dt>
 			<dd><?php echo SBM_VERSION; ?></dd>
 			<dt>Version de PHP</dt>
 			<dd><?php echo phpversion();?></dd>
-			<dt>Version bibliothèque GD</dt>
-			<dd><?php echo $gd_infos;?></dd>
 			<dt>Version de ZF2</dt>
 			<dd>Version installée: <?php echo Version::VERSION;?><br>
 	    <?php if (Version::isLatest()):?>
@@ -80,15 +92,29 @@ if ($gdInfo['GIF Read Support']) {
 	    Il y a une nouvelle version <?php echo Version::getLatest();?>
 	    <?php endif;?>
 	        </dd>
-			<dt>Version JQuery</dt>
-			<dd>Version installée: <span id="jquery"></span></dd>
 			<dt>Version de TCPDF</dt>
-			<dd>Version installée: <?php echo $vtcpdf = \TCPDF_STATIC::getTCPDFVersion();?><br>
+			<dd>Version installée: <?php echo $vtcpdf = \SbmPdf\Model\Tcpdf::getVersion();?><br>
 		<?php if ($vtcpdf == versionTcpdfGitHub()) :?>
 		C'est la dernière version.
 		<?php else :?>
 		Il y a une nouvelle version <?php echo versionTcpdfGitHub();?>
 		<?php endif;?>
+			</dd>
+		</dl>
+		<dl class="float-left" style="width: 48%">
+			<dt>Version bibliothèque GD</dt>
+			<dd><?php echo $gd_infos;?></dd>
+			<dt>Version JQuery</dt>
+			<dd>
+				Version installée: <span id="jquery"></span>
+			</dd>
+			<dt>Version TinyMCE</dt>
+			<dd>
+				Version installée: <span id="tinymce"></span>
+			</dd>
+			<dt>Version Google Maps API</dt>
+			<dd>
+				Version utilisée: <span id="maps"></span>
 			</dd>
 		</dl>
 	</div>

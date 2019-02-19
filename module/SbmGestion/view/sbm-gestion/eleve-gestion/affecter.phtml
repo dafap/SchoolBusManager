@@ -9,8 +9,8 @@
  * @filesource affecter.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 // test sur le formulaire decision
 
@@ -37,7 +37,7 @@ $latCentre = ($this->ptElv->getLatitude() + $this->ptEta->getLatitude()) / 2;
 $lngCentre = ($this->ptElv->getLongitude() + $this->ptEta->getLongitude()) / 2;
 // page html
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->jQuery();
 $this->headScript()->appendFile($this->url_api);
 $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->appendFile('/js/maps/carte.js');

@@ -4,13 +4,25 @@
  *
  * Ce formulaire s'ouvre en popup par le jQuery dialog dans la fiche d'un RPI
  * 
+ * ATTENTION !!! 
+ * Dans un formulaire s'ouvrant en `dialog`, pour éviter le warning :
+ * [Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because 
+ * of its detrimental effects to the end user's experience.
+ * ON NE DOIT PAS CHARGER DE SCRIPT en utilisant une ligne comme :
+ * $this->headScript()->appendFile($this->basePath('js/ajax/formrpi.js'));
+ * IL FAUT CHARGER LES SCRIPTS DANS LA FENETRE MERE.
+ * Mais, comme les éléments du formulaire du popup `dialog` ne sont pas en place
+ * au moment du chargement de la page, IL FAUT RETARDER LA MISE EN PLACE des triggers.
+ * Aussi, les scripts relatifs à la popup `dialog`sont mis dans une fonction et seront
+ * initialisés après le chargement de la popup.
+ * 
  * @project sbm
  * @package SbmAjax/view/sbm-ajax/admin
  * @filesource rpicommuneform.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 août 2018
- * @version 2018-2.4.2
+ * @date 13 fév. 2019
+ * @version 2019-2.4.7
  */
 ?>
 <?php $this->headStyle()->captureStart(); ?>
@@ -36,12 +48,10 @@
 }
 <?php $this->headStyle()->captureEnd(); ?>
 <?= $this->headStyle();?>
-<?php //$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));?>
-<?php $this->headScript()->appendFile($this->basePath('js/ajax/formrpi.js'));?>
-<?= $this->headScript();?>
 <?php $this->inlineScript()->captureStart();?>
-affectation.init(<?= $this->is_xmlhttprequest; ?>);
+js_form().init(<?= $this->is_xmlhttprequest; ?>);
 <?php $this->inlineScript()->captureEnd();?>
+<?= $this->inlineScript();?>
 <dl>
 	<dt><?= $this->etablissement;?></dt>
 	<dd><?= $this->commune;?></dd>

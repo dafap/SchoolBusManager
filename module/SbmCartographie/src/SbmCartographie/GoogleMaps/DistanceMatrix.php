@@ -27,7 +27,7 @@ class DistanceMatrix
 
     /**
      * Contexte de flux nécessaire pour les appels ssl
-     * 
+     *
      * @var \resource
      */
     private $context;
@@ -38,26 +38,30 @@ class DistanceMatrix
      */
     private $projection;
 
-    public function __construct($projection, $google_api_distanceMatrix)
+    public function __construct($projection, $google_api_distanceMatrix, $scheme = null)
     {
         $this->projection = $projection;
         $this->google_distancematrix_url = $google_api_distanceMatrix;
-        $cafile = __DIR__ . '/../../../config/cacert.pem';
-        $this->context = stream_context_create(
-            [
-                'ssl' => [
-                    'cafile' => $cafile
-                ]
-            ]);
+        if (is_null($scheme) || $scheme == 'http') {
+            $this->context = null;
+        } else {
+            $cafile = __DIR__ . '/../../../config/cacert.pem';
+            $this->context = stream_context_create(
+                [
+                    'ssl' => [
+                        'cafile' => $cafile
+                    ]
+                ]);
+        }
     }
 
     /**
      * Centralisation des appels à l'API
-     * 
-     * @param array(Point)|Point $origines
-     * @param array(Point)|Point $destinations
-     * 
-     * @return mixed 
+     *
+     * @param array(Point)|Point $origines            
+     * @param array(Point)|Point $destinations            
+     *
+     * @return mixed
      * @see json_decode
      */
     public function getJsonResult($origines, $destinations)

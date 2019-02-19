@@ -8,15 +8,11 @@
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 jan. 2019
- * @version 2019-2.4.6
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet(
-    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile(
-    $this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->jQuery('jquery-ui');
 $this->headScript()->appendFile($this->basepath('/js/parent/edit-eleve.js'));
 $texteDemandeR2 = <<<EOT
 La Communauté de communes vous informe que le transport pour cette 2ème adresse ne sera 

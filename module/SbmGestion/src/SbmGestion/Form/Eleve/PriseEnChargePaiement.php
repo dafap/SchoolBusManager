@@ -10,8 +10,8 @@
  * @filesource PriseEnChargePaiement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -23,7 +23,7 @@ class PriseEnChargePaiement extends Form implements InputFilterProviderInterface
 
     public function __construct()
     {
-        parent::__construct('formpaiement');
+        parent::__construct('priseenchargepaiement-form');
         $this->setAttribute('method', 'post');
         $this->add(
             [
@@ -55,7 +55,7 @@ class PriseEnChargePaiement extends Form implements InputFilterProviderInterface
                             'value' => '0',
                             'label' => 'Famille',
                             'attributes' => [
-                                'id' => 'gratuitradio0',
+                                'id' => 'priseenchargepaiement-gratuitradio0',
                                 'checked' => 'checked'
                             ]
                         ],
@@ -63,14 +63,14 @@ class PriseEnChargePaiement extends Form implements InputFilterProviderInterface
                             'value' => '1',
                             'label' => 'Gratuit',
                             'attributes' => [
-                                'id' => 'gratuitradio1'
+                                'id' => 'priseenchargepaiement-gratuitradio1'
                             ]
                         ],
                         [
                             'value' => '2',
                             'label' => 'Organisme',
                             'attributes' => [
-                                'id' => 'gratuitradio2'
+                                'id' => 'priseenchargepaiement-gratuitradio2'
                             ]
                         ]
                     ],
@@ -84,7 +84,7 @@ class PriseEnChargePaiement extends Form implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'organismeId',
                 'attributes' => [
-                    'id' => 'scolarites-organismeId',
+                    'id' => 'priseenchargepaiement-organismeId',
                     'class' => 'sbm-width-45c'
                 ],
                 'options' => [
@@ -106,6 +106,7 @@ class PriseEnChargePaiement extends Form implements InputFilterProviderInterface
                 'name' => 'submit',
                 'attributes' => [
                     'type' => 'submit',
+                    'id' => 'priseenchargepaiement-submit',
                     'value' => 'Enregistrer',
                     'class' => 'button default submit'
                 ]
@@ -115,6 +116,7 @@ class PriseEnChargePaiement extends Form implements InputFilterProviderInterface
                 'name' => 'cancel',
                 'attributes' => [
                     'type' => 'submit',
+                    'id' => 'priseenchargepaiement-cancel',
                     'value' => 'Abandonner',
                     'class' => 'button default cancel'
                 ]
@@ -129,5 +131,16 @@ class PriseEnChargePaiement extends Form implements InputFilterProviderInterface
                 'required' => false
             ]
         ];
+    }
+    
+    public function isValid()
+    {
+        if ($this->data['gratuit'] != 2) {
+            $this->data['organismeId'] = null;
+        } elseif (empty($this->data['organismeId'])) {
+            $this->get('organismeId')->setMessages(["Il faut choisir l'organisme payeur."]);
+            return false;
+        } 
+        return parent::isValid();
     }
 }

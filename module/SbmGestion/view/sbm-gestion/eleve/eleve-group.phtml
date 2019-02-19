@@ -8,13 +8,13 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 jan. 2019
- * @version 2019-2.4.6
+ * @date 14 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-// $this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 
 // le paginateur
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
