@@ -13,8 +13,8 @@
  * @filesource pdf-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 15 fév. 2019
+ * @version 2019-2.4.7
  */
 use Zend\Form\View\Helper\FormRow;
 
@@ -84,12 +84,9 @@ function blocAccordeon2cols($view, $label, $array2d)
     echo '</div>';
 }
 // =============================================================================================
-$this->headLink()
-    ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
-    ->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery('jquery-ui');
 $this->headScript()
-    ->appendFile($this->basePath('/js/jquery.min.js'))
-    ->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'))
     ->appendFile($this->basePath('js/tinymce/tinymce.min.js'))
     ->appendFile($this->basePath('js/pdf-document.js'));
 $this->inlineScript()->captureStart();

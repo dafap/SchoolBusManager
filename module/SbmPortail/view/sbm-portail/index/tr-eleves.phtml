@@ -7,8 +7,8 @@
  * @filesource tr-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\DateLib;
 
@@ -47,7 +47,7 @@ try {
 	</div>
 </div>
 <?php
-    // fin du catch (affichage d'une page d'erreur)
+   return;  // fin du catch (affichage d'une page d'erreur)
 }
 
 // les url à utiliser
@@ -61,24 +61,11 @@ $url_responsable = $this->url('sbmportail',
         'action' => 'tr-responsable',
         'page' => $this->page
     ]);
-$url_group = $this->url('sbmportail', 
-    [
-        'action' => 'tr-famille',
-        'page' => $this->page
-    ]);
 $url_rapports = $this->url('sbmportail', 
     [
         'action' => 'tr-pdf',
         'page' => $this->page
     ]);
-$url_map = $this->url('sbmcarte', 
-    [
-        'action' => 'eleves',
-        'page' => $this->page
-    ]);
-$url_retour = $this->url('sbmportail', [
-    'action' => 'retour'
-]);
 $url_telephones = $this->url('sbmportail', 
     [
         'action' => 'tr-extraction-telephones',
@@ -96,7 +83,8 @@ $actions = [
     'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $url_rapports,
-        'title' => 'Liste à imprimer'
+        'title' => 'Liste à imprimer',
+		'formtarget' => '_blank'
     ]
 ];
 if ($this->categorie == 2) {
@@ -132,13 +120,9 @@ echo $this->flashMessenger()->render('default');
 					<th>Classe</th>
 					<th>Circuits</th>
 					<th>Arrêts</th>
-					<th></th>
 				</tr>
-        <?php foreach($eleves as $test => $eleve): ?>
+        <?php foreach($eleves as $eleve): ?>
         <?php
-            // echo '<pre>';
-            // die(print_r($eleve));
-            // responsable
             $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable']), 
                 ENT_QUOTES, 'utf-8', false);
             $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1', 
@@ -153,13 +137,7 @@ echo $this->flashMessenger()->render('default');
                         'formaction' => $url_responsable,
                         'title' => 'Voir sa fiche',
                         'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'voir r1')
-                    ],
-                    /*'localiser' => [
-                    'class' => 'fam-map-magnify',
-                    'formaction' => $url_map,
-                    'title' => 'Localiser cette adresse sur la carte',
-                    'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'localiser r1')
-                    ]*/
+                    ]
                 ], [
                     'style' => 'display: inline;'
                 ]);
@@ -192,25 +170,6 @@ echo $this->flashMessenger()->render('default');
 					<td class="classe"><?php echo $this->escapeHtml($eleve['classe']);?></td>
 					<td><?php echo $circuit;?></td>
 					<td><?php echo $arret;?></td>
-					<td class="boutons">
-            <?php
-            $hiddens = [
-                'eleveId' => $eleve['eleveId'],
-                'info' => $eleve['nom'] . ' ' . $eleve['prenom'],
-                'origine' => $url_ici
-            ];
-            $buttons = [
-                'famille' => [
-                    'class' => 'fam-group',
-                    'formaction' => $url_group,
-                    'title' => 'élèves de la même famille',
-                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', 
-                        trim($eleve['responsableId']), '|')
-                ]
-            ];
-            // echo $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);
-            ?>
-				</td>
 				</tr>         
         <?php endforeach;?>
     </tbody>

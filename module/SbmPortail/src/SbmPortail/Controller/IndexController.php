@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmPortail\Controller;
 
@@ -85,7 +85,6 @@ class IndexController extends AbstractActionController
     {
         $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
         $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
-        $statPaiement = $this->db_manager->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
         return new ViewModel(
             [
@@ -112,8 +111,7 @@ class IndexController extends AbstractActionController
                 'responsablesHorsZone' => current(
                     $statResponsable->getNbCommuneNonMembre())['effectif'],
                 'responsablesDemenagement' => current(
-                    $statResponsable->getNbDemenagement())['effectif'],
-                'paiements' => $statPaiement->getSumByAsMode($millesime)
+                    $statResponsable->getNbDemenagement())['effectif']
             ]);
     }
 
@@ -126,7 +124,6 @@ class IndexController extends AbstractActionController
                     'action' => 'home-page'
                 ]);
         }
-        $userId = $auth->getUserId();
         
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -217,9 +214,6 @@ class IndexController extends AbstractActionController
                     'action' => 'home-page'
                 ]);
         }
-        $identity = $auth->getIdentity();
-        $userId = $auth->getUserId();
-        $currentPage = $this->params('page', 1);
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
@@ -228,24 +222,19 @@ class IndexController extends AbstractActionController
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-        $filtre = [
-            'criteres' => [],
-            'strict' => [
-                'empty' => [],
-                'not empty' => []
-            ]
-        ];
-        $expressions = [];
-        $where = $criteres_obj->getWherePdfForEleves();
+        $where = $criteres_obj->getWhereForEleves();
         $documentId = 'List élèves portail organisateur';
         
-        $call_pdf = $this->RenderPdfService;
-        if ($docaffectationId = $this->params('id', false)) {
-            // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
-            $call_pdf->setParam('docaffectationId', $docaffectationId);
-        }
-        $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
-        $call_pdf->renderPdf();
+        $this->RenderPdfService->setParam('documentId', $documentId)
+            ->setParam('layout', 'sbm-pdf/layout/org-pdf.phtml')
+            ->setParam('where', $where)
+            ->setData(
+            $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
+                ->getScolaritesR($where, [
+                'nom',
+                'prenom'
+            ]))
+            ->renderPdf();
         
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -288,7 +277,7 @@ class IndexController extends AbstractActionController
             $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                 $userId);
             
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement();
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(true);
             
             $elevesTransportes = StdLib::getParamR(
                 [
@@ -299,7 +288,7 @@ class IndexController extends AbstractActionController
             $services = $this->db_manager->get('Sbm\Db\Query\Services')->getServicesGivenEtablissement(
                 $etablissementId);
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement(
-                $etablissementId);
+                $etablissementId, true);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $elevesTransportes = '';
             $services = [];
@@ -332,7 +321,7 @@ class IndexController extends AbstractActionController
         try {
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur();
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(true);
             $elevesATransporter = StdLib::getParamR(
                 [
                     $transporteurId,
@@ -343,7 +332,7 @@ class IndexController extends AbstractActionController
                     'transporteurId' => $transporteurId
                 ]);
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService(
-                $transporteurId);
+                $transporteurId, true);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $transporteurId = null;
             $elevesATransporter = '';
@@ -514,9 +503,7 @@ class IndexController extends AbstractActionController
                     'action' => 'home-page'
                 ]);
         }
-        $identity = $auth->getIdentity();
         $userId = $auth->getUserId();
-        $currentPage = $this->params('page', 1);
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
@@ -525,14 +512,6 @@ class IndexController extends AbstractActionController
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-        $filtre = [
-            'criteres' => [],
-            'strict' => [
-                'empty' => [],
-                'not empty' => []
-            ]
-        ];
-        $expressions = [];
         switch ($auth->getCategorieId()) {
             case 2:
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
@@ -671,7 +650,6 @@ class IndexController extends AbstractActionController
         $userId = $auth->getUserId();
         $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
             $userId);
-        $currentPage = $this->params('page', 1);
         
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(

@@ -7,13 +7,14 @@
  * @filesource org-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
+use SbmBase\Model\StdLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_retour = $this->url('sbmportail');
-$url_ici = $this->url();
 $url_circuits = $this->url('sbmportail', [
     'action' => 'tr-circuits'
 ]);
@@ -77,7 +78,7 @@ echo $this->flashMessenger()->render('default');
 					<td class="transporteur"><?php echo $this->escapeHtml($service['transporteur']); ?></td>
 					<td class="operateur"><?php echo $this->escapeHtml($service['operateur']); ?></td>
 					<td class="nb-places"><?php echo $service['nbPlaces'];?></td>
-					<td class="effectif"><?php echo empty($this->statServices[$serviceId]['total']) ? 0 : $this->statServices[$serviceId]['total'];?></td>
+					<td class="effectif"><?php echo StdLib::getParamR([$serviceId,'total'], $this->statServices, 0);?></td>
 					<td class="etablissements"><?php echo nl2br($this->escapeHtml($etablissements));?></td>
 					<td class="boutons">
             <?php

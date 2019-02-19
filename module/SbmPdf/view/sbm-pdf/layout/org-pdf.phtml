@@ -13,8 +13,8 @@
  * @filesource org-pdf.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\DateLib;
 
@@ -57,7 +57,7 @@ table.eleves td.centre {
 			<th>Arrêts</th>
 			<th>État</th>
 		</tr>
-        <?php foreach($this->eleves as $test => $eleve): ?>
+        <?php foreach($this->eleves as $eleve): ?>
         <?php
             $r = [];
             $circuits = [];

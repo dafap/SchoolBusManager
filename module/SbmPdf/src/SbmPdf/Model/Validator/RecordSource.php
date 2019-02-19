@@ -7,11 +7,12 @@
  * @filesource RecordSource.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 août 2017
- * @version 2017-2.3.6
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmPdf\Model\Validator;
 
+use SbmPdf\Model\QuerySourceTrait;								  
 use Zend\Validator\AbstractValidator;
 use Zend\Validator\Exception;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -23,6 +24,7 @@ use SbmBase\Model\Session;
 
 class RecordSource extends AbstractValidator
 {
+	use QuerySourceTrait;					 
 
     /**
      * Error constants
@@ -80,28 +82,9 @@ class RecordSource extends AbstractValidator
         // vérifie qu'il s'agit d'une requête Sql
         try {
             // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-            $value = str_replace(
-                [
-                    '%date%',
-                    '%heure%',
-                    '%millesime%',
-                    '%userId%',
-                    '%gt%',
-                    '%gtOrEq%',
-                    '%lt%',
-                    '%ltOrEq%'
-                ], 
-                [
-                    date('Y-m-d'),
-                    date('H:i:s'),
-                    Session::get('millesime'),
-                    $this->auth_userId,
-                    '>',
-                    '>=',
-                    '<',
-                    '<='
-                ], $value);
-            $result = $this->db_manager->getDbAdapter()->query($value, 
+            // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
+            $value = $this->decodeSource($value, $this->auth_userId);
+            $this->db_manager->getDbAdapter()->query($value, 
                 \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
             return true;
         } catch (\PDOException $e) {

@@ -15,6 +15,8 @@
  * @date 4 avr. 2018
  * @version 2018-2.4.0
  */
+use SbmBase\Model\StdLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_horaires = $this->url('sbmdocument', [
@@ -65,6 +67,10 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<?php foreach ($this->services as $service):?>
 				    <?php
+        $effectif = Stdlib::getParamR([
+            $service->serviceId,
+            'total'
+        ], $this->statServices, 0);
         $hiddens = [
             'serviceId' => $service->serviceId
         ];
@@ -79,7 +85,7 @@ echo $this->flashMessenger()->render('default');
 				<tr>
 					<td><?php echo $service->serviceId;?></td>
 					<td><?php echo $service->nom;?></td>
-					<td class="effectif"><?php echo empty($this->statServices[$service->serviceId]['total']) ? 0 : $this->statServices[$service->serviceId]['total'];?></td>
+					<td class="effectif"><?php echo $effectif;?></td>
 					<td><?php echo $this->listeLigneActions($service->serviceId, $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>				
@@ -95,7 +101,7 @@ echo $this->flashMessenger()->render('default');
 			<ul>
 				<li><a href="<?php echo $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
 						des élèves</a></li>
-				<li><a href="<?php echo $url_horaires; ?>"><i class="fam-bullet-go"></i>Fiches
+				<li><a href="<?php echo $url_horaires; ?>" target="_blank"><i class="fam-bullet-go"></i>Fiches
 						horaires des circuits</a></li>
 				<li><a href="<?php echo $url_carte_stations; ?>"><i
 						class="fam-bullet-go"></i>Carte des points d'arrêts</a></li>

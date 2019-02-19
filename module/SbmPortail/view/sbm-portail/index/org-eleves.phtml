@@ -9,16 +9,12 @@
  * @filesource org-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-
-// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
-// (ne pas mettre de guillemet dans la chaine)
-$js_op = 'window.document.getElementById(\'op%s%s\').value=\'%s\';';
 
 // le paginateur
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
@@ -49,7 +45,7 @@ try {
 	</div>
 </div>
 <?php
-    // fin du catch (affichage d'une page d'erreur)
+    return; // fin du catch (affichage d'une page d'erreur)
 }
 
 // les url à utiliser
@@ -58,32 +54,9 @@ $url_ici = $this->url('sbmportail',
         'action' => 'org-eleves',
         'page' => $this->page
     ]);
-$url_responsable = $this->url('sbmportail', 
-    [
-        'action' => 'org-responsable',
-        'page' => $this->page
-    ]);
-$url_group = $this->url('sbmportail', 
-    [
-        'action' => 'org-famille',
-        'page' => $this->page
-    ]);
 $url_rapports = $this->url('sbmportail', 
     [
         'action' => 'org-pdf',
-        'page' => $this->page
-    ]);
-$url_map = $this->url('sbmcarte', 
-    [
-        'action' => 'eleves',
-        'page' => $this->page
-    ]);
-$url_retour = $this->url('sbmportail', [
-    'action' => 'retour'
-]);
-$url_telephones = $this->url('sbmportail', 
-    [
-        'action' => 'tr-extraction-telephones',
         'page' => $this->page
     ]);
 
@@ -98,7 +71,8 @@ $actions = [
     'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $url_rapports,
-        'title' => 'Liste à imprimer'
+        'title' => 'Liste à imprimer',
+		'formtarget' => '_blank'
     ]
 ];
 ?>
@@ -129,11 +103,8 @@ echo $this->flashMessenger()->render('default');
 					<th>Arrêts</th>
 					<th>État</th>
 				</tr>
-        <?php foreach($eleves as $test => $eleve): ?>
+        <?php foreach($eleves as $eleve): ?>
         <?php
-            // echo '<pre>';
-            // die(print_r($eleve));
-            // responsables
             $r = [];
             $circuits = [];
             $arrets = [];

@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 jan. 2019
- * @version 2019-2.4.6
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
 namespace SbmPdf\Model;
 
@@ -30,6 +30,7 @@ use SbmPdf\Model\Db\Sql\Select;
 
 class Tcpdf extends \TCPDF
 {
+	use QuerySourceTrait;					 
 
     const HORS_SECTION = 0;
 
@@ -130,6 +131,16 @@ class Tcpdf extends \TCPDF
         $this->last_page_docheader = 0;
         parent::__construct(null, PDF_UNIT);
     }
+    
+    /**
+     * Renvoie la version courante de TCPDF
+     * 
+     * @return string
+     */
+    public static function getVersion()
+    {
+        return \TCPDF_STATIC::getTCPDFVersion();
+    }
 
     /**
      * Initialise les paramètres
@@ -141,6 +152,12 @@ class Tcpdf extends \TCPDF
      */
     public function setParams($params = [])
     {
+        global $l;
+
+        if (array_key_exists('data', $params)) {
+            $this->setData($params['data']);
+            unset($params['data']);
+        }
         $this->params = $params;
         
         // document pdf
@@ -192,20 +209,30 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Configure la propriété $data
+     * Configure la propriété $data de sorte que chaque ligne se comporte comme un tableau
+     * associatif
      *
-     * @param array $data            
+     * @param array|\Iterator $data            
      */
-    public function setData(array $data)
+    public function setData($data)
     {
-        $this->data = $data;
+        if ($data instanceof \Zend\Db\Adapter\Driver\Pdo\Result) {
+            $data->setFetchMode(\PDO::FETCH_ASSOC);
+            $this->data = $data;
+        } elseif ($data instanceof \Iterator) {
+            $this->data = iterator_to_array($data);
+        } elseif (! is_array($data)) {
+            throw new Exception('Mauvais type de données.');
+        } else {
+            $this->data = $data;
+        }
         return $this;
     }
 
     /**
-     * Renvoie le tableau des données
+     * Renvoie le tableau des données ou un iterator se comportant comme tel
      *
-     * @return \SbmPdf\Model\array
+     * @return array
      */
     public function getData()
     {
@@ -1574,30 +1601,11 @@ class Tcpdf extends \TCPDF
                 if (empty($columns)) {
                     $columns[] = Select::SQL_STAR;
                 }
-                $recordSource = $this->getConfig('document', 'recordSource', '');
-                $recordSource = str_replace(
-                    [
-                        '%date%',
-                        '%heure%',
-                        '%millesime%',
-                        '%userId%',
-                        '%gt%',
-                        '%gtOrEq%',
-                        '%lt%',
-                        '%ltOrEq%'
-                    ], 
-                    [
-                        date('Y-m-d'),
-                        date('H:i:s'),
-                        Session::get('millesime'),
+                $recordSource = $this->decodeSource(
+                    $this->getConfig('document', 'recordSource', ''),
                         $this->pdf_manager->get('SbmAuthentification\Authentication')
                             ->by()
-                            ->getUserId(),
-                        '>',
-                        '>=',
-                        '<',
-                        '<='
-                    ], $recordSource);
+                            ->getUserId());
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 try {
                     $select = new Select($recordSource);
@@ -1972,32 +1980,13 @@ class Tcpdf extends \TCPDF
                  * S'il n'y a pas de description des colonnes dans la table doccolumns
                  * alors on en crée une par défaut.
                  */
-                $sql = $this->getConfig('document', 'recordSource', '');
-                // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-                $sql = str_replace(
-                    [
-                        '%date%',
-                        '%heure%',
-                        '%millesime%',
-                        '%userId%',
-                        '%gt%',
-                        '%gtOrEq%',
-                        '%lt%',
-                        '%ltOrEq%'
-                    ], 
-                    [
-                        date('Y-m-d'),
-                        date('H:i:s'),
-                        Session::get('millesime'),
+                // remplacement des variables %millesime%, %date%, %heure% et %userId%
+                // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
+                $sql = $this->decodeSource(
+                    $this->getConfig('document', 'recordSource', ''),
                         $this->pdf_manager->get('SbmAuthentification\Authentication')
                             ->by()
-                            ->getUserId(),
-                        '>',
-                        '>=',
-                        '<',
-                        '<='
-                    ], $sql);
-                //
+                            ->getUserId());
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 
                 try {
@@ -2404,13 +2393,18 @@ class Tcpdf extends \TCPDF
     // =======================================================================================================
     // Modèle particulier pour la liste des élèves dans le portail des organisateurs
     //
+    /**
+     * Liste associée à un layout et produisant un PDF à partir d'un modèle HTML
+     * Les données sont passées par la méthode setData, que ce soit directement dans
+     * cette classe ou par le service RenderPdfService.
+     */
     public function templateDocBodyMethod6($param = null)
     {
         /**
          * Identifiant du template
          */
         if (is_string($param) && $param == '?') {
-            return 'Liste des élèves pour portail organisateur';
+            return 'Liste associée à un modèle HTML (layout)';
         }
         $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec son chemin)
         if (empty($fichier_phtml)) {
@@ -2419,15 +2413,12 @@ class Tcpdf extends \TCPDF
         $viewRender = $this->pdf_manager->get('ViewRenderer');
         $layout = new ViewModel();
         $layout->setTemplate($fichier_phtml);
-        $saut_de_page = false;
-        $data = $this->getData();
         $layout->setVariables([
-            'eleves' => $data
+            'eleves' => $this->getData()
         ]);
         $codeHtml = $viewRender->render($layout);
         set_time_limit(300);
         // echo($codeHtml);
         $this->writeHTML($codeHtml, true, false, false, false, '');
-        $saut_de_page = true;
     }
 }

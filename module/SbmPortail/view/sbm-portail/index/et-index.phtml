@@ -12,9 +12,11 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 fév. 2019
+ * @version 2019-2.4.7
  */
+use SbmBase\Model\StdLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_horaires = $this->url('sbmdocument', [
@@ -81,8 +83,12 @@ echo $this->flashMessenger()->render('default');
 					<td><?php echo $service['nom'];?></td>
 					<td><?php echo $service['operateur'];?></td>
 					<td><?php echo $service['transporteur'];?></td>
-					<td class="effectif"><?php echo empty($this->statServices[$service['serviceId']]['total']) ? 0 : $this->statServices[$service['serviceId']]['total'];?></td>
-					<td><?php echo $this->listeLigneActions($service['serviceId'], $hiddens, $buttons);?></td>
+					<td class="effectif">
+						<?php echo StdLib::getParamR([$service['serviceId'],'total'], $this->statServices, 0);?>
+					</td>
+					<td>
+						<?php echo $this->listeLigneActions($service['serviceId'], $hiddens, $buttons);?>
+					</td>
 				</tr>
 				<?php endforeach;?>				
 			</tbody>
