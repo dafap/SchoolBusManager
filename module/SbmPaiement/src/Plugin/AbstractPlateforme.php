@@ -14,8 +14,8 @@
  * @filesource AbstractPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmPaiement\Plugin;
 
@@ -48,7 +48,7 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
      *
      * @var ServiceLocatorInterface
      */
-    private $db_manager;
+    protected $db_manager;
 
     /**
      * Configuration de la plateforme
@@ -386,7 +386,7 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
      *
      * @return array
      */
-    protected function getPlateformeConfig()
+    public function getPlateformeConfig()
     {
         return $this->config;
     }

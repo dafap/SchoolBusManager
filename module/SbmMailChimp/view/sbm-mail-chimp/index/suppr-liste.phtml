@@ -7,46 +7,39 @@
  * @filesource suppr-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
-$champ = $this->field_name;
-$segment = $this->segment_name;
 ?>
-<h1>Suppression d'une classe</h1>
+
+<h1>Suppression d'une liste de diffusion</h1>
 <div id="suppr-wrapper">
-	<p>Vous avez demandé la suppression <?php echo empty($champ) ? '' : 'd\'un champ'; ?> de la liste de diffusion :</p>
+	<p>Vous avez demandé la suppression 
+		<?= empty($this->field_name) ? '' : 'd\'un champ'; ?> de la liste de diffusion :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><span class="label">Nom :</span> <?php echo $this->escapeHtml($this->liste_info['name']); ?></li>
-			<li><span class="label">Organisateur :</span> <?php 
-			echo $this->escapeHtml(StdLib::getParamR([
-			    'contact',
-			    'company'
-			], $this->liste_info)); ?>
+			<li><span class="label">Nom :</span> 
+				<?= $this->escapeHtml($this->liste_info['name']); ?></li>
+			<li><span class="label">Organisateur :</span>
+				<?=$this->escapeHtml(StdLib::getParamR(['contact','company'],$this->liste_info));?>
 			</li>
-			<li><span class="label">Sujet :</span> <?php 
-			echo $this->escapeHtml(StdLib::getParamR([
-			    'campaign_defaults',
-			    'subject'
-			], $this->liste_info)); ?>
+			<li><span class="label">Sujet :</span> 
+				<?= $this->escapeHtml(StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info));?>
 			</li>
 			<?php if (! empty($champ)) : ?>
-			<li><b><span class="label">Champ à supprimer :</span> <?php 
-			echo sprintf('%d (%s)',$this->merge_id, $this->escapeHtml($this->field_name)); ?>
+			<li><b><span class="label">Champ à supprimer :</span> 
+				<?= sprintf('%d (%s)', $this->merge_id, $this->escapeHtml($this->field_name));?>
 			</b></li>
 			<?php elseif (! empty($segment)) :?>
-			<li><b><span class="label">Segment à supprimer :</span> <?php 
-			echo sprintf('%d (%s)',$this->segment_id, $this->escapeHtml($this->segment_name)); ?>
+			<li><b><span class="label">Segment à supprimer :</span> 
+				<?= sprintf('%d (%s)', $this->segment_id, $this->escapeHtml($this->segment_name));?>
 			</b></li>
 			<?php endif;?>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?>
+    <?= $this->form()->openTag($this->form);?>
+    <?= $this->formCollection($this->form);?>
+    <?= $this->form()->closeTag();?>
 </div>

@@ -9,8 +9,8 @@
  * @filesource LambertNTF4zones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 24 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -24,9 +24,9 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
     public function __construct($nzone)
     {
         if (! is_int($nzone) || $nzone < 1 || $nzone > 4) {
-            throw new Exception(
+            throw new Exception\DomainException(
                 __CLASS__ .
-                " - Zone $nzone inconnue. Le numéro de zone doit être un entier compris entre 44 et 50.");
+                " - Zone $nzone inconnue. Le numéro de zone doit être un entier compris entre 1 et 4.");
         }
         $this->ellipsoide = new Clarke1880Ign();
         $this->name = 'Lambert_Conformal_Conic_1SP';

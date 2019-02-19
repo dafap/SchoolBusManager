@@ -10,8 +10,8 @@
  * @filesource Session.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmBase\Model;
 
@@ -38,6 +38,7 @@ abstract class Session
     public static function get($param, $default = null,
         $sessionNamespace = self::SBM_DG_SESSION)
     {
+        $sessionNamespace = preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace);
         $session = new Container($sessionNamespace);
         return isset($session->{$param}) ? $session->{$param} : $default;
     }
@@ -55,6 +56,7 @@ abstract class Session
      */
     public static function set($param, $value, $sessionNamespace = self::SBM_DG_SESSION)
     {
+        $sessionNamespace = preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace);
         $session = new Container($sessionNamespace);
         $session->{$param} = $value;
     }
@@ -67,6 +69,7 @@ abstract class Session
      */
     public static function remove($param, $sessionNamespace = self::SBM_DG_SESSION)
     {
+        $sessionNamespace = preg_replace('/[^a-z0-9_\\\\]/i', '', $sessionNamespace);
         $session = new Container($sessionNamespace);
         unset($session->{$param});
     }

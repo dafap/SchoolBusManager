@@ -8,47 +8,72 @@
  * @filesource view/sbm-gestion/transport/classe-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => 'classe-liste',
-    'page' => $this->pageRetour
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'classe-group-pdf',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => 'classe-group',
-    'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'classe-liste',
+        'page' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'classe-group-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'classe-group',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_edit = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
-$hiddens = array(
+]);
+$url_mark_selection = $this->url('sbmgestion/transport',
+    [
+        'action' => 'classe-group-selection',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_add_photo = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$hiddens = [
     'classeId' => $this->classeId
-);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'classe-group'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'classe-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
-    'rapports' => $menuImpression['content']
-);
+    ],
+    'rapports' => $menuImpression['content'],
+    'marquer' => [
+        'class' => 'fam-basket-add',
+        'formaction' => $url_mark_selection,
+        'title' => 'Sélectionner toutes les fiches de cette liste'
+    ]
+];
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
@@ -58,22 +83,20 @@ $data = $this->paginator->getCurrentItems();
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
 		<ul class="float-left">
-			<li>classe : <?php echo $this->escapeHtml($this->classe->nom); ?></li>
+			<li>classe : <?= $this->escapeHtml($this->classe->nom); ?></li>
 		</ul>
 		<div class="flashMessenger float-right">
-		<?php
-		echo $this->flashMessenger()->render('success');
-		echo $this->flashMessenger()->render('warning');
-		echo $this->flashMessenger()->render('error');
-		echo $this->flashMessenger()->render('info');
-		echo $this->flashMessenger()->render('default');
-		?>
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo $this->paginator->getAdapter()->count($this->data); ?> prises en charge.</em>
+			<em>Il y a <?= $this->paginator->getTotalItemCount(); ?> prises en charge.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -94,48 +117,59 @@ $data = $this->paginator->getCurrentItems();
 					<th></th>
 				</tr>
 			<?php foreach ($data as $row):?>
-			<?php
-    $hiddens = array(
+				<?php
+    $hiddens = [
         'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
-    );
-    $buttons = array(
-        'modifier' => array(
+    ];
+    $buttons = [
+        'modifier' => [
             'class' => 'fam-pencil',
             'formaction' => $url_edit,
             'title' => 'Modifier'
-        )
-    );
+        ]
+    ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
     if (! empty($row['email'])) {
-        $buttons['ecrire'] = array(
+        $buttons['ecrire'] = [
             'class' => 'fam-email',
             'formaction' => $url_mail,
             'title' => 'Envoyer un email'
-        );
+        ];
     }
-    $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+    $this->pictogrammes('init')
+        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto']);
     ?>
-			    <tr class="<?php echo $this->cycle(["even", "odd"))->next();?>">
-					<td><?php echo $this->pictogrammes();?></td>
-					<td><?php echo $this->escapeHtml($row['nom']);?></td>
-					<td><?php echo $this->escapeHtml($row['prenom']);?></td>
-					<td><?php echo $this->escapeHtml($row['adresseL1']);?></td>
-					<td><?php echo $this->escapeHtml($row['adresseL2']);?></td>
-					<td><?php echo $this->escapeHtml($row['codePostal']);?></td>
-					<td><?php echo $this->escapeHtml($row['commune']);?></td>
-					<td><?php echo $this->escapeHtml($row['etablissement']);?></td>
-					<td class="centre"><?php echo $this->escapeHtml($row['classe']);?></td>
-					<td><?php echo implode('<br>', array($row['service1Id'], $row['service2Id']));?></td>
-					<td><?php echo implode('<br>', array($row['station1'], $row['station2']));?></td>
-					<td><?php echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
+			    <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td><?= $this->pictogrammes();?></td>
+					<td><?= $this->escapeHtml($row['nom']);?></td>
+					<td><?= $this->escapeHtml($row['prenom']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL1']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL2']);?></td>
+					<td><?= $this->escapeHtml($row['codePostal']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= $this->escapeHtml($row['etablissement']);?></td>
+					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
+					<td><?= implode('<br>', [$row['service1Id'], $row['service2Id']]);?></td>
+					<td><?= implode('<br>', [$row['station1'], $row['station2']]);?></td>
+					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 			<?php endforeach;?>
 			</tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 	</div>
 </div>

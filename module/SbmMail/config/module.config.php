@@ -9,12 +9,12 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
-use SbmMail\Controller;
-use SbmMail\Model;
 use SbmMail\Form\Mail;
+use SbmMail\Model;
+use SbmMail\Controller;
 
 return [
     'acl' => [
@@ -47,8 +47,7 @@ return [
                  * 'mode' => 'smtp', // 'smtp' ou 'sendmail'
                  * 'smtpOptions' => [
                  * 'host' => 'smtp.free.fr',
-                 * 'port' => '25', // 25, 587 ou 2525 si connexion TLS ; 465 ou 25025 si connexion
-                 * SSL
+                 * 'port' => '25', // 25, 587 ou 2525 si connexion TLS ; 465 ou 25025 si connexion SSL
                  * 'connexion_class' => 'plain',
                  * 'connexion_config' => [
                  * 'username' => '',
@@ -62,7 +61,7 @@ return [
                     'connection_type' => 'tls'
                 ]
             ], // ssl | tls
-
+            
             'message' => [
                 'type' => 'text/html',
                 'html_encoding' => \Zend\Mime\Mime::ENCODING_8BIT,

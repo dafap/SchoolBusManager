@@ -8,8 +8,8 @@
  * @filesource AbstractPower2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 27 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Strategy;
 
@@ -34,9 +34,9 @@ abstract class AbstractPower2 implements StrategyInterface
      * @param array $param
      *            Valeur valide ou tableau d'entiers
      *            
+     * @throws \SbmCommun\Model\Strategy\Exception\OutOfBoundsException
+     *
      * @return int Code numérique indiquant les niveaux d'enseignement
-     *        
-     * @throws Exception
      */
     public function extract($param)
     {
@@ -45,9 +45,8 @@ abstract class AbstractPower2 implements StrategyInterface
                 ob_start();
                 var_dump($param);
                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
-                throw new Exception(
-                    __METHOD__ .
-                    sprintf(
+                throw new Exception\OutOfBoundsException(
+                    __METHOD__ . sprintf(
                         _(
                             " Le paramètre est invalide.<pre>%s</pre>\nUne puissance de 2 est attendue."),
                         $dump));
@@ -57,9 +56,8 @@ abstract class AbstractPower2 implements StrategyInterface
             ob_start();
             var_dump($param);
             $dump = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(
-                __METHOD__ .
-                sprintf(
+            throw new Exception\OutOfBoundsException(
+                __METHOD__ . sprintf(
                     _(
                         " Le paramètre est invalide.<pre>%s</pre>\nUn tableau d'entiers puissances de 2 est attendu."),
                     $dump));
@@ -74,9 +72,8 @@ abstract class AbstractPower2 implements StrategyInterface
                     print_r($value);
                     $dump = html_entity_decode(strip_tags(ob_get_clean()));
                 }
-                throw new Exception(
-                    __METHOD__ .
-                    sprintf(
+                throw new Exception\OutOfBoundsException(
+                    __METHOD__ . sprintf(
                         _(
                             " Le tableau donné en paramètre contient la valeur illégale : %s\nLes valeurs doivent être des entiers puissance de 2."),
                         $dump));

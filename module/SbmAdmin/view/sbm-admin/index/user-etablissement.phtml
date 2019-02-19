@@ -9,10 +9,11 @@
  * @filesource user-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page
@@ -22,7 +23,8 @@ $actions = [
     'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
-        'title' => 'Retour'
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
     ]
 ];
 ?>
@@ -45,7 +47,7 @@ $actions = [
 <?php if ($this->etablissement === false) :?>
         <p class="left-10px">Il n'y a pas de etablissement associé à ce
 			compte d'utilisateur.</p>
-    	<?= $this->form()->openTag($this->form);?>
+		<?= $this->form()->openTag($this->form);?>
         <fieldset class="sbm-page1">
             <?= $this->formHidden($this->form->get('csrf'));?>
             <?= $this->formHidden($this->form->get('userId'));?>
@@ -55,7 +57,7 @@ $actions = [
 			    <?= $this->formSubmit($this->form->get('submit'));?>
 			    <?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
-    	<?= $this->form()->closeTag();?>
+    <?= $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="page1">
 			<div>
@@ -73,10 +75,10 @@ $actions = [
 				<?= $this->etablissement->commune; ?></div>
 			<div>
 				<div class="label">Téléphone</div>
-				<?= $this->etablissement->telephone; ?></div>
+				<?= $this->telephone($this->etablissement->telephone); ?></div>
 			<div>
 				<div class="label">Fax</div>
-				<?= $this->etablissement->fax; ?></div>
+				<?= $this->telephone($this->etablissement->fax); ?></div>
 			<div>
 				<div class="label">Email</div>
 				<?= $this->etablissement->email; ?></div>

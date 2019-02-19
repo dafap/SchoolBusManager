@@ -12,9 +12,11 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_horaires = $this->url('sbmdocument', [
@@ -33,15 +35,14 @@ $url_carte_etablissements = $this->url('sbmportail',
     [
         'action' => 'tr-carte-etablissements'
     ]);
-
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
-	<?= $this->flashMessenger()->render('success');?>
-	<?= $this->flashMessenger()->render('warning');?>
-	<?= $this->flashMessenger()->render('error');?>
-	<?= $this->flashMessenger()->render('info');?>
-	<?= $this->flashMessenger()->render('default');?>
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
     </div>
 	<h1>Portail des transports scolaires</h1>
 	<!-- h3>Pour les transporteurs</h3-->
@@ -79,8 +80,11 @@ $url_carte_etablissements = $this->url('sbmportail',
 					<td><?= $service['operateur'];?></td>
 					<td><?= $service['transporteur'];?></td>
 					<td class="effectif">
-						<?= empty($this->statServices[$service['serviceId']]['total']) ? 0 : $this->statServices[$service['serviceId']]['total'];?></td>
-					<td><?= $this->listeLigneActions($service['serviceId'], $hiddens, $buttons);?></td>
+						<?= StdLib::getParamR([$service['serviceId'],'total'], $this->statServices, 0);?>
+					</td>
+					<td>
+						<?= $this->listeLigneActions($service['serviceId'], $hiddens, $buttons);?>
+					</td>
 				</tr>
 				<?php endforeach;?>				
 			</tbody>
@@ -95,7 +99,7 @@ $url_carte_etablissements = $this->url('sbmportail',
 			<ul>
 				<li><a href="<?= $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
 						des élèves</a></li>
-				<li><a href="<?= $url_horaires; ?>"><i class="fam-bullet-go"></i>Fiches
+				<li><a href="<?= $url_horaires; ?>" target="_blank"><i class="fam-bullet-go"></i>Fiches
 						horaires des circuits</a></li>
 				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
 						des points d'arrêts</a></li>

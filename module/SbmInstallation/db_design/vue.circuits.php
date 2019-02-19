@@ -7,171 +7,171 @@
  * @filesource vue.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 jan. 2016
- * @version 2016-1.7.0
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'circuits',
     'type' => 'vue',
     'drop' => true, // si true, un DROP TABLE IF EXISTS sera fait avant la création
     'edit_entity' => true,
-    'structure' => array(
-        'fields' => array(
-            array(
+    'structure' => [
+        'fields' => [
+            [
                 'field' => 'circuitId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'selection'
-            ),
-            array(
+            ],
+            [
                 'field' => 'millesime'
-            ),
-            array(
+            ],
+            [
                 'field' => 'serviceId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'stationId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'passage'
-            ),
-            array(
+            ],
+            [
                 'field' => 'semaine'
-            ),
-            array(
+            ],
+            [
                 'field' => 'm1'
-            ),
-            array(
+            ],
+            [
                 'field' => 's1'
-            ),
-            array(
+            ],
+            [
                 'field' => 'm2'
-            ),
-            array(
+            ],
+            [
                 'field' => 's2'
-            ),
-            array(
+            ],
+            [
                 'field' => 'm3'
-            ),
-            array(
+            ],
+            [
                 'field' => 's3'
-            ),
-            array(
+            ],
+            [
                 'field' => 'distance'
-            ),
-            array(
+            ],
+            [
                 'field' => 'montee'
-            ),
-            array(
+            ],
+            [
                 'field' => 'descente'
-            ),
-            array(
+            ],
+            [
                 'field' => 'typeArret'
-            ),
-            array(
+            ],
+            [
                 'field' => 'commentaire1'
-            ),
-            array(
+            ],
+            [
                 'field' => 'commentaire2'
-            )
-        ),
-        'from' => array(
+            ]
+        ],
+        'from' => [
             'table' => 'circuits',
             'type' => 'table',
             'alias' => 'cir'
-        ),
-        'join' => array(
-            array(
+        ],
+        'join' => [
+            [
                 'table' => 'services',
                 'type' => 'table',
                 'alias' => 'ser',
                 'relation' => 'ser.serviceId = cir.serviceId',
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'service'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'nbPlaces'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'operateur'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'kmAVide'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'kmEnCharge'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'transporteurId'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'table' => 'transporteurs',
                 'type' => 'table',
                 'alias' => 'tra',
                 'relation' => 'ser.transporteurId = tra.transporteurId',
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'transporteur'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'telephone',
                         'alias' => 'telephoneTransporteur'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'table' => 'communes',
                 'type' => 'table',
                 'alias' => 'comtra',
                 'relation' => 'comtra.communeId = tra.communeId',
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'communeTransporteur'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'table' => 'stations',
                 'type' => 'table',
                 'alias' => 'sta',
                 'relation' => 'sta.stationId = cir.stationId',
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'station'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'ouverte',
                         'alias' => 'stationOuverte'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'visible',
                         'alias' => 'stationVisible'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'table' => 'communes',
                 'type' => 'table',
                 'alias' => 'comsta',
                 'relation' => 'comsta.communeId = sta.communeId',
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'communeStation'
-                    )
-                )
-            )
-        ),
-        'order' => array(
+                    ]
+                ]
+            ]
+        ],
+        'order' => [
             'serviceid',
             'm1'
-        )
-    )
-);
+        ]
+    ]
+];

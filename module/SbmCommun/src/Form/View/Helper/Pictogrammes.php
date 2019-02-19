@@ -15,8 +15,8 @@
  * @filesource Pictogrammes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 9 jan. 2019
+ * @version 2019-2.4.6
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -86,6 +86,14 @@ class Pictogrammes extends AbstractHelper
     {
         if (($demande1 > 0 && $distance1 == 0.0) || ($demande2 > 0 && $distance2 == 0.0)) {
             $this->pictogrammes[] = '<i class="fam-cog-error" title="Vérifier les distances"></i>';
+        }
+        return $this;
+    }
+
+    public function addSansPhoto($sansphoto)
+    {
+        if ($sansphoto) {
+            $this->pictogrammes[] = '<i class="fam-camera-error" title="Sans photo"></i>';
         }
         return $this;
     }

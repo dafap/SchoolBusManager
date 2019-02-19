@@ -14,8 +14,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2017
- * @version 2017-2.3.1
+ * @date 16 fév.2019
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 
@@ -28,7 +28,7 @@ function renderCheckbox($view, $name, $id, $value)
     return $view->formCheckbox($element);
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modele de jsCallback pour selection
@@ -54,61 +54,43 @@ $paiements = $this->paginator->getCurrentItems();
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 
 if (! $this->h2) {
-    $url_retour_pour_group = $this->url('sbmgestion/finance', [
-        'action' => 'paiement-liste',
+    $url_retour_pour_group = $this->url('sbmgestion/finance',
+        [
+            'action' => 'paiement-liste',
+            'page' => $this->page
+        ]);
+}
+$url_retour = empty($this->url2_retour) ? $this->url1_retour : $this->url2_retour;
+$url_ajouter = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-ajout',
         'page' => $this->page
     ]);
-}
-?>
-
-<div id="liste-wrapper">
-	<div id="liste-header" class="clearfix">
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
-		<h1>Liste des paiements</h1>
-<?php if ($this->h2): ?>
-        <h2>Paiements effectués par <?php echo $this->responsable; ?></h2>
-        <?php
-    $totalDu = $this->nbTarif1 * $this->tarif1 + $this->nbTarif2 * $this->tarif2 + $this->nbDuplicata * $this->duplicata;
-    ?>
-		<p class="left-10px">Total du : <?php echo $fmt->formatCurrency($totalDu, 'EUR');?>
-            <span class="left-95px">Payé : <?php echo $fmt->formatCurrency($this->totalPaye, 'EUR');?></span>
-			<span class="left-95px">Reste du : <?php echo $fmt->formatCurrency($totalDu - $this->totalPaye, 'EUR');?></span>
-		</p>
-<?php endif; ?>	
-		<div class="menu float-left">
-<?php
-$url_retour = empty($this->url2_retour) ? $this->url1_retour : $this->url2_retour;
-$url_ajouter = $this->url('sbmgestion/finance', [
-    'action' => 'paiement-ajout',
-    'page' => $this->page
-]);
-$url_imprimer = $this->url('sbmgestion/finance', [
-    'action' => 'paiement-depot',
-    'page' => $this->page
-]);
-$url_edit = $this->url('sbmgestion/finance', [
-    'action' => 'paiement-edit',
-    'page' => $this->page
-]);
-$url_delete = $this->url('sbmgestion/finance', [
-    'action' => 'paiement-suppr',
-    'page' => $this->page
-]);
+$url_imprimer = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-depot',
+        'page' => $this->page
+    ]);
+$url_edit = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-suppr',
+        'page' => $this->page
+    ]);
 if (! $this->h2) {
     $url_group = $this->url('sbmgestion/finance', [
         'action' => 'paiement-liste'
     ]);
 }
-$url_detail = $this->url('sbmgestion/finance', [
-    'action' => 'paiement-detail',
-    'page' => $this->page
-]);
+$url_detail = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-detail',
+        'page' => $this->page
+    ]);
 
 $hiddens = [
     'url1_retour' => $this->url1_retour,
@@ -150,8 +132,33 @@ $actions = [
 if (! $this->h2) {
     unset($actions['detail']);
 }
-echo $this->listeZoneActions($hiddens, $actions);
 ?>
+?>
+
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
+		<h1>Liste des paiements</h1>
+<?php if ($this->h2): ?>
+        <h2>Paiements effectués par <?= $this->responsable; ?></h2>
+        <?php
+    $totalDu = $this->montantInscriptions + $this->nbDuplicata * $this->duplicata;
+    ?>
+		<p class="left-10px">Total du : <?= $fmt->formatCurrency($totalDu, 'EUR');?>
+            <span class="left-95px">
+            	Payé : <?= $fmt->formatCurrency($this->totalPaye, 'EUR');?></span>
+			<span class="left-95px">
+				Reste du : <?= $fmt->formatCurrency($totalDu - $this->totalPaye, 'EUR');?></span>
+		</p>
+<?php endif; ?>	
+		<div class="menu float-left">
+			<?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="liste-inner">
@@ -167,36 +174,43 @@ echo $this->listeZoneActions($hiddens, $actions);
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-        <?php foreach($paiements as $test => $paiement): ?>
+        <?php foreach($paiements as $paiement): ?>
         <?php
             // construction des JS pour selection
-            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $paiement->paiementId);
-            $jsCallback .= sprintf("$modele\n", $paiement->paiementId, $paiement->paiementId);
-            ?>
-                <tr
-					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
-					<td class="responsable"><?php echo $r = $this->escapeHtml($paiement->responsable); ?></td>
-					<td class="montant"><?php echo $m = $fmt->formatCurrency($paiement->montant, 'EUR'); ?></td>
-					<td class="caisse"><?php echo $cs = $this->escapeHtml($paiement->caisse); ?></td>
-					<td class="mode-de-paiement"><?php echo $mp = $this->escapeHtml($paiement->modeDePaiement); ?></td>
-					<td class="date-paiement"><?php echo $dp = DateLib::formatDateTimeFromMysql($paiement->datePaiement); ?></td>
-					<td class="date-valeur"><?php echo $dv = DateLib::formatDateFromMysql($paiement->dateValeur); ?></td>
-					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $paiement->paiementId, $paiement->selection);?></td>
-					<td class="boutons">
-             <?php
-            $title_voir = 'Année scolaire : ' . $paiement->anneeScolaire . "\n" . 'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' . $paiement->titulaire . "\n" . 'Banque : ' . $paiement->banque . "\n" . 'Référence : ' . $paiement->reference . "\n" . 'Date de dépôt : ' . DateLib::formatDateTimeFromMysql($paiement->dateDepot);
-            $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" . 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" . 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" . $title_voir;
-            $js_voir = 'window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' . str_replace("\n", '; ', $texte_voir) . '\');return false;';
+            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
+                $paiement->paiementId);
+            $jsCallback .= sprintf("$modele\n", $paiement->paiementId,
+                $paiement->paiementId);
+            $r = $this->escapeHtml($paiement->responsable);
+            $m = $fmt->formatCurrency($paiement->montant, 'EUR');
+            $cs = $this->escapeHtml($paiement->caisse);
+            $mp = $this->escapeHtml($paiement->modeDePaiement);
+            $dp = DateLib::formatDateTimeFromMysql($paiement->datePaiement);
+            $dv = DateLib::formatDateFromMysql($paiement->dateValeur);
+            $title_voir = 'Année scolaire : ' . $paiement->anneeScolaire . "\n" .
+                'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' .
+                $paiement->titulaire . "\n" . 'Banque : ' . $paiement->banque . "\n" .
+                'Référence : ' . $paiement->reference . "\n" . 'Date de dépôt : ' .
+                DateLib::formatDateTimeFromMysql($paiement->dateDepot);
+            $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" .
+                'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" .
+                'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" .
+                $title_voir;
+            $js_voir = 'window.prompt(\'Copier dans le presse-papier : Ctrl+C ou click droit et Copier\', \'' .
+                str_replace("\n", '; ', $texte_voir) . '\');return false;';
             $hiddens['paiementId'] = $paiement->paiementId;
             /*
              * Pour responsableId il y a 2 cas :
-             * - si h2 == true alors responsableId correspond au responsableId de la liste et de la ligne (liste des paiements d'un responsable)
-             * - si h2 == false alors responsableId correspond au responsableId de la ligne. Dans ce cas, le responsableId de la liste est -1.
+             * - si h2 == true alors responsableId correspond au responsableId de la liste et de la
+             * ligne (liste des paiements d'un responsable)
+             * - si h2 == false alors responsableId correspond au responsableId de la ligne. Dans
+             * ce cas, le responsableId de la liste est -1.
              */
             $hiddens['responsableId'] = $paiement->responsableId;
             $hiddens['responsable'] = $this->escapeHtml($paiement->responsable);
             // ne pas utiliser de guillement dans la chaine $js
-            $js = 'window.document.getElementById(\'op' . $paiement->paiementId . '\').value=%s;';
+            $js = 'window.document.getElementById(\'op' . $paiement->paiementId .
+                '\').value=%s;';
             $buttons = [
                 'voir' => [
                     'class' => 'fam-zoom',
@@ -218,7 +232,9 @@ echo $this->listeZoneActions($hiddens, $actions);
             ];
             if (! $this->h2) {
                 // ne pas utiliser de guillement dans la chaine $js
-                $js = sprintf($js, "'grouper'") . 'window.document.getElementById(\'url2_retour' . $paiement->paiementId . '\').value=\'' . $url_retour_pour_group . '\';';
+                $js = sprintf($js, "'grouper'") .
+                    'window.document.getElementById(\'url2_retour' . $paiement->paiementId .
+                    '\').value=\'' . $url_retour_pour_group . '\';';
                 $buttons['groupe'] = [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
@@ -226,24 +242,31 @@ echo $this->listeZoneActions($hiddens, $actions);
                     'onclick' => $js
                 ];
             }
-            echo $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);
-            ?>                           
-				</td>
+            ?>
+                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="responsable"><?= $r;?></td>
+					<td class="montant"><?= $m;?></td>
+					<td class="caisse"><?= $cs;?></td>
+					<td class="mode-de-paiement"><?= $mp;?></td>
+					<td class="date-paiement"><?= $dp;?></td>
+					<td class="date-valeur"><?= $dv; ?></td>
+					<td class="centre selection">
+					    <?= renderCheckbox($this, 'selection', 'chk' . $paiement->paiementId, $paiement->selection);?></td>
+					<td class="boutons">
+						<?= $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);?></td>
 				</tr>         
         <?php endforeach;?>
     </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix"><?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
-        <?php
-        if (! is_null($this->criteres_form)) {
-            echo $this->form()->openTag($this->criteres_form);
-            echo $this->formCollection($this->criteres_form, true);
-            echo $this->form()->closeTag();
-        }
-        ?>
+        <?php if (! is_null($this->criteres_form)) :?>
+            <?= $this->form()->openTag($this->criteres_form);?>
+            <?= $this->formCollection($this->criteres_form, true);?>
+            <?= $this->form()->closeTag();?>
+        <?php endif;?>
         </div>
 	</div>
 </div>
@@ -252,8 +275,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?php echo $jsTrigger;?>}
-<?php echo $jsCallback;?>
+<?= $jsTrigger;?>}
+<?= $jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

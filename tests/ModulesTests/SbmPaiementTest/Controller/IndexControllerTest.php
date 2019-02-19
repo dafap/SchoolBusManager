@@ -33,7 +33,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp()
     {
-        $this->setApplicationConfig(Bootstrap::getServiceManager()->get('ApplicationConfig'));
+        $this->setApplicationConfig(
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }
@@ -45,9 +46,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertInstanceOf(RenderPdfService::class, $controller->RenderPdfService);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
         $this->assertInstanceOf(ServiceManager::class, $controller->form_manager);
-        $this->assertInstanceOf(PlateformeInterface::class, $controller->plugin_plateforme);
+        $this->assertInstanceOf(PlateformeInterface::class, 
+            $controller->plugin_plateforme);
         $this->assertInstanceOf(FactoryInterface::class, $controller->plugin_plateforme);
-        $this->assertInstanceOf(EventManagerAwareInterface::class, $controller->plugin_plateforme);
+        $this->assertInstanceOf(EventManagerAwareInterface::class, 
+            $controller->plugin_plateforme);
         $this->assertInstanceOf(ResponsableManager::class, $controller->responsable);
         $this->assertTrue(is_array($controller->paginator_count_per_page));
         // null ssi user anonyme

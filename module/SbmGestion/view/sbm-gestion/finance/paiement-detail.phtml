@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Justificatif du montant encaissé pour un responsable
  *
@@ -11,21 +12,21 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2016
- * @version 2016-2.1.10
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
     $element->setUseHiddenElement(false)
-    ->setAttribute('id', $id)
-    ->setValue($value);
+        ->setAttribute('id', $id)
+        ->setValue($value);
     return $view->formCheckbox($element);
 }
- 
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
 $jsCallback = '';
 $jsTrigger = '';
 // modèle pour les jsCallback
@@ -51,32 +52,32 @@ $("#chk%d").change(function() {
 			});
   });
 EOT;
-	      
 
-$url_retour = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-liste',
-    'page' => $this->page
-));
-$hiddens =[];
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
 		<h1>Détail des sommes à payer pour l'année en cours</h1>
 		<ul>
-			<li>Responsable : <?php echo $this->escapehtml($this->args['responsable']); ?></li>
-			<li>Montant encaissé : <?php echo $fmt->formatCurrency($this->totalEncaisse, 'EUR')?></li>
-			<li>Coût des duplicatas : <?php echo $fmt->formatCurrency($this->montantDuplicatas, 'EUR')?></li>
+			<li>Responsable : <?= $this->escapehtml($this->args['responsable']); ?></li>
+			<li>Montant encaissé : <?= $fmt->formatCurrency($this->totalEncaisse, 'EUR')?></li>
+			<li>Coût des duplicatas : <?= $fmt->formatCurrency($this->montantDuplicatas, 'EUR')?></li>
 		</ul>
 	</div>
 	<div id="liste-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 	</div>
 	<div id="liste-inner">
 		<table class="libelles">
@@ -90,15 +91,20 @@ $actions = array(
 				</tr>
 	            <?php foreach ($this->liste as $enfant) : ?>
 	            <?php
-	            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $enfant['eleveId']);
-	            $jsCallback .= sprintf("$modele\n", $enfant['eleveId'], $enfant['eleveId']);
-	            ?>
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
+                    $enfant['eleveId']);
+                $jsCallback .= sprintf("$modele\n", $enfant['eleveId'], $enfant['eleveId']);
+                ?>
 	            <tr>
-					<td><?php echo $this->escapeHtml($enfant['nom']);?></td>
-					<td><?php echo $this->escapeHtml($enfant['prenom']);?></td>
-					<td class="align-right"><?php echo $fmt->formatCurrency($enfant['montant'], 'EUR');?></td>
-					<td class="align-right"><?php echo $enfant['duplicata'];?></td>
-					<td class="centre paiement"><?php echo renderCheckbox($this, 'paiement', 'chk' . $enfant['eleveId'], $enfant['paiement'])?></td>
+					<td><?= $this->escapeHtml($enfant['nom']);?></td>
+					<td><?= $this->escapeHtml($enfant['prenom']);?></td>
+					<td class="align-right">
+						<?= $fmt->formatCurrency($enfant['montant'], 'EUR');?></td>
+					<td class="align-right">
+						<?= $enfant['duplicata'];?></td>
+					<td class="centre paiement">
+						<?= renderCheckbox($this, 'paiement', 'chk' . $enfant['eleveId'], $enfant['paiement'])?>
+						</td>
 				</tr>
 	            <?php endforeach;?>
 	       </tbody>
@@ -112,16 +118,16 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
   function totalEncaisse() {
-  <?php 
-    if ($this->totalEncaisse > 0) {
-      echo 'return ' . $this->totalEncaisse . ';';
-    } else {
-      echo 'return 0.0;';
-    }
-  ?>
+  <?php
+if ($this->totalEncaisse > 0) {
+    echo 'return ' . $this->totalEncaisse . ';';
+} else {
+    echo 'return 0.0;';
+}
+?>
 }
   function totalAPayer() {
-    var total = <?php echo $this->montantDuplicatas;?>;
+    var total = <?= $this->montantDuplicatas;?>;
     $("#tbody-payants > tr:not(:first)").each(function(i) {
         var element = $("td:nth-child(5) > input[type=checkbox]")[i];
         if ($(element).is(':checked')) {
@@ -132,9 +138,9 @@ $(function() {
     return total;
   }
   function triggerChange() {
-    <?php echo $jsTrigger;?>
+    <?= $jsTrigger;?>
   }
-  <?php echo $jsCallback;?>
+  <?= $jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

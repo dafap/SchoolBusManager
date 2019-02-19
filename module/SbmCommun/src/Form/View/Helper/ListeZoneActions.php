@@ -3,8 +3,8 @@
  * ViewHelper permettant d'afficher une barre de menu, à déclarer dans module.config.php comme ceci : 
  * 'view_helpers' => [
  *      'invokables' => [
- *              'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',)
- * )
+ *              'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',]
+ * ]
  *
  * Les liens sont envoyés en POST par un formulaire. Les paramètres d'appel sont passés par des 
  * inputs de type hidden.
@@ -29,8 +29,8 @@
  * @filesource ListeZoneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -45,10 +45,10 @@ class ListeZoneActions extends AbstractHelper
      * Crée le code d'un formulaire d'actions à utiliser au-dessus d'une liste.
      *
      * @param array $hiddens
-     *            Tableau indexé [name => value, ...). S'il n'y a pas de valeur mettre
+     *            Tableau indexé [name => value, ...]. S'il n'y a pas de valeur mettre
      *            <b>null</b>.
      * @param array $buttons
-     *            Tableau indexé [name => [], ...)
+     *            Tableau indexé [name => [], ...]
      * @param array $attributes
      *            Ce sont les attributs du formulaires. En voici la liste (HTML5):<br><ul>
      *            <li><b>accept-charset</b> : Une liste des ensembles de caractères que le serveur
@@ -134,7 +134,7 @@ class ListeZoneActions extends AbstractHelper
      * Renvoie le code de la barre de menu
      *
      * @param array $buttons
-     *            Ce tableau a la structure la suivante : [name => attributes, ...) où
+     *            Ce tableau a la structure la suivante : [name => attributes, ...] où
      *            attributes est un tableau
      *            (voir getMenuOnglet ou getButton pour la structure de attributes)
      *            
@@ -209,7 +209,7 @@ class ListeZoneActions extends AbstractHelper
      * Construit un menu à placer dans un onglet
      *
      * @param array $menu
-     *            Ce tableau a la structure la suivante : [name => attributes, ...) où
+     *            Ce tableau a la structure la suivante : [name => attributes, ...] où
      *            attributes est un tableau
      *            (voir getButton pour la structure de attributes)
      *            
@@ -298,93 +298,6 @@ class ListeZoneActions extends AbstractHelper
         return $result;
     }
 
-    // ================= ancien ==============================
-    private function getButtons($buttons)
-    {
-        $result = '';
-        foreach ($buttons as $name => $attributes) {
-            if (empty($result)) {
-                $result = '<ul class="menubar">';
-            }
-            $result .= '<li class="onglet">' . $this->getItem($attributes) . "</li>\n";
-            $result .= '<li class="onglet"><input type="submit" name="' . $name . '" id="' .
-                $name . '"';
-            if (array_key_exists('class', $attributes)) {
-                if (strpos($attributes['class'], 'fam-') !== false) {
-                    $result .= ' class="' . $attributes['class'] . '" value';
-                } elseif (strpos($attributes['class'], 'default') != false) {
-                    if (array_key_exists('value', $attributes)) {
-                        $result .= ' class="' . $attributes['class'] . '" value="' .
-                            $attributes['value'] . '"';
-                    } else {
-                        $result .= ' class="' . $attributes['class'] . '" value';
-                    }
-                } else {
-                    if (array_key_exists('value', $attributes)) {
-                        $result .= ' class="default ' . $attributes['class'] . '" value="' .
-                            $attributes['value'] . '"';
-                    } else {
-                        $result .= ' class="default ' . $attributes['class'] . '" value';
-                    }
-                }
-            } else {
-                if (array_key_exists('value', $attributes)) {
-                    $result .= ' class="default" value="' . $attributes['value'] . '"';
-                } else {
-                    $result .= ' class="default" value';
-                }
-            }
-            if (array_key_exists('accesskey', $attributes)) {
-                $result .= ' accesskey="' . $attributes['accesskey'] . '"';
-            }
-            if (array_key_exists('autofocus', $attributes)) {
-                $result .= ' autofocus';
-            }
-            if (array_key_exists('disabled', $attributes)) {
-                $result .= ' disabled';
-            }
-            if (array_key_exists('formaction', $attributes)) {
-                $result .= ' formaction="' . $attributes['formaction'] . '"';
-            }
-            if (array_key_exists('formenctype', $attributes)) {
-                $result .= ' formenctype="' . $attributes['formenctype'] . '"';
-            }
-            if (array_key_exists('formnovalidate', $attributes)) {
-                $result .= ' formnovalidate';
-            }
-            if (array_key_exists('formtarget', $attributes)) {
-                $result .= ' formtarget="' . $attributes['formtarget'] . '"';
-            }
-            if (array_key_exists('hidden', $attributes)) {
-                $result .= ' hidden';
-            }
-            if (array_key_exists('style', $attributes)) {
-                $result .= ' style="' . $attributes['style'] . '"';
-            }
-            if (array_key_exists('tabindex', $attributes)) {
-                $result .= ' tabindex="' . $attributes['tabindex'] . '"';
-            }
-            if (array_key_exists('title', $attributes)) {
-                $result .= ' title="' . $attributes['title'] . '"';
-            }
-            if (array_key_exists('onclick', $attributes)) {
-                $result .= ' onclick="' . $attributes['onclick'] . '"';
-            }
-            $result .= "></li>\n";
-        }
-        if (! empty($result)) {
-            $result .= '</ul>';
-        }
-        return $result;
-    }
-
-    private function getItem($attributes)
-    {
-        if (array_key_exists('label', $attributes)) {
-            return '<li class="onglet">' . $this->getItem($attributes) . "</li>\n";
-        } else {}
-    }
-
     /**
      * Renvoie dans une chaine les balises &lt;input type="hidden" name="quelque_chose" id= &gt;
      * indiqués dans le tableau $hiddens.
@@ -411,18 +324,7 @@ class ListeZoneActions extends AbstractHelper
     }
 
     /**
-     * Renvoie la balise <form .
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     * ..>
+     * Renvoie la balise <form ...>
      *
      * @param array $attributes
      * @return string

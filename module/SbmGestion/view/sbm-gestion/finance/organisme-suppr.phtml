@@ -7,8 +7,8 @@
  * @filesource organisme-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2015
- * @version 2015-1
+ * @date 1 oct. 2018
+ * @version 2019-2.5.0
  */
 ?>
 <h1>Suppression d'un organisme payeur</h1>
@@ -16,14 +16,12 @@
 	<p>Vous avez demandé la suppression de l'organisme :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?php echo $this->escapeHtml($this->data->nom); ?></li>
-			<li><?php echo $this->escapeHtml($this->data->commune); ?></li>
+			<li><?= $this->escapeHtml($this->data->nom); ?></li>
+			<li><?= $this->escapeHtml($this->data->commune); ?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-<?php
-echo $this->form()->openTag($form);
-echo $this->formCollection($form);
-echo $this->form()->closeTag();
-?>
-</div> 
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

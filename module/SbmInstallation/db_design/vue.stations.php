@@ -8,73 +8,72 @@
  * @filesource vue.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 févr. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'stations',
     'type' => 'vue',
     'drop' => true, // si true, un DROP TABLE IF EXISTS sera fait avant la création
     'edit_entity' => true,
-    'structure' => array(
-        'fields' => array(
-            array(
+    'structure' => [
+        'fields' => [
+            [
                 'field' => 'stationId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'selection'
-            ),
-            array(
+            ],
+            [
                 'field' => 'communeId'
-            ),
-            array(
+            ],
+            [
                 'field' => 'nom'
-            ),
-            array(
+            ],
+            [
                 'field' => 'aliasCG'
-            ),
-            array(
+            ],
+            [
                 'field' => 'codeCG'
-            ),
-            array(
+            ],
+            [
                 'field' => 'x'
-            ),
-            array(
+            ],
+            [
                 'field' => 'y'
-            ),
-            array(
+            ],
+            [
                 'field' => 'visible'
-            ),
-            array(
+            ],
+            [
                 'field' => 'ouverte'
-            )
-        ),
-        'from' => array(
+            ]
+        ],
+        'from' => [
             'table' => 'stations', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
             'alias' => 'sta'
-        ) // optionnel
-,
-        'join' => array(
-            array(
+        ], // optionnel
+        'join' => [
+            [
                 'table' => 'communes', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
                 'alias' => 'com', // optionnel
                 'relation' => 'com.communeId = sta.communeId', // obligatoire
-                'fields' => array(
-                    array(
+                'fields' => [
+                    [
                         'field' => 'nom',
                         'alias' => 'commune'
-                    ),
-                    array(
+                    ],
+                    [
                         'field' => 'codePostal'
-                    )
-                )
-            )
-        ),
-        'order' => array(
+                    ]
+                ]
+            ]
+        ],
+        'order' => [
             'commune',
             'nom'
-        )
-    )
-);
+        ]
+    ]
+];

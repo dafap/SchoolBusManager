@@ -9,8 +9,8 @@
  * @filesource Login.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 12 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmFront\Form;
 
@@ -42,7 +42,7 @@ class Login extends AbstractSbmForm implements InputFilterProviderInterface
                 'options' => [
                     'label' => 'Email',
                     'label_attributes' => [
-                        'class' => 'sbm-label-page1'
+                        'class' => 'sbm-label-page1 compressed'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -60,7 +60,7 @@ class Login extends AbstractSbmForm implements InputFilterProviderInterface
                 'options' => [
                     'label' => 'Mot de passe',
                     'label_attributes' => [
-                        'class' => 'sbm-label-page1'
+                        'class' => 'sbm-label-page1 compressed'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'

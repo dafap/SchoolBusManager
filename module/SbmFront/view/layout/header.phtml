@@ -4,15 +4,15 @@
  * Dessin du haut de page
  * 
  * L'appel se fait par :
- * $this->partial('layout/header', ['client_name' => 'COBAS', 'footer_elements' => ['mentions légales' => 'SbmFront\about'))); 
+ * $this->partial('layout/header', array('client_name' => 'COBAS', 'footer_elements' => array('mentions légales' => 'SbmFront\about'))); 
  *
  * @project sbm
  * @package module/SbmFront
  * @filesource view/layout/header.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <div id="top-site">
@@ -23,7 +23,7 @@ foreach ((array) $this->header_elements['left'] as $name => $url) {
     if (is_array($url)) {
         $href = array_key_exists('href', $url) ? $url['href'] : '';
         $accesskey = array_key_exists('accesskey', $url) ? ' accesskey="' .
-            $url['accesskey'] . '"' : '';
+             $url['accesskey'] . '"' : '';
         $title = array_key_exists('title', $url) ? ' title="' . $url['title'] . '"' : '';
         $css = array_key_exists('class', $url) ? ' class="' . $url['class'] . '"' : '';
     } elseif (is_string($url)) {
@@ -33,7 +33,7 @@ foreach ((array) $this->header_elements['left'] as $name => $url) {
         $css = '';
     }
     echo $sep . '<a' . $title . $accesskey . $css . ' href="' . $href . '">' . $name .
-        '</a>';
+         '</a>';
     $sep = ' ';
 }
 ?>
@@ -45,7 +45,7 @@ foreach ((array) $this->header_elements['right'] as $name => $url) {
     if (is_array($url)) {
         $href = array_key_exists('href', $url) ? $url['href'] : '';
         $accesskey = array_key_exists('accesskey', $url) ? ' accesskey="' .
-            $url['accesskey'] . '"' : '';
+             $url['accesskey'] . '"' : '';
         $title = array_key_exists('title', $url) ? ' title="' . $url['title'] . '"' : '';
         $css = array_key_exists('class', $url) ? ' class="' . $url['class'] . '"' : '';
     } elseif (is_string($url)) {
@@ -55,7 +55,7 @@ foreach ((array) $this->header_elements['right'] as $name => $url) {
         $css = '';
     }
     echo $sep . '<a' . $title . $accesskey . $css . ' href="' . $href . '">' . $name .
-        '</a>';
+         '</a>';
     $sep = ' ';
 }
 ?>

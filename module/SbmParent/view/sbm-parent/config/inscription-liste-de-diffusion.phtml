@@ -1,0 +1,40 @@
+<?php
+/**
+ * Réinscription à la liste de diffusion MailChimp
+ * 
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/config
+ * @filesource inscription-liste-de-diffusion.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 oct. 2018
+ * @version 2019-2.5.0
+ */
+$this->headScript()->appendFile('/js/jquery.min.js');
+$this->headScript()->appendFile('/js/jquery-cookie-master/jquery.cookie.js');
+$this->headScript()->appendFile(
+    "https://downloads.mailchimp.com/js/signup-forms/popup/unique-methods/embed.js",
+    "text/javascript", [
+        'data-dojo-config' => "usePlainJson: true, isDebug: false"
+    ]);
+$this->inlineScript()->captureStart();
+?>
+window.dojoRequire(["mojo/signup-forms/Loader"], function(L) { L.start({"baseUrl":"mc.us13.list-manage.com","uuid":"f51a0ccc26f0940b9b9130f0d","lid":"05eb302eb3","uniqueMethods":true}) })
+<?php
+$this->inlineScript()->captureEnd();
+?>
+<h1>Inscription à la liste de diffusion</h1>
+<div id="fiche-wrapper">
+	<p>Pour des questions de droit privé et de respect de la personne, si
+		vous avez déjà affiché le formulaire de réinscription sur cet
+		ordinateur, cette tablette ou ce smartphone, il est bloqué et ne sera
+		plus affiché à nouveau durant une période de 12 mois.</p>
+	<p>En cas de nécessité, vous pouvez forcer votre navigateur à le
+		réafficher en cliquant sur le bouton ci-dessous.</p>
+	<div>
+		<input type='button' value='Réafficher le formulaire'
+			onclick="$.removeCookie('MCPopupClosed', {path: '/'}); location.reload(true)"> <input
+			type='button' value='Retour à votre espace personnel'
+			onclick="location.href='/parent'">
+	</div>
+</div>

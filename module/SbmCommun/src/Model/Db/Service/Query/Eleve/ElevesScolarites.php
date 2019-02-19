@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -69,7 +69,8 @@ class ElevesScolarites implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->dbAdapter = $this->db_manager->getDbAdapter();
@@ -161,7 +162,15 @@ class ElevesScolarites implements FactoryInterface
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'eta.communeId = com.communeId', [
             'communeEtablissement' => 'nom'
-        ]);
+        ])
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
+            [
+                'hasphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN FALSE ELSE TRUE END')
+            ], Select::JOIN_LEFT);
         return $this;
     }
 
@@ -211,6 +220,9 @@ class ElevesScolarites implements FactoryInterface
         $where->equalTo('millesime', Session::get('millesime'))
             ->literal('inscrit = 1')
             ->nest()
+            ->literal('district = 1')->or->literal('derogation = 1')
+            ->unnest()
+            ->nest()
             ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
             ->unnest()
             ->nest()
@@ -226,9 +238,16 @@ class ElevesScolarites implements FactoryInterface
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))
             ->literal('inscrit = 1')
+            ->nest()
+            ->nest()
             ->literal('paiement = 0')
             ->literal('fa = 0')
             ->literal('gratuit = 0')
+            ->unnest()->or->nest()
+            ->literal('district = 0')
+            ->literal('derogation = 0')
+            ->unnest()
+            ->unnest()
             ->nest()
             ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
             $responsableId)->unnest();
@@ -295,6 +314,7 @@ class ElevesScolarites implements FactoryInterface
      * organisme
      *
      * @param int $responsableId
+     *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getElevesPayantsWithMontant($responsableId)
@@ -342,17 +362,18 @@ class ElevesScolarites implements FactoryInterface
     public function getInscritsNonAffectes()
     {
         $statement = $this->sql->prepareStatementForSqlObject(
-            $this->sqlInscritsNonAffectes());
+            $this->selectInscritsNonAffectes());
         return $statement->execute();
     }
 
     public function paginatorInscritsNonAffectes()
     {
         return new Paginator(
-            new DbSelect($this->sqlInscritsNonAffectes(), $this->db_manager->getDbAdapter()));
+            new DbSelect($this->selectInscritsNonAffectes(),
+                $this->db_manager->getDbAdapter()));
     }
 
-    private function sqlInscritsNonAffectes()
+    private function selectInscritsNonAffectes()
     {
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
@@ -397,8 +418,8 @@ class ElevesScolarites implements FactoryInterface
             ->literal('ele.responsable1Id = r.responsableId')->and->literal(
             'sco.demandeR1 = 2')
             ->literal('sco.accordR1 = 1')
-            ->unnest()->or->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal(
-            'sco.demandeR1 = 2')
+            ->unnest()->or->nest()->literal('ele.responsable2Id = r.responsableId')->and->literal(
+            'sco.demandeR2 = 2')
             ->literal('sco.accordR2 = 1')
             ->unnest()
             ->unnest();
@@ -416,18 +437,18 @@ class ElevesScolarites implements FactoryInterface
     public function getPreinscritsNonAffectes()
     {
         $statement = $this->sql->prepareStatementForSqlObject(
-            $this->sqlPreinscritsNonAffectes());
+            $this->selectPreinscritsNonAffectes());
         return $statement->execute();
     }
 
     public function paginatorPreinscritsNonAffectes()
     {
         return new Paginator(
-            new DbSelect($this->sqlPreinscritsNonAffectes(),
+            new DbSelect($this->selectPreinscritsNonAffectes(),
                 $this->db_manager->getDbAdapter()));
     }
 
-    private function sqlPreinscritsNonAffectes()
+    private function selectPreinscritsNonAffectes()
     {
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
@@ -495,6 +516,20 @@ class ElevesScolarites implements FactoryInterface
 
     public function getDemandeGaDistanceR2Zero()
     {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectDemandeGaDistanceR2Zero());
+        return $statement->execute();
+    }
+
+    public function paginatorDemandeGaDistanceR2Zero()
+    {
+        return new Paginator(
+            new DbSelect($this->selectDemandeGaDistanceR2Zero(),
+                $this->db_manager->getDbAdapter()));
+    }
+
+    private function selectDemandeGaDistanceR2Zero()
+    {
         $select = clone $this->select;
         $select->columns(
             [
@@ -520,8 +555,8 @@ class ElevesScolarites implements FactoryInterface
                 'responsable1' => new Expression('CONCAT(r1.nom, " ", r1.prenom)'),
                 'adresseR1L1' => 'adresseL1',
                 'adresseR1L2' => 'adresseL2',
-                'x1' => 'x',
-                'y1' => 'y'
+                'xr1' => 'x',
+                'yr1' => 'y'
             ])
             ->join([
             'comr1' => $this->db_manager->getCanonicName('communes', 'table')
@@ -547,8 +582,7 @@ class ElevesScolarites implements FactoryInterface
             ->isNotNull('responsable2Id')
             ->literal('demandeR2 = 1')
             ->literal('distanceR2 = 0');
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        return $select->where($where);
     }
 
     public function getEnfants($responsableId, $ga = 1)
@@ -596,5 +630,192 @@ class ElevesScolarites implements FactoryInterface
             ];
         }
         return $result;
+    }
+
+    /**
+     * Pour le portail de l'organisateur (secretariat)
+     *
+     * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
+     * @param string $order
+     * @param int $millesime
+     *            (inutilisé mais gardé pour la compatibilité des appels)
+     *            
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginatorScolaritesR($where, $order = null, $millesime = null)
+    {
+        $select = $this->selectScolaritesR($where, $order);
+        // die($this->getSqlString($select));
+        return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
+    }
+
+    public function getScolaritesR($where, $order = null, $millesime = null)
+    {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectScolaritesR($where, $order));
+        return $statement->execute();
+    }
+
+    private function selectScolaritesR($where, $order = null, $millesime = null)
+    {
+        $select = $this->sql->select(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
+            ->columns([
+            'millesime',
+            'eleveid',
+            'inscrit',
+            'fa',
+            'paiement',
+            'gratuit'
+        ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'eta.etablissementId = sco.etablissementId',
+            [
+                'etablissement' => new Expression(
+                    '(CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END)')
+            ])
+            ->join([
+            'etacom' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'eta.communeId = etacom.communeId', [
+            'communeEtablissement' => 'nom'
+        ])
+            ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'cla.classeId = sco.classeId', [
+            'classe' => 'nom'
+        ])
+            ->join([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], 'ele.eleveId = sco.eleveId',
+            [
+                'nom' => 'nom',
+                'nomSA' => 'nomSA',
+                'prenom' => 'prenom',
+                'prenomSA' => 'prenomSA',
+                'dateN' => 'dateN',
+                'numero' => 'numero'
+            ])
+            ->join(
+            [
+                'res1' => $this->db_manager->getCanonicName('responsables', 'table')
+            ],
+            new Expression('ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'),
+            [
+                'responsable1' => new Expression(
+                    '(CASE WHEN isnull(res1.responsableId) THEN NULL ELSE concat(res1.nomSA," ",res1.prenomSA) END)')
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'affr1' => $this->db_manager->getCanonicName('affectations', 'table')
+            ],
+            'sco.millesime=affr1.millesime AND sco.eleveId=affr1.eleveId AND res1.responsableId=affr1.responsableId',
+            [], Select::JOIN_LEFT)
+            ->join([
+            'sta1r1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'affr1.station1Id = sta1r1.stationId',
+            [
+                'station1r1' => 'nom',
+                'station1IdR1' => 'stationId'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'sta2r1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'affr1.station2Id = sta2r1.stationId',
+            [
+                'station2r1' => 'nom',
+                'station2IdR1' => 'stationId'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'ser1r1' => $this->db_manager->getCanonicName('services', 'table')
+        ], 'affr1.service1Id = ser1r1.serviceId',
+            [
+                'service1r1' => 'nom',
+                'service1IdR1' => 'serviceId'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tra1r1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'ser1r1.transporteurId = tra1r1.transporteurId',
+            [
+                'transporteur1r1' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'ser2r1' => $this->db_manager->getCanonicName('services', 'table')
+        ], 'affr1.service2Id = ser2r1.serviceId',
+            [
+                'service2r1' => 'nom',
+                'service2IdR1' => 'serviceId'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tra2r1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'ser2r1.transporteurId = tra2r1.transporteurId',
+            [
+                'transporteur2r1' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'res2' => $this->db_manager->getCanonicName('responsables', 'table')
+            ],
+            new Expression('ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'),
+            [
+                'responsable2' => new Expression(
+                    '(CASE WHEN isnull(res2.responsableId) THEN NULL ELSE concat(res2.nomSA," ",res2.prenomSA) END)')
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'affr2' => $this->db_manager->getCanonicName('affectations', 'table')
+            ],
+            'sco.millesime = affr2.millesime AND sco.eleveId = affr2.eleveId AND res2.responsableId = affr2.responsableId',
+            [], Select::JOIN_LEFT)
+            ->join([
+            'sta1r2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'affr2.station1Id = sta1r2.stationId',
+            [
+                'station1r2' => 'nom',
+                'station1IdR2' => 'stationId'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'sta2r2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'affr2.station2Id = sta2r2.stationId',
+            [
+                'station2r2' => 'nom',
+                'station2IdR2' => 'stationId'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'ser1r2' => $this->db_manager->getCanonicName('services', 'table')
+        ], 'affr2.service1Id = ser1r2.serviceId',
+            [
+                'service1r2' => 'nom',
+                'service1IdR2' => 'serviceId'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tra1r2' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'ser1r2.transporteurId = tra1r2.transporteurId',
+            [
+                'transporteur1r2' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'ser2r2' => $this->db_manager->getCanonicName('services', 'table')
+        ], 'affr2.service2Id = ser2r2.serviceId',
+            [
+                'service2r2' => 'nom',
+                'service2IdR2' => 'serviceId'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tra2r2' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'ser2r2.transporteurId = tra2r2.transporteurId',
+            [
+                'transporteur2r2' => 'nom'
+            ], Select::JOIN_LEFT);
+        if (! empty($order)) {
+            $select->order($order);
+        }
+        return $select->where($where);
     }
 }

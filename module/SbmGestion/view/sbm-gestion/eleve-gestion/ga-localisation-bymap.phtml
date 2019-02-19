@@ -9,8 +9,8 @@
  * @filesource ga-localisation-bymap.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 4 fév. 2019
+ * @version 2019-2.5.0
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
@@ -18,28 +18,50 @@ $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->appendFile('/js/maps/localisation.js');
 // préparation du script
 $i = 0;
-$tMarkers = "[";
-$tMarkers .= '{"lat":' . $this->ptR1->getLatitude() . ',"lng":' . $this->ptR1->getLongitude() . ',"color":"#00ff00","text":"S","title":"Autre responsable","info":"' . $this->ptR1->getAttribute('description') . "\"},";
-$tMarkers .= ']';
+$aMarkers = [
+    [
+        "lat" => $this->ptR1->getLatitude(),
+        "lng" => $this->ptR1->getLongitude(),
+        "color" => "#00ff00",
+        "text" => "R",
+        "title" => "Autre responsable",
+        "info" => $this->ptR1->getAttribute('description')
+    ],
+    [
+        "lat" => $this->ptEta->getLatitude(),
+        "lng" => $this->ptR1->getLongitude(),
+        "color" => "#ffff00",
+        "text" => "E",
+        "title" => "Établissement scolaire",
+        "info" => $this->ptEta->getAttribute('description')
+    ]
+];
 // lancement du script (sera affiché dans le layout à la fin de la page
-$this->inlineScript()->captureStart(); 
+$this->inlineScript()->captureStart();
 ?>
-const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
-const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
-const INI_ZOOM = <?php echo $this->config['zoom'];?>;
-initialiser("domicile de l'élève", "<?php echo $this->description;?>", <?php echo $tMarkers;?>);
+const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
+const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
+const INI_ZOOM = <?= $this->config['zoom'];?>;
+initialiser("domicile de l'élève", "<?= $this->description;?>", <?= json_encode($aMarkers);?>);
 <?php $this->inlineScript()->captureEnd(); ?>
 <h1>Position d'un domicile sur la carte</h1>
 <div id="carte-wrapper">
 	<div id="carte-header" class="clearfix">
-	    <div class="float-left"><ul style="margin-top:0;"><?php foreach ($this->responsable as $ligne) echo '<li>' . $ligne . '</li>'; ?></ul></div>
+		<div class="float-left">
+			<ul style="margin-top: 0;">
+			<?php foreach ($this->responsable as $ligne) :?>
+				<li><?=  $ligne;?></li>
+			<?php endforeach;?>
+			</ul>
+		</div>
 		<div class="float-right left-10px" style="max-width: 700px;">
-			Cliquez sur la carte à l'emplacement du domicile puis cliquez
-			sur le bouton <b>'Enregistrer la localisation'</b>. Utilisez le zoom pour plus de précision.<br>
-			<?php echo $this->form($this->form); ?>
+			Cliquez sur la carte à l'emplacement du domicile puis cliquez sur le
+			bouton <b>'Enregistrer la localisation'</b>. Utilisez le zoom pour
+			plus de précision.<br>
+			<?= $this->form($this->form); ?>
 		</div>
 
-</div>
+	</div>
 	<div id="carte-inner"
 		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>
-</div> 
+</div>

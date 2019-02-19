@@ -7,23 +7,23 @@
  * [
  *   'dafap_session' => [
  *      'config' => [
- *         'classe => string,   // soit Zend\Session\Config\StandardConfig (par défaut), 
- *                              // soit Zend\Session\Config\SessionConfig
+ *         'classe => string,   // soit \Zend\Session\Config\StandardConfig (par défaut), 
+ *                              // soit \Zend\Session\Config\SessionConfig
  *         'options' =>[] // description de la configuration des sessions
- *         ),
+ *         ],
  *      'storage' => string,    // alias ou nom de classe enregistrée comme storage dans le service manager
  *      'save_handler' => null, // ou un \Zend\Session\SaveHandler\SaveHandlerInterface si nécessaire
  *      'validators' =>[] // nom des classes enregistrées comme session validator
- *   )
- * )
+ *   ]
+ * ]
  *
  * @project sbm
  * @package SbmAuthentification
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAuthentification;
 

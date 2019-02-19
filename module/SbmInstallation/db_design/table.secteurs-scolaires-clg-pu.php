@@ -1,64 +1,61 @@
 <?php
 /**
  * Structure de la table des `secteurs-scolaires-clg-pu`
- *
- * Description longue du fichier s'il y en a une
  * 
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.secteurs-scolaires-clg-pu.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2015
- * @version 2015-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-
-return array(
+return [
     'name' => 'secteurs-scolaires-clg-pu',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'communeId' => 'varchar(6) NOT NULL',
-            'etablissementId' => 'char(8) NOT NULL',
-        ),
-        'primary_key' => array(
+            'etablissementId' => 'char(8) NOT NULL'
+        ],
+        'primary_key' => [
             'communeId',
-            'etablissementId'            
-        ),
-        'foreign key' => array(
-            array(
+            'etablissementId'
+        ],
+        'foreign key' => [
+            [
                 'key' => 'etablissementId',
-                'references' => array(
+                'references' => [
                     'table' => 'etablissements',
-                    'fields' => array(
+                    'fields' => [
                         'etablissementId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'communeId',
-                'references' => array(
+                'references' => [
                     'table' => 'communes',
-                    'fields' => array(
+                    'fields' => [
                         'communeId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     'data' => __DIR__ . '/data/data.secteurs-scolaires-clg-pu.php'
-);
+];

@@ -7,8 +7,8 @@
  * @filesource LatLng.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
 
@@ -41,12 +41,12 @@ class LatLng extends ButtonForm implements InputFilterProviderInterface
      *            tableau décrivant les boutons
      * @param array $valide
      *            tableau dont les clés 'lat' et 'lng' sont associées à un tableau à 2 réels [min,
-     *            max)
+     *            max]
      */
     public function __construct(array $hiddens, array $submits, array $valide)
     {
-        $ok = array_key_exists('lat', $valide);
-        $ok &= array_key_exists('lng', $valide);
+        $ok = array_key_exists('lat', $valide) && is_array($valide['lat']);
+        $ok &= array_key_exists('lng', $valide) && is_array($valide['lng']);
         if ($ok) {
             $ok &= count($valide['lat']) == 2;
             $ok &= count($valide['lng']) == 2;
@@ -60,7 +60,7 @@ class LatLng extends ButtonForm implements InputFilterProviderInterface
         if (! $ok) {
             ob_start();
             var_dump($valide);
-            throw new Exception(
+            throw new LogicException(
                 __METHOD__ . " - Le paramètre \"valide\" est incorrect.\n" . ob_get_clean());
         }
         $this->latRange = $valide['lat'];

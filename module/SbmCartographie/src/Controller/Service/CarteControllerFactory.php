@@ -9,8 +9,8 @@
  * @filesource CarteControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\Controller\Service;
 
@@ -32,7 +32,7 @@ class CarteControllerFactory implements FactoryInterface
             StdLib::getParam('system', $cartographie), ProjectionInterface::class);
         $nzone = StdLib::getParam('nzone', $cartographie, 0);
         $config_cartes = $cm->get('cartes');
-        $google_api = $cm->get('google_api');
+        $google_api = $cm->get('google_api_browser');
 
         return new CarteController(
             [

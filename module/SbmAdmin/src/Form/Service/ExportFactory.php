@@ -11,8 +11,8 @@
  * @filesource ExportFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
- * @version 2018-2.4.5
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAdmin\Form\Service;
 
@@ -51,7 +51,8 @@ class ExportFactory implements FactoryInterface
      *            eleve|etablissement|responsable|station<br>
      *            Correspond à une méthode privée <i>formSource</i> de la classe Export
      *            
-     * @throws \SbmAdmin\Form\Exception
+     * @throws \SbmAdmin\Form\DomainException (lancée par \SbmAdmin\Form\Export)
+     *        
      * @return \SbmAdmin\Form\Export
      */
     public function getForm($source = null)

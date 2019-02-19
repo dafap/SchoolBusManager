@@ -9,8 +9,8 @@
  * @filesource UserRelation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAdmin\Form;
 
@@ -21,6 +21,13 @@ class UserRelation extends AbstractSbmForm
 
     public function __construct($name)
     {
+        if (! in_array($name, [
+            'etablissement',
+            'transporteur'
+        ])) {
+            throw new DomainException(
+                "Les valeurs autorisées sont 'etablissement' ou 'transporteur'.");
+        }
         parent::__construct($name);
         $this->setAttribute('method', 'post');
         $this->add([

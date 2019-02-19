@@ -1,7 +1,18 @@
 <?php
+/**
+ * Layout
+ *
+ * @project sbm
+ * @package SbmCommun/view/layout
+ * @filesource layout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 27 sept. 2018
+ * @version 2019-2.5.0
+ */
 $appl_name = $this->translate($this->getParameter('appl_name', $this->parameter));
-echo $this->doctype();
 ?>
+<?= $this->doctype();?>
 <html lang="fr">
 <head>
 <?php if ($this->doctype()->isHtml5()) : ?>
@@ -15,7 +26,6 @@ echo $this->doctype();
         <?= $this->getHeadLinks($this->basePath(), $this->getParameter('favicon', $this->parameter), $this->getParameter('css', $this->parameter)); ?>
         <!-- Scripts -->
         <?= $this->getHeadScripts($this->basePath(), $this->getParameter('js', $this->parameter));?>
-
     </head>
 <body>
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">

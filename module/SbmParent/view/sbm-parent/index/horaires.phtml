@@ -9,8 +9,8 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 $url_retour = $this->url('sbmparent');
 $url_horaires = $this->url('sbmdocument', [
@@ -54,7 +54,7 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 }
 ?>
 <div id="fiche-wrapper" class="parent horaires">
-	<h1>Transport de <?= $this->enfant;?></h1>
+	<h1>Transport de <?php echo $this->enfant;?></h1>
 	<div id="fiche-header">
 		<div class="clearfix">
 			<div class="float-left">
@@ -68,8 +68,8 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 			</div>
 		</div>
 		<div class="clearfix">
-			<h3 class="float-left"><?= implode('<br>', $h3contentG); ?></h3>
-			<h3 class="float-right"><?= implode('<br>', $h3contentD); ?></h3>
+			<h3 class="float-left"><?php echo implode('<br>', $h3contentG); ?></h3>
+			<h3 class="float-right"><?php echo implode('<br>', $h3contentD); ?></h3>
 		</div>
 	</div>
 	<div id=fiche-inner>
@@ -88,8 +88,8 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 					</tr>
 	                <?php for ($i = 0; $i < count($data); $i ++):?>
 	                <?php $css = $this->cycle(['odd', 'even'])->next();?>
-	                <tr class="<?= $css;?>">
-						<td><?= implode('</td><td>', $aller[$i]);?></td>
+	                <tr class="<?php echo $css;?>">
+						<td><?php echo implode('</td><td>', $aller[$i]);?></td>
 					</tr>
 	                <?php endfor;?>
 				</tbody>
@@ -111,17 +111,17 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 					</tr>
 	                <?php for ($i = 0; $i < count($data); $i ++):?>
 	                <?php $css = $this->cycle(['odd', 'even'])->next();?>
-	                <tr class="<?= $css;?>">
-						<td><?= implode('</td><td>', $retour[$i]);?></td>
+	                <tr class="<?php echo $css;?>">
+						<td><?php echo implode('</td><td>', $retour[$i]);?></td>
 					</tr>
 	                <?php endfor;?>
 				</tbody>
 			</table>
 		</fieldset>
 		<div class="left-95px top-6px">
-			<form method="post" action="<?= $url_retour;?>">
+			<form method="post" action="<?php echo $url_retour;?>">
 				<input type="submit" class="default" name="horaires"
-					value="Imprimer" formaction="<?= $url_horaires;?>"> <input
+					value="Imprimer" formaction="<?php echo $url_horaires;?>"> <input
 					type="submit" class="default" name="cancel" value="Retour">
 			</form>
 		</div>

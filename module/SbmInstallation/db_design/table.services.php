@@ -8,17 +8,17 @@
  * @filesource table.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 févr. 2014
- * @version 2015-2
+ * @date 11 fév. 2019
+ * @version 2019-2.5.0
  */
-return array(
+return [
     'name' => 'services',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'serviceId' => 'varchar(11) NOT NULL',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'nom' => 'varchar(45) NOT NULL',
@@ -29,32 +29,33 @@ return array(
             'operateur' => 'varchar(4) NOT NULL DEFAULT "CCDA"',
             'kmAVide' => 'decimal(7,3) NOT NULL DEFAULT "0"',
             'kmEnCharge' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
+            'natureCarte' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'geotrajet' => 'POLYGON'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'serviceId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'transporteurId',
-                'references' => array(
+                'references' => [
                     'table' => 'transporteurs',
-                    'fields' => array(
+                    'fields' => [
                         'transporteurId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     
     // 'data' => include __DIR__ . '/data/data.services.php',
-    // 'data' => array('after' => array('transporteurs'),'include' => __DIR__ . '/data/data.services.php')
+    // 'data' => ['after' => ['transporteurs'],'include' => __DIR__ . '/data/data.services.php']
     'data' => __DIR__ . '/data/data.services.php'
-);
+];

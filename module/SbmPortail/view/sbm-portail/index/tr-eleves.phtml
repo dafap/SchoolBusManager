@@ -7,8 +7,8 @@
  * @filesource tr-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 
@@ -35,17 +35,16 @@ try {
 	</div>
 	<div id="liste-footer">
 		<div class="criteres-wrapper">
-		<?php if (! is_null($this->criteres_form)) : ?>
-        <?=  $this->form()->openTag($this->criteres_form);?>
-        <?=  $this->formCollection($this->criteres_form, true);?>
-        <?=  $this->form()->closeTag();?>
+		<?php if (! is_null($this->criteres_form)) :?>
+        	<?= $this->form()->openTag($this->criteres_form);?>
+        	<?= $this->formCollection($this->criteres_form, true);?>
+        	<?= $this->form()->closeTag();?>
         <?php endif;?>
         </div>
 	</div>
 </div>
 <?php
-    // fin du catch (affichage d'une page d'erreur)
-    return;
+    return; // fin du catch (affichage d'une page d'erreur)
 }
 
 // les url à utiliser
@@ -79,7 +78,8 @@ $actions = [
     'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $url_rapports,
-        'title' => 'Liste à imprimer'
+        'title' => 'Liste à imprimer',
+		'formtarget' => '_blank'
     ]
 ];
 if ($this->categorie == 2) {
@@ -95,11 +95,11 @@ if ($this->categorie == 2) {
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-		<?= $this->flashMessenger()->render('success');?>
-		<?= $this->flashMessenger()->render('warning');?>
-		<?= $this->flashMessenger()->render('error');?>
-		<?= $this->flashMessenger()->render('info');?>
-		<?= $this->flashMessenger()->render('default');?>
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -117,7 +117,7 @@ if ($this->categorie == 2) {
 					<th>Arrêts</th>
 				</tr>
         <?php foreach($eleves as $eleve): ?>
-        <?php
+        	<?php
             $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable']),
                 ENT_QUOTES, 'utf-8', false);
             $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1',
@@ -162,8 +162,7 @@ if ($this->categorie == 2) {
 						<?= $this->escapeHtml($eleve['prenom']); ?></td>
 					<td class="dateN">
 						<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
-					<td class="responsables">
-						<?= $itemR1; ?></td>
+					<td class="responsables"><?= $itemR1; ?></td>
 					<td class="etablissement">
 						<?= $this->escapeHtml($eleve['etablissement'] /*. ' - ' . $eleve['communeEtablissement']*/);?></td>
 					<td class="classe">
@@ -177,12 +176,13 @@ if ($this->categorie == 2) {
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?>
+		</div>
 		<div class="criteres-wrapper">
-		<?php if (! is_null($this->criteres_form)) : ?>
-		<?=  $this->form()->openTag($this->criteres_form);?>
-		<?= $this->formCollection($this->criteres_form, true);?>
-		<?= $this->form()->closeTag();?>
+		<?php if (! is_null($this->criteres_form)) :?>
+    		<?= $this->form()->openTag($this->criteres_form);?>
+    		<?= $this->formCollection($this->criteres_form, true);?>
+    		<?= $this->form()->closeTag();?>
 		<?php endif;?>
 	    </div>
 	</div>

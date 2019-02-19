@@ -22,8 +22,8 @@
  * @filesource Not.php
  * @encodage UTF-8
  * @author PhpStorm - Exlord (adeli.farhad@gmail.com)
- * @date 2 août 2016
- * @version 2016-2.1.10
+ * @date 2 fév. 2019
+ * @version 2019-4.5.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
 
@@ -47,7 +47,7 @@ class Not implements PredicateInterface
 
     /**
      *
-     * @param null $expression            
+     * @param null $expression
      */
     public function setExpression($expression)
     {
@@ -65,7 +65,7 @@ class Not implements PredicateInterface
 
     /**
      *
-     * @param string $specification            
+     * @param string $specification
      * @return self
      */
     public function setSpecification($specification)

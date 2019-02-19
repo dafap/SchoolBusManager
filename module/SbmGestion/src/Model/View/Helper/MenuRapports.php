@@ -9,8 +9,8 @@
  * @filesource MenuRapports.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 6 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\View\Helper;
 
@@ -31,8 +31,14 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
     }
 
     /**
-     * Renvoie le texte à afficher dans le menu pour l'option 'rapports' et le tableau $hiddens du
-     * formulaire de la barre de menu
+     * Renvoie un tableau dans lequel on trouve le ou les liens à afficher dans le menu pour
+     * l'option 'rapports' et le tableau $hiddens du formulaire de la barre de menu.
+     *
+     * Le tableau renvoyé a 2 clés 'hiddens' et 'content'.<ul>
+     * <li> 'hiddens' => tableau des hiddens reçu en paramètre auquel vient s'ajouter
+     * 'documentId' => libelle lorsqu'il n'y a qu'une option dans le menu</li>
+     * <li> 'content' => tableau qui peut prendre 2 formes, selon qu'il y a une ou plusieurs
+     * options dans le menu.</li></ul>
      *
      * @param string $route
      *            url de la page où l'on doit afficher le menu
@@ -47,7 +53,7 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
      *            hiddens du formulaire qui sera complété par le libellé du menu s'il n'y a qu'un
      *            document proposé
      *            
-     * @return string
+     * @return array Tableau de la forme ['hiddens' => [...], 'content' => [...]]
      */
     public function __invoke($route, $formaction, $class, $value = '', $hiddens = [])
     {
@@ -60,7 +66,8 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
             $documentId = sprintf('documentId[%d]', $affectation->ordinal_position);
             $content[$documentId] = [
                 'value' => $affectation->libelle,
-                'formaction' => $formaction . '/id/' . $affectation->docaffectationId
+                'formaction' => $formaction . '/id/' . $affectation->docaffectationId,
+                'formtarget' => '_blank'
             ];
         }
         // die(var_dump($content));
@@ -72,7 +79,8 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
                     'class' => $class,
                     'formaction' => $formaction . '/id/' . $affectation->docaffectationId,
                     'value' => $value,
-                    'title' => $affectation->libelle
+                    'title' => $affectation->libelle,
+                    'formtarget' => '_blank'
                 ]
             ];
         } else {

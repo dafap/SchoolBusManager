@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -54,7 +54,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
     {
         if (! ($db_manager instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($db_manager)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($db_manager)));
         }
         $this->millesime = Session::get('millesime');
         $this->dbAdapter = $db_manager->getDbAdapter();
@@ -82,9 +83,9 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function byCircuit($sanspreinscrits = false)
     {
-        // SELECT circuitId, count(*) FROM `sbm_t_circuits` c JOIN `sbm_t_affectations` a ON
-        // c.serviceId=a.service1Id AND c.stationId=a.station1Id WHERE millesime=2014 GROUP BY
-        // circuitId
+        // SELECT circuitId, count(*) FROM `sbm_t_circuits` c JOIN `sbm_t_affectations` a
+        // ON c.serviceId=a.service1Id AND c.stationId=a.station1Id
+        // WHERE millesime=2014 GROUP BY circuitId
         $result = [];
         if ($sanspreinscrits) {
             $filtre = [
@@ -125,8 +126,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
      * Le résultat est un tableau associatif où les clés sont des communeId et les valeurs
      * sont des structures de la forme
      * [
-     * 'demandes' => ['r1' => effectif1, 'r2' => effectif2, 'ele' => effectif3),
-     * 'transportes' => ['r1' => effectif4, 'r2' => effectif5, 'ele' => effectif6),
+     * 'demandes' => ['r1' => effectif1, 'r2' => effectif2, 'ele' => effectif3],
+     * 'transportes' => ['r1' => effectif4, 'r2' => effectif5, 'ele' => effectif6],
      * 'total' => ['demandes' => effectif_des_demandes, 'transportes' => effectif_des_transportes)
      * ) où r1 correspond à la commune du responsable1 lorsque l'élève n'a pas d'adresse perso,
      * r2 à la commune du responsable2
@@ -211,8 +212,16 @@ class Effectif extends AbstractQuery implements FactoryInterface
 
         // calcul du nombre d'élèves
         foreach ($result as &$value) {
-            $value['total']['demandes'] = array_sum($value['demandes']);
-            $value['total']['transportes'] = array_sum($value['transportes']);
+            if (isset($value['demandes'])) {
+                $value['total']['demandes'] = array_sum($value['demandes']);
+            } else {
+                $value['total']['demandes'] = 0;
+            }
+            if (isset($value['transportes'])) {
+                $value['total']['transportes'] = array_sum($value['transportes']);
+            } else {
+                $value['total']['transportes'] = 0;
+            }
         }
         return $result;
     }
@@ -269,42 +278,82 @@ class Effectif extends AbstractQuery implements FactoryInterface
      *
      * @return array
      */
-    public function byEtablissement()
+    public function byEtablissement($sanspreinscrits = false)
     {
         // SELECT etablissementId, count(*) FROM sbm_scolarites GROUP BY etablissementId
         $result = [];
         $group = [
             'etablissementId'
         ];
-        $filtre = [
-            'inscrit' => 1
-        ];
+        if ($sanspreinscrits) {
+            $filtre = [
+                'inscrit' => 1
+            ];
+        } else {
+            $filtre = [
+                'inscrit' => 1
+            ];
+        }
         $rowset = $this->requeteCl('etablissementId', $filtre, $group, false);
         foreach ($rowset as $row) {
             $result[$row['etablissementId']]['demandes'] = $row['effectif'];
             $result[$row['etablissementId']]['transportes'] = 0;
         }
-        $filtre = [
-            'inscrit' => 1,
-            'correspondance' => 1,
-            [
+        if ($sanspreinscrits) {
+            $filtre = [
+                'inscrit' => 1,
                 [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
                     '>' => [
-                        'demandeR1',
+                        'gratuit',
                         0
-                    ],
-                    'trajet' => 1
+                    ]
                 ],
-                'or',
+                'correspondance' => 1,
                 [
-                    '=' => [
-                        'demandeR1',
-                        0
+                    [
+                        '>' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 1
                     ],
-                    'trajet' => 2
+                    'or',
+                    [
+                        '=' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 2
+                    ]
                 ]
-            ]
-        ];
+            ];
+        } else {
+            $filtre = [
+                'inscrit' => 1,
+                'correspondance' => 1,
+                [
+                    [
+                        '>' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 1
+                    ],
+                    'or',
+                    [
+                        '=' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 2
+                    ]
+                ]
+            ];
+        }
         $rowset = $this->requeteCl('etablissementId', $filtre, $group, true);
         foreach ($rowset as $row) {
             $result[$row['etablissementId']]['transportes'] = $row['effectif'];
@@ -383,25 +432,38 @@ class Effectif extends AbstractQuery implements FactoryInterface
         return $result;
     }
 
-    public function byServiceGivenEtablissement($etablissementId)
+    public function byServiceGivenEtablissement($etablissementId, $sanspreinscrits = false)
     {
         $result = [];
-        $rowset = $this->requeteWith('service1Id',
-            [
+        if ($sanspreinscrits) {
+            $filtre = [
+                's.inscrit' => 1,
+                [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => [
+                        'gratuit',
+                        0
+                    ]
+                ],
+                'etablissementId' => $etablissementId
+            ];
+        } else {
+            $filtre = [
                 's.inscrit' => 1,
                 'etablissementId' => $etablissementId
-            ], 'service1Id');
+            ];
+        }
+        $rowset = $this->requeteWith('service1Id', $filtre, 'service1Id');
         foreach ($rowset as $row) {
             if ($row['service1Id'] == '')
                 continue;
             $result[$row['service1Id']]['r1'] = $row['effectif'];
         }
 
-        $rowset = $this->requeteWith2('service',
-            [
-                's.inscrit' => 1,
-                'etablissementId' => $etablissementId
-            ], 'service2Id');
+        $rowset = $this->requeteWith2('service', $filtre, 'service2Id');
         foreach ($rowset as $row) {
             if ($row['service2Id'] == '')
                 continue;
@@ -542,25 +604,38 @@ class Effectif extends AbstractQuery implements FactoryInterface
         return $result;
     }
 
-    public function transporteurByService($transporteurId)
+    public function transporteurByService($transporteurId, $sanspreinscrits = false)
     {
         // SELECT service1Id serviceId, count(*) FROM `sbm_t_affectations` a JOIN `sbm_t_services`
         // s ON a.service1Id=s.serviceId WHERE millesime=2014 AND transporteurId=1 GROUP BY
         // service1Id
         $result = [];
-        $rowset = $this->requeteTr1('serviceId',
-            [
+        if ($sanspreinscrits) {
+            $filtre = [
+                's.inscrit' => 1,
+                [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => [
+                        'gratuit',
+                        0
+                    ]
+                ],
+                'transporteurId' => $transporteurId
+            ];
+        } else {
+            $filtre = [
                 's.inscrit' => 1,
                 'transporteurId' => $transporteurId
-            ], 'service1Id');
+            ];
+        }
+        $rowset = $this->requeteTr1('serviceId', $filtre, 'service1Id');
         foreach ($rowset as $row) {
             $result[$row['serviceId']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteTr2('serviceId',
-            [
-                's.inscrit' => 1,
-                'transporteurId' => $transporteurId
-            ], 'a.service2Id');
+        $rowset = $this->requeteTr2('serviceId', $filtre, 'a.service2Id');
         foreach ($rowset as $row) {
             $result[$row['serviceId']]['r2'] = $row['effectif'];
         }
@@ -571,20 +646,35 @@ class Effectif extends AbstractQuery implements FactoryInterface
         return $result;
     }
 
-    public function byTransporteur()
+    public function byTransporteur($sanspreinscrits = false)
     {
         // SELECT transporteurId, count(*) FROM `sbm_t_affectations` a JOIN sbm_t_services s on
         // a.service1Id=s.serviceId WHERE millesime=2014 GROUP BY transporteurId
         $result = [];
-        $rowset = $this->requeteTr1('transporteurId', [
-            's.inscrit' => 1
-        ], 'transporteurId');
+        if ($sanspreinscrits) {
+            $filtre = [
+                's.inscrit' => 1,
+                [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => [
+                        'gratuit',
+                        0
+                    ]
+                ]
+            ];
+        } else {
+            $filtre = [
+                's.inscrit' => 1
+            ];
+        }
+        $rowset = $this->requeteTr1('transporteurId', $filtre, 'transporteurId');
         foreach ($rowset as $row) {
             $result[$row['transporteurId']]['r1'] = $row['effectif'];
         }
-        $rowset = $this->requeteTr2('transporteurId', [
-            's.inscrit' => 1
-        ], 'transporteurId');
+        $rowset = $this->requeteTr2('transporteurId', $filtre, 'transporteurId');
         foreach ($rowset as $row) {
             $result[$row['transporteurId']]['r2'] = $row['effectif'];
         }
@@ -600,14 +690,14 @@ class Effectif extends AbstractQuery implements FactoryInterface
      *
      * @param string $colum
      *            une colonne parmi sercice1Id ou service2Id (table affectations)
-     * @param string|array|Where $where
+     * @param string|array|Where $filtre
      *            description de la requête dans un tableau associatif
      *            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    private function requeteWith($column, $where, $group)
+    private function requeteWith($column, $filtre, $group)
     {
-        $where['s.millesime'] = $this->millesime;
+        $filtre['s.millesime'] = $this->millesime;
         $select = $this->sql->select();
         $select->from([
             's' => $this->tableName['scolarites']
@@ -619,7 +709,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
                 $column,
                 'effectif' => new Expression('count(*)')
             ])
-            ->where($where)
+            ->where($this->arrayToWhere(null, $filtre))
             ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
@@ -640,9 +730,6 @@ class Effectif extends AbstractQuery implements FactoryInterface
         $where = new Where();
         $where->equalTo('s.millesime', $this->millesime)->isNull(
             'correspondances.millesime');
-        foreach ($conditions as $key => $value) {
-            $where->equalTo($key, $value);
-        }
         $select = $this->sql->select();
         $select->from([
             's' => $this->tableName['scolarites']
@@ -657,7 +744,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
             ->join([
             'correspondances' => $select1
         ], $jointure, [], Select::JOIN_LEFT)
-            ->where($where)
+            ->where($this->arrayToWhere($where, $conditions))
             ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
@@ -740,9 +827,9 @@ class Effectif extends AbstractQuery implements FactoryInterface
         return $statement->execute();
     }
 
-    private function requeteTr1($column, $where, $group)
+    private function requeteTr1($column, $filtre, $group)
     {
-        $where['a.millesime'] = $this->millesime;
+        $filtre['a.millesime'] = $this->millesime;
         $select = $this->sql->select();
         $select->from([
             'a' => $this->tableName['affectations']
@@ -758,7 +845,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
                 $column,
                 'effectif' => new Expression('count(*)')
             ])
-            ->where($where)
+            ->where($this->arrayToWhere(null, $filtre))
             ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // die($this->getSqlString($select));
@@ -778,9 +865,6 @@ class Effectif extends AbstractQuery implements FactoryInterface
         $where = new Where();
         $where->equalTo('a.millesime', $this->millesime)->isNull(
             'correspondances.millesime');
-        foreach ($conditions as $key => $value) {
-            $where->equalTo($key, $value);
-        }
         $select = $this->sql->select();
         $select->from([
             'a' => $this->tableName['affectations']
@@ -799,7 +883,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
             ->join([
             'correspondances' => $select1
         ], $jointure, [], Select::JOIN_LEFT)
-            ->where($where)
+            ->where($this->arrayToWhere($where, $conditions))
             ->group($group);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
@@ -993,7 +1077,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParClasse()
     {
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParClasse($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1158,7 +1245,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCommune()
     {
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCommune($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1351,7 +1441,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCircuit()
     {
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCircuit($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1519,7 +1612,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParEtablissement()
     {
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParEtablissement($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1655,7 +1751,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [), 'annee_precedente' => [))</code><br>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
      *         où chaque tableau est composé de lignes de la forme :<br>
      *         <code>['commune' => nnn, 'circuit' => aaa, 'transportes' => value)</code>
      *         <br>où<ul>
@@ -1665,7 +1761,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCommuneCircuit()
     {
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCommuneCircuit($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -1834,7 +1933,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [), 'annee_precedente' => [))</code><br>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
      *         où chaque tableau est composé de lignes de la forme :<br>
      *         <code>['commune' => nnn, 'circuit' => aaa, 'inscrits' => value, 'internet' => value,
      *         'papier' => value, 'transportes' => value)</code>
@@ -1848,7 +1947,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
      */
     public function statistiquesParCircuitCommune()
     {
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         $statement = $this->sql->prepareStatementForSqlObject(
             $this->selectStatistiquesParCircuitCommune($this->millesime));
         $result['annee_courante'] = iterator_to_array($statement->execute());
@@ -2018,7 +2120,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [), 'annee_precedente' => [))</code><br>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
      *         où chaque tableau est composé de lignes de la forme :<br>
      *         <code>['etablissementId' => id, 'etablissement' =>nnn, 'commune' => vvv, 'classe' =>
      *         ccc, 'inscrits' => value, 'internet' => value, 'papier' => value, 'transportes' =>
@@ -2044,7 +2146,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
             $this->selectStatistiquesParEtablissementClasse($this->millesime - 1));
         $annee_precedente = iterator_to_array($statement->execute());
         // résultat par alignement des tableaux
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         for ($etablissementId = '', $ic = 0, $ip = 0; $ic < count($annee_courante) ||
             $ip < count($annee_precedente);) {
             if (empty($etablissementId)) {
@@ -2336,7 +2441,7 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [), 'annee_precedente' => [))</code><br>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
      *         où chaque tableau est composé de lignes de la forme :<br>
      *         <code>['etablissementId' => id, 'etablissement' =>nnn, 'commune' => vvv, 'classe' =>
      *         ccc, 'inscrits' => value, 'internet' => value, 'papier' => value, 'transportes' =>
@@ -2362,7 +2467,10 @@ class Effectif extends AbstractQuery implements FactoryInterface
             $this->selectStatistiquesParClasseEtablissement($this->millesime - 1));
         $annee_precedente = iterator_to_array($statement->execute());
         // résultat par alignement des tableaux
-        $result = [];
+        $result = [
+            'annee_courante' => [],
+            'annee_precedente' => []
+        ];
         for ($classe = '', $ic = 0, $ip = 0; $ic < count($annee_courante) ||
             $ip < count($annee_precedente);) {
             if (empty($classe)) {

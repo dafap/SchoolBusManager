@@ -1,46 +1,43 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Création d'un compte user pour un responsable déjà inscrit
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
  * @filesource responsable-loger.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2015
- * @version 2015-1
+ * @date 1 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_retour = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste',
-    'page' => $this->page
-));
-$hiddens = array(
+$url_retour = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [
     'op' => 'retour'
-);
-$actions = array(
-    'retour' => array(
+];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
 <h1>Créer un compte pour un responsable</h1>
 <div id="suppr-wrapper">
-	<p>Vous avez demandé de créer un compte pour <?php echo $this->info;?>.</p>
+	<p>Vous avez demandé de créer un compte pour <?= $this->info;?>.</p>
 <?php if (is_null($this->form)) : ?>
-<p><?php echo $this->msg; ?></p>
-	<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+	<p><?= $this->msg; ?></p>
+	<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 <?php else : ?>
-<p>Confirmez-vous ?</p>
-<?php
-    echo $this->form()->openTag($form);
-    echo $this->formCollection($form);
-    echo $this->form()->closeTag();
-    ?>
+	<p>Confirmez-vous ?</p>
+    <?= $this->form()->openTag($form);?>
+    <?= $this->formCollection($form);?>
+    <?= $this->form()->closeTag();?>
 <?php endif; ?>
 </div>

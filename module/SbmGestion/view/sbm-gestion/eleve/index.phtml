@@ -8,50 +8,48 @@
  * @filesource view/eleve/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2014
- * @version 2014-1
+ * @date 1 oct. 2018
+ * @version 2018-2.4.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_eleve_eleves = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-liste',
-    'page' => $this->page
-));
-$url_eleve_responsables = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste',
-    'page' => $this->page
-));
+$url_eleve_eleves = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-liste',
+        'page' => $this->page
+    ]);
+$url_eleve_responsables = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
 $url_gestion = $this->url('sbmgestion');
-?>
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_gestion,
+        'title' => 'Retour'
+    ]
+]?>
 <h1>Gestion des élèves et des responsables</h1>
 <div id="menugeneral-wrapper">
 	<div id="menugeneral-header" class="clearfix">
 		<div class="menu float-left">
-		<?php
-echo $this->listeZoneActions[], array(
-    'retour' => array(
-        'class' => 'fam-door-out',
-        'formaction' => $url_gestion,
-        'title' => 'Retour'
-    )
-));
-?>
+			<?= $this->listeZoneActions([], $actions);?>
         </div>
 		<div class="flashMessenger float-right">
-	<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
         </div>
-    </div>
+	</div>
 	<div id="menugeneral-inner">
 		<ul>
-			<li><a href="<?php echo $url_eleve_eleves; ?>"><i
-					class="fam-bullet-go"></i>Gestion des élèves</a></li>
-			<li><a href="<?php echo $url_eleve_responsables; ?>"><i
+			<li><a href="<?= $url_eleve_eleves; ?>"><i class="fam-bullet-go"></i>Gestion
+					des élèves</a></li>
+			<li><a href="<?= $url_eleve_responsables; ?>"><i
 					class="fam-bullet-go"></i>Gestion des responsables</a></li>
 		</ul>
 	</div>

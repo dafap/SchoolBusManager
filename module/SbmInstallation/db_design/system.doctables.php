@@ -8,22 +8,22 @@
  * @filesource system.doctables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2014
- * @version 2014-1
+ * @date 25 août 2018
+ * @version 2018-2.4.3
  */
-return array(
+return [
     'name' => 'doctables',
     'type' => 'system',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'doctableId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL DEFAULT "1"',
             'ordinal_table' => 'int(11) NOT NULL DEFAULT "1"', // dans le cas où il y aurait plusieurs tables dans le même document
             'section' => 'char(5)', // prend les valeurs thead, tbody ou tfoot
-            'description' => 'varchar(255) NOT NULL',
+            'description' => 'varchar(255) NOT NULL DEFAULT ""',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'width' => 'varchar(4)', // null par défaut, prend la valeur auto ou un nombre de 1 à 100 (% de la largeur de la zone d'écriture)
             'row_height' => 'int(11) NOT NULL DEFAULT "6"',
@@ -38,32 +38,32 @@ return array(
             'line_width' => 'float(2,1) NOT NULL DEFAULT "0.1"',
             'fill_color' => 'varchar(20) NOT NULL DEFAULT "E0EBFF"',
             'text_color' => 'varchar(20) NOT NULL DEFAULT "black"',
-            'font_style' => 'char(2) NOT NULL DEFAULT ""' // '', B, I, U, D, O ou combinaison de 2 d'entre elles
-        ), 
-        'primary_key' => array(
+            'font_style' => 'char(2) NOT NULL DEFAULT ""'
+        ], // '', B, I, U, D, O ou combinaison de 2 d'entre elles
+        'primary_key' => [
             'doctableId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'documentId',
-                'references' => array(
+                'references' => [
                     'table' => 'documents',
-                    'fields' => array(
+                    'fields' => [
                         'documentId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'CASCADE'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     
     // 'data' => include __DIR__ . '/data/data.system.doctables.php'
-    //'data' => array('after' => array('documents'), 'include' => __DIR__ . '/data/data.doctables.php')
+    // 'data' => ['after' => ['documents'], 'include' => __DIR__ . '/data/data.doctables.php']
     'data' => __DIR__ . '/data/data.system.doctables.php'
-);
+];

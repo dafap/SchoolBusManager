@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Liste des tarifs
  *
@@ -8,8 +9,8 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
 {
@@ -19,8 +20,9 @@ function renderCheckbox($view, $name, $id, $value)
         ->setValue($value);
     return $view->formCheckbox($element);
 }
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modèle de jsCallback pour selection
@@ -40,58 +42,64 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $tarifs = $this->paginator->getCurrentItems();
-$url_ajouter = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-pdf',
-    'page' => $this->page
-));
+$url_ajouter = $this->url('sbmgestion/finance',
+    [
+        'action' => 'tarif-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/finance',
+    [
+        'action' => 'tarif-pdf',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/finance');
-$url_edit = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-suppr',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/finance', array(
-    'action' => 'tarif-group',
-    'id' => $this->page
-));
-$hiddens =[];
-$menuImpression = $this->menuRapports($this->url('sbmgestion/finance', array(
-    'action' => 'tarif-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$url_edit = $this->url('sbmgestion/finance',
+    [
+        'action' => 'tarif-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/finance',
+    [
+        'action' => 'tarif-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/finance',
+    [
+        'action' => 'tarif-group',
+        'id' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/finance', [
+        'action' => 'tarif-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvel arrêt sur un circuit'
-    )
-);
+    ]
+];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <h1>Liste des tarifs</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="tarifs">
@@ -107,54 +115,60 @@ echo $this->flashMessenger()->render('default');
 				</tr>
         <?php foreach($tarifs as $test => $tarif): ?>
         <?php
-            // construction des JS pour selection            
+            // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $tarif->tarifId);
-            $jsCallback .= sprintf("$modele\n", $tarif->tarifId, $this->page, $tarif->tarifId);
-            ?>
-            <tr
-					class="<?php echo $this->cycle(["even", "odd"))->next();?>">
-					<td class="nom"><?php echo $this->escapeHtml($tarif->nom); ?></td>
-					<td class="montant"><?php echo $fmt->formatCurrency($tarif->montant, 'EUR'); ?></td>
-					<td class="attributs"><?php echo $this->escapeHtml($tarif->rythme); ?></td>
-					<td class="attributs"><?php echo $this->escapeHtml($tarif->grille); ?></td>
-					<td class="attributs"><?php echo $this->escapeHtml($tarif->mode); ?></td>
-					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?></td>
-					<td class="boutons">
-            <?php
-            $hiddens = array(
+            $jsCallback .= sprintf("$modele\n", $tarif->tarifId, $this->page,
+                $tarif->tarifId);
+            $hiddens = [
                 'tarifId' => $tarif->tarifId
-            );
-            $buttons = array(
-                'modifier' => array(
+            ];
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier'
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer'
-                ),
-                'eleves' => array(
+                ],
+                'eleves' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'élèves inscrits avec ce tarif'
-                )
-            );
-            echo $this->listeLigneActions($tarif->tarifId, $hiddens, $buttons);
+                ]
+            ];
             ?>
-				</td>
+            <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="nom">
+						<?= $this->escapeHtml($tarif->nom); ?></td>
+					<td class="montant">
+						<?= $fmt->formatCurrency($tarif->montant, 'EUR'); ?></td>
+					<td class="attributs">
+						<?= $this->escapeHtml($tarif->rythme); ?></td>
+					<td class="attributs">
+						<?= $this->escapeHtml($tarif->grille); ?></td>
+					<td class="attributs">
+						<?= $this->escapeHtml($tarif->mode); ?></td>
+					<td class="centre selection">
+						<?= renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
+						</td>
+					<td class="boutons">
+						<?= $this->listeLigneActions($tarif->tarifId, $hiddens, $buttons);?>
+					</td>
 				</tr>         
         <?php endforeach;?>
         </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
-        <?php echo $this->form()->openTag($this->criteres_form);?>
-        <?php echo $this->formCollection($this->criteres_form, true);?>
-        <?php echo $this->form()->closeTag();?>
+        	<?= $this->form()->openTag($this->criteres_form);?>
+        	<?= $this->formCollection($this->criteres_form, true);?>
+        	<?= $this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -163,8 +177,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?php echo $jsTrigger;?>}
-<?php echo $jsCallback;?>
+<?= $jsTrigger;?>}
+<?= $jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

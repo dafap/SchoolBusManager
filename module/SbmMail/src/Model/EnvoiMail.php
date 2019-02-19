@@ -21,8 +21,8 @@
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmMail\Model;
 
@@ -103,6 +103,8 @@ class EnvoiMail implements ListenerAggregateInterface
      * Les paramètres de l'évènement (params) sont les données à enregistrer.
      *
      * @param Event $e
+     * 
+     * @throws \SbmMail\Model\Exception
      */
     public function onSendMail(Event $e)
     {
@@ -158,6 +160,12 @@ class EnvoiMail implements ListenerAggregateInterface
         $transport->send($mail);
     }
 
+    /**
+     * 
+     * @param string|array $destinataire
+     * @throws Exception
+     * @return \Zend\Mail\Address
+     */
     protected function getAdresse($destinataire)
     {
         if (is_string($destinataire)) {

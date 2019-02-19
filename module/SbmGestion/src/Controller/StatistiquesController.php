@@ -8,8 +8,8 @@
  * @filesource StatistiquesController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
@@ -151,7 +151,7 @@ class StatistiquesController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } else {
-            $args = (array) $prg;
+            $args = $prg ?: [];
             if (! array_key_exists('documentId', $args)) {
                 $this->flashMessenger()->addErrorMessage(
                     'Le document à imprimer n\'a pas été indiqué.');

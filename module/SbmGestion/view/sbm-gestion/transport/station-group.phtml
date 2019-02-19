@@ -8,66 +8,87 @@
  * @filesource view/sbm-gestion/transport/station-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-//die(var_dump(iterator_to_array($this->data)));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'station-group-pdf',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => 'station-group',
-    'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-group-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-group',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_edit = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
-$hiddens = array(
+]);
+$url_mark_selection = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-group-selection',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_add_photo = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$hiddens = [
     'stationId' => $this->stationId
-);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'station-group'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'station-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $this->origine,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
-    'rapports' => $menuImpression['content']
-);
+    ],
+    'rapports' => $menuImpression['content'],
+    'marquer' => [
+        'class' => 'fam-basket-add',
+        'formaction' => $url_mark_selection,
+        'title' => 'Sélectionner toutes les fiches de cette liste'
+    ]
+];
 ?>
 <h1>Groupe des élèves inscrits sur une station</h1>
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
 		<ul class="float-left">
-			<li>Commune : <?php echo $this->escapeHtml($this->station->commune); ?></li>
-			<li>Arrêt : <?php echo $this->escapeHtml($this->station->nom); ?></li>
+			<li>Commune : <?= $this->escapeHtml($this->station->commune); ?></li>
+			<li>Arrêt : <?= $this->escapeHtml($this->station->nom); ?></li>
 		</ul>
 		<div class="flashMessenger float-right">
-		<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -86,45 +107,57 @@ echo $this->flashMessenger()->render('default');
 					<th>Services</th>
 					<th></th>
 				</tr>
-			<?php $services =[];?>
-			<?php foreach ($data as $row):?>
+			<?php $services = [];?>
+			<?php foreach ($this->data as $row):?>
 			<?php
-    $services = implode('<br>', array($row['service1Id'], $row['service2Id']));
-    $hiddens = array(
+    $services = implode('<br>', [
+        $row['service1Id'],
+        $row['service2Id']
+    ]);
+    $hiddens = [
         'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
-    );
-    $buttons = array(
-        'modifier' => array(
+    ];
+    $buttons = [
+        'modifier' => [
             'class' => 'fam-pencil',
             'formaction' => $url_edit,
             'title' => 'Modifier'
-        )
-    );
+        ]
+    ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
     if (! empty($row['email'])) {
-        $buttons['ecrire'] = array(
+        $buttons['ecrire'] = [
             'class' => 'fam-email',
             'formaction' => $url_mail,
             'title' => 'Envoyer un email'
-        );
+        ];
     }
-    $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+    $this->pictogrammes('init')
+        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto']);
     ?>
-			    <tr
-					class="<?php echo $this->cycle(["even", "odd"))->next();?>">
-					<td><?php echo $this->pictogrammes();?></td>
-					<td><?php echo $this->escapeHtml($row['nom']);?></td>
-					<td><?php echo $this->escapeHtml($row['prenom']);?></td>
-					<td><?php echo $this->escapeHtml($row['adresseL1']);?></td>
-					<td><?php echo $this->escapeHtml($row['adresseL2']);?></td>
-					<td><?php echo $this->escapeHtml($row['codePostal']);?></td>
-					<td><?php echo $this->escapeHtml($row['commune']);?></td>
-					<td><?php echo $this->escapeHtml($row['etablissement']);?></td>
-					<td class="centre"><?php echo $this->escapeHtml($row['classe']);?></td>
-					<td><?php echo $services;?></td>
-					<td><?php echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
+			    <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td><?= $this->pictogrammes();?></td>
+					<td><?= $this->escapeHtml($row['nom']);?></td>
+					<td><?= $this->escapeHtml($row['prenom']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL1']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL2']);?></td>
+					<td><?= $this->escapeHtml($row['codePostal']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= $this->escapeHtml($row['etablissement']);?></td>
+					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
+					<td><?= $services;?></td>
+					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 			<?php endforeach;?>
 			</tbody>
@@ -132,7 +165,7 @@ echo $this->flashMessenger()->render('default');
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 </div>

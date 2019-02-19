@@ -2,14 +2,24 @@
 /**
  * Liste des transporteurs
  *
+ * Cette vue reçoit une variable $t_nb_inscrits qui est un tableau associatif 
+ * structuré comme indiqué dans l'exemple ci-dessous :
+ * [
+ *     code_transporteur => [
+ *         'r1' => effectif des élèves transportés en demandeR1,
+ *         'r2' => effectif des élèves transportés en demandeR2,
+ *         'total' => effectif des élèves transportés (r1 ou r2)
+ *     ],
+ *     ...
+ * ]
  *
  * @project sbm
  * @package SbmGestion
  * @filesource view/sbm-gestion/transport/transporteur-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
 
@@ -22,7 +32,7 @@ function renderCheckbox($view, $name, $id, $value)
     return $view->formCheckbox($element);
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modèle de jsCallback pour selection
@@ -43,61 +53,69 @@ $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $transporteurs = $this->paginator->getCurrentItems();
 
-$url_ajouter = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-pdf',
-    'page' => $this->page
-));
+$url_ajouter = $this->url('sbmgestion/transport',
+    [
+        'action' => 'transporteur-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'transporteur-pdf',
+        'page' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/transport');
-$url_edit = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-suppr',
-    'page' => $this->page
-));
-$url_relation = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-service',
-    'id' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-group',
-    'id' => $this->page
-));
-$hiddens =[];
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'transporteur-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$url_edit = $this->url('sbmgestion/transport',
+    [
+        'action' => 'transporteur-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport',
+    [
+        'action' => 'transporteur-suppr',
+        'page' => $this->page
+    ]);
+$url_relation = $this->url('sbmgestion/transport',
+    [
+        'action' => 'transporteur-service',
+        'id' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'transporteur-group',
+        'id' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'transporteur-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau transporteur'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des transporteurs</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left">
+			<?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="transporteurs">
@@ -113,51 +131,63 @@ echo $this->flashMessenger()->render('default');
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-            <?php foreach($transporteurs as $test => $transporteur): ?>
+            <?php foreach($transporteurs as $transporteur): ?>
             <?php
-                // construction des JS pour selection                
-                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $transporteur->transporteurId);
-                $jsCallback .= sprintf("$modele\n", $transporteur->transporteurId, $transporteur->transporteurId);
-                ?>
-                <tr
-					class="<?php echo $this->cycle(["even", "odd"))->next();?>">
-					<td class="nom"><?php echo $this->escapeHtml($transporteur->nom); ?></td>
-					<td class="commune"><?php echo $this->escapeHtml($transporteur->commune); ?></td>
-					<td class="codepostal"><?php echo $this->escapeHtml($transporteur->codePostal); ?></td>
-					<td class="telephone"><?php echo $this->escapeHtml($transporteur->telephone); ?></td>
-					<td class="fax"><?php echo $this->escapeHtml($transporteur->fax); ?></td>
-					<td class="email"><?php echo $this->escapeHtml($transporteur->email); ?></td>
-					<td class="nbinscrits"><?php echo StdLib::getParamR([$transporteur->transporteurId, 'total'), $this->t_nb_inscrits, 0); ?></td>
-					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $transporteur->transporteurId, $transporteur->selection)?></td>
-					<td class="boutons">
-            <?php
-                $hiddens = array(
+                // construction des JS pour selection
+                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
+                    $transporteur->transporteurId);
+                $jsCallback .= sprintf("$modele\n", $transporteur->transporteurId,
+                    $transporteur->transporteurId);
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                $hiddens = [
                     'transporteurId' => $transporteur->transporteurId
-                );
-                $buttons = array(
-                    'modifier' => array(
+                ];
+                $buttons = [
+                    'modifier' => [
                         'class' => 'fam-pencil',
                         'formaction' => $url_edit,
                         'title' => 'modifier'
-                    ),
-                    'supprimer' => array(
+                    ],
+                    'supprimer' => [
                         'class' => 'fam-delete',
                         'formaction' => $url_delete,
                         'title' => 'supprimer'
-                    ),
-                    'services' => array(
+                    ],
+                    'services' => [
                         'class' => 'fam-table-relationship',
                         'formaction' => $url_relation,
                         'title' => 'circuits attribués à ' . $transporteur->nom
-                    ),
-                    'eleves' => array(
+                    ],
+                    'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => 'élèves pris en chage par ' . $transporteur->nom
-                    )
-                );
-                echo $this->listeLigneActions($transporteur->transporteurId, $hiddens, $buttons);
+                    ]
+                ];
                 ?>
+                <tr class="petit <?= $css;?>">
+					<td class="nom">
+						<?= $this->escapeHtml($transporteur->nom); ?></td>
+					<td class="commune">
+						<?= $this->escapeHtml($transporteur->commune); ?></td>
+					<td class="codepostal">
+						<?= $this->escapeHtml($transporteur->codePostal); ?></td>
+					<td class="telephone">
+						<?= $this->telephone($transporteur->telephone); ?></td>
+					<td class="fax">
+						<?= $this->telephone($transporteur->fax); ?></td>
+					<td class="email">
+						<?= $this->escapeHtml($transporteur->email); ?></td>
+					<td class="nbinscrits">
+						<?= StdLib::getParamR([$transporteur->transporteurId, 'total'], $this->t_nb_inscrits, 0); ?></td>
+					<td class="centre selection">
+						<?= renderCheckbox($this, 'selection', 'chk' . $transporteur->transporteurId, $transporteur->selection)?>
+					</td>
+					<td class="boutons">
+						<?=$this->listeLigneActions($transporteur->transporteurId,$hiddens,$buttons);?>
 					</td>
 				</tr>         
             <?php endforeach;?>
@@ -165,11 +195,12 @@ echo $this->flashMessenger()->render('default');
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
-	    <?php echo $this->form()->openTag($this->criteres_form);?>
-	    <?php echo $this->formCollection($this->criteres_form, true);?>
-	    <?php echo $this->form()->closeTag();?>
+	    	<?= $this->form()->openTag($this->criteres_form);?>
+	    	<?= $this->formCollection($this->criteres_form, true);?>
+	    	<?= $this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -178,8 +209,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?php echo $jsTrigger;?>}
-<?php echo $jsCallback;?>
+<?= $jsTrigger;?>}
+<?= $jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

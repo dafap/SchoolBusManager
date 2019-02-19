@@ -8,17 +8,17 @@
  * @filesource table.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 févr. 2014
- * @version 2014-1
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'stations',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'stationId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'communeId' => 'varchar(6) NOT NULL',
@@ -30,31 +30,31 @@ return array(
             'geopt' => 'GEOMETRY',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'ouverte' => 'tinyint(1) NOT NULL DEFAULT  "1"'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'stationId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'communeId',
-                'references' => array(
+                'references' => [
                     'table' => 'communes',
-                    'fields' => array(
+                    'fields' => [
                         'communeId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     
     // 'data' => include __DIR__ . '/data/data.stations.php',
-    //'data' => array('after' => array('communes'),'include' => __DIR__ . '/data/data.stations.php')
+    // 'data' => ['after' => ['communes'],'include' => __DIR__ . '/data/data.stations.php']
     'data' => __DIR__ . '/data/data.stations.php'
-);
+];

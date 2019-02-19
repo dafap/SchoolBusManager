@@ -14,39 +14,39 @@
  */
 return array(
     array(
-        'nature' => 'Caisse', 
-        'code' => 1, 
-        'libelle' => 'régisseur', 
-        'ouvert' => 1, 
+        'nature' => 'Caisse',
+        'code' => 1,
+        'libelle' => 'régisseur',
+        'ouvert' => 1
     ),
     array(
-        'nature' => 'Caisse', 
-        'code' => 2, 
-        'libelle' => 'comptable', 
-        'ouvert' => 1, 
+        'nature' => 'Caisse',
+        'code' => 2,
+        'libelle' => 'comptable',
+        'ouvert' => 1
     ),
     array(
-        'nature' => 'ModeDePaiement', 
-        'code' => 1, 
-        'libelle' => 'chèque', 
-        'ouvert' => 1, 
+        'nature' => 'ModeDePaiement',
+        'code' => 1,
+        'libelle' => 'chèque',
+        'ouvert' => 1
     ),
     array(
-        'nature' => 'ModeDePaiement', 
-        'code' => 2, 
-        'libelle' => 'espèces', 
-        'ouvert' => 1, 
+        'nature' => 'ModeDePaiement',
+        'code' => 2,
+        'libelle' => 'espèces',
+        'ouvert' => 1
     ),
     array(
-        'nature' => 'ModeDePaiement', 
-        'code' => 3, 
-        'libelle' => 'CB', 
-        'ouvert' => 0, 
+        'nature' => 'ModeDePaiement',
+        'code' => 3,
+        'libelle' => 'CB',
+        'ouvert' => 0
     ),
     array(
-        'nature' => 'ModeDePaiement', 
-        'code' => 4, 
-        'libelle' => 'Titre individuel', 
-        'ouvert' => 1, 
-    ),
+        'nature' => 'ModeDePaiement',
+        'code' => 4,
+        'libelle' => 'Titre individuel',
+        'ouvert' => 1
+    )
 );

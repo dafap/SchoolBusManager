@@ -8,8 +8,8 @@
  * @filesource CommandSql.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db;
 
@@ -85,7 +85,9 @@ abstract class CommandSql
      *
      * @param array $structure
      *            (description de la structure dans SbmInstallation/config/db_design/README.txt)
-     * @throws Exception
+     *            
+     * @throws Exception\OutOfBoundsException
+     *
      * @return boolean
      */
     public static function isValidDbDesignStructureView($structure)
@@ -106,7 +108,7 @@ abstract class CommandSql
             ob_start();
             var_dump($structure);
             $message .= html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception($message);
+            throw new Exception\OutOfBoundsException($message);
         }
     }
 
@@ -172,6 +174,14 @@ abstract class CommandSql
         return $result;
     }
 
+    /**
+     *
+     * @param array $array
+     *
+     * @throws Exception\DomainException
+     *
+     * @return \Zend\Db\Sql\Where|\Zend\Db\Sql\Predicate\Predicate
+     */
     public static function getWhere($array)
     {
         $where = new Where();
@@ -293,7 +303,7 @@ abstract class CommandSql
                     $msg = sprintf(
                         " : La clé `%s` du tableau passé en paramètre est inconnue.",
                         $predicate);
-                    throw new Exception(__METHOD__ . $msg);
+                    throw new Exception\DomainException(__METHOD__ . $msg);
                     break;
             }
         }

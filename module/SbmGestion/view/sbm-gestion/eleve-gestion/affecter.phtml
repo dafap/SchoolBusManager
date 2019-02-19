@@ -9,31 +9,29 @@
  * @filesource affecter.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 // test sur le formulaire decision
 
-
 // calcul des variables
-$url_retour = $this->url('sbmgestion/gestioneleve', array(
-    'action' => 'affecter-liste',
-    'page' => $this->page
-));
-$descriptionElv = implode('<br>', array(
-    $this->eleve['nom'] . ' ' . $this->eleve['prenom'],
-    empty($this->eleve['adresseL2']) ? $this->eleve['adresseL1'] : $this->eleve['adresseL1'] . '<br>' . $this->eleve['adresseL2'],
-    $this->eleve['codePostal'] . ' ' . $this->eleve['commune']
-));
-$descriptionEta = addslashes(implode('<br>', array(
-    $this->eleve['etablissement'],
-    $this->eleve['communeEtablissement']
-)));
-$latCentre = ($this->ptElv->getLatitude() + $this->ptEta->getLatitude()) / 2;
-$lngCentre = ($this->ptElv->getLongitude() + $this->ptEta->getLongitude()) / 2;
+$descriptionElv = implode('<br>',
+    array_filter(
+        [
+            $this->eleve['nom'] . ' ' . $this->eleve['prenom'],
+            $this->eleve['adresseL1'],
+            $this->eleve['adresseL2'],
+            $this->eleve['codePostal'] . ' ' . $this->eleve['commune']
+        ]));
+$descriptionEta = addslashes(
+    implode('<br>',
+        [
+            $this->eleve['etablissement'],
+            $this->eleve['communeEtablissement']
+        ]));
 // page html
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->jQuery();
 $this->headScript()->appendFile($this->url_api);
 $this->headScript()->appendFile('/js/StyledMarker.js');
 $this->headScript()->appendFile('/js/maps/carte.js');
@@ -44,36 +42,45 @@ $color = '#fc6700';
 $lettre = 'D';
 $title = "domicile de l'élève";
 $info = $descriptionElv;
-$tMarkers .= '{"lat":' . $this->ptElv->getLatitude() .',"lng":' . $this->ptElv->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre. '","title":"' . $title .'","info":"' . $info ."\"},\n";
+$tMarkers .= '{"lat":' . $this->ptElv->getLatitude() . ',"lng":' .
+    $this->ptElv->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre .
+    '","title":"' . $title . '","info":"' . $info . "\"},\n";
 $color = '#e5c3d0';
 $lettre = 'E';
 $title = "établissement scolaire";
 $info = $descriptionEta;
-$tMarkers .= '{"lat":' . $this->ptEta->getLatitude() .',"lng":' . $this->ptEta->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre. '","title":"' . $title .'","info":"' . $info ."\"},\n";
+$tMarkers .= '{"lat":' . $this->ptEta->getLatitude() . ',"lng":' .
+    $this->ptEta->getLongitude() . ',"color":"' . $color . '","text":"' . $lettre .
+    '","title":"' . $title . '","info":"' . $info . "\"},\n";
 $tMarkers .= ']';
-//lancement des scripts d'initialisation
+// lancement des scripts d'initialisation
 $this->inlineScript()->captureStart();
 ?>
-const CENTRE_LAT = <?php echo $this->config['centre']['lat']; ?>;
-const CENTRE_LNG = <?php echo $this->config['centre']['lng']; ?>;
-const INI_ZOOM = <?php echo $this->config['zoom']; ?>;
-initialiser(<?php echo $tMarkers;?>);
+const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
+const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
+const INI_ZOOM = <?= $this->config['zoom']; ?>;
+initialiser(<?= $tMarkers;?>);
 js_affecter.adaptedecision();
-<?php 
-$this->inlineScript()->captureEnd(); 
-//============= fin des javaScripts =================== 
+<?php
+$this->inlineScript()->captureEnd();
+// ============= fin des javaScripts ===================
+$adresse = implode(' - ',
+    array_filter([
+        $this->eleve['adresseL1'],
+        $this->eleve['adresseL2']
+    ]));
 ?>
 <div id="page-titre" class="clearfix">
 	<div class="float-left">
 		<h1>Affectation d'un élève inscrit</h1>
 	</div>
-	<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+	<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+	</div>
 </div>
 <div id="fiche-wrapper">
 	<div id="fiche-header"></div>
@@ -81,42 +88,43 @@ echo $this->flashMessenger()->render('default');
 		<div class="clearfix">
 			<div class="float-left" style="width: 45%;">
 				<ul>
-					<li><?php echo $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
-					<li><?php
-    if (empty($this->eleve['adresseL2'])) {
-        echo $this->eleve['adresseL1'];
-    } else {
-        echo $this->eleve['adresseL1'] . ' - ' . $this->eleve['adresseL2'];
-    }
-    ?></li>
-					<li><?php echo $this->eleve['codePostal'] . ' ' . $this->eleve['commune']; ?></li>
-					<li><?php echo $this->eleve['etablissement'] . ' ' . $this->eleve['communeEtablissement']; ?></li>
+					<li><?= $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
+					<li><?= $adresse;?></li>
+					<li>
+						<?= $this->eleve['codePostal'];?>
+					    <?= $this->eleve['commune'];?></li>
+					<li>
+						<?= $this->eleve['etablissement'];?>
+						<?= $this->eleve['communeEtablissement'];?></li>
 				</ul>
 				<div class="inner-form">
 <?php if ($this->op == 1):?>
-    <?php echo $this->form()->openTag($this->decision);?>
+    <?= $this->form()->openTag($this->decision);?>
     <?php foreach ($this->decision->getElements() as $element):?>
         <?php if ($element->getAttribute('type') == 'hidden'):?>
-            <?php echo $this->formHidden($element);?>
+            <?= $this->formHidden($element);?>
         <?php elseif ($element->getAttribute('type') != 'submit'):?>
-            <div id="row-<?php echo $element->getAttribute('id');?>" class="row-inner">
-            <?php echo $this->formRow($element);?>
+            <div id="row-<?= $element->getAttribute('id');?>"
+						class="row-inner">
+            <?= $this->formRow($element);?>
             </div>
         <?php endif;?>
     <?php endforeach;?>
     <div class="bloc-bouton">
-    <?php echo $this->formSubmit($this->decision->get('cancel')) . $this->formSubmit($this->decision->get('submit'));?>
+    	<?= $this->formSubmit($this->decision->get('cancel'));?>
+    	<?= $this->formSubmit($this->decision->get('submit'));?>
     </div>
-    <?php echo $this->form()->closeTag(); ?>
+    <?= $this->form()->closeTag(); ?>
 <?php else:?>
     <p>Transport accepté</p>
-    <p class="sbm-description">Précisez le circuit, le point de montée et, en cas de correspondance, le point de descente et le circuit suivant.'</p>
+					<p class="sbm-description">Précisez le circuit, le point de montée
+						et, en cas de correspondance, le point de descente et le circuit
+						suivant.'</p>
 <?php endif;?>
-	<?php
-if ($this->op > 1) {
-    echo $this->form($this->decision);
-}
-?>			</div>
+<?php if ($this->op > 1) : ?>
+    <?= $this->form($this->decision);?>
+<?php endif;?>			
+    			</div>
 			</div>
 			<div id="carte-wrapper" class="float-right"
 				style="margin-right: 10px; width: 50%;">
@@ -126,4 +134,3 @@ if ($this->op > 1) {
 	</div>
 	<div id="fiche-footer"></div>
 </div>
-

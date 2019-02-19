@@ -7,8 +7,8 @@
  * @filesource pdf-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 ?>
 <h1>Suppression d'un document pdf</h1>
@@ -16,13 +16,16 @@
 	<p>Vous avez demandé la suppression du document :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li>de nom <b><?= $this->escapeHtml($this->data->name); ?></b></li>
-			<li>dont le titre est <b><?= $this->escapeHtml($this->data->title); ?></b></li>
-			<li>dont la source est <b><?= $this->escapeHtml($this->data->recordSource); ?></b></li>
+			<li>de nom <b>
+				<?= $this->escapeHtml($this->data->name);?></b></li>
+			<li>dont le titre est <b>
+				<?= $this->escapeHtml($this->data->title);?></b></li>
+			<li>dont la source est <b>
+				<?= $this->escapeHtml($this->data->recordSource);?></b></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-	<?= $this->form()->openTag($form);?>
-	<?= $this->formCollection($form);?>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formCollection($this->form);?>
 	<?= $this->form()->closeTag();?>
 </div>

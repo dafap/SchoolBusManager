@@ -53,7 +53,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         if (method_exists($this, $method)) {
             $this->$method();
         } else {
-            throw new Exception(
+            throw new DomainException(
                 "Les sources de données sont 'eleve', 'etablissement', 'responsable' ou 'station'. On a reçu $source.");
         }
         $this->add(
@@ -454,8 +454,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         return $where;
     }
 
-    // ================= Etablissements
-    // ================================================================
+    // ================= Etablissements =======================================
     private function formEtablissement()
     {
         $this->add(
@@ -616,8 +615,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         return $where;
     }
 
-    // ====================== Responsables
-    // ==========================================================
+    // ====================== Responsables ====================================
     private function formResponsable()
     {
         $this->add(
@@ -786,7 +784,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         return $where;
     }
 
-    // ==================== Stations ==============================================================
+    // ==================== Stations ==========================================
     private function formStation()
     {
         $this->add(

@@ -4,12 +4,12 @@
  *
  * 
  * @project sbm
- * @package ConvertGeodetic
+ * @package SbmCartographie
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 2 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie;
 

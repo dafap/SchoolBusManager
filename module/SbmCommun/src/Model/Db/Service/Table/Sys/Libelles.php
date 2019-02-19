@@ -10,7 +10,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -120,6 +120,8 @@ class Libelles extends AbstractSbmTable
      * @param string $nature
      * @param string $libelle
      *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
      * @return integer
      */
     public function getCode($nature, $libelle)
@@ -129,7 +131,7 @@ class Libelles extends AbstractSbmTable
             $where->equalTo('nature', $nature)
                 ->equalTo('libelle', $libelle));
         if (! $rowset) {
-            throw new Exception('Ce libellé n\'existe pas.');
+            throw new Exception\RuntimeException('Ce libellé n\'existe pas.');
         } else {
             return $rowset->current()->code;
         }
@@ -141,6 +143,8 @@ class Libelles extends AbstractSbmTable
      * @param string $nature
      * @param int $code
      *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
      * @return string
      */
     public function getLibelle($nature, $code)
@@ -150,7 +154,7 @@ class Libelles extends AbstractSbmTable
             $where->equalTo('nature', $nature)
                 ->equalTo('code', $code));
         if (! $rowset) {
-            throw new Exception('Ce code n\'existe pas.');
+            throw new Exception\RuntimeException('Ce code n\'existe pas.');
         } else {
             return $rowset->current()->libelle;
         }

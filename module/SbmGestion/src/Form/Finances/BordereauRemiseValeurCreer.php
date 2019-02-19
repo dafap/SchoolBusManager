@@ -7,8 +7,8 @@
  * @filesource BordereauRemiseValeurCreer.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmGestion\Form\Finances;
 

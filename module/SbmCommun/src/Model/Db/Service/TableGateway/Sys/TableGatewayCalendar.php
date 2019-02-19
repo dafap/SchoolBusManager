@@ -9,8 +9,8 @@
  * @filesource TableGatewayCalendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 nov. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\TableGateway\Sys;
 
@@ -18,6 +18,7 @@ use SbmCommun\Model\Db\Service\TableGateway\AbstractSbmTableGateway;
 
 class TableGatewayCalendar extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'calendar';

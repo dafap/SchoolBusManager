@@ -7,8 +7,8 @@
  * @filesource table-alias.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2016
- * @version 2016-2
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url("sbminstall");
@@ -24,16 +24,31 @@ $actions = [
 <h1>Liste des tables et des vues enregistrées</h1>
 <div id="data-wrapper">
 	<div id="data-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="data-inner">
-<?php var_dump($this->tables, $this->systems, $this->vues); ?>
-    </div>
+		<h3>Tables</h3>
+		<pre>
+<?php var_dump($this->tables); ?>
+        </pre>
+        <h3>Plugin de paiement en ligne</h3>
+        <pre>
+<?php var_dump($this->plugin); ?>
+        </pre>
+		<h3>Systems</h3>
+		<pre>
+<?php var_dump($this->systems); ?>
+        </pre>
+		<h3>Vues</h3>
+		<pre>
+<?php var_dump($this->vues); ?>
+    </pre>
+	</div>
 </div>

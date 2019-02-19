@@ -9,8 +9,8 @@
  * @filesource ParentControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller\Service;
 
@@ -24,7 +24,6 @@ class ParentControllerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $sm = $serviceLocator->getServiceLocator();
-        // $config_application = $sm->get('config');
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager')
         ];

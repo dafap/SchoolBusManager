@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 use SbmCartographie\Model\Point;
 
@@ -23,7 +23,7 @@ function renderCheckbox($view, $name, $id, $value)
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modèle pour le jsCallback de selection
@@ -40,82 +40,90 @@ $("#chk%d").change(function() {
   });
 EOT;
 
-
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $responsables = $this->paginator->getCurrentItems();
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-edit',
-    'page' => $this->page
-));
-$url_delete = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-suppr',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-group',
-    'page' => $this->page
-));
-$url_euro = $this->url('sbmgestion/finance', array(
+$url_edit = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-group',
+        'page' => $this->page
+    ]);
+$url_euro = $this->url('sbmgestion/finance', [
     'action' => 'paiement-liste'
-));
-$url_map = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-localisation',
-    'page' => $this->page
-));
-$url_loger = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-loger',
-    'page' => $this->page
-));
-$url_ajouter = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-ajout',
-    'page' => $this->page
-));
-$url_rapports = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-pdf',
-    'page' => $this->page
-));
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
+]);
+$url_map = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-localisation',
+        'page' => $this->page
+    ]);
+$url_loger = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-loger',
+        'page' => $this->page
+    ]);
+$url_ajouter = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-pdf',
+        'page' => $this->page
+    ]);
+$url_ici = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
-));
+]);
 $url_retour = $this->url('sbmgestion');
-$hiddens =[];
-$menuImpression = $this->menuRapports($this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/eleve', [
+        'action' => 'responsable-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
                                        // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'onclick' => $js_retour,
         'title' => 'Retour'
-    ),
+    ],
     'rapports' => $menuImpression['content'],
-    'ajouter' => array(
+    'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouveau responsable'
-    )
-);
+    ]
+];
 ?>
 <h1>Liste des responsables</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="responsables">
@@ -135,40 +143,24 @@ echo $this->flashMessenger()->render('default');
 					<th>Dém.</th>
 					<th>Sélect.</th>
 				</tr>
-        <?php foreach($responsables as $responsable): ?>
-        <?php
+        		<?php foreach($responsables as $responsable): ?>
+        		<?php
             $pt = new Point($responsable['x'], $responsable['y']);
-            $ptOk = $this->projection->isValid($pt, 'parent');
+            $ptOk = $this->projection->isValid($pt, 'gestion');
             // construction du JS pour selection
-            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $responsable['responsableId']);
-            $jsCallback .= sprintf("$modele\n", $responsable['responsableId'], $responsable['responsableId']);
-            ?>
-         <tr
-					class="<?php echo $this->cycle(["even", "odd"))->next();?>">
-					<td>
-					<?php if (!$ptOk) : ?>
-					   <i class="fam-error"></i>
-					<?php endif;?>
-					</td>
-					<td class="titre"><?php echo $ttr = $this->escapeHtml($responsable['titre']); ?></td>
-					<td class="nom"><?php echo $nm = $this->escapeHtml($responsable['nom']); ?></td>
-					<td class="prenom"><?php echo $prn = $this->escapeHtml($responsable['prenom']); ?></td>
-					<td class="adresse"><?php echo $this->escapehtml($responsable['adresseL1']); ?>
-					<?php if(!empty($responsable['adresseL2'])):?>
-					   <br /><?php echo $this->escapehtml($responsable['adresseL2']); ?>
-					<?php endif;?>
-					</td>
-					<td class="centre codePostal"><?php echo $this->escapeHtml($responsable['codePostal']); ?></td>
-					<td class="commune"><?php echo $cmn =$this->escapehtml($responsable['commune']); ?></td>
-					<td class="centre gris nbEleves"><?php echo $responsable['nbEnfants']; ?></td>
-					<td class="centre nbInscrits"><?php echo $responsable['nbInscrits']; ?></td>
-					<td class="centre nbPreinscrits"><?php echo $responsable['nbPreinscrits']; ?></td>
-					<td class="centre demenagement"><?php echo $responsable['demenagement'] ? 'D' : ''; ?></td>
-					<td class="centre selection"><?php echo renderCheckbox($this, 'selection', 'chk' . $responsable['responsableId'], $responsable['selection']); ?></td>
-					<td class="boutons">
-             <?php
+            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
+                $responsable['responsableId']);
+            $jsCallback .= sprintf("$modele\n", $responsable['responsableId'],
+                $responsable['responsableId']);
+            // nombre d'inscrits
+            $nbInscrits = $responsable['nbInscrits'] + $responsable['nbGratuits'] +
+                $responsable['nbFa'];
+            $ttr = $this->escapeHtml($responsable['titre']);
+            $nm = $this->escapeHtml($responsable['nom']);
+            $prn = $this->escapeHtml($responsable['prenom']);
+            $cmn = $this->escapehtml($responsable['commune']);
             $identite = $ttr . ' ' . $nm . ' ' . $prn . ' de ' . $cmn;
-            $hiddens = array(
+            $hiddens = [
                 'responsableId' => $responsable['responsableId'],
                 'info' => $identite,
                 'nbInscrits' => $responsable['nbInscrits'],
@@ -178,68 +170,103 @@ echo $this->flashMessenger()->render('default');
                 'email' => $responsable['email'],
                 'responsable' => $identite,
                 'group' => $url_ici
-            );
+            ];
             // ne pas utiliser de guillement dans la chaine $js
-            $js = 'window.document.getElementById(\'op' . $responsable['responsableId'] . '\').value=%s;';
-            $buttons = array(
-                'modifier' => array(
+            $js = 'window.document.getElementById(\'op' . $responsable['responsableId'] .
+                '\').value=%s;';
+            $buttons = [
+                'modifier' => [
                     'class' => 'fam-pencil',
                     'formaction' => $url_edit,
                     'title' => 'modifier la fiche de ' . $identite,
                     'onclick' => sprintf($js, "'modifier'")
-                ),
-                'localiser' => array(
+                ],
+                'localiser' => [
                     'class' => $ptOk ? 'fam-map-magnify' : 'fam-map-add',
                     'formaction' => $url_map,
-                    'title' => $ptOk ? 'localiser le domicile de ' . $identite . ' sur la carte' : 'le domicile de ' . $identite . ' n\'est pas localisé sur la carte',
+                    'title' => $ptOk ? 'localiser le domicile de ' . $identite .
+                    ' sur la carte' : 'le domicile de ' . $identite .
+                    ' n\'est pas localisé sur la carte',
                     'onclick' => sprintf($js, "'localiser'")
-                ),
-                'loger' => array(
+                ],
+                'loger' => [
                     'class' => 'fam-user-add',
                     'formaction' => $url_loger,
                     'title' => 'créer un compte pour ' . $identite,
                     'onclick' => sprintf($js, "'loger'")
-                ),
-                'supprimer' => array(
+                ],
+                'supprimer' => [
                     'class' => 'fam-delete',
                     'formaction' => $url_delete,
                     'title' => 'supprimer le responsable ' . $identite,
                     'onclick' => sprintf($js, "'supprimer'")
-                ),
-                'enfants' => array(
+                ],
+                'enfants' => [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => 'enfants de ' . $identite,
                     'onclick' => sprintf($js, "'enfants'")
-                ),
-                'paiements' => array(
+                ],
+                'paiements' => [
                     'class' => 'fam-money-euro',
                     'formaction' => $url_euro,
                     'title' => 'paiements de ' . $identite,
                     'onclick' => sprintf($js, "'paiements'")
-                )
-            );
+                ]
+            ];
             if (! empty($responsable['email'])) {
-                $buttons['ecrire'] = array(
+                $buttons['ecrire'] = [
                     'class' => 'fam-email',
                     'formaction' => $url_mail,
                     'title' => 'Envoyer un email'
-                );
+                ];
             }
-            echo $this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);
             ?>
-				</td>
+            	               
+         		<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td>
+					<?php if (!$ptOk) : ?>
+					   <i class="fam-error"></i>
+					<?php endif;?>
+					</td>
+					<td class="titre"><?= $ttr; ?></td>
+					<td class="nom"><?= $nm; ?></td>
+					<td class="prenom"><?= $prn; ?></td>
+					<td class="adresse">
+						<?= $this->escapehtml($responsable['adresseL1']); ?>
+					<?php if(!empty($responsable['adresseL2'])):?>
+					   <br /><?= $this->escapehtml($responsable['adresseL2']); ?>
+					<?php endif;?>
+					</td>
+					<td class="centre codePostal">
+						<?= $this->escapeHtml($responsable['codePostal']); ?></td>
+					<td class="commune"><?= $cmn; ?></td>
+					<td class="centre gris nbEleves">
+						<?= $responsable['nbEnfants']; ?></td>
+					<td class="centre nbInscrits">
+						<?= $nbInscrits; ?></td>
+					<td class="centre nbPreinscrits">
+						<?= $responsable['nbPreinscrits']; ?></td>
+					<td class="centre demenagement">
+						<?= $responsable['demenagement'] ? 'D' : ''; ?></td>
+					<td class="centre selection">
+					<?= renderCheckbox($this, 'selection', 'chk' . $responsable['responsableId'], $responsable['selection']); ?>
+					</td>
+					<td class="boutons">
+						<?= $this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);?>
+						</td>
 				</tr>         
         <?php endforeach;?>
     </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper responsables">
-<?php echo $this->form()->openTag($this->criteres_form);?>
-<?php echo $this->formCollection($this->criteres_form, true);?>
-<?php echo $this->form()->closeTag();?>
+			<?= $this->form()->openTag($this->criteres_form);?>
+			<?= $this->formCollection($this->criteres_form, true);?>
+			<?= $this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -248,8 +275,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?php echo $jsTrigger;?>}
-<?php echo $jsCallback;?>
+<?= $jsTrigger;?>}
+<?= $jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

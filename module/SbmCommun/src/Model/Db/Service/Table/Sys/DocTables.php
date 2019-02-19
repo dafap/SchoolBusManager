@@ -9,8 +9,8 @@
  * @filesource DocTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -50,18 +50,18 @@ class DocTables extends AbstractSbmTable
      * @param int $ordinal_table
      *            numéro de la table dans le document
      *            
-     * @throws Exception s'il n'y a pas d'enregistrement pour de $documentId
+     * @throws Exception\RuntimeException s'il n'y a pas d'enregistrement pour de $documentId
      *        
      * @param array $documentId
      *            ['thead' => enregistrement, 'tbody' => enregistrement, 'tfoot' =>
-     *            enregistrement) où enregistrement est un tableau
+     *            enregistrement] où enregistrement est un tableau
      */
     public function getConfig($documentId, $ordinal_table)
     {
         $where = "documentId = $documentId AND ordinal_table = $ordinal_table";
         $resultset = $this->fetchAll($where);
         if (! $resultset->count()) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf(_("Could not find rows '%s' in table %s"), $where,
                     $this->table_name));
         }

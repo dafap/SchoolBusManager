@@ -2,7 +2,8 @@
 /**
  * Hydrator pour tenir à jour la modification d'une fiche Scolarite dans la table Scolarites
  *
- * Cet hydrator, déclaré dans SbmCommun\Model\Db\Service\Table\Scolarites::init(), 
+ * Cet hydrator 
+ * déclaré dans SbmCommun\Model\Db\Service\TableGateway\TableGatewayScolarites::init() 
  * sera utilisé dans SbmCommun\Model\Db\Service\Table\Scolarites::saveRecord()
  * 
  * @project sbm
@@ -10,8 +11,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2016
- * @version 2016-2.1.10
+ * @date 2 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Hydrator;
 
@@ -22,13 +23,18 @@ class Scolarites extends AbstractHydrator
 
     /**
      * (non-PHPdoc)
-     * 
+     *
      * @see \SbmCommun\Model\Hydrator\AbstractHydrator::calculate()
+     *
+     * @throws \SbmCommun\Model\Hydrator\Exception\InvalidArgumentException
      */
     protected function calculate($object)
     {
         if (! $object instanceof ObjectData) {
-            throw new Exception\InvalidArgumentException(sprintf('%s : On attend un SbmCommun\Model\Db\ObjectData\Scolarite et on a reçu un %s', __METHOD__, gettype($object)));
+            throw new Exception\InvalidArgumentException(
+                sprintf(
+                    '%s : On attend un SbmCommun\Model\Db\ObjectData\Scolarite et on a reçu un %s',
+                    __METHOD__, gettype($object)));
         }
         $calculate_fields = $object->getCalculateFields();
         $now = new \DateTime('now');

@@ -8,8 +8,8 @@
  * @filesource Organismes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -40,6 +40,14 @@ class Organismes extends AbstractSbmTable
         parent::saveRecord($oData);
     }
 
+    /**
+     *
+     * @param string $email
+     *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
+     * @return int
+     */
     public function getOrganismeId($email)
     {
         $where = new Where();
@@ -48,7 +56,7 @@ class Organismes extends AbstractSbmTable
         if ($result->count() == 1) {
             return $result->current()->organismeId;
         } else {
-            throw new \Exception('Impossible de trouver cet organisme');
+            throw new Exception\RuntimeException('Impossible de trouver cet organisme');
         }
     }
 }

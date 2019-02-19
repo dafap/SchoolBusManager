@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 8 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmParent\Controller\Service;
 
@@ -44,6 +44,12 @@ class IndexControllerFactory implements FactoryInterface
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'responsable' => $sm->get(Responsable::class),
             'local_manager' => $local_sm,
+            'tmpuploads' => StdLib::getParamR([
+                'sbm',
+                'img',
+                'path',
+                'tmpuploads'
+            ], $config_application),
             'client' => StdLib::getParamR([
                 'sbm',
                 'client'

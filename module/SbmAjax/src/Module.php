@@ -10,8 +10,8 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
- * @version 2018-2.4.5
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAjax;
 
@@ -54,7 +54,7 @@ class Module extends AbstractModule
                     // set true : $result->setTerminal(true);
                     $result->setTerminal(true);
                 } else {
-                    throw new \Exception(
+                    throw new \UnexpectedValueException(
                         'SbmAjax\Module::onBootstap() n\'a pas reçu un \Zend\View\Model\ViewModel');
                 }
             });

@@ -11,22 +11,23 @@
  * @version 2016-2.1.10
  */
 namespace ModulesTests\SbmCommunTest\Model\TestAsset;
- 
+
 use SbmCommun\Model\Db\ObjectData\AbstractObjectData;
 
 class ObjectSbmObjectData extends AbstractObjectData
 {
+
     public function __construct()
     {
         $this->setObjName(__CLASS__);
         $this->setIdFieldName('testId');
     }
-    
+
     public function setDataSource($data)
     {
         $this->dataSource = $data;
     }
-    
+
     public function setIdFieldName($name)
     {
         parent::setIdFieldName($name);

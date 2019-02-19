@@ -3,7 +3,7 @@
  * Formulaire permettant de positionner la première étiquette sur une planche d'étiquettes
  *
  * Ce formulaire est composé de boutons radios et de boutons submit
- * Il reçoit en paramètres un tableau array('nbcols' => nbcols, 'nbrows' => nbrows)
+ * Il reçoit en paramètres un tableau ['nbcols' => nbcols, 'nbrows' => nbrows]
  * où nbcols est le nombre de colonnes dans la planche d'étiquettes et nbrows est le nombre de lignes
  * 
  * @project sbm
@@ -11,8 +11,8 @@
  * @filesource PlancheEtiquettesForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Form;
 
@@ -41,12 +41,12 @@ class PlancheEtiquettesForm extends Form
     public function __construct($name = null, $options = [])
     {
         if (! array_key_exists('nbcols', $options)) {
-            throw new Exception(
+            throw new Exception\OutOfRangeException(
                 'Appel incorrect: le nombre de colonnes de la planche d\'étiquettes n\'a pas été indiqué.');
         }
         $this->nbcols = $options['nbcols'];
         if (! array_key_exists('nbrows', $options)) {
-            throw new Exception(
+            throw new Exception\OutOfRangeException(
                 'Appel incorrect: le nombre de rangées de la planche d\'étiquettes n\'a pas été indiqué.');
         }
         $this->nbrows = $options['nbrows'];
@@ -64,7 +64,6 @@ class PlancheEtiquettesForm extends Form
         }
         parent::__construct($name, $options);
         $this->setAttribute('method', 'post');
-        $this->setAttribute('target', '_blank');
         if (count($value_options) > 1) {
             $this->has_radio = true;
             $this->add(
@@ -99,7 +98,8 @@ class PlancheEtiquettesForm extends Form
                 'name' => 'submit',
                 'attributes' => [
                     'value' => 'Lancer l\'édition',
-                    'class' => 'button default submit left-95px'
+                    'class' => 'button default submit left-95px',
+                    'formtarget' => '_blank'
                 ]
             ]);
         $this->add(

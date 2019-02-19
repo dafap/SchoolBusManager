@@ -16,12 +16,12 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 9 oct. 2018
+ * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
 use SbmPaiement\Controller;
 use SbmPaiement\Listener;
+use SbmBase\Model\StdLib;
 
 if (! defined('MODULE_PAIEMENT_PATH')) {
     define('MODULE_PAIEMENT_PATH', dirname(__DIR__));
@@ -104,7 +104,24 @@ return [
     ],
     'sbm' => [
         'paiement' => [
-            'path_filelog' => realpath(StdLib::findParentPath(__DIR__, 'data/logs'))
+            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs') //realpath(__DIR__ . '/../../../data/logs')
+        ]
+    ],
+    'csv' => [
+        'path' => [
+            'tmpuploads' => StdLib::findParentPath(__DIR__, 'data/tmpuploads') //realpath(__DIR__ . '/../../../data/')
+        ],
+        'parameters' => [
+            'firstline' => true,
+            'separator' => ';',
+            'enclosure' => '',
+            'escape' => '\\'
+        ]
+    ],
+    'view_manager' => [
+        'template_path_stack' => [
+            __DIR__ . '/../view'
         ]
     ]
-];
+]
+;

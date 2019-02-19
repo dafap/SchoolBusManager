@@ -42,18 +42,30 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
     public function testConfigDbManager()
     {
         $config_application = $this->serviceManager->get('Config');
-        $this->assertTrue(isset($config_application['db']), 'Config incorrecte : manque la section \'db\'.');
-        $this->assertTrue(isset($config_application['db']['prefix']), 'Config incorrecte : manque la clé \'prefix\' dans la section \'db\'.');
-        $this->assertTrue(isset($config_application['service_manager']), 'Config incorrecte : manque la section \'service_manager\' et la config de la base de données.');
-        $this->assertTrue(isset($config_application['service_manager']['factories']['Zend\Db\Adapter\Adapter']), 'Config incorrecte : manque la config de la base de données.');
-        $this->assertTrue(isset($config_application['db_manager']), 'Config incorrecte : pas de configuration du <i>db_manager</i>.');
-        $this->assertTrue(isset($config_application['service_manager']['factories']['Sbm\DbManager']), 'Config incorrecte : la clé \'Sbm\DbManager\' n\'est pas déclarée dans service_manager[\'factories\'].');
-        $this->assertEquals(DbManager::class, $config_application['service_manager']['factories']['Sbm\DbManager'], 'Config incorrecte : \'DbManager\' est mal déclarée dans le service_manager.');
+        $this->assertTrue(isset($config_application['db']), 
+            'Config incorrecte : manque la section \'db\'.');
+        $this->assertTrue(isset($config_application['db']['prefix']), 
+            'Config incorrecte : manque la clé \'prefix\' dans la section \'db\'.');
+        $this->assertTrue(isset($config_application['service_manager']), 
+            'Config incorrecte : manque la section \'service_manager\' et la config de la base de données.');
+        $this->assertTrue(
+            isset(
+                $config_application['service_manager']['factories']['Zend\Db\Adapter\Adapter']), 
+            'Config incorrecte : manque la config de la base de données.');
+        $this->assertTrue(isset($config_application['db_manager']), 
+            'Config incorrecte : pas de configuration du <i>db_manager</i>.');
+        $this->assertTrue(
+            isset($config_application['service_manager']['factories']['Sbm\DbManager']), 
+            'Config incorrecte : la clé \'Sbm\DbManager\' n\'est pas déclarée dans service_manager[\'factories\'].');
+        $this->assertEquals(DbManager::class, 
+            $config_application['service_manager']['factories']['Sbm\DbManager'], 
+            'Config incorrecte : \'DbManager\' est mal déclarée dans le service_manager.');
     }
 
     public function testCreateService()
     {
-        $this->assertInstanceOf('SbmCommun\Model\Db\Service\DbManager', $this->serviceManager->get('Sbm\DbManager'), 'Echec de création du DbManager.');
+        $this->assertInstanceOf('SbmCommun\Model\Db\Service\DbManager', 
+            $this->serviceManager->get('Sbm\DbManager'), 'Echec de création du DbManager.');
     }
 
     public function testGetCanonicName()
@@ -79,13 +91,15 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
             // table
             $table_test = 'maTableTest';
             $expected = $prefix . "_t_$table_test";
-            $this->assertEquals($expected, $dbManager->getCanonicName($table_test, 'table'));
+            $this->assertEquals($expected, 
+                $dbManager->getCanonicName($table_test, 'table'));
             // vue
             $expected = $prefix . "_v_$table_test";
             $this->assertEquals($expected, $dbManager->getCanonicName($table_test, 'vue'));
             // system
             $expected = $prefix . "_s_$table_test";
-            $this->assertEquals($expected, $dbManager->getCanonicName($table_test, 'system'));
+            $this->assertEquals($expected, 
+                $dbManager->getCanonicName($table_test, 'system'));
         }
     }
 
@@ -97,17 +111,20 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         // table qui existe
         if (count($tables)) {
             $table_test = 'communes';
-            $this->assertTrue($dbManager->existsTable($table_test, 'table'), 'Pourtant la table `communes` existe !');
+            $this->assertTrue($dbManager->existsTable($table_test, 'table'), 
+                'Pourtant la table `communes` existe !');
         }
         // table qui n'existe pas
         $table_test = 'maTableTest';
-        $this->assertFalse($dbManager->existsTable($table_test, 'table'), '`maTableTest` n\'existe pas !');
+        $this->assertFalse($dbManager->existsTable($table_test, 'table'), 
+            '`maTableTest` n\'existe pas !');
     }
 
     public function testGetDbAdapter()
     {
         $dbManager = $this->serviceManager->get('Sbm\DbManager');
-        $this->assertInstanceOf('Zend\Db\Adapter\Adapter', $dbManager->getDbAdapter(), 'Le dbAdapter n\'a pas ete trouve.');
+        $this->assertInstanceOf('Zend\Db\Adapter\Adapter', $dbManager->getDbAdapter(), 
+            'Le dbAdapter n\'a pas ete trouve.');
     }
 
     public function testGetMaxLengthArrayNonExistsTable()
@@ -119,7 +136,8 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
 
     public function testGetColumnsNonExistsTable()
@@ -131,7 +149,8 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
 
     public function testGetColumnDefaultsNonExistsTable()
@@ -143,7 +162,8 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
 
     public function testGetAreNullableColumnsNonExistsTable()
@@ -155,7 +175,8 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
 
     public function testHasPrimaryKeyNonExistsTable()
@@ -167,7 +188,8 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
 
     public function testIsAutoIncrementNonExistsTable()
@@ -179,9 +201,10 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
-    
+
     public function testIsAutoIncrementNonExistsColumn()
     {
         $dbManager = $this->serviceManager->get('Sbm\DbManager');
@@ -191,9 +214,10 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
-    
+
     public function testIsColumnNonExistsTable()
     {
         $dbManager = $this->serviceManager->get('Sbm\DbManager');
@@ -203,9 +227,10 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
-    
+
     public function testIsDateTimeColumnNonExistsTable()
     {
         $dbManager = $this->serviceManager->get('Sbm\DbManager');
@@ -215,9 +240,10 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
-    
+
     public function testIsNumericColumnNonExistsTable()
     {
         $dbManager = $this->serviceManager->get('Sbm\DbManager');
@@ -227,14 +253,18 @@ class DbManagerTest extends PHPUnit_Framework_TestCase
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $except = true;
         }
-        $this->assertTrue($except, 'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
+        $this->assertTrue($except, 
+            'Aurait du provoquer une SbmCommun\Model\Db\Exception !');
     }
-    
+
     public function testIsTable()
     {
         $dbManager = $this->serviceManager->get('Sbm\DbManager');
-        $this->assertTrue($dbManager->isTable('classes', 'table'), 'La table `classes` existe donc on aurait du recevoir true.');
-        $this->assertFalse($dbManager->isTable('classes', 'vue'), 'La vue `classes` n\'est pas une table donc on aurait du recevoir false.');
-        $this->assertFalse($dbManager->isTable('maTableTest', 'table'), '`maTableTest` n\'existe pas donc on aurait du recevoir false.');
+        $this->assertTrue($dbManager->isTable('classes', 'table'), 
+            'La table `classes` existe donc on aurait du recevoir true.');
+        $this->assertFalse($dbManager->isTable('classes', 'vue'), 
+            'La vue `classes` n\'est pas une table donc on aurait du recevoir false.');
+        $this->assertFalse($dbManager->isTable('maTableTest', 'table'), 
+            '`maTableTest` n\'existe pas donc on aurait du recevoir false.');
     }
 }

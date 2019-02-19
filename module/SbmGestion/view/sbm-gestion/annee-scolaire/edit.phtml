@@ -8,18 +8,15 @@
  * @filesource edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 /*
  * On n'utilise pas le datepicker parce qu'il faudrait écrire les conversions de format de date
  * à l'entrée et à la sortie. Sinon, le jquery fonctionne bien !
  *
- * $this->headLink()->appendStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
- * $this->headScript()->appendFile($this->basepath('/js/jquery.min.js'));
- * $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
- * $this->headScript()->appendFile($this->basepath('/js/jquery-ui-1.11.4.custom/datepicker-fr.js'));
+ * $this->jQuery('jquery-ui');
  * $this->headScript()->captureStart();
  * ?>
  * $(document).ready(function($){
@@ -42,7 +39,7 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
  */
 
 $as_libelle = sprintf("%4d-%4d", $this->millesime, $this->millesime + 1);
-$url_retour = $this->url('sbmgestion/anneescolaire',
+$url_retour = $this->url('sbmgestion/anneescolaire', 
     [
         'action' => 'voir',
         'millesime' => $this->millesime
@@ -55,6 +52,23 @@ $actions = [
         'title' => 'Retour'
     ]
 ];
+
+switch ($this->data['nature']) {
+    case 'INS':
+    $element = $this->form->get('echeance');
+    $element->setLabel('Date limite');
+    break;
+    case 'PERM' :
+        $element = $this->form->get('dateDebut');
+        $element->setLabel('Date 1');
+        $element = $this->form->get('dateFin');
+        $element->setLabel('Date 2');
+        $element = $this->form->get('echeance');
+        $element->setLabel('Date 3');
+    default:
+        ;
+    break;
+} 
 ?>
 <h1>Modification d'un élément du calendrier de l'année scolaire <?= $as_libelle;?></h1>
 <div id="fiche-wrapper">
@@ -64,10 +78,10 @@ $actions = [
         </div>
 	</div>
 	<div id="fiche-inner">
-	<?= $this->form()->openTag($this->form);?>
-	<?= $this->formHidden($this->form->get('calendarId'));?>
-	<?= $this->formHidden($this->form->get('millesime'));?>
-	<?= $this->formHidden($this->form->get('csrf'));?>
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('calendarId'));?>
+		<?= $this->formHidden($this->form->get('millesime'));?>
+		<?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="page1">
 			<div id="wrapper-nature">
 				<div class="label">Nature</div><?= $this->data['nature'];?></div>
@@ -87,6 +101,6 @@ $actions = [
                 <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
             </div>
 		</fieldset>
-<?= $this->form()->closeTag();?>
+		<?= $this->form()->closeTag();?>
     </div>
 </div>

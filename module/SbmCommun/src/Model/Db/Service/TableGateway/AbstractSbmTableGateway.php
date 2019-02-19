@@ -8,11 +8,12 @@
  * @filesource AbstractSbmTableGateway.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
 
+use SbmCommun\Model\Db\Exception;
 use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\ServiceManager\FactoryInterface;
@@ -60,7 +61,7 @@ abstract class AbstractSbmTableGateway implements FactoryInterface
         if (! ($db_manager instanceof \SbmCommun\Model\Db\Service\DbManager)) {
             $type = gettype($db_manager);
             $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\\Db\\Service\\DbManager. %s fourni.';
-            throw new Exception(sprintf(_($message), $type));
+            throw new Exception\ExceptionNoDbManager(sprintf(_($message), $type));
         }
         $this->init();
         $table_name = $db_manager->getCanonicName($this->table_name, $this->type);

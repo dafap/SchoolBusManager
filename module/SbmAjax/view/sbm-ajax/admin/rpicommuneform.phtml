@@ -1,0 +1,64 @@
+<?php
+/**
+ * Formulaire d'ajout ou suppression d'une commune dans un RPI
+ *
+ * Ce formulaire s'ouvre en popup par le jQuery dialog dans la fiche d'un RPI
+ * 
+ * ATTENTION !!! 
+ * Dans un formulaire s'ouvrant en `dialog`, pour éviter le warning :
+ * [Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because 
+ * of its detrimental effects to the end user's experience.
+ * ON NE DOIT PAS CHARGER DE SCRIPT en utilisant une ligne comme :
+ * $this->headScript()->appendFile($this->basePath('js/ajax/formrpi.js'));
+ * IL FAUT CHARGER LES SCRIPTS DANS LA FENETRE MERE. 
+ * Mais, comme les éléments du formulaire du popup `dialog` ne sont pas en place
+ * au moment du chargement de la page, IL FAUT RETARDER LA MISE EN PLACE des triggers.
+ * Aussi, les scripts relatifs à la popup `dialog`sont mis dans une fonction et seront
+ * initialisés après le chargement de la popup.
+ * 
+ * @project sbm
+ * @package SbmAjax/view/sbm-ajax/admin
+ * @filesource rpicommuneform.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 13 fév. 2019
+ * @version 2019-2.5.0
+ */
+?>
+<?php $this->headStyle()->captureStart(); ?>
+#rpicommuneform label.sbm-form-auto {
+    display: inline-block;
+    width: 150px;
+    margin-right: 5px;
+}
+#rpicommuneform label.sbm-form-auto:before {
+	content: "\A";
+	white-space: pre;
+	line-height: 1.5em;
+}
+#rpicommuneform input.button {
+    position: relative;
+    top: 1.5rem;
+}
+#rpicommuneform input.button.cancel {
+    margin-left: 100px;
+}
+#rpicommuneform input.button.submit {
+	margin-left: 15px;
+}
+<?php $this->headStyle()->captureEnd(); ?>
+<?= $this->headStyle();?>
+<?php $this->inlineScript()->captureStart();?>
+js_form().init(<?= $this->is_xmlhttprequest; ?>);
+<?php $this->inlineScript()->captureEnd();?>
+<?= $this->inlineScript();?>
+<?php if ($this->op == 'delete'):?>
+<dl>
+	<dt>Commune</dt>
+	<dd><?= $this->commune;?></dd>
+</dl>
+<?php endif;?>
+<div id="rpicommuneform">
+<?= $this->form($this->form);?>
+</div>
+<div id="errors"></div>

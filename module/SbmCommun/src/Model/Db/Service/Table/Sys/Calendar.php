@@ -9,14 +9,14 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmBase\Model\DateLib;
-use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
+use SbmCommun\Model\Db\Service\Table\Exception;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 use DateTime;
@@ -38,6 +38,8 @@ class Calendar extends AbstractSbmTable
     /**
      * Renvoie la liste des années scolaires
      *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
      * @return array Toutes les colonnes de la table sont renvoyées en filtrant les lignes dont la
      *         nature est 'AS'
      */
@@ -45,7 +47,7 @@ class Calendar extends AbstractSbmTable
     {
         $resultset = $this->fetchAll("nature = 'AS'", 'millesime DESC');
         if (! $resultset->count()) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 'Les années scolaires ne sont pas définies. Il faut initialiser à nouveau la table système `calendar`.');
         }
         $result = [];
@@ -57,6 +59,14 @@ class Calendar extends AbstractSbmTable
         return $result;
     }
 
+    /**
+     *
+     * @param int $millesime
+     *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
+     * @return array
+     */
     public function getAnneeScolaire($millesime)
     {
         if (empty($millesime)) {
@@ -65,18 +75,26 @@ class Calendar extends AbstractSbmTable
         }
         $resultset = $this->fetchAll("nature = 'AS' AND millesime = $millesime");
         if (! $resultset->count()) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime,
                     $millesime + 1));
         }
         return $resultset->current()->getArrayCopy();
     }
 
+    /**
+     *
+     * @param int $millesime
+     *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
+     * @return array
+     */
     public function getMillesime($millesime)
     {
         $resultset = $this->fetchAll("millesime = $millesime", 'ordinal');
         if (! $resultset->count()) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf("L'année scolaire %4d-%4d n'est pas définie.", $millesime,
                     $millesime + 1));
         }
@@ -137,6 +155,8 @@ class Calendar extends AbstractSbmTable
 
     /**
      * Renvoie le millesime en cours à la date actuelle.
+     *
+     * @return int
      */
     public function getCurrentMillesime()
     {
@@ -153,7 +173,7 @@ class Calendar extends AbstractSbmTable
             ->where($where);
         $resultset = $this->getTableGateway()->selectWith($select);
         if (! $resultset->count()) {
-            throw new Exception('Pas d\'année scolaire en cours.');
+            throw new Exception\RuntimeException('Pas d\'année scolaire en cours.');
         }
         $row = $resultset->current();
         return $row->millesime;
@@ -163,8 +183,7 @@ class Calendar extends AbstractSbmTable
      * Vérifie si la colonne date précisée ne contient pas de valeur NULL pour le millesime
      * indiqué.
      *
-     * @param
-     *            int millesime
+     * @param int $millesime
      *            Millesime à vérifier
      * @param string $column
      *            Nom de la colonne
@@ -190,6 +209,7 @@ class Calendar extends AbstractSbmTable
      * Vérifie si les colonnes date d'un millesime précisé ne sont pas nulles.
      *
      * @param int $millesime
+     *
      * @return boolean
      */
     public function isValidMillesime($millesime)
@@ -231,7 +251,7 @@ class Calendar extends AbstractSbmTable
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
             ];
-        } elseif ($aujourdhui > $dateFin) {
+        } elseif ($aujourdhui > max($dateFin, $echeance)) {
             return [
                 'etat' => 2,
                 'dateDebut' => $dateDebut,
@@ -251,7 +271,7 @@ class Calendar extends AbstractSbmTable
     /**
      * Renvoie un tableau d'information sur les permanences
      *
-     * @return [string) - index à partir de 0
+     * @return array (string) - index à partir de 0
      */
     public function getPermanences($commune = null)
     {
@@ -262,10 +282,32 @@ class Calendar extends AbstractSbmTable
             $where->like('libelle', "%$commune%");
         }
         $resultset = $this->fetchAll($where, 'rang');
+        $aPermanences = [];
         $result = [];
-        foreach ($resultset as $row) {
-            $result[] = $row->description . ' ' .
-                DateLib::formatDateFromMysql($row->echeance);
+        if (! empty($commune)) {
+            foreach ($resultset as $row) {
+                $aPermanences[DateLib::formatDateFromMysql($row->dateDebut)] = $commune;
+                $aPermanences[DateLib::formatDateFromMysql($row->dateFin)] = $commune;
+                $aPermanences[DateLib::formatDateFromMysql($row->echeance)] = $commune;
+            }
+            $aPermanences = array_keys($aPermanences);
+            if (count($aPermanences) == 1) {
+                $result[] = "$commune le " . $aPermanences[0];
+            } else {
+                $result[] = "$commune les " . implode(', ', $aPermanences);
+            }
+        } else {
+            foreach ($resultset as $row) {
+                $commune = $row->description;
+                $aPermanences[$row->dateDebut][$commune] = $commune;
+                $aPermanences[$row->dateFin][$commune] = $commune;
+                $aPermanences[$row->echeance][$commune] = $commune;
+            }
+            ksort($aPermanences);
+            foreach ($aPermanences as $date => $liste) {
+                $result[] = DateLib::formatDateFromMysql($date) . " : " .
+                    implode(', ', $liste);
+            }
         }
         return $result;
     }
@@ -278,7 +320,7 @@ class Calendar extends AbstractSbmTable
      *            millesime de l'année scolaire à traiter
      * @param int $ouvert
      *            Prend les valeurs 1 (ouvert) ou 0 (fermé)
-     * @return \Zend\Db\TableGateway\TableGateway
+     * @return int
      */
     public function changeEtat($millesime, $ouvert = 1)
     {

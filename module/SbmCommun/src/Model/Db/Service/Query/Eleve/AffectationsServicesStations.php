@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -74,7 +74,8 @@ class AffectationsServicesStations implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
@@ -133,8 +134,22 @@ class AffectationsServicesStations implements FactoryInterface
         return $statement->execute();
     }
 
-    public function getAffectations($eleveId, $trajet = null)
+    /**
+     * Renvoie les affectations de l'année courante ou de l'année précédente
+     *
+     * @param int $eleveId
+     * @param int $trajet
+     *            1 ou 2 selon que c'est le responsable n°1 ou n°2
+     * @param boolean $annee_precedente
+     *
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getAffectations($eleveId, $trajet = null, $annee_precedente = false)
     {
+        $millesime = $this->millesime;
+        if ($annee_precedente) {
+            $millesime --;
+        }
         $select = clone $this->select;
         $select->join(
             [
@@ -177,7 +192,7 @@ class AffectationsServicesStations implements FactoryInterface
             'correspondance'
         ]);
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->and->equalTo('eleveId', $eleveId);
+        $where->equalTo('millesime', $millesime)->and->equalTo('eleveId', $eleveId);
         if (isset($trajet)) {
             $where->equalTo('trajet', $trajet);
         }
@@ -185,6 +200,13 @@ class AffectationsServicesStations implements FactoryInterface
         return $statement->execute();
     }
 
+    /**
+     * Renvoie les correspondances de l'année courante
+     *
+     * @param int $eleveId
+     *
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
     public function getCorrespondances($eleveId)
     {
         $select = clone $this->select;
@@ -256,6 +278,14 @@ class AffectationsServicesStations implements FactoryInterface
         return $statement->execute();
     }
 
+    /**
+     * Renvoie les localisations pour l'année courante
+     *
+     * @param Where $where
+     * @param string|array $order
+     *
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
     public function getLocalisation(Where $where, $order = null)
     {
         $select = $this->selectLocalisation($where, $order);
@@ -263,6 +293,14 @@ class AffectationsServicesStations implements FactoryInterface
         return $statement->execute();
     }
 
+    /**
+     * Construit la requête SELECT pour la méthode précédente
+     *
+     * @param Where $where
+     * @param string|array $order
+     *
+     * @return \Zend\Db\Sql\Select
+     */
     private function selectLocalisation(Where $where, $order = null)
     {
         $where->equalTo('aff.millesime', $this->millesime);
@@ -393,6 +431,15 @@ class AffectationsServicesStations implements FactoryInterface
         return $select->where($where);
     }
 
+    /**
+     *
+     * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
+     * @param string|array $order
+     * @param int $millesime
+     *            inutilisé mais gardé pour la compatibilité des appels
+     *            
+     * @return \Zend\Paginator\Paginator
+     */
     public function paginatorScolaritesR($where, $order = null, $millesime = null)
     {
         $select = $this->selectScolaritesR($where, $order);
@@ -401,14 +448,16 @@ class AffectationsServicesStations implements FactoryInterface
     }
 
     /**
+     * Renvoie les scolarités et responsables, avec affectations s'il y en a, pour toutes les
+     * années scolaires.
+     * Pour travailler sur une année particulière, l'indiquer dans le paramètre $where
      *
-     * @param Where|\Closure|string|array $where
-     * @param string $order
-     * @param string $millesime
+     * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
+     * @param string|array $order
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectScolaritesR($where, $order = null, $millesime = null)
+    private function selectScolaritesR($where, $order = null)
     {
         $select = clone $this->select;
         $select->join([
@@ -491,7 +540,7 @@ class AffectationsServicesStations implements FactoryInterface
     /**
      * Requête renvoyant téléphones portables pour les fiches filtrées par $where
      *
-     * @param \Zend\Db\Sql\Where $where
+     * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
@@ -505,7 +554,7 @@ class AffectationsServicesStations implements FactoryInterface
     /**
      * Paginator sur le même modèle que la requête précédente
      *
-     * @param Where $where
+     * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
      *
      * @return \Zend\Paginator\Paginator
      */

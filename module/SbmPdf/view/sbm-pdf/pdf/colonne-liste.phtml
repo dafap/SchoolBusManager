@@ -13,8 +13,8 @@
  * @filesource colonne-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -100,11 +100,11 @@ $buttons = [
 			<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		</div>
 		<div class="flashMessenger float-right">
-			<?= $this->flashMessenger()->render('success');?>
-			<?= $this->flashMessenger()->render('warning');?>
-			<?= $this->flashMessenger()->render('error');?>
-			<?= $this->flashMessenger()->render('info');?>
-			<?= $this->flashMessenger()->render('default');?>
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -125,18 +125,15 @@ $buttons = [
                 ?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
 					<td class="ordinal_position"><?= $row['ordinal_position']; ?></td>
-					<td class="thead">
-						<?= $this->escapeHtml($row['thead']); ?></td>
-					<td class="tbody">
-						<?= $this->escapeHtml($row['tbody']); ?></td>
-					<td class="tfoot">
-						<?= $this->escapeHtml($row['tfoot']); ?></td>
-					<td class="width">
-						<?= $row['width']; ?></td>
+					<td class="thead"><?= $this->escapeHtml($row['thead']); ?></td>
+					<td class="tbody"><?= $this->escapeHtml($row['tbody']); ?></td>
+					<td class="tfoot"><?= $this->escapeHtml($row['tfoot']); ?></td>
+					<td class="width"><?= $row['width']; ?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($row['doccolumnId'], $hiddens, $buttons);?></td>
+                		<?= $this->listeLigneActions($row['doccolumnId'], $hiddens, $buttons);?>
+				    </td>
 				</tr>
-        <?php endforeach;?>
+        	<?php endforeach;?>
             </tbody>
 		</table>
 	</div>

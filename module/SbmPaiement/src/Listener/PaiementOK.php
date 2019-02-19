@@ -11,8 +11,8 @@
  * @filesource PaiementOK.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2016
- * @version 2016-2
+ * @date 12 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPaiement\Listener;
 
@@ -31,15 +31,17 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
     protected $listeners = [];
 
     /**
-     * {@inheritDoc}
+     *
+     * {@inheritdoc}
      */
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme', 'paiementOK', [
-            $this,
-            'onPaiementOK'
-        ], 1);
+        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme',
+            'paiementOK', [
+                $this,
+                'onPaiementOK'
+            ], 1);
     }
 
     /**
@@ -61,7 +63,7 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
      * Le contexte de l'évènement n'est pas utilisé.
      * Les paramètres sont les données à enregistrer.
      *
-     * @param Event $e            
+     * @param Event $e
      */
     public function onPaiementOK(Event $e)
     {
@@ -75,7 +77,8 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
         $responsableId = $params['paiement']['responsableId'];
         $reference = $params['paiement']['reference'];
         $table_paiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
-        $params['paiement']['paiementId'] = $table_paiements->getPaiementId($responsableId, $datePaiement, $reference);
+        $params['paiement']['paiementId'] = $table_paiements->getPaiementId(
+            $responsableId, $datePaiement, $reference);
         // La référence paiementId doit être définie avant la création de l'objectData
         $objectData_paiement = $this->db_manager->get('Sbm\Db\ObjectData\Paiement');
         $objectData_paiement->exchangeArray($params['paiement']);

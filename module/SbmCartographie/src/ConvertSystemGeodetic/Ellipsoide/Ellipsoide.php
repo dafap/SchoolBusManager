@@ -15,8 +15,8 @@
  * @filesource Ellipsoide.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 24 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
 
@@ -167,6 +167,8 @@ class Ellipsoide
      *
      * @param number $invF
      *            inverse de l'aplatissement
+     *
+     * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\RangeException
      */
     public function setF($invF)
     {
@@ -175,7 +177,7 @@ class Ellipsoide
             $this->calculeB();
             $this->calculeE();
         } else {
-            throw new Exception(
+            throw new Exception\RangeException(
                 __METHOD__ .
                 ' - division par zéro. Il faut donner l\'inverse de l\'aplatissement !');
         }
@@ -192,17 +194,23 @@ class Ellipsoide
     /**
      * Calcule l'aplatissement f à partir du grand axe a et du petit axe b
      *
-     * @throws Exception
+     * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\RangeException
      */
     private function calculeF()
     {
         if ($this->a != 0) {
             $this->f = ($this->a - $this->b) / $this->a;
         } else {
-            throw new Exception(__METHOD__ . ' - division par zéro !');
+            throw new Exception\RangeException(__METHOD__ . ' - division par zéro !');
         }
     }
 
+    /**
+     * 
+     * @throws \
+     *
+     * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\RangeException
+     */
     private function calculeE()
     {
         if ($this->a != 0) {
@@ -210,10 +218,14 @@ class Ellipsoide
             $this->e_carre = ($a2 - $this->b * $this->b) / $a2;
             $this->e = sqrt($this->e_carre);
         } else {
-            throw new Exception(__METHOD__ . ' - division par zéro !');
+            throw new Exception\RangeException(__METHOD__ . ' - division par zéro !');
         }
     }
 
+    /**
+     *
+     * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\RangeException
+     */
     private function calculeE2()
     {
         if (empty($this->b)) {
@@ -224,7 +236,7 @@ class Ellipsoide
             $this->e2_carre = ($this->a * $this->a - $b2) / $b2;
             $this->e2 = sqrt($this->e2_carre);
         } else {
-            throw new Exception(__METHOD__ . ' - division par zéro !');
+            throw new Exception\RangeException(__METHOD__ . ' - division par zéro !');
         }
     }
 }

@@ -8,17 +8,15 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 17 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-use SbmBase\Model\DateLib;
-use SbmCommun\Model\Db\ObjectData\Exception as ObjectDataException;
+use SbmCommun\Model\Db\ObjectData\Exception as ExceptionObjectData;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class Scolarites extends AbstractSbmTable
@@ -49,8 +47,8 @@ class Scolarites extends AbstractSbmTable
     }
 
     /**
-     * Renvoie true si l'établissement a changé ou si c'est un nouvel enregistrement ou si district
-     * == 0
+     * Renvoie true si l'établissement a changé ou si c'est un nouvel enregistrement
+     * ou si district == 0
      *
      * (non-PHPdoc)
      *
@@ -63,7 +61,7 @@ class Scolarites extends AbstractSbmTable
             $old_data = $this->getRecord($obj_data->getId());
             $changeEtab = $old_data->district == 0; // pour forcer l'actualisation de district
             $is_new = false;
-        } catch (Exception $e) {
+        } catch (Exception\ExceptionInterface $e) {
             $is_new = true;
         }
         if ($is_new) {
@@ -78,7 +76,7 @@ class Scolarites extends AbstractSbmTable
             }
             try {
                 $changeEtab |= $obj_data->etablissementId != $old_data->etablissementId;
-            } catch (ObjectDataException $e) {
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
                 $changeEtab = false;
             }
             $obj_data->addCalculateField('dateModification');
@@ -192,35 +190,6 @@ class Scolarites extends AbstractSbmTable
         ]);
         $rowset = $this->table_gateway->selectWith($select);
         return $rowset->current()->lastDateCarte;
-    }
-
-    /**
-     * Enregistre la date-temps actuelle dans dateCarte pour toutes les fiches dont dateCarte est
-     * antérieur à dateDebut
-     *
-     * @param string $dateDebut
-     *            date au format Y-m-d H:i:s
-     *            
-     * @return int
-     */
-    public function prepareDateCarteForNewEdition($millesime, $dateDebut)
-    {
-        $where1 = new Where();
-        $where1->expression('millesime = ?', $millesime);
-        $select = new Select($this->db_manager->getCanonicName('affectations', 'table'));
-        $select->columns([
-            'eleveId'
-        ])
-            ->where($where1)
-            ->quantifier(Select::QUANTIFIER_DISTINCT);
-        $now = DateLib::nowToMysql();
-        $where = new Where();
-        $where->expression('millesime = ?', $millesime)
-            ->lessThan('dateCarte', $dateDebut)
-            ->in('eleveId', $select);
-        return $this->getTableGateway()->update([
-            'dateCarte' => $now
-        ], $where);
     }
 
     /**

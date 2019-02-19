@@ -9,8 +9,8 @@
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 1 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\View\Helper;
 
@@ -44,12 +44,15 @@ class Stations extends AbstractHelper implements FactoryInterface
      * @param int $eleveId
      * @param int $trajet
      *            1 ou 2
-     *            
+     * @param int $millesime
+     *
      * @return string
      */
-    public function __invoke($eleveId, $trajet)
+    public function __invoke($eleveId, $trajet, $millesime = null)
     {
-        $millesime = Session::get('millesime');
+        if (is_null($millesime)) {
+            $millesime = Session::get('millesime');
+        }
         $where = new Where();
         $where->equalTo('millesime', $millesime)
             ->equalTo('eleveId', $eleveId)

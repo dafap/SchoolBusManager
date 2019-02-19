@@ -22,25 +22,27 @@ use SbmFront\Model\Responsable\Service\ResponsableManager;
 
 class DocumentControllerTest extends AbstractHttpControllerTestCase
 {
+
     private $serviceManager;
+
     protected $traceError = true;
-    
+
     public function setUp()
     {
         $this->setApplicationConfig(
-            Bootstrap::getServiceManager()->get('ApplicationConfig')
-        );
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }
-    
+
     public function testDocumentControllerFactory()
     {
         $controller_manager = $this->serviceManager->get('ControllerManager');
         $controller = $controller_manager->get(DocumentController::class);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
         $this->assertInstanceOf(ServiceManager::class, $controller->pdf_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, $controller->authenticate);
+        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+            $controller->authenticate);
         $this->assertInstanceOf(ResponsableManager::class, $controller->responsable);
     }
 }

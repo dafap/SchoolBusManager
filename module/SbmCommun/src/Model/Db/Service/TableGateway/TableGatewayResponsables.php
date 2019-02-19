@@ -17,6 +17,7 @@ use SbmCommun\Model\Hydrator\Responsables as Hydrator;
 
 class TableGatewayResponsables extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'responsables';

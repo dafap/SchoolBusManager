@@ -8,8 +8,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 2 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -73,7 +73,8 @@ class ElevesResponsables implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
@@ -129,6 +130,7 @@ class ElevesResponsables implements FactoryInterface
      * Renvoie un tableau contenant les données de l'élève et de son responsable 1
      *
      * @param int $eleveId
+     *
      * @return array
      */
     public function getEleveResponsable1($eleveId)
@@ -146,6 +148,7 @@ class ElevesResponsables implements FactoryInterface
      *
      * @param Where $where
      * @param string|array $order
+     *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function withR2(Where $where, $order = null)
@@ -201,6 +204,7 @@ class ElevesResponsables implements FactoryInterface
      * @param Where $where
      * @param string|array $order
      * @param int $millesime
+     *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function withScolaritesR2(Where $where, $order = null, $millesime = null)
@@ -317,7 +321,188 @@ class ElevesResponsables implements FactoryInterface
             [
                 'affecte' => new Expression('count(aff.eleveId) > 0')
             ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], $select::JOIN_LEFT)
             ->group('ele.eleveId');
+        if (! is_null($order)) {
+            $select->order($order);
+        }
+        // die($this->getSqlString($select->where($where)));
+        return $select->where($where);
+    }
+
+    /**
+     *
+     * @param Where $where
+     * @param string $order
+     * @param string $millesime
+     *
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function withScolaritesEleveGroup(Where $where, $order = null, $millesime = null)
+    {
+        $select = $this->selectScolaritesEleveGroup($where, $order, $millesime);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    /**
+     *
+     * @param Where $where
+     * @param string $order
+     * @param string $millesime
+     *
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginatorScolaritesEleveGroup(Where $where, $order = null,
+        $millesime = null)
+    {
+        return new Paginator(
+            new DbSelect($this->selectScolaritesEleveGroup($where, $order),
+                $this->db_manager->getDbAdapter()));
+    }
+
+    /**
+     *
+     * @param Where $where
+     * @param string $order
+     * @param string $millesime
+     *
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectScolaritesEleveGroup(Where $where, $order = null, $millesime = null)
+    {
+        // table de recherche du plus grand millesime pour chaque élève
+        $select1 = $this->sql->select();
+        $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'max_millesime' => new Expression('MAX(millesime)'),
+            'eleveId'
+        ])
+            ->group('eleveId');
+
+        // table des scolarites à prendre en compte pour le millesime en question
+        if (is_null($millesime)) {
+            $millesime = $this->millesime;
+        }
+        $select2 = $this->sql->select();
+        $select2->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])->where->equalTo('millesime', $millesime);
+
+        // requête principale
+        $select = clone $this->select;
+        $select->join([
+            'filtre' => $select1
+        ], 'filtre.eleveId = ele.eleveId', [
+            'max_millesime'
+        ])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'filtre.max_millesime = sco.millesime AND filtre.eleveId = sco.eleveId',
+            [
+                'millesime' => 'millesime',
+                'selectionScolarite' => 'selection',
+                'dateInscription' => 'dateInscription',
+                'dateModificationScolarite' => 'dateModification',
+                'etablissementId' => 'etablissementId',
+                'classeId' => 'classeId',
+                'chez' => 'chez',
+                'adresseL1' => 'adresseL1',
+                'adresseL2' => 'adresseL2',
+                'codePostal' => 'codePostal',
+                'communeId' => 'communeId',
+                'x' => 'x',
+                'y' => 'y',
+                'distanceR1' => 'distanceR1',
+                'distanceR2' => 'distanceR2',
+                'dateEtiquette' => 'dateEtiquette',
+                'dateCarte' => 'dateCarte',
+                'inscrit' => 'inscrit',
+                'gratuit' => 'gratuit',
+                'paiement' => 'paiement',
+                'fa' => 'fa',
+                'anneeComplete' => 'anneeComplete',
+                'subventionR1' => 'subventionR1',
+                'subventionR2' => 'subventionR2',
+                'demandeR1' => 'demandeR1',
+                'demandeR2' => 'demandeR2',
+                'accordR1' => 'accordR1',
+                'accordR2' => 'accordR2',
+                'internet' => 'internet',
+                'district' => 'district',
+                'derogation' => 'derogation',
+                'dateDebut' => 'dateDebut',
+                'dateFin' => 'dateFin',
+                'joursTransport' => 'joursTransport',
+                'subventionTaux' => 'subventionTaux',
+                'tarifId' => 'tarifId',
+                'regimeId' => 'regimeId',
+                'motifDerogation' => 'motifDerogation',
+                'motifRefusR1' => 'motifRefusR1',
+                'motifRefusR2' => 'motifRefusR2',
+                'commentaire' => 'commentaire'
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId = eta.etablissementId',
+            [
+                'etablissement' => new Expression(
+                    'CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
+                'xeta' => 'x',
+                'yeta' => 'y'
+            ])
+            ->join([
+            'com' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'eta.communeId = com.communeId', [
+            'communeEtablissement' => 'nom'
+        ])
+            ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'cla.classeId = sco.classeId', [
+            'classe' => 'nom'
+        ])
+            ->join([
+            'r2' => $this->db_manager->getCanonicName('responsables', 'table')
+        ], 'ele.responsable2Id=r2.responsableId',
+            [
+                'titreR2' => 'titre',
+                'responsable2NomPrenom' => new Expression(
+                    'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
+                'adresseL1R2' => 'adresseL1',
+                'adresseL2R2' => 'adresseL2',
+                'codePostalR2' => 'codePostal',
+                'emailR2' => 'email',
+                'x2' => 'x',
+                'y2' => 'y'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'r2c' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'r2.communeId=r2c.communeId', [
+            'communeR2' => 'nom'
+        ], $select::JOIN_LEFT)
+            ->join([
+            's' => $select2
+        ], 'ele.eleveId = s.eleveId',
+            [
+                'scolarise' => new Expression('s.eleveId IS NOT NULL')
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
         }
@@ -331,6 +516,7 @@ class ElevesResponsables implements FactoryInterface
      *
      * @param Where $where
      * @param string $order
+     *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getLocalisation(Where $where, $order = null)

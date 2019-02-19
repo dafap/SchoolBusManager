@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 16 sept. 2018
- * @version 2018-2.4.5
+ * @date 6 juin 2018
+ * @version 2018-2.4.1
  */
 use SbmAdmin\Controller;
 use SbmAdmin\Form;

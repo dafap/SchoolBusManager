@@ -9,14 +9,14 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2016
- * @version 2016-2
+ * @date 8 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmPortail\Controller\Service;
 
+use SbmPortail\Controller\IndexController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmPortail\Controller\IndexController;
 
 class IndexControllerFactory implements FactoryInterface
 {

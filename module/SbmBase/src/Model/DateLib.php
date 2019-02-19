@@ -7,8 +7,8 @@
  * @filesource DateLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 août 2016
- * @version 2016-2.2.0
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmBase\Model;
 
@@ -18,9 +18,12 @@ class DateLib
 {
 
     /**
-     * Reçoit une date au format Mysql (an-mois-jour) et renvoie une date au format FR (jour/mois/an)
+     * Reçoit une date au format Mysql (an-mois-jour) et renvoie une date au format FR
+     * (jour/mois/an)
      *
-     * @param string $d            
+     * @param string $d
+     *
+     * @throws \SbmBase\Model\Exception\RuntimeException
      *
      * @return string
      */
@@ -34,15 +37,19 @@ class DateLib
             } elseif ($date = DateTime::createFromFormat('Y-m-d H:i:s', $d)) {
                 return $date->format('d/m/Y');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (an-mois-jour attendu).");
+                throw new Exception\RuntimeException(
+                    "La donnée $d a un format incorrect (an-mois-jour attendu).");
             }
         }
     }
 
     /**
-     * Reçoit une dateTime au format Mysql (an-mois-jour heure:min:s) et renvoie une dateTime au format FR (jour/mois/an heure:min:s)
+     * Reçoit une dateTime au format Mysql (an-mois-jour heure:min:s) et renvoie une dateTime au
+     * format FR (jour/mois/an heure:min:s)
      *
-     * @param string $d            
+     * @param string $d
+     *
+     * @throws \SbmBase\Model\Exception\RuntimeException
      *
      * @return string
      */
@@ -54,17 +61,21 @@ class DateLib
             if ($date = DateTime::createFromFormat('Y-m-d H:i:s', $d)) {
                 return $date->format('d/m/Y H:i:s');
             } elseif ($date = DateTime::createFromFormat('Y-m-d|', $d)) {
-                 return $date->format('d/m/Y H:i:s');
+                return $date->format('d/m/Y H:i:s');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (an-mois-jour heure:minute:seconde attendu).");
+                throw new Exception\RuntimeException(
+                    "La donnée $d a un format incorrect (an-mois-jour heure:minute:seconde attendu).");
             }
         }
     }
 
     /**
-     * Reçoit une date au format FR (jour/mois/an) et renvoie une date au format Mysql (an-mois-jour)
+     * Reçoit une date au format FR (jour/mois/an) et renvoie une date au format Mysql
+     * (an-mois-jour)
      *
-     * @param string $d            
+     * @param string $d
+     *
+     * @throws \SbmBase\Model\Exception\RuntimeException
      *
      * @return string
      */
@@ -78,15 +89,19 @@ class DateLib
             } elseif ($date = DateTime::createFromFormat('d/m/Y H:i:s', $d)) {
                 return $date->format('Y-m-d');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (jour/mois/an attendu).");
+                throw new Exception\RuntimeException(
+                    "La donnée $d a un format incorrect (jour/mois/an attendu).");
             }
         }
     }
 
     /**
-     * Reçoit une dateTime au format FR (jour/mois/an heure:min:s) et renvoie une dateTime au format Mysql (an-mois-jour heure:min:s)
+     * Reçoit une dateTime au format FR (jour/mois/an heure:min:s) et renvoie une dateTime au
+     * format Mysql (an-mois-jour heure:min:s)
      *
-     * @param string $d            
+     * @param string $d
+     *
+     * @throws \SbmBase\Model\Exception\RuntimeException
      *
      * @return string
      */
@@ -100,11 +115,12 @@ class DateLib
             } elseif ($date = DateTime::createFromFormat('d/m/Y|', $d)) {
                 return $date->format('Y-m-d H:i:s');
             } else {
-                throw new Exception("La donnée $d a un format incorrect (jour/mois/an heure:minute:seconde attendu).");
+                throw new Exception\RuntimeException(
+                    "La donnée $d a un format incorrect (jour/mois/an heure:minute:seconde attendu).");
             }
         }
     }
-    
+
     /**
      * Renvoie la date-heure actuelle au format (an-mois-jour heure:min:s)
      */
@@ -113,7 +129,7 @@ class DateLib
         $date = new DateTime();
         return $date->format('Y-m-d H:i:s');
     }
-    
+
     /**
      * Renvoie la date actuelle au format (an-mois-jour)
      */
@@ -122,7 +138,7 @@ class DateLib
         $date = new DateTime();
         return $date->format('Y-m-d');
     }
-    
+
     /**
      * Renvoie la date-heure actuele au format (jour/mois/an heure:min:s)
      */
@@ -131,7 +147,7 @@ class DateLib
         $date = new DateTime();
         return $date->format('d/m/Y H:i:s');
     }
-    
+
     /**
      * Renvoie la date actuelle au format (jour/mois/an)
      */

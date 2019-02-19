@@ -24,8 +24,8 @@
  * @filesource org-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -45,20 +45,14 @@ $url_carte_etablissements = $this->url('sbmportail',
     [
         'action' => 'tr-carte-etablissements'
     ]);
-
-$paiementsAS = $this->paiements['totalASMode'];
-$paiementsMode = current($paiementsAS);
-$paiementsTotal = $this->paiements['totalGeneral'];
-
-$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
-    <?= $this->flashMessenger()->render('success');?>
-    <?= $this->flashMessenger()->render('warning');?>
-    <?= $this->flashMessenger()->render('error');?>
-    <?= $this->flashMessenger()->render('info');?>
-    <?= $this->flashMessenger()->render('default');?>
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
     </div>
 	<h1>Portail du service</h1>
 	<div class="float-left">
@@ -128,31 +122,6 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					</tr>
 				</tbody>
 			</table>
-			<p></p>
-			<!-- table class="jaune">
-				<tbody></tbody>
-				<tr>
-					<td>Paiements en ligne</td>
-					<td class="euro"><?= $fmt->formatCurrency(isset($paiementsMode['CB']) ? $paiementsMode['CB'] : 0, 'EUR');?></td>
-				</tr>
-				<tr>
-					<td>Paiements par chèque</td>
-					<td class="euro"><?= $fmt->formatCurrency(isset($paiementsMode['chèque']) ? $paiementsMode['chèque'] : 0, 'EUR');?></td>
-				</tr>
-				<tr>
-					<td>Paiements en espèces</td>
-					<td class="euro"><?= $fmt->formatCurrency(isset($paiementsMode['espèces']) ? $paiementsMode['espèces'] : 0, 'EUR');?></td>
-				</tr>
-				<tr class="separateur">
-					<td>Paiements par titre individuel</td>
-					<td class="euro"><?= $fmt->formatCurrency(isset($paiementsMode['Titre individuel']) ? $paiementsMode['Titre individuel'] : 0, 'EUR');?></td>
-				</tr>
-				<tr>
-					<td>Total des encaissements</td>
-					<td class="euro"><?= $fmt->formatCurrency($paiementsTotal, 'EUR');?></td>
-				</tr>
-				</tbody>
-			</table-->
 		</div>
 	</div>
 	<div id="menugeneral" class="float-right">
@@ -165,7 +134,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 						des élèves</a></li>
 				<li><a href="<?= $url_circuits;?>"><i class="fam-bullet-go"></i>Circuits
 						et horaires</a></li>
-				<li><a href="<?= $url_horaires; ?>"><i class="fam-bullet-go"></i>Horaires
+				<li><a href="<?= $url_horaires; ?>" target="_blank"><i class="fam-bullet-go"></i>Horaires
 						des circuits à imprimer</a></li>
 				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
 						des points d'arrêts</a></li>

@@ -9,15 +9,15 @@
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 2 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service;
 
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Metadata\Metadata;
+use SbmCommun\Model\Db\Metadata;
 use Zend\Db\Metadata\Object\TableObject;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
@@ -44,7 +44,7 @@ class DbManager extends ServiceManager implements FactoryInterface
     /**
      * Descripteur de la base de donnée
      *
-     * @var Metadata
+     * @var \Zend\Db\Metadata\MetadataInterface
      */
     private $metadata;
 
@@ -83,7 +83,8 @@ class DbManager extends ServiceManager implements FactoryInterface
             $config->configureServiceManager($this);
         }
         $this->dbadapter = $sm->get('Zend\Db\Adapter\Adapter');
-        $this->metadata = new Metadata($this->dbadapter);
+        $this->metadata = Metadata\Source\Factory::createSourceFromAdapter(
+            $this->dbadapter);
         $this->table_list = $this->metadata->getTableNames(null, true);
         return $this;
     }
@@ -138,7 +139,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception si la table n'existe pas
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
      *        
      * @return array de la forme [colName => tailleColonne, ...]
      */
@@ -171,7 +172,8 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception si la table ou une colonne n'existe pas
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table ou une colonne n'existe
+     *         pas
      *        
      * @return array
      */
@@ -181,8 +183,28 @@ class DbManager extends ServiceManager implements FactoryInterface
             $table = $this->metadata->getTable($this->getCanonicName($tableName, $type));
             return $table->getColumns();
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), $e->getCode(), $e);
+            throw new Exception\RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * Construit et renvoie un tableau associatif de la forme ['columnName' => 'columnType']
+     *
+     * @param string $tableName
+     *            nom simple
+     * @param string $type
+     *            table|vue|system
+     *            
+     * @return array
+     */
+    public function getColumnTypes($tableName, $type)
+    {
+        $columns = $this->getColumns($tableName, $type);
+        $result = [];
+        foreach ($columns as $columnObject) {
+            $result[$columnObject->getName()] = $columnObject->getDataType();
+        }
+        return $result;
     }
 
     /**
@@ -194,7 +216,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception si la table n'existe pas
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
      *        
      * @return array de la forme [colName => tailleColonne, ...]
      */
@@ -227,7 +249,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception si la table n'existe pas
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
      *        
      * @return array
      */
@@ -269,7 +291,8 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Renvoie la liste des noms de tables de la base de données.
+     * Renvoie la liste des noms de tables de la base de données contenue dans la propriété
+     * $this->tabe_list.
      * C'est le nom complet qui est renvoyé, préfixé et avec l'indicateur de table, system ou de
      * vue.
      *
@@ -365,12 +388,12 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      */
     private function structureTable($tableName, $type = 'table')
     {
         if (! $this->existsTable($tableName, $type)) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf("Il n'y a pas de %s du nom de %s dans la base de données.",
                     $type == 'vue' ? 'vue' : $type == 'table' ? 'table' : 'table système',
                     $tableName), 3778);
@@ -417,7 +440,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            Prend les valeurs 'table', 'system' ou 'vue'
      *            
-     * @throws \SbmCommun\Model\Db\Exception si la table n'existe pas
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
      *        
      * @return boolean
      */
@@ -474,12 +497,12 @@ class DbManager extends ServiceManager implements FactoryInterface
      *            Prend les valeurs 'table', 'system' ou 'vue'
      * @param string $method
      *
-     * @throws \SbmCommun\Model\Db\Exception
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      */
     private function validColumn($columnName, $tableName, $type = 'table', $method = __METHOD__)
     {
         if (! $this->isColumn($columnName, $tableName, $type)) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf("$method\nLa colonne %s n'existe pas dans la %s %s.", $columnName,
                     $type == 'vue' ?: 'table', $this->getCanonicName($tableName, $type)));
         }
@@ -494,7 +517,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            Prend les valeurs 'table', 'system' ou 'vue'
      *            
-     * @throws \SbmCommun\Model\Db\Exception
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      *
      * @return boolean
      */
@@ -514,22 +537,26 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      *
      * @return boolean
      */
     public function isColumn($columnName, $tableName, $type = 'table')
     {
         // initialise DbLib::table_descriptor si nécessaire
-        if (! StdLib::array_keys_exists([
-            $type,
-            $tableName,
-            'columns'
-        ], $this->table_descriptor)) {
-            $this->structureTable($tableName, $type);
+        try {
+            if (! StdLib::array_keys_exists([
+                $type,
+                $tableName,
+                'columns'
+            ], $this->table_descriptor)) {
+                $this->structureTable($tableName, $type);
+            }
+            return array_key_exists($columnName,
+                $this->table_descriptor[$type][$tableName]['columns']);
+        } catch (\Exception $e) {
+            throw new Exception\RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
-        return array_key_exists($columnName,
-            $this->table_descriptor[$type][$tableName]['columns']);
     }
 
     /**
@@ -541,8 +568,8 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception
-     *
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException (par validColumn)
+     *        
      * @return boolean
      */
     public function isDateTimeColumn($columnName, $tableName, $type = 'table')
@@ -568,8 +595,8 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *            
-     * @throws \SbmCommun\Model\Db\Exception
-     *
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException (par validColumn)
+     *        
      * @return boolean
      */
     public function isNumericColumn($columnName, $tableName, $type = 'table')

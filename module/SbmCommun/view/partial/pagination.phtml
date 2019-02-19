@@ -8,8 +8,8 @@
  * @filesource pagination.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 27 sept. 2018
+ * @version 2019-2.5.0
  */
 $firstClassCss = 'first';
 $previousClassCss = 'previous';
@@ -33,19 +33,14 @@ if (! isset($this->next)) {
 	<a
 		href="<?= $this->url($this->route, ['page' => $this->previous], false, true); ?>"
 		class="<?= $previousClassCss; ?>"><i class="fam-resultset-previous"></i></a>
-
-        <?php
-    foreach ($this->pagesInRange as $p) {
-        if ($p == $this->current) {
-            echo '<span class="current">' . $p . '/' . $this->pageCount . '</span>';
-        } else {
-            echo '<a href="' . $this->url($this->route, [
-                'page' => $p
-            ], false, true) . '" class="page">' . $p . '</a>';
-        }
-    }
-    ?>
-
+<?php foreach ($this->pagesInRange as $p) :?>
+    <?php if ($p == $this->current) : ?>
+            <span class="current"><?= $p;?>/<?= $this->pageCount;?></span>
+    <?php else : ?>  
+            <a
+		href="<?= $this->url($this->route, ['page' => $p], false, true);?>" class="page"><?= $p;?></a>
+    <?php endif;?>
+<?php endforeach;?>
         <a
 		href="<?= $this->url($this->route, ['page' => $this->next], false, true); ?>"
 		class="<?= $nextClassCss; ?>"><i class="fam-resultset-next"></i></a> <a

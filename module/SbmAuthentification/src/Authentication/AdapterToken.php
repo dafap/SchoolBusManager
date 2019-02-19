@@ -9,8 +9,8 @@
  * @filesource AdapterToken.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAuthentification\Authentication;
 
@@ -59,12 +59,14 @@ class AdapterToken implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\AdapterInterface::authenticate()
+     * 
+     * @throws \SbmAuthentification\Authentication\Exception\RuntimeException
      */
     public function authenticate()
     {
         if (empty($this->identity)) {
-            throw new Exception(
-                __METHOD__ . 'Paramètre d\'entrée incorrect. Le token n\'a pas été donné.');
+            throw new Exception\RuntimeException(
+                __METHOD__ . 'Paramètre d\'entrée incorrect : pas de token.');
         }
         $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
         try {
@@ -99,11 +101,13 @@ class AdapterToken implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::setIdentity()
+     * 
+     * @throws \SbmAuthentification\Authentication\Exception\InvalidArgumentException
      */
     public function setIdentity($identity)
     {
         if (! is_string($identity)) {
-            throw new Exception('Token : une chaine de caractère est attendue.');
+            throw new Exception\InvalidArgumentException('Token : une chaine de caractère est attendue.');
         }
         $this->identity = $identity;
         return $this;

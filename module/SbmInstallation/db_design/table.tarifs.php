@@ -8,8 +8,8 @@
  * @filesource table.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
 
 /**
@@ -39,14 +39,14 @@
  * Ces 3 groupes d'attibuts se combinent par "Et binaire"
  * ***************************************************************************
  */
-return array(
+return [
     'name' => 'tarifs',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'tarifId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'montant' => 'decimal(10,2) NOT NULL DEFAULT "0.00"',
@@ -54,16 +54,16 @@ return array(
             'rythme' => 'int(4) NOT NULL DEFAULT "1"',
             'grille' => 'int(4) NOT NULL DEFAULT "1"',
             'mode' => 'int(4) NOT NULL DEFAULT "3"'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'tarifId'
-        ),
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
+    ],
     
     // 'data' => include __DIR__ . '/data/data.tarifs.php'
-    //'data' => array('after' =>[],'include' => __DIR__ . '/data/data.tarifs.php')
+    // 'data' => ['after' => [],'include' => __DIR__ . '/data/data.tarifs.php']
     'data' => __DIR__ . '/data/data.tarifs.php'
-);
+];

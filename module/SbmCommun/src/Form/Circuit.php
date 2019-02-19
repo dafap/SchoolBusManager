@@ -8,8 +8,8 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 25 avr. 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Form;
 
@@ -22,14 +22,16 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('circuit');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'name' => 'circuitId',
-            'type' => 'hidden'
-        ]);
-        $this->add([
-            'name' => 'millesime',
-            'type' => 'hidden'
-        ]);
+        $this->add(
+            [
+                'name' => 'circuitId',
+                'type' => 'hidden'
+            ]);
+        $this->add(
+            [
+                'name' => 'millesime',
+                'type' => 'hidden'
+            ]);
         $this->add(
             [
                 'name' => 'csrf',
@@ -262,7 +264,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'distance',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'circuit-distance',
                     'class' => 'sbm-width-10c'

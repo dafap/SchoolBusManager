@@ -9,17 +9,18 @@
  * @filesource EnfantFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2016
- * @version 2016-2.2.1
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmParent\Form\Service;
 
+use SbmParent\Form\Enfant;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmParent\Form\Enfant;
 
 class EnfantFactory implements FactoryInterface
 {
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $db_manager = $serviceLocator->get('Sbm\DbManager');

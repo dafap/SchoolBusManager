@@ -8,72 +8,101 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 6 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$url_retour = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine ?  : 'circuit-liste',
-    'page' => $this->pageRetour
-));
-$url_rapports = $this->url('sbmgestion/transport', array(
-    'action' => 'circuit-group-pdf',
-    'page' => $this->page
-));
-$url_group = $this->url('sbmgestion/transport', array(
-    'action' => $this->origine ? $this->origine . '-group' : 'circuit-group',
-    'page' => $this->page
-));
-$url_edit = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-edit',
-    'page' => $this->page
-));
-$url_mail = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-mail'
-));
-$hiddens = array(
-    'circuitId' => $this->circuitId
-);
-$menuImpression = $this->menuRapports($this->url('sbmgestion/transport', array(
-    'action' => 'circuit-group'
-)), $url_rapports, 'fam-printer', null, $hiddens);
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => $this->origine ?: 'circuit-liste',
+        'page' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-group-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => $this->origine ? $this->origine . '-group' : 'circuit-group',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_edit = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_mail = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-mail',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_mark_selection = $this->url('sbmgestion/transport',
+    [
+        'action' => $this->origine ? $this->origine . '-group-selection' : 'circuit-group-selection',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_add_photo = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$hiddens = [
+    'circuitId' => $this->circuitId,
+    'serviceId' => $this->circuit->serviceId,
+    'stationId' => $this->circuit->stationId
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'circuit-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
-$actions = array(
-    'retour' => array(
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => $js_retour
-    ),
-    'rapports' => $menuImpression['content']
-);
+    ],
+    'rapports' => $menuImpression['content'],
+    'marquer' => [
+        'class' => 'fam-basket-add',
+        'formaction' => $url_mark_selection,
+        'title' => 'Sélectionner toutes les fiches de cette liste'
+    ]
+];
 ?>
 <h1>Groupe des élèves inscrits sur un point d'arrêt d'un circuit</h1>
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
 		<ul class="float-left">
-			<li>Circuit : <?php echo $this->escapeHtml($this->circuit->serviceId); ?></li>
-			<li>Arrêt : <?php echo $this->escapeHtml($this->circuit->station . ' - ' . $this->circuit->communeStation); ?></li>
-			<li>Type d'arrêt : <?php echo $this->escapeHtml($this->circuit->typeArret); ?></li>
-			<li>Commentaire aller : <?php echo $this->escapeHtml($this->circuit->commentaire1); ?></li>
-			<li>Commentaire retour : <?php echo $this->escapeHtml($this->circuit->commentaire2); ?></li>
+			<li>Circuit : <?= $this->escapeHtml($this->circuit->serviceId); ?></li>
+			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> - 
+						<?= $this->escapeHtml($this->circuit->communeStation); ?></li>
+			<li>Type d'arrêt : <?= $this->escapeHtml($this->circuit->typeArret); ?></li>
+			<li>Commentaire aller : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
+			<li>Commentaire retour : <?= $this->escapeHtml($this->circuit->commentaire2); ?></li>
 		</ul>
 		<div class="flashMessenger float-right">
-		<?php
-		echo $this->flashMessenger()->render('success');
-		echo $this->flashMessenger()->render('warning');
-		echo $this->flashMessenger()->render('error');
-		echo $this->flashMessenger()->render('info');
-		echo $this->flashMessenger()->render('default');
-		?>
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -92,39 +121,49 @@ $actions = array(
 				</tr>
 			<?php foreach ($this->data as $row):?>
 			<?php
-    $hiddens = array(
+    $hiddens = [
         'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
         'email' => $row['email'],
         'responsable' => $row['responsable'],
         'group' => $url_group
-    );
-    $buttons = array(
-        'modifier' => array(
+    ];
+    $buttons = [
+        'modifier' => [
             'class' => 'fam-pencil',
             'formaction' => $url_edit,
             'title' => 'Modifier'
-        )
-    );
+        ]
+    ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
     if (! empty($row['email'])) {
-        $buttons['ecrire'] = array(
+        $buttons['ecrire'] = [
             'class' => 'fam-email',
             'formaction' => $url_mail,
             'title' => 'Envoyer un email'
-        );
+        ];
     }
-    $this->pictogrammes('init')->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0);
+    $this->pictogrammes('init')
+        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto']);
     ?>
-			    <tr class="<?php echo $this->cycle(["even", "odd"))->next();?>">
-					<td><?php echo $this->pictogrammes();?></td>
-					<td><?php echo $this->escapeHtml($row['nom']);?></td>
-					<td><?php echo $this->escapeHtml($row['prenom']);?></td>
-					<td><?php echo $this->escapeHtml($row['adresseL1']);?></td>
-					<td><?php echo $this->escapeHtml($row['adresseL2']);?></td>
-					<td><?php echo $this->escapeHtml($row['codePostal']);?></td>
-					<td><?php echo $this->escapeHtml($row['commune']);?></td>
-					<td><?php echo $this->escapeHtml($row['etablissement']);?></td>
-					<td class="centre"><?php echo $this->escapeHtml($row['classe']);?></td>
-					<td><?php echo $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
+			    <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td><?= $this->pictogrammes();?></td>
+					<td><?= $this->escapeHtml($row['nom']);?></td>
+					<td><?= $this->escapeHtml($row['prenom']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL1']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL2']);?></td>
+					<td><?= $this->escapeHtml($row['codePostal']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= $this->escapeHtml($row['etablissement']);?></td>
+					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
+					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 			<?php endforeach;?>
 			</tbody>
@@ -132,7 +171,7 @@ $actions = array(
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?php echo count($this->data); ?> élèves.</em>
+			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 </div>

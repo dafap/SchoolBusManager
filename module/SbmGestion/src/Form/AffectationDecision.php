@@ -7,8 +7,8 @@
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 13 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Form;
 
@@ -47,7 +47,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
     {
         $this->trajet = $trajet;
         $this->phase = $phase;
-        parent::__construct('decision');
+        parent::__construct($phase == 1 ? 'decision-form' : 'affectation-form');
         $this->setAttribute('method', 'post');
         $this->add(
             [
@@ -87,7 +87,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                     'attributes' => [
                         'type' => 'submit',
                         'value' => 'Précédent',
-                        'id' => 'decision-cancel',
+                        'id' => 'affectation-back',
                         'autofocus' => 'autofocus',
                         'class' => 'button default cancel'
                     ]
@@ -99,7 +99,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Abandonner',
-                    'id' => 'decision-cancel',
+                    'id' => $phase == 1 ? 'decision-cancel' : 'affectation-cancel',
                     'autofocus' => 'autofocus',
                     'class' => 'button default cancel'
                 ]
@@ -110,7 +110,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Valider',
-                    'id' => 'decision-submit',
+                    'id' => $phase == 1 ? 'decision-submit' : 'affectation-submit',
                     'class' => 'button default submit'
                 ]
             ]);
@@ -126,7 +126,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'fictif',
                 'attributes' => [
-                    'id' => 'decision_district',
+                    'id' => 'decision-district',
                     'class' => 'sbm-checkbox',
                     'disabled' => 'disabled'
                 ],
@@ -146,7 +146,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'derogation',
                 'attributes' => [
-                    'id' => 'decision_derogation',
+                    'id' => 'decision-derogation',
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
@@ -165,7 +165,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'type' => 'text',
                 'name' => 'motifDerogation' . $this->trajet,
                 'attributes' => [
-                    'id' => 'decision_motifDerogation',
+                    'id' => 'decision-motifDerogation',
                     'class' => 'sbm-width-35c'
                 ],
                 'options' => [
@@ -184,7 +184,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'accordR' . $this->trajet,
                 'attributes' => [
-                    'id' => 'decision_accordR',
+                    'id' => 'decision-accordR',
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
@@ -203,7 +203,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'type' => 'text',
                 'name' => 'motifRefusR' . $this->trajet,
                 'attributes' => [
-                    'id' => 'decision_motifRefusR',
+                    'id' => 'decision-motifRefusR',
                     'class' => 'sbm-width-35c'
                 ],
                 'options' => [
@@ -222,7 +222,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'subventionR' . $this->trajet,
                 'attributes' => [
-                    'id' => 'decision_subventionR',
+                    'id' => 'decision-subventionR',
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [

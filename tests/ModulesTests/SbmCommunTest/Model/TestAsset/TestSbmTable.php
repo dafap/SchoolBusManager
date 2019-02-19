@@ -16,6 +16,7 @@ use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
 
 class TestSbmTable extends AbstractSbmTable
 {
+
     protected function init()
     {
         $this->table_name = 'test';

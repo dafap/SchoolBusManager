@@ -8,8 +8,8 @@
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\Element;
 
@@ -31,7 +31,7 @@ class Telephone extends Element implements InputProviderInterface
     {
         if (is_null($this->validator)) {
             $validator = new RegexValidator('/^0[1-9](\s?\d{2}){4}$/');
-            $validator->setMessage('Entrez les 10 chiffres composant le numéro !',
+            $validator->setMessage('Entrez les 10 chiffres composant le numéro !', 
                 RegexValidator::NOT_MATCH);
             $this->validator = $validator;
         }

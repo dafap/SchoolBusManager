@@ -7,8 +7,8 @@
  * @filesource colonne-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 ?>
 <h1>Suppression d'une colonne dans un document Pdf</h1>
@@ -23,7 +23,7 @@
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-	<?= $this->form()->openTag($form);?>
-	<?= $this->formCollection($form);?>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formCollection($this->form);?>
 	<?= $this->form()->closeTag();?>
 </div>

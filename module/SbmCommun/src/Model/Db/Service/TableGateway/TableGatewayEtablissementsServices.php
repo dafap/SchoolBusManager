@@ -15,6 +15,7 @@ namespace SbmCommun\Model\Db\Service\TableGateway;
 
 class TableGatewayEtablissementsServices extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'etablissements-services';

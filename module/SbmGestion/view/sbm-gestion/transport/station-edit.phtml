@@ -8,49 +8,60 @@
  * @filesource view/sbm-gestion/transport/station-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
- * @version 2016-2.1.10
+ * @date 2 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/transport', array('action'=> 'station-liste', 'page' => $this->page));
-$hiddens =[];
-$actions = array(
-    'retour' => array(
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Modification d'une station</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php 
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('stationId'));
-echo $this->formHidden($this->form->get('origine'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
-    <fieldset class="sbm-page1">
-        <div id="station-edit-communeId" class="row-inner edit"><?php echo $this->formRow($this->form->get('communeId')); ?></div>
-        <div id="station-edit-nom" class="row-inner edit"><?php echo $this->formRow($this->form->get('nom')); ?></div>
-        <div id="station-edit-aliasCG" class="row-inner edit"><?php echo $this->formRow($this->form->get('aliasCG')); ?></div>
-        <div id="station-edit-codeCG" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeCG')); ?></div>
-        <div id="station-edit-longitude" class="row-inner edit"><?php echo $this->formRow($this->form->get('x')); ?></div>
-        <div id="station-edit-latitude" class="row-inner edit"><?php echo $this->formRow($this->form->get('y')); ?></div>
-        <div id="station-edit-visible" class="row-inner edit"><?php echo $this->formRow($this->form->get('visible')); ?></div>
-        <div id="station-edit-ouverte" class="row-inner edit"><?php echo $this->formRow($this->form->get('ouverte')); ?></div>
-        <div id="station-edit-buttons" class="row-inner edit">
-        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
-    </fieldset>
-<?php echo $this->form()->closeTag(); ?>
+        <?= $this->form()->openTag($this->form);?>
+        <?= $this->formHidden($this->form->get('stationId'));?>
+        <?= $this->formHidden($this->form->get('origine'));?>
+        <?= $this->formHidden($this->form->get('csrf'));?>
+    	<fieldset class="sbm-page1">
+			<div id="station-edit-communeId" class="row-inner edit">
+				<?= $this->formRow($this->form->get('communeId')); ?></div>
+			<div id="station-edit-nom" class="row-inner edit">
+				<?= $this->formRow($this->form->get('nom')); ?></div>
+			<div id="station-edit-aliasCG" class="row-inner edit">
+				<?= $this->formRow($this->form->get('aliasCG')); ?></div>
+			<div id="station-edit-codeCG" class="row-inner edit">
+				<?= $this->formRow($this->form->get('codeCG')); ?></div>
+			<div id="station-edit-longitude" class="row-inner edit">
+				<?= $this->formRow($this->form->get('x')); ?></div>
+			<div id="station-edit-latitude" class="row-inner edit">
+				<?= $this->formRow($this->form->get('y')); ?></div>
+			<div id="station-edit-visible" class="row-inner edit">
+				<?= $this->formRow($this->form->get('visible')); ?></div>
+			<div id="station-edit-ouverte" class="row-inner edit">
+				<?= $this->formRow($this->form->get('ouverte')); ?></div>
+			<div id="station-edit-buttons" class="row-inner edit">
+        		<?= $this->formSubmit($this->form->get('submit'));?>
+        		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+		<?= $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>
 </div>

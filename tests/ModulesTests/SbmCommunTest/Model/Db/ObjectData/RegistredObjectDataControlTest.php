@@ -25,18 +25,20 @@ class RegistredObjectDataControlTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->ctrl_list = new ControlListRegisteredClasses();
-        $this->ctrl_list->setSkip([
-            'AbstractObjectData',
-            'Criteres',
-            'Exception',
-            'ObjectDataInterface'
-        ]);
+        $this->ctrl_list->setSkip(
+            [
+                'AbstractObjectData',
+                'Criteres',
+                'Exception',
+                'ObjectDataInterface'
+            ]);
     }
 
     public function testDebug()
     {
         $ns = 'SbmCommun\Model\Db\ObjectData';
-        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager', 'invokables');
+        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager', 
+            'invokables');
         
         $this->assertEmpty($unregistred, implode("\n", $unregistred));
     }

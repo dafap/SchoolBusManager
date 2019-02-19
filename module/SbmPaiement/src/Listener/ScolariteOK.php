@@ -11,8 +11,8 @@
  * @filesource ScolariteOK.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2016
- * @version 2016-2
+ * @date 12 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPaiement\Listener;
 
@@ -31,15 +31,17 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
     protected $listeners = [];
 
     /**
-     * {@inheritDoc}
+     *
+     * {@inheritdoc}
      */
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme', 'scolariteOK', [
-            $this,
-            'onScolariteOK'
-        ], 1);
+        $this->listeners[] = $sharedEvents->attach('SbmPaiement\Plugin\Plateforme',
+            'scolariteOK', [
+                $this,
+                'onScolariteOK'
+            ], 1);
     }
 
     /**
@@ -61,26 +63,29 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
      * Le contexte de l'évènement n'est pas utilisé.
      * Les paramètres sont les références à traiter.
      *
-     * @param Event $e            
+     * @param Event $e
      */
     public function onScolariteOK(Event $e)
     {
         $params = $e->getParams();
         // indicateur utiliser pour la mise à jour du champ `paiement` de la table `scolarites`
         $indicateur = $params['type'] == 'CREDIT' ? 0 : 1;
-        
+
         $table_scolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $objectData_scolarite = $this->db_manager->get('Sbm\Db\ObjectData\Scolarite');
         foreach ($params['eleveIds'] as $eleveId) {
             try {
-                $objectData_scolarite->exchangeArray([
-                    'millesime' => $params['millesime'],
-                    'eleveId' => $eleveId,
-                    'paiement' => $indicateur
-                ]);
+                $objectData_scolarite->exchangeArray(
+                    [
+                        'millesime' => $params['millesime'],
+                        'eleveId' => $eleveId,
+                        'paiement' => $indicateur
+                    ]);
                 $table_scolarites->updateRecord($objectData_scolarite);
             } catch (\Exception $e) {
-                $msg = sprintf('Impossible de mettre à jour la scolarité de l\'élève n° %s pour l\'année %s', $eleveId, $params['millesime']);
+                $msg = sprintf(
+                    'Impossible de mettre à jour la scolarité de l\'élève n° %s pour l\'année %s',
+                    $eleveId, $params['millesime']);
                 $this->log(Logger::CRIT, $msg, $params);
             }
         }

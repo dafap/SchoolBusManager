@@ -9,15 +9,15 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 25 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller\Service;
 
+use SbmBase\Model\StdLib;
+use SbmGestion\Controller\IndexController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmGestion\Controller\IndexController;
-use SbmBase\Model\StdLib;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -35,10 +35,11 @@ class IndexControllerFactory implements FactoryInterface
                 'sbm',
                 'mail'
             ], $config_application),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application)
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application)
         ];
         return new IndexController($config_controller);
     }

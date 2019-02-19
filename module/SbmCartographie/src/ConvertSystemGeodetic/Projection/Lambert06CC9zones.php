@@ -9,8 +9,8 @@
  * @filesource Lambert06CC9zones.php
  *             @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 24 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -24,7 +24,7 @@ class Lambert06CC9zones extends AbstractProjection implements ProjectionInterfac
     public function __construct($nzone)
     {
         if (! is_int($nzone) || $nzone < 42 || $nzone > 50) {
-            throw new Exception(
+            throw new Exception\DomainException(
                 __CLASS__ .
                 " - Zone $nzone inconnue. Le numéro de zone doit être un entier compris entre 42 et 50.");
         }

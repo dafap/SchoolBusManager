@@ -9,8 +9,8 @@
  * @filesource Image.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 27 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Image;
 
@@ -34,7 +34,7 @@ class Image
     protected $file_name;
 
     protected $height;
-    
+
     protected $image;
 
     protected $mime;
@@ -70,9 +70,8 @@ class Image
     }
 
     public function createImage($file_name)
-    {
-        
-    }
+    {}
+
     public function resize()
     {
         switch ($this->taille) {

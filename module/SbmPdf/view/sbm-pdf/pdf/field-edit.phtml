@@ -12,20 +12,19 @@
  * @filesource field-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
-$this->headLink()
-    ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
-    ->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()
-    ->appendFile($this->basePath('/js/jquery.min.js'))
-    ->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery('jquery-ui');
+$this->headScript()->appendFile($this->basePath('/js/pdf/field-edit.js'));
 $this->inlineScript()->captureStart();
 ?>
  $("#accordion").accordion();
+ js_nature.init();
 <?php
 $this->inlineScript()->captureEnd();
+// le formulaire doit avoir id="accordion" pour que ça marche
 // =============================================================================================
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmpdf', [
@@ -59,15 +58,14 @@ $actions = [
 	</div>
 	<div id="fiche-inner">
 		<fieldset class="sbm-page1">
-	   		<?php // le formulaire doit avoir id="accordion" pour que ça marche ?>
-    		<?= $this->form()->openTag($this->form);?>
+    		<?= $this->form()->openTag($this->form);?> 
     		<?= $this->formHidden($this->form->get('docfieldId'));?>
     		<?= $this->formHidden($this->form->get('documentId'));?>
     		<?= $this->formHidden($this->form->get('name'));?>
     		<?= $this->formHidden($this->form->get('recordSource'));?>
     		<?= $this->formHidden($this->form->get('csrf'));?>
 			<div id="accordion">
-				<h3>Définition et configuration du champ</h3>
+				<h3 id="data">Paramètres du champ</h3>
 				<div>
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('ordinal_position'));?></div>
@@ -90,7 +88,7 @@ $actions = [
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('format'));?></div>
 				</div>
-				<h3>Contexte et position</h3>
+				<h3 id="label">Paramètres du texte</h3>
 				<div>
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('style'));?></div>
@@ -106,6 +104,33 @@ $actions = [
 						<?= $this->formRow($this->form->get('label_align'));?></div>
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('label_stretch'));?></div>
+				</div>
+				<h3 id="photo" style="display: none;">Paramètres pour une photo</h3>
+				<div>
+
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('photo_x'));?></div>
+					<p class="sbm-description">Une photo à gauche des lignes d'écriture
+						sera obtenue par une abscisse négative.</p>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('photo_y'));?></div>
+					<p class="sbm-description">Une photo décalée vers le haut par
+						rapport à la première ligne d'écriture sera obtenue par une
+						ordonnée négative.</p>
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('photo_w'));?></div>
+
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('photo_h'));?></div>
+
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('photo_type'));?></div>
+
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('photo_align'));?></div>
+
+					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('photo_resize'));?></div>
 				</div>
 			</div>
 			<div id="pdf-edit-buttons" class="row-inner edit">

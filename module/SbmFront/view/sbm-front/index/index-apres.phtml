@@ -1,0 +1,78 @@
+<?php
+/**
+ * Page d'accueil après la période d'inscription
+ *
+ *
+ * @project sbm
+ * @package module/SbmFront
+ * @filesource view/sbm-front/index/index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 sept. 2018
+ * @version 2019-2.5.0
+ */
+use SbmBase\Model\Session;
+
+$dateDebutAs = Session::get('as')['dateDebut']; // utilisé dans l'include
+$msg = include 'index-apres/demo.php';
+
+$url_carte = $this->url('sbmcarte', [
+    'action' => 'etablissements'
+]);
+?>
+<div class="table-page1">
+	<div class="row">
+		<div class="column1 compressed">
+			<div class="centre">
+				<h1>Transports scolaires</h1>
+				<h3 class="accueil">Inscription et paiement en ligne</h3>
+			</div>
+		    <?= $msg; ?>
+		</div>
+		<div class="column2">
+			<div class="vecartement-6px">
+    		<?= $this->flashMessenger()->render('success');?>
+    		<?= $this->flashMessenger()->render('warning');?>
+    		<?= $this->flashMessenger()->render('error');?>
+    		<?= $this->flashMessenger()->render('info');?>
+    		<?= $this->flashMessenger()->render('default');?>
+		    </div>
+		    <?= $this->form()->openTag($this->form); ?>
+		    <fieldset class="sbm-page1">
+				<div class="centre">
+					<h3>Identifiez-vous</h3>
+					<div class="sbm-description">(si vous avez déjà créé votre compte)</div>
+				</div>	
+		    <?= $this->formRow($this->form->get('email')); ?>
+		    <br>
+		    <?= $this->formRow($this->form->get('mdp')); ?>
+		    <br>
+				<div class="centre"><?= $this->formSubmit($this->form->get('signin')); ?></div>
+				<div class="centre top-6px">
+					<a
+						href="<?= $this->url('login', ['action' => 'mdp-demande']); ?>">Mot
+						de passe oublié ?</a>
+				</div>
+			</fieldset>
+			<p></p>
+			<?php if ($this->etat['etat'] == 1): ?>
+			<fieldset class="sbm-page1">
+				<div class="centre">
+					<h3>Nouvel utilisateur</h3>
+					<div class="sbm-description">(si vous n'avez pas de compte)</div>
+					<div class="centre">
+					    <?= $this->formSubmit($this->form->get('signup')); ?>
+					</div>
+				</div>
+			</fieldset>
+			<p></p>
+			<?php endif;?>
+			<?= $this->form()->closeTag(); ?>
+			<div class="sbm-page1">
+				<a href="<?= $url_carte;?>"><img
+					alt="carte des établissements desservis"
+					src="img/logocarteetablissements.png"></a>
+			</div>
+		</div>
+	</div>
+</div>

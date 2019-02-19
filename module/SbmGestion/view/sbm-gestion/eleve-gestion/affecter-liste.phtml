@@ -9,8 +9,8 @@
  * @filesource affecter-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2015
- * @version 2015-1
+ * @date 7 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -19,28 +19,28 @@ $this->paginator->setCurrentPageNumber($this->page);
 $data = $this->paginator->getCurrentItems();
 
 $url_retour = $this->url('sbmgestion/gestioneleve');
-$hiddens =[];
-$actions = array(
-    'retour' => array(
+$hiddens = [];
+$actions = [
+    'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
-    )
-);
+    ]
+];
 ?>
-<h1>Liste des élèves <?php echo $this->title;?> sans affectation</h1>
+<h1>Liste des élèves <?= $this->title;?> sans affectation</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
-<?php if (count($data)): ?>
+<?php if ($this->paginator->getCurrentItemCount()): ?>
 	<div id="liste-inner">
 		<table class="data">
 			<tbody>
@@ -54,19 +54,19 @@ echo $this->flashMessenger()->render('default');
 					<th>Distance</th>
 				</tr>
 <?php foreach ($data as $row): ?>
-<?php $distance = $row['estR1'] ? $row['distanceR1'] : $row['distanceR2']; ?>
 <?php
-
+        $distance = $row['estR1'] ? $row['distanceR1'] : $row['distanceR2'];
         if ($row['district'] || $row['derogation']) {
             $tr_css = $distance < 1 ? 'alert' : ($distance < 3 ? 'warning' : '');
         } else {
             $tr_css = 'alert';
         }
-        $url_affecter = $this->url('sbmgestion/gestioneleve', array(
-            'action' => 'affecter',
-            'page' => $this->page
-        ));
-        $hiddens = array(
+        $url_affecter = $this->url('sbmgestion/gestioneleve',
+            [
+                'action' => 'affecter',
+                'page' => $this->page
+            ]);
+        $hiddens = [
             'eleveId' => $row['eleveId'],
             'millesime' => $row['millesime'],
             'trajet' => $row['estR1'] ? 1 : 2,
@@ -75,47 +75,57 @@ echo $this->flashMessenger()->render('default');
             'correspondance' => 1,
             'responsableId' => $row['responsableId'],
             'op' => 1
-        );
-        $buttons = array(
-            'affecter' => array(
+        ];
+        $buttons = [
+            'affecter' => [
                 'class' => 'fam-car-add',
                 'formaction' => $url_affecter,
                 'title' => 'affecter'
-            )
-        );
-        $cle = implode('|', array(
-            $row['millesime'],
-            $row['eleveId'],
-            $row['estR1'] ? 1 : 2,
-            $row['responsableId']
-        ));
+            ]
+        ];
+        $cle = implode('|',
+            [
+                $row['millesime'],
+                $row['eleveId'],
+                $row['estR1'] ? 1 : 2,
+                $row['responsableId']
+            ]);
+        $adresse = implode('<br/>',
+            [
+                $this->escapeHtml($row['adresseL1']),
+                $this->escapeHtml($row['adresseL2'])
+            ]);
         ?>
-            <tr
-					class="<?php echo $tr_css . ' ' . $this->cycle(['even', 'odd'))->next(); ?>">
-					<td><?php echo $this->escapeHtml($row['nom']); ?></td>
-					<td><?php echo $this->escapeHtml($row['prenom']); ?></td>
-					<td><?php echo implode('<br/>', array($this->escapeHtml($row['adresseL1']), $this->escapeHtml($row['adresseL2']))); ?></td>
-					<td><?php echo $this->escapeHtml($row['commune']); ?></td>
-					<td><?php echo $this->escapeHtml($row['etablissement']); ?></td>
-					<td><?php echo $this->escapeHtml($row['communeEtablissement']); ?></td>
-					<td><?php echo $distance; ?></td>
-					<td><?php echo $this->listeLigneActions($cle, $hiddens, $buttons); ?></td>
+            	<tr
+					class="<?= $tr_css . ' ' . $this->cycle(['even', 'odd'])->next(); ?>">
+					<td><?= $this->escapeHtml($row['nom']); ?></td>
+					<td><?= $this->escapeHtml($row['prenom']); ?></td>
+					<td><?= $adresse?></td>
+					<td><?= $this->escapeHtml($row['commune']); ?></td>
+					<td><?= $this->escapeHtml($row['etablissement']); ?></td>
+					<td><?= $this->escapeHtml($row['communeEtablissement']); ?></td>
+					<td><?= $distance; ?></td>
+					<td><?= $this->listeLigneActions($cle, $hiddens, $buttons); ?></td>
 				</tr>
 <?php endforeach;?>	
 		</tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator,'Sliding','sbm/pagination',[]);?></div>
 		<div class="clearfix">
 			<div class="criteres-wrapper float-left">
 				<div class="clearfix">
-	                <?php echo $this->form()->openTag($this->criteres_form);?>
+	                <?= $this->form()->openTag($this->criteres_form);?>
 	                <fieldset>
-	                <div style="display: inline-block"><?php echo $this->formRow($this->criteres_form->get('choix'));?></div>
-					<div style="display: inline-block" class="left-10px"><?php echo $this->formRow($this->criteres_form->get('submit'));?></div>
+						<div style="display: inline-block">
+						<?= $this->formRow($this->criteres_form->get('choix'));?>
+						</div>
+						<div style="display: inline-block" class="left-10px">
+							<?= $this->formRow($this->criteres_form->get('submit'));?></div>
 					</fieldset>
-	                <?php echo $this->form()->closeTag();?>
+	                <?= $this->form()->closeTag();?>
 	            </div>
 			</div>
 			<p class="sbm-description float-right">
@@ -129,7 +139,7 @@ echo $this->flashMessenger()->render('default');
 	</div>
 <?php else: ?>
     <div id="liste-inner">
-		<i>Il n'y a pas d`élève inscrit non affecté.</i>
+		<i>Il n'y a pas d'élève inscrit non affecté.</i>
 	</div>
 	<div id="liste-footer"></div>
 <?php endif; ?>

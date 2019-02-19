@@ -14,8 +14,8 @@
  * @filesource Template.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmMail\Model;
 
@@ -72,7 +72,7 @@ class Template
      *
      * @param array $data
      *            tableau des variables à passer au 'template'
-     *            ou ['body' => contenu) si le 'template' est null
+     *            ou ['body' => contenu] si le 'template' est null
      *            
      * @return string
      */

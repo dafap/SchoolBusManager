@@ -7,18 +7,17 @@
  * @filesource system.doccolumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-
-return array(
+return [
     'name' => 'doccolumns',
     'type' => 'system',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'doccolumnId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL DEFAULT "1"',
             'ordinal_table' => 'int(11) NOT NULL DEFAULT "1"',
@@ -41,31 +40,31 @@ return array(
             'filter' => 'text NULL',
             'width' => 'int(11) NOT NULL DEFAULT "0"', // laisser à 0 pour que Tcpdf calcule la valeur nécessaire
             'truncate' => 'tinyint(1) NOT NULL DEFAULT "0"', // couper à la taille de la colonne (oui 1/non 0)
-            'nl' => 'tinyint(1) NOT NULL DEFAULT "0"', // saut de page après un changement de valeur dans cette colonne (oui 1/non 0)
-        ),
-        'primary_key' => array(
+            'nl' => 'tinyint(1) NOT NULL DEFAULT "0"'
+        ], // saut de page après un changement de valeur dans cette colonne (oui 1/non 0)
+        'primary_key' => [
             'doccolumnId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'documentId',
-                'references' => array(
+                'references' => [
                     'table' => 'documents',
-                    'fields' => array(
+                    'fields' => [
                         'documentId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'CASCADE'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
-    //'data' => include __DIR__ . '/data/data.system.doccolumns.php'
-    //'data' => array('after' => array('documents'), 'include' => __DIR__ . '/data/data.doccolumns.php')
+    ],
+    // 'data' => include __DIR__ . '/data/data.system.doccolumns.php'
+    // 'data' => ['after' => ['documents'], 'include' => __DIR__ . '/data/data.doccolumns.php']
     'data' => __DIR__ . '/data/data.system.doccolumns.php'
-);
+];

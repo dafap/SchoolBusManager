@@ -8,14 +8,15 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 5 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Db\ObjectData\Exception as ExceptionObjectData;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate\In;
 
 class Eleves extends AbstractSbmTable
 {
@@ -24,7 +25,7 @@ class Eleves extends AbstractSbmTable
      * Renvoie l'enregistrement corresponsdant au gid donné
      *
      * @param int $gid
-     * @throws Exception
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
      * @return mixed
      */
     public function getRecordByGid($gid)
@@ -37,7 +38,7 @@ class Eleves extends AbstractSbmTable
         $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();
         if (! $row) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf(_("Could not find row '%s' in table %s"), $condition_msg,
                     $this->table_name));
         }
@@ -62,10 +63,11 @@ class Eleves extends AbstractSbmTable
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
+        $dateNUnchanged = true;
         try {
             $old_data = $this->getRecord($obj_data->getId());
             $is_new = false;
-        } catch (Exception $e) {
+        } catch (Exception\ExceptionInterface $e) {
             try {
                 $nom = $obj_data->nom;
                 $prenom = $obj_data->prenom;
@@ -79,12 +81,16 @@ class Eleves extends AbstractSbmTable
                 }
                 $is_new = ! $old_data;
                 if (! $is_new) {
+                    if ($old_data->dateN == '1950-01-01') {
+                        $old_data->dateN = $obj_data->dateN;
+                        $dateNUnchanged = false;
+                    }
                     $obj_data = $old_data;
                     // remettre les responsables dans l'ordre demandé cette année
                     $obj_data->responsable1Id = $responsable1Id;
                     $obj_data->responsable2Id = $responsable2Id;
                 }
-            } catch (ExceptionObjectData $e) {
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
                 // die($e->getMessage());
                 $is_new = true;
             }
@@ -105,18 +111,24 @@ class Eleves extends AbstractSbmTable
             $obj_data->numero = $u;
         } else {
             // on vérifie si des données ont changé
-            if ($obj_data->isUnchanged($old_data))
+            if ($dateNUnchanged && $obj_data->isUnchanged($old_data))
                 return;
-
-            if ($old_data->nom != $obj_data->nom) {
-                $obj_data->addCalculateField('nomSA');
-            }
-            if ($old_data->prenom != $obj_data->prenom) {
-                $obj_data->addCalculateField('prenomSA');
+            if (! $obj_data->isUnchanged($old_data)) {
+                if ($old_data->nom != $obj_data->nom) {
+                    $obj_data->addCalculateField('nomSA');
+                }
+                if ($old_data->prenom != $obj_data->prenom) {
+                    $obj_data->addCalculateField('prenomSA');
+                }
             }
             $obj_data->addCalculateField('dateModification');
         }
         parent::saveRecord($obj_data);
+        if ($is_new) {
+            return $this->getTableGateway()->getLastInsertValue();
+        } else {
+            return $obj_data->eleveId;
+        }
     }
 
     /**
@@ -134,6 +146,31 @@ class Eleves extends AbstractSbmTable
             'selection' => $selection
         ]);
         parent::saveRecord($oData);
+    }
+
+    /**
+     * Marque les fiches dont les eleveId sont dans le tableau $arrayId
+     * selection = 1
+     *
+     * @param array $arrayId
+     *            tableau des valeurs de eleveId à traiter
+     *            
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
+     * @return boolean|integer Nombre de lignes sélectionnées
+     */
+    public function markSelection($arrayId)
+    {
+        if ($arrayId) {
+            try {
+                return $this->table_gateway->update([
+                    'selection' => 1
+                ], new In('eleveId', $arrayId));
+            } catch (\Exception $e) {
+                throw new Exception\RuntimeException(print_r($arrayId, true), 0, $e);
+            }
+        }
+        return 0;
     }
 
     /**
@@ -265,7 +302,7 @@ class Eleves extends AbstractSbmTable
                 'prenom' => $prenom,
                 'dateN' => $dateN
             ]);
-        if (empty($resultset)) {
+        if ($resultset->count() == 0) {
             $resultset = $this->fetchAll(
                 [
                     'nom' => $nom,
@@ -273,7 +310,7 @@ class Eleves extends AbstractSbmTable
                     'responsable1Id' => $responsableId
                 ]);
         }
-        if (empty($resultset)) {
+        if ($resultset->count() == 0) {
             $resultset = $this->fetchAll(
                 [
                     'nom' => $nom,

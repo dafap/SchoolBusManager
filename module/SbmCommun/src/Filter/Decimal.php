@@ -3,15 +3,16 @@
  * Filtre pour un décimal
  *
  * Ne laisse que des chiffres et un séparateur décimal.
- * Permet de préciser le séparateur décimal (. par défaut) et le caractère à remplacer par le séparateur décimal (rien par défaut)
+ * Permet de préciser le séparateur décimal (. par défaut) et le caractère 
+ * à remplacer par le séparateur décimal (rien par défaut)
  * 
  * @project sbm
  * @package SbmCommun/Filter
  * @filesource Decimal.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Filter;
 
@@ -34,9 +35,9 @@ class Decimal extends AbstractFilter implements FilterInterface
     public function __construct($options)
     {
         if (! is_array($options)) {
-            throw new \Exception(
+            throw new Exception\InvalidArgumentException(
                 __CLASS__ .
-                " - Le séparateur décimal est donné dans un tableau options => ['separateur' => ',')");
+                " - Le séparateur décimal est donné dans un tableau options => ['separateur' => ',']");
         }
         $this->car2sep = StdLib::getParam('car2sep', $options, false);
         $this->setOptions($options);

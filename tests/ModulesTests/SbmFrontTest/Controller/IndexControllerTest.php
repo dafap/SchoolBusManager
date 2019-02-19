@@ -20,28 +20,29 @@ use SbmCommun\Model\Db\Service\DbManager;
 
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
+
     private $serviceManager;
+
     protected $traceError = true;
-    
+
     public function setUp()
     {
         $this->setApplicationConfig(
-            Bootstrap::getServiceManager()->get('ApplicationConfig')
-        );
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }
-    
+
     public function testIndexActionCanBeAccessed()
     {
         $this->dispatch('/');
-        $this->assertResponseStatusCode(200);        
+        $this->assertResponseStatusCode(200);
         $this->assertModuleName('SbmFront');
         $this->assertControllerName(IndexController::class);
         $this->assertControllerClass('IndexController');
         $this->assertMatchedRouteName('home');
     }
-    
+
     public function testIndexControllerFactory()
     {
         $controller_manager = $this->serviceManager->get('ControllerManager');

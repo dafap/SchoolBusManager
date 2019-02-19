@@ -6,7 +6,7 @@
  * Usage simple dans un controller : 
  *   return $this->csvExport('foo.csv', $header, $records); 
  *   - nom du fichier produit: foo.csv
- *   - ligne d'en-tête (ex: ['Nom', 'Prénom', 'Date de naissance') )
+ *   - ligne d'en-tête (ex: ['Nom', 'Prénom', 'Date de naissance'] )
  *   - données sous forme de tableau (ex: iterator_to_array($resultset))
  *   - pas de fonction callback
  *   - le délimiteur par défaut est ';'
@@ -24,8 +24,8 @@
  * @filesource CsvExport.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
@@ -175,8 +175,9 @@ class CsvExport extends AbstractPlugin
     /**
      * Préparation de la réponse Http contenant le fichier CSV en attaché
      *
-     * @throws \SbmCommun\Model\Mvc\Controller\Plugin\Exception
-     * @throws Exception exception provoquée par la fonction de rappel
+     * @throws \SbmCommun\Model\Mvc\Controller\Plugin\Exception\UnexpectedValueException ou
+     *         exception provoquée par la fonction de rappel
+     *        
      * @return \Zend\Http\PhpEnvironment\Response
      */
     public function getResponse()
@@ -199,7 +200,7 @@ class CsvExport extends AbstractPlugin
             try {
                 $fields = $this->callback ? call_user_func($this->callback, $item) : $item;
                 if (! is_array($fields)) {
-                    throw new Exception(
+                    throw new Exception\UnexpectedValueException(
                         'CsvExport can only accept arrays, ' . gettype($fields) .
                         ' provided at index ' . $i .
                         '. Either use arrays when setting the records or use a callback to convert each record into an array.');

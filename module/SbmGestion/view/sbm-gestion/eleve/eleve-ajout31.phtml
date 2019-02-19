@@ -15,149 +15,195 @@
  * - enregistre la scolarité
  * - passe en mode modification FIN
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 nov. 2016
- * @version 2016-2.2.3
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->jQuery();
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout31.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->inlineScript()->captureStart();
 ?>
 multicheckbox_actions.init("wrapper-joursTransport");
 js_ajout31.init();
-<?php 
+<?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
-//======================= fin js =================================================
-$url_map = $this->url('sbmgestion/eleve', array(
-    'action' => 'localisation',
-    'page' => $this->page
-));
-$url_ici = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-ajout31',
-    'page' => $this->page
-));
-$hiddens = array(
+// ======================= fin js =================================================
+$telephonesR1 = array_filter(
+    [
+        $this->telephone($this->data['telephoneFR1']),
+        $this->telephone($this->data['telephonePR1']),
+        $this->telephone($this->data['telephoneTR1'])
+    ]);
+$telephonesR2 = array_filter(
+    [
+        $this->telephone($this->data['telephoneFR2']),
+        $this->telephone($this->data['telephonePR2']),
+        $this->telephone($this->data['telephoneTR2'])
+    ]);
+$url_map = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'localisation',
+        'page' => $this->page
+    ]);
+$url_ici = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-ajout31',
+        'page' => $this->page
+    ]);
+$hiddens = [
     'eleveId' => $this->data['eleveId'],
     'eleveName' => $this->info,
     'origine' => $url_ici
-);
-$actions = array(
-    'localiser' => array(
+];
+$actions = [
+    'localiser' => [
         'class' => 'fam-map-magnify',
         'formaction' => $url_map,
         'title' => 'localiser cet élève sur la carte',
         'onclick' => sprintf($js, "'localiser'")
-    )
-);
+    ]
+];
 ?>
 <h1>Création d'un nouvel élève</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
-	<div id="fiche-inner">	    
-<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('eleveId'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
+	<div id="fiche-inner">
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('eleveId'));?>
+		<?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="sbm-page1">
 			<div id="commun" class="clearfix">
 				<div id="commun-col1" class="float-left">
 					<div>
-						<div class="label">Nom de l'élève</div><?php echo $this->data['nom']?></div>
+						<div class="label">Nom de l'élève</div>
+							<?= $this->data['nom']?></div>
 					<div>
-						<div class="label">Prénom de l'élève</div><?php echo $this->data['prenom']?></div>
+						<div class="label">Prénom de l'élève</div>
+							<?= $this->data['prenom']?></div>
 					<div>
-						<div class="label">Date de naissance</div><?php echo $this->data['dateN']?></div>
-					<div id="wrapper-joursTransport" class="row-inner edit"><?php echo $this->formRow($this->form->get('joursTransport'));?></div>
+						<div class="label">Date de naissance</div>
+							<?= $this->data['dateN']?></div>
+					<div id="wrapper-joursTransport" class="row-inner edit">
+						<?= $this->formRow($this->form->get('joursTransport'));?></div>
 				</div>
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner edit">
-					<?php echo $this->formRow($this->form->get('etablissementId'));?>
-					<br><span class='etablissement-precedent'><?php echo $this->scolarite_precedente['etablissement']; ?></span>
+					<?= $this->formRow($this->form->get('etablissementId'));?>
+					<br> <span class='etablissement-precedent'>
+						<?= $this->scolarite_precedente['etablissement']; ?></span>
 					</div>
 					<div id="wrapper-classeId" class="row-inner edit">
-					<?php echo $this->formRow($this->form->get('classeId'));?>
-					<span class='classe-precedente'><?php echo $this->scolarite_precedente['classe']; ?></span>
+					<?= $this->formRow($this->form->get('classeId'));?>
+					<span class='classe-precedente'><?= $this->scolarite_precedente['classe']; ?></span>
 					</div>
 					<div id="commun-col2-periode" class="clearfix">
-						<div id="wrapper-anneeComplete" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('anneeComplete'));?></div>
-						<div id="wrapper-dateDebut" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateDebut'));?></div>
-						<div id="wrapper-dateFin" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('dateFin'));?></div>
+						<div id="wrapper-anneeComplete" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('anneeComplete'));?></div>
+						<div id="wrapper-dateDebut" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('dateDebut'));?></div>
+						<div id="wrapper-dateFin" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('dateFin'));?></div>
 					</div>
 					<div id="commun-col2-derogation" class="clearfix">
-						<div id="wrapper-derogation" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('derogation'));?></div>
+						<div id="wrapper-derogation" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('derogation'));?></div>
 						<div id="wrapper-motifDerogation"
-							class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('motifDerogation'));?></div>
+							class="row-inner edit float-left">
+								<?= $this->formRow($this->form->get('motifDerogation'));?></div>
+					</div>
+					<div id="wrapper-tarifId" class="row-inner edit">
+					<?= $this->formRow($this->form->get('tarifId'));?>
 					</div>
 				</div>
 				<div id="commun-col3" class="float-left left-10px">
 					<div id="wrapper-numero">
 						<div class="label">N° carte</div>
-						<div class="input"><?php echo $this->data['numero'];?></div>
+						<div class="input"><?= $this->data['numero'];?></div>
 					</div>
 					<div id="wrapper-inscrit">
 						<div class="label">Etat</div>
 						<div class="input">en cours...</div>
 					</div>
-					<div id="wrapper-district"><?php echo $this->formRow($this->form->get('district'));?></div>
-					<div id="wrapper-fa"><?php echo $this->formRow($this->form->get('fa'));?></div>
-					<div id="wrapper-paiement"><?php echo $this->formRow($this->form->get('paiement'));?></div>
-					<div id="wrapper-ga"><?php echo empty($data['responsable2Id']) ? '' : 'Garde alternée';?></div>
+					<div id="wrapper-district">
+						<?= $this->formRow($this->form->get('district'));?></div>
+					<div id="wrapper-fa">
+						<?= $this->formRow($this->form->get('fa'));?></div>
+					<div id="wrapper-paiement">
+						<?= $this->formRow($this->form->get('paiement'));?></div>
+					<div id="wrapper-ga">
+						<?= empty($data['responsable2Id']) ? '' : 'Garde alternée';?></div>
 				</div>
 			</div>
 			<div id="responsables" class="clearfix">
 				<div id="responsables-col1" class="float-left cols">
-				    <?php echo $this->formHidden($this->form->get('responsable1Id'));?>
-					<div class="gras">Responsable<?php echo empty($data['responsable2Id']) ? '' : ' 1';?></div>
+				    <?= $this->formHidden($this->form->get('responsable1Id'));?>
+					<div class="gras">Responsable<?= empty($data['responsable2Id']) ? '' : ' 1';?></div>
 					<div id="wrapper-responsable1" class="wrapper-responsable">
-						<div id="r1-ligne1"><?php echo $this->data['titreR1'] . ' ' . $this->data['responsable1NomPrenom'];?></div>
-						<div id="r1-ligne2"><?php echo $this->data['adresseL1R1'] . ' ' . $this->data['adresseL2R1'];?></div>
-						<div id="r1-ligne3"><?php echo $this->data['codePostalR1'] . ' ' . $this->data['communeR1'];?></div>
-						<div id="r1-ligne4">email: <?php echo $this->data['emailR1'];?></div>
-						<div id="r1-ligne5">Tél. <?php echo $this->data['telephoneFR1'] . ' ' . $this->data['telephonePR1'] . ' ' .$this->data['telephoneTR1'];?></div>
+						<div id="r1-ligne1">
+							<?= $this->data['titreR1'];?>
+							<?= $this->data['responsable1NomPrenom'];?></div>
+						<div id="r1-ligne2">
+							<?= $this->data['adresseL1R1'];?>
+							<?= $this->data['adresseL2R1'];?></div>
+						<div id="r1-ligne3">
+							<?= $this->data['codePostalR1'];?>
+							<?= $this->data['communeR1'];?></div>
+						<div id="r1-ligne4">email: <?= $this->data['emailR1'];?></div>
+						<div id="r1-ligne5">
+							Tél. <?= implode(' - ', $telephonesR1);?></div>
 					</div>
 					<div class="clearfix">
-						<div id="wrapper-distanceR1" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR1'));?></div>
-						<div id="wrapper-demandeR1" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR1'));?></div>
+						<div id="wrapper-distanceR1" class="float-left top-18px">
+							<?= $this->formRow($this->form->get('distanceR1'));?></div>
+						<div id="wrapper-demandeR1" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('demandeR1'));?></div>
 					</div>
 				</div>  
 				<?php if (!empty($data['responsable2Id'])) : ?>				
 				<div id="responsables-col2" class="float-left cols left-10px">
-				    <?php echo $this->formHidden($this->form->get('responsable2Id'));?>
+				    <?= $this->formHidden($this->form->get('responsable2Id'));?>
 					<div class="gras">Responsable 2</div>
 					<div id="wrapper-responsable2" class="wrapper-responsable">
-						<div id="r2-ligne1"><?php echo $this->data['titreR2'] . ' ' . $this->data['responsable2NomPrenom'];?></div>
-						<div id="r2-ligne2"><?php echo $this->data['adresseL1R2'] . ' ' . $this->data['adresseL2R2'];?></div>
-						<div id="r2-ligne3"><?php echo $this->data['codePostalR2'] . ' ' . $this->data['communeR2'];?></div>
-						<div id="r2-ligne4">email: <?php echo $this->data['emailR2'];?></div>
-						<div id="r2-ligne5">Tél. <?php echo $this->data['telephoneFR2'] . ' ' . $this->data['telephonePR2'] . ' ' .$this->data['telephoneTR2'];?></div>
+						<div id="r2-ligne1">
+							<?= $this->data['titreR2'];?>
+							<?= $this->data['responsable2NomPrenom'];?></div>
+						<div id="r2-ligne2">
+							<?=$this->data['adresseL1R2'];?>
+							<?= $this->data['adresseL2R2'];?></div>
+						<div id="r2-ligne3">
+							<?= $this->data['codePostalR2'];?>
+							<?= $this->data['communeR2'];?></div>
+						<div id="r2-ligne4">email: <?= $this->data['emailR2'];?></div>
+						<div id="r2-ligne5">Tél. <?= implode(' - ', $telephonesR2);?></div>
 					</div>
 					<div class="clearfix">
-						<div id="wrapper-distanceR2" class="float-left top-18px"><?php echo $this->formRow($this->form->get('distanceR2'));?></div>
-						<div id="wrapper-demandeR2" class="row-inner edit float-left"><?php echo $this->formRow($this->form->get('demandeR2'));?></div>
+						<div id="wrapper-distanceR2" class="float-left top-18px">
+							<?= $this->formRow($this->form->get('distanceR2'));?></div>
+						<div id="wrapper-demandeR2" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('demandeR2'));?></div>
 					</div>
 				</div>
 				<?php endif;?>
 			</div>
-			<div id="wrapper-commentaire" class="row-inner edit top-6px"><?php echo $this->formRow($this->form->get('commentaire'));?></div>
+			<div id="wrapper-commentaire" class="row-inner edit top-6px">
+				<?= $this->formRow($this->form->get('commentaire'));?></div>
 		</fieldset>
 		<div id="eleve-edit-buttons" class="row-inner edit left-95px">
-        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+        	<?= $this->formSubmit($this->form->get('submit'));?>
+        	<?= $this->formSubmit($this->form->get('cancel'));?>
     </div>
-<?php
-echo $this->form()->closeTag();
-?>
+	<?= $this->form()->closeTag();?>
 	</div><?php // fiche_inner ?>
     <div id="fiche-footer">
     <?php // var_dump($this->form->getMessages());?>

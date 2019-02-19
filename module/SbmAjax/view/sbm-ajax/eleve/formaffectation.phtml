@@ -9,26 +9,32 @@
  * @filesource formaffectation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 
-/* Pour DEBUG
+/*
+ * Pour DEBUG
  * décommenter les lignes suivantes
  *
- $msg_alert = '"eleveId: "+$("#formaffectation' . $this->trajet . ' input[name=eleveId]").val()';
- $msg_alert .= '+"\nmillesime: "+$("#formaffectation' . $this->trajet . ' input[name=millesime]").val()';
- $msg_alert .= '+"\ntrajet: "+$("#formaffectation' . $this->trajet . ' input[name=trajet]").val()';
- $msg_alert .= '+"\njours: "+$("#formaffectation' . $this->trajet . ' input[name=jours]").val()';
- $msg_alert .= '+"\nsens: "+$("#formaffectation' . $this->trajet . ' input[name=sens]").val()';
- $msg_alert .= '+"\ncorrespondance: "+$("#formaffectation' . $this->trajet . ' input[name=correspondance]").val()';
- $msg_alert .= '+"\nresponsableId: "+$("#formaffectation' . $this->trajet . ' input[name=responsableId]").val()';
- $msg_alert .= '+"\ndemandeR1: "+$("#formaffectation' . $this->trajet . ' input[name=demandeR1]").val()';
- $msg_alert .= '+"\nop: "+$("#formaffectation' . $this->trajet . ' input[name=op]").val()';
- $msg_alert .= '+"\nservice1: "+$("#affectation-service1Id option:selected").val()';
- 
- /* et ajouter la ligne qui suit dans inlineScript()->captureStart()
- alert(<?= $msg_alert;?>);
+ * $msg_alert = '"eleveId: "+$("#formaffectation' . $this->trajet . ' input[name=eleveId]").val()';
+ * $msg_alert .= '+"\nmillesime: "+$("#formaffectation' . $this->trajet . '
+ * input[name=millesime]").val()';
+ * $msg_alert .= '+"\ntrajet: "+$("#formaffectation' . $this->trajet . '
+ * input[name=trajet]").val()';
+ * $msg_alert .= '+"\njours: "+$("#formaffectation' . $this->trajet . ' input[name=jours]").val()';
+ * $msg_alert .= '+"\nsens: "+$("#formaffectation' . $this->trajet . ' input[name=sens]").val()';
+ * $msg_alert .= '+"\ncorrespondance: "+$("#formaffectation' . $this->trajet . '
+ * input[name=correspondance]").val()';
+ * $msg_alert .= '+"\nresponsableId: "+$("#formaffectation' . $this->trajet . '
+ * input[name=responsableId]").val()';
+ * $msg_alert .= '+"\ndemandeR1: "+$("#formaffectation' . $this->trajet . '
+ * input[name=demandeR1]").val()';
+ * $msg_alert .= '+"\nop: "+$("#formaffectation' . $this->trajet . ' input[name=op]").val()';
+ * $msg_alert .= '+"\nservice1: "+$("#affectation-service1Id option:selected").val()';
+ *
+ * /* et ajouter la ligne qui suit dans inlineScript()->captureStart()
+ * alert(<?= $msg_alert;?>);
  */
 ?>
 <?php $this->headStyle()->captureStart(); ?>
@@ -54,85 +60,16 @@
 }
 <?php $this->headStyle()->captureEnd(); ?>
 <?= $this->headStyle();?>
-<?php $this->headScript()->captureStart();?>
-var is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
-var urlform = '<?= $this->form->getAttribute('action'); ?>';
-var btnclick;
-var affectation = (function() {
-  function setStationsValueOptions(valeur) {
-      $.ajax({
-	            url : '/sbmajaxeleve/getstationsforselect/serviceId:'+valeur,
-	            dataType: 'json',
-	            success : function(dataJson){
-	                $("#affectation-station1Id").empty();
-	                $("#affectation-station2Id").empty();
-	                if (dataJson.success) {
-	                    $.each(dataJson.data, function(k, d) {
-	                        $('#affectation-station1Id').append('<option value="' + k + '">' + d + '</option>');
-	                        $('#affectation-station2Id').append('<option value="' + k + '">' + d + '</option>');
-	                    });
-	                }
-	            },
-	            error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-	    });
-  }
-  $("#formaffectation<?= $this->trajet;?> input[name=cancel]").click(function(){btnclick='cancel';});
-  $("#formaffectation<?= $this->trajet;?> input[name=submit]").click(function(){btnclick='submit';});
-  $("form#decision").submit(
-    function() {
-	    // if not call by ajax submit to showformAction
-	    if (is_xmlhttprequest == 0)
-            return true;
-		// if by ajax check by ajax : formaffectationvalidateAction
-		var trajet = $('#formaffectation<?= $this->trajet;?> input[name=trajet]').val();
-		var demande = 'demandeR'+trajet;
-		var data = {
-		    'csrf' : $('#formaffectation<?= $this->trajet;?> input[name=csrf]').val(),
-			'eleveId' : $('#formaffectation<?= $this->trajet;?> input[name=eleveId]').val(),
-			'millesime' : $('#formaffectation<?= $this->trajet;?> input[name=millesime]').val(),
-			'trajet' : trajet,
-			'jours' : $('#formaffectation<?= $this->trajet;?> input[name=jours]').val(),
-			'sens' : $('#formaffectation<?= $this->trajet;?> input[name=sens]').val(),
-			'correspondance' : $('#formaffectation<?= $this->trajet;?> input[name=correspondance]').val(),
-			'responsableId' : $('#formaffectation<?= $this->trajet;?> input[name=responsableId]').val(),
-			'demandeR1' : $('#formaffectation<?= $this->trajet;?> input[name=demandeR1]').val(),
-			'demandeR2' : $('#formaffectation<?= $this->trajet;?> input[name=demandeR2]').val(),
-			'service1Id' : $('#formaffectation<?= $this->trajet;?> select[name=service1Id]').val(),
-			'service2Id' : $('#formaffectation<?= $this->trajet;?> select[name=service2Id]').val(),
-			'station1Id' : $('#formaffectation<?= $this->trajet;?> select[name=station1Id]').val(),
-			'station2Id' : $('#formaffectation<?= $this->trajet;?> select[name=station2Id]').val(),
-			'op' : $('#formaffectation<?= $this->trajet;?> input[name=op]').val(),
-			'submit' : btnclick	
-		}
-		$.post(urlform, data, function(itemJson) {		
-			$("#winpopup").dialog('close');
-			js_edit.majBlockAffectations(trajet);
-			//alert(itemJson.cr);						
-        }, 'json');
-        return false;
-	});
-	$("#affectation-service1Id").on('change',function() {
-	    var valeur = $(this).val();
-	    setStationsValueOptions(valeur);
-	});
-	return {
-	    "init" : function() {
-	        var valeur = $("#affectation-service1Id option:selected").val();
-	        if (valeur) {
-	            setStationsValueOptions(valeur);
-	        }
-	    }
-	}
-})();
-<?php $this->headScript()->captureEnd();?>
-<?= $this->headScript();?>
 <?php $this->inlineScript()->captureStart();?>
-affectation.init();
+var is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
+var formaffectation = "#formaffectation<?= $this->trajet;?>";
+var urlform = '<?= $this->form->getAttribute('action'); ?>';
+var station1Id = <?= $this->station1Id ?:'null';?>;
+var station2Id = <?= $this->station2Id?:'null';?>;
+affectation().init(station1Id, station2Id, is_xmlhttprequest, formaffectation, urlform);
 <?php $this->inlineScript()->captureEnd();?>
+<?= $this->inlineScript();?>
 <div id="formaffectation<?= $this->trajet;?>">
 <?= $this->form($this->form);?>
 </div>
 <div id="errors"></div>
-<?= $this->inlineScript();?>

@@ -16,8 +16,8 @@
  * @filesource table-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -104,7 +104,7 @@ $buttons = [
 					</th>
 					<th></th>
 				</tr>
-            <?php foreach($data as $row): ?>
+            <?php foreach($data as $section => $row): ?>
             	<?php
                 $hiddens = [
                     'doctableId' => $row['doctableId'],
@@ -115,18 +115,13 @@ $buttons = [
                 ];
                 ?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
-					<td class="section">
-						<?= $this->escapeHtml($row['section']); ?></td>
-					<td class="description">
-						<?= $this->escapeHtml($row['description']); ?></td>
-					<td class="visible">
-						<?= $row['visible'] ? 'Oui' : 'Non'; ?></td>
-					<td class="width">
-						<?= $row['width']; ?></td>
-					<td class="row_height">
-						<?= $row['row_height']; ?></td>
+					<td class="section"><?= $this->escapeHtml($row['section']); ?></td>
+					<td class="description"><?= $this->escapeHtml($row['description']); ?></td>
+					<td class="visible"><?= $row['visible'] ? 'Oui' : 'Non'; ?></td>
+					<td class="width"><?= $row['width']; ?></td>
+					<td class="row_height"><?= $row['row_height']; ?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($row['doctableId'], $hiddens, $buttons);?>
+                <?= $this->listeLigneActions($row['doctableId'], $hiddens, $buttons);?>
                 
 				    </td>
 				</tr>         

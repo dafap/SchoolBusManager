@@ -9,8 +9,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 3 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmFront\Controller;
 
@@ -119,9 +119,7 @@ class LoginController extends AbstractActionController
                     $tableUsers->saveRecord($odata);
                     $this->flashMessenger()->addSuccessMessage(
                         'Votre compte est confirmé. Votre mot de passe est enregistré.');
-                } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {
-                    // die(var_dump(/*$auth->authenticate()->getCode(), */$auth->hasIdentity(),
-                    // $auth->getIdentity()));
+                } catch (\SbmCommun\Model\Db\ObjectData\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addErrorMessage(
                         'Ce lien ne peut être utilisé qu\'une seule fois. Identifiez-vous ou cliquez sur mot de passe oublié.');
                 }
@@ -172,10 +170,37 @@ class LoginController extends AbstractActionController
                         } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
                             throw $e->getPrevious();
                         }
-                        $d2etab = $this->distance_etablissements;
+                        // contrôle de la commune
+                        if (! $responsable->inscriptionenligne) {
+                            // page d'information indiquant que les inscriptions en ligne
+                            // ne sont pas autorisées pour les parents de cette commune.
+                            $commune = $responsable->commune;
+                            $message = <<<EOT
+Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas ouvert aux habitants 
+de votre commune.
+EOT;
+                            $this->flashMessenger()->addErrorMessage($message);
+                            $this->logout();
+                            return $this->redirect()->toRoute('home',
+                                [
+                                    'action' => 'hors-zone',
+                                    'id' => $commune
+                                ]);
+                        }
+                        if (! $responsable->paiementenligne) {
+                            // indiquer que les préinscriptions sont autorisées mais que
+                            // le paiement en ligne n'est pas permi pour les parents de
+                            // cette commune
+                            $message = <<<EOT
+Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants 
+de votre commune.'
+EOT;
+                            $this->flashMessenger()->addInfoMessage($message);
+                        }
                         // contrôle de position géographique
                         $point = new Point($responsable->x, $responsable->y);
-                        $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+                        $pt = $this->oDistanceMatrix->getProjection()->xyzVersgRGF93(
+                            $point);
                         $configCarte = StdLib::getParam('parent', $this->config_cartes);
                         $pt->setLatLngRange($configCarte['valide']['lat'],
                             $configCarte['valide']['lng']);
@@ -233,12 +258,7 @@ class LoginController extends AbstractActionController
         }
     }
 
-    /**
-     * Déconnexion
-     *
-     * @return \Zend\Http\Response
-     */
-    public function logoutAction()
+    private function logout()
     {
         try {
             $this->responsable->get()->clear();
@@ -246,6 +266,16 @@ class LoginController extends AbstractActionController
         $auth = $this->authenticate->by();
         $auth->clearIdentity();
         Session::remove('millesime');
+    }
+
+    /**
+     * Déconnexion
+     *
+     * @return \Zend\Http\Response
+     */
+    public function logoutAction()
+    {
+        $this->logout();
         return $this->redirect()->toRoute('home');
     }
 
@@ -261,7 +291,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (\array_key_exists('cancel', $args)) {
             $this->flashMessenger()->addErrorMessage('Demande abandonnée.');
             return $this->redirect()->toRoute('home');
@@ -361,7 +391,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         $form = $this->form_manager->get(Form\MdpChange::class);
         $form->setAttribute('action',
             $this->url()
@@ -377,7 +407,7 @@ class LoginController extends AbstractActionController
                 ->setCredential($args['mdp_old']);
             if ($auth->authenticate()->getCode() > 0) {
                 if ($args['mdp_old'] == $args['mdp_new']) {
-                    $this->setToSession('post', []);
+                    Session::set('post', []);
                     $this->flashMessenger()->addInfoMessage(
                         'Le mot de passe est inchangé.');
                     return $this->homePageAction();
@@ -431,7 +461,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         $auth = $this->authenticate->by('email');
         $identity = $auth->getIdentity();
         $email_old = $identity['email'];
@@ -448,7 +478,7 @@ class LoginController extends AbstractActionController
                 ->setCredential($args['mdp']);
             if ($auth->authenticate()->getCode() > 0) {
                 if ($email_old == $args['email_new']) {
-                    $this->setToSession('post', []);
+                    Session::set('post', []);
                     $this->flashMessenger()->addInfoMessage('L\'email est inchangé.');
                     return $this->homePageAction();
                 }
@@ -505,7 +535,7 @@ class LoginController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (\array_key_exists('cancel', $args)) {
             $this->flashMessenger()->addErrorMessage('Création abandonnée.');
             return $this->redirect()->toRoute('home');
@@ -516,7 +546,7 @@ class LoginController extends AbstractActionController
             $form->bind($table_users->getObjData());
             $form->setData($args);
             if ($form->isValid()) {
-                // prépare data (c'est un SbmCommun\Model\Db\ObjectData\User qui possède des
+                // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui possède des
                 // méthodes qui vont bien)
                 $odata = $form->getData()->completeToCreate();
                 $table_users->saveRecord($odata);
@@ -605,7 +635,7 @@ class LoginController extends AbstractActionController
             if ($prg instanceof Response) {
                 return $prg;
             }
-            $args = (array) $prg;
+            $args = $prg ?: [];
             if (\array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Modification abandonnée.');
                 return $this->homePageAction();
@@ -617,7 +647,7 @@ class LoginController extends AbstractActionController
             if (\array_key_exists('submit', $args)) {
                 $form->setData($args);
                 if ($form->isValid()) {
-                    // prépare data (c'est un SbmCommun\Model\Db\ObjectData\User qui possède des
+                    // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui possède des
                     // méthodes qui vont bien)
                     $oUser = $form->getData()->completeToModif();
                     $table_users->saveRecord($oUser);

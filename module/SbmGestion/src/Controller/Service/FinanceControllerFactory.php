@@ -9,15 +9,15 @@
  * @filesource FinanceControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 25 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller\Service;
 
+use SbmBase\Model\StdLib;
+use SbmGestion\Controller\FinanceController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmGestion\Controller\FinanceController;
-use SbmBase\Model\StdLib;
 
 class FinanceControllerFactory implements FactoryInterface
 {
@@ -36,10 +36,11 @@ class FinanceControllerFactory implements FactoryInterface
                 'sbm',
                 'mail'
             ], $config_application),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application)
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application)
         ];
         return new FinanceController($config_controller);
     }

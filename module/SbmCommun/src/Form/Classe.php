@@ -8,8 +8,8 @@
  * @filesource Classe.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 9 mai 2018
+ * @version 2018-2.4.1
  */
 namespace SbmCommun\Form;
 
@@ -22,10 +22,11 @@ class Classe extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('classe');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'name' => 'classeId',
-            'type' => 'hidden'
-        ]);
+        $this->add(
+            [
+                'name' => 'classeId',
+                'type' => 'hidden'
+            ]);
         $this->add(
             [
                 'name' => 'csrf',
@@ -84,6 +85,25 @@ class Classe extends AbstractSbmForm implements InputFilterProviderInterface
                     'label' => 'Cochez les niveaux concernés',
                     'label_attributes' => [
                         'class' => 'sbm-label130'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'rang',
+                'type' => 'SbmCommun\Form\Element\IsInt',
+                'attributes' => [
+                    'id' => 'classe-rang',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Rang dans le niveau',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'

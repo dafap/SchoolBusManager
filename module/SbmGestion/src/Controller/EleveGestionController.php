@@ -9,13 +9,14 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
+use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\LatLng;
@@ -45,10 +46,10 @@ class EleveGestionController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('criteres', []);
+            $args = Session::get('criteres', []);
         } else {
             $args = $prg;
-            $this->setToSession('criteres', $args);
+            Session::set('criteres', $args);
         }
         $form = new \Zend\Form\Form('criteres');
         $form->setAttribute('method', 'post');
@@ -124,7 +125,7 @@ class EleveGestionController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if (! $args) {
                 $this->flashMessenger()->addErrorMessage(
                     'Action formellement interdite !');
@@ -142,11 +143,11 @@ class EleveGestionController extends AbstractActionController
                     ]);
             }
             if ($args['op'] == 2 && array_key_exists('back', $args)) {
-                $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+                $args = Session::get('post', false, $this->getSessionNamespace());
             } else {
                 $postSession = $args;
                 unset($postSession['submit'], $postSession['back']);
-                $this->setToSession('post', $postSession, $this->getSessionNamespace());
+                Session::set('post', $postSession, $this->getSessionNamespace());
                 unset($postSession);
             }
         }
@@ -190,7 +191,7 @@ class EleveGestionController extends AbstractActionController
                     } else {
                         // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase
                         // 2. Pour le moment, mettre la décision en session
-                        $this->setToSession('decision', $decision);
+                        Session::set('decision', $decision);
                         $formDecision = new AffectationDecision($args['trajet'], 2);
                         $values_options1 = $this->db_manager->get(
                             'Sbm\Db\Select\Stations')->ouvertes();
@@ -209,7 +210,7 @@ class EleveGestionController extends AbstractActionController
                     $oData->exchangeArray($formDecision->getData());
                     $table->saveRecord($oData);
                     // on enregistre la décision qui est en session
-                    $decision = $this->getFromSession('decision');
+                    $decision = Session::get('decision');
                     $table = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                     $oData = $table->getObjData();
                     $oData->exchangeArray($decision);
@@ -232,12 +233,13 @@ class EleveGestionController extends AbstractActionController
             ->current();
         $formDecision->setData(array_merge($eleve, $args));
 
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $point = new Point($eleve['x'], $eleve['y']);
-        $ptElv = $d2etab->getProjection()->xyzVersgRGF93($point);
+        $ptElv = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
         $point = new Point($eleve['xeta'], $eleve['yeta']);
-        $ptEta = $d2etab->getProjection()->xyzVersgRGF93($point);
-        $configCarte = StdLib::getParam('parent',
+        $ptEta = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
+        $configCarte = StdLib::getParam('gestion',
             $this->cartographie_manager->get('cartes'));
         return new ViewModel(
             [
@@ -248,15 +250,17 @@ class EleveGestionController extends AbstractActionController
                 'ptElv' => $ptElv,
                 'ptEta' => $ptEta,
                 'config' => $configCarte,
-                'url_api' => $this->cartographie_manager->get('google_api')['js']
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
             ]);
     }
 
     public function gaLocalisationListeAction()
     {
+        $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->paginatorDemandeGaDistanceR2Zero();
         return new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getDemandeGaDistanceR2Zero(),
+                'paginator' => $paginator,
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
                 'page' => $this->params('page', 1)
             ]);
     }
@@ -290,11 +294,12 @@ class EleveGestionController extends AbstractActionController
                 ]);
             }
         }
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $responsableId = $args['responsableId'];
         $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // nécessaire pour valider lat et lng
-        $configCarte = StdLib::getParam('parent',
+        $configCarte = StdLib::getParam('gestion',
             $this->cartographie_manager->get('cartes'));
         $form = new LatLng([
             'responsableId' => [
@@ -323,7 +328,7 @@ class EleveGestionController extends AbstractActionController
             if ($form->isValid()) {
                 // transforme les coordonnées
                 $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
-                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
                 // enregistre dans la fiche responsable
                 $oData = $tResponsables->getObjData();
                 $oData->exchangeArray(
@@ -336,7 +341,11 @@ class EleveGestionController extends AbstractActionController
                 $this->flashMessenger()->addSuccessMessage(
                     'La localisation du domicile est enregistrée.');
                 // Met à jour les fiches des enfants dans scolarites
-                $this->cartographie_manager->get('Sbm\MajDistances')->pour($responsableId);
+                $msg = $this->cartographie_manager->get('Sbm\MajDistances')->pour(
+                    $responsableId);
+                if ($msg) {
+                    $this->flashMessenger()->addWarningMessage($msg);
+                }
                 return $this->redirect()->toRoute('sbmgestion/gestioneleve',
                     [
                         'action' => 'ga-localisation-liste',
@@ -349,14 +358,14 @@ class EleveGestionController extends AbstractActionController
             $responsable->communeId);
         if ($responsable->x == 0.0 && $responsable->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
-            $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode(
+            $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
                 $responsable->adresseL2 ?: $responsable->adresseL1,
                 $responsable->codePostal, $commune->nom);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
             $description = $array['adresse'];
         } else {
             $point = new Point($responsable->x, $responsable->y);
-            $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+            $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
             $description = nl2br(
                 trim(implode("\n", [
                     $responsable->adresseL1,
@@ -370,12 +379,18 @@ class EleveGestionController extends AbstractActionController
                 'lat' => $pt->getLatitude(),
                 'lng' => $pt->getLongitude()
             ]);
-        $point = new Point($args['x1'], $args['y1']);
-        $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
-        $pt->setAttribute('description', $args['description']);
+        // localisation du R1
+        $point = new Point($args['xr1'], $args['yr1']);
+        $ptR1 = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
+        $ptR1->setAttribute('description', $args['descriptionr1']);
+        // localisation de l'établissement
+        $point = new Point($args['xeta'], $args['yeta']);
+        $ptEta = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
+        $ptEta->setAttribute('description', $args['descriptioneta']);
         return new ViewModel(
             [
-                'ptR1' => $pt,
+                'ptR1' => $ptR1,
+                'ptEta' => $ptEta,
                 'form' => $form->prepare(),
                 'description' => $description,
                 'responsable' => [
@@ -391,10 +406,15 @@ class EleveGestionController extends AbstractActionController
                     $responsable->codePostal . ' ' . $commune->nom
                 ],
                 'config' => $configCarte,
-                'url_api' => $this->cartographie_manager->get('google_api')['js']
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
             ]);
     }
 
+    /**
+     * Ne traite que les cartes de NatureCartes == 1
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function cartesAction()
     {
         $prg = $this->prg();
@@ -402,7 +422,7 @@ class EleveGestionController extends AbstractActionController
             return $prg;
         }
         $vue = true;
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmgestion/eleve',
                 [
@@ -422,18 +442,27 @@ class EleveGestionController extends AbstractActionController
             ]);
         $form2 = new \SbmGestion\Form\SelectionCartes();
         $form2->setValueOptions('dateReprise',
-            $this->db_manager->get('Sbm\Db\Select\DatesCartes'))
+            $this->db_manager->get('Sbm\Db\Select\DatesCartes')
+                ->cartesPapier())
             ->setData(
             [
                 'selection' => 'nouvelle',
                 'critere' => 'tous',
                 'document' => 'Liste de contrôle des cartes'
             ]);
+        // initialisation des documentId à utiliser pour les cartes, étiquettes, liste de controle
+        $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
+        $where = new Where();
+        $where->equalTo('nature', 'ImpressionCartes')->greaterThanOrEqualTo('code', 1);
+        $aLibellesImpressionCartes = $tLibelles->fetchAll($where, 'code')->toArray();
+        $form2->setDocumentValueOptions($aLibellesImpressionCartes, $this->db_manager);
+        // -------- fin de l'initialisation des documentId -------
         if (array_key_exists('nouvelle', $args)) {
-            $this->db_manager->get('Sbm\Db\Table\Scolarites')->prepareDateCarteForNewEdition(
-                $millesime, $dateDebut);
+            $this->db_manager->get(\SbmGestion\Model\Cartes\Cartes::class)->nouveauLot(
+                $millesime, $dateDebut, 1);
             $form2->setValueOptions('dateReprise',
-                $this->db_manager->get('Sbm\Db\Select\DatesCartes'));
+                $this->db_manager->get('Sbm\Db\Select\DatesCartes')
+                    ->cartesPapier());
         } elseif (array_key_exists('submit', $args)) {
             $form2->setData($args);
             if ($form2->isValid()) {
@@ -475,6 +504,7 @@ class EleveGestionController extends AbstractActionController
                         $where->equalTo('dateCarte', $dateReprise);
                         break;
                     case 'selection':
+                        // il s'agit ici de la colonne `selection` de la table `eleves`
                         $expression = [
                             "millesime = $millesime",
                             'selection = 1'
@@ -511,7 +541,8 @@ class EleveGestionController extends AbstractActionController
                     'form2' => $form2,
                     'lastDateCarte' => $lastDateCarte,
                     'dateDebut' => $dateDebut,
-                    'page' => $this->params('page', 1)
+                    'page' => $this->params('page', 1),
+                    'natureCartes' => $tLibelles->getLibelle('NatureCartes', 1)
                 ]);
         } else {
             die();
@@ -530,20 +561,21 @@ class EleveGestionController extends AbstractActionController
             return $prg;
         }
         $vue = true;
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (array_key_exists('origine', $args)) {
-            $this->setToSession('origine', $args['origine'], $this->getSessionNamespace());
+            Session::set('origine', $args['origine'], $this->getSessionNamespace());
         } else {
-            $args['origine'] = $this->getFromSession('origine', null,
-                $this->getSessionNamespace());
+            $args['origine'] = Session::get('origine', null, $this->getSessionNamespace());
         }
         if (array_key_exists('cancel', $args) || ! array_key_exists('eleveId', $args)) {
             return $this->redirect()->toUrl($args['origine']);
         }
         $millesime = Session::get('millesime');
         $vue = true;
+        $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
+        $documentName = $tLibelles->getLibelle('ImpressionCartes', 0);
         $documentId = $this->db_manager->get('Sbm\Db\System\Documents')->getDocumentId(
-            'Duplicata carte');
+            $documentName);
         $configLabel = $this->db_manager->get('Sbm\Db\System\DocLabels')->getConfig(
             $documentId);
         $form = new \SbmGestion\Form\PlancheEtiquettesForm('duplicata',
@@ -590,7 +622,7 @@ class EleveGestionController extends AbstractActionController
                 $where->equalTo('millesime', $millesime)->equalTo('eleveId',
                     $args['eleveId']);
                 $call_pdf = $this->RenderPdfService;
-                $call_pdf->setParam('documentId', 'Duplicata carte')
+                $call_pdf->setParam('documentId', $documentName)
                     ->setParam('where', $where)
                     ->setParam('criteres', [])
                     ->setParam('expression',
@@ -615,6 +647,127 @@ class EleveGestionController extends AbstractActionController
                     'form' => $form,
                     'eleveid' => $args['eleveId'],
                     'origine' => $args['origine']
+                ]);
+        } else {
+            die();
+        }
+    }
+
+    public function photosAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $vue = true;
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/eleve',
+                [
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $millesime = Session::get('millesime');
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+        $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
+        $form1 = new ButtonForm([],
+            [
+                'nouvelle' => [
+                    'class' => 'button default submit left-95px',
+                    'value' => 'Préparer un nouveau lot de photos'
+                ]
+            ]);
+        $form2 = new \SbmGestion\Form\SelectionPhotos();
+        $form2->setValueOptions('dateReprise',
+            $this->db_manager->get('Sbm\Db\Select\DatesCartes')
+                ->extractionsPhotos())
+            ->setData(
+            [
+                'selection' => 'nouvelle',
+                'document' => 'Liste de contrôle des cartes'
+            ]);
+        // initialisation des documentId à utiliser pour les cartes, étiquettes, liste de controle
+        $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
+        $where = new Where();
+        $where->equalTo('nature', 'ImpressionCartes')->greaterThanOrEqualTo('code', 1);
+        $aLibellesImpressionCartes = $tLibelles->fetchAll($where, 'code')->toArray();
+        $form2->setDocumentValueOptions($aLibellesImpressionCartes, $this->db_manager);
+        // -------- fin de l'initialisation des documentId -------
+        if (array_key_exists('nouvelle', $args)) {
+            $this->db_manager->get(\SbmGestion\Model\Photos\Photos::class)->nouveauLot(
+                $millesime, $dateDebut, 2);
+            $form2->setValueOptions('dateReprise',
+                $this->db_manager->get('Sbm\Db\Select\DatesCartes')
+                    ->extractionsPhotos());
+        } elseif (array_key_exists('submit', $args)) {
+            $form2->setData($args);
+            if ($form2->isValid()) {
+                $where = new Where();
+                $criteres = [];
+                $expression = [
+                    "millesime = $millesime",
+                    'inscrit=1'
+                ];
+                switch ($args['selection']) {
+                    case 'nouvelle':
+                        $lastDateCarte = $this->db_manager->get(
+                            'Sbm\Db\Table\ElevesPhotos')->getLastDateExtraction();
+                        $expression[] = "dateExtraction = '$lastDateCarte'";
+                        $where->equalTo('dateExtraction', $lastDateCarte);
+                        break;
+                    case 'reprise':
+                        $dateReprise = $args['dateReprise'];
+                        $expression[] = "dateExtraction = '$dateReprise'";
+                        $where->equalTo('dateExtraction', $dateReprise);
+                        break;
+                    case 'selection':
+                        // il s'agit ici de la colonne `selection` de la table `eleves`
+                        $expression = [
+                            "millesime = $millesime",
+                            'selection = 1'
+                        ];
+                        $where->literal('selection = 1');
+                        break;
+                }
+                if ($args['document'] == 'extraction') {
+                    return $this->db_manager->get(\SbmGestion\Model\Photos\Photos::class)->renderZip(
+                        $where);
+                    die('---- photos demandées ----');
+                } else {
+                    $where->equalTo('millesime', $millesime);
+                    $call_pdf = $this->RenderPdfService;
+                    $call_pdf->setParam('documentId', $args['document'])
+                        ->setParam('where', $where)
+                        ->setParam('criteres', $criteres)
+                        ->setParam('strict', [
+                        'empty' => [],
+                        'not empty' => []
+                    ])
+                        ->setParam('expression', $expression)
+                        ->renderPdf();
+                    $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+                    $vue = false; // la http response est lancée par renderPdf()
+                }
+            }
+        }
+        if ($vue) {
+            $lastDateCarte = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getLastDateExtraction();
+            if ($lastDateCarte < $dateDebut) {
+                $e = $form2->get('selection');
+                $e->unsetValueOption('nouvelle')->unsetValueOption('reprise');
+                $form2->setData([
+                    'selection' => 'selection'
+                ]);
+            }
+            return new ViewModel(
+                [
+                    'form1' => $form1,
+                    'form2' => $form2,
+                    'lastDateCarte' => $lastDateCarte,
+                    'dateDebut' => $dateDebut,
+                    'page' => $this->params('page', 1),
+                    'natureCartes' => $tLibelles->getLibelle('NatureCartes', 2)
                 ]);
         } else {
             die();

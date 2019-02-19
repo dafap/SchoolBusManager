@@ -9,13 +9,13 @@
  * @filesource LocalisationAdresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
 
 use SbmCommun\Form\AbstractSbmForm;
-use SbmCommun\Form\Exception;
+use SbmCommun\Form\LogicException as Exception;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class LocalisationAdresse extends AbstractSbmForm implements InputFilterProviderInterface

@@ -8,8 +8,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource AbstractObjectData.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -51,6 +51,13 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     private $id_field_name;
 
     /**
+     * Tableau des longueurs maxi des colonnes (à initialiser par le setter si besoin)
+     *
+     * @var array
+     */
+    private $max_length_array = [];
+
+    /**
      * Masque servant de modèle pour la composition de la donnée dans la méthode exchangeArray()
      * (Pour un objet associé à une table, c'est la liste des noms de colonnes)
      *
@@ -82,7 +89,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      * @param string $param
      *            nom de la propriété
      *            
-     * @throws Exception
+     * @throws Exception\OutOfBoundsException
      *
      * @return mixed
      */
@@ -92,7 +99,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
             if ($this->dataSource->offsetExists($param)) {
                 return $this->dataSource->offsetGet($param);
             } else {
-                throw new Exception(
+                throw new Exception\OutOfBoundsException(
                     sprintf(_(self::ERROR_PROPERTY_MSG), $param,
                         print_r($this->dataSource, true)));
             }
@@ -101,7 +108,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
                 if ($param == $key)
                     return $value;
             }
-            throw new Exception(
+            throw new Exception\OutOfBoundsException(
                 sprintf(_(self::ERROR_PROPERTY_MSG), $param,
                     print_r($this->dataSource, true)));
         }
@@ -116,7 +123,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      *            nom de la propriété
      * @param mixed $valeur
      *
-     * @throws Exception
+     * @throws Exception\OutOfBoundsException
      */
     public function __set($param, $valeur)
     {
@@ -125,7 +132,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
                 in_array($param, $this->array_mask)) {
                 $this->dataSource->offsetSet($param, $valeur);
             } else {
-                throw new Exception(
+                throw new Exception\OutOfBoundsException(
                     sprintf(_(self::ERROR_PROPERTY_MSG), $param,
                         print_r($this->array_mask, true)));
             }
@@ -140,7 +147,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
                 }
             }
             unset($value);
-            throw new Exception(
+            throw new Exception\OutOfBoundsException(
                 sprintf(_(self::ERROR_PROPERTY_MSG), $param,
                     print_r($this->dataSource, true)));
         }
@@ -237,18 +244,31 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
+     * Initialise la propriété max_length_array
+     *
+     * @param array $aMaxLength
+     * @return \SbmCommun\Model\Db\ObjectData\AbstractObjectData
+     */
+    public function setMaxLengthArray($aMaxLength)
+    {
+        $this->max_length_array = $aMaxLength;
+        return $this;
+    }
+
+    /**
      * Enregistre le masque à utiliser pour la méthode exchangeArray().
      * Lance une exception si le paramètre n'est pas un tableau.
      *
      * @param array $array_mask
      *
-     * @throws Exception
+     * @throws Exception\InvalidArgumentException
+     *
      * @see Bdts\Model\ObjectData.ObjectDataInterface::setArrayMask()
      */
     public function setArrayMask($array_mask = [])
     {
         if (! is_array($array_mask)) {
-            throw new Exception(
+            throw new Exception\InvalidArgumentException(
                 sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, gettype($array_mask)));
         }
         $this->array_mask = $array_mask;
@@ -259,12 +279,12 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      * Lance une exception si le paramètre n'est pas un tableau.
      *
      * @param array $are_nullable
-     * @throws Exception
+     * @throws Exception\InvalidArgumentException
      */
     public function setAreNullable($are_nullable = [])
     {
         if (! is_array($are_nullable)) {
-            throw new Exception(
+            throw new Exception\InvalidArgumentException(
                 sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, gettype($are_nullable)));
         }
         $this->are_nullable = $are_nullable;
@@ -286,7 +306,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      *
      * @param array $array
      *
-     * @throws Exception
+     * @throws Exception\InvalidArgumentException
      */
     public function setCalculateFields($array)
     {
@@ -294,7 +314,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
             ob_start();
             var_dump($array);
             $dump = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, $dump));
+            throw new Exception\InvalidArgumentException(
+                sprintf(_(self::ERROR_NOT_ARRAY), __METHOD__, $dump));
         }
         $this->calculate_fields = $array;
     }
@@ -305,7 +326,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      *
      * @param string $str
      *
-     * @throws Exception
+     * @throws Exception\InvalidArgumentException
      */
     public function addCalculateField($str)
     {
@@ -313,7 +334,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
             ob_start();
             var_dump($str);
             $dump = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(sprintf(_(self::ERROR_NOT_STRING), __METHOD__, $dump));
+            throw new Exception\InvalidArgumentException(
+                sprintf(_(self::ERROR_NOT_STRING), __METHOD__, $dump));
         }
         $this->calculate_fields[] = $str;
     }
@@ -333,6 +355,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      * Lance une exception si le paramètre n'est pas du type attendu.
      *
      * @see Bdts\Model.ObjectDataInterface::exchangeArray()
+     *
+     * @throws Exception\InvalidArgumentException
      */
     public function exchangeArray($dataSource)
     {
@@ -344,7 +368,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
             ob_start();
             var_dump($dataSource);
             $dump = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(sprintf(_(self::ERROR_EXCHANGE), __METHOD__, $dump));
+            throw new Exception\InvalidArgumentException(
+                sprintf(_(self::ERROR_EXCHANGE), __METHOD__, $dump));
         }
         if ($this->array_mask) {
             $columns = array_fill_keys($this->array_mask, null);
@@ -361,6 +386,16 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
                 if (is_null($dataSource[$key])) {
                     unset($dataSource[$key]);
                 }
+            }
+        }
+        foreach ($this->max_length_array as $key => $length) {
+            if (! array_key_exists($key, $dataSource)) {
+                continue;
+            }
+            if (empty($dataSource[$key])) {
+                continue;
+            } else {
+                $dataSource[$key] = substr($dataSource[$key], 0, $length);
             }
         }
         $this->dataSource = new ArrayIterator($dataSource);

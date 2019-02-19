@@ -12,8 +12,8 @@
  * @filesource avertissement-transporteur.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 if (count($this->services) == 1) {
     $lescircuits = 'le circuit suivant';
@@ -24,11 +24,9 @@ if (count($this->services) == 1) {
 <p>Des modifications ont été enregistrées dans les inscriptions des
 	enfants inscrits sur <?= $lescircuits;?> :</p>
 <ul>
-<?php
-foreach ($this->services as $serviceId) {
-    echo '<li>' . $serviceId . '</li>';
-}
-?>
+<?php foreach ($this->services as $serviceId) :?>
+    <li><?= $serviceId;?></li>
+<?php endforeach;?>
 </ul>
 <p>
 	Vous pouvez consulter l'état des inscriptions en vous connectant au

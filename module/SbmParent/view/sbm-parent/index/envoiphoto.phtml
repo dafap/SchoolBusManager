@@ -1,0 +1,57 @@
+<?php
+/**
+ * Formulaire d'envoi d'une photo
+ * 
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/index
+ * @filesource envoiphoto.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
+ */
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('/js/parent/envoiphoto.js'));
+$this->inlineScript()->captureStart();
+?>
+js_envoi.init();
+<?php $this->inlineScript()->captureEnd();?>
+<?php
+$this->formphoto->setAttribute('action',
+    $this->url('sbmajaxeleve', [
+        'action' => 'savephoto'
+    ]))
+    ->prepare();
+?>
+<h1>Envoi d'une photo d'identité</h1>
+<div>
+	<div>
+		<fieldset class="sbm-page1">
+			<p class="info">
+				En envoyant une photo, je donne mon autorisation pour son archivage
+				numérique durant la scolarité de mon enfant.<br>Cette démarche est
+				utile en cas de demande de duplicata et lors de la réinscription.<br>A
+				l'expiration de la scolarité la photo est effacée.<br>Si vous
+				envoyez une nouvelle photo, l'ancienne est détruite automatiquement.
+			</p>
+            <?= $this->form()->openTag($this->formphoto);?>
+            <?= $this->formHidden($this->formphoto->get('eleveId'));?>
+            <?= $this->formRow($this->formphoto->get('filephoto')); ?>
+            <div style="display: inline;">
+            <?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
+            <?= $this->formButton(new \Zend\Form\Element\Button('cancel'), 'Quitter');?>
+            </div>
+			<div class="photo-progress" style="display: none;">
+				<div class="photo-msg">Envoi en cours ...</div>
+				<div
+					style="margin-left: 40px; margin-bottom: 10px; height: 20px; width: 100px; border: 1px solid blue;">
+					<div class="photo-progressbar" style="background-color: lightgrey;"></div>
+				</div>
+			</div>
+			<div id="wrapper-img" style="display: none;">
+				<img src="" height="180" />
+			</div>
+			<div id="error" class="input-error"></div>
+		</fieldset>
+	</div>
+</div>

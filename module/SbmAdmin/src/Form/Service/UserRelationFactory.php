@@ -11,8 +11,8 @@
  * @filesource UserRelationFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
- * @version 2018-2.4.5
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAdmin\Form\Service;
 
@@ -22,13 +22,16 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class UserRelationFactory implements FactoryInterface
 {
+
     private $name;
+
     private $form;
 
     /**
      * Crée le service en initialisant le db_manager
      *
      * (non-PHPdoc)
+     *
      * @see \Zend\ServiceManager\FactoryInterface::createService()
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
@@ -38,15 +41,15 @@ class UserRelationFactory implements FactoryInterface
         return $this;
     }
 
-
     /**
      * Renvoie la classe du formulaire
-     * 
+     *
      * @param string $name
-     *   etablissement|transporteur<br>
-     *   Correspond à un rôle d'utilisateur
-     *   
-     * @throws \SbmAdmin\Form\Exception
+     *            etablissement|transporteur<br>
+     *            Correspond à un rôle d'utilisateur
+     *            
+     * @throws \SbmAdmin\Form\DomainException (lancée par \SbmAdmin\Form\UserRelation)
+     *        
      * @return \SbmAdmin\Form\Export
      */
     public function getForm($name)
@@ -55,8 +58,7 @@ class UserRelationFactory implements FactoryInterface
             $this->name = $name;
             $this->form = new UserRelation($name);
         }
-        
+
         return $this->form;
     }
-
 }

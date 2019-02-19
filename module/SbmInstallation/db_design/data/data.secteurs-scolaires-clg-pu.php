@@ -15,26 +15,26 @@
 return array(
     array(
         'etablissementId' => '0120004P',
-        'communeId' => '12013',
+        'communeId' => '12013'
     ),
     array(
         'etablissementId' => '0120004P',
-        'communeId' => '12083',
+        'communeId' => '12083'
     ),
     array(
         'etablissementId' => '0120622L',
-        'communeId' => '12089',
+        'communeId' => '12089'
     ),
     array(
         'etablissementId' => '0120622L',
-        'communeId' => '12100',
+        'communeId' => '12100'
     ),
     array(
         'etablissementId' => '0120622L',
-        'communeId' => '12305',
+        'communeId' => '12305'
     ),
     array(
         'etablissementId' => 'A120622L',
-        'communeId' => '12100',
-    ),
+        'communeId' => '12100'
+    )
 );

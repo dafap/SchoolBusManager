@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPortail\Controller;
 
@@ -81,7 +81,6 @@ class IndexController extends AbstractActionController
     {
         $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
         $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
-        $statPaiement = $this->db_manager->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
         return new ViewModel(
             [
@@ -108,8 +107,7 @@ class IndexController extends AbstractActionController
                 'responsablesHorsZone' => current(
                     $statResponsable->getNbCommuneNonMembre())['effectif'],
                 'responsablesDemenagement' => current(
-                    $statResponsable->getNbDemenagement())['effectif'],
-                'paiements' => $statPaiement->getSumByAsMode($millesime)
+                    $statResponsable->getNbDemenagement())['effectif']
             ]);
     }
 
@@ -138,13 +136,13 @@ class IndexController extends AbstractActionController
                 // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit.
                 // Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
-                $args = Session::get('post', [], $this->getSessionNamespace(
-                    'org-eleves'));
+                $args = Session::get('post', [],
+                    $this->getSessionNamespace('org-eleves'));
             } else {
                 if (array_key_exists('cancel', $args)) {
                     try {
                         return $this->redirectToOrigin()->back();
-                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                         return $this->redirect()->toRoute('sbmportail',
                             [
                                 'action' => 'index'
@@ -164,7 +162,9 @@ class IndexController extends AbstractActionController
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('serviceId',
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId',
@@ -222,18 +222,19 @@ class IndexController extends AbstractActionController
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-
-        $where = $criteres_obj->getWherePdfForEleves();
+        $where = $criteres_obj->getWhereForEleves();
         $documentId = 'List élèves portail organisateur';
 
-        $call_pdf = $this->RenderPdfService;
-        if ($docaffectationId = $this->params('id', false)) {
-            // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans
-            // docaffectations
-            $call_pdf->setParam('docaffectationId', $docaffectationId);
-        }
-        $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
-        $call_pdf->renderPdf();
+        $this->RenderPdfService->setParam('documentId', $documentId)
+            ->setParam('layout', 'sbm-pdf/layout/org-pdf.phtml')
+            ->setParam('where', $where)
+            ->setData(
+            $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
+                ->getScolaritesR($where, [
+                'nom',
+                'prenom'
+            ]))
+            ->renderPdf();
 
         $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
@@ -243,7 +244,7 @@ class IndexController extends AbstractActionController
         try {
             $services = $this->db_manager->get('Sbm\Db\Query\Services')->paginatorServicesWithEtablissements();
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService();
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $services = [];
             $stats = [];
         }
@@ -275,7 +276,8 @@ class IndexController extends AbstractActionController
             $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                 $userId);
 
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement();
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(
+                true);
 
             $elevesTransportes = StdLib::getParamR([
                 $etablissementId,
@@ -285,8 +287,8 @@ class IndexController extends AbstractActionController
             $services = $this->db_manager->get('Sbm\Db\Query\Services')->getServicesGivenEtablissement(
                 $etablissementId);
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement(
-                $etablissementId);
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                $etablissementId, true);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $elevesTransportes = '';
             $services = [];
             $stats = [];
@@ -317,7 +319,7 @@ class IndexController extends AbstractActionController
         try {
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur();
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(true);
             $elevesATransporter = StdLib::getParamR([
                 $transporteurId,
                 'total'
@@ -327,8 +329,8 @@ class IndexController extends AbstractActionController
                     'transporteurId' => $transporteurId
                 ]);
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService(
-                $transporteurId);
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                $transporteurId, true);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $transporteurId = null;
             $elevesATransporter = '';
             $services = [];
@@ -375,7 +377,7 @@ class IndexController extends AbstractActionController
                 if (array_key_exists('cancel', $args)) {
                     try {
                         return $this->redirectToOrigin()->back();
-                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                         return $this->redirect()->toRoute('sbmportail',
                             [
                                 'action' => 'index'
@@ -395,7 +397,9 @@ class IndexController extends AbstractActionController
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes'))
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('serviceId',
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId',
@@ -435,12 +439,12 @@ class IndexController extends AbstractActionController
                             'nom',
                             'prenom'
                         ]);
-                } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addErrorMessage(
                         'Votre compte n\'est pas associé à un transporteur. Contactez le service des transports scolaires');
                     try {
                         return $this->redirectToOrigin()->back();
-                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                         return $this->redirect()->toRoute('sbmportail',
                             [
                                 'action' => 'tr-index'
@@ -465,7 +469,7 @@ class IndexController extends AbstractActionController
             default:
                 try {
                     return $this->redirectToOrigin()->back();
-                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                     return $this->redirect()->toRoute('sbmportail',
                         [
                             'action' => 'index'
@@ -545,7 +549,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('serviceId', $args)) {
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
@@ -554,7 +558,7 @@ class IndexController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('horaires', $args)) {
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         $serviceId = $args['serviceId'];
@@ -582,7 +586,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('serviceId', $args) ||
                 ! array_key_exists('circuitId', $args)) {
                 return $this->redirect()->toRoute('sbmportail', [
@@ -592,7 +596,7 @@ class IndexController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('eleves', $args)) {
-                $this->setToSession('post', $args, $this->getSessionNamespace());
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         $circuitId = $args['circuitId'];
@@ -600,7 +604,7 @@ class IndexController extends AbstractActionController
         return new ViewModel(
             [
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query(
-                    $this->getFromSession('millesime'),
+                    Session::get('millesime'),
                     FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId),
                     [
                         'nom',

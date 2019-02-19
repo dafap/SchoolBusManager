@@ -7,8 +7,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Circuit;
 
@@ -57,7 +57,7 @@ class Liste implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->dbAdapter = $this->db_manager->getDbAdapter();

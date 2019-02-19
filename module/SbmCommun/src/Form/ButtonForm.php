@@ -8,8 +8,8 @@
  * @filesource ButtonForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
 
@@ -31,9 +31,9 @@ class ButtonForm extends Form
      * @param[] $submits
      *            Le tableau $submits est de la forme <pre>
      *            [
-     *            'name-button1' => [validTagAttribute => valeur de l'attribut, ...)
+     *            'name-button1' => [validTagAttribute => valeur de l'attribut, ...]
      *            ...
-     *            )
+     *            ]
      *            </pre>
      *            où validTagAttribute est dans validGlobalAttributes (@see Zend\Form\View\Helper\AbstractHelper)
      *            ou dans validTagAttributes (@see Zend\View\Helper\FormButton)

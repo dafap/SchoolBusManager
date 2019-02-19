@@ -7,8 +7,8 @@
  * @filesource nouveau-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 ?>
 <p>Bonjour <?= $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
@@ -38,6 +38,7 @@
 
 <p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
 <div style="text-align: center;">
-	<b><?= $this->client['name'];?></b><br><?= implode(' - ', $this->client['adresse']);?> - <?= $this->client['code_postal'] . ' ' . $this->client['commune'];?>
+	<b><?= $this->client['name'];?></b> <br><?= implode(' - ', $this->client['adresse']);?> - 
+	<?= $this->client['code_postal'];?> <?= $this->client['commune'];?>
 	<br>Tél. <?= $this->client['telephone'];?> - Email: <?= $this->client['email'];?>
 </div>

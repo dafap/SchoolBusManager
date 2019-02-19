@@ -8,8 +8,8 @@
  * @filesource Scolarite.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -40,7 +40,7 @@ class Scolarite extends AbstractObjectData
             $value = $this->adresseL1;
             unset($value);
             return true;
-        } catch (Exception $e) {
+        } catch (Exception\OutOfBoundsException $e) {
             return false;
         }
     }

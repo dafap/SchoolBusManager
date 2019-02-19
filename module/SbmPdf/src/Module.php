@@ -11,32 +11,34 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
- namespace SbmPdf;
- 
- use SbmBase\Module\AbstractModule;
- use Zend\Mvc\MvcEvent;
- use SbmPdf\Listener\PdfListener;
- 
- 
- class Module extends AbstractModule
- {
-     public function getDir()
-     {
-         return __DIR__;
-     }
-     
-     public function getNamespace()
-     {
-         return __NAMESPACE__;
-     }
-     
-     public function onBootstrap(MvcEvent $e)
-     {
-         $pdfListener = $e->getApplication()->getServiceManager()->get(PdfListener::class);
-         $eventManager = $e->getTarget()->getEventManager();         
-         $eventManager->attach($pdfListener);
-     }
- }
+namespace SbmPdf;
+
+use SbmBase\Module\AbstractModule;
+use SbmPdf\Listener\PdfListener;
+use Zend\Mvc\MvcEvent;
+
+class Module extends AbstractModule
+{
+
+    public function getDir()
+    {
+        return __DIR__;
+    }
+
+    public function getNamespace()
+    {
+        return __NAMESPACE__;
+    }
+
+    public function onBootstrap(MvcEvent $e)
+    {
+        $pdfListener = $e->getApplication()
+            ->getServiceManager()
+            ->get(PdfListener::class);
+        $eventManager = $e->getTarget()->getEventManager();
+        $eventManager->attach($pdfListener);
+    }
+}

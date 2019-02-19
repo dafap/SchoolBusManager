@@ -13,85 +13,103 @@
  * @filesource paiement-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 oct. 2016
- * @version 2016-2.2.1
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile($this->basePath('/js/gestion-paiement.js'));
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('/js/gestion-finance/paiement-ajout.js'));
 $this->inlineScript()->captureStart();
 ?>
 js_paiement_ajout.init();
-<?php 
+<?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/finance', array(
+$url_retour = $this->url('sbmgestion/finance', [
     'action' => 'paiement-ajout'
-));
-$hiddens = array(
+]);
+$hiddens = [
     'op' => $this->hidden_responsableId ? '' : 'retour'
-);
-$actions = array(
-    'cancel' => array(
+];
+$actions = [
+    'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour',
         'onclick' => sprintf($js, "'retour'")
-    )
-);
+    ]
+];
 ?>
 <h1>Enregistrement d'un nouveau paiement</h1>
 <?php if ($this->hidden_responsableId):?>
-<h2>Paiement concernant <?php echo $this->responsable; ?></h2>
+<h2>Paiement concernant <?= $this->responsable; ?></h2>
 <?php endif;?>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
-	    <div id="somme-due"></div>
+		<div id="somme-due"></div>
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('paiementId'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('paiementId'));?>
+		<?= $this->formHidden($this->form->get('csrf'));?>
         <div class="float-left left-10px">
-	       <fieldset class="sbm-page1">
+			<fieldset class="sbm-page1">
 <?php if ($this->hidden_responsableId) : ?>
-<?php echo $this->formHidden($this->form->get('responsableId')); ?>
+				<?= $this->formHidden($this->form->get('responsableId')); ?>
 <?php else : ?>
-                <div id="paiement-edit-responsableId" class="row-inner edit"><?php echo $this->formRow($this->form->get('responsableId')); ?></div>
+                <div id="paiement-edit-responsableId"
+					class="row-inner edit">
+					<?= $this->formRow($this->form->get('responsableId')); ?></div>
 <?php endif; ?>
 
-                <div id="paiement-edit-code-caisse" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeCaisse')); ?></div>
-		        <div id="paiement-edit-montant" class="row-inner edit"><?php echo $this->formRow($this->form->get('montant')); ?></div>
-		        <div id="paiement-edit-code-mode-de-paiement" class="row-inner edit"><?php echo $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
-				<div id="paiement-edit-exercice" class="row-inner edit"><?php echo $this->formRow($this->form->get('exercice')); ?></div>
-				<div id="paiement-edit-annee-scolaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('anneeScolaire')); ?></div>
-				<div id="paiement-edit-date-paiement" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
-				<div id="paiement-edit-date-valeur" class="row-inner edit"><?php echo $this->formRowDate($this->form->get('dateValeur')); ?></div>
-				<div id="paiement-edit-date-depot" class="row-inner edit"><?php echo $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
-				<div id="paiement-edit-titulaire" class="row-inner edit"><?php echo $this->formRow($this->form->get('titulaire')); ?></div>
-				<div id="paiement-edit-banque" class="row-inner edit"><?php echo $this->formRow($this->form->get('banque')); ?></div>
-				<div id="paiement-edit-reference" class="row-inner edit"><?php echo $this->formRow($this->form->get('reference')); ?></div>
+                <div id="paiement-edit-code-caisse"
+					class="row-inner edit">
+					<?= $this->formRow($this->form->get('codeCaisse')); ?></div>
+				<div id="paiement-edit-montant" class="row-inner edit">
+					<?= $this->formRow($this->form->get('montant')); ?></div>
+				<div id="paiement-edit-code-mode-de-paiement" class="row-inner edit">
+					<?= $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
+				<div id="paiement-edit-exercice" class="row-inner edit">
+					<?= $this->formRow($this->form->get('exercice')); ?></div>
+				<div id="paiement-edit-annee-scolaire" class="row-inner edit">
+					<?= $this->formRow($this->form->get('anneeScolaire')); ?></div>
+				<div id="paiement-edit-date-paiement" class="row-inner edit">
+					<?= $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
+				<div id="paiement-edit-date-valeur" class="row-inner edit">
+					<?= $this->formRowDate($this->form->get('dateValeur')); ?></div>
+				<div id="paiement-edit-date-depot" class="row-inner edit">
+					<?= $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
+				<div id="paiement-edit-titulaire" class="row-inner edit">
+					<?= $this->formRow($this->form->get('titulaire')); ?></div>
+				<div id="paiement-edit-banque" class="row-inner edit">
+					<?= $this->formRow($this->form->get('banque')); ?></div>
+				<div id="paiement-edit-reference" class="row-inner edit">
+					<?= $this->formRow($this->form->get('reference')); ?></div>
 				<div id="paiement-edit-buttons" class="row-inner edit">
-    <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+    				<?= $this->formSubmit($this->form->get('submit'));?>
+    				<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 			</fieldset>
 		</div>
 		<div class="float-left left-10px">
-		    <fieldset class="sbm-page1">
-		         <h3>Liste des enfants préinscrits de ce responsable</h3>
-		         <table>
-		             <tbody id="tbody-preinscrits">
-		                 <tr><th>Nom</th><th>Prénom</th><th></th></tr>
-		             </tbody>
-		         </table>
-		         <p class="sbm-description">Cochez les enfants concernés par ce paiement.</p>
-		    </fieldset>
+			<fieldset class="sbm-page1">
+				<h3>Liste des enfants préinscrits de ce responsable</h3>
+				<table>
+					<tbody id="tbody-preinscrits">
+						<tr>
+							<th>Nom</th>
+							<th>Prénom</th>
+							<th></th>
+						</tr>
+					</tbody>
+				</table>
+				<p class="sbm-description">Cochez les enfants concernés par ce
+					paiement.</p>
+			</fieldset>
 		</div>
-<?php echo $this->form()->closeTag(); ?>
+<?= $this->form()->closeTag(); ?>
     </div><?php // fiche-inner ?>
 	<div id="fiche-footer"></div>
 </div>

@@ -8,8 +8,8 @@
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -84,11 +84,13 @@ class Criteres implements ArraySerializableInterface
      * Prépare la structure de propriété data
      *
      * @param array $fields
+     *
+     * @throws Exception\InvalidArgumentException
      */
     public function createDataStructure($fields)
     {
         if (! is_array($fields)) {
-            throw new Exception(
+            throw new Exception\InvalidArgumentException(
                 sprintf("Tableau attendu. On a reçu un %s", gettype($fields)));
         }
         $this->data = array_fill_keys($fields, null);
@@ -165,6 +167,8 @@ class Criteres implements ArraySerializableInterface
      *
      * @param array $descripteur
      *
+     * @throws Exception\LogicException
+     *
      * @return \Zend\Db\Sql\Where
      */
     public function getWherePdf($descripteur = null)
@@ -182,11 +186,10 @@ class Criteres implements ArraySerializableInterface
             if (getenv('APPLICATION_ENV') == 'development') {
                 foreach ($descripteur['expressions'] as $key => $value) {
                     if (strpos($value, '.') !== false) {
-                        $msg = __METHOD__ .
-                            sprintf(
-                                ' - Ne pas utiliser de champ préfixé. Problème sur %s => %s',
-                                $key, $value);
-                        throw new \Exception($msg);
+                        $msg = __METHOD__ . sprintf(
+                            ' - Ne pas utiliser de champ préfixé. Problème sur %s => %s',
+                            $key, $value);
+                        throw new Exception\LogicException($msg);
                     }
                 }
             }

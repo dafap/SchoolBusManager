@@ -9,12 +9,13 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
+use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use Zend\Json\Json;
 use Zend\View\Model\ViewModel;
@@ -188,6 +189,8 @@ class EleveController extends AbstractActionController
     public function formaffectationAction()
     {
         $trajet = $this->params('trajet', 1);
+        $station1Id = $this->params('station1Id', null);
+        $station2Id = $this->params('station2Id', null);
         $aData = [
             'millesime' => Session::get('millesime'),
             'eleveId' => $this->params('eleveId', 0),
@@ -196,8 +199,8 @@ class EleveController extends AbstractActionController
             'sens' => '3', // aller-retour
             'correspondance' => $this->params('correspondance', 1),
             'responsableId' => $this->params('responsableId', 0),
-            'station1Id' => $this->params('station1Id', null),
-            'station2Id' => $this->params('station2Id', null),
+            'station1Id' => $station1Id,
+            'station2Id' => $station2Id,
             'service1Id' => $this->params('service1Id', null),
             'service2Id' => $this->params('service2Id', null),
             'op' => $this->params('op', null)
@@ -206,6 +209,8 @@ class EleveController extends AbstractActionController
         return new ViewModel(
             [
                 'trajet' => $trajet,
+                'station1Id' => $station1Id,
+                'station2Id' => $station2Id,
                 'form' => $this->getFormAffectationDecision($trajet)->setData($aData),
                 'is_xmlhttprequest' => 1
             ]);
@@ -231,8 +236,8 @@ class EleveController extends AbstractActionController
                     'success' => 1
                 ]));
             } else {
-                $form = $this->getFormAffectationDecision($request->getPost('trajet'));
-                $form->setData($request->getPost());
+                $form = $this->getFormAffectationDecision($request->getPost('trajet'))
+                    ->setData($request->getPost());
                 if (! $form->isValid()) {
                     $errors = $form->getMessages();
                     $messages = '';
@@ -455,7 +460,7 @@ class EleveController extends AbstractActionController
                     $etablissementId);
                 $destination = new Point($etablissement->x, $etablissement->y);
                 $oOrigineDestination = $this->cartographie_manager->get(
-                    'SbmCarto\DistanceEtablissements');
+                    GoogleMaps\DistanceMatrix::class);
                 $distance = $oOrigineDestination->calculDistance($origine, $destination);
                 if ($distance) {
                     $distance = round($distance / 1000, 1);
@@ -466,27 +471,51 @@ class EleveController extends AbstractActionController
                     'distance' => $distance,
                     'success' => 1
                 ]));
+        } catch (GoogleMaps\Exception\ExceptionNoAnswer $e) {
+            $response->setContent(Json::encode([
+                'distance' => 99,
+                'success' => 1
+            ]));
         } catch (\Exception $e) {
             $response->setContent(
-                Json::encode([
-                    'cr' => $e->getMessage(),
-                    'success' => 0
-                ]));
+                Json::encode(
+                    [
+                        'cr' => sprintf("%s\n%s", $e->getMessage(), $e->getTraceAsString()),
+                        'success' => 0
+                    ]));
         }
+
         return $response;
     }
 
     public function blockaffectationsAction()
     {
+        $query = $this->db_manager->get('Sbm/Db/Query/AffectationsServicesStations');
+        $structure = [
+            'annee_courante' => null,
+            'annee_precedente' => null
+        ];
         $eleveId = $this->params('eleveId');
         $trajet = $this->params('trajet');
-        $resultset = $this->db_manager->get('Sbm/Db/Query/AffectationsServicesStations')->getAffectations(
-            $eleveId, $trajet);
-        $structure = null;
+        $resultset = $query->getAffectations($eleveId, $trajet, false);
         if ($resultset->count()) {
-            $structure = [];
+            $structure['annee_courante'] = [];
             foreach ($resultset as $affectation) {
-                $structure[$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
+                $structure['annee_courante'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
+                    'service1Id' => $affectation['service1Id'],
+                    'station1Id' => $affectation['station1Id'],
+                    'station1' => $affectation['station1'],
+                    'service2Id' => $affectation['service2Id'],
+                    'station2Id' => $affectation['station2Id'],
+                    'station2' => $affectation['station2']
+                ];
+            }
+        }
+        $resultset = $query->getAffectations($eleveId, $trajet, true);
+        if ($resultset->count()) {
+            $structure['annee_precedente'] = [];
+            foreach ($resultset as $affectation) {
+                $structure['annee_precedente'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
                     'service1Id' => $affectation['service1Id'],
                     'station1Id' => $affectation['station1Id'],
                     'station1' => $affectation['station1'],
@@ -626,6 +655,12 @@ class EleveController extends AbstractActionController
         }
     }
 
+    /**
+     * ajax - décrémenter duplicata dans la table scolarites
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
     public function decrementeduplicataAction()
     {
         try {
@@ -651,6 +686,148 @@ class EleveController extends AbstractActionController
                     'cr' => $e->getMessage(),
                     'success' => 0
                 ]));
+        }
+    }
+
+    /**
+     * ajax - incrémenter duplicata dans la table scolarites
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function incrementeduplicataAction()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+            $odata = $tScolarites->getRecord(
+                [
+                    'millesime' => Session::get('millesime'),
+                    'eleveId' => $eleveId
+                ]);
+            $odata->duplicata ++;
+            $tScolarites->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'duplicata' => $odata->duplicata,
+                    'success' => 1
+                ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * Reçoie en POST les données du formulaire \SbmCommun\Model\Photo\Photo::getForm()<ul>
+     * <li>eleveId (post)</li>
+     * <li>filephoto (files)</li></ul>
+     * Vérifie si elles sont valide et les enregistre dans la table `elevesphotos`
+     * Renvoie un compte rendu :<ul>
+     * <li>success = 1 et src = la chaine src à placer dans la balise `img`</li>
+     * <li>success = 10x et cr = la chaine à afficher en cas d'erreur</li></ul>
+     *
+     * @method POST
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function savephotoAction()
+    {
+        $request = $this->getRequest();
+        if (! $request->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 102
+                ]));
+        }
+        $post = array_merge_recursive($request->getPost()->toArray(),
+            $request->getFiles()->toArray());
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
+        $form = $ophoto->getFormWithInputFilter($this->img['path']['tmpuploads'])->prepare();
+        $form->setData($post);
+        if ($form->isValid()) {
+            $data = $form->getData();
+            $source = $data['filephoto']['tmp_name'];
+            try {
+                $blob = $ophoto->getImageJpegAsString($source);
+                unlink($source);
+            } catch (\Exception $e) {
+                // problème de fichier, de format de fichier ou d'image dont le format n'est pas
+                // traité
+                return $this->getResponse()->setContent(
+                    Json::encode([
+                        'cr' => $e->getMessage(),
+                        'success' => 101
+                    ]));
+            }
+        } else {
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'cr' => implode(', ', $ophoto->getMessagesFilePhotoElement()),
+                        'success' => 100
+                    ]));
+        }
+        // base de données
+        $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+        $odata = $tPhotos->getObjData();
+        $odata->exchangeArray(
+            [
+                'eleveId' => $data['eleveId'],
+                'photo' => addslashes($blob)
+            ]);
+        $tPhotos->saveRecord($odata);
+        return $this->getResponse()->setContent(
+            Json::encode([
+                'src' => $ophoto->img_src($blob),
+                'success' => 1
+            ]));
+    }
+
+    /**
+     * Reçoie en POST le paramètre eleveId et supprime la photo dans la table ElevesPhotos.
+     * Renvoie un compte rendu : <ul>
+     * <li>success = 1 et src = sans photo gif</li>
+     * <li>success = 20x et cr = message d'erreur à afficher en cas d'erreur</li></ul>
+     *
+     * @method POST
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function supprphotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 202
+                ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $success = $tPhotos->deleteRecord($eleveId);
+            if ($success) {
+                $ophoto = new \SbmCommun\Model\Photo\Photo();
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'src' => $ophoto->img_src($ophoto->getSansPhotoGifAsString(),
+                                'gif'),
+                            'success' => 1
+                        ]));
+            } else {
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'cr' => 'Impossible de supprimer cette photo',
+                            'success' => 201
+                        ]));
+            }
+            ;
         }
     }
 }

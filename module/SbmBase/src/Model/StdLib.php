@@ -7,8 +7,8 @@
  * @filesource StdLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmBase\Model;
 
@@ -40,12 +40,15 @@ abstract class StdLib
      *
      * @param array $keys
      * @param array $search
+     * 
      * @return boolean
+     * 
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
      */
     public static function array_keys_exists($keys, $search)
     {
         if (! is_array($keys)) {
-            throw new Exception('Argument invalide pour le tableau $keys.');
+            throw new Exception\InvalidArgumentException('Argument invalide pour le tableau $keys.');
         }
         $s = $search;
         foreach ($keys as $key) {
@@ -69,6 +72,7 @@ abstract class StdLib
      * @see http://stackoverflow.com/questions/10333016/how-to-access-object-properties-with-names-like-integers
      *
      * @param array|mixed $array
+     * 
      * @return \stdClass|mixed
      */
     public static function arrayToObject($array)
@@ -99,7 +103,7 @@ abstract class StdLib
      * @param array $array
      * @param mixed $default
      *
-     * @throws Exception
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
      *
      * @return mixed
      */
@@ -111,7 +115,7 @@ abstract class StdLib
             $mess = sprintf(
                 "%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s",
                 __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
-            throw new Exception($mess);
+            throw new Exception\InvalidArgumentException($mess);
         }
         if (! is_string($index) && ! is_integer($index)) {
             ob_start();
@@ -119,7 +123,7 @@ abstract class StdLib
             $mess = sprintf(
                 "Le paramètre demandé doit être une chaîne de caractères ou un entier. On a reçu %s",
                 html_entity_decode(strip_tags(ob_get_clean())));
-            throw new Exception($mess);
+            throw new Exception\InvalidArgumentException($mess);
         }
         if (array_key_exists($index, $array)) {
             return $array[$index];
@@ -136,7 +140,7 @@ abstract class StdLib
      * @param array $array
      * @param mixed $default
      *
-     * @throws Exception
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
      *
      * @return mixed
      */
@@ -148,7 +152,7 @@ abstract class StdLib
             $mess = sprintf(
                 "%s : Mauvaise configuration des paramètres. Un tableau est attendu. On a reçu %s",
                 __METHOD__, html_entity_decode(strip_tags(ob_get_clean())));
-            throw new Exception($mess);
+            throw new Exception\InvalidArgumentException($mess);
         }
         if (is_array($index)) {
             if (self::array_keys_exists($index, $array)) {
@@ -199,7 +203,8 @@ abstract class StdLib
      * @param string $path
      * @param string $file
      *
-     * @throws Exception
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
+     * 
      * @return string
      */
     public static function concatPath($path, $file)
@@ -207,7 +212,7 @@ abstract class StdLib
         if (! (is_string($path) && is_string($file))) {
             ob_start();
             var_dump($path, $file);
-            throw new Exception(
+            throw new Exception\InvalidArgumentException(
                 __METHOD__ . "Des chaînes de caractères sont attendues comme paramètres.\n" .
                 html_entity_decode(strip_tags(ob_get_clean())));
         }
@@ -273,13 +278,15 @@ abstract class StdLib
      * Le séparateur de lignes du tableau est la virgule
      *
      * @param string $str
+     * 
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
      *
      * @return array
      */
     public static function getArrayFromString($str)
     {
         if (! is_string($str) && ! is_numeric($str) && ! is_null($str)) {
-            throw new Exception(
+            throw new Exception\InvalidArgumentException(
                 'Le paramètre doit être une chaine de caractère ou un nombre ou null.');
         }
         // on analyse la chaine reçue et on la formate correctement, avec quotes et échappement
@@ -306,7 +313,9 @@ abstract class StdLib
      *
      * @param mixed $data
      * @param array $array
-     * @throws Exception (lancée par la méthode traduire)
+     * 
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException (lancée par la méthode traduire)
+     * 
      * @return mixed
      */
     public static function translateData($data, $array)
@@ -324,7 +333,7 @@ abstract class StdLib
     private static function traduire($data, $array)
     {
         if (! is_string($data) && ! is_numeric($data) && ! is_null($data)) {
-            throw new Exception(
+            throw new Exception\InvalidArgumentException(
                 'Le paramètre doit être une chaine de caractère ou un nombre ou null.');
         }
         if (is_null($data)) {
@@ -353,12 +362,14 @@ abstract class StdLib
      *            Si c'est une chaine de chiffres commençant par 0, le caractère de complétion est
      *            0
      *            
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
+     * 
      * @return number|string
      */
     public static function formatData($data, $precision, $completion)
     {
         if (is_array($data) || is_object($data)) {
-            throw new Exception(
+            throw new Exception\InvalidArgumentException(
                 'La donnée est d\'un type incorrect : nombre, chaine ou null attendus.');
         }
         if ($completion != 0) {
@@ -391,13 +402,15 @@ abstract class StdLib
      * Dans le cas de tableaux emboités on ne regarde que le premier niveau.
      *
      * @param array $array
-     * @throws Exception
+     * 
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
+     * 
      * @return boolean
      */
     public static function isIndexedArray($array)
     {
         if (! is_array($array)) {
-            throw new Exception('Le paramètre doit être un tableau.');
+            throw new Exception\InvalidArgumentException('Le paramètre doit être un tableau.');
         }
         $keys = array_keys($array);
         return array_keys($keys) == array_values($keys);

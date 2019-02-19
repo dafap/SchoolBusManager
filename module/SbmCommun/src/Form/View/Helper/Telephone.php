@@ -2,7 +2,7 @@
 /**
  * ViewHelper permettant d'afficher le formulaire d'actions au-dessus d'une liste dans la `zone-action`, 
  * à déclarer dans module.config.php comme ceci : 
- * 'view_helpers' => ['invokables' => ['telephone' => 'SbmCommun\Form\View\Helper\Telephone',))
+ * 'view_helpers' => ['invokables' => ['telephone' => 'SbmCommun\Form\View\Helper\Telephone',]]
  *
  * Usage dans une vue : echo $this->telephone($data);
  * 
@@ -11,8 +11,8 @@
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -26,7 +26,7 @@ class Telephone extends AbstractHelper
         if (is_null($data)) {
             return '';
         } elseif (! is_string($data)) {
-            throw new Exception('Un numéro de téléphone est attendu.');
+            throw new InvalidArgumentException('Un numéro de téléphone est attendu.');
         }
         return implode(' ', str_split($data, 2));
     }

@@ -9,12 +9,13 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 17 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmInstallation\Controller;
 
 use SbmBase\Model\StdLib;
+use SbmBase\Model\Session;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
@@ -37,7 +38,13 @@ class IndexController extends AbstractActionController
     }
 
     public function versionAction()
-    {}
+    {
+        return new ViewModel(
+            [
+                'url_maps_api' => StdLib::getParam('js',
+                    $this->cartographie_manager->get('google_api_browser'))
+            ]);
+    }
 
     public function fichierslogAction()
     {
@@ -45,7 +52,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbminstall');
         }
@@ -53,6 +60,10 @@ class IndexController extends AbstractActionController
         $fileNamePaiement = strtolower($config_paiement['plateforme']) . '_error.log';
         $filePaiement = StdLib::concatPath($config_paiement['path_filelog'],
             $fileNamePaiement);
+        if (! file_exists($filePaiement)) {
+            $f = fopen($filePaiement, 'w');
+            fclose($f);
+        }
         $fileErrors = $this->error_log;
         if (array_key_exists('fichier', $args)) {
             switch ($args['fichier']) {
@@ -183,8 +194,9 @@ class IndexController extends AbstractActionController
                 // TRAITEMENT DE LA DEMANDE
                 $tables = $request->getPost('tables', []);
                 $systems = $request->getPost('systems', []);
+                $plugin = $request->getPost('plugin', []);
                 $onscreen = $request->getPost('onscreen', false);
-                $tables = array_merge($tables, $systems);
+                $tables = array_merge($tables, $systems, $plugin);
 
                 $oDumpTable = new DumpTables($this->db_manager);
                 $oDumpTable->init($tables, $onscreen);
@@ -202,6 +214,7 @@ class IndexController extends AbstractActionController
             $form = new FormDumpTables();
             $form->setValueOptions('tables', $this->getDbTablesAlias('table'));
             $form->setValueOptions('systems', $this->getDbTablesAlias('system'));
+            $form->setValueOptions('plugin', $this->getDbTablesAlias('plugin'));
 
             $viewArgs = [
                 'tables' => [],
@@ -219,6 +232,7 @@ class IndexController extends AbstractActionController
             [
                 'tables' => $this->getDbTablesAlias('table'),
                 'systems' => $this->getDbTablesAlias('system'),
+                'plugin' => $this->getDbTablesAlias('plugin'),
                 'vues' => $this->getDbTablesAlias('vue')
             ]);
     }
@@ -230,7 +244,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        //$args = (array) $prg;
+        // $args = $prg ?: [];
         $config = $this->img;
         $files = scandir($config['path']['system']);
         $file_names = [];
@@ -271,7 +285,7 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif (is_array($prg)) {
             if (array_key_exists('cancel', $prg)) {
-                $this->removeInSession('post', $this->getSessionNamespace());
+                Session::remove('post', $this->getSessionNamespace());
                 $this->flashMessenger()->addWarningMessage(
                     'Aucune image n\'a été modifiée.');
                 return $this->redirect()->toRoute('sbminstall',
@@ -279,7 +293,11 @@ class IndexController extends AbstractActionController
                         'action' => 'gestion-images'
                     ]);
             }
-            $this->setToSession('post', $prg, $this->getSessionNamespace());
+
+            $label = $prg['label'];
+            $image = StdLib::concatPath($this->img['path']['url'], $prg['fname']);
+            $descriptif = $prg;
+            Session::set('post', $descriptif, $this->getSessionNamespace());
             if (array_key_exists('submit', $prg)) {
                 if ($form->isValid()) {
                     $data = $form->getData();
@@ -291,7 +309,7 @@ class IndexController extends AbstractActionController
                     // $data['image-file']['name'];
                     copy($source, $dest);
                     unlink($source);
-                    $this->removeInSession('post', $this->getSessionNamespace());
+                    Session::remove('post', $this->getSessionNamespace());
                     $this->flashMessenger()->addSuccessMessage(
                         'L\'image a été enregistrée.');
                     return $this->redirect()->toRoute('sbminstall',
@@ -307,33 +325,37 @@ class IndexController extends AbstractActionController
                     }
                 }
             } else {
-                $form = new UploadImage('upload-form');
+                $form->get('image-file')->setMessages([]);
                 $form->setData($prg);
-                $label = $prg['label'];
             }
         } else {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
-            $config = $this->img;
+            $form->get('image-file')->setMessages([]);
+            $descriptif = Session::get('post', [], $this->getSessionNamespace());
+            $label = $this->img['administrer'][$descriptif['fname']]['label'];
+            if (empty($descriptif)) {
+                $descriptif = [
+                    'fname' => $descriptif['fname'],
+                    'label' => $label,
+                    'width' => $descriptif['width'],
+                    'height' => $descriptif['height'],
+                    'type' => $descriptif['type'],
+                    'mime' => $descriptif['mime']
+                ];
+            }
             $form->setAttribute('action',
                 $this->url()
                     ->fromRoute('sbminstall', [
                     'action' => 'upload-image'
                 ]))
-                ->setData(
-                [
-                    'fname' => $args['fname'],
-                    'label' => ($label = $config['administrer'][$args['fname']]['label']),
-                    'width' => $args['width'],
-                    'height' => $args['height'],
-                    'type' => $args['type'],
-                    'mime' => $args['mime']
-                ]);
+                ->setData($descriptif);
+            $image = StdLib::concatPath($this->img['path']['url'], $descriptif['fname']);
         }
-
         return [
             'form' => $form,
             'label' => $label,
-            'tempFile' => $tempFile
+            'tempFile' => $tempFile,
+            'image' => $image,
+            'descriptif' => $descriptif
         ];
     }
 
@@ -373,6 +395,7 @@ class IndexController extends AbstractActionController
             [
                 'table',
                 'system',
+                'plugin',
                 'vue'
             ]))) {
             throw new \Exception('Filtre incorrect dans ' . __METHOD__);
@@ -384,19 +407,27 @@ class IndexController extends AbstractActionController
                 'Sbm\\Db\\Vue\\'
             ];
         } else {
-            $filters = [
-                'Sbm\\Db\\' . ucfirst($filter) . '\\'
-            ];
+            if ($filter != 'plugin') {
+                $filters = [
+                    'Sbm\\Db\\' . ucfirst($filter) . '\\'
+                ];
+            }
         }
         $config_db_manager = $this->db_manager->getDbManagerConfig();
         $result = [];
-        foreach (array_keys($config_db_manager['factories']) as $alias) {
-            foreach ($filters as $f) {
-                if (strpos($alias, $f) !== false) {
-                    $result[] = $alias;
-                    break;
+        if ($filter != 'plugin') {
+            foreach (array_keys($config_db_manager['factories']) as $alias) {
+                foreach ($filters as $f) {
+                    if (strpos($alias, $f) !== false) {
+                        $result[] = $alias;
+                        break;
+                    }
                 }
             }
+        }
+        // ajout éventuel du plugin de paiement
+        if ($filter == '' || $filter == 'plugin') {
+            $result[] = 'SbmPaiement\\Plugin\\Table';
         }
         return $result;
     }
@@ -444,5 +475,15 @@ class IndexController extends AbstractActionController
         $this->flashMessenger()->addWarningMessage(
             'La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');
         return $this->redirect()->toRoute('sbminstall');
+    }
+
+    public function updateHostnameValidatorAction()
+    {
+        return [];
+    }
+    
+    public function updateCacertAction()
+    {
+        return [];
     }
 }

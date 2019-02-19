@@ -7,17 +7,17 @@
  * @filesource Columns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 18 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
 
-use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Columns
 {
+    use QuerySourceTrait;
 
     /**
      *
@@ -103,17 +103,8 @@ class Columns
     protected function sqlListeDesChamps()
     {
         // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-        $sql = str_replace([
-            '%date%',
-            '%heure%',
-            '%millesime%',
-            '%userId%'
-        ], [
-            date('Y-m-d'),
-            date('H:i:s'),
-            Session::get('millesime'),
-            $this->auth_userId
-        ], $this->recordSource);
+        // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
+        $sql = $this->decodeSource($this->recordSource, $this->auth_userId);
         $result = [];
         $rowset = $this->db_manager->getDbAdapter()->query($sql,
             \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);

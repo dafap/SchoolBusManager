@@ -7,13 +7,12 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmMailChimp\Model\Db\Service;
 
 use SbmCommun\Model\Db\Service\DbManager;
-use SbmMailChimp\Model\Exception;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Having;
 use Zend\Db\Sql\Select;
@@ -61,7 +60,8 @@ class Users implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'DbManager attendu. On a reçu %s.';
-            throw new Exception(sprintf($message), gettype($serviceLocator));
+            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(sprintf($message),
+                gettype($serviceLocator));
         }
         $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
         $this->dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d H:i:s');

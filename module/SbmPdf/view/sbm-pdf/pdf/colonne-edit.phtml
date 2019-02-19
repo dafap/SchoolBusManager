@@ -12,15 +12,11 @@
  * @filesource colonne-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
-$this->headLink()
-    ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
-    ->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()
-    ->appendFile($this->basePath('/js/jquery.min.js'))
-    ->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->jQuery('jquery-ui');
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->inlineScript()->captureStart();
 ?>
  $("#accordion").accordion();
@@ -52,6 +48,7 @@ $actions = [
         'onclick' => sprintf($js, "'retour'")
     ]
 ];
+// le formulaire doit avoir id="accordion" pour que ça marche
 ?>
 <h1>Définition d'une colonne d'un tableau</h1>
 <ul>
@@ -68,14 +65,13 @@ $actions = [
 	</div>
 	<div id="fiche-inner">
 		<fieldset class="sbm-page1">
-	   		<?php// le formulaire doit avoir id="accordion" pour que ça marche. ?>
-    		<?= $this->form()->openTag($this->form); ?>
-    		<?= $this->formHidden($this->form->get('doccolumnId'));?>
-    		<?= $this->formHidden($this->form->get('documentId'));?>
-    		<?= $this->formHidden($this->form->get('name'));?>
-    		<?= $this->formHidden($this->form->get('ordinal_table'));?>
-    		<?= $this->formHidden($this->form->get('recordSource'));?>
-    		<?= $this->formHidden($this->form->get('csrf'));?>    
+    		<?= $this->form()->openTag($this->form);?>             
+            <?= $this->formHidden($this->form->get('doccolumnId'));?>
+            <?= $this->formHidden($this->form->get('documentId'));?>
+            <?= $this->formHidden($this->form->get('name'));?>
+            <?= $this->formHidden($this->form->get('ordinal_table'));?>
+            <?= $this->formHidden($this->form->get('recordSource'));?>
+            <?= $this->formHidden($this->form->get('csrf'));?>
         	<div class="sbm-document-table">
         		<?= $this->formRow($this->form->get('ordinal_position'));?></div>
 			<div class="sbm-document-table">
@@ -129,8 +125,9 @@ $actions = [
 			</div>
 			<div id="pdf-edit-buttons" class="row-inner edit">
 	    		<?= $this->formSubmit($this->form->get('submit')); ?>
-	    		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
-        <?= $this->form()->closeTag(); ?>
+	    		<?= $this->formSubmit($this->form->get('cancel')); ?>
+        	</div>
+        	<?= $this->form()->closeTag(); ?>
         </fieldset>
 	</div>
 	<div id="fiche-footer"></div>

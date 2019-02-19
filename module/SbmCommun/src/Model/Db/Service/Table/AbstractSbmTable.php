@@ -10,8 +10,8 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 jan. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -128,7 +128,8 @@ abstract class AbstractSbmTable implements FactoryInterface
         } else {
             $type = gettype($db_manager);
             $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\Db\\Service\\DbManager. %s fourni.';
-            throw new Exception(sprintf(_($message), $type));
+            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(
+                sprintf(_($message), $type));
         }
         $this->init();
         $this->primary_key = $db_manager->getPrimaryKey($this->table_name,
@@ -148,7 +149,7 @@ abstract class AbstractSbmTable implements FactoryInterface
             $this->obj_data->setAreNullable(
                 $this->db_manager->getAreNullableColumns($this->table_name,
                     $this->table_type));
-        } catch (\SbmCommun\Model\Db\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Exception\ExceptionInterface $e) {
             die(
                 '<!DOCTYPE Html><head><meta charset="utf-8"><title>SBM School Bus Manager</title></head><body>Il faut installer les tables dans la base de données.</body></html>');
         }
@@ -238,19 +239,38 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function select($where_obj = null, $order = null)
+    public function select($where_obj = null, $order = null)
     {
         if (! is_null($where_obj)) {
             if ($where_obj instanceof Where) {
                 $this->obj_select->where($where_obj);
             } else {
-                throw new Exception(_('Zend\Db\Sql\Where instance expected.'));
+                throw new \InvalidArgumentException(
+                    _('Zend\Db\Sql\Where instance expected.'));
             }
         }
         if (! is_null($order)) {
             $this->obj_select->order($order);
         }
         return $this->obj_select;
+    }
+
+    /**
+     * Renvoie la requête sous forme d'une chaine de caractères.
+     * La requête est $select ou obj_select si $select est null.
+     *
+     *
+     * @param \Zend\Db\Sql\Select $select
+     *
+     * @return string
+     */
+    public function getSqlString($select = null)
+    {
+        if (is_null($select)) {
+            $select = $this->obj_select;
+        }
+        return $select->getSqlString($this->db_manager->getDbAdapter()
+            ->getPlatform());
     }
 
     /**
@@ -279,7 +299,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      * @param string $combination
      *            One of the OP_* constants from Predicate\PredicateSet
      *            
-     * @throws Exception
+     * @throws Exception\RuntimeException
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
@@ -311,7 +331,7 @@ abstract class AbstractSbmTable implements FactoryInterface
             if (getenv('APPLICATION_ENV') != 'development') {
                 $msg = "Impossible d'exécuter la requête.";
             }
-            throw new Exception($msg, $e->getCode(), $e->getPrevious());
+            throw new Exception\RuntimeException($msg, $e->getCode(), $e->getPrevious());
             // die("<!DOCTYPE Html><html><head></head><body><pre>$msg</pre></body></html>");
         }
     }
@@ -323,7 +343,8 @@ abstract class AbstractSbmTable implements FactoryInterface
      * @param int|string|array $id
      *            Si c'est un tableau, ce doit être un tableau associatif
      *            
-     * @throws Exception
+     * @throws Exception\RuntimeException
+     *
      * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface null
      */
     public function getRecord($id)
@@ -346,7 +367,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();
         if (! $row) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf(_("Could not find row '%s' in table %s"), $condition_msg,
                     $this->table_name));
         }
@@ -360,7 +381,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         try {
             $this->getRecord($id);
             return false;
-        } catch (Exception $e) {
+        } catch (Exception\ExceptionInterface $e) {
             return true;
         }
     }
@@ -370,6 +391,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @param int|string|array|Where|ObjectDataInterface $item
      *            identifiant ou where
+     *            
      * @return int
      */
     public function deleteRecord($item)
@@ -393,7 +415,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      * L'objet passé en paramètre doit définir la méthode getId().
      *
      * @param ObjectDataInterface $obj_data
-     * @throws Exception
+     * @throws Exception\RuntimeException
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
@@ -424,7 +446,7 @@ abstract class AbstractSbmTable implements FactoryInterface
                 $this->table_gateway->update($this->prepareDataForUpdate($data),
                     $array_where);
             } else {
-                throw new Exception(
+                throw new Exception\RuntimeException(
                     sprintf(
                         _(
                             "This is not a new data and the id '%s' can not be found in the table %s."),
@@ -442,7 +464,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $obj_data
      *
-     * @throws Exception
+     * @throws Exception\RuntimeException
      */
     public function updateRecord(ObjectDataInterface $obj_data)
     {
@@ -469,7 +491,7 @@ abstract class AbstractSbmTable implements FactoryInterface
 
             $this->table_gateway->update($this->prepareDataForUpdate($data), $array_where);
         } else {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf(
                     _(
                         "This is not a new data and the id '%s' can not be found in the table %s."),
@@ -493,9 +515,8 @@ abstract class AbstractSbmTable implements FactoryInterface
                     $this->table_type)) {
                     $value = null;
                 } elseif ($this->db_manager->isDateTimeColumn($key, $this->table_name,
-                    $this->table_type) ||
-                    $this->db_manager->isNumericColumn($key, $this->table_name,
-                        $this->table_type)) {
+                    $this->table_type) || $this->db_manager->isNumericColumn($key,
+                    $this->table_name, $this->table_type)) {
                     if ($this->are_nullables[$key]) {
                         $value = null;
                     } elseif (array_key_exists($key, $this->column_defaults)) {
@@ -520,9 +541,8 @@ abstract class AbstractSbmTable implements FactoryInterface
         foreach ($data as $key => &$value) {
             if ($value === '') {
                 if ($this->db_manager->isDateTimeColumn($key, $this->table_name,
-                    $this->table_type) ||
-                    $this->db_manager->isNumericColumn($key, $this->table_name,
-                        $this->table_type)) {
+                    $this->table_type) || $this->db_manager->isNumericColumn($key,
+                    $this->table_name, $this->table_type)) {
                     if ($this->are_nullables[$key]) {
                         $value = null;
                     } elseif (array_key_exists($key, $this->column_defaults)) {

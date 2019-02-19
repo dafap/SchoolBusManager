@@ -18,7 +18,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 15 sept. 2018
- * @version 2018-2.4.5
+ * @version 2019-2.5.0
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
@@ -303,7 +303,7 @@ class Plateforme extends AbstractPlateforme
         $id = $this->getUniqueId($args);
         $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
         $odata = $tAppels->getObjData();
-        foreach ($params['elevesIds'] as $eleveId) {
+        foreach ($params['eleveIds'] as $eleveId) {
             $odata->exchangeArray(
                 [
                     'referenceId' => $id,

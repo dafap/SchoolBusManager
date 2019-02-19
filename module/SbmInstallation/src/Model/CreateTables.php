@@ -8,8 +8,8 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 11 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmInstallation\Model;
 
@@ -503,6 +503,8 @@ class CreateTables
         try {
             if (! empty($command)) {
                 $result = $this->dbadapter->query($command, Adapter::QUERY_MODE_EXECUTE);
+            } else {
+                return null;
             }
         } catch (\PDOException $e) {
             $message = "Impossible d'exécuter la commande $command.\n" . $e->getMessage();

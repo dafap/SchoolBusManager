@@ -9,22 +9,20 @@
  * @filesource mdp-demande.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 ?>
 <h1>Oubli du mot de passe</h1>
 <div class="fiche-wrapper">
 	<div class="zone-actions"></div>
-		<?= $this->form()->openTag($this->form);?>
-		<?= $this->formHidden($this->form->get('csrf'));?>
-		<fieldset class="sbm-page1">
-		<div id="front-edit-email" class="row-inner edit">
-				<?= $this->formRow($this->form->get('email')); ?></div>
-		<div id="front-edit-buttons" class="top-6px">
-				<?= $this->formSubmit($this->form->get('submit'));?>
-				<?= $this->formSubmit($this->form->get('cancel')); ?>
-			</div>
+<?php
+echo $this->form()->openTag($this->form);
+echo $this->formHidden($this->form->get('csrf'));
+?>
+<fieldset class="sbm-page1">
+		<div id="front-edit-email" class="row-inner edit"><?php echo $this->formRow($this->form->get('email')); ?></div>
+		<div id="front-edit-buttons" class="top-6px"><?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
 		<div class="sbm-description">
 			<p>
 				Donnez votre email.<br />Si vous avez créé un compte avec cet email,
@@ -33,6 +31,6 @@
 			</p>
 		</div>
 	</fieldset>
-	<?= $this->form()->closeTag(); ?>
-	<p></p>
+<?php echo $this->form()->closeTag(); ?>
+<p></p>
 </div>

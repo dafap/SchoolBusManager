@@ -7,9 +7,11 @@
  * @filesource org-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_retour = $this->url('sbmportail');
@@ -35,11 +37,11 @@ $services = $this->paginator->getCurrentItems();
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-		<?= $this->flashMessenger()->render('success');?>
-		<?= $this->flashMessenger()->render('warning');?>
-		<?= $this->flashMessenger()->render('error');?>
-		<?= $this->flashMessenger()->render('info');?>
-		<?= $this->flashMessenger()->render('default');?>
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -55,10 +57,10 @@ $services = $this->paginator->getCurrentItems();
 					<th>Etablissements desservis</th>
 					<th></th>
 				</tr>
-        		<?php foreach($services as $serviceId => $service): ?>
-        		<?php
+        <?php foreach($services as $serviceId => $service): ?>
+        <?php
             // etablissements
-            array_walk($service['etablissements'],
+            $cr = array_walk($service['etablissements'],
                 function (&$item, $key) {
                     $item = implode(' - ', $item);
                 });
@@ -81,11 +83,10 @@ $services = $this->paginator->getCurrentItems();
                 ]
             ];
             ?>
-         		<tr class="<?= $tr_css;?>">
+         <tr class="<?= $tr_css;?>">
 					<td class="serviceId">
 						<?= $this->escapeHtml($serviceId); ?></td>
-					<td class="nom">
-						<?= $this->escapeHtml($service['nom']); ?></td>
+					<td class="nom"><?= $this->escapeHtml($service['nom']); ?></td>
 					<td class="transporteur">
 						<?= $this->escapeHtml($service['transporteur']); ?></td>
 					<td class="operateur">
@@ -93,11 +94,12 @@ $services = $this->paginator->getCurrentItems();
 					<td class="nb-places">
 						<?= $service['nbPlaces'];?></td>
 					<td class="effectif">
-						<?= empty($this->statServices[$serviceId]['total']) ? 0 : $this->statServices[$serviceId]['total'];?></td>
+						<?= StdLib::getParamR([$serviceId,'total'], $this->statServices, 0);?></td>
 					<td class="etablissements">
 						<?= nl2br($this->escapeHtml($etablissements));?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($serviceId, $hiddens, $buttons);?></td>
+            			<?= $this->listeLigneActions($serviceId, $hiddens, $buttons);?>            
+					</td>
 				</tr>         
         <?php endforeach;?>
     </tbody>
@@ -105,7 +107,8 @@ $services = $this->paginator->getCurrentItems();
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?>
+		</div>
 		<div class="criteres-wrapper"></div>
 	</div>
 </div>

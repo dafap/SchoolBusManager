@@ -1,17 +1,38 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Documentation technique pour les documents particuliers
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 août 2015
- * @version 2015-1
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
-
 ?>
-<h1>Liste des documents particuliers</h1> 
+<h1>Principe des documents particuliers</h1>
+<p>
+	Les documents particuliers sont formés d'un <b>layout</b> (modèle)
+	défini dans ce dossier, d'une méthode <b>templateDocBodyMethod<span style="border:solid 1px; color:orange;">x</span></b>
+	(où <span style="border:solid 1px; color:orange;">x</span> est un numéro) et d'un <b>document</b> indexé par
+	documentId, défini dans la table des documents et modifiable par
+	l'administrateur qui peut agir sur la mise en page.
+</p>
+<p>Voici les documents programmés :</p>
+<ul>
+	<li><dl>
+			<dt>Horaires</dt>
+			<dd>
+				layout : horaires.phtml<br>méthode : templateDocBodyMethod4<br>documentId
+				: Horaires détaillés
+			</dd>
+		</dl></li>
+	<li><dl>
+			<dt>Liste des élèves du portail organisateur</dt>
+			<dd>
+				layout : org-pdf.phtml<br>méthode : templateDocBodyMethod6<br>documentId
+				: List élèves portail organisateur
+			</dd>
+		</dl></li>
+</ul>

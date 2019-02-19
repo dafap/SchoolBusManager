@@ -8,14 +8,16 @@
  * @filesource TableGatewayCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mai 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\TableGateway\Vue;
 
 use SbmCommun\Model\Db\Service\TableGateway\AbstractSbmTableGateway;
+
 class TableGatewayCircuits extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'circuits';

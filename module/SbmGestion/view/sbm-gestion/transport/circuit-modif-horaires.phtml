@@ -10,18 +10,16 @@
  * @filesource circuit-modif-horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 oct. 2016
- * @version 2016-2.2.1
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 ?>
 <h1>Modification des horaires des arrêts sélectionnés</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header"></div>
 	<div id="fiche-inner">
-	<?php
-echo $this->form()->openTag($this->form);
-?>
-    <fieldset class="sbm-page1">
+		<?= $this->form()->openTag($this->form);?>
+    	<fieldset class="sbm-page1">
 			<div id="circuit-modif-horaires-buttons" class="row-inner">
 				<div id="horaire-matin" class="row-inner">
 					<fieldset>
@@ -29,28 +27,22 @@ echo $this->form()->openTag($this->form);
 						<table>
 							<tr id="circuit-m1" class="row-inner">
 								<th>Lun Ma Je Ve</th>
-						<?php
-    echo '<td>' . $this->FormRadio($this->form->get('m1-op')) . '</td>';
-    echo '<td>' . $this->formText($this->form->get('m1-min')) . ' min</td>';
-    echo '<td>' . $this->formText($this->form->get('m1-sec')) . ' sec</td>';
-    ?>
-						</tr>
+								<td><?= $this->FormRadio($this->form->get('m1-op'));?></td>
+								<td><?= $this->formText($this->form->get('m1-min'));?> min</td>
+								<td><?= $this->formText($this->form->get('m1-sec'));?> sec</td>
+							</tr>
 							<tr id="circuit-m2" class="row-inner">
 								<th>Mercredi</th>
-						<?php
-    echo '<td>' . $this->FormRadio($this->form->get('m2-op')) . '</td>';
-    echo '<td>' . $this->formText($this->form->get('m2-min')) . ' min</td>';
-    echo '<td>' . $this->formText($this->form->get('m2-sec')) . ' sec</td>';
-    ?>
-						</tr>
+								<td><?= $this->FormRadio($this->form->get('m2-op'));?></td>
+								<td><?= $this->formText($this->form->get('m2-min'));?> min</td>
+								<td><?= $this->formText($this->form->get('m2-sec'));?> sec</td>
+							</tr>
 							<tr id="circuit-m3" class="row-inner">
 								<th>Samedi</th>
-						<?php
-    echo '<td>' . $this->FormRadio($this->form->get('m3-op')) . '</td>';
-    echo '<td>' . $this->formText($this->form->get('m3-min')) . ' min</td>';
-    echo '<td>' . $this->formText($this->form->get('m3-sec')) . ' sec</td>';
-    ?>
-						</tr>
+								<td><?= $this->FormRadio($this->form->get('m3-op'));?></td>
+								<td><?= $this->formText($this->form->get('m3-min'));?> min</td>
+								<td><?= $this->formText($this->form->get('m3-sec'));?> sec</td>
+							</tr>
 						</table>
 					</fieldset>
 				</div>
@@ -60,34 +52,29 @@ echo $this->form()->openTag($this->form);
 						<table id="circuit-s1" class="row-inner">
 							<tr>
 								<th>Lun Ma Je Ve</th>
-						<?php
-    echo '<td>' . $this->FormRadio($this->form->get('s1-op')) . '</td>';
-    echo '<td>' . $this->formText($this->form->get('s1-min')) . ' min</td>';
-    echo '<td>' . $this->formText($this->form->get('s1-sec')) . ' sec</td>';
-    ?>
-						</tr>
+								<td><?= $this->FormRadio($this->form->get('s1-op'));?></td>
+								<td><?= $this->formText($this->form->get('s1-min'));?> min</td>
+								<td><?= $this->formText($this->form->get('s1-sec'));?> sec</td>
+							</tr>
 							<tr id="circuit-s2" class="row-inner">
 								<th>Mercredi</th>
-						<?php
-    echo '<td>' . $this->FormRadio($this->form->get('s2-op')) . '</td>';
-    echo '<td>' . $this->formText($this->form->get('s2-min')) . ' min</td>';
-    echo '<td>' . $this->formText($this->form->get('s2-sec')) . ' sec</td>';
-    ?>
-						</tr>
+								<td><?= $this->FormRadio($this->form->get('s2-op'));?></td>
+								<td><?= $this->formText($this->form->get('s2-min'));?> min</td>
+								<td><?= $this->formText($this->form->get('s2-sec'));?> sec</td>
+							</tr>
 							<tr id="circuit-s3" class="row-inner">
 								<th>Samedi</th>
-						<?php
-    echo '<td>' . $this->FormRadio($this->form->get('s3-op')) . '</td>';
-    echo '<td>' . $this->formText($this->form->get('s3-min')) . ' min</td>';
-    echo '<td>' . $this->formText($this->form->get('s3-sec')) . ' sec</td>';
-    ?>
-						</tr>
+								<td><?= $this->FormRadio($this->form->get('s3-op'));?></td>
+								<td><?= $this->formText($this->form->get('s3-min'));?> min</td>
+								<td><?= $this->formText($this->form->get('s3-sec'));?> sec</td>
+							</tr>
 						</table>
 					</fieldset>
 				</div>
-        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+        		<?= $this->formSubmit($this->form->get('submit'));?>
+        		<?= $this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
-    <?php echo $this->form()->closeTag(); ?>
+    	<?= $this->form()->closeTag(); ?>
 	</div>
 	<div id="fiche-footer">
 		<p class="sbm-description">

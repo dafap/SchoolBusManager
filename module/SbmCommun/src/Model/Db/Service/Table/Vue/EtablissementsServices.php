@@ -8,8 +8,8 @@
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Vue;
 
@@ -17,6 +17,7 @@ use SbmCommun\Model\Db\Service\Table\EtablissementsServices as TableEtablissemen
 
 class EtablissementsServices extends TableEtablissementsServices
 {
+
     /**
      * Initialisation du service
      */

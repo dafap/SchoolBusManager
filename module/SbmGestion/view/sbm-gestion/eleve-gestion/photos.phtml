@@ -1,0 +1,81 @@
+<?php
+/**
+ * Page de gestion du téléchargement d'un ensemble de photos
+ * 
+ * @project sbm
+ * @package SbmGestion/viw/sbm-gestion/eleve-gestion
+ * @filesource photos.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
+ */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [
+    // afin de retrouver les critères en session
+    'op' => 'retour'
+];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/cartes-photos.js'));
+$this->inlineScript()->captureStart();
+?>
+js_date.montreDate();
+<?php $this->inlineScript()->captureEnd();?>
+<div id="fiche-wrapper">
+	<h1>Extraction des photos pour les <?= strtolower($this->natureCartes);?></h1>
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	<?php if ($this->lastDateCarte >= $this->dateDebut) : ?>
+	<p>La dernière préparation a été faite le <?php echo DateLib::formatDateTimeFromMysql($this->lastDateCarte);?>.</p>
+	<?php else :?>
+	<p>Aucun lot de photos n'a été préparé pour cette année scolaire.</p>
+	<?php endif;?>
+	</div>
+	<div id="fiche-inner">	    
+		<?php echo $this->form()->openTag($this->form1); ?>
+	    <fieldset class="sbm-page1">
+			<p>
+				Si vous souhaitez préparer une nouvelle extraction, cliquez sur le
+				bouton ci-dessous.<br>Attention ! Seuls les élèves qui sont affectés 
+				sur un circuit nécessitant des <?= strtolower($this->natureCartes);?> 
+				seront pris en compte.</p>
+			<div class="row-inner"><?php echo $this->formSubmit($this->form1->get('nouvelle')); ?></div>
+			<p>
+				Par la suite pour utiliser ce nouveau lot de photos, cochez <i>Dernière
+					préparation</i> puis sélectionnez résultat que vous voulez obtenir
+				et cliquez sur le bouton <i>Lancer votre demande</i>.
+			</p>
+		</fieldset>
+	    <?php echo $this->form()->closeTag(); ?>
+	    <p></p>
+	    <?php echo $this->form()->openTag($this->form2); ?>
+		<fieldset class="sbm-page1">
+			<div id="selection" class="row-inner"><?php echo $this->formRow($this->form2->get('selection'));?></div>
+			<div id="quelle-date" class="row-inner"><?php echo $this->formRow($this->form2->get('dateReprise'));?></div>
+			<div id="document" class="row-inner"><?php echo $this->formRow($this->form2->get('document'));?></div>
+			<div class="row-inner"><?php echo $this->formSubmit($this->form2->get('submit')); ?></div>
+		</fieldset>
+		<?php echo $this->form()->closeTag(); ?>
+	</div>
+	<div id="fiche-footer">
+		<p class="sbm-description">Vous pouvez créer un nouveau lot de photos,
+			reprendre un lot déjà réalisé à une date donnée ou demander
+			l'extraction des photos pour les fiches sélectionnées.</p>
+	</div>
+</div>

@@ -9,14 +9,14 @@
  * @filesource EnvoiMailFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 11 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmMail\Model\Service;
 
+use SbmMail\Model\EnvoiMail;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmMail\Model\EnvoiMail;
 
 class EnvoiMailFactory implements FactoryInterface
 {

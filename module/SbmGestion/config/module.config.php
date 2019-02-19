@@ -7,14 +7,16 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 5 fév. 2019
+ * @version 2019-2.5.0
  */
 use SbmGestion\Controller;
 use SbmGestion\Form;
 use SbmGestion\Controller\Service;
-use SbmGestion\Model\Db\Service\Simulation\Prepare;
+use SbmGestion\Model\Db\Service as SbmGestionDbService;
 use SbmGestion\Model\View\Helper as ViewHelper;
+use SbmGestion\Model\Cartes;
+use SbmGestion\Model\Photos;
 
 return [
     'acl' => [
@@ -74,10 +76,12 @@ return [
     ],
     'db_manager' => [
         'factories' => [
-            'Sbm\Db\Simulation\Prepare' => Prepare::class,
-            'Sbm\Db\Circuit\Liste' => 'SbmGestion\Model\Db\Service\Circuit\Liste',
-            'Sbm\Db\Eleve\Liste' => 'SbmGestion\Model\Db\Service\Eleve\Liste',
-            'Sbm\Db\Eleve\Effectif' => 'SbmGestion\Model\Db\Service\Eleve\Effectif'
+            'Sbm\Db\Simulation\Prepare' => SbmGestionDbService\Simulation\Prepare::class,
+            'Sbm\Db\Circuit\Liste' => SbmGestionDbService\Circuit\Liste::class,
+            'Sbm\Db\Eleve\Liste' => SbmGestionDbService\Eleve\Liste::class,
+            'Sbm\Db\Eleve\Effectif' => SbmGestionDbService\Eleve\Effectif::class,
+            Cartes\Cartes::class => Cartes\CartesFactory::class,
+            Photos\Photos::class => Photos\PhotosFactory::class
         ]
     ],
     'form_manager' => [
@@ -163,10 +167,11 @@ return [
                     'transport' => [ // gestion des données du réseau de transport
                         'type' => 'segment',
                         'options' => [
-                            'route' => '/transport[/:action[/page/:page][/id/:id]]',
+                            'route' => '/transport[/:action[/page/:page][/pr/:pr][/id/:id]]',
                             'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
+                                'pr' => '[0-9]+',
                                 'id' => '[0-9]+'
                             ],
                             'defaults' => [

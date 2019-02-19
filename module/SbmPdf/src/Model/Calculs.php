@@ -19,12 +19,12 @@
  * Exemple d'utilisation :
  * echo '<h1>Functions</h1><pre>';
  * $data = [
- *  [ 1,  2, 12),
- *  [12,  6,  7),
- *  [14, 15, 12),
- *  [20,  7, 18),
- *  [17, 16, 18)
- * );
+ *  [ 1,  2, 12],
+ *  [12,  6,  7)]
+ *  [14, 15, 12],
+ *  [20,  7, 18],
+ *  [17, 16, 18]
+ * ];
  * $f1 = 'Nombre: %compte% lignes - Total col1: %moyenne(1)% col2: %moyenne(2)% col3: %moyenne(3)%';
  * $oCalculs = new Calculs($data);
  * $oCalculs->range(0, 2);
@@ -43,8 +43,8 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
 
@@ -106,7 +106,7 @@ class Calculs
     public function range($debut = 0, $fin = null)
     {
         if (! is_int($debut) || (! is_null($fin) && ! is_int($fin))) {
-            throw Exception(
+            throw new Exception(
                 'Erreur de type dans les arguments de la méthode ' . __METHOD__);
         }
         if (! ($this->debut == $debut && $this->fin == $fin)) {

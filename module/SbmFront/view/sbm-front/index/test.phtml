@@ -8,31 +8,6 @@
  * @filesource 
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2014
- * @version 2014-1
+ * @date 17 fév. 2018
+ * @version 2019-2.5.0
  */
-echo '<div class="clearfix"></div>';
-echo '<div style="overflow:scroll">';
-echo 'args<pre>';
-
-if ($this->args instanceof \Traversable) {
-    foreach ($this->args as $row) {
-        print_r($row);
-    }
-} else {
-    print_r($this->args);
-}
-echo '</pre>var_dump(args) donne :';
-var_dump($this->args);
-echo 'X = ' . $this->x;
-echo '</div>';
-?>
-<h1>Page des tests</h1>
-<h3>Menu :</h3>
-<div class="menu clearfix">
-<ul class="menubar">
-<li class="onglet">Impressions
-<?php echo $this->navigation($this->monMenu)->menu()?>
-</li>
-</ul></div>
-<p>Suite du contenu de la page ...</p>

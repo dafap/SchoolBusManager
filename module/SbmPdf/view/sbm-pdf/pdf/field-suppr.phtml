@@ -7,8 +7,8 @@
  * @filesource field-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 ?>
 <h1>Suppression d'un champ dans un document Pdf (hors présentation
@@ -19,9 +19,9 @@
 		<ul>
 			<li>Champ n° : <?= $this->data->ordinal_position; ?></li>
 			<li>Champ : <?= $this->escapeHtml($this->data->fieldname); ?></li>
-			<li>
-			Libellé : <?= $this->data->label ?$this->escapeHtml($this->data->label) : '(sans étiquette)'; ?>
-			</li>
+			<li>Libellé : 
+				<?= $this->data->label ?$this->escapeHtml($this->data->label) : '(sans étiquette)'; ?>
+				</li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>

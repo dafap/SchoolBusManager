@@ -12,8 +12,8 @@
  * @filesource RedirectBack.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
@@ -26,13 +26,13 @@ class RedirectBack extends Redirect
 {
 
     /**
-     * 
+     *
      * @var \Zend\Session\Container
      */
     protected $container;
 
     /**
-     * 
+     *
      * @var \Zend\Session\ManagerInterface
      */
     protected $session;
@@ -48,9 +48,13 @@ class RedirectBack extends Redirect
             unset($container->back[$index]);
         }
     }
-    
+
     /**
      * Prend l'url en haut de la pile, dépile et redirige sur cette url
+     * 
+     * @throws \SbmCommun\Model\Mvc\Controller\Plugin\Exception\UnderflowException
+     * 
+     * @return \Zend\Http\Response
      */
     public function back()
     {
@@ -61,7 +65,7 @@ class RedirectBack extends Redirect
             unset($container->back[$index]);
             return $this->toUrl($url);
         } else {
-            throw new Exception(__METHOD__ . ' - Pile vide');
+            throw new Exception\UnderflowException(__METHOD__ . ' - Pile vide');
         }
     }
 
@@ -69,10 +73,10 @@ class RedirectBack extends Redirect
      * Empile l'url donnée dans la pile.
      * Si $url est null, on empile l'adresse actuelle
      *
-     * @param string $url            
+     * @param string $url
      *
-     * @throws \DomainException
-     * 
+     * @throws \SbmCommun\Model\Mvc\Controller\Plugin\Exception\BadMethodCallException
+     *
      * @return \SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack
      */
     public function setBack($url = null)
@@ -80,15 +84,18 @@ class RedirectBack extends Redirect
         if (is_null($url)) {
             $controller = $this->getController();
             if (! $controller || ! method_exists($controller, 'plugin')) {
-                throw new \DomainException('Redirect plugin requires a controller that defines the plugin() method');
+                throw new Exception\BadMethodCallException(
+                    'Redirect plugin requires a controller that defines the plugin() method');
             }
-            
+
             $urlPlugin = $controller->plugin('url');
             $url = $urlPlugin->fromRoute(null, [], [], true);
         }
         $container = $this->getContainer();
         if (! isset($container->back)) {
-            $container->back = [$url];
+            $container->back = [
+                $url
+            ];
         } else {
             $container->back[] = $url;
         }
@@ -96,16 +103,17 @@ class RedirectBack extends Redirect
     }
 
     /**
-     * Set the session manager. Fluent interface.
+     * Set the session manager.
+     * Fluent interface.
      *
-     * @param Manager $manager         
-     *    
+     * @param Manager $manager
+     *
      * @return \SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack
      */
     public function setSessionManager(Manager $manager)
     {
         $this->session = $manager;
-        
+
         return $this;
     }
 
@@ -121,7 +129,7 @@ class RedirectBack extends Redirect
         if (! $this->session instanceof Manager) {
             $this->setSessionManager(Container::getDefaultManager());
         }
-        
+
         return $this->session;
     }
 
@@ -135,10 +143,10 @@ class RedirectBack extends Redirect
         if ($this->container instanceof Container) {
             return $this->container;
         }
-        
+
         $manager = $this->getSessionManager();
         $this->container = new Container('RedirectBack', $manager);
-        
+
         return $this->container;
     }
 }

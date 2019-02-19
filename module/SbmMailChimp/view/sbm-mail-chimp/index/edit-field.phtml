@@ -7,8 +7,8 @@
  * @filesource edit-field.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
 
@@ -27,41 +27,39 @@ $actions = [
     ]
 ];
 ?>
-<h1><?php echo $this->h1_msg; ?></h1>
+<h1><?= $this->h1_msg; ?></h1>
 <table>
-  <tr>
-    <th><?php echo StdLib::getParam('id', $this->liste_info); ?></th>
-    <th><?php echo StdLib::getParam('name', $this->liste_info); ?></th>
-    <th><?php echo StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
-    <th><?php ?></th>
-  </tr>
+	<tr>
+		<th><?= StdLib::getParam('id', $this->liste_info); ?></th>
+		<th><?= StdLib::getParam('name', $this->liste_info); ?></th>
+		<th><?= StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
+		<th><?php ?></th>
+	</tr>
 </table>
 
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('id_liste'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
+        <?= $this->form()->openTag($this->form);?>
+        <?= $this->formHidden($this->form->get('id_liste'));?>
+        <?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="sbm-page1">
         <?php if ($this->form->has('merge_id')):?>
-			<div id="edit-merge_id" class="row-inner edit"><?php echo $this->formRow($this->form->get('merge_id')); ?></div>
+			<div id="edit-merge_id" class="row-inner edit"><?= $this->formRow($this->form->get('merge_id')); ?></div>
 		<?php endif;?>
-			<div id="edit-tag" class="row-inner edit"><?php echo $this->formRow($this->form->get('tag')); ?></div>
-			<div id="edit-name" class="row-inner edit"><?php echo $this->formRow($this->form->get('name')); ?></div>
-			<div id="edit-type" class="row-inner edit"><?php echo $this->formRow($this->form->get('type')); ?></div>
-			<div id="edit-required" class="row-inner ajout"><?php echo $this->formRow($this->form->get('required')); ?></div>
-			<div id="edit-default_value" class="row-inner ajout"><?php echo $this->formRow($this->form->get('default_value')); ?></div>
+			<div id="edit-tag" class="row-inner edit"><?= $this->formRow($this->form->get('tag')); ?></div>
+			<div id="edit-name" class="row-inner edit"><?= $this->formRow($this->form->get('name')); ?></div>
+			<div id="edit-type" class="row-inner edit"><?= $this->formRow($this->form->get('type')); ?></div>
+			<div id="edit-required" class="row-inner ajout"><?= $this->formRow($this->form->get('required')); ?></div>
+			<div id="edit-default_value" class="row-inner ajout"><?= $this->formRow($this->form->get('default_value')); ?></div>
 			<div id="edit-buttons" class="row-inner edit">
-        <?php echo $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+        <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>
-<?php echo $this->form()->closeTag(); ?>
+		<?= $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>
 </div>

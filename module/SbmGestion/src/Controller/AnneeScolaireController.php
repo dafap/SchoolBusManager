@@ -8,11 +8,12 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 25 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
+use SbmBase\Model\Session;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Form\Calendar as FormCalendar;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
@@ -33,14 +34,13 @@ class AnneeScolaireController extends AbstractActionController
             return $prg;
         }
         $simulation_vide = $this->db_manager->get('Sbm\Db\Table\Scolarites')->isEmptyMillesime(
-            self::SIMULATION) &&
-            $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(
-                self::SIMULATION);
+            self::SIMULATION) && $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(
+            self::SIMULATION);
 
         return new ViewModel(
             [
                 'anneesScolaires' => $this->db_manager->get('Sbm\Db\System\Calendar')->getAnneesScolaires(),
-                'millesimeActif' => $this->getFromSession('millesime', false),
+                'millesimeActif' => Session::get('millesime', false),
                 'simulation_millesime' => self::SIMULATION,
                 'simulation_vide' => $simulation_vide
             ]);
@@ -50,7 +50,7 @@ class AnneeScolaireController extends AbstractActionController
     {
         $millesime = $this->params('millesime', 0);
         if (! empty($millesime)) {
-            $this->setToSession('millesime', $millesime);
+            Session::set('millesime', $millesime);
         }
         $this->flashMessenger()->addSuccessMessage('L\'année active a changé.');
         return $this->redirect()->toRoute('sbmgestion/anneescolaire');
@@ -81,7 +81,18 @@ class AnneeScolaireController extends AbstractActionController
                         'millesime' => $millesime
                     ]);
             }
-            $form->setData($request->getPost());
+            // compléter les dates si nécessaire
+            $args = $request->getPost();
+            if (empty($args['dateFin']['day']) || empty($args['dateFin']['month']) ||
+                empty($args['dateFin']['year'])) {
+                $args['dateFin'] = $args['dateDebut'];
+            }
+            if (empty($args['echeance']['day']) || empty($args['echeance']['month']) ||
+                empty($args['echeance']['year'])) {
+                $args['echeance'] = $args['dateFin'];
+            }
+            // validation des données
+            $form->setData($args);
             if ($form->isValid()) { // controle le csrf
                 $table_calendar->saveRecord($form->getData());
                 $this->flashMessenger()->addSuccessMessage(
@@ -228,6 +239,8 @@ class AnneeScolaireController extends AbstractActionController
                 if ($form->isValid()) {
                     $millesime = $prg['millesime'];
                     $this->db_manager->get('Sbm\Db\Simulation\Prepare')
+                        ->setMajDistances(
+                        $this->cartographie_manager->get('Sbm\CalculDroitsTransport'))
                         ->duplicateCircuits($millesime, self::SIMULATION)
                         ->duplicateEleves($millesime, self::SIMULATION);
                     $this->flashMessenger()->addSuccessMessage(

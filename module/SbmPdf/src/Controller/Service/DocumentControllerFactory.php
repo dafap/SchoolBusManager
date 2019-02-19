@@ -9,12 +9,12 @@
  * @filesource DocumentControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 8 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller\Service;
 
-use SbmFront\Model\Responsable\Service\ResponsableManager as Responsable;
+use SbmFront\Model\Responsable\Service\ResponsableManager;
 use SbmPdf\Controller\DocumentController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -29,7 +29,7 @@ class DocumentControllerFactory implements FactoryInterface
             'db_manager' => $sm->get('Sbm\DbManager'),
             'pdf_manager' => $sm->get('Sbm\PdfManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
-            'responsable' => $sm->get(Responsable::class)
+            'responsable_manager' => $sm->get(ResponsableManager::class)
         ];
         return new DocumentController($config_controller);
     }

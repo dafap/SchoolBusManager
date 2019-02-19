@@ -7,8 +7,8 @@
  * @filesource tr-circuit-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 8 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmportail',
@@ -33,9 +33,8 @@ $actions = [
 	<div id="liste-title">
 		<ul>
 			<li>Circuit : <?= $this->escapeHtml($this->circuit->serviceId); ?></li>
-			<li>Arrêt : 
-				<?= $this->escapeHtml($this->circuit->station . ' - ' . $this->circuit->communeStation); ?>
-				</li>
+			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> - 
+				<?= $this->escapeHtml($this->circuit->communeStation);?></li>
 			<li>Type d'arrêt : <?= $this->escapeHtml($this->circuit->typeArret); ?></li>
 			<li>Commentaire aller : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
 			<li>Commentaire retour : <?= $this->escapeHtml($this->circuit->commentaire2); ?></li>
@@ -44,7 +43,7 @@ $actions = [
 	<div id="liste-header">
 		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?= count($this->data); ?> élèves.</em>
+			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -60,19 +59,20 @@ $actions = [
 					<th>Etablissement</th>
 					<th>Classe</th>
 				</tr>
-			<?php foreach ($this->data as $row) : ?>
-				<?= '<tr class="' . $this->cycle(['even', 'odd'])->next() . '">';?>
-				<?php foreach ($row as $item) : ?>
-					<?= '<td>' . $item . '</td>';?>
+				<?php foreach ($this->data as $row) :?>
+    			<tr class="<?= $this->cycle(["even","odd"])->next()?>">
+    				<?php foreach ($row as $item) :?>
+        			<td><?= $item;?></td>
+    				<?php endforeach;?>
+    			</tr>
 				<?php endforeach;?>
-				<?= '</tr>';?>
-			<?php endforeach;?>
+
 			</tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?= count($this->data); ?> élèves.</em>
+			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
 		</p>
 	</div>
 </div>

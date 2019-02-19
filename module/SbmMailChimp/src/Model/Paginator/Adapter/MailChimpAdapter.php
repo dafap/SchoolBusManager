@@ -10,8 +10,8 @@
  * @filesource MailChimpAdapter.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmMailChimp\Model\Paginator\Adapter;
 
@@ -27,22 +27,22 @@ class MailChimpAdapter implements AdapterInterface
      * @var MailChimp
      */
     protected $mailchimp;
-    
+
     /**
-     * 
+     *
      * @var string
      */
     protected $method;
-    
+
     /**
      * Nom du container (lists, segments, members, merge_fields ...)
-     * 
+     *
      * @var string
      */
     protected $container;
-    
+
     /**
-     * 
+     *
      * @var int
      */
     protected $count;
@@ -56,11 +56,13 @@ class MailChimpAdapter implements AdapterInterface
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Zend\Paginator\Adapter\AdapterInterface::getItems()
      */
     public function getItems($offset, $itemCountPerPage)
     {
-        $method = sprintf('%s?offset=%d&count=%d', $this->method, $offset, $itemCountPerPage);
+        $method = sprintf('%s?offset=%d&count=%d', $this->method, $offset,
+            $itemCountPerPage);
         return $this->mailchimp->get($method)[$this->container];
     }
 
@@ -76,7 +78,8 @@ class MailChimpAdapter implements AdapterInterface
     public function count()
     {
         if ($this->count === null) {
-            $this->count = StdLib::getParam('total_items', $this->mailchimp->get($this->method));
+            $this->count = StdLib::getParam('total_items',
+                $this->mailchimp->get($this->method));
         }
         return $this->count;
     }

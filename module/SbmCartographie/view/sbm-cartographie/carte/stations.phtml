@@ -12,8 +12,8 @@
  * @filesource stations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 2 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -56,19 +56,20 @@ initialiser(<?= $tMarkers;?>);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
+$hiddens = [];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        'title' => 'Retour'
+    ]
+];
 ?>
 <h1>Points d'arrêt</h1>
 <div id="carte-wrapper">
 	<div id="carte-header" class="clearfix">
-		<div class="menu float-left"><?php
-echo $this->listeZoneActions([],
-    [
-        'cancel' => [
-            'class' => 'fam-door-out',
-            'title' => 'Retour'
-        ]
-    ]);
-?></div>
+		<div class="menu float-left">
+		<?= $this->listeZoneActions($hiddens,$actions);?>
+		</div>
 		<div class="float-right right-10px">
 			<span style="background-color: #ff0000; font-weight: bold;">En rouge</span>
 			les points d'arrêt fermés. <span

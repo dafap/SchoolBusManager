@@ -17,31 +17,32 @@
  * @version 2016-2.1.10
  */
 namespace SbmCommun\Model\Hydrator;
- 
+
 /*
  * @deprecated use Zend\Stdlib\Hydrator\ArraySerializable;
- */ 
+ */
 use Zend\Hydrator\ArraySerializable;
 
 abstract class AbstractHydrator extends ArraySerializable
 {
+
     /**
      * Copie de l'objet qui sera modifiée par calculate() avant extraction
-     * 
+     *
      * @var object qui implemente la methode getArrayCopy()
      */
-    protected  $object;
-    
+    protected $object;
+
     public function extract($object)
     {
         return parent::extract($this->calculate($object));
     }
-    
+
     /**
      * L'objet doit implémenter la méthode getArrayCopy()
-     * 
+     *
      * @param object $object
-     * 
+     *
      * @return object
      */
     protected abstract function calculate($object);

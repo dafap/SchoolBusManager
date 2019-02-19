@@ -7,22 +7,23 @@
  * @filesource oubli-mdp.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 ?>
 <p>Bonjour <?= $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
 <p>Bienvenue au service des transports de la <?= $this->client['name'];?>.</p>
 
 <p>
-	Vous avez oublié votre mot de passe.<br> Pour en créer un nouveau,
-	suivez le lien suivant :<br>
+	Vous ne connaissez pas votre mot de passe.<br> Pour en créer un
+	nouveau, suivez le lien suivant :<br>
     <?= $this->url_confirme;?></p>
 <p>Attention ! Ce lien ne fonctionne qu'une seule fois.</p>
 <p>Si ce lien n'est pas actif dans vote logiciel de courrier, copiez le
 	puis collez le dans la barre d'adresse de votre navigateur.</p>
 <p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
 <div style="text-align: center;">
-	<b><?= $this->client['name'];?></b><br><?= implode(' - ', $this->client['adresse']);?> - <?= $this->client['code_postal'] . ' ' . $this->client['commune'];?>
+	<b><?= $this->client['name'];?></b> <br><?= implode(' - ', $this->client['adresse']);?> - 
+	<?= $this->client['code_postal'];?> <?= $this->client['commune'];?>
 	<br>Tél. <?= $this->client['telephone'];?> - Email: <?= $this->client['email'];?>
 </div>

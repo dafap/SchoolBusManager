@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 17 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -77,7 +77,7 @@ class Responsables extends AbstractSbmTable
         try {
             $old_data = $this->getRecord($obj_data->getId());
             $is_new = false;
-        } catch (Exception $e) {
+        } catch (Exception\ExceptionInterface $e) {
             try {
                 $email = $obj_data->email;
                 $nom = $this->filtre_sa->filter($obj_data->nom);
@@ -117,7 +117,7 @@ class Responsables extends AbstractSbmTable
                     $obj_data->exchangeArray(
                         array_merge($old_data->getArrayCopy(), $obj_data_array));
                 }
-            } catch (ExceptionObjectData $e) {
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
                 $is_new = true;
             }
         }
@@ -141,22 +141,22 @@ class Responsables extends AbstractSbmTable
                 if ($old_data->nom != $obj_data->nom) {
                     $obj_data->addCalculateField('nomSA');
                 }
-            } catch (ExceptionObjectData $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {}
             try {
                 if ($old_data->prenom != $obj_data->prenom) {
                     $obj_data->addCalculateField('prenomSA');
                 }
-            } catch (ExceptionObjectData $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {}
             try {
                 if ($old_data->nom2 != $obj_data->nom2) {
                     $obj_data->addCalculateField('nom2SA');
                 }
-            } catch (ExceptionObjectData $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {}
             try {
                 if ($old_data->prenom2 != $obj_data->prenom2) {
                     $obj_data->addCalculateField('prenom2SA');
                 }
-            } catch (ExceptionObjectData $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {}
             if ($checkDemenagement) {
                 try {
                     $demenagement = $old_data->adresseL1 != $obj_data->adresseL1;
@@ -176,13 +176,13 @@ class Responsables extends AbstractSbmTable
                             array_merge($obj_data->getArrayCopy(), $dataDemenagement));
                     }
                     $changeCommuneId = $demenagement;
-                } catch (ExceptionObjectData $e) {
+                } catch (ExceptionObjectData\ExceptionInterface $e) {
                     $changeCommuneId = false;
                 }
             } else {
                 try {
                     $changeCommuneId = $old_data->communeId != $obj_data->communeId;
-                } catch (ExceptionObjectData $e) {
+                } catch (ExceptionObjectData\ExceptionInterface $e) {
                     $changeCommuneId = false;
                 }
             }

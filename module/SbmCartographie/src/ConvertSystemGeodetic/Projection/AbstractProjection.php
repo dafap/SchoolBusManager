@@ -16,7 +16,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -361,7 +361,7 @@ abstract class AbstractProjection
      * Initialise, si nécessaire, les propriétés lambda_0, phi_0, phi_1 et phi_2 en radians en
      * tenant compte de l'unité de la projection.
      *
-     * @throws Exception
+     * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\DomainException
      */
     private function initUniteDGR()
     {
@@ -385,7 +385,7 @@ abstract class AbstractProjection
                     $this->{$vr} = $this->{$vu};
                     break;
                 default:
-                    throw new Exception(
+                    throw new Exception\DomainException(
                         __METHOD__ .
                         ' - Unité non conforme. On attend degré, grade ou radian.');
                     break;
@@ -584,6 +584,8 @@ abstract class AbstractProjection
      * Utilise les propriétés k0 et phi_0 de l'objet (ainsi que lambda_0, x0 et y0).
      *
      * Calcule les propriétés lambda_c, n, C, Xs et Ys.
+     * 
+     * @throws  \SbmCartographie\ConvertSystemGeodetic\Exception\OutOfRangeException
      */
     public function alg0019()
     {
@@ -593,7 +595,7 @@ abstract class AbstractProjection
             ob_start();
             var_dump($this);
             $dump_obj = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(
+            throw new Exception\OutOfRangeException(
                 __METHOD__ .
                 " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas tangent.\n$dump_obj");
         }
@@ -624,6 +626,8 @@ abstract class AbstractProjection
      * Utilise les propriétés phi_0, phi_1 et phi_2 de l'objet (ainsi que lambda_0, x0 et y0).
      *
      * Calcule les propriétés lambda_c, n, C, Xs et Ys.
+     * 
+     * @throws  \SbmCartographie\ConvertSystemGeodetic\Exception\OutOfRangeException
      */
     public function alg0054()
     {
@@ -634,7 +638,7 @@ abstract class AbstractProjection
             ob_start();
             var_dump($this);
             $dump_obj = html_entity_decode(strip_tags(ob_get_clean()));
-            throw new Exception(
+            throw new Exception\OutOfRangeException(
                 __METHOD__ .
                 " - Cette projection ne définit pas les constantes nécessaires à une projection Lambert conique conforme dans le cas sécant.\n$dump_obj");
         }

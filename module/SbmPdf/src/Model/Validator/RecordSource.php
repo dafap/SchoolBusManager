@@ -7,16 +7,17 @@
  * @filesource RecordSource.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 18 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Model\Validator;
 
-use SbmBase\Model\Session;
+use SbmPdf\Model\QuerySourceTrait;
 use Zend\Validator\AbstractValidator;
 
 class RecordSource extends AbstractValidator
 {
+    use QuerySourceTrait;
 
     /**
      * Error constants
@@ -28,11 +29,12 @@ class RecordSource extends AbstractValidator
      * @var array Message templates
      */
     protected $messageTemplates = [
-        self::ERROR_BAD_QUERY => "Ce n'est ni l'identifiant d'une table ou d'une vue, ni une requête Sql\n%msg%"
+        self::ERROR_BAD_QUERY => "Ce n'est ni l'identifiant d'une table ou d'une vue, ni une requête Sql\n%msg%\n%sql%"
     ];
 
     protected $messageVariables = [
-        'msg' => 'msg'
+        'msg' => 'msg',
+        'sql' => 'sql'
     ];
 
     protected $msg;
@@ -73,23 +75,14 @@ class RecordSource extends AbstractValidator
         // vérifie qu'il s'agit d'une requête Sql
         try {
             // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
-            $value = str_replace([
-                '%date%',
-                '%heure%',
-                '%millesime%',
-                '%userId%'
-            ],
-                [
-                    date('Y-m-d'),
-                    date('H:i:s'),
-                    Session::get('millesime'),
-                    $this->auth_userId
-                ], $value);
+            // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
+            $value = $this->decodeSource($value, $this->auth_userId);
             $this->db_manager->getDbAdapter()->query($value,
                 \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
             return true;
         } catch (\PDOException $e) {
             $this->msg = $e->getMessage();
+            $this->sql = $value;
             $this->error(self::ERROR_BAD_QUERY);
             return false;
         }

@@ -14,13 +14,16 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmPaiement\Controller;
 
+use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmPaiement\Form\UploadCsv;
+use SbmPaiement\Model\RapprochementCR;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
@@ -43,7 +46,7 @@ class IndexController extends AbstractActionController
             return $this->redirect()->toRoute('sbmparent');
         }
         // prg contient le post ['montant' => ..., 'payer' => ...)
-        $args = (array) $prg;
+        $args = $prg ?: [];
 
         // préparation des données
         $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
@@ -179,8 +182,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            if (($notificationId = $this->getFromSession('notificationId', false)) ===
-                false) {
+            if (($notificationId = Session::get('notificationId', false)) === false) {
                 return $this->redirect()->toRoute('login', [
                     'action' => 'logout'
                 ]);
@@ -193,7 +195,7 @@ class IndexController extends AbstractActionController
                     'action' => 'logout'
                 ]);
             } else {
-                $this->setToSession('notificationId', $notificationId);
+                Session::set('notificationId', $notificationId);
             }
         }
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
@@ -220,5 +222,58 @@ class IndexController extends AbstractActionController
                 ->setContent($message)
                 ->setStatusCode(200);
         }
+    }
+
+    /**
+     * Charge un fichier csv de transactions remisées.
+     * Analyse le fichier (après contrôle) en le rapprochant des paiements enregistrés.
+     * Affiche le compte-rendu en indiquant la marche à suivre si des paiements sont absents.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response
+     */
+    public function rapprochementAction()
+    {
+        // formulaire d'upload servant à la fois à la saisie et à la validation
+        $tmpuploads = $this->csv['path']['tmpuploads'];
+        $form = new UploadCsv('upload-form', [
+            'tmpuploads' => $tmpuploads
+        ]);
+
+        $prg = $this->fileprg($form);
+        if ($prg instanceof Response) {
+            // renvoie redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops
+            // = 1)
+            return $prg;
+        } elseif (is_array($prg) && ! array_key_exists('origine', $prg)) {
+            if (array_key_exists('cancel', $prg)) {
+                $this->flashMessenger()->addWarningMessage('Abandon de la demande');
+                return $this->redirect()->toRoute('sbmpaiement');
+            }
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $cr = $this->plugin_plateforme->rapprochement(
+                    $data['csvfile']['tmp_name'], $data['firstline'], $data['separator'],
+                    $data['enclosure'], $data['escape']);
+                if (empty($cr)) {
+                    $this->flashMessenger()->addInfoMessage(
+                        'Tous les paiements sont présents.');
+                    return $this->redirect()->toRoute('sbmpaiement');
+                } else {
+                    // construction et envoi d'un CR en pdf pour pouvoir l'imprimer
+                    $pdf_doc = new RapprochementCR($cr,
+                        $this->plugin_plateforme->rapprochementCrHeader());
+                    return $pdf_doc->render_cr();
+                }
+            }
+        } else {
+            // ce n'est pas un post. Afficher le formulaire d'upload d'un fichier
+            $form->get('csvfile')->setMessages([]);
+            $form->get('firstline')->setMessages([]);
+            $form->setData($this->csv['parameters']);
+        }
+        $view = new ViewModel([
+            'form' => $form
+        ]);
+        return $view;
     }
 }

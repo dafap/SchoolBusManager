@@ -8,8 +8,8 @@
  * @filesource Station.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
@@ -22,10 +22,11 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('station');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'name' => 'stationId',
-            'type' => 'hidden'
-        ]);
+        $this->add(
+            [
+                'name' => 'stationId',
+                'type' => 'hidden'
+            ]);
         $this->add(
             [
                 'name' => 'csrf',

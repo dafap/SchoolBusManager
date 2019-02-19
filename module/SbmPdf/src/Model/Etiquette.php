@@ -11,8 +11,8 @@
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 8 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
 
@@ -76,16 +76,16 @@ class Etiquette
      * $label->setCurrentRow($k); // optionnel
      * list($this->x, $this->y) = $label->xyStart(); // nécessaire
      *
-     * @param ServiceLocatorInterface $db_manager            
-     * @param int $documentId            
+     * @param ServiceLocatorInterface $db_manager
+     * @param int $documentId
      */
     public function __construct(ServiceLocatorInterface $db_manager, $documentId)
     {
         $this->db_manager = $db_manager;
         $this->documentId = $documentId;
-        
-        
-        // Lecture des tables system document, doclabel et docfields pour initialiser les paramètres de la structure
+
+        // Lecture des tables system document, doclabel et docfields pour initialiser les
+        // paramètres de la structure
         /*
          * il ne semble pas être nécessaire d'utiliser la config du document dans cette classe.
          * (en réserve au cas où ...)
@@ -99,27 +99,35 @@ class Etiquette
         $t = $this->db_manager->get('Sbm\Db\System\DocLabels');
         try {
             $this->config['doclabel'] = $t->getConfig($this->documentId);
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $this->config['doclabel'] = require (__DIR__ . '/default/doclabels.inc.php');
         }
         $t = $this->db_manager->get('Sbm\Db\System\DocFields');
         try {
             $this->config['docfields'] = $t->getConfig($this->documentId);
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $this->config['docfields'] = [];
         }
-        $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) / ($this->lineCount() - 1);
+        $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) /
+            ($this->lineCount() - 1);
         $this->NewPage();
     }
 
     /**
-     * Donne le nombre de lignes d'écriture dans une étiquette
+     * Donne le nombre de lignes d'écriture dans une étiquette.
+     * On ne compte pas les photos
      *
      * @return int
      */
     public function lineCount()
     {
-        return count($this->config['docfields']);
+        $n = 0;
+        foreach ($this->config['docfields'] as $docfield) {
+            if ($docfield['nature'] < 2) {
+                $n ++;
+            }
+        }
+        return $n;
     }
 
     public function labelHeight()
@@ -164,10 +172,11 @@ class Etiquette
 
     /**
      * Initialise la colonne courante.
-     * Permet de fixer la position de la première étiquette à tirer sur une planche partiellement utilisée.
+     * Permet de fixer la position de la première étiquette à tirer sur une planche partiellement
+     * utilisée.
      * Utile également pour tirer des duplicatas.
      *
-     * @param int $n            
+     * @param int $n
      */
     public function setCurrentColumn($n)
     {
@@ -176,10 +185,11 @@ class Etiquette
 
     /**
      * Initialise la ligne courante.
-     * Permet de fixer la position de la première étiquette à tirer sur une planche partiellement utilisée.
+     * Permet de fixer la position de la première étiquette à tirer sur une planche partiellement
+     * utilisée.
      * Utile également pour tirer des duplicatas.
      *
-     * @param int $n            
+     * @param int $n
      */
     public function setCurrentRow($n)
     {
@@ -248,16 +258,18 @@ class Etiquette
      * Renvoie la position (X, Y) d'une nouvelle ligne d'écriture dans l'étiquette.
      *
      * On fera :
-     * list($this->x, $this->y) = $label->Ln($i); // ou $i est le numéro de la ligne qu'on vient d'écrire
+     * list($this->x, $this->y) = $label->Ln($i); // ou $i est le numéro de la ligne qu'on vient
+     * d'écrire
      *
-     * @param int $rang            
+     * @param int $rang
      *
      * @return array of float (x, y) en coordonnées absolue (page)
      */
     public function Ln($rang)
     {
         $height = (float) $this->config['docfields'][$rang]['height'];
-        if (array_key_exists($rang + 1, $this->config['docfields']) && empty($this->config['docfields'][$rang + 1]['label'])) {
+        if (array_key_exists($rang + 1, $this->config['docfields']) &&
+            empty($this->config['docfields'][$rang + 1]['label'])) {
             $label_width = (float) $this->config['docfields'][$rang + 1]['label_width'];
         } else {
             $label_width = 0;
@@ -282,7 +294,7 @@ class Etiquette
      * list($this->x, $this->y) = $xy;
      * }</code>
      *
-     * @param int $rang            
+     * @param int $rang
      * @return array|boolean
      */
     public function NextPosition($rang)
@@ -363,6 +375,19 @@ class Etiquette
         return (float) $this->config['docfields'][$rang]['label_space'];
     }
 
+    public function parametresPhoto($rang)
+    {
+        return [
+            'x' => $this->config['docfields'][$rang]['photo_x'],
+            'y' => $this->config['docfields'][$rang]['photo_y'],
+            'w' => $this->config['docfields'][$rang]['photo_w'],
+            'h' => $this->config['docfields'][$rang]['photo_h'],
+            'type' => $this->config['docfields'][$rang]['photo_type'],
+            'align' => $this->config['docfields'][$rang]['photo_align'],
+            'resize' => $this->config['docfields'][$rang]['photo_resize']
+        ];
+    }
+
     /**
      * Renvoie un tableau indexé à partir de 0
      *
@@ -375,7 +400,7 @@ class Etiquette
             'filter',
             'format',
             'label',
-            'is_date',
+            'nature',
             'style'
         ];
         $result = [];

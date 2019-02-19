@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2016
- * @version 2016-2.1.1
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 use SbmMailChimp\Controller;
 use SbmMailChimp\Model\Db\Service\Users;
@@ -33,7 +33,6 @@ return [
                             ]
                         ]
                     ],
-
                     'creer-field' => [
                         'allow' => [
                             'roles' => [

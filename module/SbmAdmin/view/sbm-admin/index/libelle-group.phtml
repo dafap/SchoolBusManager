@@ -7,8 +7,8 @@
  * @filesource libelle-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 20 sept. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -51,7 +51,7 @@ $actions = [
 	<div id="liste-header">
 		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?= count($this->data); ?> libellés.</em>
+			<em>Il y a <?= $this->data->count(); ?> libellés.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -77,7 +77,7 @@ $actions = [
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?= count($this->data); ?> libellés..</em>
+			<em>Il y a <?= $this->data->count(); ?> libellés.</em>
 		</p>
 	</div>
 </div>

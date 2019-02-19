@@ -8,14 +8,14 @@
  * @filesource User.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 2 fév. 2019
+ * @version 2010-2.5.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
-use Zend\Math\Rand;
-use SbmBase\Model\DateLib;
 use SbmAuthentification\Model\Mdp;
+use SbmBase\Model\DateLib;
+use Zend\Math\Rand;
 
 class User extends AbstractObjectData
 {

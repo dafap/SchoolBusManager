@@ -21,18 +21,20 @@ class ConfigServiceFactoryTest extends PHPUnit_Framework_TestCase
     public function testCreateService()
     {
         $ma_config = [
-                'sbm' => [
-                    'mail' => [
-                        'foo' => 'bar'
-                    ]
+            'sbm' => [
+                'mail' => [
+                    'foo' => 'bar'
                 ]
+            ]
         ];
         $factory = new ConfigServiceFactory();
-        $serviceLocator = $this->createMock('Zend\\ServiceManager\\ServiceLocatorInterface');
+        $serviceLocator = $this->createMock(
+            'Zend\\ServiceManager\\ServiceLocatorInterface');
         $serviceLocator->expects($this->any())
             ->method('get')
             ->with('Config')
             ->will($this->returnValue($ma_config));
-        $this->assertSame($ma_config['sbm']['mail'], $factory->createService($serviceLocator));
+        $this->assertSame($ma_config['sbm']['mail'], 
+            $factory->createService($serviceLocator));
     }
 }

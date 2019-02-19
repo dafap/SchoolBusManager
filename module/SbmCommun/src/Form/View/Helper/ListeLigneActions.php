@@ -4,8 +4,8 @@
  * à déclarer dans module.config.php comme ceci : 
  * 'view_helpers' => [
  *          'invokables' => [
- *                      'listeLigneActions' =>'SbmCommun\Form\View\Helper\ListeLigneActions',)
- * )
+ *                      'listeLigneActions' =>'SbmCommun\Form\View\Helper\ListeLigneActions',]
+ * ]
  * 
  * La mise en page d'une liste est la suivante :
  * <div class="liste-wrapper">
@@ -28,8 +28,8 @@
  * @filesource ListeLigneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -47,8 +47,13 @@ class ListeLigneActions extends AbstractHelper
      *            La référence unique des données de la ligne (composé par exemple à partir
      *            de la <i>primary_key</i> ou d'une <i>key unique</i>).
      * @param array $hiddens
-     *            Tableau indexé [name => value, ...). S'il n'y a pas de valeur mettre
+     *            Tableau indexé [name => value, ...]. S'il n'y a pas de valeur mettre
      *            <b>null</b>.
+     * @param array $buttons
+     *            Tableau indexé [name => attributes, ...] où name est une chaine (nom de
+     *            l'élément input type=submit) et attributes est un tableau des attributs de cet
+     *            élément ['class' => ..., 'formaction' => ..., 'title' => ..., 'value => ...,
+     *            'formtarget' => ..., 'autofocus' => ...]
      * @param array $attributes
      *            Ce sont les attributs du formulaires. En voici la liste (HTML5):<br><ul>
      *            <li><b>accept-charset</b> : Une liste des ensembles de caractères que le serveur

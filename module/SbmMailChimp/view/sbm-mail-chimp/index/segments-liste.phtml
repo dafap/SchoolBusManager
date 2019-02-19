@@ -9,43 +9,48 @@
  * @filesource segments-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $categorieId = $this->auth->getCategorieId();
 $url_retour = $this->url('sbmmailchimp');
-if ($this->acl->hasResource('edit-segment') && $this->acl->isAllowed($categorieId, 'edit-segment')) {
+if ($this->acl->hasResource('edit-segment') &&
+    $this->acl->isAllowed($categorieId, 'edit-segment')) {
     $url_edit = $this->url('sbmmailchimp', [
         'action' => 'edit-segment'
     ]);
 } else {
     $url_edit = false;
 }
-if ($this->acl->hasResource('dupliquer-segment') && $this->acl->isAllowed($categorieId, 'dupliquer-segment')) {
+if ($this->acl->hasResource('dupliquer-segment') &&
+    $this->acl->isAllowed($categorieId, 'dupliquer-segment')) {
     $url_duplique = $this->url('sbmmailchimp', [
         'action' => 'dupliquer-segment'
     ]);
 } else {
     $url_duplique = false;
 }
-if ($this->acl->hasResource('creer-segment') && $this->acl->isAllowed($categorieId, 'creer-segment')) {
+if ($this->acl->hasResource('creer-segment') &&
+    $this->acl->isAllowed($categorieId, 'creer-segment')) {
     $url_creer = $this->url('sbmmailchimp', [
         'action' => 'creer-segment'
     ]);
 } else {
     $url_creer = false;
 }
-if ($this->acl->hasResource('suppr-segment') && $this->acl->isAllowed($categorieId, 'suppr-segment')) {
+if ($this->acl->hasResource('suppr-segment') &&
+    $this->acl->isAllowed($categorieId, 'suppr-segment')) {
     $url_suppr = $this->url('sbmmailchimp', [
         'action' => 'suppr-segment'
     ]);
 } else {
     $url_suppr = false;
 }
-if ($this->acl->hasResource('segment-members') && $this->acl->isAllowed($categorieId, 'segment-members')) {
+if ($this->acl->hasResource('segment-members') &&
+    $this->acl->isAllowed($categorieId, 'segment-members')) {
     $url_members = $this->url('sbmmailchimp', [
         'action' => 'segment-members'
     ]);
@@ -79,26 +84,24 @@ $data = $this->source->getCurrentItems();
 <h1>Listes des segments d'une liste de diffusion de MailChimp</h1>
 <table>
 	<tr>
-		<th><?php echo $id_liste; ?></th>
-		<th><?php echo $liste_name; ?></th>
-		<th><?php echo StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
+		<th><?= $id_liste; ?></th>
+		<th><?= $liste_name; ?></th>
+		<th><?= StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
 		<th><?php ?></th>
 	</tr>
 </table>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?php echo $this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-if ($this->message) {
-    $ligne = sprintf('<ul class="%s"><li>%s</li><ul>', 'info', $this->message);
-    echo $ligne;
-}
-?>
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+			<?php if ($this->message) : ?>
+			    <?= sprintf('<ul class="%s"><li>%s</li><ul>', 'info', $this->message);?>
+			<?php endif;?>
         </div>
 	</div>
 	<div id="liste-inner">
@@ -111,12 +114,12 @@ if ($this->message) {
 					<th style="min-width: 5em;">Inscrits</th>
 					<th></th>
 				</tr>
-	    <?php foreach($data as $segment): ?>
-	    <?php $hiddens['id_liste'] = $id_liste; ?>
-	    <?php $hiddens['liste_name'] = $liste_name; ?>
-	    <?php $hiddens['segment_id'] = $segment['id']; ?>
-	    <?php $hiddens['segment_name'] = $segment['name']; ?>
-	    <?php
+	    		<?php foreach($data as $segment): ?>
+	    			<?php $hiddens['id_liste'] = $id_liste; ?>
+	    			<?php $hiddens['liste_name'] = $liste_name; ?>
+	    			<?php $hiddens['segment_id'] = $segment['id']; ?>
+	    			<?php $hiddens['segment_name'] = $segment['name']; ?>
+	    			<?php
         $buttons = [];
         if ($url_edit) {
             $buttons['edit'] = [
@@ -150,24 +153,27 @@ if ($this->message) {
             'options',
             'match'
         ], $segment, '') == 'any' ? 'OU' : 'ET';
-        $n_conditions = count(StdLib::getParamR([
-            'options',
-            'conditions'
-        ], $segment, []));
+        $n_conditions = count(
+            StdLib::getParamR([
+                'options',
+                'conditions'
+            ], $segment, []));
         $conditions = sprintf('%s (%d)', $match, $n_conditions);
         ?>
-	    <tr class="<?php echo $this->cycle(['even', 'odd'])->next();?>">
-					<td><?php echo $segment['id'];?></td>
-					<td><?php echo $this->escapeHtml($segment['name']);?></td>
-					<td><?php echo $conditions;?></td>
-					<td><?php echo $this->escapeHtml($segment['member_count']);?></td>
-					<td><?php echo $this->listeLigneActions($segment['id'], $hiddens, $buttons);?></td>
+	    		<tr class="<?= $this->cycle(['even', 'odd'])->next();?>">
+					<td><?= $segment['id'];?></td>
+					<td><?= $this->escapeHtml($segment['name']);?></td>
+					<td><?= $conditions;?></td>
+					<td><?= $this->escapeHtml($segment['member_count']);?></td>
+					<td><?= $this->listeLigneActions($segment['id'], $hiddens, $buttons);?></td>
 				</tr>
 	    <?php endforeach;?>
 	    </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?php echo $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->source, 'Sliding', 'sbm/pagination', []); ?>
+		</div>
 	</div>
 </div>

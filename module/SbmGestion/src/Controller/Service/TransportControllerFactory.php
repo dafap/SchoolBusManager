@@ -9,15 +9,15 @@
  * @filesource TransportControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 oct. 2017
- * @version 2017-2.3.12
+ * @date 25 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller\Service;
 
+use SbmBase\Model\StdLib;
+use SbmGestion\Controller\TransportController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmGestion\Controller\TransportController;
-use SbmBase\Model\StdLib;
 
 class TransportControllerFactory implements FactoryInterface
 {
@@ -40,10 +40,11 @@ class TransportControllerFactory implements FactoryInterface
                 'sbm',
                 'mail'
             ], $config_application),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application)
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application)
         ];
         return new TransportController($config_controller);
     }

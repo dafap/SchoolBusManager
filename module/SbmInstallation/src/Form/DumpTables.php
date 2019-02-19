@@ -7,8 +7,8 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 2 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmInstallation\Form;
 
@@ -31,6 +31,9 @@ class DumpTables extends Form
         $element->setLabel('Tables système')->setValueOptions([]);
         $this->add($element);
 
+        $element = new MultiCheckbox('plugin');
+        $element->setLabel('Table du plugin de paiement en ligne')->setValueOptions([]);
+        $this->add($element);
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Radio',

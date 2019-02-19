@@ -8,8 +8,8 @@
  * @filesource Abreviations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Filter;
 
@@ -375,7 +375,7 @@ class Abreviations extends AbstractUnicode implements FilterInterface
                 $suffixes1 = explode(',', $matches[2]);
                 $suffixes2 = explode(',', $matches[4]);
                 if (count($suffixes1) != count($suffixes2)) {
-                    throw new Exception(
+                    throw new Exception\LogicException(
                         'Erreur de référence dans le fichier ' . __FILE__ .
                         '. Les deux parties du mot composé doivent avoir le même nombre de variantes.');
                 }
@@ -400,7 +400,7 @@ class Abreviations extends AbstractUnicode implements FilterInterface
                                                  // longueur
                 }
             })) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 __CLASS__ . '. Impossible de trier le tableau des abréviations.');
         }
     }

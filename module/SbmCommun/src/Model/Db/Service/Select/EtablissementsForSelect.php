@@ -10,8 +10,8 @@
  * @filesource EtablissementsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -46,12 +46,35 @@ class EtablissementsForSelect implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->table_name = $this->db_manager->getCanonicName('etablissements', 'table');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
         return $this;
+    }
+
+    public function tous()
+    {
+        $select = $this->sql->select(
+            $this->db_manager->getCanonicName('etablissements', 'vue'));
+        $select->columns([
+            'etablissementId',
+            'commune',
+            'nom'
+        ]);
+        $select->order([
+            'commune',
+            'nom'
+        ]);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
+        }
+        return $array;
     }
 
     public function desservis()
@@ -105,6 +128,29 @@ class EtablissementsForSelect implements FactoryInterface
         $select = $this->sql->select(
             $this->db_manager->getCanonicName('etablissements', 'vue'));
         $select->where('statut = 1 AND niveau = 4');
+        $select->columns([
+            'etablissementId',
+            'commune',
+            'nom'
+        ]);
+        $select->order([
+            'commune',
+            'nom'
+        ]);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
+        }
+        return $array;
+    }
+
+    public function enRpi()
+    {
+        $select = $this->sql->select(
+            $this->db_manager->getCanonicName('etablissements', 'vue'));
+        $select->where('regrPeda = 1 AND niveau <= 3');
         $select->columns([
             'etablissementId',
             'commune',

@@ -8,8 +8,8 @@
  * @filesource PluginTableGateway.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 avr. 2015
- * @version 2015-1
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmPaiement\Plugin\SystemPay\Db\TableGateway;
 
@@ -17,6 +17,7 @@ use SbmCommun\Model\Db\Service\TableGateway\AbstractSbmTableGateway;
 
 class PluginTableGateway extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'systempay';

@@ -7,8 +7,8 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
 
@@ -70,7 +70,8 @@ class Circuits implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->sm = $serviceLocator;
@@ -136,7 +137,7 @@ class Circuits implements FactoryInterface
                 ];
                 break;
             default:
-                throw new Exception('L\'horaire demandé est inconnu.');
+                throw new Exception\DomainException('L\'horaire demandé est inconnu.');
         }
         $select = $this->sql->select();
         $select->from([
@@ -217,7 +218,7 @@ class Circuits implements FactoryInterface
                 ];
                 break;
             default:
-                throw new Exception('L\'horaire demandé est inconnu.');
+                throw new Exception\DomainException('L\'horaire demandé est inconnu.');
         }
         $select = $this->sql->select();
         $select->from([
@@ -252,12 +253,12 @@ class Circuits implements FactoryInterface
                     'serviceId' => $serviceId
                 ]);
             return $oetablissementservice->stationId;
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $code = $e->getCode();
             if (! is_numeric($code)) {
                 $code = 0;
             }
-            throw new Exception(
+            throw new Exception\OutOfBoundsException(
                 "L'établissement $etablissementId n'est pas desservi par le circuit $serviceId.",
                 $code, $e);
         }
@@ -291,7 +292,7 @@ class Circuits implements FactoryInterface
             case 'soir':
                 return $ocircuit->s1;
             default:
-                throw new Exception('L\'horaire demandé est inconnu.');
+                throw new Exception\DomainException('L\'horaire demandé est inconnu.');
         }
     }
 }

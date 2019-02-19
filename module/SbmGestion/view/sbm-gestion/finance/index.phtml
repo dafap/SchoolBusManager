@@ -8,45 +8,52 @@
  * @filesource view/finance/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 1 oct. 2018
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_finance_encaissements = $this->url('sbmgestion/finance', array(
-    'action' => 'paiement-liste',
-    'page' => 1,
-    'id' => 'tous'
-));
-$url_finance_tarifs = $this->url('sbmgestion/finance', array(
+$url_finance_encaissements = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-liste',
+        'page' => 1,
+        'id' => 'tous'
+    ]);
+$url_finance_tarifs = $this->url('sbmgestion/finance', [
     'action' => 'tarif-liste'
-));
-$url_organisme_liste = $this->url('sbmgestion/finance', array(
+]);
+$url_organisme_liste = $this->url('sbmgestion/finance', [
     'action' => 'organisme-liste'
-));
-$url_finance_factures = $this->url('sbmgestion/finance');
-$url_finance_prelevements = $this->url('sbmgestion/finance');
+]);
+// $url_finance_factures = $this->url('sbmgestion/finance');
+// $url_finance_prelevements = $this->url('sbmgestion/finance');
 $url_paiement_liste = $this->url('sbmpaiement');
 $url_gestion = $this->url('sbmgestion');
 
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $anneeScolaire = sprintf("%d-%d", $this->millesime, $this->millesime + 1);
 
-$nouveauBordereauCheques = (empty($this->dateBordereauCheques) && ! empty($this->datePaiementCheques)) || (! empty($this->dateBordereauCheques) && ! empty($this->datePaiementCheques) && $this->dateBordereauCheques < $this->datePaiementCheques);
-$nouveauBordereauEspeces = (empty($this->dateBordereauEspeces) && ! empty($this->datePaiementEspeces)) || (! empty($this->dateBordereauEspeces) && ! empty($this->datePaiementEspeces) && $this->dateBordereauEspeces < $this->datePaiementEspeces);
-$nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiementCB)) || (! empty($this->dateBordereauCB) && ! empty($this->datePaiementCB) && $this->dateBordereauCB < $this->datePaiementCB);
+$nouveauBordereauCheques = (empty($this->dateBordereauCheques) &&
+    ! empty($this->datePaiementCheques)) || (! empty($this->dateBordereauCheques) &&
+    ! empty($this->datePaiementCheques) &&
+    $this->dateBordereauCheques < $this->datePaiementCheques);
+$nouveauBordereauEspeces = (empty($this->dateBordereauEspeces) &&
+    ! empty($this->datePaiementEspeces)) || (! empty($this->dateBordereauEspeces) &&
+    ! empty($this->datePaiementEspeces) &&
+    $this->dateBordereauEspeces < $this->datePaiementEspeces);
+$nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiementCB)) || (! empty(
+    $this->dateBordereauCB) && ! empty($this->datePaiementCB) &&
+    $this->dateBordereauCB < $this->datePaiementCB);
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
-	<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+        <?= $this->flashMessenger()->render('success');?>
+        <?= $this->flashMessenger()->render('warning');?>
+        <?= $this->flashMessenger()->render('error');?>
+        <?= $this->flashMessenger()->render('info');?>
+        <?= $this->flashMessenger()->render('default');?>
     </div>
 	<h1>Gestion financière</h1>
 	<div class="float-left">
@@ -55,9 +62,9 @@ echo $this->flashMessenger()->render('default');
 				<legend>Derniers paiements</legend>
 				<dl class="statistiques">
 					<dt>Date du dernier bordereau de chèques</dt>
-					<dd><?php echo DateLib::formatDateTimeFromMysql($this->dateBordereauCheques);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->dateBordereauCheques);?></dd>
 					<dt>Date du dernier paiement par chèque</dt>
-					<dd><?php echo DateLib::formatDateTimeFromMysql($this->datePaiementCheques);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->datePaiementCheques);?></dd>
 					<?php if ($nouveauBordereauCheques) : ?>
 					<dd class="alert">Il faudra préparer un nouveau bordereau de
 						chèques.</dd>
@@ -65,9 +72,9 @@ echo $this->flashMessenger()->render('default');
 				</dl>
 				<dl class="statistiques separateur">
 					<dt>Date du dernier bordereau d'espèces</dt>
-					<dd><?php echo DateLib::formatDateTimeFromMysql($this->dateBordereauEspeces);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->dateBordereauEspeces);?></dd>
 					<dt>Date du dernier paiement en espèces</dt>
-					<dd><?php echo DateLib::formatDateTimeFromMysql($this->datePaiementEspeces);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->datePaiementEspeces);?></dd>
 					<?php if ($nouveauBordereauEspeces) : ?>
 					<dd class="alert">Il faudra préparer un nouveau bordereau
 						d'espèces.</dd>
@@ -75,9 +82,9 @@ echo $this->flashMessenger()->render('default');
 				</dl>
 				<dl class="statistiques separateur">
 					<dt>Date du dernier bordereau de CB</dt>
-					<dd><?php echo DateLib::formatDateTimeFromMysql($this->dateBordereauCB);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->dateBordereauCB);?></dd>
 					<dt>Date du dernier paiement par CB</dt>
-					<dd><?php echo DateLib::formatDateTimeFromMysql($this->datePaiementCB);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->datePaiementCB);?></dd>
 					<?php if ($nouveauBordereauCB) : ?>
 					<dd class="alert">Il faudra préparer un nouveau bordereau de CB.</dd>
 					<?php endif;?>
@@ -88,26 +95,26 @@ echo $this->flashMessenger()->render('default');
 					<legend>Bordereaux en cours</legend>
 					<dl class="statistiques">
 						<dt>Bordereau de chèques</dt>
-						<dd><?php echo $fmt->formatCurrency($this->encoursCheques ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->encoursCheques ?:0, 'EUR');?></dd>
 						<dt>Bordereau d'espèces</dt>
-						<dd><?php echo $fmt->formatCurrency($this->encoursEspeces ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->encoursEspeces ?:0, 'EUR');?></dd>
 						<dt>Bordereau de CB</dt>
-						<dd><?php echo $fmt->formatCurrency($this->encoursCB ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->encoursCB ?:0, 'EUR');?></dd>
 					</dl>
 					<dl class="statistiques separateur">
 						<dt>Total des bordereaux en cours</dt>
-						<dd><?php echo $fmt->formatCurrency($this->encoursTotal ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->encoursTotal ?:0, 'EUR');?></dd>
 					</dl>
 				</fieldset>
 				<fieldset class="bleu">
 					<legend>Titres individuels émis</legend>
 					<dl class="statistiques">
 						<dt>Pour l'année scolaire</dt>
-						<dd><?php echo $fmt->formatCurrency($this->titresAs ?:0, 'EUR');?></dd>
-						<dt>Pour l'exercice <?php echo $this->millesime;?></dt>
-						<dd><?php echo $fmt->formatCurrency($this->titresExercice1 ?:0, 'EUR');?></dd>
-						<dt>Pour l'exercice <?php echo $this->millesime + 1;?></dt>
-						<dd><?php echo $fmt->formatCurrency($this->titresExercice2 ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->titresAs ?:0, 'EUR');?></dd>
+						<dt>Pour l'exercice <?= $this->millesime;?></dt>
+						<dd><?= $fmt->formatCurrency($this->titresExercice1 ?:0, 'EUR');?></dd>
+						<dt>Pour l'exercice <?= $this->millesime + 1;?></dt>
+						<dd><?= $fmt->formatCurrency($this->titresExercice2 ?:0, 'EUR');?></dd>
 					</dl>
 				</fieldset>
 			</div>
@@ -119,19 +126,18 @@ echo $this->flashMessenger()->render('default');
 		</div>
 		<div id="menugeneral-inner">
 			<ul>
-				<li><a href="<?php echo $url_finance_encaissements; ?>"><i
+				<li><a href="<?= $url_finance_encaissements; ?>"><i
 						class="fam-bullet-go"></i>Gestion des encaissements</a></li>
-				<li><a href="<?php echo $url_paiement_liste; ?>"><i
-						class="fam-bullet-go"></i>Gestion des notifications de paiement en
-						ligne</a></li>
-				<li><a href="<?php echo $url_finance_tarifs; ?>"><i
-						class="fam-bullet-go"></i>Gestion des tarifs</a></li>
+				<li><a href="<?= $url_paiement_liste; ?>"><i class="fam-bullet-go"></i>Gestion
+						des notifications de paiement en ligne</a></li>
+				<li><a href="<?= $url_finance_tarifs; ?>"><i class="fam-bullet-go"></i>Gestion
+						des tarifs</a></li>
 				<li class="gris"><i class="fam-bullet-go"></i>Gestion des factures</li>
 				<li class="gris"><i class="fam-bullet-go"></i>Gestion des
 					prélèvements</li>
-				<li><a href="<?php echo $url_organisme_liste; ?>"><i
-						class="fam-bullet-go"></i>Gestion des organismes payeurs</a></li>
-				<li><a href="<?php echo $url_gestion; ?>"><i class="fam-door-out"></i>Retour
+				<li><a href="<?= $url_organisme_liste; ?>"><i class="fam-bullet-go"></i>Gestion
+						des organismes payeurs</a></li>
+				<li><a href="<?= $url_gestion; ?>"><i class="fam-door-out"></i>Retour
 						au menu général</a></li>
 			</ul>
 		</div>
@@ -139,66 +145,66 @@ echo $this->flashMessenger()->render('default');
 </div>
 <div class="clearfix">
 	<fieldset class="bleu float-left">
-		<legend>Année scolaire <?php echo $anneeScolaire;?></legend>
+		<legend>Année scolaire <?= $anneeScolaire;?></legend>
 		<dl class="statistiques">
 			<dt>Paiements par chèques non déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->asCheques ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->asCheques ?:0, 'EUR');?></dd>
 			<dt>Paiements en espèces non déposés</dt>
-			<dd class="statistiques"><?php echo $fmt->formatCurrency($this->asEspeces ?:0, 'EUR');?></dd>
+			<dd class="statistiques"><?= $fmt->formatCurrency($this->asEspeces ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total de la caisse de régie</dt>
-			<dd><?php echo $fmt->formatCurrency($this->asRegie ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->asRegie ?:0, 'EUR');?></dd>
 			<dt>Total de la caisse DFT</dt>
-			<dd><?php echo $fmt->formatCurrency($this->asDft ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->asDft ?:0, 'EUR');?></dd>
 			<dt>Total des encaissements déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->asComptable ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->asComptable ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total des encaissements</dt>
-			<dd><?php echo $fmt->formatCurrency($this->asTotal ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->asTotal ?:0, 'EUR');?></dd>
 		</dl>
 	</fieldset>
 	<fieldset class="rose float-left">
-		<legend>Exercice budgétaire <?php echo $this->millesime;?></legend>
+		<legend>Exercice budgétaire <?= $this->millesime;?></legend>
 		<dl class="statistiques">
 			<dt>Paiements par chèques non déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->montantCheques1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->montantCheques1 ?:0, 'EUR');?></dd>
 			<dt>Paiements en espèces non déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->montantEspeces1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->montantEspeces1 ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total de la caisse de régie</dt>
-			<dd><?php echo $fmt->formatCurrency($this->totalRegie1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->totalRegie1 ?:0, 'EUR');?></dd>
 			<dt>Total de la caisse DFT</dt>
-			<dd><?php echo $fmt->formatCurrency($this->totalDft1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->totalDft1 ?:0, 'EUR');?></dd>
 			<dt>Total des encaissements déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->totalComptable1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->totalComptable1 ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total des encaissements</dt>
-			<dd><?php echo $fmt->formatCurrency($this->total1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->total1 ?:0, 'EUR');?></dd>
 		</dl>
 	</fieldset>
 	<fieldset class="jaune float-left">
-		<legend>Exercice budgétaire <?php echo $this->millesime + 1;?></legend>
+		<legend>Exercice budgétaire <?= $this->millesime + 1;?></legend>
 		<dl class="statistiques">
 			<dt>Paiements par chèques non déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->montantCheques2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->montantCheques2 ?:0, 'EUR');?></dd>
 			<dt>Paiements en espèces non déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->montantEspeces2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->montantEspeces2 ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total de la caisse de régie</dt>
-			<dd class=""><?php echo $fmt->formatCurrency($this->totalRegie2 ?:0, 'EUR');?></dd>
+			<dd class=""><?= $fmt->formatCurrency($this->totalRegie2 ?:0, 'EUR');?></dd>
 			<dt>Total de la caisse DFT</dt>
-			<dd><?php echo $fmt->formatCurrency($this->totalDft2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->totalDft2 ?:0, 'EUR');?></dd>
 			<dt>Total des encaissements déposés</dt>
-			<dd><?php echo $fmt->formatCurrency($this->totalComptable2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->totalComptable2 ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total des encaissements</dt>
-			<dd><?php echo $fmt->formatCurrency($this->total2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->total2 ?:0, 'EUR');?></dd>
 		</dl>
 	</fieldset>
 </div>

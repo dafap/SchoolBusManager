@@ -7,8 +7,8 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 30 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -331,6 +331,25 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
+                'name' => 'tarifId',
+                'attributes' => [
+                    'id' => 'eleve-tarifId',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Tarif',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un tarif',
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
                 'name' => 'responsable1Id',
                 'attributes' => [
                     'id' => 'eleve-responsable1Id',
@@ -445,7 +464,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'distanceR1',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'eleve-distanceR1',
                     'class' => 'sbm-width-10c',
@@ -465,7 +484,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'distanceR2',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'eleve-distanceR2',
                     'class' => 'sbm-width-10c',
@@ -598,12 +617,31 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Textarea',
                 'name' => 'commentaire',
                 'attributes' => [
-                    'id' => 'eleve-commentaire'
+                    'id' => 'eleve-commentaire',
+                    'class' => 'commentaire'
                 ],
                 'options' => [
-                    'label' => 'Notes',
+                    'label' => 'Notes annuelles',
                     'label_attributes' => [
-                        'class' => 'sbm-label'
+                        'class' => 'sbm-label commentaire'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'note',
+                'attributes' => [
+                    'id' => 'eleve-note',
+                    'class' => 'commentaire'
+                ],
+                'options' => [
+                    'label' => 'Notes permanentes',
+                    'label_attributes' => [
+                        'class' => 'sbm-label commentaire'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm_error'

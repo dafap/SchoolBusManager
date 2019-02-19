@@ -2,14 +2,13 @@
 /**
  * Vue affichant la liste des documents pdf
  *
- *
  * @project sbm
  * @package SbmPdf/view/sbm-pdf/document
  * @filesource pdf-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -141,14 +140,14 @@ $buttons = [
 					<th>Pied de page</th>
 					<th style="width: 110px;"></th>
 				</tr>
-            <?php foreach($documents as $doc): ?>
+            <?php foreach($documents as $test => $doc): ?>
                 <?php
                 $doc_title = $doc_footer = $page_title = $page_footer = '';
                 if ($doc->docheader) {
                     $doc_title = 'title="' . $doc->title;
                     $tmp = $doc->docheader_subtitle;
                     if (! empty($tmp)) {
-                        $doc_title .= "\n$tmp";
+                        $doc_title .= "\n" . strip_tags($tmp);
                     }
                     $doc_title .= '"';
                 }
@@ -156,7 +155,7 @@ $buttons = [
                     $doc_footer = 'title="' . $doc->docfooter_title;
                     $tmp = $doc->docfooter_string;
                     if (! empty($tmp)) {
-                        $doc_footer .= "\n$tmp";
+                        $doc_footer .= "\n" . strip_tags($tmp);
                     }
                     $doc_footer .= '"';
                 }
@@ -164,7 +163,7 @@ $buttons = [
                     $page_title = 'title="' . $doc->pageheader_title;
                     $tmp = $doc->pageheader_string;
                     if (! empty($tmp)) {
-                        $doc_title .= "\n$tmp";
+                        $doc_title .= "\n" . strip_tags($tmp);
                     }
                     $page_title .= '"';
                 }
@@ -202,12 +201,13 @@ $buttons = [
                 ];
                 ?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
-					<td class="documentId">
-						<?= $doc->documentId; ?></td>
-					<td class="name">
-						<?= $this->escapeHtml($doc->name); ?></td>
-					<td class="recordSource"><div style="max-width: 400px;">
-						<?= nl2br($this->escapeHtml($doc->recordSource)); ?></div></td>
+					<td class="documentId"><?= $doc->documentId; ?></td>
+					<td class="name"><?= $this->escapeHtml($doc->name); ?></td>
+					<td class="recordSource">
+						<div style="max-width: 400px;">
+							<?= nl2br($this->escapeHtml($doc->recordSource)); ?>
+						</div>
+					</td>
 					<td class="filter">
 						<?= $this->escapeHtml($doc->filter); ?></td>
 					<td class="orderBy">
@@ -225,7 +225,7 @@ $buttons = [
 					<td class="pagefooter" <?= $page_footer;?>>
 						<?= $doc->pagefooter ? 'Oui' : ''; ?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($doc->documentId, $hiddens, $buttons);?>
+                		<?= $this->listeLigneActions($doc->documentId, $hiddens, $buttons);?>
 				    </td>
 				</tr>         
         <?php endforeach;?>
@@ -233,11 +233,11 @@ $buttons = [
 		</table>
 	</div>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination',[]); ?></div>
+		<div class="pagination-wrapper clearfix"><?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
 		<div class="criteres-wrapper">
-	    <?= $this->form()->openTag($this->criteres_form);?>
-	    <?= $this->formCollection($this->criteres_form, true);?>
-	    <?= $this->form()->closeTag();?>
+	    	<?= $this->form()->openTag($this->criteres_form);?>
+	    	<?= $this->formCollection($this->criteres_form, true);?>
+	    	<?= $this->form()->closeTag();?>
 	    </div>
 	</div>
 </div>

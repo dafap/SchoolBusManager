@@ -9,18 +9,18 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmMailChimp\Controller\Service;
 
+use SbmBase\Model\StdLib;
+use SbmMailChimp\Controller\IndexController;
+use Zend\Permissions\Acl\Acl;
+use Zend\Permissions\Acl\Resource\GenericResource;
+use Zend\Permissions\Acl\Role\GenericRole;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Permissions\Acl\Acl;
-use Zend\Permissions\Acl\Role\GenericRole;
-use Zend\Permissions\Acl\Resource\GenericResource;
-use SbmMailChimp\Controller\IndexController;
-use SbmBase\Model\StdLib;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -62,7 +62,8 @@ class IndexControllerFactory implements FactoryInterface
             if (is_null($parent)) {
                 $acl->addRole(new GenericRole($categorieIds[$role]));
             } else {
-                $acl->addRole(new GenericRole($categorieIds[$role]), $categorieIds[$parent]);
+                $acl->addRole(new GenericRole($categorieIds[$role]),
+                    $categorieIds[$parent]);
             }
         }
         // les resources

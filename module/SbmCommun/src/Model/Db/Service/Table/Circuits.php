@@ -8,12 +8,13 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
+use Zend\Db\Sql\Expression;
 
 class Circuits extends AbstractSbmTable
 {
@@ -99,6 +100,24 @@ class Circuits extends AbstractSbmTable
         return $this->table_gateway->delete([
             'millesime' => $millesime
         ]);
+    }
+
+    /**
+     * Renvoie le dernier millesime utilisé dans la table des circuits
+     *
+     * @return int
+     */
+    public function getDernierMillesime()
+    {
+        $select = $this->getTableGateway()
+            ->getSql()
+            ->select();
+        $select->columns([
+            'millesime' => new Expression('max(millesime)')
+        ]);
+        $resultset = $this->getTableGateway()->selectWith($select);
+        $row = $resultset->current();
+        return $row->millesime;
     }
 }
 

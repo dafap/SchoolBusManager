@@ -8,20 +8,22 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2016
- * @version 2016-2.1.9
+ * @date 2 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // $url_gest_eleve = $this->url('sbmgestion/eleve');
-$url_gest_eleves = $this->url('sbmgestion/eleve', array(
-    'action' => 'eleve-liste',
-    'page' => $this->page
-));
-$url_gest_responsables = $this->url('sbmgestion/eleve', array(
-    'action' => 'responsable-liste',
-    'page' => $this->page
-));
+$url_gest_eleves = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'eleve-liste',
+        'page' => $this->page
+    ]);
+$url_gest_responsables = $this->url('sbmgestion/eleve', 
+    [
+        'action' => 'responsable-liste',
+        'page' => $this->page
+    ]);
 $url_portail = $this->url('sbmportail');
 $url_gest_finance = $this->url('sbmgestion/finance');
 $url_gest_transport = $this->url('sbmgestion/transport');
@@ -29,23 +31,20 @@ $url_gest_change_as = $this->url('sbmgestion/anneescolaire');
 $url_gest_statistiques = $this->url('sbmgestion/statistiques');
 $url_gest_mailchimp = $this->url('sbmmailchimp');
 $url_gest_parametre = $this->url('sbmgestion/config');
-$url_parent = $this->url('sbmparent');
 
-$paiementsAS = $this->paiements['totalASMode'];
-$paiementsMode = current($paiementsAS);
-$paiementsTotal = $this->paiements['totalGeneral'];
+$pAS = $this->paiements['totalASMode'];
+$pMode = current($pAS);
+$pTotal = $this->paiements['totalGeneral'];
 
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
-	<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+        <?= $this->flashMessenger()->render('success');?>
+        <?= $this->flashMessenger()->render('warning');?>
+        <?= $this->flashMessenger()->render('error');?>
+        <?= $this->flashMessenger()->render('info');?>
+        <?= $this->flashMessenger()->render('default');?>
     </div>
 	<h1>Gestion du service</h1>
 	<div class="float-left">
@@ -54,43 +53,43 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves enregistrés</td>
-					<td class="effectif"><?php echo $this->elevesEnregistres ?:0;?></td>
+					<td class="effectif"><?= $this->elevesEnregistres ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves inscrits</td>
-					<td class="effectif"><?php echo $this->elevesInscrits ?:0;?></td>
+					<td class="effectif"><?= $this->elevesInscrits ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves inscrits puis rayés</td>
-					<td class="effectif"><?php echo $this->elevesInscritsRayes ?:0;?></td>
+					<td class="effectif"><?= $this->elevesInscritsRayes ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves préinscrits</td>
-					<td class="effectif"><?php echo $this->elevesPreinscrits ?:0;?></td>
+					<td class="effectif"><?= $this->elevesPreinscrits ?:0;?></td>
 				</tr>
 				<tr class="separateur">
 					<td>Nombre d'élèves préinscrits puis rayés</td>
-					<td class="effectif"><?php echo $this->elevesPreinscritsRayes ?:0;?></td>
+					<td class="effectif"><?= $this->elevesPreinscritsRayes ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves à moins de 1 km</td>
-					<td class="effectif"><?php echo $this->elevesMoins1km ?:0;?></td>
+					<td class="effectif"><?= $this->elevesMoins1km ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves de 1 à 3 km</td>
-					<td class="effectif"><?php echo $this->elevesDe1A3km ?:0;?></td>
+					<td class="effectif"><?= $this->elevesDe1A3km ?:0;?></td>
 				</tr>
 				<tr class="separateur">
 					<td>Nombre d'élèves à 3 km et plus</td>
-					<td class="effectif"><?php echo $this->eleves3kmEtPlus ?:0;?></td>
+					<td class="effectif"><?= $this->eleves3kmEtPlus ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves en famille d'accueil</td>
-					<td class="effectif"><?php echo $this->elevesFamilleAcceuil ?:0;?></td>
+					<td class="effectif"><?= $this->elevesFamilleAcceuil ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves en garde alternée</td>
-					<td class="effectif"><?php echo $this->elevesGardeAlternee ?:0;?></td>
+					<td class="effectif"><?= $this->elevesGardeAlternee ?:0;?></td>
 				</tr>
 			</tbody>
 		</table>
@@ -99,23 +98,23 @@ echo $this->flashMessenger()->render('default');
 				<tbody>
 					<tr>
 						<td>Nombre de responsables</td>
-						<td class="effectif"><?php echo $this->responsablesEnregistres;?></td>
+						<td class="effectif"><?= $this->responsablesEnregistres;?></td>
 					</tr>
 					<tr>
 						<td>Nombre de responsables ayant inscrit des enfants</td>
-						<td class="effectif"><?php echo $this->responsablesAvecEnfant;?></td>
+						<td class="effectif"><?= $this->responsablesAvecEnfant;?></td>
 					</tr>
 					<tr class="separateur">
 						<td>Nombre de responsables sans enfant inscrit</td>
-						<td class="effectif"><?php echo $this->responsablesSansEnfant;?></td>
+						<td class="effectif"><?= $this->responsablesSansEnfant;?></td>
 					</tr>
 					<tr>
 						<td>Nombre de responsables résidant hors périmètre</td>
-						<td class="effectif"><?php echo $this->responsablesHorsZone;?></td>
+						<td class="effectif"><?= $this->responsablesHorsZone;?></td>
 					</tr>
 					<tr>
 						<td>Nombre de responsables ayant déménagé</td>
-						<td class="effectif"><?php echo $this->responsablesDemenagement;?></td>
+						<td class="effectif"><?= $this->responsablesDemenagement;?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -124,23 +123,32 @@ echo $this->flashMessenger()->render('default');
 				<tbody></tbody>
 				<tr>
 					<td>Paiements en ligne</td>
-					<td class="euro"><?php echo $fmt->formatCurrency(isset($paiementsMode['CB']) ? $paiementsMode['CB'] : 0, 'EUR');?></td>
+					<td class="euro">
+						<?= $fmt->formatCurrency(isset($pMode['CB']) ? $pMode['CB'] : 0, 'EUR');?>
+						</td>
 				</tr>
 				<tr>
 					<td>Paiements par chèque</td>
-					<td class="euro"><?php echo $fmt->formatCurrency(isset($paiementsMode['chèque']) ? $paiementsMode['chèque'] : 0, 'EUR');?></td>
+					<td class="euro">
+						<?= $fmt->formatCurrency(isset($pMode['chèque']) ? $pMode['chèque'] : 0, 'EUR');?>
+						</td>
 				</tr>
 				<tr>
 					<td>Paiements en espèces</td>
-					<td class="euro"><?php echo $fmt->formatCurrency(isset($paiementsMode['espèces']) ? $paiementsMode['espèces'] : 0, 'EUR');?></td>
+					<td class="euro">
+						<?= $fmt->formatCurrency(isset($pMode['espèces']) ? $pMode['espèces'] : 0, 'EUR');?>
+						</td>
 				</tr>
 				<tr class="separateur">
 					<td>Paiements par titre individuel</td>
-					<td class="euro"><?php echo $fmt->formatCurrency(isset($paiementsMode['Titre individuel']) ? $paiementsMode['Titre individuel'] : 0, 'EUR');?></td>
+					<td class="euro">
+						<?= $fmt->formatCurrency(isset($pMode['Titre individuel']) ? $pMode['Titre individuel'] : 0, 'EUR');?>
+						</td>
 				</tr>
 				<tr>
 					<td>Total des encaissements</td>
-					<td class="euro"><?php echo $fmt->formatCurrency($paiementsTotal, 'EUR');?></td>
+					<td class="euro">
+						<?= $fmt->formatCurrency($pTotal, 'EUR');?></td>
 				</tr>
 				</tbody>
 			</table>
@@ -152,23 +160,23 @@ echo $this->flashMessenger()->render('default');
 		</div>
 		<div id="menugeneral-inner">
 			<ul>
-				<li><a href="<?php echo $url_gest_eleves; ?>"><i
+				<li><a href="<?= $url_gest_eleves; ?>"><i
 						class="fam-bullet-go"></i>Gestion des élèves</a></li>
-				<li><a href="<?php echo $url_gest_responsables; ?>"><i
+				<li><a href="<?= $url_gest_responsables; ?>"><i
 						class="fam-bullet-go"></i>Gestion des responsables</a></li>
-				<li><a href="<?php echo $url_gest_finance; ?>"><i
+				<li><a href="<?= $url_gest_finance; ?>"><i
 						class="fam-bullet-go"></i>Gestion financière</a></li>
-				<li><a href="<?php echo $url_gest_transport; ?>"><i
+				<li><a href="<?= $url_gest_transport; ?>"><i
 						class="fam-bullet-go"></i>Gestion du réseau de transport</a></li>
-				<li><a href="<?php echo $url_gest_change_as; ?>"><i
+				<li><a href="<?= $url_gest_change_as; ?>"><i
 						class="fam-bullet-go"></i>Choix de l'année scolaire</a></li>
-				<li><a href="<?php echo $url_gest_statistiques; ?>"><i
-					class="fam-bullet-go"></i>Statistiques</a></li>
-				<li><a href="<?php echo $url_gest_mailchimp; ?>"><i
-					class="fam-bullet-go"></i>Gestion de la liste de diffusion</a></li>
-			<!-- >li><a href="<?php echo $url_gest_parametre; ?>"><i
+				<li><a href="<?= $url_gest_statistiques; ?>"><i
+						class="fam-bullet-go"></i>Statistiques</a></li>
+				<li><a href="<?= $url_gest_mailchimp; ?>"><i
+						class="fam-bullet-go"></i>Gestion de la liste de diffusion</a></li>
+				<!-- >li><a href="<?= $url_gest_parametre; ?>"><i
 					class="fam-bullet-go"></i>Configuration et paramètres</a></li-->
-				<li><a href="<?php echo $url_portail; ?>"><i class="fam-bullet-go"></i>Portail
+				<li><a href="<?= $url_portail; ?>"><i class="fam-bullet-go"></i>Portail
 						de consultation</a></li>
 			</ul>
 		</div>

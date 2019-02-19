@@ -8,8 +8,8 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -36,7 +36,8 @@ class Users extends AbstractSbmTable
      * @param string $field_name
      * @param string $search
      *
-     * @throws Exception
+     * @throws Exception\RuntimeException
+     *
      * @return \SbmCommun\Model\Db\ObjectData\User
      */
     public function getRecordOneBy($field_name, $search)
@@ -50,7 +51,7 @@ class Users extends AbstractSbmTable
         $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();
         if (! $row) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf(_("Could not find row '%s' in table %s"), $condition_msg,
                     $this->table_name));
         }

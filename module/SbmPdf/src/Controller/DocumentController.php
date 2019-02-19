@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 1 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller;
 
@@ -37,7 +37,9 @@ class DocumentController extends AbstractActionController
     {}
 
     /**
-     * Reçoit éventuellement en post un
+     * Action pour générer les horaires au format pdf
+     *
+     * Reçoit éventuellement en post un 'serviceId'
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
@@ -47,7 +49,7 @@ class DocumentController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         $millesime = Session::get('millesime');
         // on doit être authentifié
         $auth = $this->authenticate->by('email');
@@ -62,7 +64,7 @@ class DocumentController extends AbstractActionController
         switch ($this->categorie) {
             case 1: // parent
                 try {
-                    $responsable = $this->responsable->get();
+                    $responsable = $this->responsable_manager->get();
                 } catch (\Exception $e) {
                     return $this->redirect()->toRoute('login', [
                         'action' => 'logout'
@@ -85,7 +87,7 @@ class DocumentController extends AbstractActionController
                     if (! empty($services)) {
                         $services = array_values($services);
                     }
-                } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Vos enfants n\'ont pas été affectés sur un circuit.');
                     return $this->redirect()->toRoute('login', [
@@ -105,7 +107,7 @@ class DocumentController extends AbstractActionController
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
-                } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Pas d\'enfants affectés sur vos circuits.');
                     return $this->redirect()->toRoute('login', [
@@ -126,7 +128,7 @@ class DocumentController extends AbstractActionController
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
-                } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Aucun service dessert votre établissement.');
                     return $this->redirect()->toRoute('login', [
@@ -144,7 +146,7 @@ class DocumentController extends AbstractActionController
                     foreach ($oservices as $objectService) {
                         $services[] = $objectService->serviceId;
                     }
-                } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Impossible d\'obtenir la liste des services.');
                     return $this->redirect()->toRoute('login', [
@@ -187,14 +189,21 @@ class DocumentController extends AbstractActionController
                     })
             ];
         }
-        $this->pdf_manager->get(Tcpdf::class)
-            ->setParams(
-            [
-                'documentId' => 'Horaires détaillés',
-                'layout' => 'sbm-pdf/document/horaires.phtml'
-            ])
-            ->setData($ahoraires)
-            ->run();
+        if (count($ahoraires)) {
+            $this->pdf_manager->get(Tcpdf::class)
+                ->setParams(
+                [
+                    'documentId' => 'Horaires détaillés',
+                    'layout' => 'sbm-pdf/layout/horaires.phtml'
+                ])
+                ->setData($ahoraires)
+                ->run();
+        } else {
+            $this->flashMessenger()->addInfoMessage('Rien à imprimer');
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
     }
 
     private function detailHoraireArret($arret, $qListe, $millesime)
@@ -206,12 +215,81 @@ class DocumentController extends AbstractActionController
                 'nom',
                 'prenom'
             ]);
-        $arret['effectif'] = count($liste);
+        $arret['effectif'] = $liste->count();
         $arret['liste'] = [];
         foreach ($liste as $eleve) {
             $arret['liste'][] = $eleve['nom'] . ' ' . $eleve['prenom'] . ' - ' .
                 $eleve['classe'];
         }
         return $arret;
+    }
+
+    /**
+     * Action permettant de générer la liste des élèves au format pdf dans le portail de
+     * l'organisateur
+     */
+    public function orgPdfAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        // on doit être authentifié
+        $auth = $this->authenticate->by('email');
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmPortail\Form\CriteresForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
+            ->setValueOptions('serviceId',
+            $this->db_manager->get('Sbm\Db\Select\Services'))
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->toutes());
+
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+            $criteres_form->getElementNames());
+
+        if ($this->sbm_isPost) {
+            $criteres_form->setData($args);
+            if ($criteres_form->isValid()) {
+                $criteres_obj->exchangeArray($criteres_form->getData());
+            }
+        }
+        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas
+        // de post ou invalide)
+        if (! $criteres_form->hasValidated() && ! empty($args)) {
+            $criteres_obj->exchangeArray($args);
+            $criteres_form->setData($criteres_obj->getArrayCopy());
+        }
+
+        $where = $criteres_obj->getWhereForEleves();
+        $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritesR(
+            $where, [
+                'nom',
+                'prenom'
+            ]);
+
+        $this->pdf_manager->get(Tcpdf::class)
+            ->setParams(
+            [
+                'documentId' => 'List élèves portail organisateur',
+                'layout' => 'sbm-pdf/layout/org-pdf.phtml'
+            ])
+            ->setData(iterator_to_array($data))
+            ->run();
+
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 }

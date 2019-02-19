@@ -23,17 +23,19 @@ class RegisteredTableControlTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->ctrl_list = new ControlListRegisteredClasses();
-        $this->ctrl_list->setSkip([
-            'AbstractSbmTable',
-            'Exception',
-        ]);
+        $this->ctrl_list->setSkip(
+            [
+                'AbstractSbmTable',
+                'Exception'
+            ]);
     }
 
     public function testDebug()
     {
         $ns = 'SbmCommun\Model\Db\Service\Table';
-        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager', 'factories');
-
+        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager', 
+            'factories');
+        
         $this->assertEmpty($unregistred, implode("\n", $unregistred));
     }
 }

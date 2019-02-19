@@ -9,8 +9,8 @@
  * @filesource layout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 $url_img = $this->serverUrl($this->path['url'] . $this->file_name);
 $attributes = [];
@@ -34,6 +34,7 @@ if (is_array($this->img_attributes)) {
 <html>
 <body>
 <?= $this->content;?>
-<img src="<?= $url_img;?>" <?= implode(' ', $attributes);?>>
+<img src="<?= $url_img;?>"
+		<?= implode(' ', $attributes);?>>
 </body>
 </html>

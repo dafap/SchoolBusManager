@@ -8,14 +8,14 @@
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-1
+ * @date 8 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Form;
 
+use SbmCommun\Model\Strategy\Color;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
-use SbmCommun\Model\Strategy\Color;
 
 class DocLabel extends Form implements InputFilterProviderInterface
 {
@@ -40,274 +40,293 @@ class DocLabel extends Form implements InputFilterProviderInterface
             'type' => 'hidden',
             'name' => 'recordSource'
         ]);
-        $this->add([
-            'name' => 'csrf',
-            'type' => 'Zend\Form\Element\Csrf',
-            'options' => [
-                'csrf_options' => [
-                    'timeout' => 180
+        $this->add(
+            [
+                'name' => 'csrf',
+                'type' => 'Zend\Form\Element\Csrf',
+                'options' => [
+                    'csrf_options' => [
+                        'timeout' => 180
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'margin_left',
-            'attributes' => [
-                'id' => 'label-margin_left',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Marge de gauche',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'margin_left',
+                'attributes' => [
+                    'id' => 'label-margin_left',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Marge de gauche',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'margin_top',
-            'attributes' => [
-                'id' => 'label-margin_top',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Marge du haut',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'margin_top',
+                'attributes' => [
+                    'id' => 'label-margin_top',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Marge du haut',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'x_space',
-            'attributes' => [
-                'id' => 'label-x_space',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Espacement horizontal entre 2 colonnes d\'étiquettes',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'x_space',
+                'attributes' => [
+                    'id' => 'label-x_space',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Espacement horizontal entre 2 colonnes d\'étiquettes',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'y_space',
-            'attributes' => [
-                'id' => 'label-y_space',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Espacement vertical entre 2 rangées d\'étiquettes',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'y_space',
+                'attributes' => [
+                    'id' => 'label-y_space',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Espacement vertical entre 2 rangées d\'étiquettes',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'label_width',
-            'attributes' => [
-                'id' => 'label-label_width',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Largeur d\'une étiquette',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'label_width',
+                'attributes' => [
+                    'id' => 'label-label_width',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Largeur d\'une étiquette',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'label_height',
-            'attributes' => [
-                'id' => 'label-label_height',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Hauteur d\'une étiquette',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'label_height',
+                'attributes' => [
+                    'id' => 'label-label_height',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Hauteur d\'une étiquette',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'cols_number',
-            'attributes' => [
-                'id' => 'label-cols_number',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Nombre de colonnes',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'cols_number',
+                'attributes' => [
+                    'id' => 'label-cols_number',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Nombre de colonnes',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'rows_number',
-            'attributes' => [
-                'id' => 'label-rows_number',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Nombre de rangées d\'étiquettes',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'rows_number',
+                'attributes' => [
+                    'id' => 'label-rows_number',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Nombre de rangées d\'étiquettes',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'padding_top',
-            'attributes' => [
-                'id' => 'label-padding_top',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Marge intérieure en haut',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'padding_top',
+                'attributes' => [
+                    'id' => 'label-padding_top',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Marge intérieure en haut',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'padding_right',
-            'attributes' => [
-                'id' => 'label-padding_right',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Marge intérieure à droite',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'padding_right',
+                'attributes' => [
+                    'id' => 'label-padding_right',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Marge intérieure à droite',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'padding_bottom',
-            'attributes' => [
-                'id' => 'label-padding_bottom',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Marge intérieure en bas',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'padding_bottom',
+                'attributes' => [
+                    'id' => 'label-padding_bottom',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Marge intérieure en bas',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'padding_left',
-            'attributes' => [
-                'id' => 'label-padding_left',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Marge intérieure à gauche',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'padding_left',
+                'attributes' => [
+                    'id' => 'label-padding_left',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Marge intérieure à gauche',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'border',
-            'attributes' => [
-                'id' => 'label-border',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Bordure',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'border',
+                'attributes' => [
+                    'id' => 'label-border',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Bordure',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'border_dash',
-            'attributes' => [
-                'id' => 'label-border_dash',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Trait (plein, tirets ou pointillé)',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'border_dash',
+                'attributes' => [
+                    'id' => 'label-border_dash',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Trait (plein, tirets ou pointillé)',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'text',
-            'name' => 'border_width',
-            'attributes' => [
-                'id' => 'label-border_width',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Epaisseur du trait de bordure',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'border_width',
+                'attributes' => [
+                    'id' => 'label-border_width',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Epaisseur du trait de bordure',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'type' => 'Zend\Form\Element\Color',
-            'name' => 'border_color',
-            'attributes' => [
-                'id' => 'label-border_color',
-                'class' => ''
-            ],
-            'options' => [
-                'label' => 'Couleur de la bordure',
-                'label_attributes' => [],
-                'error_options' => [
-                    'class' => 'sbm-error'
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Color',
+                'name' => 'border_color',
+                'attributes' => [
+                    'id' => 'label-border_color',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Couleur de la bordure',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
-        $this->add([
-            'name' => 'submit',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Enregistrer',
-                'id' => 'documentpdf-submit',
-                'class' => 'button default submit left-95px'
-            ]
-        ]);
-        $this->add([
-            'name' => 'cancel',
-            'attributes' => [
-                'type' => 'submit',
-                'value' => 'Abandonner',
-                'id' => 'documentpdf-cancel',
-                'autofocus' => 'autofocus',
-                'class' => 'button default cancel'
-            ]
-        ]);
+            ]);
+        $this->add(
+            [
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'id' => 'documentpdf-submit',
+                    'class' => 'button default submit left-95px'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'cancel',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Abandonner',
+                    'id' => 'documentpdf-cancel',
+                    'autofocus' => 'autofocus',
+                    'class' => 'button default cancel'
+                ]
+            ]);
     }
 
     public function getInputFilterSpecification()
@@ -518,14 +537,6 @@ class DocLabel extends Form implements InputFilterProviderInterface
                     [
                         'name' => 'Alnum'
                     ]
-                ],
-                'validators' => [
-                    /*[
-                        'name' => 'Zend\Validator\Regex',
-                        'options' => [
-                            'pattern' => '(?:0|1|[LTRB]{0,4}]'
-                        ]
-                    ]*/
                 ]
             ],
             'border_dash' => [
@@ -538,14 +549,6 @@ class DocLabel extends Form implements InputFilterProviderInterface
                     [
                         'name' => 'StringTrim'
                     ]
-                ],
-                'validators' => [
-                    /*[
-                        'name' => 'Zend\Validator\Regex',
-                        'options' => [
-                            'pattern' => '(?:0|[1-9],?[1-9]]'
-                        ]
-                    ]*/
                 ]
             ],
             'border_width' => [

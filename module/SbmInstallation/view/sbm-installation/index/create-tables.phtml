@@ -8,33 +8,32 @@
  * @filesource create.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 3 oct. 2018
+ * @version 2019-2.5.0
  */
 use Zend\Db\Adapter\Driver\ResultInterface;
 
-function getResult($args)
-{    
+function printResult($args)
+{
     if (! is_array($args)) {
-        ob_start();
-        var_dump($args);        
-        return sprintf("Résultat inconnu\n%s\n", html_entity_decode(strip_tags(ob_get_clean())));
+        echo "Résultat inconnu\n";
+        var_dump($args);
+        echo "\n";
     } else {
-        $html = '';
         foreach ($args as $result) {
             if (is_string($result)) {
-                $html .= "$result\n";
+                echo "$result\n";
             } elseif ($result instanceof ResultInterface) {
-                $html.= $result->getResource()->queryString . "\n";
+                echo $result->getResource()->queryString;
+                echo "\n";
             } elseif (is_array($result)) {
-                $html .= getResult($result);
+                printResult($result);
             } else {
-                ob_start();
+                echo "Résultat inconnu\n";
                 var_dump($result);
-                return sprintf("Résultat inconnu\n%s\n", html_entity_decode(strip_tags(ob_get_clean())));
+                echo "\n";
             }
         }
-        return $html;
     }
 }
 // ------------------------------ DEBUT -----------------------------------------
@@ -55,16 +54,16 @@ $actions = [
 	<div id="data-header" class="clearfix">
 		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-        <?= $this->flashMessenger()->render('success');?>
-        <?= $this->flashMessenger()->render('warning');?>
-        <?= $this->flashMessenger()->render('error');?>
-        <?= $this->flashMessenger()->render('info');?>
-        <?= $this->flashMessenger()->render('default');?>
-        </div>
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 <?php if (is_null($this->form)) : ?>        	
 	<div id="data-inner">
-		<pre><?= getResult($this->args); ?></pre>
+		<pre><?php printResult($this->args);?></pre>
 		<p>Création terminée.</p>
 	</div>
 <?php else : ?>
@@ -82,7 +81,7 @@ $actions = [
 			</thead>
 			<tbody>
 	<?php foreach ($this->args as $row) : ?>
-		        <tr class="<?= $this->cycle(["even", "odd"])->next(); ?>">
+		        <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
 					<td><?= $row['name'];?></td>
 					<td><?= $row['type'];?></td>
 					<td><?= $row['drop'];?></td>
@@ -93,12 +92,11 @@ $actions = [
 	<?php endforeach; ?>
 	</tbody>
 		</table>
-
 		<p>Confirmez-vous que vous voulez créer les tables comme indiqué dans
 			cette configuration ?</p>
-<?= $this->form()->openTag($form);?>
-<?= $this->formCollection($form);?>
-<?= $this->form()->closeTag();?>
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formCollection($this->form);?>
+		<?= $this->form()->closeTag();?>
     </div>
-<?php endif; ?>
+<?php endif;?>
 </div>

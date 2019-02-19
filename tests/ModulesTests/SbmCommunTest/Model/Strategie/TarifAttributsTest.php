@@ -56,15 +56,15 @@ class TarifAttributsTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($this->error_message . ' : ziz', $e->getMessage());
         }
     }
-    
+
     public function testExtractNumericValue()
     {
         $this->assertEquals(4, $this->strategy->extract(4));
     }
-    
+
     public function testExtractNumericValueOutOfRange()
     {
-         try {
+        try {
             $libelle = $this->strategy->extract(13);
             $this->assertTrue(false, 'Aurait du lancer une exception.');
         } catch (\Exception $e) {
@@ -76,7 +76,7 @@ class TarifAttributsTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals('baz', $this->strategy->hydrate(2));
     }
-    
+
     public function testHydrateWithValueNotInRange()
     {
         try {
@@ -86,7 +86,7 @@ class TarifAttributsTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($this->error_message . ' : 12', $e->getMessage());
         }
     }
-    
+
     public function testHydrateWithValueNull()
     {
         try {
@@ -96,7 +96,7 @@ class TarifAttributsTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($this->error_message . ' : ', $e->getMessage());
         }
     }
-    
+
     public function testHydrateWithValueAsString()
     {
         try {

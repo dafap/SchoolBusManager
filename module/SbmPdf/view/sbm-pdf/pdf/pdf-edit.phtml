@@ -14,8 +14,8 @@
  * @filesource pdf-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 
 /**
@@ -84,19 +84,17 @@ function blocAccordeon2cols($view, $label, $array2d)
     echo '</div>';
 }
 // =============================================================================================
-$this->headLink()
-    ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
-    ->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery('jquery-ui');
 $this->headScript()
-    ->appendFile($this->basePath('/js/jquery.min.js'))
-    ->appendFile($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'))
     ->appendFile($this->basePath('js/tinymce/tinymce.min.js'))
-    ->appendFile($this->basePath('js/pdf-document.js'));
+    ->appendFile($this->basePath('js/pdf/pdf-document.js'));
 $this->inlineScript()->captureStart();
 ?>
 js_document_edit.init();
 <?php
 $this->inlineScript()->captureEnd();
+// le formulaire doit avoir id="accordion" pour que ça marche
 // =============================================================================================
 $tableau = $this->form->get('tableau');
 $tableau->setAttribute('formaction',
@@ -139,7 +137,6 @@ $actions = [
         </div>
 	</div>
 	<div id="fiche-inner">
-		<?php // le formulaire doit avoir id="accordion" pour que ça marche ?>
 		<?= $this->form()->openTag($this->form);?>
 		<?= $this->formHidden($this->form->get('documentId'));?>
 		<?= $this->formHidden($this->form->get('type'));?>
@@ -147,7 +144,7 @@ $actions = [
 		<?= $this->formHidden($this->form->get('creator'));?>
 		<?= $this->formHidden($this->form->get('recordSource'));?>
         <div id="accordion">
-<?php
+		<?php
 blocAccordeon2cols($this, 'Caractéristiques du document',
     [
         'css' => 'accordion1',
@@ -298,11 +295,11 @@ blocAccordeon2cols($this, 'Titres',
 ?>
         </div>
 		<div id="pdf-edit-buttons" class="row-inner edit">
-	    <?= $this->formSubmit($this->form->get('submit')); ?>
-	    <?= $this->formSubmit($tableau); ?>
-	    <?= $this->formSubmit($texte); ?>
-	    <?= $this->formSubmit($etiquette); ?>
-	    <?= $this->formSubmit($this->form->get('cancel')); ?>
+	    	<?= $this->formSubmit($this->form->get('submit')); ?>
+	    	<?= $this->formSubmit($tableau); ?>
+	    	<?= $this->formSubmit($texte); ?>
+	    	<?= $this->formSubmit($etiquette); ?>
+	    	<?= $this->formSubmit($this->form->get('cancel')); ?>
         </div>
         <?= $this->form()->closeTag(); ?>
     </div><?php // fiche_inner ?>

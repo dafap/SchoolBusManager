@@ -9,8 +9,8 @@
  * @filesource DocColumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -31,12 +31,21 @@ class DocColumns extends AbstractSbmTable
         $this->id_name = 'doccolumnId';
     }
 
+    /**
+     *
+     * @param int $documentId
+     * @param int $ordinal_table
+     *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
+     * @return array
+     */
     public function getConfig($documentId, $ordinal_table)
     {
         $where = "documentId = $documentId AND ordinal_table = $ordinal_table";
         $resultset = $this->fetchAll($where, 'ordinal_position');
         if (! $resultset->count()) {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf(_("Could not find rows '%s' in table %s"), $where,
                     $this->table_name));
         }

@@ -8,12 +8,10 @@
  * @filesource etiquette-format.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
-$this->headLink()->
-// ->prependStylesheet($this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'))
-appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_cancel = $this->url('sbmpdf', [
     'action' => 'pdf-liste',
@@ -52,6 +50,7 @@ $actions = [
         'title' => 'Définition et mise en forme du contenu de l\'étiquette'
     ]
 ];
+// le formulaire doit avoir id="accordion" pour que ça marche
 ?>
 <h1>Paramétrage des étiquettes</h1>
 <ul>
@@ -66,8 +65,7 @@ $actions = [
 	</div>
 	<div id="fiche-inner" class="clearfix">
 		<fieldset class="sbm-page1">
-	   		<?php // le formulaire doit avoir id="accordion" pour que ça marche ?>
-    		<?= $this->form()->openTag($this->form);?>
+    		<?= $this->form()->openTag($this->form);?> 
     		<?= $this->formHidden($this->form->get('doclabelId'));?>
     		<?= $this->formHidden($this->form->get('documentId'));?>
     		<?= $this->formHidden($this->form->get('name'));?>

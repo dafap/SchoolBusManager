@@ -9,8 +9,8 @@
  * @filesource Point.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 24 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\Model;
 
@@ -118,6 +118,8 @@ class Point
      * @param number $z
      * @param string $unite
      *            vide (par défaut), 'degré', 'grade' ou 'radian'
+     *            
+     * @throws \SbmCartographie\Model\Exception\DomainException
      */
     public function __construct($x = 0, $y = 0, $z = 0, $unite = '')
     {
@@ -127,7 +129,7 @@ class Point
             'grade',
             'radian'
         ])) {
-            throw new Exception(__CLASS__ . ' - unité incorrecte.');
+            throw new Exception\DomainException(__CLASS__ . ' - unité incorrecte.');
         }
         $this->x = $x;
         $this->y = $y;
@@ -326,7 +328,10 @@ class Point
      *
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
-     * @throws Exception
+     *            
+     * @throws \SbmCartographie\Model\Exception\DomainException
+     * @throws \SbmCartographie\Model\Exception\Exception
+     *
      * @return double|number
      */
     public function getLongitude($unite = 'degré')
@@ -336,12 +341,16 @@ class Point
             'grade',
             'radian'
         ])) {
-            throw new Exception(__METHOD__ . ' - unité incorrecte.');
+            throw new Exception\DomainException(__METHOD__ . ' - unité incorrecte.');
         }
         if ($unite == $this->unite) {
             return $this->x;
-        } else {
+        } elseif ($this->unite) {
             return $this->x * $this->plat[$unite] / $this->plat[$this->unite];
+        } else {
+            $msg = __METHOD__ .
+                ' Cet objet Point n\'a pas d\'unité d\'angle : impossible d\'obtenir ses coordonnées';
+            throw new Exception\Exception($msg);
         }
     }
 
@@ -350,7 +359,10 @@ class Point
      *
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
-     * @throws Exception
+     *            
+     * @throws \SbmCartographie\Model\Exception\DomainException
+     * @throws \SbmCartographie\Model\Exception\Exception
+     *
      * @return double|number
      */
     public function getLatitude($unite = 'degré')
@@ -360,12 +372,16 @@ class Point
             'grade',
             'radian'
         ])) {
-            throw new Exception(__METHOD__ . ' - unité incorrecte.');
+            throw new Exception\DomainException(__METHOD__ . ' - unité incorrecte.');
         }
         if ($unite == $this->unite) {
             return $this->y;
-        } else {
+        } elseif ($this->unite) {
             return $this->y * $this->plat[$unite] / $this->plat[$this->unite];
+        } else {
+            $msg = __METHOD__ .
+                ' Cet objet Point n\'a pas d\'unité d\'angle : impossible d\'obtenir ses coordonnées';
+            throw new Exception\Exception($msg);
         }
     }
 
@@ -375,6 +391,8 @@ class Point
      * @param number $longitude
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
+     *            
+     * @throws \SbmCartographie\Model\Exception\DomainException
      */
     public function setLongitude($longitude, $unite = 'degré')
     {
@@ -383,7 +401,7 @@ class Point
             'grade',
             'radian'
         ])) {
-            throw new Exception(__METHOD__ . ' - unité incorrecte.');
+            throw new Exception\DomainException(__METHOD__ . ' - unité incorrecte.');
         }
         $this->x = $longitude;
         $this->unite = $unite;
@@ -395,6 +413,8 @@ class Point
      * @param number $latitude
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
+     *            
+     * @throws \SbmCartographie\Model\Exception\DomainException           
      */
     public function setLatitude($latitude, $unite = 'degré')
     {
@@ -403,7 +423,7 @@ class Point
             'grade',
             'radian'
         ])) {
-            throw new Exception(__METHOD__ . ' - unité incorrecte.');
+            throw new Exception\DomainException(__METHOD__ . ' - unité incorrecte.');
         }
         $this->y = $latitude;
         $this->unite = $unite;
@@ -457,21 +477,22 @@ class Point
      * L'intérieur d'un rectangle est caractérisé par (x-x1)(x-x2) <=0 et (y-y1)(y-y2) <= 0
      * où x1 et x2 sont les bornes de l'une des coordonnées et y1 et y2 sont les bornes de l'autre.
      *
-     * @throws Exception
+     * @throws \SbmCartographie\Model\Exception\RangeException
+     * 
      * @return boolean
      */
     public function isValid()
     {
         if (empty($this->unite)) {
             if (empty($this->xRange) || empty($this->yRange)) {
-                throw new Exception(
+                throw new Exception\RangeException(
                     'Les intervalles de validité de x et de y ne sont pas initialisés.');
             }
             $ok = ($this->x - $this->xRange[0]) * ($this->x - $this->xRange[1]) <= 0;
             $ok &= ($this->y - $this->yRange[0]) * ($this->y - $this->yRange[1]) <= 0;
         } else {
             if (empty($this->latRange) || empty($this->lngRange)) {
-                throw new Exception(
+                throw new Exception\RangeException(
                     'Les intervalles de validité de la latitude et de la longitude ne sont pas initialisés.');
             }
             $lat = $this->getLatitude('degré');

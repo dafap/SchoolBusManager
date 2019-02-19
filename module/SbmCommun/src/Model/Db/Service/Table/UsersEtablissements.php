@@ -9,8 +9,8 @@
  * @filesource UsersEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -52,7 +52,7 @@ class UsersEtablissements extends AbstractSbmTable
      * @param int $userId
      *
      * @return int
-     * @throws \SbmCommun\Model\Db\Service\Table\Exception
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
      */
     public function getEtablissementId($userId)
     {
@@ -62,7 +62,7 @@ class UsersEtablissements extends AbstractSbmTable
         if ($resultset->count() == 1) {
             return $resultset->current()->etablissementId;
         } else {
-            throw new Exception(
+            throw new Exception\RuntimeException(
                 sprintf('L\utilisateur n° %d n\'est pas associé à un établissement.',
                     $userId));
         }

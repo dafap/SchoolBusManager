@@ -7,8 +7,8 @@
  * @filesource edit-segment.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
 
@@ -27,13 +27,20 @@ $actions = [
         'title' => 'Retour'
     ]
 ];
+$ajoutregle = [
+    'addcondition' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajax,
+        'title' => 'Ajouter une règle'
+    ]
+];
 ?>
-<h1><?php echo $this->h1_msg; ?></h1>
+<h1><?= $this->h1_msg; ?></h1>
 <table>
 	<tr>
-		<th><?php echo StdLib::getParam('id', $this->liste_info); ?></th>
-		<th><?php echo StdLib::getParam('name', $this->liste_info); ?></th>
-		<th><?php echo StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
+		<th><?= StdLib::getParam('id', $this->liste_info); ?></th>
+		<th><?= StdLib::getParam('name', $this->liste_info); ?></th>
+		<th><?= StdLib::getParamR(['campaign_defaults','subject'], $this->liste_info);?></th>
 		<th><?php ?></th>
 	</tr>
 </table>
@@ -41,29 +48,29 @@ $actions = [
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?php echo $this->listeZoneActions($hiddens, $actions);?>
+        <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner" class="clearfix">
 
 		<div id="formulaire">
-        <?php echo $this->form()->openTag($this->form);?>
-        <?php echo $this->formHidden($this->form->get('id_liste'));?>
-        <?php echo $this->formHidden($this->form->get('segment_id'));?>
-        <?php echo $this->formHidden($this->form->get('csrf'));?>
+        <?= $this->form()->openTag($this->form);?>
+        <?= $this->formHidden($this->form->get('id_liste'));?>
+        <?= $this->formHidden($this->form->get('segment_id'));?>
+        <?= $this->formHidden($this->form->get('csrf'));?>
 			<div id="colonne1" class="float-left">
 				<fieldset class="sbm-page1">
 					<legend>Définition</legend>
 					<div id="edit-name" class="row-inner edit">
-			         <?php echo $this->formRow($this->form->get('name')); ?>
+			         <?= $this->formRow($this->form->get('name')); ?>
 			        </div>
 					<div id="edit-match" class="row-inner edit">
-			         <?php echo $this->formRow($this->form->get('match')); ?>
+			         <?= $this->formRow($this->form->get('match')); ?>
 			        </div>
 				</fieldset>
 				<div class="top-6px">
-					<span class="left-95px"><?php echo $this->formSubmit($this->form->get('submit'));?></span>
-					<span class="left-10px"><?php echo $this->formSubmit($this->form->get('cancel')); ?></span>
+					<span class="left-95px"><?= $this->formSubmit($this->form->get('submit'));?></span>
+					<span class="left-10px"><?= $this->formSubmit($this->form->get('cancel')); ?></span>
 				</div>
 			</div>
 			<div id="colonne2" class="float-left clearfix"
@@ -72,20 +79,12 @@ $actions = [
 					class="float-left sbm-page1 left-10px">
 					<legend>Les règles du filtre</legend>
 					<div id="conditions-header" class="menu clearfix">
-				     <?php
-        echo $this->listeZoneActions([], [
-            'addcondition' => [
-                'class' => 'fam-add',
-                'formaction' => $url_ajax,
-                'title' => 'Ajouter une règle'
-            ]
-        ]);
-        ?>
+				    	<?= $this->listeZoneActions([], $ajoutregle);?>
 				    </div>
 					<div id="conditions"></div>
 				</fieldset>
 			</div>
-			<?php echo $this->form()->closeTag();?>
+			<?= $this->form()->closeTag();?>
 		</div>
 	</div>
 	<div id="fiche-footer">

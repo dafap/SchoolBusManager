@@ -9,19 +9,23 @@
  * @filesource par-classe.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2016
- * @version 2016-2.1.7
+ * @date 2 oct. 2018
+ * @version 2019-2.5.0
  */
 try {
     $url_retour = $this->url('sbmgestion/statistiques');
     $url_rapports = $this->url('sbmgestion/statistiques', [
         'action' => 'pdf-classe'
     ]);
-    // l'exception est lancée par l'aide de vue url() donc la methode appendStylesheet doit être placée après
+    // l'exception est lancée par l'aide de vue url() donc la methode appendStylesheet doit être
+    // placée après
     $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 } catch (\Zend\View\Exception\RuntimeException $e) {
     $url_retour = false;
-    $this->headLink()->appendStylesheet($this->basePath('/css/statistiques.css'), ['media' => 'all']);
+    $this->headLink()->appendStylesheet($this->basePath('/css/statistiques.css'),
+        [
+            'media' => 'all'
+        ]);
     echo $this->headLink();
 }
 $n = $this->millesime;
@@ -41,28 +45,30 @@ $totaux = [
         'transportes' => 0
     ]
 ];
-?>
-<h1>Effectifs par classe</h1>
-<div id="liste-wrapper">
-	<div id="liste-header" class="clearfix">
-		<div class="menu float-left">
-		<?php
 if ($url_retour) {
     $hiddens = [];
-    $menuImpression = $this->menuRapports($this->url('sbmgestion/statistiques', [
-        'action' => 'par-classe'
-    ]), $url_rapports, 'fam-printer', null, $hiddens);
+    $menuImpression = $this->menuRapports(
+        $this->url('sbmgestion/statistiques', [
+            'action' => 'par-classe'
+        ]), $url_rapports, 'fam-printer', null, $hiddens);
     $hiddens = $menuImpression['hiddens'];
-    echo $this->listeZoneActions($hiddens, [
+    $actions = [
         'retour' => [
             'class' => 'fam-door-out',
             'formaction' => $url_retour,
             'title' => 'Retour'
         ],
         'rapports' => $menuImpression['content']
-    ]);
+    ];
 }
 ?>
+<h1>Effectifs par classe</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left">
+		<?php if ($url_retour) :?>
+            <?= $this->listeZoneActions($hiddens, $actions);?>
+        <?php endif;?>
         </div>
 	</div>
 	<div id="liste-inner">
@@ -71,8 +77,8 @@ if ($url_retour) {
 				<tr>
 					<th rowspan="2">Nom</th>
 					<th rowspan="2" class="invisible">Alias</th>
-					<th colspan="4" class="border-bold centre">Année <?php echo $as1;?></th>
-					<th colspan="4" class="border-bold centre">Année <?php echo $as0;?></th>
+					<th colspan="4" class="border-bold centre">Année <?= $as1;?></th>
+					<th colspan="4" class="border-bold centre">Année <?= $as0;?></th>
 				</tr>
 				<tr>
 					<th class="border-bold">Transportés</th>
@@ -95,49 +101,66 @@ if ($url_retour) {
 				<?php for ($i = 0; $i < count($this->statistiques['annee_courante']); $i++):?>
 				<?php
         // année précédente
-        $inscrits_a_p = $this->statistiques['annee_precedente'][$i]['inscrits'] ?  : 0;
+        $inscrits_a_p = $this->statistiques['annee_precedente'][$i]['inscrits'] ?: 0;
         $totaux['annee_precedente']['inscrits'] += $inscrits_a_p;
-        $internet_a_p = $this->statistiques['annee_precedente'][$i]['internet'] ?  : 0;
+        $internet_a_p = $this->statistiques['annee_precedente'][$i]['internet'] ?: 0;
         $totaux['annee_precedente']['internet'] += $internet_a_p;
-        $papier_a_p = $this->statistiques['annee_precedente'][$i]['papier'] ?  : 0;
+        $papier_a_p = $this->statistiques['annee_precedente'][$i]['papier'] ?: 0;
         $totaux['annee_precedente']['papier'] += $papier_a_p;
-        $transportes_a_p = $this->statistiques['annee_precedente'][$i]['transportes'] ?  : 0;
+        $transportes_a_p = $this->statistiques['annee_precedente'][$i]['transportes'] ?: 0;
         $totaux['annee_precedente']['transportes'] += $transportes_a_p;
         // année courante
-        $inscrits_a_c = $this->statistiques['annee_courante'][$i]['inscrits'] ?  : 0;
+        $inscrits_a_c = $this->statistiques['annee_courante'][$i]['inscrits'] ?: 0;
         $totaux['annee_courante']['inscrits'] += $inscrits_a_c;
-        $internet_a_c = $this->statistiques['annee_courante'][$i]['internet'] ?  : 0;
+        $internet_a_c = $this->statistiques['annee_courante'][$i]['internet'] ?: 0;
         $totaux['annee_courante']['internet'] += $internet_a_c;
-        $papier_a_c = $this->statistiques['annee_courante'][$i]['papier'] ?  : 0;
+        $papier_a_c = $this->statistiques['annee_courante'][$i]['papier'] ?: 0;
         $totaux['annee_courante']['papier'] += $papier_a_c;
-        $transportes_a_c = $this->statistiques['annee_courante'][$i]['transportes'] ?  : 0;
+        $transportes_a_c = $this->statistiques['annee_courante'][$i]['transportes'] ?: 0;
         $totaux['annee_courante']['transportes'] += $transportes_a_c;
         ?>
-				<tr class="<?php echo $this->cycle(['even', 'odd'])->next();?>">
-					<td><?php echo $this->statistiques['annee_courante'][$i]['nom'];?></td>
-					<td class="invisible"><?php echo $this->statistiques['annee_courante'][$i]['alias'];?></td>
-					<td class="border-bold align-right"><?php echo $transportes_a_p;?></td>
-					<td class=" align-right"><?php echo $internet_a_p;?></td>
-					<td class=" align-right"><?php echo $papier_a_p;?></td>
-					<td class=" align-right"><?php echo $inscrits_a_p;?></td>
-					<td class="border-bold align-right"><?php echo $transportes_a_c;?></td>
-					<td class=" align-right"><?php echo $internet_a_c;?></td>
-					<td class=" align-right"><?php echo $papier_a_c;?></td>
-					<td class=" align-right"><?php echo $inscrits_a_c;?></td>
+				<tr class="<?= $this->cycle(['even', 'odd'])->next();?>">
+					<td><?= $this->statistiques['annee_courante'][$i]['nom'];?></td>
+					<td class="invisible">
+						<?= $this->statistiques['annee_courante'][$i]['alias'];?></td>
+					<td class="border-bold align-right">
+						<?= $transportes_a_p;?></td>
+					<td class=" align-right">
+						<?= $internet_a_p;?></td>
+					<td class=" align-right">
+						<?= $papier_a_p;?></td>
+					<td class=" align-right">
+						<?= $inscrits_a_p;?></td>
+					<td class="border-bold align-right">
+						<?= $transportes_a_c;?></td>
+					<td class=" align-right">
+						<?= $internet_a_c;?></td>
+					<td class=" align-right">
+						<?= $papier_a_c;?></td>
+					<td class=" align-right">
+						<?= $inscrits_a_c;?></td>
 				</tr>
 				<?php endfor;?>
 			</tbody>
 			<tr>
 				<th>Total</th>
 				<th class="invisible"></th>
-				<th class="border-bold align-right"><?php echo $totaux['annee_precedente']['transportes'];?></th>
-				<th class=" align-right"><?php echo $totaux['annee_precedente']['internet'];?></th>
-				<th class=" align-right"><?php echo $totaux['annee_precedente']['papier'];?></th>
-				<th class=" align-right"><?php echo $totaux['annee_precedente']['inscrits'];?></th>
-				<th class="border-bold align-right"><?php echo $totaux['annee_courante']['transportes'];?></th>
-				<th class=" align-right"><?php echo $totaux['annee_courante']['internet'];?></th>
-				<th class=" align-right"><?php echo $totaux['annee_courante']['papier'];?></th>
-				<th class=" align-right"><?php echo $totaux['annee_courante']['inscrits'];?></th>
+				<th class="border-bold align-right">
+					<?= $totaux['annee_precedente']['transportes'];?></th>
+				<th class=" align-right">
+					<?= $totaux['annee_precedente']['internet'];?></th>
+				<th class=" align-right">
+					<?= $totaux['annee_precedente']['papier'];?></th>
+				<th class=" align-right">
+					<?= $totaux['annee_precedente']['inscrits'];?></th>
+				<th class="border-bold align-right">
+					<?= $totaux['annee_courante']['transportes'];?></th>
+				<th class=" align-right">
+					<?= $totaux['annee_courante']['internet'];?></th>
+				<th class=" align-right">
+					<?= $totaux['annee_courante']['papier'];?></th>
+				<th class=" align-right">
+					<?= $totaux['annee_courante']['inscrits'];?></th>
 			</tr>
 			<tfoot>
 			</tfoot>

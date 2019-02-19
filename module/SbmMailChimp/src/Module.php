@@ -9,15 +9,16 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 15 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmMailChimp;
 
-use SbmBase\Module\AbstractModule;
 use SbmBase\Model\StdLib;
+use SbmBase\Module\AbstractModule;
+use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 
-class Module extends AbstractModule
+class Module extends AbstractModule implements AutoloaderProviderInterface
 {
 
     /**
@@ -26,17 +27,14 @@ class Module extends AbstractModule
      */
     public function getAutoloaderConfig()
     {
-        $autoload = array_merge_recursive(parent::getAutoloaderConfig(),
-            [
-                'Zend\Loader\StandardAutoloader' => [
-                    'namespaces' => [
-                        'DrewM\MailChimp' => realpath(
-                            StdLib::findParentPath(__DIR__,
-                                'vendor/drewm/mailchimp-api/src'))
-                    ]
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
+                    'DrewM\MailChimp' => realpath(
+                        StdLib::findParentPath(__DIR__, 'vendor/drewm/mailchimp-api/src'))
                 ]
-            ]);
-        return $autoload;
+            ]
+        ];
     }
 
     public function getDir()

@@ -1,16 +1,14 @@
 <?php
 /**
  * Ecran de saisie d'une affectation d'un document dans un menu
- *
- * Description longue du fichier s'il y en a une
  * 
  * @project sbm
  * @package SbmPdf/view/sbm-pdf/document
  * @filesource affectation-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -56,13 +54,14 @@ if (strlen($this->document['recordSource']) > 450) {
     		<?= $this->formHidden($this->form->get('documentId'));?>
     		<?= $this->formHidden($this->form->get('name'));?>
     		<?= $this->formHidden($this->form->get('recordSource'));?>
-    		<?= $this->formHidden($this->form->get('csrf'));?>    
+    		<?= $this->formHidden($this->form->get('csrf'));?>
  			<div class="row-inner label-240"><?= $this->formRow($this->form->get('libelle'));?></div>
 			<div class="row-inner label-240"><?= $this->formRow($this->form->get('ordinal_position'));?></div>
 			<div class="row-inner label-240"><?= $this->formRow($this->form->get('route'));?></div>
 			<div class="row-inner">
 	    		<?= $this->formSubmit($this->form->get('submit')); ?>
-	    		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
+	    		<?= $this->formSubmit($this->form->get('cancel')); ?>
+        	</div>
         	<?= $this->form()->closeTag(); ?>
         </fieldset>
 	</div>

@@ -1,4 +1,15 @@
 <?php
+/**
+ * Page d'erreur
+ *
+ * @project sbm
+ * @package SbmCommun/view/layout
+ * @filesource error.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 27 sept. 2018
+ * @version 2019-2.5.0
+ */
 $this->declarevars(
     [
         'parameter' => [
@@ -12,22 +23,17 @@ $this->declarevars(
         ]
     ]);
 $appl_name = $this->translate($this->parameter['appl_name']);
-echo $this->doctype();
 ?>
-
+<?= $this->doctype();?>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
         <?= $this->headTitle('SBM '. $appl_name)->setSeparator(' - ')->setAutoEscape(false) ?>
-        <?= $this->headMeta()
-            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
-            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge');?>
-
+        <?=$this->headMeta()->appendName('viewport','width=device-width, initial-scale=1.0')->appendHttpEquiv('X-UA-Compatible','IE=edge');?>
         <!-- Le styles -->
         <?= $this->getHeadLinks($this->basePath(), 'img/favicon.ico', $this->parameter['css']); ?>
         <!-- Scripts -->
         <?= $this->getHeadScripts($this->basePath(), $this->parameter['js']);?>
-
     </head>
 <body>
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -54,8 +60,8 @@ echo $this->doctype();
             <?= $this->content; ?>
             <hr>
 		<footer>
-			<p>&copy; 2013 - <?= date('Y'); ?> par <a
-					href="https://www.dafap.fr" target=_blank>DAFAP Informatique</a>. <?= $this->translate('All rights reserved.'); ?></p>
+			<p>&copy; 2013 - <?= date('Y'); ?> par <a href="https://www.dafap.fr"
+					target=_blank>DAFAP Informatique</a>. <?= $this->translate('All rights reserved.'); ?></p>
 		</footer>
 	</div>
 	<!-- /container -->

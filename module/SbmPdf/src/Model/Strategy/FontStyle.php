@@ -7,8 +7,8 @@
  * @filesource FontStyle.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2016
- * @version 2016-2
+ * @date 8 fév. 2019
+ * @version 2018-2.5.0
  */
 namespace SbmPdf\Model\Strategy;
 
@@ -17,14 +17,18 @@ use Zend\Stdlib\Hydrator\Strategy\StrategyInterface;
 class FontStyle implements StrategyInterface
 {
 
+    /**
+     * Dans l'ordre : Gras, Italique, Souligné, Barré, Trait suscrit
+     *
+     * @var array
+     */
     private $reference = [
-        "B", // Gras
-        "I", // Italique
-        "U", // Souligné
-        "D", // Barré
+        "B",
+        "I",
+        "U",
+        "D",
         "O"
-    ] // Trait suscrit
-;
+    ];
 
     public function extract($param)
     {

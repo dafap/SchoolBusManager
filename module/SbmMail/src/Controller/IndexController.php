@@ -11,8 +11,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmMail\Controller;
 
@@ -39,12 +39,12 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (array_key_exists('cancel', $args)) {
             $this->flashMessenger()->addWarningMessage('Aucun message envoyé.');
             try {
                 return $this->redirectToOrigin()->back();
-            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                 return $this->redirect()->toRoute('login', [
                     'action' => 'home-page'
                 ]);
@@ -87,7 +87,7 @@ class IndexController extends AbstractActionController
                     'Le message a été envoyé au service de transport et une copie vous a été adressée. Consultez votre messagerie.');
                 try {
                     return $this->redirectToOrigin()->back();
-                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                     return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
                     ]);
@@ -200,7 +200,7 @@ class IndexController extends AbstractActionController
                     $message .= "\n - $value";
                 }
             }
-        } catch (\SbmCommun\Model\Db\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Exception\ExceptionInterface $e) {
             $message = 'Le service d\'alerte des transporteurs est interrompu durant les vacances. Les envois reprendront à partir du début de l\'année scolaire.';
         }
 

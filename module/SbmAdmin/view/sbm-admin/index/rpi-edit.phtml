@@ -10,15 +10,11 @@
  * @filesource rpi-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet(
-    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile(
-    $this->basePath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
+$this->jQuery('jquery-ui');
 $this->headScript()->appendFile($this->basePath('/js/rpi/edit.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
 $this->headScript()->captureStart();
@@ -28,7 +24,6 @@ multicheckbox_actions.init("classe-edit-niveau");
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
 ?>
-
 <?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';

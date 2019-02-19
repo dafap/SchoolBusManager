@@ -9,8 +9,8 @@
  * @filesource formpaiement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 14 fév. 2019
+ * @version 2019-2.5.0
  */
 // style css utilisés dans le formulaire
 $this->headStyle()->captureStart();
@@ -35,72 +35,24 @@ $this->headStyle()->captureStart();
 #formpaiement<?= $this->trajet;?> input.button.submit {
 	margin-left: 15px;
 }
-<?php
-$this->headStyle()->captureEnd();
-echo $this->headStyle();
-
-// scripts js utilisés dans cette page
-$this->headScript()->captureStart();
-?>
-var is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
-var urlform = '<?= $this->form->getAttribute('action'); ?>';
-var btnclick;
-$(function() {
-  $("#formpaiement input[name=cancel]").click(function(){btnclick='cancel';});
-  $("#formpaiement input[name=submit]").click(function(){btnclick='submit';});
-  $("form#formpaiement").submit(function() {
-    if (is_xmlhttprequest == 0) return true;
-    // ici c'est de l'ajax
-    var gratuit = $('#formpaiement input[name=gratuit]:checked').val();
-    var organismeId = $('#formpaiement select[name=organismeId] option:selected').val();
-    var data = {
-      'csrf' : $('#formpaiement input[name=csrf]').val(),
-	  'eleveId' : $('#formpaiement input[name=eleveId]').val(),
-	  'gratuit' : gratuit,
-	  'organismeId' : organismeId,
-	  'submit' : btnclick	
-    };
-    $.post(urlform, data, function(itemJson) {		
-			$("#winpopup").dialog('close');
-			js_edit.majPaiement(gratuit);						
-        }, 'json');
-    return false;
-  });
-  $("#gratuitradio0").on('change',function() {
-    $("#formpaiement-organismeId").hide();
-  });
-  $("#gratuitradio1").on('change',function() {
-    $("#formpaiement-organismeId").hide();    
-  });
-  $("#gratuitradio2").on('change',function() {
-    $("#formpaiement-organismeId").show();
-  });
-});
-<?php
-$this->headScript()->captureEnd();
-echo $this->headScript();
-$this->inlineScript()->captureStart();
-?>
-if ($('#formpaiement input[name=gratuit]:checked').val()==2){
-  $("#formpaiement-organismeId").show();
-}
-<?php
-$this->inlineScript()->captureEnd();
-echo $this->inlineScript();
-?>
+<?php $this->headStyle()->captureEnd(); ?>
+<?= $this->headStyle();?>
+<?php $this->inlineScript()->captureStart();?>
+is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
+urlform = '<?= $this->form->getAttribute('action'); ?>';
+priseenchargepaiement().init(is_xmlhttprequest, urlform);
+<?php $this->inlineScript()->captureEnd();?>
+<?= $this->inlineScript();?>
 <div id="formpaiement">
-	<?= $this->form()->openTag($this->form);?>
-	<?= $this->formHidden($this->form->get('eleveId'));?>
-	<?= $this->formHidden($this->form->get('csrf'));?>
-	<div id="formpaiement-gratuit" class="row-inner">
-		<?= $this->formRow($this->form->get('gratuit'));?></div>
+<?= $this->form()->openTag($this->form);?>
+<?= $this->formHidden($this->form->get('eleveId'));?>
+<?= $this->formHidden($this->form->get('csrf'));?>
+<div id="formpaiement-gratuit" class="row-inner"><?= $this->formRow($this->form->get('gratuit'));?></div>
 	<div id="formpaiement-organismeId" class="row-inner"
-		style="display: none;">
-		<?= $this->formRow($this->form->get('organismeId'));?></div>
+		style="display: none;"><?= $this->formRow($this->form->get('organismeId'));?></div>
 	<div id="formpaiement-buttons" class="row-inner edit left-95px">
-		<?= $this->formSubmit($this->form->get('submit'));?>
-		<?= $this->formSubmit($this->form->get('cancel'));?>
-	</div>
-	<?= $this->form()->closeTag();?>
+<?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+</div>
+<?= $this->form()->closeTag();?>
 </div>
 <div id="errors"></div>

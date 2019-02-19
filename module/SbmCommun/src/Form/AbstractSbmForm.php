@@ -8,8 +8,8 @@
  * @filesource AbstractSbmForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mai 2014
- * @version 2014-1
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form;
 
@@ -17,6 +17,7 @@ use Zend\Form\Form;
 
 abstract class AbstractSbmForm extends Form
 {
+
     public function setMaxLength(array $array)
     {
         foreach ($array as $elementName => $maxLength) {
@@ -26,22 +27,22 @@ abstract class AbstractSbmForm extends Form
                 if (! is_null($type) && $type == 'text') {
                     $e->setAttribute('maxlength', $maxLength);
                 }
-            } catch (\Exception $e) {
-            }
+            } catch (\Exception $e) {}
         }
         return $this;
     }
-    
+
     public function setValueOptions($element, array $values_options)
     {
         $e = $this->get($element);
         $e->setValueOptions($values_options);
         return $this;
     }
-    
+
     /**
-     * Place une classe 'required' aux labels des champs obligatoires 
+     * Place une classe 'required' aux labels des champs obligatoires
      * (non-PHPdoc)
+     *
      * @see \Zend\Form\Form::prepare()
      */
     public function prepare()

@@ -9,12 +9,13 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 28 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmMailChimp\Controller;
 
 use DrewM\MailChimp\MailChimp;
+use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
@@ -89,7 +90,7 @@ class IndexController extends AbstractActionController
                 break;
                 break;
         }
-        $this->removeInSession('identifiant', $this->getSessionNamespace());
+        Session::remove('identifiant', $this->getSessionNamespace());
         return $this->redirect()->toRoute('sbmmailchimp', [
             'action' => $action
         ]);
@@ -111,7 +112,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } else {
-            $args = (array) $prg;
+            $args = $prg ?: [];
             if (array_key_exists('cancel', $args)) {
                 return $this->retourListe('warning', 'La liste n\'a pas été crée.');
             }
@@ -247,7 +248,7 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             $args = [
-                'id_liste' => $this->getFromSession('identifiant', false,
+                'id_liste' => Session::get('identifiant', false,
                     $this->getSessionNamespace())
             ];
             if ($args === false) {
@@ -256,7 +257,7 @@ class IndexController extends AbstractActionController
         } else {
             if (array_key_exists('edit', $prg)) {
                 if (array_key_exists('id_liste', $prg)) {
-                    $this->setToSession('identifiant', $prg['id_liste'],
+                    Session::set('identifiant', $prg['id_liste'],
                         $this->getSessionNamespace());
                 } else {
                     return $this->retourListe();
@@ -368,15 +369,14 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false,
-                $this->getSessionNamespace());
+            $args = Session::get('identifiant', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
             }
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('fields', $prg)) {
-                    $this->setToSession('identifiant',
+                    Session::set('identifiant',
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name']
@@ -386,8 +386,7 @@ class IndexController extends AbstractActionController
                 return $this->retourListe();
             }
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()),
-                $prg);
+                Session::get('identifiant', [], $this->getSessionNamespace()), $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
         // lecture des infos de la liste
@@ -429,8 +428,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false,
-                $this->getSessionNamespace());
+            $args = Session::get('identifiant', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'fields-liste');
             }
@@ -438,7 +436,7 @@ class IndexController extends AbstractActionController
             if (array_key_exists('edit', $prg)) {
                 if (array_key_exists('id_liste', $prg) &&
                     array_key_exists('merge_id', $prg)) {
-                    $this->setToSession('identifiant',
+                    Session::set('identifiant',
                         [
                             'id_liste' => $prg['id_liste'],
                             'merge_id' => $prg['merge_id']
@@ -724,15 +722,14 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false,
-                $this->getSessionNamespace());
+            $args = Session::get('identifiant', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
             }
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('segments', $prg)) {
-                    $this->setToSession('identifiant',
+                    Session::set('identifiant',
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name']
@@ -743,8 +740,7 @@ class IndexController extends AbstractActionController
             }
             // on s'assure que les 2 paramètres sont dans args (cas d'un retour)
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()),
-                $prg);
+                Session::get('identifiant', [], $this->getSessionNamespace()), $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
         // lecture des infos de la liste
@@ -926,8 +922,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false,
-                $this->getSessionNamespace());
+            $args = Session::get('identifiant', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'segments-liste');
             }
@@ -935,7 +930,7 @@ class IndexController extends AbstractActionController
             if (array_key_exists('edit', $prg)) {
                 if (array_key_exists('id_liste', $prg) &&
                     array_key_exists('segment_id', $prg)) {
-                    $this->setToSession('identifiant',
+                    Session::set('identifiant',
                         [
                             'id_liste' => $prg['id_liste'],
                             'segment_id' => $prg['segment_id']
@@ -1086,15 +1081,14 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false,
-                $this->getSessionNamespace());
+            $args = Session::get('identifiant', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe('error', 'Action interdite.', 'segments-liste');
             }
         } else {
             if (array_key_exists('id_liste', $prg) && array_key_exists('segment_id', $prg)) {
                 if (array_key_exists('members', $prg)) {
-                    $this->setToSession('identifiant',
+                    Session::set('identifiant',
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name'],
@@ -1111,8 +1105,7 @@ class IndexController extends AbstractActionController
             }
             // on s'assure que les 4 paramètres sont dans args
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()),
-                $prg);
+                Session::get('identifiant', [], $this->getSessionNamespace()), $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
         $method = 'lists/' . $args['id_liste'] . '/segments/' . $args['segment_id'] .
@@ -1153,15 +1146,14 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('identifiant', false,
-                $this->getSessionNamespace());
+            $args = Session::get('identifiant', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->retourListe();
             }
         } else {
             if (array_key_exists('id_liste', $prg)) {
                 if (array_key_exists('members', $prg)) {
-                    $this->setToSession('identifiant',
+                    Session::set('identifiant',
                         [
                             'id_liste' => $prg['id_liste'],
                             'liste_name' => $prg['liste_name']
@@ -1175,8 +1167,7 @@ class IndexController extends AbstractActionController
             }
             // on s'assure que les 2 paramètres sont dans args
             $args = array_merge(
-                $this->getFromSession('identifiant', [], $this->getSessionNamespace()),
-                $prg);
+                Session::get('identifiant', [], $this->getSessionNamespace()), $prg);
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
         $method = 'lists/' . $args['id_liste'] . '/members';
@@ -1342,7 +1333,7 @@ class IndexController extends AbstractActionController
                 try {
                     $testId = $tusers->getRecordByEmail($email);
                     unset($testId); // juste pour savoir s'il y a une exception
-                } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $subscriber_hash = md5(strtolower($email));
                     $method = "lists/$id_list/members/$subscriber_hash";
                     $id = 'op' . ++ $i;

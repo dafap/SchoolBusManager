@@ -8,8 +8,8 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 févr. 2014
- * @version 2014-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Vue;
 
@@ -17,6 +17,7 @@ use SbmCommun\Model\Db\Service\Table\Circuits as TableCircuits;
 
 class Circuits extends TableCircuits
 {
+
     /**
      * Initialisation du circuit
      */

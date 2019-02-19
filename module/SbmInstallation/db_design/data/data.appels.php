@@ -13,5 +13,4 @@
  * @date 18 mai 2015
  * @version 2015-1
  */
-
-return[];
+return array();

@@ -22,8 +22,8 @@
  * @filesource AppelPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2016-2.4.5
+ * @date 12 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPaiement\Listener;
 
@@ -111,7 +111,7 @@ class AppelPlateforme implements ListenerAggregateInterface
          * CURLOPT_RETURNTRANSFER => 1,
          * CURLOPT_CAINFO => $cacert,
          * CURLOPT_SSL_VERIFYPEER => true
-         * );
+         * ];
          * curl_setopt_array($ch, $options);
          * $fm = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
          * if (!curl_exec($ch)) {

@@ -1,0 +1,93 @@
+<?php
+/**
+ * Phase 1 de la procédure de réinscription
+ * 
+ * En phase 1, la page présente les enfants connus et à réinscrire du parent
+ * - phase = 1
+ * - aReinscrire est un tableau dont les clés sont 'eleveId', 'nom' et 'prenom'
+ *
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/index
+ * @filesource reinscription-eleve-phase1.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 oct. 2018
+ * @version 2019-2.5.0
+ */
+$url_ajoutEleve = $this->url('sbmparent', [
+    'action' => 'inscription-eleve'
+]);
+$url_reinscrire = $this->url('sbmparent', [
+    'action' => 'reinscription-eleve'
+]);
+$url_retour = $this->url('sbmparent');
+$actions = [
+    [
+        'class' => 'button default float-right left-10px',
+        'formaction' => $url_ajoutEleve,
+        'value' => 'Inscrire un autre enfant',
+        'title' => 'Inscrire un enfant qui n\'est pas dans la liste'
+    ],
+    [
+        'class' => 'button default float-right left-10px',
+        'formaction' => $url_retour,
+        'value' => 'Retour à l\'espace parent'
+    ]
+];
+$modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td></tr>';
+?>
+<h1>Inscription ou réinscription d'un enfant</h1>
+<div id="parent-wrapper">
+	<div id="liste-header"></div>
+	<div id="liste-inner">
+		<fieldset class="sbm-page1">
+			<legend>Enfants pouvant être réinscrits</legend>
+			<table class="parent eleve">
+				<tbody>
+					<tr>
+						<th>Nom</th>
+						<th>Prénom</th>
+						<th></th>
+					</tr>
+					<?php foreach ($this->aReinscrire as $row) :?>
+					<?php
+        $hiddens = [
+            'eleveId' => $row['eleveId'],
+            'phase' => 2
+        ];
+        $buttons = [
+            'reinscrire' => [
+                'class' => 'button default left-10px',
+                'formaction' => $url_reinscrire,
+                'title' => 'réinscrire ' . $row['prenom'],
+                'value' => 'Réinscrire'
+            ]
+        ];
+        $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
+        echo sprintf($modeleligne, $this->cycle([
+            "odd",
+            "even"
+        ])->next(), $row['nom'], $row['prenom'], $btligne);
+        ?>
+                    <?php endforeach;?>
+		        </tbody>
+			</table>
+		</fieldset>
+		<p class="sbm-description">
+			Pour réinscrire un enfant présent dans cette liste, cliquez sur le
+			bouton <b>Réinscrire</b> puis vérifiez et complétez les informations
+			le concernant.
+		</p>
+		<p class="sbm-description">
+			Pour inscrire un enfant qui n'est pas dans la liste, cliquez sur le
+			bouton <b>Inscrire un autre enfant</b>.
+		</p>
+
+		<div class="bouton-inscrire">
+			<div class="menu clearfix">
+				<?= $this->listeZoneActions([], $actions);?>
+			</div>
+		</div>
+	</div>
+	<div id="liste-footer"></div>
+</div>

@@ -8,13 +8,14 @@
  * @filesource TableGatewayAffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2015
- * @version 2015-1
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
 
 class TableGatewayAffectations extends AbstractSbmTableGateway
 {
+
     protected function init()
     {
         $this->table_name = 'affectations';

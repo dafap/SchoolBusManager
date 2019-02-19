@@ -12,9 +12,11 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_horaires = $this->url('sbmdocument', [
@@ -33,17 +35,14 @@ $url_carte_etablissements = $this->url('sbmportail',
     [
         'action' => 'tr-carte-etablissements'
     ]);
-
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
-	<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
     </div>
 	<h1>Portail des transports scolaires</h1>
 	<!-- h3>Pour les transporteurs</h3-->
@@ -53,7 +52,9 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves à transporter</td>
-					<td class="effectif"><?php echo $this->elevesATransporter ?:0;?></td>
+					<td class="effectif">
+						<?= $this->elevesATransporter ?:0;?>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -64,6 +65,10 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<?php foreach ($this->services as $service):?>
 				    <?php
+        $effectif = Stdlib::getParamR([
+            $service->serviceId,
+            'total'
+        ], $this->statServices, 0);
         $hiddens = [
             'serviceId' => $service->serviceId
         ];
@@ -76,10 +81,12 @@ echo $this->flashMessenger()->render('default');
         ];
         ?>
 				<tr>
-					<td><?php echo $service->serviceId;?></td>
-					<td><?php echo $service->nom;?></td>
-					<td class="effectif"><?php echo empty($this->statServices[$service->serviceId]['total']) ? 0 : $this->statServices[$service->serviceId]['total'];?></td>
-					<td><?php echo $this->listeLigneActions($service->serviceId, $hiddens, $buttons);?></td>
+					<td><?= $service->serviceId;?></td>
+					<td><?= $service->nom;?></td>
+					<td class="effectif"><?= $effectif;?></td>
+					<td>
+						<?= $this->listeLigneActions($service->serviceId, $hiddens, $buttons);?>
+					</td>
 				</tr>
 				<?php endforeach;?>				
 			</tbody>
@@ -92,13 +99,13 @@ echo $this->flashMessenger()->render('default');
 		</div>
 		<div id="menugeneral-inner">
 			<ul>
-				<li><a href="<?php echo $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
+				<li><a href="<?= $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
 						des élèves</a></li>
-				<li><a href="<?php echo $url_horaires; ?>"><i class="fam-bullet-go"></i>Fiches
+				<li><a href="<?= $url_horaires; ?>" target="_blank"><i class="fam-bullet-go"></i>Fiches
 						horaires des circuits</a></li>
-				<li><a href="<?php echo $url_carte_stations; ?>"><i
-						class="fam-bullet-go"></i>Carte des points d'arrêts</a></li>
-				<li><a href="<?php echo $url_carte_etablissements; ?>"><i
+				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
+						des points d'arrêts</a></li>
+				<li><a href="<?= $url_carte_etablissements; ?>"><i
 						class="fam-bullet-go"></i>Carte des établissements scolaires</a></li>
 			</ul>
 		</div>

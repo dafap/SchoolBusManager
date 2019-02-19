@@ -33,10 +33,14 @@ class NotTest extends TestCase
         $parts = $predicate->getExpressionData();
         $this->assertEquals(1, count($parts));
         $this->assertContains('NOT (%1$s)', $parts[0]);
-        $this->assertContains([$where], $parts[0]);
-        $this->assertContains([Not::TYPE_VALUE], $parts[0]);
+        $this->assertContains([
+            $where
+        ], $parts[0]);
+        $this->assertContains([
+            Not::TYPE_VALUE
+        ], $parts[0]);
     }
-    
+
     public function testEmptyConstructorYieldsNullExpression()
     {
         $not = new Not();

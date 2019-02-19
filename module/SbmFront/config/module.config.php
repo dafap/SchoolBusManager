@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 24 sept. 2018
+ * @version 2019-2.5.0
  */
 use SbmFront\Controller;
 use SbmFront\Form;
@@ -33,6 +33,15 @@ if (! defined('APPL_NAME')) {
 return [
     'acl' => [
         'resources' => [
+            'home' => [
+                'actions' => [
+                    'hors-zone' => [
+                        'roles' => [
+                            'parent'
+                        ]
+                    ]
+                ]
+            ],
             'login' => [
                 'actions' => [
                     'annuler' => [
@@ -160,9 +169,10 @@ return [
             'home' => [
                 'type' => 'segment',
                 'options' => [
-                    'route' => '/[:action]',
+                    'route' => '/[:action[/:id]]',
                     'constraints' => [
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9\-\'\s\%]*'
                     ],
                     'defaults' => [
                         'module' => __NAMESPACE__,

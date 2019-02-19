@@ -9,13 +9,13 @@
  * @filesource DateTimeSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\Element;
 
-use SbmCommun\Model\Validator\DateValidator;
 use Zend\Form\Element\DateTimeSelect as ZendDateTimeSelect;
+use SbmCommun\Model\Validator\DateValidator;
 
 class DateTimeSelect extends ZendDateTimeSelect
 {
@@ -23,9 +23,10 @@ class DateTimeSelect extends ZendDateTimeSelect
     protected function getValidator()
     {
         if (null === $this->validator) {
-            $this->validator = new DateValidator([
-                'format' => 'Y-m-d H:i:s'
-            ]);
+            $this->validator = new DateValidator(
+                [
+                    'format' => 'Y-m-d H:i:s'
+                ]);
         }
         return $this->validator;
     }

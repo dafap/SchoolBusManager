@@ -13,8 +13,8 @@
  * @filesource field-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -123,27 +123,19 @@ $buttons = [
                 $hiddens['ordinal_position'] = $row['ordinal_position'];
                 ?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
-					<td class="ordinal_position">
-						<?= $row['ordinal_position']; ?></td>
-					<td class="fieldname">
-						<?= $this->escapeHtml($row['fieldname']); ?></td>
-					<td class="fieldname_width">
-						<?= $row['fieldname_width']; ?></td>
-					<td class="fieldname_align">
-						<?= $row['fieldname_align']; ?></td>
-					<td class="label">
-						<?= $this->escapeHtml($row['label']); ?></td>
-					<td class="label_width">
-						<?= $row['label_width']; ?></td>
-					<td class="height">
-						<?= $row['height']; ?></td>
-					<td class="style">
-						<?= $this->escapeHtml($row['style']); ?></td>
+					<td class="ordinal_position"><?= $row['ordinal_position']; ?></td>
+					<td class="fieldname"><?= $this->escapeHtml($row['fieldname']); ?></td>
+					<td class="fieldname_width"><?= $row['fieldname_width']; ?></td>
+					<td class="fieldname_align"><?= $row['fieldname_align']; ?></td>
+					<td class="label"><?= $this->escapeHtml($row['label']); ?></td>
+					<td class="label_width"><?= $row['label_width']; ?></td>
+					<td class="height"><?= $row['height']; ?></td>
+					<td class="style"><?= $this->escapeHtml($row['style']); ?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($row['docfieldId'], $hiddens, $buttons);?>
+                		<?=$this->listeLigneActions($row['docfieldId'],$hiddens,$buttons);?>
 				    </td>
 				</tr>
-        <?php endforeach;?>
+        	<?php endforeach;?>
             </tbody>
 		</table>
 	</div>

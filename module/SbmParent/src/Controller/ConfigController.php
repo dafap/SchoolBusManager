@@ -7,12 +7,13 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2018-2.4.5
+ * @date 28 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
 
 use SbmBase\Model\StdLib;
+use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use SbmCommun\Form;
 use SbmCommun\Filter\SansAccent;
@@ -244,7 +245,7 @@ class ConfigController extends AbstractActionController
                 $this->flashMessenger()->addSuccessMessage("La fiche a été enregistrée.");
                 try {
                     return $this->redirectToOrigin()->back();
-                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                     return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
                     ]);
@@ -273,7 +274,8 @@ class ConfigController extends AbstractActionController
         // nécessaire pour valider lat et lng
         $configCarte = StdLib::getParam('parent',
             $this->cartographie_manager->get('cartes'));
-        $d2etab = $this->cartographie_manager->get('SbmCarto\DistanceEtablissements');
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -281,12 +283,12 @@ class ConfigController extends AbstractActionController
             // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
             $args = $responsable->getArrayCopy();
             $point = new Point($args['x'], $args['y']);
-            $pt = $d2etab->getProjection()->xyzVersgRGF93($point);
+            $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
             $pt->setLatLngRange($configCarte['valide']['lat'],
                 $configCarte['valide']['lng']);
             if (! $pt->isValid()) {
                 // essayer de localiser par l'adresse avant de présenter la carte
-                $array = $this->cartographie_manager->get('SbmCarto\Geocoder')->geocode(
+                $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
                     $responsable->adresseL1, $responsable->codePostal,
                     $responsable->commune);
                 $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
@@ -348,7 +350,7 @@ class ConfigController extends AbstractActionController
             // On vérifie qu'on a cliqué dans un rectangle autorisé
             $form->setData($args);
             if ($form->isValid()) {
-                $point = $d2etab->getProjection()->gRGF93versXYZ($pt);
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
                 $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
                 $oData = $tableResponsables->getObjData();
                 $oData->exchangeArray(
@@ -359,8 +361,10 @@ class ConfigController extends AbstractActionController
                     ]);
                 $tableResponsables->saveRecord($oData);
                 $responsable->refresh();
-                $this->cartographie_manager->get('Sbm\MajDistances')->pour(
+                $msg = $this->cartographie_manager->get('Sbm\MajDistances')->pour(
                     $responsable->responsableId);
+                // ne pas afficher l'échec de mise à jour des distances pour les élèves
+                unset($msg);
                 $this->flashMessenger()->addSuccessMessage(
                     'La localisation du domicile est enregistrée.');
                 return $this->redirect()->toRoute('login', [
@@ -374,7 +378,12 @@ class ConfigController extends AbstractActionController
                 'responsable' => $responsable,
                 'form' => $form->prepare(),
                 'config' => $configCarte,
-                'url_api' => $this->cartographie_manager->get('google_api')['js']
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
             ]);
+    }
+
+    public function inscriptionListeDeDiffusionAction()
+    {
+        return [];
     }
 } 

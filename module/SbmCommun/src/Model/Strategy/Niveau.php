@@ -6,8 +6,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Strategy
  * @filesource Niveau.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Model\Strategy;
 

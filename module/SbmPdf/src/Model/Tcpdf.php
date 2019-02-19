@@ -13,13 +13,12 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
 
 use SbmBase\Model\DateLib;
-use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmPdf\Model\Db\Sql\Select;
 use Zend\Db\Sql\Where;
@@ -28,6 +27,7 @@ use Zend\View\Model\ViewModel;
 
 class Tcpdf extends \TCPDF
 {
+    use QuerySourceTrait;
 
     const HORS_SECTION = 0;
 
@@ -133,6 +133,16 @@ class Tcpdf extends \TCPDF
     }
 
     /**
+     * Renvoie la version courante de TCPDF
+     *
+     * @return string
+     */
+    public static function getVersion()
+    {
+        return \TCPDF_STATIC::getTCPDFVersion();
+    }
+
+    /**
      * Initialise les paramètres
      *
      * @param array $params
@@ -144,6 +154,10 @@ class Tcpdf extends \TCPDF
     {
         global $l;
 
+        if (array_key_exists('data', $params)) {
+            $this->setData($params['data']);
+            unset($params['data']);
+        }
         $this->params = $params;
 
         // document pdf
@@ -195,18 +209,28 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Configure la propriété $data
+     * Configure la propriété $data de sorte que chaque ligne se comporte comme un tableau
+     * associatif
      *
-     * @param array $data
+     * @param array|\Iterator $data
      */
-    public function setData(array $data)
+    public function setData($data)
     {
-        $this->data = $data;
+        if ($data instanceof \Zend\Db\Adapter\Driver\Pdo\Result) {
+            $data->setFetchMode(\PDO::FETCH_ASSOC);
+            $this->data = $data;
+        } elseif ($data instanceof \Iterator) {
+            $this->data = iterator_to_array($data);
+        } elseif (! is_array($data)) {
+            throw new Exception('Mauvais type de données.');
+        } else {
+            $this->data = $data;
+        }
         return $this;
     }
 
     /**
-     * Renvoie le tableau des données
+     * Renvoie le tableau des données ou un iterator se comportant comme tel
      *
      * @return array
      */
@@ -609,7 +633,7 @@ class Tcpdf extends \TCPDF
         try {
             $this->config['document'] = $table_documents->getConfig(
                 $this->getDocumentId());
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             if (getenv('APPLICATION_ENV') == 'development') {
                 $msg = __METHOD__ . ' - ' . $e->getMessage();
             } else {
@@ -913,8 +937,8 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, $barcode_width,
-                (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width,
+                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {
@@ -1565,6 +1589,7 @@ class Tcpdf extends \TCPDF
                 }
                 $this->config['doctable']['columns'] = $table_columns;
             } else {
+                $t_nb_inscrits = $this->getParam('t_nb_inscrits', []);
                 $columns = [];
                 foreach ($table_columns as $column) {
                     $columns[] = $column['tbody'];
@@ -1572,22 +1597,11 @@ class Tcpdf extends \TCPDF
                 if (empty($columns)) {
                     $columns[] = Select::SQL_STAR;
                 }
-                $recordSource = $this->getConfig('document', 'recordSource', '');
-                $recordSource = str_replace(
-                    [
-                        '%date%',
-                        '%heure%',
-                        '%millesime%',
-                        '%userId%'
-                    ],
-                    [
-                        date('Y-m-d'),
-                        date('H:i:s'),
-                        Session::get('millesime'),
-                        $this->pdf_manager->get('SbmAuthentification\Authentication')
-                            ->by()
-                            ->getUserId()
-                    ], $recordSource);
+                $recordSource = $this->decodeSource(
+                    $this->getConfig('document', 'recordSource', ''),
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
+                        ->by()
+                        ->getUserId());
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 try {
                     $select = new Select($recordSource);
@@ -1614,7 +1628,21 @@ class Tcpdf extends \TCPDF
                             // $row est un ArrayObject
                             $ligne = [];
                             for ($key = 0; $key < count($table_columns); $key ++) {
-                                $ligne[] = $value = $row[$table_columns[$key]['tbody']];
+                                $value = $row[$table_columns[$key]['tbody']];
+                                // traitement des effectifs
+                                if ($table_columns[$key]['filter'] &&
+                                    strpos($table_columns[$key]['filter'], '%valeur%')) {
+                                    $filter = $table_columns[$key]['filter'];
+                                    $filter = str_replace('%valeur%', $value, $filter);
+                                    $filter = explode('=>', $filter);
+                                    if ($filter[0] == 't_nb_inscrits') {
+                                        $filter = StdLib::getArrayFromString($filter[1]);
+                                        $value = StdLib::getParamR($filter, $t_nb_inscrits,
+                                            0);
+                                    }
+                                }
+                                // reprise du traitement
+                                $ligne[] = $value;
                                 // adapte la largeur de la colonne si nécessaire
                                 $value_width = $this->GetStringWidth($value,
                                     $this->getConfig('document', 'data_font_family',
@@ -1635,7 +1663,7 @@ class Tcpdf extends \TCPDF
                     if (getenv('APPLICATION_ENV') == 'development') {
                         $msg = __METHOD__ . ' - ' . $e->getMessage() . "\n" . $recordSource;
                     } else {
-                        $msg = "Impossible d'exécuter la requête.";
+                        $msg = "Impossible d'exécuter la requête.\n" . $sqlString;
                     }
                     $errcode = $e->getCode();
                     if (! empty($errcode) && ! is_numeric($errcode)) {
@@ -1808,10 +1836,28 @@ class Tcpdf extends \TCPDF
         $descripteur = $label->descripteurData();
         $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            $lignes = $etiquetteData['lignes'];
+            $photos = $etiquetteData['photos'];
             $page_vide = false;
-            for ($j = 0; $j < count($etiquetteData); $j ++) {
+            // partie graphique : photos
+            $origine = [
+                $this->x,
+                $this->y
+            ];
+            foreach ($photos as $rang => $img) {
+                list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
+                    $label->parametresPhoto($rang));
+                unset($resize); // TODO : ce paramètre n'est pas utilisé
+                $x += $origine[0];
+                $y += $origine[1];
+                $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
+            }
+            // partie texte - etiquetteData est indexé à partir de 0
+            list ($x, $y) = $origine;
+            $this->SetXY($x, $y);
+            for ($j = 0; $j < count($lignes); $j ++) {
                 $this->setStyle($descripteur[$j]['style']);
-                $txt = $etiquetteData[$j];
+                $txt = $lignes[$j];
                 $txtLabel = $descripteur[$j]['label'];
                 if (! empty($txtLabel)) {
                     $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0,
@@ -1836,11 +1882,36 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie un tableau de données pour les étiquettes.
+     * Renvoie un tableau indexé de données pour les étiquettes.
+     * Chaque enregistrement du tableau correspond au contenu d'une étiquette sous la
+     * forme d'un tableau associatif
+     * [
+     * 'lignes' => [tableau indexé des lignes de l'étiquette (1)],
+     * 'photos' => false ou tableau indexé de tableaux associatifs de la photo et de ses
+     * paramètres (2). Autant de photos que le descripteur l'indique
+     * ]
+     * (1) Chaque ligne de ce tableau est une chaine de caractères correctement formatée
+     * pour être directement "écrite" dans la page PDF.
+     * (2) Si le descripteur indique qu'il s'agit d'une photo :
+     * 'photos' =>[
+     * [
+     * img => @imagedata où imagedata est le décodage de la colonne photo
+     * x => abscisse du coin supérieur gauche ('' par défaut)
+     * y => ordonnée du coin supérieur gauche ('' par défaut)
+     * w => largeur de l'image dans la page (0 par défaut)
+     * h => hauteur de l'image dans la page (0 par défaut)
+     * type => typephoto (JPEG ou PNG ou GIF - '' par défaut)
+     * align => T ou M ou B ou N ('' par défaut)
+     * resize => true (false par défaut)
+     * dpi => résolution de l'image (300 par défaut)
+     * ], ...
+     * ]
+     * Sinon, 'photo' => []
      *
      * @param array $descripteur
-     *            décrit chaque ligne dans un tableau avec les clés 'fieldname', 'filter',
-     *            'format', 'label'
+     *            tableau de descripteurs des champs
+     *            chaque champ est décrit dans un tableau avec les clés
+     *            'fieldname', 'filter', 'format', 'label', 'nature', 'style', 'data'
      * @param bool $force
      *            force l'initialisation des données par lecture de la base
      *            
@@ -1869,45 +1940,53 @@ class Tcpdf extends \TCPDF
                 $table = $this->getRecordSourceTable();
                 // lecture des données et application du filtre et du format
                 foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
-                    $ligne = [];
-                    foreach ($descripteur as $column) {
+                    $lignes = [];
+                    $photos = [];
+                    foreach ($descripteur as $rang => $column) {
                         $value = StdLib::translateData($row->{$column['fieldname']},
                             $column['filter']);
-                        if ($column['is_date']) {
-                            if (! empty($column['format']) &&
-                                stripos('h', $column['format']) !== false) {
-                                $value = DateLib::formatDateTimeFromMysql($value);
-                            } else {
-                                $value = DateLib::formatDateFromMysql($value);
-                            }
-                        } elseif (! empty($column['format'])) {
-                            $value = sprintf($column['format'], $value);
+                        switch ($column['nature']) {
+                            case 2:
+                                if ($value) {
+                                    $photos[$rang] = '@' . stripslashes($value);
+                                }
+                                break;
+                            case 1:
+                                if (! empty($column['format']) &&
+                                    stripos('h', $column['format']) !== false) {
+                                    $value = DateLib::formatDateTimeFromMysql($value);
+                                } else {
+                                    $value = DateLib::formatDateFromMysql($value);
+                                }
+                                break;
+                            default:
+                                $value = sprintf($column['format'], $value);
+                                break;
                         }
-                        $ligne[] = $value;
+                        $lignes[] = $value;
                     }
-                    $this->data[] = $ligne;
+                    if ($photos == []) {
+                        $photos = false;
+                    }
+                    $this->data[] = [
+                        'lignes' => $lignes,
+                        'photos' => $photos
+                    ];
                 }
             } else {
-                // c'est une requête Sql. S'il n'y a pas de description des colonnes dans la table
-                // doccolumns alors on en crée une par défaut.
-                $sql = $this->getConfig('document', 'recordSource', '');
-                // remplacement des variables éventuelles : %millesime%, %date%, %heure% et
-                // %userId%
-                $sql = str_replace([
-                    '%date%',
-                    '%heure%',
-                    '%millesime%',
-                    '%userId%'
-                ],
-                    [
-                        date('Y-m-d'),
-                        date('H:i:s'),
-                        Session::get('millesime'),
-                        $this->pdf_manager->get('SbmAuthentification\Authentication')
-                            ->by()
-                            ->getUserId()
-                    ], $sql);
-                //
+                /**
+                 * c'est une requête Sql.
+                 *
+                 * S'il n'y a pas de description des colonnes dans la table doccolumns
+                 * alors on en crée une par défaut.
+                 */
+                // remplacement des variables %millesime%, %date%, %heure% et %userId%
+                // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
+                $sql = $this->decodeSource(
+                    $this->getConfig('document', 'recordSource', ''),
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
+                        ->by()
+                        ->getUserId());
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
 
                 try {
@@ -1959,7 +2038,8 @@ class Tcpdf extends \TCPDF
                     if ($rowset->count()) {
                         foreach ($rowset as $row) {
                             // $row est un ArrayObject
-                            $etiquette = [];
+                            $lignes = [];
+                            $photos = [];
                             for ($key = 0; $key < count($descripteur); $key ++) {
                                 if (empty($descripteur[$key]['fieldname'])) {
                                     $value = '';
@@ -1967,22 +2047,38 @@ class Tcpdf extends \TCPDF
                                     $value = StdLib::translateData(
                                         $row[$descripteur[$key]['fieldname']],
                                         $descripteur[$key]['filter']);
-                                    if ($descripteur[$key]['is_date']) {
-                                        if (! empty($descripteur[$key]['format']) && stripos(
-                                            'h', $descripteur[$key]['format']) !== false) {
-                                            $value = DateLib::formatDateTimeFromMysql(
-                                                $value);
-                                        } else {
-                                            $value = DateLib::formatDateFromMysql($value);
-                                        }
-                                    } elseif (! empty($descripteur[$key]['format'])) {
-                                        $value = sprintf($descripteur[$key]['format'],
-                                            $value);
+                                    switch ($descripteur[$key]['nature']) {
+                                        case 2:
+                                            if ($value) {
+                                                $photos[$key] = '@' . stripslashes($value);
+                                            }
+                                            break;
+                                        case 1:
+                                            if (! empty($descripteur[$key]['format']) &&
+                                                stripos('h', $descripteur[$key]['format']) !==
+                                                false) {
+                                                $value = DateLib::formatDateTimeFromMysql(
+                                                    $value);
+                                            } else {
+                                                $value = DateLib::formatDateFromMysql(
+                                                    $value);
+                                            }
+                                            $lignes[] = $value;
+                                            break;
+                                        default:
+                                            if (! empty($descripteur[$key]['format'])) {
+                                                $value = sprintf(
+                                                    $descripteur[$key]['format'], $value);
+                                            }
+                                            $lignes[] = $value;
+                                            break;
                                     }
                                 }
-                                $etiquette[] = $value;
                             }
-                            $this->data[] = $etiquette;
+                            $this->data[] = [
+                                'lignes' => $lignes,
+                                'photos' => $photos
+                            ];
                         }
                     }
                 } catch (\Exception $e) {
@@ -2031,6 +2127,8 @@ class Tcpdf extends \TCPDF
         $duplicata = $this->getParam('duplicata', false);
         $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
+            $lignes = $etiquetteData['lignes'];
+            $photos = (array) $etiquetteData['photos'];
             $page_vide = false;
             // partie graphique
             $origine = [
@@ -2048,10 +2146,19 @@ class Tcpdf extends \TCPDF
                 $this->Titre(1, 'DUPLICATA', 'L');
                 $this->StopTransform();
             }
+            // partie photos
+            foreach ($photos as $rang => $img) {
+                list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
+                    $label->parametresPhoto($rang));
+                unset($resize); // TODO : ce paramètre n'est pas utilisé
+                $x += $origine[0];
+                $y += $origine[1];
+                $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
+            }
+            // partie texte - etiquetteData est indexé à partir de 0
             list ($x, $y) = $origine;
             $this->SetXY($x, $y);
-            // partie texte - etiquetteData est indexé à partir de 0
-            for ($i = 0; $i < count($etiquetteData); $i ++) {
+            for ($i = 0; $i < count($lignes); $i ++) {
                 $this->setStyle($descripteur[$i]['style']);
                 $txt = [];
                 $txtLabel = $descripteur[$i]['label'];
@@ -2059,7 +2166,7 @@ class Tcpdf extends \TCPDF
                     $txt[] = $txtLabel;
                 }
                 if ($descripteur[$i]['data']) {
-                    $txt[] = $etiquetteData[$i];
+                    $txt[] = $lignes[$i];
                 }
                 $this->SetX($label->X($i));
                 $this->Cell($label->wCell($i), $label->hCell($i), implode(' ', $txt), 0, 0,
@@ -2205,8 +2312,8 @@ class Tcpdf extends \TCPDF
                 'bgcolor' => false,
                 'text' => false
             ];
-            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, $barcode_width,
-                (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+            $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width,
+                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {
@@ -2282,5 +2389,37 @@ class Tcpdf extends \TCPDF
         $html = $this->getParam('html', 'Aucune donnée reçue.');
         // die('<pre>' . htmlentities($html) . '</pre>');
         $this->writeHTML($html, true, false, true, false, '');
+    }
+
+    // =======================================================================================================
+    // Modèle particulier pour la liste des élèves dans le portail des organisateurs
+    //
+    /**
+     * Liste associée à un layout et produisant un PDF à partir d'un modèle HTML
+     * Les données sont passées par la méthode setData, que ce soit directement dans
+     * cette classe ou par le service RenderPdfService.
+     */
+    public function templateDocBodyMethod6($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Liste associée à un modèle HTML (layout)';
+        }
+        $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec son chemin)
+        if (empty($fichier_phtml)) {
+            throw new Exception("Le modèle de ce document n'a pas été défini.");
+        }
+        $viewRender = $this->pdf_manager->get('ViewRenderer');
+        $layout = new ViewModel();
+        $layout->setTemplate($fichier_phtml);
+        $layout->setVariables([
+            'eleves' => $this->getData()
+        ]);
+        $codeHtml = $viewRender->render($layout);
+        set_time_limit(300);
+        // echo($codeHtml);
+        $this->writeHTML($codeHtml, true, false, false, false, '');
     }
 }

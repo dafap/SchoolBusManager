@@ -9,8 +9,8 @@
  * @filesource affectation-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -98,18 +98,16 @@ if (strlen($this->document['recordSource']) > 450) {
 					<th></th>
 				</tr>
             <?php foreach($data as $row): ?>
-            <?php $hiddens['docaffectationId'] = $row['docaffectationId'];?>
+            	<?php $hiddens['docaffectationId'] = $row['docaffectationId'];?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
-					<td class="route">
-						<?= $this->escapeHtml($row['route']); ?></td>
-					<td class="libelle">
-						<?= $this->escapeHtml($row['libelle']); ?></td>
-					<td class="libelle align-right">
-						<?= $row['ordinal_position']; ?></td>
+					<td class="route"><?= $this->escapeHtml($row['route']); ?></td>
+					<td class="libelle"><?= $this->escapeHtml($row['libelle']); ?></td>
+					<td class="libelle align-right"><?= $row['ordinal_position']; ?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($row['docaffectationId'], $hiddens, $buttons);?></td>
+						<?= $this->listeLigneActions($row['docaffectationId'], $hiddens, $buttons);?>
+				    </td>
 				</tr>
-        	<?php endforeach;?>
+        <?php endforeach;?>
             </tbody>
 		</table>
 	</div>

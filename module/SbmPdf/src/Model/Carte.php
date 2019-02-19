@@ -11,8 +11,8 @@
  * @filesource Carte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 8 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
 
@@ -67,28 +67,15 @@ class Carte extends Etiquette
     }
 
     /**
-     * version 2016 sur page A4
+     * version 2016 sur page A4 (revue en fév. 2019 pour paramétrer le nombre de lignes)
      *
      * @param number $delta
      * @param number $hauteur_utile
      */
     private function initPositions($delta, $hauteur_utile)
     {
-        // zone 1
-        for ($y = $delta, $i = 0; $i < 10; $i ++) {
-            /*
-             * $this->positions[$i]['x'] = 12;
-             * $this->positions[$i]['y'] = $y;
-             * $this->positions[$i]['data'] = true;
-             * $this->positions[$i]['style'] = 'main';
-             * $y += $delta;
-             * }
-             * $this->positions[0]['data'] = false; // c'est du texte - prendre uniquement le label
-             * du docfield
-             * $y = $this->positions[2]['y'] = 15; // en mm
-             * // zone 2
-             * for ($y += $delta; $i < 14; $i ++) {
-             */
+        $n = $this->lineCount();
+        for ($y = $delta, $i = 0; $i < $n; $i ++) {
             $this->positions[$i]['x'] = 1;
             $this->positions[$i]['y'] = $y;
             $this->positions[$i]['data'] = true;
@@ -97,8 +84,8 @@ class Carte extends Etiquette
         }
         // optimisation des lignes
         $d = $hauteur_utile - $y;
-        if (abs($d) > 0.11) {
-            $delta += $d / 11;
+        if (abs($d) > 0.01 * $n) {
+            $delta += $d / $n;
             $this->initPositions($delta, $hauteur_utile);
         }
     }

@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 24 sept. 2018
+ * @version 2019-2.5.0
  */
 use SbmAjax\Controller\Service;
 
@@ -41,7 +41,6 @@ foreach ($controllers as $key => $value) {
     ];
 }
 unset($value);
-
 return [
     'acl' => [
         'resources' => [
@@ -83,8 +82,7 @@ return [
         ]
     ],
     'controllers' => [
-        // de préférence dans ce module, commencer les noms par sbmajax (pour des routes commençant
-        // par ajax) et les laisser en minuscules
+        // de préférence dans ce module, commencer les noms par sbmajax (pour des routes commençant par ajax) et les laisser en minuscules
         'factories' => $controllers
     ],
     'router' => [
@@ -95,8 +93,10 @@ return [
         'template_path_stack' => [
             __DIR__ . '/../view'
         ]
-        // 'strategies' => [
-        // 'ViewJsonStrategy'
-        // ]
     ]
-];
+]
+// 'strategies' => [
+// 'ViewJsonStrategy'
+// ]
+
+;

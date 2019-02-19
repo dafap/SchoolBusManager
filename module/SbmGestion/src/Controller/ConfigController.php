@@ -8,8 +8,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 25 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
@@ -64,7 +64,8 @@ class ConfigController extends AbstractActionController
 
     public function localisationAction()
     {
-        $this->flashMessenger()->addWarningMessage('La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');
+        $this->flashMessenger()->addWarningMessage(
+            'La localisation n\'est pas possible pour votre catégorie d\'utilisateurs.');
         return $this->redirect()->toRoute('sbmgestion');
     }
 }

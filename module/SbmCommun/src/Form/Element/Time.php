@@ -9,14 +9,15 @@
  * @filesource Time.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juin 2017
- * @version 2017-3.3.4
+ * @date 3 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmCommun\Form\Element;
- 
+
 use Zend\Form\Element\Time as ZendFormElementTime;
 
 class Time extends ZendFormElementTime
 {
+
     const DATETIME_FORMAT = 'H:i';
 }

@@ -8,8 +8,8 @@
  * @filesource Paiement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
 
@@ -146,7 +146,7 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'montant',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsDecimal',
                 'attributes' => [
                     'id' => 'paiement-montant',
                     'class' => 'sbm-width-15c'

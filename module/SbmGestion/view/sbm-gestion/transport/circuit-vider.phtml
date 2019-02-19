@@ -1,0 +1,26 @@
+<?php
+/**
+ * Page de confirmation pour vider la table des circuits pour le millesime courant
+ *
+ * Reçoit $form, formulaire de confirmation
+ * 
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource circuit-vider.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 oct. 2018
+ * @version 2019-2.5.0
+ */
+?>
+<h1>Suppression d'un circuit</h1>
+<div id="suppr-wrapper">
+	<p>
+		Si vous confirmez, la table des circuits pour l'année scolaire <b><?= $this->as;?></b>
+		sera vidée.
+	</p>
+	<p>Confirmez-vous ?</p>
+	<?= $this->form()->openTag($form);?>   
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

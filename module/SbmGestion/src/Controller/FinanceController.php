@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
@@ -126,10 +126,10 @@ class FinanceController extends AbstractActionController
             if ($this->params('id', '') == 'tous') {
                 // appel depuis finances : pas de post, éventuellement des criteres
                 $args = [];
-                $this->removeInSession('post', $this->getSessionNamespace());
+                Session::remove('post', $this->getSessionNamespace());
             } else {
                 // F5, back ou un redirect de sortie : reprendre le contexte d'avant en session
-                $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+                $args = Session::get('post', [], $this->getSessionNamespace());
             }
         } else {
             // suite à un post,
@@ -145,8 +145,7 @@ class FinanceController extends AbstractActionController
                     $args = $prg;
                     $args['url1_retour'] = $args['origine'];
                 } else {
-                    $args = $this->getFromSession('post', [],
-                        $this->getSessionNamespace());
+                    $args = Session::get('post', [], $this->getSessionNamespace());
                     $args = array_merge($args, $prg);
                 }
             } else {
@@ -154,7 +153,7 @@ class FinanceController extends AbstractActionController
                 // paiement-edit
                 $args = $prg;
             }
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
 
         // la page vient de la route (compatibilité du paginateur)
@@ -190,12 +189,12 @@ class FinanceController extends AbstractActionController
                 $criteres_form->setData($args);
                 if ($criteres_form->isValid()) {
                     $criteres_obj->exchangeArray($criteres_form->getData());
-                    $this->setToSession('criteres', $criteres_obj->getArrayCopy());
+                    Session::set('criteres', $criteres_obj->getArrayCopy());
                 }
             }
             // récupère les données de la session si le post n'a pas été validé dans le formulaire
             // (pas de post ou invalide)
-            $criteres_data = $this->getFromSession('criteres');
+            $criteres_data = Session::get('criteres');
             if (! $criteres_form->hasValidated() && ! empty($criteres_data)) {
                 $criteres_obj->exchangeArray($criteres_data);
                 $criteres_form->setData($criteres_obj->getArrayCopy());
@@ -243,12 +242,13 @@ class FinanceController extends AbstractActionController
             $responsable = $this->db_manager->get('Sbm\Db\Query\Responsables')
                 ->withEffectifs($where, [
                 'responsableId'
-            ])
+            ], $responsableId)
                 ->current();
             $nomPrenom = sprintf('%s %s %s', $responsable['titre'], $responsable['nom'],
                 $responsable['prenom']);
             $nbTarif1 = $responsable['nbTarif1'];
             $nbTarif2 = $responsable['nbTarif2'];
+            $montantInscriptions = $responsable['montant'];
             $nbDuplicata = $responsable['nbDuplicata'];
             // }
 
@@ -259,6 +259,7 @@ class FinanceController extends AbstractActionController
                     'criteres_form' => null,
                     'h2' => true,
                     'responsable' => $nomPrenom,
+                    'montantInscriptions' => $montantInscriptions,
                     'totalPaye' => $totalPaye,
                     'tarif1' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
                         'tarif1'),
@@ -314,13 +315,13 @@ class FinanceController extends AbstractActionController
         $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
         // on détermine si le responsable est fixé ou s'il faudra le choisir
         if (\array_key_exists('h2', $args)) {
-            $this->setToSession('responsable_attributes',
+            Session::set('responsable_attributes',
                 [
                     'h2' => $args['h2'],
                     'responsable' => $args['responsable']
                 ], $this->getSessionNamespace());
         } else {
-            $responsable_attributes = $this->getFromSession('responsable_attributes', [],
+            $responsable_attributes = Session::get('responsable_attributes', [],
                 $this->getSessionNamespace());
             $args = \array_merge($args, $responsable_attributes);
         }
@@ -362,8 +363,7 @@ class FinanceController extends AbstractActionController
                 // validation des paiements dans les fiches scolarites
                 if (! empty($args['eleveId'])) {
                     $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-                    $tScolarites->setPaiement($this->getFromSession('millesime'),
-                        $args['eleveId']);
+                    $tScolarites->setPaiement(Session::get('millesime'), $args['eleveId']);
                 }
                 // retour à la liste
                 $this->flashMessenger()->addSuccessMessage(
@@ -375,7 +375,7 @@ class FinanceController extends AbstractActionController
                     ]);
             }
         } else {
-            $millesime = $this->getFromSession('millesime');
+            $millesime = Session::get('millesime');
             $as = $millesime . '-' . ($millesime + 1);
             $libelles = $this->db_manager->get('Sbm\Libelles');
             $init_form = [
@@ -449,10 +449,9 @@ class FinanceController extends AbstractActionController
             function ($post) use ($sessionNS) {
                 if (array_key_exists('responsable', $post)) {
                     $responsable = $post['responsable'];
-                    \SbmBase\Model\Session::set('responsable', $responsable, $sessionNS);
+                    Session::set('responsable', $responsable, $sessionNS);
                 } else {
-                    $responsable = \SbmBase\Model\Session::get('responsable', '',
-                        $sessionNS);
+                    $responsable = Session::get('responsable', '', $sessionNS);
                 }
                 return [
                     'paiementId' => $post['paiementId'],
@@ -528,8 +527,7 @@ class FinanceController extends AbstractActionController
         // Si responsable est passé, on le met en session afin de le retrouver si nécessaire (cas
         // d'un formulaire non validé)
         if (\array_key_exists('responsable', $args)) {
-            $this->setToSession('responsable', $args['responsable'],
-                $this->getSessionNamespace());
+            Session::set('responsable', $args['responsable'], $this->getSessionNamespace());
         }
 
         $paiementId = $args['paiementId'];
@@ -559,7 +557,7 @@ class FinanceController extends AbstractActionController
                         'page' => $this->params('page', 1)
                     ]);
             } else {
-                $args['responsable'] = $this->getFromSession('responsable');
+                $args['responsable'] = Session::get('responsable');
             }
         } else {
             $form->setData($tablePaiements->getRecord($paiementId)
@@ -582,7 +580,7 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } else {
-            $args = (array) $prg;
+            $args = $prg ?: [];
             $page = $this->params('page', 1);
             if (array_key_exists('cancel', $args)) {
                 $this->flashMessenger()->addWarningMessage('Action abandonnée.');
@@ -604,6 +602,7 @@ class FinanceController extends AbstractActionController
         }
         unset($libelle);
         $form1 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        $form1->setAttribute('id', 'bordereau-en-cours');
         $form1->setValueOptions('bordereau', $bordereauxEnCours);
         $editerSubmit = $form1->get('editer');
         $editerSubmit->setAttribute('formaction',
@@ -616,11 +615,13 @@ class FinanceController extends AbstractActionController
                 ]));
 
         $form2 = new \SbmGestion\Form\Finances\BordereauRemiseValeurCreer();
+        $form2->setAttribute('id', 'bordereau-preparer');
         $form2->setValueOptions('codeModeDePaiement', $nouveauxPossibles)->setValueOptions(
             'codeCaisse', $this->db_manager->get('Sbm\Db\Select\Libelles')
                 ->caisse());
 
         $form3 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        $form3->setAttribute('id', 'bordereau-cloture');
         $form3->setValueOptions('bordereau', $bordereauxClotures);
         $editerSubmit = $form3->get('editer');
         $editerSubmit->setAttribute('formaction',
@@ -727,7 +728,7 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false || empty($prg['responsableId'])) {
-            $args = $this->getFromSession('post', false, $this->getSessionNamespace());
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false) {
                 return $this->redirect()->toRoute('sbmgestion/finance',
                     [
@@ -737,7 +738,7 @@ class FinanceController extends AbstractActionController
             }
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $responsableId = $args['responsableId'];
         $tEleves = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
@@ -783,7 +784,7 @@ class FinanceController extends AbstractActionController
         }
         $page = $this->params('page', 1);
         $id = $this->params('id', 1);
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (! array_key_exists('editer', $args)) {
             $this->flashMessenger()->addWarningMessage('Action abandonnée.');
             return $this->redirect()->toRoute('sbmgestion/finance',
@@ -814,7 +815,7 @@ class FinanceController extends AbstractActionController
             $call_pdf->setParam('documentId', 'Bordereau de remise de valeurs');
             $aKey = $sBordereaux->decode($args['bordereau']); // tableau de la forme
                                                               // ['dateBordereau' => date,
-                                                              // 'codeModeDePaiement' => code)
+                                                              // 'codeModeDePaiement' => code]
             $where = new Where();
             $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo(
                 'codeModeDePaiement', $aKey['codeModeDePaiement']);
@@ -1073,18 +1074,17 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         $currentPage = $this->params('page', 1);
         $pageRetour = $this->params('id', - 1);
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1,
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $tarifId = StdLib::getParam('tarifId', $args, - 1);
         if ($tarifId == - 1) {
@@ -1098,7 +1098,7 @@ class FinanceController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
-                    $this->getFromSession('millesime'), [
+                    Session::get('millesime'), [
                         'tarifId' => $tarifId
                     ], [
                         'nom',
@@ -1336,16 +1336,15 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = $this->getFromSession('post', [], $this->getSessionNamespace());
+            $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            $this->setToSession('post', $args, $this->getSessionNamespace());
+            Session::set('post', $args, $this->getSessionNamespace());
         }
         if ($pageRetour == - 1) {
-            $pageRetour = $this->getFromSession('pageRetour', 1,
-                $this->getSessionNamespace());
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
-            $this->setToSession('pageRetour', $pageRetour, $this->getSessionNamespace());
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $organismeId = StdLib::getParam('organismeId', $args, - 1);
         if ($organismeId == - 1) {
@@ -1359,14 +1358,13 @@ class FinanceController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->
-                // ->paginatorByOrganisme($this->getFromSession('millesime'), $organismeId, [
-                paginator($this->getFromSession('millesime'),
-                    [
-                        'organismeId' => $organismeId
-                    ], [
-                        'nom',
-                        'prenom'
-                    ]),
+                // ->paginatorByOrganisme(Session::get('millesime'), $organismeId, [
+                paginator(Session::get('millesime'), [
+                    'organismeId' => $organismeId
+                ], [
+                    'nom',
+                    'prenom'
+                ]),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'organisme' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->getRecord(
                     $organismeId),

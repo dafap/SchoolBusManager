@@ -10,13 +10,12 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @version 2019-2.5.0
  */
 ?>
 <?= $this->form()->openTag($this->form);?>
 <?= $this->formHidden($this->form->get('csrf'));?>
 <fieldset class="sbm-page1">
-	';
 	<div id="commun-edit-mdp-old" class="row-inner edit">
 		<?= $this->formRow($this->form->get('mdp_old'));?></div>
 	<div id="commun-edit-mdp-new" class="row-inner edit">
@@ -27,7 +26,6 @@
 		<?= $this->formSubmit($this->form->get('submit'));?>
 		<?= $this->formSubmit($this->form->get('cancel'));?></div>
 </fieldset>
-';
 <?= $this->form()->closeTag();?>
 <div class="sbm-description">
 	<p>Donnez d'abord votre mot de passe actuel, puis le nouveau mot de

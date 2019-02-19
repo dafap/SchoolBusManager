@@ -76,10 +76,11 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
+use SbmBase\Model\View\Helper;
 
 return [
     'sbm_session' => [
@@ -100,6 +101,16 @@ return [
         'validators' => [
             'Zend\Session\Validator\RemoteAddr',
             'Zend\Session\Validator\HttpUserAgent'
+        ]
+    ],
+    'view_helpers' => [
+        'aliases' => [
+            'jQuery' => Helper\JQuery::class,
+            'jquery' => Helper\JQuery::class,
+            'JQuery' => Helper\JQuery::class
+        ],
+        'factories' => [
+            Helper\JQuery::class => Helper\JQueryFactory::class
         ]
     ]
 ];

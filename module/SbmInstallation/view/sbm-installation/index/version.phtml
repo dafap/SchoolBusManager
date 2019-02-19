@@ -1,35 +1,64 @@
 <?php
 /**
- * Version du logiciel et de PHP, de ZF2
- *
+ * Affiche les versions des logiciels 
+ * - SchoolBusManager (définie dans Sbminstallation/config/version.inc.php)
+ * - PHP
+ * - bibliothèque GD
+ * - Zendframework
+ * - JQuery
+ * - TCPDF
+ * et vérifie éventuellement s'il y a une version plus récente.
+ * 
  * @project sbm
  * @package SbmInstallation\view
  * @filesource version.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
-use Zend\Version\Version;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\DateLib;
 use Zend\Json\Json;
-
-define('SBM_VERSION', '2.4.5');
+use Zend\Version\Version;
 
 function versionTcpdfGitHub()
 {
     $context = stream_context_create(
         [
             'http' => [
-                'user_agent' => sprintf('Sbm/%s', SBM_VERSION)
+                'user_agent' => sprintf('Sbm/%s', DateLib::todayToMysql())
             ]
         ]);
     $url = 'https://api.github.com/repos/tecnickcom/TCPDF/tags';
     $apiResponse = file_get_contents($url, false, $context);
     $decodedResponse = Json::decode($apiResponse, Json::TYPE_ARRAY);
-    return $decodedResponse[0]['name'];
+    $last_version = current($decodedResponse);
+    if ($last_version['name'] == 'OLDv6') {
+        $last_version = next($decodedResponse);
+    }
+    return $last_version['name'];
 }
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+$this->headScript()->captureStart();
+?>
+function initMap() {
+    $("#maps").html(google.maps.version);
+}
+<?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->prependFile($this->url_maps_api . '&callback=initMap');
+$this->inlineScript()->captureStart();
+?>
+$(function() {
+    $("#jquery").html($.fn.jquery);
+    $("#tinymce").html(tinymce.majorVersion + '.' + tinymce.minorVersion);
+});
+<?php
+$this->inlineScript()->captureEnd();
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
@@ -54,37 +83,51 @@ if ($gdInfo['GIF Read Support']) {
 <h1>Versions installées</h1>
 <div id="version-wrapper" class="left-10px">
 	<div id="version-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions)?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions([], $actions)?></div>
 	</div>
-	<div id="vesion-inner">
-		<dl>
+	<div id="version-inner" class="clearfix">
+		<dl class="float-left" style="width: 48%">
 			<dt>Version de School bus manager</dt>
-			<dd><?php echo SBM_VERSION; ?></dd>
+			<dd><?= include StdLib::concatPath(StdLib::findParentPath(__DIR__,'config'),'version.inc.php');?></dd>
 			<dt>Version de PHP</dt>
-			<dd><?php echo phpversion();?></dd>
-			<dt>Version bibliothèque GD</dt>
-			<dd><?php echo $gd_infos;?></dd>
+			<dd><?= phpversion();?></dd>
 			<dt>Version de ZF2</dt>
-			<dd>Version installée: <?php echo Version::VERSION;?><br>
+			<dd>Version installée: <?= Version::VERSION;?><br>
 	    <?php if (Version::isLatest()):?>
 	    C'est la dernière version.
 	    <?php else :?>
-	    Il y a une nouvelle version <?php echo Version::getLatest();?>
+	    Il y a une nouvelle version <?= Version::getLatest();?>
 	    <?php endif;?>
 	        </dd>
 			<dt>Version de TCPDF</dt>
-			<dd>Version installée: <?php echo $vtcpdf = \TCPDF_STATIC::getTCPDFVersion();?><br>
+			<dd>Version installée: <?= $vtcpdf = \SbmPdf\Model\Tcpdf::getVersion();?><br>
 		<?php if ($vtcpdf == versionTcpdfGitHub()) :?>
 		C'est la dernière version.
 		<?php else :?>
-		Il y a une nouvelle version <?php echo versionTcpdfGitHub();?>
+		Il y a une nouvelle version <?= versionTcpdfGitHub();?>
 		<?php endif;?>
+			</dd>
+		</dl>
+		<dl class="float-left" style="width: 48%">
+			<dt>Version bibliothèque GD</dt>
+			<dd><?= $gd_infos;?></dd>
+			<dt>Version JQuery</dt>
+			<dd>
+				Version installée: <span id="jquery"></span>
+			</dd>
+			<dt>Version TinyMCE</dt>
+			<dd>
+				Version installée: <span id="tinymce"></span>
+			</dd>
+			<dt>Version Google Maps API</dt>
+			<dd>
+				Version utilisée: <span id="maps"></span>
 			</dd>
 		</dl>
 	</div>
 	<div id="version-footer">
-		<p class="sbm-description">Pour une nouvelle version de School bus
-			manager, noter son numéro dans le fichier `version.phtml` du module
+		<p class="sbm-description">Pour une nouvelle version de School Bus
+			Manager, noter son numéro dans le fichier `version.inc.php` du module
 			SbmInstallation.</p>
 	</div>
 </div>

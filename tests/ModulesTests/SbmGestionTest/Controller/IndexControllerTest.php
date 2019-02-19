@@ -22,18 +22,19 @@ use SbmPdf\Service\RenderPdfService;
 
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
+
     private $serviceManager;
+
     protected $traceError = true;
-    
+
     public function setUp()
     {
         $this->setApplicationConfig(
-            Bootstrap::getServiceManager()->get('ApplicationConfig')
-        );
+            Bootstrap::getServiceManager()->get('ApplicationConfig'));
         parent::setUp();
         $this->serviceManager = $this->getApplicationServiceLocator();
     }
-    
+
     public function testIndexControllerFactory()
     {
         $controller_manager = $this->serviceManager->get('ControllerManager');
@@ -41,7 +42,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
         $this->assertInstanceOf(ServiceManager::class, $controller->form_manager);
         $this->assertInstanceOf(ServiceManager::class, $controller->cartographie_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, $controller->authenticate);
+        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+            $controller->authenticate);
         $this->assertTrue(is_array($controller->mail_config));
         $this->assertTrue(is_array($controller->paginator_count_per_page));
     }

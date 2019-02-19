@@ -8,8 +8,8 @@
  * @filesource Commune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
- * @version 2018-2.4.5
+ * @date 28 juillet 2018
+ * @version 2018-2.4.2
  */
 namespace SbmCommun\Form;
 
@@ -269,6 +269,42 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'inscriptionenligne',
+                'attributes' => [
+                    'id' => 'commune-inscriptionenligne',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Inscription en ligne autorisée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'paiementenligne',
+                'attributes' => [
+                    'id' => 'commune-paiementenligne',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Paiement en ligne autorisé',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'name' => 'submit',
                 'attributes' => [
                     'type' => 'submit',
@@ -429,10 +465,11 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
     {
         $this->remove('communeId');
         $this->get('nom')->setAttribute('autofocus', 'autofocus');
-        $this->add([
-            'name' => 'communeId',
-            'type' => 'hidden'
-        ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'hidden'
+            ]);
         $this->add(
             [
                 'name' => 'communeInsee',

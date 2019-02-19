@@ -7,12 +7,11 @@
  * @filesource Exception.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 5 avr. 2018
+ * @version 2018-2.4.0
  */
 namespace SbmMail\Model;
 
 class Exception extends \Exception
 {
-    
 }

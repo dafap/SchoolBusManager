@@ -7,8 +7,8 @@
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 30 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -25,14 +25,13 @@ abstract class AbstractQuery
      * <li>$key => $value qui sera traduit en equalTo($key, $value)</li>
      * <li>'or' qui sera traduit en OR</li>
      * <li>'and' qui sera traduit en AND</li>
-     * <li>'<' => array(left, right, [leftType, rightType]) qui sera traduit en lessThan</li>
-     * <li>'>' => array(left, right, [leftType, rightType]) qui sera traduit en greaterThan</li>
-     * <li>'=' => array(left, right, [leftType, rightType]) qui sera traduit en equalTo</li>
-     * <li>'<=' => array(left, right, [leftType, rightType]) qui sera traduit en
-     * lessThanOrEqualTo</li>
-     * <li>'>=' => array(left, right, [leftType, rightType]) qui sera traduit en
+     * <li>'<' => [left, right, [leftType, rightType]) qui sera traduit en lessThan</li>
+     * <li>'>' => [left, right, [leftType, rightType]) qui sera traduit en greaterThan</li>
+     * <li>'=' => [left, right, [leftType, rightType]) qui sera traduit en equalTo</li>
+     * <li>'<=' => [left, right, [leftType, rightType]) qui sera traduit en lessThanOrEqualTo</li>
+     * <li>'>=' => [left, right, [leftType, rightType]) qui sera traduit en
      * greaterThanOrEqualTo</li>
-     * <li>'<>' => array(left, right, [leftType, rightType]) qui sera traduit en notEqualTo</li>
+     * <li>'<>' => [left, right, [leftType, rightType]) qui sera traduit en notEqualTo</li>
      * <li>'sauf' => $sous_filtre qui sera traduit en NOT predicate où predicate est la
      * transformation du $sous_filtre. On peut remplacer 'sauf' par 'not' ou 'pas'</li>
      * <li>$sous_filtre qui sera traduit en nest()->predicate->unnest() où predicate est la
@@ -42,10 +41,9 @@ abstract class AbstractQuery
      * @param array $filtre
      *
      * @throws \InvalidArgumentException
-     *
      * @return \Zend\Db\Sql\Where
      */
-    protected function arrayToWhere(\Zend\Db\Sql\Where $where = null, $filtre = [])
+    protected function arrayToWhere(Where $where = null, $filtre = [])
     {
         if (empty($where)) {
             $where = new Where();

@@ -9,16 +9,17 @@
  * @filesource responsable-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 nov. 2016
- * @version 2016-2.2.2
+ * @date 4 fév. 2019
+ * @version 2019-2.5.0
  */
 // calcul du contenu de l'infobulle
-$description =[];
-$description[] = $domicile = '<b>' . implode(' ', array(
-    $this->responsable->titre,
-    $this->responsable->nom,
-    $this->responsable->prenom
-)) . '</b>';
+$description = [];
+$description[] = $domicile = '<b>' . implode(' ',
+    [
+        $this->responsable->titre,
+        $this->responsable->nom,
+        $this->responsable->prenom
+    ]) . '</b>';
 $description[] = $this->responsable->adresseL1;
 $domicile .= ' ' . $this->responsable->adresseL1;
 $tmp = $this->responsable->adresseL2;
@@ -26,28 +27,20 @@ if (! empty($tmp)) {
     $description[] = $this->responsable->adresseL2;
     $domicile .= ' ' . $this->responsable->adresseL2;
 }
-$cp_ville = implode(' ', array(
+$cp_ville = implode(' ', [
     $this->responsable->codePostal,
     $this->responsable->commune
-));
+]);
 $description[] = $cp_ville;
 $domicile .= ' ' . $cp_ville;
-$telephone =[];
-$tmp = $this->responsable->telephoneF;
-if (! empty($tmp)) {
-    $telephone[] = $this->responsable->telephoneF;
-}
-$tmp = $this->responsable->telephoneP;
-if (! empty($tmp)) {
-    $telephone[] = $this->responsable->telephoneP;
-}
-$tmp = $this->responsable->telephoneT;
-if (! empty($tmp)) {
-    $telephone[] = $this->responsable->telephoneT;
-}
-$tel = implode(' ', $telephone);
-if (! empty($tel)) {
-    $description[] = 'Tél.' . $tel;
+$telephones = array_filter(
+    [
+        $this->telephone($this->responsable->telephoneF),
+        $this->telephone($this->responsable->telephoneP),
+        $this->telephone($this->responsable->telephoneT)
+    ]);
+if (! empty($telephones)) {
+    $description[] = 'Tél.' . implode(' - ', $telephones);
 }
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps
@@ -57,26 +50,23 @@ $this->headScript()->appendFile('/js/maps/localisation.js');
 // lancement du script (sera affiché dans le layout à la fin de la page)
 $this->inlineScript()->captureStart();
 ?>
-const CENTRE_LAT = <?php echo $this->config['centre']['lat'];?>;
-const CENTRE_LNG = <?php echo $this->config['centre']['lng'];?>;
-const INI_ZOOM = <?php echo $this->config['zoom'];?>;
-initialiser('mon domicile', "<?php echo implode('<br/>', $description);?>", []);
-<?php 
-$this->inlineScript()->captureEnd(); 
+const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
+const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
+const INI_ZOOM = <?= $this->config['zoom'];?>;
+initialiser('mon domicile', "<?= implode('<br/>', $description);?>", []);
+<?php
+$this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
 ?>
 <h1>Position de votre domicile sur la carte</h1>
 <div id="carte-wrapper">
 	<div id="carte-header">
 		<p>
-			Cliquez sur le domicile de <b><?php echo $domicile;?></b>
-			puis <b>Enregistrer la localisation</b>.
-			Utilisez le zoom pour plus de précision.
+			Cliquez sur le domicile de <b><?= $domicile;?></b> puis <b>Enregistrer
+				la localisation</b>. Utilisez le zoom pour plus de précision.
 		</p>
-<?php
-echo $this->form($this->form);
-?>
-</div>
+		<?= $this->form($this->form); ?>
+	</div>
 	<div id="carte-inner"
 		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>
 </div>

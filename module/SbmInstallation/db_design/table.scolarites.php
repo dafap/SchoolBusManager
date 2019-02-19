@@ -9,17 +9,17 @@
  * @filesource table.scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2016
- * @version 2016-2.1.10
+ * @date 7 avr. 2018
+ * @version 2018-2.4.0
  */
-return array(
+return [
     'name' => 'scolarites',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
     'add_data' => false,
-    'structure' => array(
-        'fields' => array(
+    'structure' => [
+        'fields' => [
             'millesime' => 'int(4) NOT NULL DEFAULT "0"',
             'eleveId' => 'int(11) NOT NULL DEFAULT "0"',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -32,7 +32,7 @@ return array(
             'adresseL2' => 'varchar(38) DEFAULT NULL',
             'codePostal' => 'varchar(5) DEFAULT NULL',
             'communeId' => 'varchar(6) DEFAULT NULL',
-            'x' => 'decimal(18,10) NOT NULL DEFAULT "0"', 
+            'x' => 'decimal(18,10) NOT NULL DEFAULT "0"',
             'y' => 'decimal(18,10) NOT NULL DEFAULT "0"',
             'geopt' => 'GEOMETRY DEFAULT NULL',
             'distanceR1' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
@@ -42,7 +42,6 @@ return array(
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'paiement' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'duplicata' => 'int(11) NOT NULL DEFAULT "0"',
             'fa' => 'tinyint(1) NOT NULL DEFAULT "0"', // famille d'accueil
             'anneeComplete' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'subventionR1' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -59,90 +58,89 @@ return array(
             'joursTransport' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
             'tarifId' => 'int(11) NOT NULL DEFAULT "0"',
-            'organismeId' => 'int(11) NOT NULL DEFAULT "0"',
             'regimeId' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'motifDerogation' => 'text NULL',
             'motifRefusR1' => 'text NULL',
             'motifRefusR2' => 'text NULL',
             'commentaire' => 'text NULL'
-        ),
-        'primary_key' => array(
+        ],
+        'primary_key' => [
             'millesime',
             'eleveId'
-        ),
-        'foreign key' => array(
-            array(
+        ],
+        'foreign key' => [
+            [
                 'key' => 'eleveId',
-                'references' => array(
+                'references' => [
                     'table' => 'eleves',
-                    'fields' => array(
+                    'fields' => [
                         'eleveId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'etablissementId',
-                'references' => array(
+                'references' => [
                     'table' => 'etablissements',
-                    'fields' => array(
+                    'fields' => [
                         'etablissementId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'classeId',
-                'references' => array(
+                'references' => [
                     'table' => 'classes',
-                    'fields' => array(
+                    'fields' => [
                         'classeId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'communeId',
-                'references' => array(
+                'references' => [
                     'table' => 'communes',
-                    'fields' => array(
+                    'fields' => [
                         'communeId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            ),
-            array(
+                    ]
+                ]
+            ],
+            [
                 'key' => 'tarifId',
-                'references' => array(
+                'references' => [
                     'table' => 'tarifs',
-                    'fields' => array(
+                    'fields' => [
                         'tarifId'
-                    ),
-                    'on' => array(
+                    ],
+                    'on' => [
                         'update' => 'CASCADE',
                         'delete' => 'RESTRICT'
-                    )
-                )
-            )
-        ),
+                    ]
+                ]
+            ]
+        ],
         'engine' => 'InnoDB',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
-    ),
-    'triggers' => array(
-        'scolarites_bi_history' => array(
+    ],
+    'triggers' => [
+        'scolarites_bi_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'INSERT',
             'definition' => <<<EOT
@@ -150,8 +148,8 @@ INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
 VALUES ('%table(scolarites)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', NEW.millesime, NEW.eleveId), NOW(), CONCAT_WS('|', NEW.selection, NEW.dateInscription, NEW.dateModification, NEW.etablissementId, NEW.classeId, NEW.chez, NEW.adresseL1, NEW.adresseL2, NEW.codePostal, NEW.communeId, NEW.x, NEW.y, NEW.distanceR1, NEW.distanceR2, NEW.dateEtiquette, NEW.dateCarte, NEW.inscrit, NEW.gratuit, NEW.paiement, NEW.anneeComplete, NEW.subventionR1, NEW.subventionR2, NEW.demandeR1, NEW.demandeR2, NEW.accordR1, NEW.accordR2, NEW.internet, NEW.district, NEW.derogation, NEW.dateDebut, NEW.dateFin, NEW.joursTransport, NEW.subventionTaux, NEW.tarifId, NEW.regimeId, NEW.motifDerogation, NEW.motifRefusR1, NEW.motifRefusR2, NEW.commentaire))
 EOT
 
-        ),
-        'scolarites_bu_history' => array(
+        ],
+        'scolarites_bu_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
@@ -159,8 +157,8 @@ INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
 VALUES ('%table(scolarites)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.chez, OLD.adresseL1, OLD.adresseL2, OLD.codePostal, OLD.communeId, OLD.x, OLD.y, OLD.distanceR1, OLD.distanceR2, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subventionR1, OLD.subventionR2, OLD.demandeR1, OLD.demandeR2, OLD.accordR1, OLD.accordR2, OLD.internet, OLD.district, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.joursTransport, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.motifDerogation, OLD.motifRefusR1, OLD.motifRefusR2, OLD.commentaire))
 EOT
 
-        ),
-        'scolarites_bd_history' => array(
+        ],
+        'scolarites_bd_history' => [
             'moment' => 'BEFORE',
             'evenement' => 'DELETE',
             'definition' => <<<EOT
@@ -168,7 +166,7 @@ INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
 VALUES ('%table(scolarites)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId'), CONCAT_WS('|', OLD.millesime, OLD.eleveId), NOW(), CONCAT_WS('|', OLD.selection, OLD.dateInscription, OLD.dateModification, OLD.etablissementId, OLD.classeId, OLD.chez, OLD.adresseL1, OLD.adresseL2, OLD.codePostal, OLD.communeId, OLD.x, OLD.y, OLD.distanceR1, OLD.distanceR2, OLD.dateEtiquette, OLD.dateCarte, OLD.inscrit, OLD.gratuit, OLD.paiement, OLD.anneeComplete, OLD.subventionR1, OLD.subventionR2, OLD.demandeR1, OLD.demandeR2, OLD.accordR1, OLD.accordR2, OLD.internet, OLD.district, OLD.derogation, OLD.dateDebut, OLD.dateFin, OLD.joursTransport, OLD.subventionTaux, OLD.tarifId, OLD.regimeId, OLD.motifDerogation, OLD.motifRefusR1, OLD.motifRefusR2, OLD.commentaire))
 EOT
 
-        )
-    ),
-    'data' => __DIR__ . '/data/data.scolarites.php'    
-); 
+        ]
+    ],
+    'data' => __DIR__ . '/data/data.scolarites.php'
+]; 

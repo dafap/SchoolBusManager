@@ -8,11 +8,11 @@
  * @filesource eleve-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2018-2.4.5
+ * @date 17 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
+$this->jQuery();
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout.js'));
 $this->inlineScript()->captureStart();
 ?>
@@ -38,7 +38,7 @@ $actions = [
 if (! $this->form instanceof \Zend\Form\FormInterface) {
     try {
         $responsable2Id = $this->data->responsable2Id;
-    } catch (\SbmCommun\Model\Db\ObjectData\Exception $e) {
+    } catch (\SbmCommun\Model\Db\ObjectData\Exception\ExceptionInterface $e) {
         $responsable2Id = null;
     }
     $hiddens = [
@@ -116,30 +116,39 @@ if (! $this->form instanceof \Zend\Form\FormInterface) {
 					<th></th>
 				</tr>
 			<?php foreach($this->eleves as $eleve): ?>
-				<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
-					<td class="numero"><?= $eleve['numero']; ?></td>
-					<td class="nom"><?= $this->escapeHtml($eleve['nom']); ?></td>
-					<td class="prenom"><?= $this->escapeHtml($eleve['prenom']); ?></td>
-					<td class="dateN"><?= $this->escapeHtml($eleve['dateN']); ?></td>
-					<td class="responsable1"><?= $this->escapehtml($eleve['responsable1NomPrenom']); ?></td>
-					<td class="commune1"><?= $this->escapehtml($eleve['communeR1']); ?></td>
-					<td class="responsable2"><?= $this->escapehtml($eleve['responsable2NomPrenom']); ?></td>
-					<td class="commune2"><?= $this->escapeHtml($eleve['communeR2']);?></td>
-					<td><?php
+			<?php
         $info = $eleve['nom'] . ' ' . $eleve['prenom'];
-        echo $this->listeLigneActions($eleve['eleveId'],
-            [
-                'eleveId' => $eleve['eleveId'],
-                'info' => $info
-            ],
-            [
-                'reprendre' => [
-                    'class' => 'fam-basket-put',
-                    'formaction' => $url_reprise,
-                    'title' => 'Choisir ' . $info
-                ]
-            ]);
-        ?></td>
+        $hiddensLigne = [
+            'eleveId' => $eleve['eleveId'],
+            'info' => $info
+        ];
+        $actionsLigne = [
+            'reprendre' => [
+                'class' => 'fam-basket-put',
+                'formaction' => $url_reprise,
+                'title' => 'Choisir ' . $info
+            ]
+        ];
+        ?>
+				<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="numero">
+						<?= $eleve['numero']; ?></td>
+					<td class="nom">
+						<?= $this->escapeHtml($eleve['nom']); ?></td>
+					<td class="prenom">
+						<?= $this->escapeHtml($eleve['prenom']); ?></td>
+					<td class="dateN">
+						<?= $this->escapeHtml($eleve['dateN']); ?></td>
+					<td class="responsable1">
+						<?= $this->escapehtml($eleve['responsable1NomPrenom']); ?></td>
+					<td class="commune1">
+						<?= $this->escapehtml($eleve['communeR1']); ?></td>
+					<td class="responsable2">
+						<?= $this->escapehtml($eleve['responsable2NomPrenom']); ?></td>
+					<td class="commune2">
+						<?= $this->escapeHtml($eleve['communeR2']);?></td>
+					<td>
+						<?= $this->listeLigneActions($eleve['eleveId'], $hiddensLigne, $actionsLigne);?></td>
 				</tr>
 			<?php endforeach;?>
             </tbody>

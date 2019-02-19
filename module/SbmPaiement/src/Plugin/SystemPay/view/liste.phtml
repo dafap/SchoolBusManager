@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Liste des paiements pour la table `systempay`
  *
@@ -8,14 +7,28 @@
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
+ */
+use Zend\View\Model\ViewModel;
+
+/**
+ *
+ * @param string $date
  */
 function formatDate($date)
 {
     return \DateTime::createFromFormat('YmdHis', $date)->format('d/m/Y H:i:s');
 }
 
+/**
+ *
+ * @param ViewModel $view
+ * @param string $name
+ * @param string $id
+ * @param boolean $value
+ *            0 ou 1
+ */
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -25,7 +38,7 @@ function renderCheckbox($view, $name, $id, $value)
     return $view->formCheckbox($element);
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.min.js');
+$this->jQuery();
 $jsCallback = '';
 $jsTrigger = '';
 // modèle de jsCallback pour selection
@@ -49,6 +62,11 @@ $url_rapports = $this->url('sbmpaiement', [
     'action' => 'pdf',
     'page' => $this->page
 ]);
+$url_rapprochement = $this->url('sbmpaiement',
+    [
+        'action' => 'rapprochement',
+        'page' => $this->page
+    ]);
 $url_voir = $this->url('sbmpaiement', [
     'action' => 'voir',
     'page' => $this->page
@@ -56,7 +74,9 @@ $url_voir = $this->url('sbmpaiement', [
 $config = include __DIR__ . '/../config/systempay.config.php';
 $url_marchand = $config['url_marchand'];
 $retour = $this->url('sbmgestion/finance');
-$hiddens = [];
+$hiddens = [
+    'origine' => 'liste'
+];
 $menuImpression = $this->menuRapports('/paiement/liste', $url_rapports, 'fam-printer',
     null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
@@ -70,7 +90,13 @@ $actions = [
     'systempay' => [
         'class' => 'fam-house-link',
         'formaction' => $url_marchand,
-        'title' => 'Systempay Back Office'
+        'title' => 'Systempay Back Office',
+        'formtarget' => '_blank'
+    ],
+    'rapprochement' => [
+        'class' => 'fam-plugin-error',
+        'formaction' => $url_rapprochement,
+        'title' => 'Rapprochement avec les encaissements de Systempay Back Office'
     ]
 ];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);

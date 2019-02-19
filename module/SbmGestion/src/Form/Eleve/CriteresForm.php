@@ -7,8 +7,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -140,10 +140,27 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                     ],
                     'empty_option' => 'Tout',
                     'value_options' => [
-                        '1' => 'Incrits',
-                        '2' => 'Préinscrits',
-                        '3' => 'Rayés',
-                        '4' => 'Famille d\'accueil'
+                        'inscription' => [
+                            'label' => 'état de l\'inscription',
+                            'options' => [
+                                '1' => 'Incrits',
+                                '2' => 'Préinscrits'
+                            ]
+                        ],
+                        'fiche' => [
+                            'label' => 'état de la fiche',
+                            'options' => [
+                                '3' => 'Rayés',
+                                '4' => 'Non rayés'
+                            ]
+                        ],
+                        'photo' => [
+                            'label' => 'état des photos',
+                            'options' => [
+                                '5' => 'Avec photo',
+                                '6' => 'Sans photo'
+                            ]
+                        ]
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -195,19 +212,20 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
             ]);
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'derogation',
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'incomplet',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
-                    'class' => 'sbm-checkbox'
+                    'id' => 'critere-incomplet',
+                    'class' => 'sbm-width-10c'
                 ],
                 'options' => [
-                    'label' => 'Dérogation',
+                    'label' => 'Fiches incomplètes',
+                    'empty_option' => 'Toutes',
+                    'value_options' => [
+                        '1' => 'Distance à calculer',
+                        '2' => 'Sans affectation',
+                        '3' => 'Sans photo'
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -215,59 +233,20 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
             ]);
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'nonaffecte',
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'particularite',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
-                    'class' => 'sbm-checkbox'
+                    'id' => 'critere-particularite',
+                    'class' => 'sbm-width-10c'
                 ],
                 'options' => [
-                    'label' => 'Sans affectation',
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'ga',
-                'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
+                    'label' => 'Particularité',
+                    'empty_option' => 'Tout',
+                    'value_options' => [
+                        '1' => 'Garde alternée',
+                        '2' => 'Famille d\'accueil',
+                        '3' => 'Dérogation accordée'
                     ],
-                    'class' => 'sbm-checkbox'
-                ],
-                'options' => [
-                    'label' => 'Garde alternée',
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'distancezero',
-                'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
-                    'class' => 'sbm-checkbox'
-                ],
-                'options' => [
-                    'label' => 'Distances à calculer',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -365,13 +344,12 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'name' => 'decision',
                 'required' => false
             ],
-            'derogation' => [
-                'name' => 'derogation',
+            'incomplet' => [
+                'name' => 'incomplet',
                 'required' => false
             ],
-
-            'ga' => [
-                'name' => 'ga',
+            'particularite' => [
+                'name' => 'particularite',
                 'required' => false
             ],
             'selection' => [

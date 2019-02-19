@@ -9,13 +9,14 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 2 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
@@ -60,7 +61,8 @@ class Eleves implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->dbAdapter = $this->db_manager->getDbAdapter();
@@ -147,6 +149,14 @@ class Eleves implements FactoryInterface
         ], 'cla.classeId = sco.classeId', [
             'classe' => 'nom'
         ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], Select::JOIN_LEFT)
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute();

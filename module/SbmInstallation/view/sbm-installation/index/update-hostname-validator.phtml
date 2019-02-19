@@ -1,0 +1,16 @@
+<?php
+/**
+ * Mise à jour du validateur Hostname dans zend-validator
+ * 
+ * @project sbm
+ * @package SbmInstallation\view\sbm-installation\index
+ * @filesource update-hostname-validator.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 23 mai 2018
+ * @version 2018-2.4.1
+ */
+use SbmBase\Model\StdLib;
+
+include StdLib::findParentPath(__DIR__, 'tools/') .
+     'update_hostname_validator.php';

@@ -7,12 +7,13 @@
  * @filesource MajDistances.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Service;
 
 use SbmBase\Model\Session;
+use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Exception;
 use SbmCartographie\Model\Point;
 use Zend\ServiceManager\FactoryInterface;
@@ -51,14 +52,16 @@ class MajDistances implements FactoryInterface
 
     /**
      *
-     * @var \SbmCartographie\GoogleMaps\DistanceEtablissements
+     * @var \SbmCartographie\GoogleMaps\DistanceMatrix
      */
-    private $oDomicileEtablissements;
+    private $oDistanceMatrix;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        if (! $serviceLocator->has('SbmCarto\DistanceEtablissements')) {
-            throw new Exception(sprintf('CartographieManager attendu.'));
+        if (! $serviceLocator->has(GoogleMaps\DistanceMatrix::class)) {
+            throw new Exception\ExceptionNoCartographieManager(
+                sprintf(_("CartographieManager attendu, doit contenir %s."),
+                    GoogleMaps\DistanceMatrix::class));
         }
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->millesime = Session::get('millesime');
@@ -69,8 +72,7 @@ class MajDistances implements FactoryInterface
             ],
             'etablissements' => []
         ];
-        $this->oDomicileEtablissements = $serviceLocator->get(
-            'SbmCarto\DistanceEtablissements');
+        $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
         return $this;
     }
 
@@ -80,6 +82,8 @@ class MajDistances implements FactoryInterface
      * (Un seul appel à l'API de google)
      *
      * @param int $responsableId
+     *
+     * @return string|null renvoie null en cas de succès ou le message d'erreur en cas d'échec
      */
     public function pour($responsableId)
     {
@@ -105,34 +109,42 @@ class MajDistances implements FactoryInterface
                 $destinations[] = $this->famille['etablissements'][$row['etablissementId']]['pt'];
             }
         }
+        $msg = null;
         if (! empty($destinations)) {
-            // appel de l'API
-            $result = $this->oDomicileEtablissements->uneOriginePlusieursDestinations(
-                $this->domicile, $destinations);
+            try {
+                // appel de l'API
+                $result = $this->oDistanceMatrix->uneOriginePlusieursDestinations(
+                    $this->domicile, $destinations);
 
-            // analyse du résultat. On n'a qu'un domicile donc qu'une distance par établissement.
-            // Cette distance est en mètres.
-            $j = 0;
-            foreach ($this->famille['etablissements'] as $etablissementId => &$array) {
-                $array['distance'] = $result[$j ++];
-            }
-            unset($array);
-            // maj table scolarites (conversion des distances en km)
-            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-            $oData = $tScolarites->getObjData();
-            for ($i = 1; $i <= 2; $i ++) {
-                foreach ($this->famille['enfants'][$i] as $eleveId => $etablissementId) {
-                    $oData->exchangeArray(
-                        [
-                            'millesime' => $this->millesime,
-                            'eleveId' => $eleveId,
-                            'distanceR' . $i => round(
-                                $this->famille['etablissements'][$etablissementId]['distance'] /
-                                1000, 1)
-                        ]);
-                    $tScolarites->saveRecord($oData);
+                // analyse du résultat. On n'a qu'un domicile donc qu'une distance par
+                // établissement. Cette distance est en mètres.
+                $j = 0;
+                foreach ($this->famille['etablissements'] as $etablissementId => &$array) {
+                    $array['distance'] = $result[$j ++];
                 }
+                unset($array);
+                // maj table scolarites (conversion des distances en km)
+                $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+                $oData = $tScolarites->getObjData();
+                for ($i = 1; $i <= 2; $i ++) {
+                    foreach ($this->famille['enfants'][$i] as $eleveId => $etablissementId) {
+                        $oData->exchangeArray(
+                            [
+                                'millesime' => $this->millesime,
+                                'eleveId' => $eleveId,
+                                'distanceR' . $i => round(
+                                    $this->famille['etablissements'][$etablissementId]['distance'] /
+                                    1000, 1)
+                            ]);
+                        $tScolarites->saveRecord($oData);
+                    }
+                }
+            } catch (GoogleMaps\Exception\ExceptionNoAnswer $e) {
+                $msg = "Google Maps API ne répond pas. La distance entre le domicile et l'établissement scolaire n'a pas pu être mise à jour dans les fiches des enfants.";
+            } catch (\Exception $e) {
+                $msg = "La distance entre le domicile et l'établissement n'a pas pu être enregistrée dans les fiches des enfants.";
             }
         }
+        return $msg;
     }
 }

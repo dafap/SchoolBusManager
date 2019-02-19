@@ -10,8 +10,8 @@
  * @filesource BordereauRemiseValeurChoix.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 19 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Finances;
 
@@ -60,10 +60,10 @@ class BordereauRemiseValeurChoix extends AbstractSbmForm
                     'type' => 'submit',
                     'value' => 'Editer le bordereau',
                     'id' => 'editer-submit',
-                    'class' => 'button default submit'
+                    'class' => 'button default submit',
+                    'formtarget' => '_blank'
                 ]
             ]);
-
         $this->add(
             [
                 'name' => 'supprimer',
@@ -74,7 +74,6 @@ class BordereauRemiseValeurChoix extends AbstractSbmForm
                     'class' => 'button default submit'
                 ]
             ]);
-
         $this->add(
             [
                 'name' => 'cloturer',

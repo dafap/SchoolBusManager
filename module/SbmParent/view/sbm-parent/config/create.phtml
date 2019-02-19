@@ -8,16 +8,12 @@
  * @filesource create.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->prependStylesheet(
-    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.css'));
-$this->headScript()->appendFile($this->basePath('/js/jquery.min.js'));
-$this->headScript()->appendFile(
-    $this->basepath('/js/jquery-ui-1.11.4.custom/jquery-ui.min.js'));
-
+$this->jQuery('jquery-ui');
+$this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');
 $hiddens = [];
 $actions = [];
 ?>
@@ -26,11 +22,11 @@ $actions = [];
 		style="margin-left: 30px; margin-right: 30px;"></div>
 </div>
 <div class="flashMessenger float-right">
-    <?= $this->flashMessenger()->render('success');?>
-    <?= $this->flashMessenger()->render('warning');?>
-    <?= $this->flashMessenger()->render('error');?>
-    <?= $this->flashMessenger()->render('info');?>
-    <?= $this->flashMessenger()->render('default');?>
+	<?= $this->flashMessenger()->render('success');?>
+	<?= $this->flashMessenger()->render('warning');?>
+	<?= $this->flashMessenger()->render('error');?>
+	<?= $this->flashMessenger()->render('info');?>
+	<?= $this->flashMessenger()->render('default');?>
 </div>
 <h1>Création de la fiche du responsable</h1>
 <div id="fiche-wrapper">
@@ -58,6 +54,7 @@ $elementTitre->setValue($this->identity['titre'])
     ->setOptions([
     'label' => 'Identité du responsable'
 ]);
+
 ?>
     	<fieldset class="sbm-page1">
 			<div id="responsable-edit-email" class="row-inner edit">
@@ -93,9 +90,9 @@ $elementTitre->setValue($this->identity['titre'])
 			<div id="responsable-edit-communeId" class="row-inner edit">
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
-    <?= $this->formSubmit($this->form->get('submit')); ?></div>
+				<?= $this->formSubmit($this->form->get('submit')); ?></div>
 		</fieldset>
-<?= $this->form()->closeTag(); ?>
+		<?= $this->form()->closeTag(); ?>
     </div>
 	<div id="fiche-footer"></div>
 </div>
@@ -110,5 +107,3 @@ $elementTitre->setValue($this->identity['titre'])
 		ces cas particuliers, l'information sera demandée au moment de
 		l'inscription des enfants.</p>
 </div>
-<?php
-$this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');

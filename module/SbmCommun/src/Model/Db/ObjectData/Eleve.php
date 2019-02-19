@@ -8,8 +8,8 @@
  * @filesource Eleve.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juil. 2014
- * @version 2014-1
+ * @date 26 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -17,7 +17,8 @@ class Eleve extends AbstractObjectData
 {
 
     const BASE = 99991;
- // un nombre premier proche de 100000
+
+    // un nombre premier proche de 100000
     public function __construct()
     {
         $this->setObjName(__CLASS__);
@@ -26,13 +27,15 @@ class Eleve extends AbstractObjectData
 
     /**
      * Renvoie un numéro d'élève calculé sans controle d'existance.
-     * Dans la méthode saveRecord() de la table eleves il faut s'assurer que ce numero est libre avant d'enregistrer.
+     * Dans la méthode saveRecord() de la table eleves il faut s'assurer que ce numero est libre
+     * avant d'enregistrer.
      *
      * @return number
      */
     public function createNumero()
     {
-        $cle = substr($this->nom . str_repeat(' ', 11), 0, 11) . substr($this->prenom . str_repeat(' ', 4), 0, 4);
+        $cle = substr($this->nom . str_repeat(' ', 11), 0, 11) .
+            substr($this->prenom . str_repeat(' ', 4), 0, 4);
         $mots = str_split($cle, 2);
         $u = 0;
         foreach ($mots as $mot) {
@@ -49,9 +52,9 @@ class Eleve extends AbstractObjectData
                 $d = floor($n / self::BASE);
                 $n -= $d * self::BASE;
             }
-            $u = $n % self::BASE;            
+            $u = $n % self::BASE;
         }
-        
+
         return $u == 0 ? self::BASE : $u;
     }
 }

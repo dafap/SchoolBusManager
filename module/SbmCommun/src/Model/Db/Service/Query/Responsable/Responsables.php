@@ -8,14 +8,15 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 16 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Sql\Predicate;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
@@ -74,7 +75,8 @@ class Responsables implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
@@ -190,9 +192,9 @@ class Responsables implements FactoryInterface
      * @param array $order
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function withEffectifs($where, $order = null)
+    public function withEffectifs($where, $order = null, $responsableId = null)
     {
-        $select = $this->selectResponsables($where, $order);
+        $select = $this->selectResponsables($where, $order, $responsableId);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         // die($this->getSqlString($select));
         return $statement->execute();
@@ -207,10 +209,10 @@ class Responsables implements FactoryInterface
      * @param array $order
      * @return \Zend\Paginator\Paginator
      */
-    public function paginator($where, $order)
+    public function paginator($where, $order = null, $responsableId = null)
     {
         return new Paginator(
-            new DbSelect($this->selectResponsables($where, $order),
+            new DbSelect($this->selectResponsables($where, $order, $responsableId),
                 $this->db_manager->getDbAdapter()));
     }
 
@@ -221,64 +223,51 @@ class Responsables implements FactoryInterface
      * @param array $order
      * @return \Zend\Db\Sql\Select
      */
-    private function selectResponsables($where, $order)
+    private function selectResponsables($where, $order, $responsableId)
     {
+        $calculDroits = $this->db_manager->get('Sbm\Db\Query\Responsable\Montants');
+        $calculDroits->droitsInscription($responsableId);
         // préinscrits
-        $where1 = new Where();
-        $where1->literal('inscrit = 1')
-            ->literal('paiement = 0')
-            ->equalTo('millesime', $this->millesime);
+        $preinscrits = new Predicate\ElevesPreinscrits($this->millesime);
         $select1 = new Select();
         $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where1);
-        // inscrits payants
-        $where2 = new Where();
-        $where2->literal('inscrit = 1')
-            ->literal('paiement = 1')
-            ->equalTo('millesime', $this->millesime);
+            ->where($preinscrits());
+        // payants inscrits (pas fa et direct ou par un organisme)
+        $payants = new Predicate\ElevesPayantsInscrits($this->millesime);
         $select2 = new Select();
         $select2->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where2);
-        // inscrits gratuits
-        $where3 = new Where();
-        $where3->literal('inscrit = 1')
-            ->literal('gratuit = 1')
-            ->equalTo('millesime', $this->millesime);
+            ->where($payants());
+        // gratuits
+        $gratuits = new Predicate\ElevesGratuits($this->millesime);
         $select3 = new Select();
         $select3->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where3);
-        // inscrits en famille d'accueil
-        $where4 = new Where();
-        $where4->literal('inscrit = 1')
-            ->literal('fa = 1')
-            ->equalTo('millesime', $this->millesime);
+            ->where($gratuits());
+        // en famille d'accueil
+        $enFA = new Predicate\ElevesEnFA($this->millesime);
         $select4 = new Select();
         $select4->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($where4);
-        // duplicata
-        $where5 = new Where();
-        $where5->literal('inscrit = 1')
-            ->literal('duplicata > 0')
-            ->equalTo('millesime', $this->millesime);
+            ->where($enFA());
+        // avec duplicata
+        $avecDuplicatas = new Predicate\ElevesAvecDuplicatas($this->millesime);
         $select5 = new Select();
         $select5->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId',
             'duplicata'
         ])
-            ->where($where5);
+            ->where($avecDuplicatas());
         // tarif annuel
         $where6 = new Where();
         $where6->literal('inscrit = 1')
@@ -305,9 +294,16 @@ class Responsables implements FactoryInterface
             'eleveId'
         ])
             ->where($where7);
+        // montants
+        $select8 = $this->db_manager->get('Sbm\Db\Query\Responsable\Montants')->selectDroitsInscription();
         // requête principale
         $select = clone $this->select;
         $select->join([
+            'mnt' => $select8
+        ], 'mnt.responsableId = res.responsableId', [
+            'montant'
+        ], $select::JOIN_LEFT)
+            ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ],
             'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id',

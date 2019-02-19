@@ -28,11 +28,12 @@ class SemaineTest extends PHPUnit_Framework_TestCase
     public function testExtract()
     {
         // on doit obtenir 14 = 2 + 4 + 8
-        $actual = $this->strategy->extract([
-            Semaine::CODE_SEMAINE_MARDI,
-            Semaine::CODE_SEMAINE_MERCREDI,
-            Semaine::CODE_SEMAINE_JEUDI
-        ]);
+        $actual = $this->strategy->extract(
+            [
+                Semaine::CODE_SEMAINE_MARDI,
+                Semaine::CODE_SEMAINE_MERCREDI,
+                Semaine::CODE_SEMAINE_JEUDI
+            ]);
         $expected = 0 * Semaine::CODE_SEMAINE_LUNDI;
         $expected += 1 * Semaine::CODE_SEMAINE_MARDI;
         $expected += 1 * Semaine::CODE_SEMAINE_MERCREDI;

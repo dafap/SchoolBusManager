@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 7 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\Controller;
 
@@ -34,14 +34,14 @@ class CarteController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (array_key_exists('back', $args)) {
             $this->redirectToOrigin()->setBack($args['back']);
         }
         if (array_key_exists('cancel', $args)) {
             try {
                 $this->redirectToOrigin()->back();
-            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                 return $this->redirect()->toRoute('home');
             }
         }
@@ -56,7 +56,7 @@ class CarteController extends AbstractActionController
         return new ViewModel(
             [
                 'ptEtablissements' => $ptEtablissements,
-                'config' => StdLib::getParam('etablissements', $this->config_cartes),
+                'config' => StdLib::getParam('etablissement', $this->config_cartes),
                 'url_api' => $this->url_api
             ]);
     }
@@ -67,14 +67,14 @@ class CarteController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = (array) $prg;
+        $args = $prg ?: [];
         if (array_key_exists('back', $args)) {
             $this->redirectToOrigin()->setBack($args['back']);
         }
         if (array_key_exists('cancel', $args)) {
             try {
                 $this->redirectToOrigin()->back();
-            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
                 return $this->redirect()->toRoute('home');
             }
         }
@@ -90,7 +90,7 @@ class CarteController extends AbstractActionController
             [
                 'ptStations' => $ptStations,
                 // on utilise la même configuration (centre, zoom) que pour les établissements
-                'config' => StdLib::getParam('etablissements', $this->config_cartes),
+                'config' => StdLib::getParam('station', $this->config_cartes),
                 'url_api' => $this->url_api
             ]);
     }

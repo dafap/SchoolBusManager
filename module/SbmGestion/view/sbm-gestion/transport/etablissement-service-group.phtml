@@ -1,0 +1,187 @@
+<?php
+/**
+ * Page de consultation des inscrits sur un établissement particulier et un service particulier
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/service-group.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 6 fév. 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => $this->origine,
+        'page' => $this->pageRetour
+    ]);
+$btn_retour = [
+    'class' => 'fam-door-out',
+    'formaction' => $url_retour,
+    'title' => 'Retour'
+];
+$url_edit = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
+    'action' => 'responsable-mail'
+]);
+
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-service-group',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-service-group-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_mark_selection = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-service-group-selection',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_add_photo = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$hiddens = [
+    'etablissementId' => $this->etablissementId,
+    'serviceId' => $this->serviceId
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'etablissement-service-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+
+$actions = [
+    'retour' => $btn_retour,
+    'rapports' => $menuImpression['content'],
+    'marquer' => [
+        'class' => 'fam-basket-add',
+        'formaction' => $url_mark_selection,
+        'title' => 'Sélectionner toutes les fiches de cette liste'
+    ]
+];
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+$oEtablissement = $this->etablissement;
+$oService = $this->service;
+?>
+<h1><?= $this->h1;?></h1>
+<div id="liste-wrapper">
+	<div id="liste-title" class="clearfix">
+		<ul class="float-left">
+		<?php if (!empty($oEtablissement)) : ?>
+		    <li><?= $this->escapeHtml($this->etablissement->nom); ?></li>
+			<li><?= $this->escapeHtml($this->etablissement->commune); ?></li>
+		<?php endif;?>
+		<?php if (!empty($oService)) :?>
+			<li><?= $this->escapeHtml($this->service->serviceId); ?></li>
+			<li><?= $this->escapeHtml($this->service->nom); ?></li>
+			<li><?= $this->escapeHtml($this->service->transporteur); ?></li>
+		<?php endif;?>
+		</ul>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-header">
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<p>
+			<em>Il y a <?= $this->paginator->getTotalItemCount(); ?> prises en charge.</em>
+		</p>
+	</div>
+	<div id="liste-inner">
+		<table class="eleves">
+			<tbody>
+				<tr>
+					<th></th>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Adresse</th>
+					<th>Adresse</th>
+					<th>Code postal</th>
+					<th>Commune</th>
+					<th>Etablissement</th>
+					<th>Classe</th>
+					<th>Circuits</th>
+					<th>Stations</th>
+					<th></th>
+				</tr>
+			<?php
+foreach ($data as $row) :
+    $this->pictogrammes('init')
+        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto']);
+    $hiddens = [
+        'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
+        'email' => $row['email'],
+        'responsable' => $row['responsable'],
+        'group' => $url_group
+    ];
+    $buttons = [
+        'modifier' => [
+            'class' => 'fam-pencil',
+            'formaction' => $url_edit,
+            'title' => 'Modifier'
+        ]
+    ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
+    if (! empty($row['email'])) {
+        $buttons['ecrire'] = [
+            'class' => 'fam-email',
+            'formaction' => $url_mail,
+            'title' => 'Envoyer un email'
+        ];
+    }
+    ?>
+                <tr class="<?= $this->cycle(["even","odd"])->next();?>">
+					<td><?= $this->pictogrammes();?></td>
+					<td><?= $this->escapeHtml($row['nom']);?></td>
+					<td><?= $this->escapeHtml($row['prenom']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL1']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL2']);?></td>
+					<td><?= $this->escapeHtml($row['codePostal']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= $this->escapeHtml($row['etablissement']);?></td>
+					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
+					<td><?= $row['serviceId'];?></td>
+					<td><?= $row['station'];?></td>
+					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
+				</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+	</div>
+</div>

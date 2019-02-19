@@ -9,8 +9,8 @@
  * @filesource modif-adresse.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2018-2.4.5
+ * @date 4 oct. 2018
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $hiddens = [];
@@ -34,18 +34,18 @@ $actions = [];
 		<?= $this->form()->openTag($this->form);?>
 		<?= $this->formHidden($this->form->get('responsableId'));?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
-		<fieldset class="sbm-page1">
+    	<fieldset class="sbm-page1">
 			<div id="responsable-edit-identite" class="row-inner edit">
-				<div class="enfant-label">Identité</div> 
-				<?= $this->responsable['titre'];?>
-				<?= $this->responsable['nom'];?>
-				<?= $this->responsable['prenom'];?></div>
+				<div class="enfant-label">Identité</div>
+				<?= $this->responsable['titre'];?> 
+				<?= $this->responsable['nom'];?> 
+				<?= $this->responsable['prenom']; ?></div>
 			<div id="responsable-edit-email" class="row-inner edit">
 				<div class="enfant-label">Email</div>
-				<?= $this->responsable['email'];?></div>
+				<?= $this->responsable['email']; ?></div>
 			<div id="responsable-edit-conjoint" class="row-inner edit">
 				<div class="enfant-label">Conjoint</div>
-				<?= $this->responsable['titre2'];?> 
+				<?= $this->responsable['titre2'];?>
 				<?= $this->responsable['nom2'];?>
 				<?= $this->responsable['prenom2'];?></div>
 			<div id="responsable-edit-telephoneF" class="row-inner edit">
@@ -64,7 +64,7 @@ $actions = [];
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
     			<?= $this->formSubmit($this->form->get('submit'));?>
-    			<?= $this->formSubmit($this->form->get('cancel')); ?></div>
+    			<?= $this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
 		<?= $this->form()->closeTag(); ?>
     </div>

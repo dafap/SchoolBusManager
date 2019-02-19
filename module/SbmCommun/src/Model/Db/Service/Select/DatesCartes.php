@@ -8,12 +8,13 @@
  * @filesource DatesCartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 2 fév. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
 use SbmBase\Model\DateLib;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\Db\Sql\Sql;
@@ -24,25 +25,49 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class DatesCartes implements FactoryInterface
 {
 
+    /**
+     *
+     * @var string
+     */
+    private $dateDebut;
+
+    /**
+     *
+     * @var DbManager
+     */
+    private $db_manager;
+
+    /**
+     *
+     * @var int
+     */
+    private $millesime;
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
+        $this->db_manager = $serviceLocator;
+        $this->millesime = Session::get('millesime');
         $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
-        //$millesime = Session::get('millesime');
-        $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
+        $this->dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
+        return $this;
+    }
+
+    public function cartesPapier()
+    {
         $where = new Where();
-        $where->greaterThanOrEqualTo('dateCarte', $dateDebut);
-        $db_manager = $serviceLocator;
-        $sql = new Sql($db_manager->getDbAdapter());
-        $select = $sql->select($db_manager->getCanonicName('scolarites', 'table'));
+        $where->greaterThanOrEqualTo('dateCarte', $this->dateDebut);
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $select = $sql->select($this->db_manager->getCanonicName('scolarites', 'table'));
         $select->columns([
             'dateCarte'
         ])
             ->order('dateCarte Desc')
-            ->quantifier('DISTINCT')
+            ->quantifier($select::QUANTIFIER_DISTINCT)
             ->where($where);
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
@@ -50,6 +75,28 @@ class DatesCartes implements FactoryInterface
         foreach ($rowset as $row) {
             $array[$row['dateCarte']] = DateLib::formatDateTimeFromMysql(
                 $row['dateCarte']);
+        }
+        return $array;
+    }
+
+    public function extractionsPhotos()
+    {
+        $where = new Where();
+        $where->greaterThanOrEqualTo('dateExtraction', $this->dateDebut);
+        $sql = new Sql($this->db_manager->getDbAdapter());
+        $select = $sql->select($this->db_manager->getCanonicName('elevesphotos', 'table'));
+        $select->columns([
+            'dateExtraction'
+        ])
+            ->order('dateExtraction Desc')
+            ->quantifier($select::QUANTIFIER_DISTINCT)
+            ->where($where);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row['dateExtraction']] = DateLib::formatDateTimeFromMysql(
+                $row['dateExtraction']);
         }
         return $array;
     }

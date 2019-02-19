@@ -8,8 +8,8 @@
  * @filesource Etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 sept. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -67,15 +67,16 @@ class Etablissements extends AbstractSbmTable
     }
 
     /**
-     * Renvoie les écoles publiques de la zone d'un niveau donné (maternelle ou primaire) ou
-     * uniquement celles de la commune si la commune est précisée.
+     * Renvoie les écoles publiques de la zone d'un niveau donné (maternelle ou primaire)
+     * ou uniquement celles des ou de la commune si $communeId n'est pas null.
      *
      * @param int $niveau
      *            enum {1, 2}
      * @param int|null $statut
      *            enum {0, 1} 0: privé ; 1: public
-     * @param string|null $communeId
-     *
+     * @param array|string|null $communeId
+     *            null ou $communeId ou tableau de $communeId
+     *            
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
     public function getEcoles($niveau, $statut = null, $communeId = null)
@@ -89,7 +90,7 @@ class Etablissements extends AbstractSbmTable
                     ->nest()
                     ->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3)->unnest();
             }
-        } else {
+        } elseif (is_string($communeId)) {
             if (is_null($statut)) {
                 $where->equalTo('communeId', $communeId)
                     ->nest()
@@ -97,6 +98,17 @@ class Etablissements extends AbstractSbmTable
             } else {
                 $where->equalTo('statut', $statut)
                     ->equalTo('communeId', $communeId)
+                    ->nest()
+                    ->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3)->unnest();
+            }
+        } else {
+            if (is_null($statut)) {
+                $where->in('communeId', $communeId)
+                    ->nest()
+                    ->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3)->unnest();
+            } else {
+                $where->equalTo('statut', $statut)
+                    ->in('communeId', $communeId)
                     ->nest()
                     ->equalTo('niveau', $niveau)->OR->equalTo('niveau', 3)->unnest();
             }

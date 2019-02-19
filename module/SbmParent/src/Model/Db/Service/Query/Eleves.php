@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 28 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmParent\Model\Db\Service\Query;
 
@@ -55,7 +55,8 @@ class Eleves implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'DbManager attendu. On a reçu %s.';
-            throw new Exception(sprintf($message), gettype($serviceLocator));
+            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(sprintf($message),
+                gettype($serviceLocator));
         }
         $this->millesime = Session::get('millesime');
         $this->db_manager = $serviceLocator;
@@ -76,6 +77,15 @@ class Eleves implements FactoryInterface
         return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 
+    /**
+     * Donne les informations (tables eleves, scolarites, etablissements, communes)
+     * d'une scolarité précédant le millésime courant.
+     * S'il y en a plusieurs, donne la plus récente.
+     *
+     * @param int $eleveId
+     *
+     * @return array
+     */
     public function getEleve($eleveId)
     {
         $where = new Where();
@@ -169,7 +179,11 @@ class Eleves implements FactoryInterface
         ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute()->current();
+        try {
+            return $statement->execute()->current();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**

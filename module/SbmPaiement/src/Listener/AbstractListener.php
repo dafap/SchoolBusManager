@@ -9,8 +9,8 @@
  * @filesource AbstractListener.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
- * @version 2016-2.4.5
+ * @date 28 oct. 2018
+ * @version 2016-2.4.6
  */
 namespace SbmPaiement\Listener;
 
@@ -59,13 +59,15 @@ abstract class AbstractListener
     {
         if (! ($db_manager) instanceof DbManager) {
             $message = __CLASS__ . ' - DbManager attendu. On a reçu %s.';
-            throw new Exception(sprintf($message, gettype($db_manager)));
+            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($db_manager)));
         }
         $this->db_manager = $db_manager;
         $this->plateforme = $plateforme;
         $this->config_plateforme = $config_plateforme;
         $this->log_file = StdLib::concatPath(
-            realpath(StdLib::findParentPath(__DIR__ , 'data/logs')), $plateforme . '_error.log');
+            realpath(StdLib::findParentPath(__DIR__, 'data/logs')),
+            $plateforme . '_error.log');
     }
 
     /**

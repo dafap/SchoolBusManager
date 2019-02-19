@@ -10,8 +10,8 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2018-2.4.5
+ * @date 27 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmFront\Model\Responsable;
 
@@ -53,7 +53,7 @@ class Responsable
      * @param \Zend\Authentication\AuthenticationService $authenticate_by
      * @param \SbmCommun\Model\Db\Service\Table\Vue\Responsables $vue_responsable
      *
-     * @throws Exception
+     * @throws \SbmFront\Model\Responsable\Exception (par la method init())
      */
     public function __construct($authenticate_by, $vue_responsable)
     {
@@ -79,14 +79,14 @@ class Responsable
 
     public function __set($name, $value)
     {
-        $this->responsable['name'] = $value;
+        $this->responsable[$name] = $value;
         Session::set('responsable', $this->responsable,
             self::SESSION_RESPONSABLE_NAMESPACE);
     }
 
     public function __unset($name)
     {
-        unset($this->responsable['name']);
+        unset($this->responsable[$name]);
         Session::set('responsable', $this->responsable,
             self::SESSION_RESPONSABLE_NAMESPACE);
     }
@@ -116,7 +116,7 @@ class Responsable
      * Si invalide, va chercher le responsable correspondant à l'utilisateur autentifié dans la
      * table des responsables
      *
-     * @throws Exception S'il n'y a pas de responsable correspondant à l'utilisateur autentifié
+     * @throws \SbmFront\Model\Responsable\Exception S'il n'y a pas de responsable correspondant à l'utilisateur autentifié
      */
     private function init()
     {

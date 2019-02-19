@@ -12,11 +12,12 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 12 fév. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
 
+use SbmBase\Model\Session;
 use SbmCommun\Filter\SansAccent;
 use SbmCommun\Form\AbstractSbmForm;
 use SbmCommun\Model\Strategy\Semaine;
@@ -35,6 +36,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function __construct($db_manager)
     {
+        $as = Session::get('as')['libelle'];
         $this->db_manager = $db_manager;
         parent::__construct('enfant');
         $this->setAttribute('method', 'post');
@@ -67,6 +69,14 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add([
             'type' => 'hidden',
             'name' => 'motifDerogation'
+        ]);
+        $this->add([
+            'type' => 'hidden',
+            'name' => 'regimeId'
+        ]);
+        $this->add([
+            'type' => 'hidden',
+            'name' => 'organismeId'
         ]);
         $this->add(
             [
@@ -107,6 +117,97 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'type' => 'SbmCommun\Form\Element\NomPropre',
+                'name' => 'chez',
+                'attributes' => [
+                    'id' => 'enfant_chez',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Chez',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresseL1',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'enfant_adresseEleveL1',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresseL2',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'enfant_adresseEleveL2',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Complément d\'adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'codePostal',
+                'type' => 'SbmCommun\Form\Element\CodePostal',
+                'attributes' => [
+                    'id' => 'enfant_codePostalEleve',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code postal',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'communeId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'enfant_communeEleveId',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez une commune',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'type' => 'Zend\Form\Element\DateSelect',
                 'name' => 'dateN',
                 'attributes' => [
@@ -140,7 +241,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Etablissement fréquenté l\'année prochaine',
+                    'empty_option' => 'Etablissement fréquenté en ' . $as,
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -155,7 +256,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
-                    'label' => 'Classe suivie l\'année prochaine',
+                    'label' => 'Classe suivie en ' . $as,
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -180,6 +281,38 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'ap',
+                'attributes' => [
+                    'id' => 'btnradioap',
+                    'class' => 'sbmparent-enfant',
+                    'value' => '0'
+                ],
+                'options' => [
+                    'label' => 'Résidense personnelle',
+                    'label_attributes' => [
+                        'class' => 'sbm-radio-label'
+                    ],
+                    'value_options' => [
+                        [
+                            'value' => '1',
+                            'label' => 'Oui',
+                            'attributes' => [
+                                'id' => 'btnradioap1'
+                            ]
+                        ],
+                        [
+                            'value' => '0',
+                            'label' => 'Non',
+                            'attributes' => [
+                                'id' => 'btnradioap0'
+                            ]
+                        ]
                     ]
                 ]
             ]);
@@ -312,7 +445,30 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return [
-
+            'ap' => [
+                'name' => 'ap',
+                'required' => false
+            ],
+            'chez' => [
+                'name' => 'chez',
+                'required' => false
+            ],
+            'adresseL1' => [
+                'name' => 'adresseL1',
+                'required' => false
+            ],
+            'adresseL2' => [
+                'name' => 'adresseL2',
+                'required' => false
+            ],
+            'codePostal' => [
+                'name' => 'codePostal',
+                'required' => false
+            ],
+            'communeId' => [
+                'name' => 'communeId',
+                'required' => false
+            ],
             'joursTransport' => [
                 'name' => 'joursTransport',
                 'required' => true

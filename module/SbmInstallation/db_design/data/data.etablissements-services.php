@@ -14,355 +14,355 @@
  */
 return array(
     array(
-        'etablissementId' => '0120349P', 
-        'serviceId' => '083-1A', 
+        'etablissementId' => '0120349P',
+        'serviceId' => '083-1A'
     ),
     array(
-        'etablissementId' => '0120350R', 
-        'serviceId' => '083-1A', 
+        'etablissementId' => '0120350R',
+        'serviceId' => '083-1A'
     ),
     array(
-        'etablissementId' => '0120349P', 
-        'serviceId' => '083-1B', 
+        'etablissementId' => '0120349P',
+        'serviceId' => '083-1B'
     ),
     array(
-        'etablissementId' => '0120350R', 
-        'serviceId' => '083-1B', 
+        'etablissementId' => '0120350R',
+        'serviceId' => '083-1B'
     ),
     array(
-        'etablissementId' => '0120004P', 
-        'serviceId' => '083-2', 
+        'etablissementId' => '0120004P',
+        'serviceId' => '083-2'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '083-2', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '083-2'
     ),
     array(
-        'etablissementId' => '0120349P', 
-        'serviceId' => '083-2', 
+        'etablissementId' => '0120349P',
+        'serviceId' => '083-2'
     ),
     array(
-        'etablissementId' => '0120004P', 
-        'serviceId' => '083-3', 
+        'etablissementId' => '0120004P',
+        'serviceId' => '083-3'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '083-3', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '083-3'
     ),
     array(
-        'etablissementId' => '0120147V', 
-        'serviceId' => '083-3', 
+        'etablissementId' => '0120147V',
+        'serviceId' => '083-3'
     ),
     array(
-        'etablissementId' => '0120349P', 
-        'serviceId' => '083-3', 
+        'etablissementId' => '0120349P',
+        'serviceId' => '083-3'
     ),
     array(
-        'etablissementId' => '0120004P', 
-        'serviceId' => '083-3-R', 
+        'etablissementId' => '0120004P',
+        'serviceId' => '083-3-R'
     ),
     array(
-        'etablissementId' => '0120147V', 
-        'serviceId' => '083-4', 
+        'etablissementId' => '0120147V',
+        'serviceId' => '083-4'
     ),
     array(
-        'etablissementId' => '0120004P', 
-        'serviceId' => '083-TC', 
+        'etablissementId' => '0120004P',
+        'serviceId' => '083-TC'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '083-TC', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '083-TC'
     ),
     array(
-        'etablissementId' => '0120004P', 
-        'serviceId' => '089-1', 
+        'etablissementId' => '0120004P',
+        'serviceId' => '089-1'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-1', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-1'
     ),
     array(
-        'etablissementId' => '0120096P', 
-        'serviceId' => '089-1', 
+        'etablissementId' => '0120096P',
+        'serviceId' => '089-1'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-1', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-1'
     ),
     array(
-        'etablissementId' => '0121228V', 
-        'serviceId' => '089-1', 
+        'etablissementId' => '0121228V',
+        'serviceId' => '089-1'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-1', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-1'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-1-R', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-1-R'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-1-R', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-1-R'
     ),
     array(
-        'etablissementId' => '0121228V', 
-        'serviceId' => '089-1-R', 
+        'etablissementId' => '0121228V',
+        'serviceId' => '089-1-R'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-1-R', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-1-R'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-2', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-2'
     ),
     array(
-        'etablissementId' => '0120096P', 
-        'serviceId' => '089-2', 
+        'etablissementId' => '0120096P',
+        'serviceId' => '089-2'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-2', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-2'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-2', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-2'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-2-R', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-2-R'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-2-R', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-2-R'
     ),
     array(
-        'etablissementId' => '0121228V', 
-        'serviceId' => '089-2-R', 
+        'etablissementId' => '0121228V',
+        'serviceId' => '089-2-R'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-2-R', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-2-R'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-3', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-3'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-3', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-3'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-3', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-3'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-4', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-4'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-4', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-4'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-4', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-4'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-6', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-6'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-6', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-6'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-6', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-6'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-7', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-7'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-7', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-7'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-7', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-7'
     ),
     array(
-        'etablissementId' => '0120362D', 
-        'serviceId' => '089-8', 
+        'etablissementId' => '0120362D',
+        'serviceId' => '089-8'
     ),
     array(
-        'etablissementId' => '0121166C', 
-        'serviceId' => '089-8', 
+        'etablissementId' => '0121166C',
+        'serviceId' => '089-8'
     ),
     array(
-        'etablissementId' => '0121241J', 
-        'serviceId' => '089-8', 
+        'etablissementId' => '0121241J',
+        'serviceId' => '089-8'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-9', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-9'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-9', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-9'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-9', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-9'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => '0120096P', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => '0120096P',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => '0120301M', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => '0120301M',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => '0121166C', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => '0121166C',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => '0121228V', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => '0121228V',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => 'A120622L', 
-        'serviceId' => '089-TA', 
+        'etablissementId' => 'A120622L',
+        'serviceId' => '089-TA'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '089-TC', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '089-TC'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '089-TC', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '089-TC'
     ),
     array(
-        'etablissementId' => '0121228V', 
-        'serviceId' => '089-TC', 
+        'etablissementId' => '0121228V',
+        'serviceId' => '089-TC'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => '089-TC', 
+        'etablissementId' => '0121257B',
+        'serviceId' => '089-TC'
     ),
     array(
-        'etablissementId' => '0120301M', 
-        'serviceId' => '100-1A', 
+        'etablissementId' => '0120301M',
+        'serviceId' => '100-1A'
     ),
     array(
-        'etablissementId' => '0120302N', 
-        'serviceId' => '100-1A', 
+        'etablissementId' => '0120302N',
+        'serviceId' => '100-1A'
     ),
     array(
-        'etablissementId' => 'A120622L', 
-        'serviceId' => '100-1A', 
+        'etablissementId' => 'A120622L',
+        'serviceId' => '100-1A'
     ),
     array(
-        'etablissementId' => '0120303P', 
-        'serviceId' => '100-1B', 
+        'etablissementId' => '0120303P',
+        'serviceId' => '100-1B'
     ),
     array(
-        'etablissementId' => '0120301M', 
-        'serviceId' => '100-2', 
+        'etablissementId' => '0120301M',
+        'serviceId' => '100-2'
     ),
     array(
-        'etablissementId' => 'A120622L', 
-        'serviceId' => '100-2', 
+        'etablissementId' => 'A120622L',
+        'serviceId' => '100-2'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '100-4A', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '100-4A'
     ),
     array(
-        'etablissementId' => '0120301M', 
-        'serviceId' => '100-4A', 
+        'etablissementId' => '0120301M',
+        'serviceId' => '100-4A'
     ),
     array(
-        'etablissementId' => '0120302N', 
-        'serviceId' => '100-4A', 
+        'etablissementId' => '0120302N',
+        'serviceId' => '100-4A'
     ),
     array(
-        'etablissementId' => 'A120622L', 
-        'serviceId' => '100-4A', 
+        'etablissementId' => 'A120622L',
+        'serviceId' => '100-4A'
     ),
     array(
-        'etablissementId' => '0120301M', 
-        'serviceId' => '100-4B', 
+        'etablissementId' => '0120301M',
+        'serviceId' => '100-4B'
     ),
     array(
-        'etablissementId' => '0120302N', 
-        'serviceId' => '100-4B', 
+        'etablissementId' => '0120302N',
+        'serviceId' => '100-4B'
     ),
     array(
-        'etablissementId' => 'A120622L', 
-        'serviceId' => '100-4B', 
+        'etablissementId' => 'A120622L',
+        'serviceId' => '100-4B'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => '100-5A', 
+        'etablissementId' => '0120006S',
+        'serviceId' => '100-5A'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => '100-5A', 
+        'etablissementId' => '0120622L',
+        'serviceId' => '100-5A'
     ),
     array(
-        'etablissementId' => '0120301M', 
-        'serviceId' => '100-5B', 
+        'etablissementId' => '0120301M',
+        'serviceId' => '100-5B'
     ),
     array(
-        'etablissementId' => '0120302N', 
-        'serviceId' => '100-5B', 
+        'etablissementId' => '0120302N',
+        'serviceId' => '100-5B'
     ),
     array(
-        'etablissementId' => 'A120622L', 
-        'serviceId' => '100-5B', 
+        'etablissementId' => 'A120622L',
+        'serviceId' => '100-5B'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => 'M217F', 
+        'etablissementId' => '0120006S',
+        'serviceId' => 'M217F'
     ),
     array(
-        'etablissementId' => '0120006S', 
-        'serviceId' => 'M219A', 
+        'etablissementId' => '0120006S',
+        'serviceId' => 'M219A'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => 'M219A', 
+        'etablissementId' => '0120622L',
+        'serviceId' => 'M219A'
     ),
     array(
-        'etablissementId' => '0121257B', 
-        'serviceId' => 'M219A', 
+        'etablissementId' => '0121257B',
+        'serviceId' => 'M219A'
     ),
     array(
-        'etablissementId' => '0120622L', 
-        'serviceId' => 'M220B', 
+        'etablissementId' => '0120622L',
+        'serviceId' => 'M220B'
     ),
     array(
-        'etablissementId' => '0120096P', 
-        'serviceId' => 'M222B', 
+        'etablissementId' => '0120096P',
+        'serviceId' => 'M222B'
     ),
     array(
-        'etablissementId' => '0120147V', 
-        'serviceId' => 'M222B', 
-    ),
+        'etablissementId' => '0120147V',
+        'serviceId' => 'M222B'
+    )
 );

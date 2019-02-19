@@ -9,8 +9,8 @@
  * @filesource AdapterEmail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 août 2016
- * @version 2016-2.2.0
+ * @date 23 oct. 2018
+ * @version 2019-2.5.0
  */
 namespace SbmAuthentification\Authentication;
 
@@ -23,7 +23,8 @@ class AdapterEmail implements ValidatableAdapterInterface
 {
 
     /**
-     *
+     * Correspond à l'email
+     * 
      * @var string
      */
     protected $identity;
@@ -36,7 +37,7 @@ class AdapterEmail implements ValidatableAdapterInterface
 
     /**
      * C'est un db manager mais on n'utilise que la méthode get()
-     * 
+     *
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
     protected $db_manager;
@@ -48,18 +49,20 @@ class AdapterEmail implements ValidatableAdapterInterface
     protected $mdp;
 
     /**
-     * Passe éventuellement un tableau de lettres (chars), chiffres (nums) et signes (syms) autorisés pour la constitution du mot de passe.
+     * Passe éventuellement un tableau de lettres (chars), chiffres (nums) et signes (syms)
+     * autorisés pour la constitution du mot de passe.
      * Pour chaque catégorie, les valeurs autorisées sont regroupées dans une chaine de caractères.
-     * Dans les valeurs par défaut, par de o, pas de i, pas de l. Les ensembles autorisées de lettres minuscules et majuscules sont les mêmes.
+     * Dans les valeurs par défaut, par de o, pas de i, pas de l. Les ensembles autorisées de
+     * lettres minuscules et majuscules sont les mêmes.
      *
      * @param
      *            Zend\ServiceManager\ServiceLocatorInterface
-     * @param array $args            
+     * @param array $args
      */
     public function __construct(ServiceLocatorInterface $db_manager, array $args = [])
     {
         $this->db_manager = $db_manager;
-        
+
         $chars = 'abcdefghjkmnpqrstuvwxyz';
         if (array_key_exists('chars', $args))
             $chars = $args['chars'];
@@ -69,7 +72,7 @@ class AdapterEmail implements ValidatableAdapterInterface
         $syms = '!@#$%^&*()-+?';
         if (array_key_exists('syms', $args))
             $chars = $args['syms'];
-        
+
         $this->mdp = new Mdp($chars, $nums, $syms);
     }
 
@@ -80,11 +83,15 @@ class AdapterEmail implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\AdapterInterface::authenticate()
+     * 
+     * @throws \SbmAuthentification\Authentication\Exception\RuntimeException
      */
     public function authenticate()
     {
-        if (empty($this->identity) || empty($this->mdp)) {
-            throw new Exception(__METHOD__ . 'Paramètres d\'identification incorrects. L\'email ou le mot de passe n\'ont pas été donnés.');
+        if (empty($this->identity)) {
+            throw new Exception\RuntimeException('Le mail n\'a pas été donné.');
+        } elseif (empty($this->credential)) {
+            throw new Exception\RuntimeException('Le mot de passe n\'a pas été donné.');
         }
         $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
         $result = $tUsers->getMdpGdsByEmail($this->identity);
@@ -101,14 +108,16 @@ class AdapterEmail implements ValidatableAdapterInterface
                     'Identification réussie.'
                 ]);
             } else {
-                return new Result(Result::FAILURE_CREDENTIAL_INVALID, '', [
-                    'Mot de passe incorrect ou compte bloqué.'
-                ]);
+                return new Result(Result::FAILURE_CREDENTIAL_INVALID, '',
+                    [
+                        'Mot de passe incorrect ou compte bloqué.'
+                    ]);
             }
         } else {
-            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '', [
-                'Email inconnu ou compte inactif.'
-            ]);
+            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, '',
+                [
+                    'Email inconnu ou compte inactif.'
+                ]);
         }
     }
 
@@ -130,6 +139,8 @@ class AdapterEmail implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::setIdentity()
+     * 
+     * @throws \SbmAuthentification\Authentication\Exception\InvalidArgumentException
      */
     public function setIdentity($identity)
     {
@@ -138,7 +149,9 @@ class AdapterEmail implements ValidatableAdapterInterface
         } elseif (is_array($identity) && array_key_exists('email', $identity)) {
             $this->identity = $identity['email'];
         } else {
-            throw new Exception(__METHOD__ . 'Paramètres d\'identification incorrects. L\'email n\'a pas été donné.');
+            throw new Exception\InvalidArgumentException(
+                __METHOD__ .
+                'Paramètres d\'identification incorrects. L\'email n\'a pas été donné.');
         }
         return $this;
     }
@@ -161,6 +174,8 @@ class AdapterEmail implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::setCredential()
+     * 
+     * @throws \SbmAuthentification\Authentication\Exception\InvalidArgumentException
      */
     public function setCredential($credential)
     {
@@ -169,7 +184,9 @@ class AdapterEmail implements ValidatableAdapterInterface
         } elseif (is_array($credential) && array_key_exists('mdp', $credential)) {
             $this->credential = $credential['mdp'];
         } else {
-            throw new Exception(__METHOD__ . 'Paramètres d\'identification incorrects. Le mot de passe n\'a pas été donné.');
+            throw new Exception\InvalidArgumentException(
+                __METHOD__ .
+                'Paramètres d\'identification incorrects. Le mot de passe n\'a pas été donné.');
         }
         return $this;
     }
