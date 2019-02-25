@@ -9,7 +9,7 @@
  * @filesource DocTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
@@ -30,13 +30,9 @@ class DocTables extends AbstractSbmTable
         $this->table_type = 'system';
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocTables';
         $this->id_name = 'doctableId';
-    }
-
-    protected function setStrategies()
-    {
         foreach ($this->getColumnsNames() as $columnName) {
             if (substr($columnName, - 6) == '_color') {
-                $this->hydrator->addStrategy($columnName, new Color());
+                $this->strategies[$columnName] = new Color();
             }
         }
     }

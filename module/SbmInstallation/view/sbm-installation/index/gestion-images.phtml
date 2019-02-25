@@ -7,7 +7,7 @@
  * @filesource gestion-images.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 23 fév. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -15,10 +15,9 @@ $id_form_img = 0;
 $buttons = [
     'maj' => [
         'class' => 'fam-image-edit',
-        'formaction' => $this->url('sbminstall', 
-            [
-                'action' => 'upload-image'
-            ]),
+        'formaction' => $this->url('sbminstall', [
+            'action' => 'upload-image'
+        ]),
         'title' => 'Mettre à jour'
     ]
 ];
@@ -72,11 +71,11 @@ $actions = [
 					src="<?= $this->path['url'] . sprintf('%s?%d',$fname, time());?>"
 					width="<?= $width;?>" height="<?= $height;?>"></td>
 				<td>Taille : <?= $descriptif['width'];?>
-					<span style="font-family:sans-serif;">x</span>
+					<span style="font-family: sans-serif;">x</span>
 					<?= $descriptif['height'];?> px<br>
             		Type : <?= $descriptif['mime'];?>
             	</td>
-				<td><?= $this->listeLigneActions($id_form_img, $hiddens, $buttons);?></td>
+				<td><?= $this->listeLigneActions($id_form_img++, $hiddens, $buttons);?></td>
 			</tr>
     <?php endforeach;?>
     </table>

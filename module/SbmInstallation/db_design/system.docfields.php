@@ -8,9 +8,11 @@
  * @filesource system.docfields.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 fév. 2019
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'docfields',
     'type' => 'system',
@@ -89,5 +91,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    'data' => __DIR__ . '/data/data.system.docfields.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.system.docfields.php')
 ];

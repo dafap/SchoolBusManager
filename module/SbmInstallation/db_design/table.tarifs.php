@@ -8,8 +8,8 @@
  * @filesource table.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
 
 /**
@@ -39,6 +39,8 @@
  * Ces 3 groupes d'attibuts se combinent par "Et binaire"
  * ***************************************************************************
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'tarifs',
     'drop' => false,
@@ -62,8 +64,9 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    
+
     // 'data' => include __DIR__ . '/data/data.tarifs.php'
     // 'data' => ['after' => [],'include' => __DIR__ . '/data/data.tarifs.php']
-    'data' => __DIR__ . '/data/data.tarifs.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.tarifs.php')
 ];

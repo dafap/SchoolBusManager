@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2018
+ * @date 23 fév. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -45,7 +45,7 @@ return [
     'sbm' => [
         'img' => [
             'path' => [
-                'system' =>  StdLib::findParentPath(__DIR__, 'public/img'),
+                'system' => StdLib::findParentPath(__DIR__, 'public/img'),
                 'tmpuploads' => './data/tmpuploads',
                 'url' => '/img/'
             ],
@@ -60,45 +60,65 @@ return [
                  * liste des images à administrer
                  * - label : explication de la nature de l'image
                  * - taille : prend les valeurs
-                 * real (taille réelle de l'image ; width et height sont ignorés),
-                 * fixe (taille fixe ; width et height sont en pt)
-                 * scale (taille proportionnelle ; sera ramenée à la taille indiquée en pt)
+                 * FULL_SIZE (taille réelle de l'image ; width et height sont ignorés),
+                 * FIXED_SIZE (taille fixe ; width et height sont en pt)
+                 * PROPORTIONAL_SIZE (taille proportionnelle ; sera ramenée à la taille indiquée en
+                 * pt)
+                 * - width : en pt
+                 * - height : en pt
                  */
-                'bandeau-ccda-1.jpg' => [
+                'bandeau-sbm.png' => [
+                    // utilisé dans CSS .page1 #header #bandeau
                     'label' => 'Bandeau de haut de page du site',
                     'taille' => Image::FIXED_SIZE,
                     'width' => 1170,
                     'height' => 195
                 ],
                 'bas-de-mail-service-gestion.png' => [
-                    'label' => 'Bas de mail personnalisé',
+                    // utilisé dans \SbmGestion\Controller\EleveController::responsableMailAction()
+                    // et \SbmMail\Controller\IndexController::lastDayChangesAction()
+                    'label' => 'Bas de mail personnalisé service transport',
                     'taille' => Image::PROPORTIONAL_SIZE,
-                    'width' => '427',
-                    'height' => '128'
+                    'width' => 427,
+                    'height' => 128
                 ],
                 'bas-de-mail-transport-scolaire.png' => [
+                    // utilisé dans \SbmFront\Controller\LoginController::mdpDemande(),
+                    // creerCompteAction() et
+                    // \SbmGestion\Controller\EleveController::responsableLogerAction()
                     'label' => 'Bas de mail impersonnel avec logo TS',
                     'taille' => Image::PROPORTIONAL_SIZE,
-                    'width' => '427',
-                    'height' => '128'
+                    'width' => 427,
+                    'height' => 128
                 ],
-                'logocartedroite.jpg' => [
-                    'label' => 'Logo transport scolaire',
+                'logotransportscolaire.png' => [
+                    // utilisé uniquement dans les documents
+                    'label' => 'Logo transport scolaire des documents à imprimer',
                     'taille' => Image::PROPORTIONAL_SIZE,
-                    'width' => '85',
-                    'height' => '48'
+                    'width' => 85,
+                    'height' => 48
                 ],
                 'logocarteetablissements.png' => [
+                    // utilisé dans SbmFront/view/sbm-front/index/index-avant.phtml,
+                    // index-pendant.phtml et index-après.phtml
                     'label' => 'Image de la carte en page d\'accueil',
                     'taille' => Image::FULL_SIZE,
                     'width' => 0,
                     'height' => 0
                 ],
-                'logocartegauche.jpg' => [
-                    'label' => 'Logo de l\'organisateur',
+                'logocartegauche.png' => [
+                    // utilisé dans \SbmPdf\Model\Tcpdf::templateDocBodyMethod3Picture()
+                    'label' => 'Logo carte gauche',
                     'taille' => Image::PROPORTIONAL_SIZE,
-                    'width' => '48',
-                    'height' => '65'
+                    'width' => 48,
+                    'height' => 65
+                ],
+                'logocartedroite.png' => [
+                    // utilisé dans \SbmPdf\Model\Tcpdf::templateDocBodyMethod3Picture()
+                    'label' => 'Logo carte droite',
+                    'taille' => Image::PROPORTIONAL_SIZE,
+                    'width' => 85,
+                    'height' => 48
                 ]
             ]
         ]
@@ -111,11 +131,11 @@ return [
     'router' => [
         'routes' => [
             'sbminstall' => [
-                
+
                 // 'type' => 'literal',
                 'type' => 'segment',
                 'options' => [
-                    
+
                     // 'route' => '/install',
                     'route' => '/install[/:action]',
                     'constraints' => [

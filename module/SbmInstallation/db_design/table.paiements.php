@@ -8,8 +8,8 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
 
 /**
@@ -19,15 +19,19 @@
  * Description des champs *
  * - paiementId est un auto-incrément *
  * - dateDepot et datePaiement sont des datetime *
- * - dateValeur est une date utilisé pour savoir quand on doit déposer les valeurs (chèques ou espèces) *
+ * - dateValeur est une date utilisé pour savoir quand on doit déposer les valeurs (chèques ou
+ * espèces) *
  * - responsableId référence le responsable qui paie *
  * - anneeScolaire est l'année scolaire en cours (varchar) *
  * - exercice est l'exercice budgétaire (int)
  * - montant est un décimal a 2 décimales
  * - codeModePaiement et codeCaisse sont des références dans la table système des libelles
- * - banque, titulaire et reference sont des varchar(30) destinés à recevoir les informations nécessaires pour les paiements par chèque
+ * - banque, titulaire et reference sont des varchar(30) destinés à recevoir les informations
+ * nécessaires pour les paiements par chèque
  * *************************************************************************
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'paiements',
     'drop' => false,
@@ -98,5 +102,6 @@ EOT
 
         ]
     ],
-    'data' => __DIR__ . '/data/data.paiements.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.paiements.php')
 ];

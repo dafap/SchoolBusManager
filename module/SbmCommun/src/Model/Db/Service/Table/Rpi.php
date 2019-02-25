@@ -8,7 +8,7 @@
  * @filesource Rpi.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 sept. 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -27,24 +27,7 @@ class Rpi extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Rpi';
         $this->id_name = 'rpiId';
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
-     */
-    protected function setStrategies()
-    {
-        $this->hydrator->addStrategy('niveau', new NiveauStrategy());
-    }
-
-    public static function getNiveaux()
-    {
-        return [
-            NiveauStrategy::CODE_NIVEAU_MATERNELLE => 'maternelle',
-            NiveauStrategy::CODE_NIVEAU_ELEMENTAIRE => 'élémentaire'
-        ];
+        $this->strategies['niveau'] = new NiveauStrategy();
     }
 
     /**

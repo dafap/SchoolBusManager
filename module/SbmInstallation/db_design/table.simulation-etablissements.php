@@ -7,9 +7,11 @@
  * @filesource table.simulation-etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2018
- * @version 2018-2.4.3
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'simulation-etablissements',
     'type' => 'table',
@@ -56,5 +58,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    'data' => __DIR__ . '/data/data.simulation-etablissements.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.simulation-etablissements.php')
 ];

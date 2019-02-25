@@ -8,7 +8,7 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 sept. 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -28,16 +28,7 @@ class Circuits extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Circuits';
         $this->id_name = 'circuitId';
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
-     */
-    protected function setStrategies()
-    {
-        $this->hydrator->addStrategy('semaine', new SemaineStrategy());
+        $this->strategies['semaine'] = new SemaineStrategy();
     }
 
     public function getSemaine()

@@ -9,9 +9,11 @@
  * @filesource table.staffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'affectations',
     'type' => 'table',
@@ -22,10 +24,15 @@ return [
         'fields' => [
             'millesime' => 'int(4) NOT NULL DEFAULT "0"',
             'eleveId' => 'int(11) NOT NULL DEFAULT "0"',
-            'trajet' => 'tinyint(1) NOT NULL DEFAULT "1"', // 1 pour le responsable 1, 2 pour le responsable 2
-            'jours' => 'tinyint(2) NOT NULL DEFAULT "31"', // 27 semaine, 4 mercredi, 32 samedi - indiquer 63 pour semaine complète ou 59 pour semaine + samedi
-            'sens' => 'tinyint(1) NOT NULL DEFAULT "3"', // 1 pour aller / 2 pour retour / 3 pour aller-retour
-            'correspondance' => 'tinyint(1) NOT NULL DEFAULT "1"', // de 1 à n à partir du domicile
+            'trajet' => 'tinyint(1) NOT NULL DEFAULT "1"', // 1 pour le responsable 1, 2 pour le
+                                                            // responsable 2
+            'jours' => 'tinyint(2) NOT NULL DEFAULT "31"', // 27 semaine, 4 mercredi, 32 samedi -
+                                                            // indiquer 63 pour semaine complète ou
+                                                            // 59 pour semaine + samedi
+            'sens' => 'tinyint(1) NOT NULL DEFAULT "3"', // 1 pour aller / 2 pour retour / 3 pour
+                                                          // aller-retour
+            'correspondance' => 'tinyint(1) NOT NULL DEFAULT "1"', // de 1 à n à partir du
+                                                                    // domicile
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'responsableId' => 'int(11) NOT NULL',
             'station1Id' => 'int(11) NOT NULL',
@@ -132,8 +139,6 @@ EOT
 
         ]
     ],
-    
-    // 'data' => include __DIR__ . '/data/data.affectations.php'
-    // 'data' => ['after' => ['eleves','responsables','stations','services'],'include' => __DIR__ . '/data/data.affectations.php']
-    'data' => __DIR__ . '/data/data.affectations.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.affectations.php')
 ]; 

@@ -8,17 +8,21 @@
  * @filesource table.communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juillet 2018
- * @version 2018-2.4.2
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 ini_set('memory_limit', '-1');
 
 return [
     'name' => 'communes',
     'type' => 'table',
     'drop' => false,
-    'edit_entity' => false, // si false, on ne touche pas à la structure dans Create::createOrAlterEntity() - true par défaut
-    'add_data' => false, // si false, on ne fait rien dans Create::addData() - true par défaut ; sans effet sur une vue
+    'edit_entity' => false, // si false, on ne touche pas à la structure dans
+                             // Create::createOrAlterEntity() - true par défaut
+    'add_data' => false, // si false, on ne fait rien dans Create::addData() - true par défaut ;
+                          // sans effet sur une vue
     'structure' => [
         'fields' => [
             'communeId' => 'varchar(6) NOT NULL',
@@ -41,16 +45,10 @@ return [
         'primary_key' => [
             'communeId'
         ],
-        // 'keys' => [
-        // 'noms' => ['fields' => ['nom',),),
-        // 'membres_alpha' => ['fields' => ['membre',),),
-        // 'desservies_alpha' => ['fields' => ['desservie',),),
-        // ),
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    // 'data' => include __DIR__ . '/data/data.communes.php',
-    // 'data' => ['after' => [), 'include' => __DIR__ . '/data/data.communes.php')
-    'data' => __DIR__ . '/data/data.communes.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.communes.php')
 ];

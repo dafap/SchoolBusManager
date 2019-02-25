@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 fév. 2019
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Controller;
@@ -113,6 +113,11 @@ class IndexController extends AbstractActionController
                         'download' => [
                             'class' => 'confirm default',
                             'value' => 'Télécharger le fichier des transactions'
+                        ],
+                        'voir' => [
+                            'class' => 'confirm default',
+                            'value' => 'Voir le contenu',
+                            'formaction' => '/install/fichierslog-voir'
                         ]
                     ]),
                 'form2' => new ButtonForm([
@@ -127,9 +132,10 @@ class IndexController extends AbstractActionController
                             'class' => 'confirm default',
                             'value' => 'Télécharger le fichier d\'erreurs'
                         ],
-                        'cancel' => [
+                        'voir' => [
                             'class' => 'confirm default',
-                            'value' => 'Quitter'
+                            'value' => 'Voir le contenu',
+                            'formaction' => '/install/fichierslog-voir'
                         ]
                     ]),
                 'paiement' => [
@@ -143,6 +149,41 @@ class IndexController extends AbstractActionController
                     'lignes' => count(file($fileErrors))
                 ]
             ]);
+    }
+
+    public function fichierslogVoirAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        if ($prg === false || ! array_key_exists('fichier', $prg)) {
+            return $this->redirect()->toRoute('sbminstall', [
+                'action' => 'fichierslog'
+            ]);
+        }
+        if ($prg['fichier'] == 'paiement') {
+            $title = 'Historique des transactions de la plateforme de paiement';
+            $config_paiement = $this->config_paiement;
+            $filename = strtolower($config_paiement['plateforme']) . '_error.log';
+            $filename = StdLib::concatPath($config_paiement['path_filelog'], $filename);
+        } else {
+            $title = 'Contenu du fichier d\'erreurs';
+            $filename = $this->error_log;
+        }
+        $acontent = [];
+        if (file_exists($filename)) {
+            $acontent = file($filename);
+        }
+        if (empty($acontent)) {
+            $acontent = [
+                'Le fichier est vide'
+            ];
+        }
+        return new ViewModel([
+            'title' => $title,
+            'acontent' => $acontent
+        ]);
     }
 
     public function createTablesAction()
@@ -247,6 +288,8 @@ class IndexController extends AbstractActionController
         // $args = $prg ?: [];
         $config = $this->img;
         $files = scandir($config['path']['system']);
+        $this->installationImages($config['administrer'], $files,
+            $config['path']['system']);
         $file_names = [];
         foreach ($files as $fname) {
             if (StdLib::getParamR([
@@ -271,6 +314,35 @@ class IndexController extends AbstractActionController
                 'path' => $config['path'],
                 'file_names' => $file_names
             ]);
+    }
+
+    private function installationImages($besoins, &$presents, $path)
+    {
+        foreach ($besoins as $key => $description) {
+            if (! in_array($key, $presents)) {
+                // créer l'image manquante
+                $image = imagecreatetruecolor($description['width'],
+                    $description['height']);
+                $ext = substr($key, - 3);
+                switch ($ext) {
+                    case 'png':
+                        imagepng($image, StdLib::concatPath($path, $key));
+                        break;
+                    case 'jpg':
+                    case 'jpeg':
+                        imagejpeg($image, StdLib::concatPath($path, $key));
+                        break;
+                    case 'gig':
+                        imagegif($image, StdLib::concatPath($path, $key));
+                        break;
+                    default:
+                        $msg = "key: $key\next: $ext\nCe formant de fichier n'est pas géré.";
+                        throw new \SbmCommun\Model\Photo\Exception($msg);
+                        break;
+                }
+                $presents[] = $key;
+            }
+        }
     }
 
     public function uploadImageAction()
@@ -481,7 +553,7 @@ class IndexController extends AbstractActionController
     {
         return [];
     }
-    
+
     public function updateCacertAction()
     {
         return [];

@@ -8,7 +8,7 @@
  * @filesource Etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 sept. 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -29,17 +29,8 @@ class Etablissements extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Etablissements';
         $this->id_name = 'etablissementId';
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
-     */
-    protected function setStrategies()
-    {
-        $this->hydrator->addStrategy('jOuverture', new SemaineStrategy());
-        $this->hydrator->addStrategy('niveau', new NiveauStrategy());
+        $this->strategies['jOuverture'] = new SemaineStrategy();
+        $this->strategies['niveau'] = new NiveauStrategy();
     }
 
     public function getSemaine()

@@ -8,7 +8,7 @@
  * @filesource AbstractPower2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 oct. 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Strategy;
@@ -48,8 +48,8 @@ abstract class AbstractPower2 implements StrategyInterface
                 throw new Exception\OutOfBoundsException(
                     __METHOD__ . sprintf(
                         _(
-                            " Le paramètre est invalide.<pre>%s</pre>\nUne puissance de 2 est attendue."),
-                        $dump));
+                            " Le paramètre est invalide dans %s.<pre>%s</pre>\nUne puissance de 2 est attendue."),
+                        get_class($this), $dump));
             }
             return $param;
         } elseif (! is_array($param)) {
@@ -59,8 +59,8 @@ abstract class AbstractPower2 implements StrategyInterface
             throw new Exception\OutOfBoundsException(
                 __METHOD__ . sprintf(
                     _(
-                        " Le paramètre est invalide.<pre>%s</pre>\nUn tableau d'entiers puissances de 2 est attendu."),
-                    $dump));
+                        " Le paramètre est invalide dans %s.<pre>%s</pre>\nUn tableau d'entiers puissances de 2 est attendu."),
+                    get_class($this), $dump));
         }
         $result = 0;
         foreach ($param as $value) {
@@ -75,8 +75,8 @@ abstract class AbstractPower2 implements StrategyInterface
                 throw new Exception\OutOfBoundsException(
                     __METHOD__ . sprintf(
                         _(
-                            " Le tableau donné en paramètre contient la valeur illégale : %s\nLes valeurs doivent être des entiers puissance de 2."),
-                        $dump));
+                            " Le tableau donné en paramètre dans %s contient la valeur illégale : %s\nLes valeurs doivent être des entiers puissance de 2."),
+                        get_class($this), $dump));
             }
             $result |= (int) $value; // bitwise Or
         }

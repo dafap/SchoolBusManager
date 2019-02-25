@@ -22,29 +22,29 @@
  * @filesource checkallbox.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juin 2017
- * @version 2017-2.3.3
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
 var multicheckbox_actions = (function() {
 	var checkboxes_sel = "input.sbm-multicheckbox:enabled";
 	var id_wrapper;
 	var checkboxes_changed = function() {
-		var $container = $("#" + id_wrapper);
-		var total_boxes = $container.find(checkboxes_sel).length;
-		var checked_boxes = $container.find(checkboxes_sel + ":checked").length;
-		var $checkall = $container.find("input.checkall_box");
+		var container = $("#" + id_wrapper);
+		var total_boxes = container.find(checkboxes_sel).length;
+		var checked_boxes = container.find(checkboxes_sel + ":checked").length;
+		var checkall = container.find("input.checkall_box");
 		if (total_boxes == checked_boxes) {
-			$checkall.prop({
+			checkall.prop({
 				checked : true,
 				indeterminate : false
 			});
 		} else if (checked_boxes > 0) {
-			$checkall.prop({
+			checkall.prop({
 				checked : true,
 				indeterminate : true
 			});
 		} else {
-			$checkall.prop({
+			checkall.prop({
 				checked : false,
 				indeterminate : false
 			});

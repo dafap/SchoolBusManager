@@ -7,9 +7,11 @@
  * @filesource table.rpi-classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2018
- * @version 2018-2.4.1
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'rpi-classes',
     'type' => 'table',
@@ -57,5 +59,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    'data' => __DIR__ . '/data/data.rpi-classes.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.rpi-classes.php')
 ];

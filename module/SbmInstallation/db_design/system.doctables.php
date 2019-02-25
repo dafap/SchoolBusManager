@@ -8,9 +8,11 @@
  * @filesource system.doctables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2018
- * @version 2018-2.4.3
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'doctables',
     'type' => 'system',
@@ -21,11 +23,14 @@ return [
         'fields' => [
             'doctableId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL DEFAULT "1"',
-            'ordinal_table' => 'int(11) NOT NULL DEFAULT "1"', // dans le cas où il y aurait plusieurs tables dans le même document
+            'ordinal_table' => 'int(11) NOT NULL DEFAULT "1"', // dans le cas où il y aurait
+                                                                // plusieurs tables dans le même
+                                                                // document
             'section' => 'char(5)', // prend les valeurs thead, tbody ou tfoot
             'description' => 'varchar(255) NOT NULL DEFAULT ""',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
-            'width' => 'varchar(4)', // null par défaut, prend la valeur auto ou un nombre de 1 à 100 (% de la largeur de la zone d'écriture)
+            'width' => 'varchar(4)', // null par défaut, prend la valeur auto ou un nombre de 1 à
+                                      // 100 (% de la largeur de la zone d'écriture)
             'row_height' => 'int(11) NOT NULL DEFAULT "6"',
             'cell_border' => 'varchar(4) NOT NULL DEFAULT "1"', // 0, 1, L, R, T, B
             'cell_align' => 'char(1) NOT NULL DEFAULT "L"', // L, C, R, J
@@ -62,8 +67,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    
-    // 'data' => include __DIR__ . '/data/data.system.doctables.php'
-    // 'data' => ['after' => ['documents'], 'include' => __DIR__ . '/data/data.doctables.php']
-    'data' => __DIR__ . '/data/data.system.doctables.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.system.doctables.php')
 ];

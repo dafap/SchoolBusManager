@@ -9,7 +9,7 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 fév. 2019
+ * @date 25 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Model;
@@ -28,7 +28,7 @@ class DumpTables
     private $db_manager;
 
     /**
-     * 
+     *
      * @var string
      */
     private $template_head;
@@ -92,29 +92,35 @@ EOT;
         $this->screen = $this->onScreen ? "<pre>\n" : '';
 
         // initialisation des invariants de boucle
-        $path = SBM_BASE_PATH . '/module/SbmInstallation/db_design/data/';
+        // $path = SBM_BASE_PATH . '/module/SbmInstallation/db_design/data/';
+        $path_db_design = StdLib::findParentPath(__DIR__, 'db_design');
         $format_date = '%e %b %Y';
         if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
             $format_date = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format_date);
         }
         $aujourdhui = strftime($format_date);
-
         foreach ($this->tables as $table_alias) {
             // initialisation des variables de boucle
             $table = $this->db_manager->get($table_alias);
             $table_type = $table->getTableType();
             $table_name = $table->getTableName();
+            // lecture du fichier descripteur
             if ($table_type == 'system') {
                 $template_head_1 = 'table système';
-                $file_name = 'data.system.' . $table_name . '.php';
+                $db_design = 'system.' . $table_name . '.php';
             } else {
                 $template_head_1 = 'table';
-                $file_name = 'data.' . $table_name . '.php';
+                $db_design = 'table.' . $table_name . '.php';
+            }
+            $descripteur = include (StdLib::concatPath($path_db_design, $db_design));
+            $file_name = StdLib::getParam('data', $descripteur);
+            if (is_null($file_name)) {
+                continue;
             }
             $columns = $this->db_manager->getColumnTypes($table_name, $table_type);
 
             // ouverture du fichier
-            $fp = fopen($path . $file_name, 'w');
+            $fp = fopen($file_name, 'w');
             $this->fputs($fp,
                 sprintf($this->template_head, $template_head_1, $table_name, $file_name,
                     $aujourdhui, $this->version));
@@ -124,7 +130,7 @@ EOT;
                 foreach ($row->getArrayCopy() as $key => $column) {
                     if ($columns[$key] == 'blob') {
                         $val = "addslashes(base64_decode('" .
-                             base64_encode(stripslashes($column)) . "'))";
+                            base64_encode(stripslashes($column)) . "'))";
                     } elseif (is_numeric($column)) {
                         if (substr($column, 0, 1) == 0 && strlen(trim($column)) > 1) {
                             $val = "'$column'"; // 0 à gauche
@@ -136,44 +142,34 @@ EOT;
                     } elseif (is_bool($column)) {
                         $val = $column ? 'true' : 'false';
                     } elseif (is_array($column)) {
-                        switch ($key) {
-                            case 'natureCarte':
-                                $strategie = new Strategy\NatureCarte();
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'niveau':
-                                $strategie = new Strategy\Niveau();
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'semaine':
-                            case 'jOuverture':
-                            case 'joursTransport':
-                                $strategie = new Strategy\Semaine();
-                                $val = $strategie->extract($column);
-                                break;
-                            default:
-                                ob_start();
-                                var_dump($column);
-                                $dump = html_entity_decode(strip_tags(ob_get_clean()));
-                                throw new Exception(
-                                    __METHOD__ . " - Codage inconnu pour $key\n$dump");
-                                break;
+                        try {
+                            $val = $table->getStrategie($key)->extract($column);
+                        } catch (\Exception $e) {
+                            ob_start();
+                            var_dump($column);
+                            $dump = html_entity_decode(strip_tags(ob_get_clean()));
+                            throw new Exception(
+                                __METHOD__ .
+                                " - Table: $table_name - Codage impossible pour $key\n$dump",
+                                999, $e);
+                            break;
                         }
                     } elseif ($table->getTableName() == 'tarifs' &&
                         $table->getTableType() == 'table') {
                         switch ($key) {
                             case 'mode':
-                                $strategie = new Strategy\TarifAttributs($table->getModes(),
-                                    "$column est un mode invalide.");
+                                $strategie = new Strategy\TarifAttributs(
+                                    $table->getModes(), "$column est un mode invalide.");
                                 $val = $strategie->extract($column);
                                 break;
                             case 'rythme':
-                                $strategie = new Strategy\TarifAttributs($table->getRythmes(),
-                                    "$column est un rythme invalide.");
+                                $strategie = new Strategy\TarifAttributs(
+                                    $table->getRythmes(), "$column est un rythme invalide.");
                                 $val = $strategie->extract($column);
                                 break;
                             case 'grille':
-                                $strategie = new Strategy\TarifAttributs($table->getGrilles(),
+                                $strategie = new Strategy\TarifAttributs(
+                                    $table->getGrilles(),
                                     "$column est une grille invalide.");
                                 $val = $strategie->extract($column);
                                 break;

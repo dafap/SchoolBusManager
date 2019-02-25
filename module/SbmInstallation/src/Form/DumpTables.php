@@ -7,7 +7,7 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Form;
@@ -24,10 +24,12 @@ class DumpTables extends Form
         $this->setAttribute('method', 'post');
 
         $element = new MultiCheckbox('tables');
+        $element->setAttribute('class', 'sbm-multicheckbox');
         $element->setLabel('Tables')->setValueOptions([]);
         $this->add($element);
 
         $element = new MultiCheckbox('systems');
+        $element->setAttribute('class', 'sbm-multicheckbox');
         $element->setLabel('Tables système')->setValueOptions([]);
         $this->add($element);
 

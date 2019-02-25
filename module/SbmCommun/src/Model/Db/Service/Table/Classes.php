@@ -8,7 +8,7 @@
  * @filesource Classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -27,16 +27,7 @@ class Classes extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Classes';
         $this->id_name = 'classeId';
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
-     */
-    protected function setStrategies()
-    {
-        $this->hydrator->addStrategy('niveau', new NiveauStrategy());
+        $this->strategies['niveau'] = new NiveauStrategy();
     }
 
     public function getNiveaux()

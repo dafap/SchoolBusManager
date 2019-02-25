@@ -7,9 +7,11 @@
  * @filesource system.doccolumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'doccolumns',
     'type' => 'system',
@@ -30,16 +32,32 @@ return [
             'tbody' => 'varchar(255) NOT NULL DEFAULT ""',
             'tbody_align' => 'varchar(8) NOT NULL DEFAULT "standard"', // L, C, R, J
             'tbody_stretch' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // de 0 à 4
-            'tbody_precision' => 'tinyint(3) NOT NULL DEFAULT "-1"', // précision pour les colonnes numériques. -1 pour ne pas appliquer la précision
-            'tbody_completion' => 'tinyint(3) NOT NULL DEFAULT "0"', // complétion à gauche par des espaces ou zéros. Indique le nombre de chiffres à obtenir. 0 <=> pas de complétion
+            'tbody_precision' => 'tinyint(3) NOT NULL DEFAULT "-1"', // précision pour les
+                                                                      // colonnes numériques. -1
+                                                                      // pour ne pas appliquer la
+                                                                      // précision
+            'tbody_completion' => 'tinyint(3) NOT NULL DEFAULT "0"', // complétion à gauche par
+                                                                      // des espaces ou zéros.
+                                                                      // Indique le nombre de
+                                                                      // chiffres à obtenir. 0 <=>
+                                                                      // pas de complétion
             'tfoot' => 'varchar(255) NOT NULL DEFAULT ""',
             'tfoot_align' => 'varchar(8) NOT NULL DEFAULT "standard"', // L, C, R, J
             'tfoot_stretch' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // de 0 à 4
-            'tfoot_precision' => 'tinyint(3) NOT NULL DEFAULT "-1"', // précision pour les colonnes numériques. -1 pour ne pas appliquer la précision
-            'tfoot_completion' => 'tinyint(3) NOT NULL DEFAULT "0"', // complétion à gauche par des espaces ou zéros. Indique le nombre de chiffres à obtenir. 0 <=> pas de complétion
+            'tfoot_precision' => 'tinyint(3) NOT NULL DEFAULT "-1"', // précision pour les
+                                                                      // colonnes numériques. -1
+                                                                      // pour ne pas appliquer la
+                                                                      // précision
+            'tfoot_completion' => 'tinyint(3) NOT NULL DEFAULT "0"', // complétion à gauche par
+                                                                      // des espaces ou zéros.
+                                                                      // Indique le nombre de
+                                                                      // chiffres à obtenir. 0 <=>
+                                                                      // pas de complétion
             'filter' => 'text NULL',
-            'width' => 'int(11) NOT NULL DEFAULT "0"', // laisser à 0 pour que Tcpdf calcule la valeur nécessaire
-            'truncate' => 'tinyint(1) NOT NULL DEFAULT "0"', // couper à la taille de la colonne (oui 1/non 0)
+            'width' => 'int(11) NOT NULL DEFAULT "0"', // laisser à 0 pour que Tcpdf calcule la
+                                                        // valeur nécessaire
+            'truncate' => 'tinyint(1) NOT NULL DEFAULT "0"', // couper à la taille de la colonne
+                                                              // (oui 1/non 0)
             'nl' => 'tinyint(1) NOT NULL DEFAULT "0"'
         ], // saut de page après un changement de valeur dans cette colonne (oui 1/non 0)
         'primary_key' => [
@@ -64,7 +82,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    // 'data' => include __DIR__ . '/data/data.system.doccolumns.php'
-    // 'data' => ['after' => ['documents'], 'include' => __DIR__ . '/data/data.doccolumns.php']
-    'data' => __DIR__ . '/data/data.system.doccolumns.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.system.doccolumns.php')
 ];

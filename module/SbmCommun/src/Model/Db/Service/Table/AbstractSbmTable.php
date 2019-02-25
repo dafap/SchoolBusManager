@@ -10,7 +10,7 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 jan. 2019
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -114,6 +114,15 @@ abstract class AbstractSbmTable implements FactoryInterface
     protected $column_defaults;
 
     /**
+     * Tableau indexé
+     * La clé est le nom de la colonne sur laquelle porte la stratégie
+     * La valeur est l'objet strategy
+     *
+     * @var array
+     */
+    protected $strategies = [];
+
+    /**
      * Constructeur
      * Les attributs $table_name et $table_type doivent être déclarés dans la méthode init() des
      * classes dérivées.
@@ -171,7 +180,25 @@ abstract class AbstractSbmTable implements FactoryInterface
      * A surcharger dans les classes dérivées si nécessaire
      */
     protected function setStrategies()
-    {}
+    {
+        foreach ($this->strategies as $key => $value) {
+            $this->hydrator->addStrategy($key, $value);
+        }
+    }
+
+    /**
+     * Renvoie un objet strategy
+     *
+     * @param string $key
+     *
+     * @throw \Zend\Hydrator\Exception\InvalidArgumentException
+     *
+     * @return \Zend\Hydrator\Strategy\StrategyInterface
+     */
+    public function getStrategie($key)
+    {
+        return $this->hydrator->getStrategy($key);
+    }
 
     /**
      * Complète la requête pour le select() et le fetchPaginator().

@@ -7,9 +7,11 @@
  * @filesource users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 fév. 2019
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'users',
     'type' => 'table',
@@ -19,24 +21,42 @@ return [
     'structure' => [
         'fields' => [
             'userId' => 'int(11) NOT NULL AUTO_INCREMENT',
-            'token' => 'varchar(32) DEFAULT NULL', // pour une entrée directe par un lien - usage unique
-            'tokenalive' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si le token est actif. Il ne l'est pas par défaut
-            'confirme' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si l'email a été confirmé. Il ne l'est pas par défaut
+            'token' => 'varchar(32) DEFAULT NULL', // pour une entrée directe par un lien - usage
+                                                    // unique
+            'tokenalive' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si le token est
+                                                                         // actif. Il ne l'est pas
+                                                                         // par défaut
+            'confirme' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si l'email a été
+                                                                       // confirmé. Il ne l'est pas
+                                                                       // par défaut
             'active' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // compte actif ou désactivé
             'selection' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
             'dateCreation' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"', // n'est modifié que pour titre, nom, prenom, email, mdp
+            'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"', // n'est
+                                                                                      // modifié
+                                                                                      // que pour
+                                                                                      // titre,
+                                                                                      // nom,
+                                                                                      // prenom,
+                                                                                      // email, mdp
             'dateLastLogin' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'datePreviousLogin' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'adresseIp' => 'varchar(16) NOT NULL DEFAULT ""',
             'previousIp' => 'varchar(16) NOT NULL DEFAULT ""',
-            'categorieId' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // 1: parent, 2: transporteur, 3: ecole, 253: gestionnaire, 254: administrateur, 255: superviseur sadmin
+            'categorieId' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // 1: parent, 2:
+                                                                          // transporteur, 3:
+                                                                          // ecole, 253:
+                                                                          // gestionnaire, 254:
+                                                                          // administrateur, 255:
+                                                                          // superviseur sadmin
             'titre' => 'varchar(20) NOT NULL DEFAULT "M."',
             'nom' => 'varchar(30) NOT NULL',
             'prenom' => 'varchar(30) NOT NULL DEFAULT ""',
             'email' => 'varchar(80) NOT NULL',
-            'mdp' => 'varchar(60) NOT NULL DEFAULT ""', // mot de passe crypté par \SbmAuthentification\Model\Mdp::crypteMdp()
-            'gds' => 'varchar(8) NOT NULL', // grain de sel - mot aléatoire de 8 caractères enregistré lors de la création, puis inchangé
+            'mdp' => 'varchar(60) NOT NULL DEFAULT ""', // mot de passe crypté par
+                                                         // \SbmAuthentification\Model\Mdp::crypteMdp()
+            'gds' => 'varchar(8) NOT NULL', // grain de sel - mot aléatoire de 8 caractères
+                                             // enregistré lors de la création, puis inchangé
             'note' => 'text NULL'
         ],
         'primary_key' => [
@@ -80,6 +100,7 @@ EOT
 
         ]
     ],
-    
-    'data' => __DIR__ . '/data/data.users.php'
+
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.users.php')
 ];

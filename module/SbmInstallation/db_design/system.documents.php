@@ -8,11 +8,11 @@
  * @filesource system.documents.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
 
-// $k_path_images = str_replace('\\', '/', dirname(__FILE__).'/../../../public/img/');
 return [
     'name' => 'documents',
     'type' => 'system',
@@ -24,12 +24,17 @@ return [
             // document
             'documentId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'type' => 'char(3) NOT NULL DEFAULT "pdf"',
-            'disposition' => 'varchar(12) NOT NULL DEFAULT "Tabulaire"', // Tabulaire, Texte, Etiquette
+            'disposition' => 'varchar(12) NOT NULL DEFAULT "Tabulaire"', // Tabulaire, Texte,
+                                                                          // Etiquette
             'name' => 'varchar(32) NOT NULL',
-            'out_mode' => 'varchar(2) NOT NULL DEFAULT "I"', // I (inline), D (force download), F (file on server), S (string), FI (F + I), FD (F + D), E (base64 mime multi-part email attachment)
+            'out_mode' => 'varchar(2) NOT NULL DEFAULT "I"', // I (inline), D (force download), F
+                                                              // (file on server), S (string), FI
+                                                              // (F + I), FD (F + D), E (base64
+                                                              // mime multi-part email attachment)
             'out_name' => 'varchar(32) NULL DEFAULT "document-sbm.pdf"',
             'recordSource' => 'text NOT NULL',
-            'recordSourceType' => 'char(1) NOT NULL DEFAULT "T"', // prend les valeurs T ou R (pour table ou requête)
+            'recordSourceType' => 'char(1) NOT NULL DEFAULT "T"', // prend les valeurs T ou R
+                                                                   // (pour table ou requête)
             'filter' => 'text NULL',
             'orderBy' => 'varchar(255) NULL DEFAULT NULL',
             // images
@@ -40,32 +45,54 @@ return [
             'docfooter' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'pageheader' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'pagefooter' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            // propriétés du document (qui constitueront la page d'entête du rapport si docheader == 1)
+            // propriétés du document (qui constitueront la page d'entête du rapport si docheader
+            // == 1)
             'creator' => 'varchar(255) NOT NULL DEFAULT "SchoolBusManager"',
             'author' => 'varchar(255) NOT NULL DEFAULT ""',
             'title' => 'varchar(255) NOT NULL DEFAULT ""',
             'subject' => 'varchar(255) NOT NULL DEFAULT ""',
             'keywords' => 'varchar(255) NOT NULL DEFAULT ""',
-            'docheader_subtitle' => 'text NULL', // ne fait pas partie des propriétés d'un pdf mais complète la page d'entête du rapport (si présente)
-            'docheader_page_distincte' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 la suite sur la même page ; 1 la suite sur une nouvelle page
-            'docheader_margin' => 'int(11) NOT NULL DEFAULT "20"', // marge du bloc docheader si page_distincte == 0
-            'docheader_pageheader' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pageheader sur la première page ; 1 si oui
-            'docheader_pagefooter' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pagefooter sur la première page ; 1 si oui
+            'docheader_subtitle' => 'text NULL', // ne fait pas partie des propriétés d'un pdf
+                                                  // mais complète la page d'entête du rapport (si
+                                                  // présente)
+            'docheader_page_distincte' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 la suite sur la
+                                                                              // même page ; 1 la
+                                                                              // suite sur une
+                                                                              // nouvelle page
+            'docheader_margin' => 'int(11) NOT NULL DEFAULT "20"', // marge du bloc docheader si
+                                                                    // page_distincte == 0
+            'docheader_pageheader' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pageheader
+                                                                          // sur la première page ;
+                                                                          // 1 si oui
+            'docheader_pagefooter' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pagefooter
+                                                                          // sur la première page ;
+                                                                          // 1 si oui
             'docheader_templateId' => 'int(11) NOT NULL DEFAULT "1"',
             // pied de document (si docfooter == 1)
             'docfooter_title' => 'varchar(255) NOT NULL DEFAULT ""',
             'docfooter_string' => 'text NULL',
-            'docfooter_page_distincte' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 la suite sur la même page ; 1 la suite sur une nouvelle page
-            'docfooter_insecable' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 le footer peut être scindé ; 1 tout le footer sur la même page
-            'docfooter_margin' => 'int(11) NOT NULL DEFAULT "20"', // marge du bloc docfooter si page_distincte == 0
-            'docfooter_pageheader' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pageheader sur la dernière page ; 1 si oui
-            'docfooter_pagefooter' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pagefooter sur la dernière page ; 1 si oui
+            'docfooter_page_distincte' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 la suite sur la
+                                                                              // même page ; 1 la
+                                                                              // suite sur une
+                                                                              // nouvelle page
+            'docfooter_insecable' => 'tinyint(1) NOT NULL DEFAULT "1"', // 0 le footer peut être
+                                                                         // scindé ; 1 tout le
+                                                                         // footer sur la même page
+            'docfooter_margin' => 'int(11) NOT NULL DEFAULT "20"', // marge du bloc docfooter si
+                                                                    // page_distincte == 0
+            'docfooter_pageheader' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pageheader
+                                                                          // sur la dernière page ;
+                                                                          // 1 si oui
+            'docfooter_pagefooter' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 pas de pagefooter
+                                                                          // sur la dernière page ;
+                                                                          // 1 si oui
             'docfooter_templateId' => 'int(11) NOT NULL DEFAULT "1"',
             // entête de page (si pageheader == 1)
             'pageheader_templateId' => 'int(11) NOT NULL DEFAULT "1"',
             'pageheader_title' => 'varchar(255) NOT NULL DEFAULT ""',
             'pageheader_string' => 'text NULL',
-            'pageheader_logo_visible' => 'tinyint(1) NOT NULL DEFAULT "1"', // si 0 on envoie l'image blank
+            'pageheader_logo_visible' => 'tinyint(1) NOT NULL DEFAULT "1"', // si 0 on envoie
+                                                                             // l'image blank
             'pageheader_logo' => 'varchar(255) NOT NULL DEFAULT "sbm-logo.gif"',
             'pageheader_logo_width' => 'int(11) NOT NULL DEFAULT "15"',
             'pageheader_margin' => 'int(11) NOT NULL DEFAULT "5"',
@@ -84,7 +111,8 @@ return [
             'pagefooter_text_color' => 'varchar(20) NOT NULL DEFAULT "000000"',
             'pagefooter_line_color' => 'varchar(20) NOT NULL DEFAULT "000000"',
             // page
-            'page_templateId' => 'int(11) NOT NULL DEFAULT "1"', // identifiant du template (table system template)
+            'page_templateId' => 'int(11) NOT NULL DEFAULT "1"', // identifiant du template (table
+                                                                  // system template)
             'page_format' => 'varchar(30) NOT NULL DEFAULT "A4"',
             'page_orientation' => 'varchar(1) NOT NULL DEFAULT "P"',
             'page_margin_top' => 'int(11) NOT NULL DEFAULT "27"',
@@ -130,7 +158,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    // 'data' => include __DIR__ . '/data/data.system.documents.php'
-    // 'data' => ['after' => [], 'include' => __DIR__ . '/data/data.documents.php']
-    'data' => __DIR__ . '/data/data.system.documents.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.system.documents.php')
 ];

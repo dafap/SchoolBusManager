@@ -8,7 +8,7 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 fév. 2019
+ * @date 22 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Model;
@@ -226,8 +226,14 @@ class CreateTables
             $insert = $sql->insert(
                 StdLib::entityName($properties[0], $properties[1], $this->prefix));
             $insert->values($data);
-            $sqlString = $sql->getSqlStringForSqlObject($insert);
+            //$sqlString = $sql->getSqlStringForSqlObject($insert); obsolete
+            $sqlString = $sql->buildSqlString($insert);
+            try {
             $results[] = $this->dbadapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+            } catch (\Exception $e) {
+                $msg = __METHOD__ . "\n" . $sqlString;
+                throw new Exception($msg, 999, $e);
+            }
         }
         return $results;
     }

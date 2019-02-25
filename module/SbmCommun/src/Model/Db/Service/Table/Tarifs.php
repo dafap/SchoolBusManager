@@ -8,13 +8,13 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 sept. 2018
+ * @date 24 fév. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-use Zend\Db\Sql\Where;
 use SbmCommun\Model\Strategy\TarifAttributs as TarifAttributsStrategy;
+use Zend\Db\Sql\Where;
 
 class Tarifs extends AbstractSbmTable
 {
@@ -55,21 +55,11 @@ class Tarifs extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Tarifs';
         $this->id_name = 'tarifId';
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::setStrategies()
-     */
-    protected function setStrategies()
-    {
-        $this->hydrator->addStrategy('rythme',
-            new TarifAttributsStrategy($this->rythmes, $this->rythme_inconnu));
-        $this->hydrator->addStrategy('grille',
-            new TarifAttributsStrategy($this->grilles, $this->grille_inconnu));
-        $this->hydrator->addStrategy('mode',
-            new TarifAttributsStrategy($this->modes, $this->mode_inconnu));
+        $this->strategies = [
+            'rythme' => new TarifAttributsStrategy($this->rythmes, $this->rythme_inconnu),
+            'grille' => new TarifAttributsStrategy($this->grilles, $this->grille_inconnu),
+            'mode' => new TarifAttributsStrategy($this->modes, $this->mode_inconnu)
+        ];
     }
 
     // --------------- nomenclatures ------------------------
@@ -139,12 +129,12 @@ class Tarifs extends AbstractSbmTable
 
     /**
      * Renvoie l'identifiant d'un tarif.
-     * Pour 'tarif1' (annuel) et 'tarif2' (trimestriel) s'il y a plusieurs tarifs, 
+     * Pour 'tarif1' (annuel) et 'tarif2' (trimestriel) s'il y a plusieurs tarifs,
      * renvoie celui de plus petit montant
      *
      * @param string $choix
      *            'en ligne' ou 'tarif1' (annuel) ou 'tarif2' (trimestriel)
-     *
+     *            
      * @return integer
      */
     public function getTarifId($choix)

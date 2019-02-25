@@ -8,9 +8,11 @@
  * @filesource table.etablissements-services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 fév. 2019
+ * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'etablissements-services',
     'type' => 'table',
@@ -72,8 +74,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    
-    // 'data' => include __DIR__ . '/data/data.services.php',
-    // 'data' => ['after' => ['transporteurs'],'include' => __DIR__ . '/data/data.services.php']
-    'data' => __DIR__ . '/data/data.etablissements-services.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.etablissements-services.php')
 ];
