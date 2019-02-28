@@ -16,7 +16,6 @@ namespace SbmInstallation\Model;
 
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\DbManager;
-use SbmCommun\Model\Strategy;
 
 class DumpTables
 {
@@ -156,26 +155,10 @@ EOT;
                         }
                     } elseif ($table->getTableName() == 'tarifs' &&
                         $table->getTableType() == 'table') {
-                        switch ($key) {
-                            case 'mode':
-                                $strategie = new Strategy\TarifAttributs(
-                                    $table->getModes(), "$column est un mode invalide.");
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'rythme':
-                                $strategie = new Strategy\TarifAttributs(
-                                    $table->getRythmes(), "$column est un rythme invalide.");
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'grille':
-                                $strategie = new Strategy\TarifAttributs(
-                                    $table->getGrilles(),
-                                    "$column est une grille invalide.");
-                                $val = $strategie->extract($column);
-                                break;
-                            default:
-                                $val = "'" . addslashes($column) . "'";
-                                break;
+                        try {
+                            $val = $table->getStrategie($key)->extract($column);
+                        } catch (\Exception $e) {
+                            $val = "'" . addslashes($column) . "'";
                         }
                     } else {
                         if (substr($key, - 5) == 'color' && substr($column, 0, 1) == '#') {
