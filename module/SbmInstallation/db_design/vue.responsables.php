@@ -8,8 +8,8 @@
  * @filesource vue.eleve.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 2 mars 2019
+ * @version 2019-2.5.0
  */
 return [
     'name' => 'responsables',
@@ -98,6 +98,15 @@ return [
             ],
             [
                 'field' => 'telephoneT'
+            ],
+            [
+                'field' => 'smsF'
+            ],
+            [
+                'field' => 'smsP'
+            ],
+            [
+                'field' => 'smsT'
             ],
             [
                 'field' => 'etiquette'

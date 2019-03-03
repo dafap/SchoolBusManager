@@ -3,7 +3,7 @@
  * Structure de la table des `elevesphotos`
  *
  * Liaison 1<->1 avec `eleves`
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.elevesphotos.php
@@ -17,9 +17,9 @@ use SbmBase\Model\StdLib;
 return [
     'name' => 'elevesphotos',
     'type' => 'table',
-    'drop' => true,
-    'edit_entity' => true,
-    'add_data' => true,
+    'drop' => false,
+    'edit_entity' => false,
+    'add_data' => false,
     'structure' => [
         'fields' => [
             'eleveId' => 'int(11) NOT NULL',
@@ -56,4 +56,4 @@ return [
     ],
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
         'data.elevesphotos.php')
-]; 
+];

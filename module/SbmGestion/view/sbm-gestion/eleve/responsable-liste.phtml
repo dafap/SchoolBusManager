@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 2 mars 2019
  * @version 2019-2.5.0
  */
 use SbmCartographie\Model\Point;
@@ -89,6 +89,9 @@ $url_ici = $this->url('sbmgestion/eleve',
 $url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
 ]);
+$url_sms = $this->url('sbmcleversms', [
+    'action' => 'envoi-msm'
+]);
 $url_retour = $this->url('sbmgestion');
 $hiddens = [];
 $menuImpression = $this->menuRapports(
@@ -116,13 +119,13 @@ $actions = [
 <h1>Liste des responsables</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-			<?= $this->flashMessenger()->render('success');?>
-			<?= $this->flashMessenger()->render('warning');?>
-			<?= $this->flashMessenger()->render('error');?>
-			<?= $this->flashMessenger()->render('info');?>
-			<?= $this->flashMessenger()->render('default');?>
+			<?=$this->flashMessenger()->render('success');?>
+			<?=$this->flashMessenger()->render('warning');?>
+			<?=$this->flashMessenger()->render('error');?>
+			<?=$this->flashMessenger()->render('info');?>
+			<?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -143,7 +146,10 @@ $actions = [
 					<th>Dém.</th>
 					<th>Sélect.</th>
 				</tr>
-        		<?php foreach($responsables as $responsable): ?>
+        		<?php
+
+        foreach ($responsables as $responsable) :
+            ?>
         		<?php
             $pt = new Point($responsable['x'], $responsable['y']);
             $ptOk = $this->projection->isValid($pt, 'gestion');
@@ -214,6 +220,13 @@ $actions = [
                     'onclick' => sprintf($js, "'paiements'")
                 ]
             ];
+            if ($this->oResponsable->exchangeArray($responsable)->accepteSms()) {
+                $buttons['sms'] = [
+                    'class' => 'fam-phone',
+                    'formaction' => $url_sms,
+                    'title' => 'Envoyer un SMS'
+                ];
+            }
             if (! empty($responsable['email'])) {
                 $buttons['ecrire'] = [
                     'class' => 'fam-email',
@@ -222,51 +235,64 @@ $actions = [
                 ];
             }
             ?>
-            	               
-         		<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+
+         		<tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td>
-					<?php if (!$ptOk) : ?>
+					<?php
+
+            if (! $ptOk) :
+                ?>
 					   <i class="fam-error"></i>
-					<?php endif;?>
+					<?php endif;
+
+            ?>
 					</td>
-					<td class="titre"><?= $ttr; ?></td>
-					<td class="nom"><?= $nm; ?></td>
-					<td class="prenom"><?= $prn; ?></td>
+					<td class="titre"><?=$ttr;?></td>
+					<td class="nom"><?=$nm;?></td>
+					<td class="prenom"><?=$prn;?></td>
 					<td class="adresse">
-						<?= $this->escapehtml($responsable['adresseL1']); ?>
-					<?php if(!empty($responsable['adresseL2'])):?>
-					   <br /><?= $this->escapehtml($responsable['adresseL2']); ?>
-					<?php endif;?>
+						<?=$this->escapehtml($responsable['adresseL1']);?>
+					<?php
+
+            if (! empty($responsable['adresseL2'])) :
+                ?>
+					   <br /><?=$this->escapehtml($responsable['adresseL2']);?>
+					<?php endif;
+
+            ?>
 					</td>
 					<td class="centre codePostal">
-						<?= $this->escapeHtml($responsable['codePostal']); ?></td>
-					<td class="commune"><?= $cmn; ?></td>
+						<?=$this->escapeHtml($responsable['codePostal']);?></td>
+					<td class="commune"><?=$cmn;?></td>
 					<td class="centre gris nbEleves">
-						<?= $responsable['nbEnfants']; ?></td>
+						<?=$responsable['nbEnfants'];?></td>
 					<td class="centre nbInscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="centre nbPreinscrits">
-						<?= $responsable['nbPreinscrits']; ?></td>
+						<?=$responsable['nbPreinscrits'];?></td>
 					<td class="centre demenagement">
-						<?= $responsable['demenagement'] ? 'D' : ''; ?></td>
+						<?=$responsable['demenagement'] ? 'D' : '';?></td>
 					<td class="centre selection">
-					<?= renderCheckbox($this, 'selection', 'chk' . $responsable['responsableId'], $responsable['selection']); ?>
+					<?=renderCheckbox($this, 'selection', 'chk' . $responsable['responsableId'],$responsable['selection']);?>
 					</td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);?>
 						</td>
-				</tr>         
-        <?php endforeach;?>
+				</tr>
+        <?php
+        endforeach
+        ;
+        ?>
     </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper responsables">
-			<?= $this->form()->openTag($this->criteres_form);?>
-			<?= $this->formCollection($this->criteres_form, true);?>
-			<?= $this->form()->closeTag();?>
+			<?=$this->form()->openTag($this->criteres_form);?>
+			<?=$this->formCollection($this->criteres_form, true);?>
+			<?=$this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -275,8 +301,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

@@ -4,10 +4,10 @@
  *
  * Il s'agit des appels à la plateforme de paiement pour essayer de payer.
  * Cette table établit la liaison entre le payeur et les élèves concernés.
- * 
+ *
  * `referenceId` est la concaténation de vads_trans_id (formaté sur 6 caractères) avec
  * vads_trans_date (formaté AAAAMMJJHHMMSS, heure du serveur de SystemPay)
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.appels.php

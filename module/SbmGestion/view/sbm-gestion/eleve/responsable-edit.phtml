@@ -8,53 +8,81 @@
  * @filesource responsable-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 2 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
 $this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_ici = $this->url('sbmgestion/eleve',
-    [
-        'action' => 'responsable-edit',
-        'page' => $this->page
+if ($this->responsableId) {
+    $h1 = "Modification d'un responsable";
+    $url_ici = $this->url('sbmgestion/eleve',
+        [
+            'action' => 'responsable-edit',
+            'page' => $this->page
+        ]);
+    $url_map = $this->url('sbmgestion/eleve',
+        [
+            'action' => 'responsable-localisation',
+            'page' => $this->page
+        ]);
+    $url_email = $this->url('sbmgestion/eleve', [
+        'action' => 'responsable-mail'
     ]);
-$url_map = $this->url('sbmgestion/eleve',
-    [
-        'action' => 'responsable-localisation',
-        'page' => $this->page
+    $url_sms = $this->url('sbmcleversms', [
+        'action' => 'envoi-msm'
     ]);
-$url_email = $this->url('sbmgestion/eleve', [
-    'action' => 'responsable-mail'
-]);
-$email = $this->form->get('email')->getValue();
-$hiddens = [
-    'responsableId' => $this->responsableId,
-    'info' => $this->identite,
-    'origine' => $url_ici
-];
-$actions = [
-    'cancel' => [
-        'class' => 'fam-door-out',
-        'formaction' => $url_ici,
-        'title' => 'Retour'
-    ],
-    'localiser' => [
-        'class' => 'fam-map-magnify',
-        'formaction' => $url_map,
-        'title' => 'localiser ce responsable sur la carte',
-        'onclick' => sprintf($js, "'localiser'")
-    ]
-];
-if (! empty($email)) {
-    $hiddens['email'] = $email;
-    $hiddens['responsable'] = $this->identite;
-    $hiddens['group'] = $url_ici;
-    $actions['ecrire'] = [
-        'class' => 'fam-email',
-        'formaction' => $url_email,
-        'title' => 'Envoyer un email'
+    $email = $this->form->get('email')->getValue();
+    $hiddens = [
+        'responsableId' => $this->responsableId,
+        'info' => $this->identite,
+        'origine' => $url_ici
+    ];
+    $actions = [
+        'cancel' => [
+            'class' => 'fam-door-out',
+            'formaction' => $url_ici,
+            'title' => 'Retour'
+        ],
+        'localiser' => [
+            'class' => 'fam-map-magnify',
+            'formaction' => $url_map,
+            'title' => 'localiser ce responsable sur la carte',
+            'onclick' => sprintf($js, "'localiser'")
+        ]
+    ];
+    if (! empty($email)) {
+        $hiddens['email'] = $email;
+        $hiddens['responsable'] = $this->identite;
+        $hiddens['group'] = $url_ici;
+        $actions['ecrire'] = [
+            'class' => 'fam-email',
+            'formaction' => $url_email,
+            'title' => 'Envoyer un email'
+        ];
+    }
+    if ($this->accepte_sms) {
+        $actions['sms'] = [
+            'class' => 'fam-phone',
+            'formaction' => $url_sms,
+            'title' => 'Envoyer un SMS'
+        ];
+    }
+} else {
+    $h1 = "Création d'un nouveau responsable";
+    $url_retour = $this->url('sbmgestion/eleve',
+        [
+            'action' => 'responsable-liste',
+            'page' => $this->page
+        ]);
+    $hiddens = [];
+    $actions = [
+        'retour' => [
+            'class' => 'fam-door-out',
+            'formaction' => $url_retour,
+            'title' => 'Retour'
+        ]
     ];
 }
 ?>
@@ -62,75 +90,84 @@ if (! empty($email)) {
 	<div id="winpopup-content"
 		style="margin-left: 30px; margin-right: 30px;"></div>
 </div>
-<h1>Modification d'un responsable</h1>
+<h1><?=$h1;?></h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?= $this->listeZoneActions($hiddens, $actions);?>
+        <?=$this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-		<?= $this->form()->openTag($this->form);?>
-		<?= $this->formHidden($this->form->get('responsableId'));?>
-		<?= $this->formHidden($this->form->get('nature'));?>
-		<?= $this->formHidden($this->form->get('csrf'));?>
+		<?=$this->form()->openTag($this->form);?>
+		<?=$this->formHidden($this->form->get('responsableId'));?>
+		<?=$this->formHidden($this->form->get('nature'));?>
+		<?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
 			<div id="responsable-edit-ligne1" class="clearfix">
 				<div id="responsable-edit-titre" class="row-inner edit float-left">
-					<?= $this->formRow($this->form->get('titre')); ?></div>
+					<?=$this->formRow($this->form->get('titre'));?></div>
 				<div id="responsable-edit-nom" class="row-inner edit float-left">
-					<?= $this->formRow($this->form->get('nom')); ?></div>
+					<?=$this->formRow($this->form->get('nom'));?></div>
 				<div id="responsable-edit-prenom" class="row-inner edit float-left">
-					<?= $this->formRow($this->form->get('prenom')); ?></div>
+					<?=$this->formRow($this->form->get('prenom'));?></div>
 			</div>
 			<div id="responsable-edit-ligne2" class="clearfix">
 				<div id="responsable-edit-titre2" class="row-inner edit float-left">
-					<?= $this->formRow($this->form->get('titre2')); ?></div>
+					<?=$this->formRow($this->form->get('titre2'));?></div>
 				<div id="responsable-edit-nom2" class="row-inner edit float-left">
-					<?= $this->formRow($this->form->get('nom2')); ?></div>
+					<?=$this->formRow($this->form->get('nom2'));?></div>
 				<div id="responsable-edit-prenom2" class="row-inner edit float-left">
-					<?= $this->formRow($this->form->get('prenom2')); ?></div>
+					<?=$this->formRow($this->form->get('prenom2'));?></div>
 			</div>
-			<div id="responsable-edit-telephoneF" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneF')); ?></div>
-			<div id="responsable-edit-telephoneP" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneP')); ?></div>
-			<div id="responsable-edit-telephoneT" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneT')); ?></div>
+			<div id="responsable-edit-telephoneF" class="row-inner edit clearfix">
+				<div class="float-left"><?=$this->formRow($this->form->get('telephoneF'));?></div>
+				<div class="float-left left-20px">Accepte les SMS
+					<?=$this->formRadio($this->form->get('smsF'));?></div>
+			</div>
+			<div id="responsable-edit-telephoneP" class="row-inner edit clearfix">
+				<div class="float-left"><?=$this->formRow($this->form->get('telephoneP'));?></div>
+				<div class="float-left left-20px">Accepte les SMS
+					<?=$this->formRadio($this->form->get('smsP'));?></div>
+			</div>
+			<div id="responsable-edit-telephoneT" class="row-inner edit clearfix">
+				<div class="float-left"><?=$this->formRow($this->form->get('telephoneT'));?></div>
+				<div class="float-left left-20px">Accepte les SMS
+					<?=$this->formRadio($this->form->get('smsT'));?></div>
+			</div>
 			<div id="responsable-edit-email" class="row-inner edit">
-				<?= $this->formRow($this->form->get('email')); ?></div>
+				<?=$this->formRow($this->form->get('email'));?></div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit">
-				<?= $this->formRow($this->form->get('adresseL1')); ?></div>
+				<?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit">
-				<?= $this->formRow($this->form->get('adresseL2')); ?></div>
+				<?=$this->formRow($this->form->get('adresseL2'));?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit">
-				<?= $this->formRow($this->form->get('codePostal')); ?></div>
+				<?=$this->formRow($this->form->get('codePostal'));?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit">
-				<?= $this->formRow($this->form->get('communeId')); ?></div>
+				<?=$this->formRow($this->form->get('communeId'));?></div>
 			<div id="responsable-edit-demenagement" class="row-inner edit">
-				<?= $this->formRow($this->form->get('demenagement')); ?></div>
+				<?=$this->formRow($this->form->get('demenagement'));?></div>
 			<div id="responsable-edit-blocAncien"
-				<?= $this->demenagement ? '' : 'style="display: none;"'; ?>>
+				<?=$this->demenagement ? '' : 'style="display: none;"';?>>
 				<div id="responsable-edit-dateDemenagement" class="row-inner edit">
-					<?= $this->formRow($this->form->get('dateDemenagement')); ?></div>
+					<?=$this->formRow($this->form->get('dateDemenagement'));?></div>
 				<div id="responsable-edit-ancienAdresseL1" class="row-inner edit">
-					<?= $this->formRow($this->form->get('ancienAdresseL1')); ?></div>
+					<?=$this->formRow($this->form->get('ancienAdresseL1'));?></div>
 				<div id="responsable-edit-ancienAdresseL2" class="row-inner edit">
-					<?= $this->formRow($this->form->get('ancienAdresseL2')); ?></div>
+					<?=$this->formRow($this->form->get('ancienAdresseL2'));?></div>
 				<div id="responsable-edit-ancienCodePostal" class="row-inner edit">
-					<?= $this->formRow($this->form->get('ancienCodePostal')); ?></div>
+					<?=$this->formRow($this->form->get('ancienCodePostal'));?></div>
 				<div id="responsable-edit-ancienCommuneId" class="row-inner edit">
-					<?= $this->formRow($this->form->get('ancienCommuneId')); ?></div>
+					<?=$this->formRow($this->form->get('ancienCommuneId'));?></div>
 			</div>
 			<div id="responsable-edit-selection" class="row-inner edit">
-				<?= $this->formRow($this->form->get('selection')); ?></div>
+				<?=$this->formRow($this->form->get('selection'));?></div>
 			<div id="wrapper-commentaire" class="row-inner edit top-6px">
-				<?= $this->formRow($this->form->get('note'));?></div>
+				<?=$this->formRow($this->form->get('note'));?></div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
-    			<?= $this->formSubmit($this->form->get('submit'));?>
-    			<?= $this->formSubmit($this->form->get('cancel')); ?></div>
+    			<?=$this->formSubmit($this->form->get('submit'));?>
+    			<?=$this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
-		<?= $this->form()->closeTag(); ?>
+		<?=$this->form()->closeTag();?>
     </div>
 	<div id="fiche-footer"></div>
 </div>

@@ -67,7 +67,8 @@
 			"SbmPaiement\\" : "module/SbmPaiement/src",
 			"SbmParent\\" : "module/SbmParent/src",
 			"SbmPdf\\" : "module/SbmPdf/src",
-			"SbmPortail\\" : "module/SbmPortail/src"
+			"SbmPortail\\" : "module/SbmPortail/src",
+			"SbmCleverSms\\" : "module/SbmCleverSms/src"
 		}
 	}
 }

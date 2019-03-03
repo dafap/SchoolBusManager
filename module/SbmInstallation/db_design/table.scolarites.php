@@ -3,7 +3,7 @@
  * Structure de la table des `eleves`
  *
  * Découpage en `eleves`, `scolarites`, `affectations` et `responsables`
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.scolarites.php
@@ -174,4 +174,4 @@ EOT
     ],
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
         'data.scolarites.php')
-]; 
+];

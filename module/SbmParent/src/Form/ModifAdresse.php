@@ -2,16 +2,16 @@
 /**
  * Formulaire de modification de l'adresse d'un responsable
  *
- * La méthode valid() vérifie si l'adresse a changé et dans ce cas place 
+ * La méthode valid() vérifie si l'adresse a changé et dans ce cas place
  * l'ancienne adresse dans les data du formulaire.
- * 
+ *
  * @project sbm
  * @package SbmParent/Form
  * @filesource ModifAdresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 2 mars 2019
+ * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
 
@@ -140,7 +140,7 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Téléphone',
+                    'label' => 'Autre téléphone',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -158,12 +158,67 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Téléphone',
+                    'label' => 'Autre téléphone',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'smsF',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Accepte les SMS',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Oui',
+                        '0' => 'Non'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'smsP',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Accepte les SMS',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Oui',
+                        '0' => 'Non'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'smsT',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Accepte les SMS',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Oui',
+                        '0' => 'Non'
                     ]
                 ]
             ]);
@@ -211,7 +266,7 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
             ],
             'telephoneF' => [
                 'name' => 'telephoneF',
-                'required' => true
+                'required' => false
             ],
             'telephoneP' => [
                 'name' => 'telephoneF',
@@ -220,7 +275,61 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
             'telephoneT' => [
                 'name' => 'telephoneF',
                 'required' => false
+            ],
+            'smsF' => [
+                'name' => 'smsF',
+                'required' => false
+            ],
+            'smsP' => [
+                'name' => 'smsP',
+                'required' => false
+            ],
+            'smsT' => [
+                'name' => 'smsT',
+                'required' => false
             ]
         ];
+    }
+
+    public function isValid()
+    {
+        $result = parent::isValid();
+        // un des 3 numéros de téléphones doit être renseigné
+        if (empty($this->data['telephoneF']) && empty($this->data['telephoneP']) &&
+            empty($this->data['telephoneT'])) {
+            $result = false;
+            $element = $this->get('telephoneT');
+            $element->setMessages(
+                [
+                    'Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'
+                ]);
+        } else {
+            // si un numéro est renseigné, on doit dire s'il peut recevoir des SMS
+            if (! empty($this->data['telephoneF']) && ! isset($this->data['smsF'])) {
+                $result = false;
+                $element = $this->get('telephoneF');
+                $element->setMessages(
+                    [
+                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
+                    ]);
+            }
+            if (! empty($this->data['telephoneP']) && ! isset($this->data['smsP'])) {
+                $result = false;
+                $element = $this->get('telephoneP');
+                $element->setMessages(
+                    [
+                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
+                    ]);
+            }
+            if (! empty($this->data['telephoneT']) && ! isset($this->data['smsT'])) {
+                $result = false;
+                $element = $this->get('telephoneT');
+                $element->setMessages(
+                    [
+                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
+                    ]);
+            }
+        }
+        return $result;
     }
 }

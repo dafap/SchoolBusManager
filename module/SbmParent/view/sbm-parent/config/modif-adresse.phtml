@@ -3,7 +3,7 @@
  * Modification de l'adresse d'un parent
  *
  * La modification porte sur l'adresse et les téléphones
- * 
+ *
  * @project sbm
  * @package SbmParent/view/sbm-parent/config
  * @filesource modif-adresse.phtml
@@ -17,56 +17,65 @@ $hiddens = [];
 $actions = [];
 ?>
 <div class="flashMessenger float-right">
-	<?= $this->flashMessenger()->render('success');?>
-	<?= $this->flashMessenger()->render('warning');?>
-	<?= $this->flashMessenger()->render('error');?>
-	<?= $this->flashMessenger()->render('info');?>
-	<?= $this->flashMessenger()->render('default');?>
+	<?=$this->flashMessenger()->render('success');?>
+	<?=$this->flashMessenger()->render('warning');?>
+	<?=$this->flashMessenger()->render('error');?>
+	<?=$this->flashMessenger()->render('info');?>
+	<?=$this->flashMessenger()->render('default');?>
 </div>
 <h1>Modification de la fiche du responsable</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
-        <?= $this->listeZoneActions($hiddens, $actions);?>
+        <?=$this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
 	<div id="fiche-inner">
-		<?= $this->form()->openTag($this->form);?>
-		<?= $this->formHidden($this->form->get('responsableId'));?>
-		<?= $this->formHidden($this->form->get('csrf'));?>
+		<?=$this->form()->openTag($this->form);?>
+		<?=$this->formHidden($this->form->get('responsableId'));?>
+		<?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
 			<div id="responsable-edit-identite" class="row-inner edit">
 				<div class="enfant-label">Identité</div>
-				<?= $this->responsable['titre'];?> 
-				<?= $this->responsable['nom'];?> 
-				<?= $this->responsable['prenom']; ?></div>
+				<?=$this->responsable['titre'];?>
+				<?=$this->responsable['nom'];?>
+				<?=$this->responsable['prenom'];?></div>
 			<div id="responsable-edit-email" class="row-inner edit">
 				<div class="enfant-label">Email</div>
-				<?= $this->responsable['email']; ?></div>
+				<?=$this->responsable['email'];?></div>
 			<div id="responsable-edit-conjoint" class="row-inner edit">
 				<div class="enfant-label">Conjoint</div>
-				<?= $this->responsable['titre2'];?>
-				<?= $this->responsable['nom2'];?>
-				<?= $this->responsable['prenom2'];?></div>
-			<div id="responsable-edit-telephoneF" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneF')); ?></div>
-			<div id="responsable-edit-telephoneP" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneP')); ?></div>
-			<div id="responsable-edit-telephoneT" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneT')); ?></div>
+				<?=$this->responsable['titre2'];?>
+				<?=$this->responsable['nom2'];?>
+				<?=$this->responsable['prenom2'];?></div>
+			<div id="responsable-edit-telephoneF" class="row-inner edit clearfix erreur-a-droite">
+				<div class="float-left"><?=$this->formRow($this->form->get('telephoneF'));?></div>
+				<div class="float-left left-20px">Accepte les SMS
+					<?=$this->formRadio($this->form->get('smsF'));?></div>
+			</div>
+			<div id="responsable-edit-telephoneP" class="row-inner edit clearfix erreur-a-droite">
+				<div class="float-left"><?=$this->formRow($this->form->get('telephoneP'));?></div>
+				<div class="float-left left-20px">Accepte les SMS
+					<?=$this->formRadio($this->form->get('smsP'));?></div>
+			</div>
+			<div id="responsable-edit-telephoneT" class="row-inner edit clearfix erreur-a-droite">
+				<div class="float-left"><?=$this->formRow($this->form->get('telephoneT'));?></div>
+				<div class="float-left left-20px">Accepte les SMS
+					<?=$this->formRadio($this->form->get('smsT'));?></div>
+			</div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit">
-				<?= $this->formRow($this->form->get('adresseL1')); ?></div>
+				<?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit">
-				<?= $this->formRow($this->form->get('adresseL2')); ?></div>
+				<?=$this->formRow($this->form->get('adresseL2'));?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit">
-				<?= $this->formRow($this->form->get('codePostal')); ?></div>
+				<?=$this->formRow($this->form->get('codePostal'));?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit">
-				<?= $this->formRow($this->form->get('communeId')); ?></div>
+				<?=$this->formRow($this->form->get('communeId'));?></div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
-    			<?= $this->formSubmit($this->form->get('submit'));?>
-    			<?= $this->formSubmit($this->form->get('cancel'));?></div>
+    			<?=$this->formSubmit($this->form->get('submit'));?>
+    			<?=$this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
-		<?= $this->form()->closeTag(); ?>
+		<?=$this->form()->closeTag();?>
     </div>
 	<div id="fiche-footer">
 		<p class="sbm-description">

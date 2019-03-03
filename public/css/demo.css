@@ -189,6 +189,10 @@ p.important {
 	margin-left: 10px;
 }
 
+.left-20px {
+	margin-left: 20px;
+}
+
 .left-95px {
 	margin-left: 70px;
 }
@@ -233,6 +237,18 @@ div#error_wrapper {
 
 .row-inner ul {
 	color: #db001b;
+}
+
+div.erreur-a-droite {
+	position: relative;
+}
+
+div.erreur-a-droite ul {
+	position: absolute;
+	display: inline-block;
+	width: 400px;
+	margin: 0;
+	right: 0;
 }
 /*--------- TOP-SITE -----------------*/
 #top-site {
@@ -1155,6 +1171,10 @@ div.depot #fiche-inner input.submit {
 	width: 170px;
 }
 
+#fiche-inner #responsable label.sbm-label-radio {
+	width: 5em;
+}
+
 #fiche-inner #responsable label.responsable-nom {
 	width: 7em;
 	margin-left: 20px;
@@ -1605,4 +1625,21 @@ table.statistiques th.border-left, table.statistiques td.border-left {
 
 table.statistiques th.border-bold, table.statistiques td.border-bold {
 	border-left: 1px solid #9ab3ba;
+}
+
+/*------------------ Clever Sms -----------------------*/
+#clever-sms-inner dl.inline {
+	margin-left: 10px;
+}
+#clever-sms-inner dl.inline dt {
+	display: inline-block;
+	min-width: 20em;
+}
+#clever-sms-inner dl.inline dd {
+	display: inline;
+	margin: 0;
+}
+#clever-sms-inner dl.inline dd:after {
+	display: block;
+	content: '';
 }

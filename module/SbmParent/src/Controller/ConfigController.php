@@ -7,7 +7,7 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
+ * @date 2 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -71,17 +71,10 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(Form\Responsable::class);
-        if ($hasEnfantInscrit) {
-            $form->setMaxLength(
-                $this->db_manager->getMaxLengthArray('responsables', 'table'));
-        } else {
-            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
-            $form->setValueOptions('communeId', $value_options)
-                ->setValueOptions('ancienCommuneId', $value_options)
-                ->setMaxLength(
-                $this->db_manager->getMaxLengthArray('responsables', 'table'));
-            unset($value_options);
-        }
+        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
+        $form->setValueOptions('communeId', $value_options)
+            ->setValueOptions('ancienCommuneId', $value_options)
+            ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
         if (array_key_exists('submit', $args)) {
@@ -128,6 +121,7 @@ class ConfigController extends AbstractActionController
         } else {
             $args = $prg;
             if (array_key_exists('cancel', $args)) {
+                $this->flashMessenger()->addWarningMessage('Abandon : données inchangées');
                 return $this->redirect()->toRoute('login', [
                     'action' => 'home-page'
                 ]);
@@ -160,10 +154,10 @@ class ConfigController extends AbstractActionController
                             'action' => 'localisation'
                         ]);
                 }
+                return $this->redirect()->toRoute('sbmparent');
             } else {
                 $this->flashMessenger()->addWarningMessage('Données inchangées');
             }
-            return $this->redirect()->toRoute('sbmparent');
         }
         return new ViewModel(
             [
@@ -386,4 +380,4 @@ class ConfigController extends AbstractActionController
     {
         return [];
     }
-} 
+}

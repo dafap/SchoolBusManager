@@ -8,8 +8,8 @@
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 3 mars 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form\Element;
 
@@ -31,7 +31,7 @@ class Telephone extends Element implements InputProviderInterface
     {
         if (is_null($this->validator)) {
             $validator = new RegexValidator('/^0[1-9](\s?\d{2}){4}$/');
-            $validator->setMessage('Entrez les 10 chiffres composant le numéro !', 
+            $validator->setMessage('Entrez les 10 chiffres composant le numéro !',
                 RegexValidator::NOT_MATCH);
             $this->validator = $validator;
         }
@@ -45,9 +45,8 @@ class Telephone extends Element implements InputProviderInterface
     }
 
     /**
-     * Provide default input rules for this element
-     *
-     * Attaches an telephone validator.
+     * Le filtre supprime les espaces dans la chaine de caractères
+     * Le validateur vérifie que le numéro est bien formé (avec ou sans espaces séparateurs)
      *
      * @return array
      */
@@ -60,12 +59,9 @@ class Telephone extends Element implements InputProviderInterface
                 [
                     'name' => 'Zend\Filter\PregReplace',
                     'options' => [
-                        'pattern' => '/\D/',
+                        'pattern' => '/\s/',
                         'replacement' => ''
                     ]
-                ],
-                [
-                    'name' => 'Zend\Filter\StringTrim'
                 ]
             ],
             'validators' => [

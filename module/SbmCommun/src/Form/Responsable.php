@@ -2,7 +2,7 @@
 /**
  * Formulaire de saisie et modification d'un responsable
  *
- * A noter que les éléments SbmCommun\Form\Element\NomPropre et 
+ * A noter que les éléments SbmCommun\Form\Element\NomPropre et
  * SbmCommun\Form\Element\Prenom ont leur propre méthode getInputSpecification()
  *
  * @project sbm
@@ -10,7 +10,7 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 3 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
@@ -275,7 +275,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Téléphone domicile',
+                    'label' => 'Téléphone',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -293,7 +293,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Téléphone portable',
+                    'label' => 'Autre téléphone',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -317,6 +317,60 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'smsF',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributtes' => [
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Accepte les SMS',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Oui',
+                        '0' => 'Non'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'smsP',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributtes' => [
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Accepte les SMS',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Oui',
+                        '0' => 'Non'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'smsT',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributtes' => [
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Accepte les SMS',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Oui',
+                        '0' => 'Non'
                     ]
                 ]
             ]);
@@ -555,6 +609,18 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'name' => 'telephoneT',
                 'required' => false
             ],
+            'smsF' => [
+                'name' => 'smsF',
+                'required' => false
+            ],
+            'smsP' => [
+                'name' => 'smsP',
+                'required' => false
+            ],
+            'smsT' => [
+                'name' => 'smsT',
+                'required' => false
+            ],
             'email' => [
                 'name' => 'email',
                 'required' => false
@@ -613,6 +679,32 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 [
                     'Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'
                 ]);
+        } else {
+            // si un numéro est renseigné, on doit dire s'il peut recevoir des SMS
+            if (! empty($this->data['telephoneF']) && ! isset($this->data['smsF'])) {
+                $result = false;
+                $element = $this->get('telephoneF');
+                $element->setMessages(
+                    [
+                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
+                    ]);
+            }
+            if (! empty($this->data['telephoneP']) && ! isset($this->data['smsP'])) {
+                $result = false;
+                $element = $this->get('telephoneP');
+                $element->setMessages(
+                    [
+                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
+                    ]);
+            }
+            if (! empty($this->data['telephoneT']) && ! isset($this->data['smsT'])) {
+                $result = false;
+                $element = $this->get('telephoneT');
+                $element->setMessages(
+                    [
+                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
+                    ]);
+            }
         }
         return $result;
     }

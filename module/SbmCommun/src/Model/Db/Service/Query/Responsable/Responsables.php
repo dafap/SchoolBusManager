@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 2 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -116,6 +116,9 @@ class Responsables implements FactoryInterface
                 'telephoneF' => 'telephoneF',
                 'telephoneP' => 'telephoneP',
                 'telephoneT' => 'telephoneT',
+                'smsF' => 'smsF',
+                'smsP' => 'smsP',
+                'smsT' => 'smsT',
                 'etiquette' => 'etiquette',
                 'demenagement' => 'demenagement',
                 'dateDemenagement' => 'dateDemenagement',

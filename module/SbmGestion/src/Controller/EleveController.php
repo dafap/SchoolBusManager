@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
+ * @date 2 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -1396,14 +1396,19 @@ class EleveController extends AbstractActionController
         $rangeY = $projection->getRangeY();
         $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
 
-        $args = $this->initListe('responsables', function($config, $form){
-            $form->get('demenagement')->setUseHiddenElement(false);
-            $form->get('inscrits')->setUseHiddenElement(false);
-            $form->get('preinscrits')->setUseHiddenElement(false);
-            $form->get('localisation')->setUseHiddenElement(false);
-            $form->get('selection')->setUseHiddenElement(false);
-        } ,
-            [
+        $args = $this->initListe('responsables',
+            function ($config, $form) {
+                $form->get('demenagement')
+                    ->setUseHiddenElement(false);
+                $form->get('inscrits')
+                    ->setUseHiddenElement(false);
+                $form->get('preinscrits')
+                    ->setUseHiddenElement(false);
+                $form->get('localisation')
+                    ->setUseHiddenElement(false);
+                $form->get('selection')
+                    ->setUseHiddenElement(false);
+            }, [
                 'nbEnfants',
                 'nbInscrits',
                 'nbPreinscrits'
@@ -1430,7 +1435,8 @@ class EleveController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_responsables', 10),
                 'criteres_form' => $args['form'],
-                'projection' => $this->cartographie_manager->get(Projection::class)
+                'projection' => $this->cartographie_manager->get(Projection::class),
+                'oResponsable' => $this->db_manager->get('Sbm\Db\Table\Responsables')->getObjData()
             ]);
     }
 
@@ -1499,13 +1505,15 @@ class EleveController extends AbstractActionController
                 return $viewmodel;
             }
         }
-        return new ViewModel(
+        $view = new ViewModel(
             [
                 'form' => $form->prepare(),
                 'page' => $currentPage,
                 'responsableId' => $responsableId,
                 'demenagement' => false
             ]);
+        $view->setTemplate('sbm-gestion/eleve/responsable-edit.phtml');
+        return $view;
     }
 
     public function responsableEditAction()
@@ -1600,14 +1608,17 @@ class EleveController extends AbstractActionController
             }
             $demenagement = $args['demenagement'] ?: false;
             $identite = $args['titre'] . ' ' . $args['nom'] . ' ' . $args['prenom'];
+            $smsOk = $tableResponsables->getObjData()
+                ->exchangeArray($args)
+                ->accepteSms();
         } else {
-            $array_data = $tableResponsables->getRecord($responsableId)->getArrayCopy();
-            $form->setData($array_data);
-            $this->hasUserCompte($this->db_manager, $array_data['email'],
+            $oData = $tableResponsables->getRecord($responsableId);
+            $form->setData($oData->getArrayCopy());
+            $this->hasUserCompte($this->db_manager, $oData->email,
                 $this->getSessionNamespace());
-            $demenagement = $array_data['demenagement'];
-            $identite = $array_data['titre'] . ' ' . $array_data['nom'] . ' ' .
-                $array_data['prenom'];
+            $demenagement = $oData->demenagement;
+            $identite = $oData->titre . ' ' . $oData->nom . ' ' . $oData->prenom;
+            $smsOk = $oData->accepteSms();
         }
         return new ViewModel(
             [
@@ -1615,7 +1626,8 @@ class EleveController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'responsableId' => $responsableId,
                 'identite' => $identite,
-                'demenagement' => $demenagement
+                'demenagement' => $demenagement,
+                'accepte_sms' => $smsOk
             ]);
     }
 
@@ -1966,7 +1978,8 @@ class EleveController extends AbstractActionController
                     'inscrits' => 'Literal:nbInscrits > 0',
                     'preinscrits' => 'Literal: nbPreinscrits > 0',
                     'localisation' => sprintf($pasLocalisaton, $rangeX['gestion'][0],
-                        $rangeX['gestion'][1], $rangeY['gestion'][0], $rangeY['gestion'][1])
+                        $rangeX['gestion'][1], $rangeY['gestion'][0],
+                        $rangeY['gestion'][1])
                 ]
             ]
         ];

@@ -1,11 +1,11 @@
 <?php
 /**
- * Paramètres de configuration du module ConvertGeodetic
+ * Paramètres de configuration du module SbmCartographie
  *
  * Compatible ZF3
- * 
+ *
  * @project sbm
- * @package ConvertGeodetic/config
+ * @package SbmCartographie/config
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
@@ -13,12 +13,12 @@
  * @version 2018-2.4.1
  */
 use SbmCartographie\Controller;
-use SbmCartographie\Model\Service\CartographieManager;
 use SbmCartographie\GoogleMaps\DistanceMatrix;
-use SbmCartographie\GoogleMaps\Service\DistanceMatrixFactory;
 use SbmCartographie\GoogleMaps\Geocoder;
+use SbmCartographie\GoogleMaps\Service\DistanceMatrixFactory;
 use SbmCartographie\GoogleMaps\Service\GeocoderFactory;
 use SbmCartographie\Model\Projection;
+use SbmCartographie\Model\Service\CartographieManager;
 use SbmCartographie\Model\Service\ProjectionFactory;
 
 return [
@@ -49,7 +49,7 @@ return [
             ]
         ]
     ],
-    
+
     'cartographie_manager' => [
         'factories' => [
             DistanceMatrix::class => DistanceMatrixFactory::class,

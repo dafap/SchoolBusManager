@@ -3,7 +3,7 @@
  * Structure de la table des `affectations`
  *
  * Découpage en `eleves`, `scolarites`, `affectations` et `responsables`
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.staffectations.php
@@ -141,4 +141,4 @@ EOT
     ],
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
         'data.affectations.php')
-]; 
+];
