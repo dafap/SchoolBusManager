@@ -46,4 +46,17 @@ class Rpi extends AbstractSbmTable
             ]);
         parent::saveRecord($oData);
     }
+
+    /**
+     * Niveaux concernés par les RPI
+     *
+     * @return string[]
+     */
+    public static function getNiveaux()
+    {
+        return [
+            NiveauStrategy::CODE_NIVEAU_MATERNELLE => 'maternelle',
+            NiveauStrategy::CODE_NIVEAU_ELEMENTAIRE => 'élémentaire'
+        ];
+    }
 }
