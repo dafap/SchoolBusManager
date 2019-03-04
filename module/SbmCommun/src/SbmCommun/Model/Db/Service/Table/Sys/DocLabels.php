@@ -11,12 +11,13 @@
  * @filesource DocLabels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
+use SbmCommun\Model\Db\Service\Table\Exception;
 use SbmCommun\Model\Strategy\Color;
 
 class DocLabels extends AbstractSbmTable
@@ -31,17 +32,21 @@ class DocLabels extends AbstractSbmTable
         $this->table_type = 'system';
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocLabels';
         $this->id_name = 'documentId';
-    }
-
-    protected function setStrategies()
-    {
         foreach ($this->getColumnsNames() as $columnName) {
             if (substr($columnName, - 6) == '_color') {
-                $this->hydrator->addStrategy($columnName, new Color());
+                $this->strategies[$columnName] = new Color();
             }
         }
     }
 
+    /**
+     *
+     * @param int $documentId
+     *
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
+     *
+     * @return array
+     */
     public function getConfig($documentId)
     {
         $where = "documentId = $documentId";

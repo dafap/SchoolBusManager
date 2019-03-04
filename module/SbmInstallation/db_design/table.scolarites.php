@@ -9,9 +9,11 @@
  * @filesource table.scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'scolarites',
     'type' => 'table',
@@ -42,6 +44,7 @@ return [
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'paiement' => 'tinyint(1) NOT NULL DEFAULT "0"',
+			'duplicata' => 'int(11) NOT NULL DEFAULT "0"',
             'fa' => 'tinyint(1) NOT NULL DEFAULT "0"', // famille d'accueil
             'anneeComplete' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'subventionR1' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -58,6 +61,7 @@ return [
             'joursTransport' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
             'tarifId' => 'int(11) NOT NULL DEFAULT "0"',
+			'organismeId' => 'int(11) NOT NULL DEFAULT "0"',
             'regimeId' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'motifDerogation' => 'text NULL',
             'motifRefusR1' => 'text NULL',
@@ -168,5 +172,6 @@ EOT
 
         ]
     ],
-    'data' => __DIR__ . '/data/data.scolarites.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.scolarites.php')
 ]; 

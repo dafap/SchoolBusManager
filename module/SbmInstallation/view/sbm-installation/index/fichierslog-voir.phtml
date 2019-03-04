@@ -1,0 +1,40 @@
+<?php
+/**
+ * Affiche le contenu du fichier d'erreur dans l'ordre décroissant des enregistrements
+ * 
+ * @project sbm
+ * @package SbmInstallation/view
+ * @filesource fichierslog-voir.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 févr. 2019
+ * @version 2019-2.4.8
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbminstall', [
+    'action' => 'fichierslog'
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1><?= $this->title;?></h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="zone-actions">
+			<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		</div>
+	</div>
+	<div id="fiche-inner" style="height: 400px; overflow-y: scroll;">
+		<ul>
+			<?php for ($i=count($this->acontent)-1; $i>=0; $i--) :?>
+				<li><?= ltrim($this->acontent[$i]);?></li>
+			<?php endfor;?>
+		</ul>
+	</div>
+</div>

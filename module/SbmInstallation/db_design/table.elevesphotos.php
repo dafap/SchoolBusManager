@@ -9,9 +9,11 @@
  * @filesource table.elevesphotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 janv. 2019
- * @version 2019-2.4.6
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'elevesphotos',
     'type' => 'table',
@@ -52,6 +54,7 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    // 'data' => ['after' => ['eleves'],'include' => __DIR__ . '/data/data.elevesphotos.php']
-    'data' => __DIR__ . '/data/data.elevesphotos.php'
+    // 'data' => ['after' => ['eleves'],'include' => __DIR__ . '/data/data.elevesphotos.php'],
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.elevesphotos.php')
 ]; 

@@ -7,8 +7,8 @@
  * @filesource gestion-images.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $id_form_img = 0;
@@ -75,7 +75,7 @@ echo $this->flashMessenger()->render('default');
 					width="<?php echo $width;?>" height="<?php echo $height;?>"></td>
 				<td>Taille : <?php echo $descriptif['width'] . '<span style="font-family:sans-serif;">x</span>' . $descriptif['height'] . 'px';?><br>
             Type : <?php echo $descriptif['mime']; ?></td>
-				<td><?php echo $this->listeLigneActions($id_form_img, $hiddens, $buttons);?></td>
+				<td><?php echo $this->listeLigneActions($id_form_img++, $hiddens, $buttons);?></td>
 			</tr>
     <?php endforeach;?>
     </table>

@@ -8,8 +8,8 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 août 2018
- * @version 2018-2.4.4
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -55,21 +55,11 @@ class Tarifs extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Tarifs';
         $this->id_name = 'tarifId';
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \SbmCommun\Model\Db\Table\AbstractTable::setStrategies()
-     */
-    protected function setStrategies()
-    {
-        $this->hydrator->addStrategy('rythme', 
-            new TarifAttributsStrategy($this->rythmes, $this->rythme_inconnu));
-        $this->hydrator->addStrategy('grille', 
-            new TarifAttributsStrategy($this->grilles, $this->grille_inconnu));
-        $this->hydrator->addStrategy('mode', 
-            new TarifAttributsStrategy($this->modes, $this->mode_inconnu));
+        $this->strategies = [
+            'rythme' => new TarifAttributsStrategy($this->rythmes, $this->rythme_inconnu),
+            'grille' => new TarifAttributsStrategy($this->grilles, $this->grille_inconnu),
+            'mode' => new TarifAttributsStrategy($this->modes, $this->mode_inconnu)
+        ];
     }
     
     // --------------- nomenclatures ------------------------
@@ -154,10 +144,7 @@ class Tarifs extends AbstractSbmTable
     }
 
     /**
-     * Renvoie un tableau indexé [tarifId => montant, .
-     *
-     *
-     * ..]
+     * Renvoie un tableau indexé [tarifId => montant, ...]
      *
      * @return array
      */
@@ -177,7 +164,8 @@ class Tarifs extends AbstractSbmTable
      * Mise à jour de la colonne `selection`
      *
      * @param int $tarifId            
-     * @param byte $selection            
+     * @param int $selection
+     *            0 ou 1            
      */
     public function setSelection($tarifId, $selection)
     {

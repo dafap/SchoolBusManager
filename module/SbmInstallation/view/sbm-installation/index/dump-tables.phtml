@@ -1,19 +1,25 @@
 <?php
 /**
- * Description courte du fichier
+ * Page de sauvegarde des données
  *
- * Description longue du fichier s'il y en a une
+ * Choix des tables à sauvegarder et affichage du compte-rendu.
  * 
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
  * @filesource dump-tables.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
-$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-
+$this->headLink()->appendStylesheet($this->basePath('css/fam-icons-custom.css'));
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('js/checkallbox.js'));
+$this->inlineScript()->captureStart();
+?>
+multicheckbox_actions.init('tables');
+<?php
+$this->inlineScript()->captureEnd();
 $retour = $this->url("sbminstall");
 $actions = [
     'retour' => [
@@ -32,19 +38,23 @@ if (! empty($inner)) {
     $output = $this->description;
 }
 ?>
-<h1><?php echo $this->titre; ?></h1>
+<h1><?= $this->titre; ?></h1>
 <div id="data-wrapper">
 	<div id="data-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions)?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions([], $actions)?></div>
 	</div>
 	<div id="data-inner">
-		<p><?php echo $output; ?></p>
+		<p><?= $output; ?></p>
 <?php if (is_null($this->form)) : ?>
+        <pre>
   <?php
     // liste des tables copiées
-    echo var_dump($this->tables);
+    ob_start();
+    var_dump($this->tables);
+    echo strip_tags(ob_get_clean());
     ?>
-<a href="<?php echo $retour; ?>" class="bouton" title="Retour"><i
+        </pre>
+<a href="<?= $retour; ?>" class="bouton" title="Retour"><i
 			class="fam-door-out"></i></a>
 <?php else : ?>
   <?php
@@ -58,11 +68,13 @@ if (! empty($inner)) {
     echo $this->form()->openTag($this->form);
     
     $element = $this->form->get('tables');
-    echo $this->formRow($element);
-    $element = $this->form->get('systems');
-    echo $this->formRow($element);
-    $element = $this->form->get('plugin');
-    echo $this->formRow($element);
+    ?>
+    <div id='tables'><?= $this->formRow($element);?></div>
+    <?php $element = $this->form->get('systems');?>
+    <div id='systems'><?= $this->formRow($element);?></div>
+    <?php $element = $this->form->get('plugin');?> 
+    <div><?= $this->formRow($element);?></div>
+    <?php
     $element = $this->form->get('onscreen');
     $element->setValue(0);
     echo $this->formRow($element);

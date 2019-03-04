@@ -10,8 +10,8 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 janv. 2019
- * @version 2019-2.4.6
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -25,6 +25,7 @@ use Zend\Paginator\Paginator;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Db\Service\Table\Exception;
 use Zend\Db\Metadata\Object\ColumnObject;
+						 
 
 abstract class AbstractSbmTable implements FactoryInterface
 {
@@ -59,6 +60,7 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     /**
      * objet Hydrator utilisé pour chaque ligne de résultat des méthodes fetchAll(), paginator(), getRecord(), saveRecord()
+								
      * Cette propriété est définie dans AbstractSbmTableGateway.
      * Sa méthode extract() est utilisée dans saveRecord().
      *
@@ -116,8 +118,18 @@ abstract class AbstractSbmTable implements FactoryInterface
     protected $column_defaults;
 
     /**
+     * Tableau indexé
+     * La clé est le nom de la colonne sur laquelle porte la stratégie
+     * La valeur est l'objet strategy
+     *
+     * @var array
+     */
+    protected $strategies = [];
+
+    /**
      * Constructeur
      * Les attributs $table_name et $table_type doivent être déclarés dans la méthode init() des classes dérivées.
+						  
      *
      * @param ServiceLocatorInterface $sm            
      * @param ObjectDataInterface $objectData            
@@ -129,6 +141,7 @@ abstract class AbstractSbmTable implements FactoryInterface
         } else {
             $type = gettype($db_manager);
             $message = 'Le service manager fourni n\'est pas un \\SbmCommun\\Model\Db\\Service\\DbManager. %s fourni.';
+																		 
             throw new Exception(sprintf(_($message), $type));
         }
         $this->init();
@@ -140,6 +153,7 @@ abstract class AbstractSbmTable implements FactoryInterface
             $this->table_type);
         $this->table_gateway = $db_manager->get($this->table_gateway_alias);
         $this->obj_select = clone $this->table_gateway->getSql()->select(); // utile pour join() et pour paginator()
+																							   
         $this->join();
         // à placer après join()
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
@@ -171,8 +185,26 @@ abstract class AbstractSbmTable implements FactoryInterface
      * A surcharger dans les classes dérivées si nécessaire
      */
     protected function setStrategies()
-    {}
+    {
+        foreach ($this->strategies as $key => $value) {
+            $this->hydrator->addStrategy($key, $value);
+        }
+    }
 
+    /**
+     * Renvoie un objet strategy
+     *
+     * @param string $key
+     *
+     * @throw \Zend\Hydrator\Exception\InvalidArgumentException
+     *
+     * @return \Zend\Hydrator\Strategy\StrategyInterface
+     */
+    public function getStrategie($key)
+    {
+        return $this->hydrator->getStrategy($key);
+    }
+													   
     /**
      * Complète la requête pour le select() et le fetchPaginator().
      * A surcharger dans les classes dérivées si nécessaire
@@ -236,6 +268,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @param \Zend\Db\Sql\Where $where_obj            
      * @param array|string|null $order            
+	  
      * @return Zend\Db\Sql\Select
      */
     public function select($where_obj = null, $order = null)
@@ -244,6 +277,7 @@ abstract class AbstractSbmTable implements FactoryInterface
             if ($where_obj instanceof Where) {
                 $this->obj_select->where($where_obj);
             } else {
+													
                 throw new Exception(_('Zend\Db\Sql\Where instance expected.'));
             }
         }
@@ -278,6 +312,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @param Where|\Closure|string|array|Predicate\PredicateInterface $where_obj            
      * @param array|string|null $order            
+	  
      * @return Zend\Paginator\Paginator
      */
     public function paginator($where_obj = null, $order = null)
@@ -342,6 +377,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *            Si c'est un tableau, ce doit être un tableau associatif
      *            
      * @throws Exception
+	  
      * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface null
      */
     public function getRecord($id)
@@ -388,6 +424,7 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @param int|string|array|Where|ObjectDataInterface $item
      *            identifiant ou where
+				  
      * @return int
      */
     public function deleteRecord($item)
@@ -407,6 +444,7 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     /**
      * Enregistre l'objet $obj_data dans sa table en distinguant un nouvel enregistrement d'une mise à jour.
+					
      * L'objet passé en paramètre doit définir la méthode getId().
      *
      * @param ObjectDataInterface $obj_data            
@@ -455,8 +493,10 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Si l'enregistrement est absent on lance une exception
      * ATTENTION !!!
      * Cette méthode ne convient pas lorsqu'on change la pk (ou une partie de la pk lorsqu'elle est basée sur plusieurs colonnes)
+									 
      *
      * @param ObjectData $obj_data            
+	  
      * @throws Exception
      */
     public function updateRecord(ObjectDataInterface $obj_data)

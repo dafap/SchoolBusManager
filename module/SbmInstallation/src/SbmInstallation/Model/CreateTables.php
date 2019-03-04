@@ -8,8 +8,8 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmInstallation\Model;
 
@@ -31,8 +31,6 @@ class CreateTables
     const BAD_CREATE = 202;
 
     const BAD_TRIGGER = 203;
-
-    const DB_DESIGN_PATH = '/../../../db_design';
 
     /**
      * Prend la valeur 'table', 'system' ou 'vue'
@@ -100,6 +98,21 @@ class CreateTables
     }
 
     /**
+     * Renvoie le chemin absolu du dossier db_design ou du fichier $file contenu dans ce dossier
+     *
+     * @param string $file
+     *
+     * @return string
+     */
+    public function dbDesignPath($file = null)
+    {
+        if (empty($file)) {
+            return StdLib::findParentPath(__DIR__, 'db_design');
+        }
+        return StdLib::concatPath(StdLib::findParentPath(__DIR__, 'db_design'), $file);
+    }
+
+    /**
      * Crée la queue de traitement des tables.
      * Cette queue définit
      * - la liste des fichiers de définition dans db_design associés à leur type
@@ -132,14 +145,14 @@ class CreateTables
     private function insereQueue($include_file)
     {
         if (! array_key_exists($include_file, $this->queue['db_design'])) {
-            $def = include (__DIR__ . self::DB_DESIGN_PATH . "/$include_file");
+            $filename = $this->dbDesignPath($include_file);
+            $def = include ($filename);
             if (! $this->isEntity($def)) {
                 $message = "Le fichier $include_file est incorrect.\n" . $this->err_msg .
                      "\n";
                 $message .= "\n-----------------------------\n";
-                $message .= realpath(__DIR__ . self::DB_DESIGN_PATH) . "/$include_file\n";
-                $message .= file_get_contents(
-                    __DIR__ . self::DB_DESIGN_PATH . "/$include_file\n");
+                $message .= "$filename\n";
+                $message .= file_get_contents($filename) . "\n";
                 $message .= "\n-----------------------------\n";
                 throw new Exception($message, self::BAD_DESIGN);
             }
@@ -213,8 +226,14 @@ class CreateTables
             $insert = $sql->insert(
                 StdLib::entityName($properties[0], $properties[1], $this->prefix));
             $insert->values($data);
-            $sqlString = $sql->getSqlStringForSqlObject($insert);
+            //$sqlString = $sql->getSqlStringForSqlObject($insert); obsolete
+            $sqlString = $sql->buildSqlString($insert);
+            try {
             $results[] = $this->dbadapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+            } catch (\Exception $e) {
+                $msg = __METHOD__ . "\n" . $sqlString;
+                throw new Exception($msg, 999, $e);
+            }
         }
         return $results;
     }
@@ -222,9 +241,9 @@ class CreateTables
     /**
      * A FAIRE
      *
-     * @param unknown $entityName            
-     * @param unknown $entityStructure            
-     * @param unknown $entityType            
+     * @param string $entityName            
+     * @param array $entityStructure            
+     * @param string $entityType            
      * @return string
      */
     protected function alterTable($entityName, $entityStructure, $entityType)
@@ -344,14 +363,15 @@ class CreateTables
     {
         $structure = [];
         $filename = 'vue.' . $viewName . '.php';
-        $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
+        $entity = require ($this->dbDesignPath($filename));
         $viewStructure = $entity['structure'];
-        SbmCommun\Model\Db\CommandSql::isValidDbDesignStructureView($viewStructure); // lance une exception si la structure n'est pas bonne
+        // lance une exception si la structure n'est pas bonne
+        CommandSql::isValidDbDesignStructureView($viewStructure); 
         $table = $viewStructure['from']['table'];
         if ($viewStructure['from']['type'] == 'table' ||
              $viewStructure['from']['type'] == 'system') {
             $filename = $viewStructure['from']['type'] . '.' . $table . '.php';
-            $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
+            $entity = require ($this->dbDesignPath($filename));
             $fields_table = $entity['structure']['fields'];
             foreach ($viewStructure['fields'] as $field) {
                 // chercher la définition de ce champ dans cette table
@@ -394,7 +414,7 @@ class CreateTables
                 $table = $join['table'];
                 if ($join['type'] == 'table' || $join['type'] == 'system') {
                     $filename = $join['type'] . '.' . $table . '.php';
-                    $entity = require (__DIR__ . self::DB_DESIGN_PATH . "/$filename");
+                    $entity = require ($this->dbDesignPath($filename));
                     $join_structure = $entity['structure']['fields'];
                 } else {
                     // il s'agit d'une vue
@@ -508,6 +528,7 @@ class CreateTables
             $command = "DROP TRIGGER IF EXISTS `$name`";
             try {
                 $r = $this->dbadapter->query($command, Adapter::QUERY_MODE_EXECUTE);
+                unset($r);
                 $result .= "$command -> OK\n";
             } catch (\PDOException $e) {
                 $message = "Impossible d'exécuter la commande $command.\n" .
@@ -806,7 +827,7 @@ EOT;
     private function dir()
     {
         $result = [];
-        $dossier = opendir(__DIR__ . self::DB_DESIGN_PATH);
+        $dossier = opendir($this->dbDesignPath());
         while ($f = readdir($dossier)) {
             $p = explode('.', $f);
             if (! is_dir($f) && count($p) == 3 && $p[2] == 'php' &&
@@ -831,8 +852,9 @@ EOT;
         ];
         $result = [];
         foreach ($this->dir() as $filename) {
-            $buffer = file(__DIR__ . self::DB_DESIGN_PATH . "/$filename");
+            $buffer = file($this->dbDesignPath($filename));
             $row = array_fill_keys($keys, '');
+            $parts = null;
             foreach ($buffer as $ligne) {
                 preg_match(
                     "@^\s*'(.*)'\s*=>\s*(?:include __DIR__ \. '/)?'?([^',]*)'?,?\s*(?://.*)*$@i", 

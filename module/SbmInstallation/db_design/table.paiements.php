@@ -8,8 +8,8 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 
 /**
@@ -28,6 +28,8 @@
  * - banque, titulaire et reference sont des varchar(30) destinés à recevoir les informations nécessaires pour les paiements par chèque
  * *************************************************************************
  */
+ use SbmBase\Model\StdLib;
+
 return [
     'name' => 'paiements',
     'drop' => false,
@@ -98,5 +100,6 @@ EOT
 
         ]
     ],
-    'data' => __DIR__ . '/data/data.paiements.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.paiements.php')
 ];

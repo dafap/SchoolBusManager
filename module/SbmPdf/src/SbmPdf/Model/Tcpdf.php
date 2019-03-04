@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.4.7
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmPdf\Model;
 
@@ -1848,6 +1848,7 @@ class Tcpdf extends \TCPDF
             foreach ($photos as $rang => $img) {
                 list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
                     $label->parametresPhoto($rang));
+                unset($resize); // TODO : ce paramètre n'est pas utilisé
                 $x += $origine[0];
                 $y += $origine[1];
                 $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
@@ -2150,6 +2151,7 @@ class Tcpdf extends \TCPDF
             foreach ($photos as $rang => $img) {
                 list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
                     $label->parametresPhoto($rang));
+                unset($resize); // TODO : ce paramètre n'est pas utilisé
                 $x += $origine[0];
                 $y += $origine[1];
                 $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
@@ -2192,9 +2194,9 @@ class Tcpdf extends \TCPDF
         $path = $this->getConfig('document', 'url_path_images'); // se termine par /
         $x = $this->x;
         $y = $this->y;
-        $file = $path . 'logocartegauche.jpg';
+        $file = $path . 'logocartegauche.png';
         $this->Image($file, $x, $y, 9.5, 13, '', '', '', true, 300);
-        $file = $path . 'logocartedroite.jpg';
+        $file = $path . 'logocartedroite.png';
         $this->Image($file, $x + 56, $y, 23, 13, '', '', '', true, 300);
         $border_style = [
             'width' => 0.25,

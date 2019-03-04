@@ -8,9 +8,11 @@
  * @filesource table.communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juillet 2018
- * @version 2018-2.4.2
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
+use SbmBase\Model\StdLib;
+
 ini_set('memory_limit', '-1');
 
 return [
@@ -52,5 +54,6 @@ return [
     ],
     // 'data' => include __DIR__ . '/data/data.communes.php',
     // 'data' => ['after' => [), 'include' => __DIR__ . '/data/data.communes.php')
-    'data' => __DIR__ . '/data/data.communes.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.communes.php')
 ];

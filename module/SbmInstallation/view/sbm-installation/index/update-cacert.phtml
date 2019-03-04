@@ -1,0 +1,39 @@
+<?php
+/**
+ * Mise à jour du fichier cacert.pem
+ *
+ * Ce fichier est chargé à partir du site de CURL et placé dans le dossier config/ssl de SBM
+ * 
+ * @project sbm
+ * @package sbm-installation/index
+ * @filesource update-cacert.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 févr. 2019
+ * @version 2019-2.4.8
+ */
+use SbmBase\Model\StdLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$retour = $this->url("sbminstall");
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Mise à jour de cacert.pem</h1>
+<div id="data-wrapper">
+	<div id="data-header" class="clearfix">
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div>
+<?php
+include StdLib::findParentPath(__DIR__, 'tools/') . 'update_cacert.php';
+?>
+	</div>
+</div>

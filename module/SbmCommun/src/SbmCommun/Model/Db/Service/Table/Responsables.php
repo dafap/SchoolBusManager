@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 4 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -88,9 +88,9 @@ class Responsables extends AbstractSbmTable
                 $adresseL2 = $obj_data->adresseL2;
                 $communeId = $obj_data->communeId;
                 $telephones = [
-                    $obj_data->telephoneF,
-                    $obj_data->telephoneP,
-                    $obj_data->telephoneT
+                    isset($obj_data->telephoneF) ? $obj_data->telephoneF : null,
+                    isset($obj_data->telephoneP) ? $obj_data->telephoneP : null,
+                    isset($obj_data->telephoneT) ? $obj_data->telephoneT : null
                 ];
                 $email = $obj_data->email;
                 $old_data = $this->getRecordByEmail($email);
@@ -224,10 +224,12 @@ class Responsables extends AbstractSbmTable
      *
      * @param string $email_old            
      * @param string $email_new            
+     *
+     * @return int
      */
     public function changeEmail($email_old, $email_new)
     {
-        $update = $this->table_gateway->update(
+        return $this->table_gateway->update(
             [
                 'email' => $email_new
             ], [
@@ -258,7 +260,7 @@ class Responsables extends AbstractSbmTable
      *
      * @param string $email            
      *
-     * @return boolean|\Zend\Db\ResultSet\object
+     * @return boolean|\SbmCommun\Model\Db\ObjectData\Responsable
      */
     public function getRecordByEmail($email)
     {
@@ -280,14 +282,13 @@ class Responsables extends AbstractSbmTable
      * @param string $telephone
      *            On cherche s'il y a une correspondance avec telephoneF ou telephoneP ou telephoneT
      *            
-     * @return boolean|\Zend\Db\ResultSet\object
+     * @return boolean|\SbmCommun\Model\Db\ObjectData\Responsable
      */
     private function getRecordByNomPrenomTelephone($nom, $prenom, $telephones)
     {
         if (empty($nom) || empty($prenom) || empty($telephones)) {
             return false;
         }
-        $where = new Where();
         $resultset = false;
         foreach ($telephones as $telephone) {
             if (empty($telephone)) {
@@ -366,7 +367,7 @@ class Responsables extends AbstractSbmTable
      *            On cherche s'il y a une correspondance avec adresseL1 ou avec adresseL2
      * @param string $communeId            
      *
-     * @return boolean|\Zend\Db\ResultSet\object
+     * @return boolean|\SbmCommun\Model\Db\ObjectData\Responsable
      */
     private function getRecordByNomPrenomAdresse($nom, $prenom, $adresse, $communeId)
     {

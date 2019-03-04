@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmAdmin\Controller;
 
@@ -578,7 +578,7 @@ class IndexController extends AbstractActionController
         $form = $this->form_manager->get(FormSecteurScolaire::class);
         $form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->desservis())
+                ->clgPu())
             ->setValueOptions('communeId', 
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->desservies());
@@ -967,7 +967,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = Session::get('post', false);
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('userId', $args)) {
                 return $this->redirect()->toRoute('login', 
                     [
@@ -984,7 +984,7 @@ class IndexController extends AbstractActionController
                         'page' => $this->params('page', 1)
                     ]);
             } elseif (! array_key_exists('submit', $args)) {
-                Session::set('post', $args);
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         $form = $this->form_manager->get(User::class);
@@ -1093,7 +1093,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $args = Session::get('post', false);
+            $args = Session::get('post', false, $this->getSessionNamespace());
             if ($args === false || ! array_key_exists('email', $args)) {
                 return $this->redirect()->toRoute('login', 
                     [
@@ -1109,7 +1109,7 @@ class IndexController extends AbstractActionController
                         'page' => $this->params('page', 1)
                     ]);
             } elseif (! array_key_exists('submit', $args)) {
-                Session::set('post', $args);
+                Session::set('post', $args, $this->getSessionNamespace());
             }
         }
         // récupère la fiche de l'user

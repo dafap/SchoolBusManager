@@ -8,9 +8,11 @@
  * @filesource table.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 janv. 2019
- * @version 2019-2.4.6
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'services',
     'type' => 'table',
@@ -56,6 +58,7 @@ return [
     ],
     
     // 'data' => include __DIR__ . '/data/data.services.php',
-    // 'data' => ['after' => ['transporteurs'],'include' => __DIR__ . '/data/data.services.php']
-    'data' => __DIR__ . '/data/data.services.php'
+    // 'data' => ['after' => ['transporteurs'],'include' => __DIR__ . '/data/data.services.php'],
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.services.php')
 ];

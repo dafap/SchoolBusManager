@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mai 2018
- * @version 2018-2.4.1
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -43,6 +43,9 @@ $url_update_hostname_validation = $this->url('sbminstall',
     [
         'action' => 'update-hostname-validator'
     ]);
+$url_update_cacert = $this->url('sbminstall', [
+    'action' => 'update-cacert'
+]);
 ?>
 <h1>Installation de l'application <?php echo $this->translate('School Bus Manager'); ?></h1>
 <div id="menugeneral">
@@ -81,6 +84,8 @@ echo $this->flashMessenger()->render('default');
 					<li><a href="<?php echo $url_update_hostname_validation;?>"
 						target="_blank"><i class="fam-bullet-go"></i>Mise à jour du
 							validateur des hostnames</a></li>
+					<li><a href="<?= $url_update_cacert;?>"><i class="fam-bullet-go"></i>Mise
+							à jour du fichier cacert.pem</a></li>
 					<li><a href="<?php echo $url_fichierslog;?>"><i
 							class="fam-bullet-go"></i>Fichiers de log</a></li>
 					<li><a href="<?php echo $url_create; ?>"><i class="fam-bullet-go"></i>Création

@@ -8,8 +8,8 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 janv. 2019
- * @version 2019-2.4.6
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -17,11 +17,6 @@ use SbmCommun\Model\Strategy\NatureCarte as NatureCarteStrategy;
 
 class Services extends AbstractSbmTable
 {
-    /**
-     * 
-     * @var NatureCarteStrategy
-     */
-    private $strategy;
 
     /**
      * Initialisation du service
@@ -32,23 +27,17 @@ class Services extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Services';
         $this->id_name = 'serviceId';
-        $this->strategy = new NatureCarteStrategy();
+        $this->strategies['natureCarte'] = new NatureCarteStrategy();
         $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
         $resultset = $tLibelles->fetchAll(['nature' => 'NatureCartes']);
         foreach ($resultset as $row) {
-            $this->strategy->addNatureCarte($row->libelle);
+            $this->strategies['natureCarte']->addNatureCarte($row->libelle);
         }
-    }
-
-    protected function setStrategies()
-    {
-        
-        $this->hydrator->addStrategy('natureCarte', $this->strategy);
     }
     
     public function getNatureCartes()
     {
-        return $this->strategy->getNatureCartes();
+        return $this->strategies['natureCarte']->getNatureCartes();
     }
 
     public function setSelection($serviceId, $selection)

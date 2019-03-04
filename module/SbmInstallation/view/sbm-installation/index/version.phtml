@@ -1,26 +1,33 @@
 <?php
 /**
- * Version du logiciel et de PHP, de ZF2
+ * Affiche les versions des logiciels 
+ * - SchoolBusManager (définie dans Sbminstallation/config/version.inc.php)
+ * - PHP
+ * - bibliothèque GD
+ * - Zendframework
+ * - JQuery
+ * - TCPDF
+ * et vérifie éventuellement s'il y a une version plus récente.
  *
  * @project sbm
  * @package SbmInstallation\view
  * @filesource version.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 fév. 2019
- * @version 2019-2.4.7
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
-use Zend\Version\Version;
+use SbmBase\Model\StdLib;
+use SbmBase\Model\DateLib;
 use Zend\Json\Json;
-
-define('SBM_VERSION', '2.4.7');
+use Zend\Version\Version;
 
 function versionTcpdfGitHub()
 {
     $context = stream_context_create(
         [
             'http' => [
-                'user_agent' => sprintf('Sbm/%s', SBM_VERSION)
+                'user_agent' => sprintf('Sbm/%s', DateLib::todayToMysql())
             ]
         ]);
     $url = 'https://api.github.com/repos/tecnickcom/TCPDF/tags';
@@ -81,7 +88,7 @@ if ($gdInfo['GIF Read Support']) {
 	<div id="version-inner" class="clearfix">
 		<dl class="float-left" style="width: 48%">
 			<dt>Version de School bus manager</dt>
-			<dd><?php echo SBM_VERSION; ?></dd>
+			<dd><?= include StdLib::concatPath(StdLib::findParentPath(__DIR__,'config'),'version.inc.php');?></dd>
 			<dt>Version de PHP</dt>
 			<dd><?php echo phpversion();?></dd>
 			<dt>Version de ZF2</dt>
@@ -120,7 +127,7 @@ if ($gdInfo['GIF Read Support']) {
 	</div>
 	<div id="version-footer">
 		<p class="sbm-description">Pour une nouvelle version de School Bus
-			Manager, noter son numéro dans le fichier `version.phtml` du module
+			Manager, noter son numéro dans le fichier `version.inc.php` du module
 			SbmInstallation.</p>
 	</div>
 </div>

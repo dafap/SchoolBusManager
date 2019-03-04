@@ -10,8 +10,8 @@
  * @filesource fichierslog.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 oct. 2017
- * @version 2017-2.3.12
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $actions = [
@@ -25,14 +25,14 @@ $actions = [
 <h1>Téléchargement de fichiers log</h1>
 <div id="suppr-wrapper">
 	<div id="fichierlog-header">
-		<div class="menu clearfix"><?php echo $this->listeZoneActions([], $actions)?></div>
+		<div class="menu clearfix"><?= $this->listeZoneActions([], $actions)?></div>
 	</div>
 	<div id="fichierlog-inner">
 		<dl>
 			<dt>Historique des transactions de la plateforme de paiement</dt>
-			<dd>Date de dernière écriture: <?php echo $this->paiement['date'];?></dd>
-			<dd>Nombre de lignes: <?php echo $this->paiement['lignes'];?></dd>
-			<dd>Taille: <?php echo $this->paiement['taille'];?></dd>
+			<dd>Date de dernière écriture: <?= $this->paiement['date'];?></dd>
+			<dd>Nombre de lignes: <?= $this->paiement['lignes'];?></dd>
+			<dd>Taille: <?= $this->paiement['taille'];?></dd>
 			<dd>
 <?php
 echo $this->form()->openTag($this->form1);
@@ -41,9 +41,9 @@ echo $this->form()->closeTag();
 ?>
         </dd>
 			<dt>Fichier d'erreur PHP</dt>
-			<dd>Date de dernière écriture: <?php echo $this->errors['date'];?></dd>
-			<dd>Nombre de lignes: <?php echo $this->errors['lignes'];?></dd>
-			<dd>Taille: <?php echo $this->errors['taille'];?></dd>
+			<dd>Date de dernière écriture: <?= $this->errors['date'];?></dd>
+			<dd>Nombre de lignes: <?= $this->errors['lignes'];?></dd>
+			<dd>Taille: <?= $this->errors['taille'];?></dd>
 			<dd>
 <?php
 echo $this->form()->openTag($this->form2);

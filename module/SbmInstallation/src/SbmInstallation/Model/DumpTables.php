@@ -9,14 +9,14 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 janv. 2019
- * @version 2019-2.4.6
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmInstallation\Model;
 
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Strategy;
-use SbmCommun\Model\Strategy\TarifAttributs;
 
 class DumpTables
 {
@@ -27,7 +27,26 @@ class DumpTables
      */
     private $db_manager;
 
-    private $template_head = <<<EOT
+    /**
+     *
+     * @var string
+     */
+    private $template_head;
+
+    private $tables = [];
+
+    private $onScreen;
+
+    private $screen = '';
+
+    private $version;
+
+    public function __construct(DbManager $db_manager)
+    {
+        $this->db_manager = $db_manager;
+        $this->version = include StdLib::concatPath(
+            StdLib::findParentPath(__DIR__, 'config'), 'version.inc.php');
+        $this->template_head = <<<EOT
 <?php
 /**
  * Données de la %s `%s`
@@ -40,20 +59,10 @@ class DumpTables
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date %s
- * @version 2018-2.4.0
+ * @version %s
  */
-return array(
+return [
 EOT;
-
-    private $tables = [];
-
-    private $onScreen;
-
-    private $screen = '';
-
-    public function __construct(DbManager $db_manager)
-    {
-        $this->db_manager = $db_manager;
     }
 
     /**
@@ -81,34 +90,41 @@ EOT;
         $this->screen = $this->onScreen ? "<pre>\n" : '';
         
         // initialisation des invariants de boucle
-        $path = SBM_BASE_PATH . '/module/SbmInstallation/db_design/data/';
+        // $path = SBM_BASE_PATH . '/module/SbmInstallation/db_design/data/';
+        $path_db_design = StdLib::findParentPath(__DIR__, 'db_design');
         $format_date = '%e %b %Y';
         if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
             $format_date = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format_date);
         }
         $aujourdhui = strftime($format_date);
-        
         foreach ($this->tables as $table_alias) {
             // initialisation des variables de boucle
             $table = $this->db_manager->get($table_alias);
             $table_type = $table->getTableType();
             $table_name = $table->getTableName();
+            // lecture du fichier descripteur
             if ($table_type == 'system') {
                 $template_head_1 = 'table système';
-                $file_name = 'data.system.' . $table_name . '.php';
+                $db_design = 'system.' . $table_name . '.php';
             } else {
                 $template_head_1 = 'table';
-                $file_name = 'data.' . $table_name . '.php';
+                $db_design = 'table.' . $table_name . '.php';
+            }
+            $descripteur = include (StdLib::concatPath($path_db_design, $db_design));
+            $file_name = StdLib::getParam('data', $descripteur);
+            if (is_null($file_name)) {
+                continue;
             }
             $columns = $this->db_manager->getColumnTypes($table_name, $table_type);
+			
             // ouverture du fichier
-            $fp = fopen($path . $file_name, 'w');
+            $fp = fopen($file_name, 'w');
             $this->fputs($fp, 
                 sprintf($this->template_head, $template_head_1, $table_name, $file_name, 
-                    $aujourdhui));
+                    $aujourdhui, $this->version));
             // lecture de la table
             foreach ($table->fetchAll() as $row) {
-                $ligne = "\n    array(";
+                $ligne = "\n    [";
                 foreach ($row->getArrayCopy() as $key => $column) {
                     if ($columns[$key] == 'blob') {
                         $val = "addslashes(base64_decode('" .
@@ -124,48 +140,23 @@ EOT;
                     } elseif (is_bool($column)) {
                         $val = $column ? 'true' : 'false';
                     } elseif (is_array($column)) {
-                        switch ($key) {
-                            case 'natureCarte':
-                                $strategie = new Strategy\NatureCarte();
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'niveau':
-                                $strategie = new Strategy\Niveau();
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'semaine':
-                            case 'jOuverture':
-                            case 'joursTransport':
-                                $strategie = new Strategy\Semaine();
-                                $val = $strategie->extract($column);
-                                break;
-                            default:
+                        try {
+                            $val = $table->getStrategie($key)->extract($column);
+                        } catch (\Exception $e) {
                                 ob_start();
                                 var_dump($column);
                                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
                                 throw new Exception(
-                                    __METHOD__ . " - Codage inconnu pour $key\n$dump");
+                                __METHOD__ .
+                                " - Table: $table_name - Codage impossible pour $key\n$dump",
+                                999, $e);
                                 break;
                         }
                     } elseif ($table->getTableName() == 'tarifs' &&
                          $table->getTableType() == 'table') {
-                        switch ($key) {
-                            case 'mode':
-                                $strategie = new TarifAttributs($table->getModes(), 
-                                    "$column est un mode invalide.");
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'rythme':
-                                $strategie = new TarifAttributs($table->getRythmes(), 
-                                    "$column est un rythme invalide.");
-                                $val = $strategie->extract($column);
-                                break;
-                            case 'grille':
-                                $strategie = new TarifAttributs($table->getGrilles(), 
-                                    "$column est une grille invalide.");
-                                $val = $strategie->extract($column);
-                                break;
-                            default:
+                        try {
+                            $val = $table->getStrategie($key)->extract($column);
+                        } catch (\Exception $e) {
                                 $val = "'" . addslashes($column) . "'";
                                 break;
                         }
@@ -178,10 +169,10 @@ EOT;
                     
                     $ligne .= "\n        '$key' => $val, ";
                 }
-                $ligne .= "\n    ),";
+                $ligne .= "\n    ],";
                 $this->fputs($fp, $ligne);
             }
-            $this->fputs($fp, "\n);");
+            $this->fputs($fp, "\n];");
             // fermeture du fichier
             fclose($fp);
         }

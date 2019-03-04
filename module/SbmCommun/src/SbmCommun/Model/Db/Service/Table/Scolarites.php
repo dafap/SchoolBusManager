@@ -8,8 +8,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 jan. 2019
- * @version 2019-2.4.6
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -38,16 +38,7 @@ class Scolarites extends AbstractSbmTable
             'millesime',
             'eleveId'
         ];
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \SbmCommun\Model\Db\Table\AbstractTable::setStrategies()
-     */
-    protected function setStrategies()
-    {
-        $this->hydrator->addStrategy('joursTransport', new SemaineStrategy());
+        $this->strategies['joursTransport'] = new SemaineStrategy();
     }
 
     /**

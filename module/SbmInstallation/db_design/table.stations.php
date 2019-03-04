@@ -8,9 +8,11 @@
  * @filesource table.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'stations',
     'drop' => false,
@@ -53,8 +55,8 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    
     // 'data' => include __DIR__ . '/data/data.stations.php',
-    // 'data' => ['after' => ['communes'],'include' => __DIR__ . '/data/data.stations.php']
-    'data' => __DIR__ . '/data/data.stations.php'
+    // 'data' => ['after' => ['communes'],'include' => __DIR__ . '/data/data.stations.php'],
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.stations.php')
 ];

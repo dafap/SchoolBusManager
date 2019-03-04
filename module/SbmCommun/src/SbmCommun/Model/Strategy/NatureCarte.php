@@ -8,8 +8,8 @@
  * @filesource NatureCarte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 janv. 2019
- * @version 2019-2.4.6
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Strategy;
 
@@ -31,7 +31,7 @@ class NatureCarte extends AbstractPower2
 
     public function valid($value)
     {
-        return array_key_exists($value, self::getNatureCartes());
+        return array_key_exists($value, $this->naturecartes);
     }
 
     /**

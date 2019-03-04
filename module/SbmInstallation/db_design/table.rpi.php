@@ -8,8 +8,8 @@
  * @filesource table.rpi.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2018
- * @version 2018-2.4.1
+ * @date 25 fév. 2019
+ * @version 2019-2.4.8
  */
 
 /**
@@ -27,6 +27,8 @@
  * - 3 pour maternelle et élémentaire (primaire)
  * *************************************************************************
  */
+use SbmBase\Model\StdLib;
+
 return [
     'name' => 'rpi',
     'drop' => false,
@@ -48,5 +50,6 @@ return [
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
     ],
-    'data' => __DIR__ . '/data/data.rpi.php'
+    'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
+        'data.rpi.php')
 ];
