@@ -4,7 +4,7 @@
  *
  * @project sbm
  * @package module/SbmCommun/src/Form
- * @filesource ResponsableVerrouille.php
+ * @filesource ResponsableFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 4 mars 2019
@@ -15,14 +15,14 @@ namespace SbmCommun\Form;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ResponsableVerrouille implements FactoryInterface
+class ResponsableFactory implements FactoryInterface
 {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         return new Responsable('responsable',
             [
-                'verrouille' => true,
+                'verrouille' => false,
                 'hassbmservicesms' => $serviceLocator->has('sbmservicesms')
             ]);
     }

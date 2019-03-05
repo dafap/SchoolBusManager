@@ -248,7 +248,10 @@ div.erreur-a-droite ul {
 	display: inline-block;
 	width: 400px;
 	margin: 0;
-	right: 0;
+}
+
+#responsable-telephone-numbers div.erreur-a-droite ul {
+	margin-left: 372px;
 }
 /*--------- TOP-SITE -----------------*/
 #top-site {

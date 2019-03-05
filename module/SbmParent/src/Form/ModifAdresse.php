@@ -6,24 +6,40 @@
  * l'ancienne adresse dans les data du formulaire.
  *
  * @project sbm
- * @package SbmParent/Form
+ * @package SbmParent/src/Form
  * @filesource ModifAdresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
 
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
-    public function __construct()
+    /**
+     * Indicateur
+     *
+     * @var bool
+     */
+    private $hassbmservicesms;
+
+    public function __construct($name = null, $options = [])
     {
-        parent::__construct('responsable');
+        $this->hassbmservicesms = StdLib::getParam('hassbmservicesms', $options, false);
+        unset($options['hassbmservicesms']);
+        parent::__construct($name, $options);
+        $this->setAttribute('method', 'post');
+        $this->init();
+    }
+
+    public function init()
+    {
         $this->add([
             'type' => 'hidden',
             'name' => 'responsableId'
@@ -168,60 +184,62 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                 ]
             ]);
 
-        $this->add(
-            [
-                'name' => 'smsF',
-                'type' => 'Zend\Form\Element\Radio',
-                'attributes' => [
-                    'class' => 'sbm-radio'
-                ],
-                'options' => [
-                    'label' => 'Accepte les SMS',
-                    'label_attributes' => [
-                        'class' => 'sbm-label-radio'
+        if ($this->hassbmservicesms) {
+            $this->add(
+                [
+                    'name' => 'smsF',
+                    'type' => 'Zend\Form\Element\Radio',
+                    'attributes' => [
+                        'class' => 'sbm-radio'
                     ],
-                    'value_options' => [
-                        '1' => 'Oui',
-                        '0' => 'Non'
+                    'options' => [
+                        'label' => 'Accepte les SMS',
+                        'label_attributes' => [
+                            'class' => 'sbm-label-radio'
+                        ],
+                        'value_options' => [
+                            '1' => 'Oui',
+                            '0' => 'Non'
+                        ]
                     ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'smsP',
-                'type' => 'Zend\Form\Element\Radio',
-                'attributes' => [
-                    'class' => 'sbm-radio'
-                ],
-                'options' => [
-                    'label' => 'Accepte les SMS',
-                    'label_attributes' => [
-                        'class' => 'sbm-label-radio'
+                ]);
+            $this->add(
+                [
+                    'name' => 'smsP',
+                    'type' => 'Zend\Form\Element\Radio',
+                    'attributes' => [
+                        'class' => 'sbm-radio'
                     ],
-                    'value_options' => [
-                        '1' => 'Oui',
-                        '0' => 'Non'
+                    'options' => [
+                        'label' => 'Accepte les SMS',
+                        'label_attributes' => [
+                            'class' => 'sbm-label-radio'
+                        ],
+                        'value_options' => [
+                            '1' => 'Oui',
+                            '0' => 'Non'
+                        ]
                     ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'smsT',
-                'type' => 'Zend\Form\Element\Radio',
-                'attributes' => [
-                    'class' => 'sbm-radio'
-                ],
-                'options' => [
-                    'label' => 'Accepte les SMS',
-                    'label_attributes' => [
-                        'class' => 'sbm-label-radio'
+                ]);
+            $this->add(
+                [
+                    'name' => 'smsT',
+                    'type' => 'Zend\Form\Element\Radio',
+                    'attributes' => [
+                        'class' => 'sbm-radio'
                     ],
-                    'value_options' => [
-                        '1' => 'Oui',
-                        '0' => 'Non'
+                    'options' => [
+                        'label' => 'Accepte les SMS',
+                        'label_attributes' => [
+                            'class' => 'sbm-label-radio'
+                        ],
+                        'value_options' => [
+                            '1' => 'Oui',
+                            '0' => 'Non'
+                        ]
                     ]
-                ]
-            ]);
+                ]);
+        }
         $this->add(
             [
                 'name' => 'submit',
@@ -303,7 +321,7 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                 [
                     'Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'
                 ]);
-        } else {
+        } elseif ($this->hassbmservicesms) {
             // si un numéro est renseigné, on doit dire s'il peut recevoir des SMS
             if (! empty($this->data['telephoneF']) && ! isset($this->data['smsF'])) {
                 $result = false;

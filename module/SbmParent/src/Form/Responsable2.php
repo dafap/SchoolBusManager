@@ -1,38 +1,67 @@
 <?php
 /**
- * Partie du formulaire d'inscription d'un enfant concernant le second responsable 
+ * Partie du formulaire d'inscription d'un enfant concernant le second responsable
  * en cas de garde alternée.
  *
- * Cette classe abstraite est utilisée en tant que collection et sera dérivée en précisant
- * la propritété complet dans le constructeur.
+ * Cette classe est utilisée en tant que collection et sera initialisée en précisant
+ * les propritétés complet et hassbmservicesms dans le factory qui le construit.
  * Afin qu'il n'y ait pas de conflit, tous les nom d'éléments commmencent par r2.
- * Les methodes setData et getData sont adaptées en conséquence pour que ça fonctionne 
- * aussi bien si les datas proviennent de la table (pas de r2 en préfixe du nom des colonnes) 
+ * Les methodes setData et getData sont adaptées en conséquence pour que ça fonctionne
+ * aussi bien si les datas proviennent de la table (pas de r2 en préfixe du nom des colonnes)
  * ou du post (r2 en préfixe).
- * 
+ *
  * @project sbm
  * @package SbmParent/Form
- * @filesource AbstractResponsable2.php
+ * @filesource Responsable2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 sept. 2018
- * @version 2016-2.4.5
+ * @date 4 mars 2019
+ * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
 
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\AbstractSbmForm;
 use Zend\Form\FormInterface;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-abstract class AbstractResponsable2 extends AbstractSbmForm implements 
-    InputFilterProviderInterface
+class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
+    /**
+     * Indicateur
+     *
+     * @var bool
+     */
     protected $complet;
 
-    public function __construct()
+    /**
+     * Indicateur
+     *
+     * @var bool
+     */
+    private $hassbmservicesms;
+
+    /*
+     * public function __construct()
+     * {
+     * parent::__construct('responsable2');
+     * $this->
+     * }
+     */
+    public function __construct($name = null, $options = [])
     {
-        parent::__construct('responsable2');
+        $this->complet = StdLib::getParam('complet', $options, false);
+        unset($options['complet']);
+        $this->hassbmservicesms = StdLib::getParam('hassbmservicesms', $options, false);
+        unset($options['hassbmservicesms']);
+        parent::__construct($name, $options);
+        $this->setAttribute('method', 'post');
+        $this->init();
+    }
+
+    public function init()
+    {
         $this->add([
             'type' => 'hidden',
             'name' => 'r2responsable2Id'
@@ -199,6 +228,23 @@ abstract class AbstractResponsable2 extends AbstractSbmForm implements
                         ]
                     ]
                 ]);
+
+            $this->add(
+                [
+                    'name' => 'r2smsF',
+                    'type' => 'Zend\Form\Element\Radio',
+                    'attributes' => [],
+                    'options' => [
+                        'label' => 'Accepte SMS',
+                        'label_attributes' => [
+                            'class' => 'sbm-radio-label'
+                        ],
+                        'value_options' => [
+                            '1' => 'Oui',
+                            '0' => 'Non'
+                        ]
+                    ]
+                ]);
             $this->add(
                 [
                     'name' => 'r2email',
@@ -226,6 +272,10 @@ abstract class AbstractResponsable2 extends AbstractSbmForm implements
             return [
                 'r2telephoneF' => [
                     'name' => 'r2telephoneF',
+                    'required' => false
+                ],
+                'r2smsF' => [
+                    'name' => 'r2smsF',
                     'required' => false
                 ],
                 'r2email' => [
@@ -267,6 +317,10 @@ abstract class AbstractResponsable2 extends AbstractSbmForm implements
                     'name' => 'r2telephoneF',
                     'required' => false
                 ],
+                'r2smsF' => [
+                    'name' => 'r2smsF',
+                    'required' => false
+                ],
                 'r2email' => [
                     'name' => 'r2email',
                     'required' => false
@@ -305,5 +359,21 @@ abstract class AbstractResponsable2 extends AbstractSbmForm implements
         return array_combine(
             preg_replace('/(2Id)$/', 'Id', preg_replace('/^(r2)/', '', array_keys($a))),
             array_values($a));
+    }
+
+    public function isValid()
+    {
+        $result = parent::isValid();
+        if ($this->hassbmservicesms) {
+            if (! empty($this->data['r2telephoneF']) && ! isset($this->data['r2smsF'])) {
+                $result = false;
+                $element = $this->get('r2telephoneF');
+                $element->setMessages(
+                    [
+                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
+                    ]);
+            }
+        }
+        return $result;
     }
 }

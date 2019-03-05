@@ -4,15 +4,15 @@
  *
  * Ce formulaire ne présente pas de garde alternée.
  * Lorsqu'il s'agit d'un nouvel élève, il est forcément inscrit par son responsable1.
- * 
+ *
  * Compatible ZF3
- * 
+ *
  * @project sbm
  * @package SbmParent/Form
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
@@ -413,7 +413,8 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'options' => [
                     'label' => 'Commentaires à transmettre au service transport',
                     'label_attributes' => [
-                        'class' => 'sbm-commentaire'
+                        'class' => 'sbm-commentaire',
+                        'style' => 'width: inherit;'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'

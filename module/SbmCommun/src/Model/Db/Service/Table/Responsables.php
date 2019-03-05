@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -66,7 +66,7 @@ class Responsables extends AbstractSbmTable
      *            false par défaut.
      *            Si true alors on vérifie si l'adresse a changé et on met à jour les
      *            éléments concernant le déménagement si nécessaire.
-     *            
+     *
      * @return boolean Si checkDemenagement alors on renvoie vrai si l'adresse a changé
      *         (adresseL1 ou adresseL2 ou codePostal ou commune).
      *         Si non on renvoie vrai si la commune a changé.
@@ -86,9 +86,9 @@ class Responsables extends AbstractSbmTable
                 $adresseL2 = $obj_data->adresseL2;
                 $communeId = $obj_data->communeId;
                 $telephones = [
-                    $obj_data->telephoneF,
-                    $obj_data->telephoneP,
-                    $obj_data->telephoneT
+                    isset($obj_data->telephoneF) ? $obj_data->telephoneF : null,
+                    isset($obj_data->telephoneP) ? $obj_data->telephoneP : null,
+                    isset($obj_data->telephoneT) ? $obj_data->telephoneT : null
                 ];
                 $email = $obj_data->email;
                 $old_data = $this->getRecordByEmail($email);
@@ -243,7 +243,7 @@ class Responsables extends AbstractSbmTable
      *            référence du respondable
      * @param bool $with_titre
      *            indique si le titre doit être mis ou non
-     *            
+     *
      * @return string
      */
     public function getNomPrenom($responsabled, $with_titre = false)
@@ -281,7 +281,7 @@ class Responsables extends AbstractSbmTable
      * @param string $telephone
      *            On cherche s'il y a une correspondance avec telephoneF ou telephoneP ou
      *            telephoneT
-     *            
+     *
      * @return boolean|\SbmCommun\Model\Db\ObjectData\Responsable
      */
     private function getRecordByNomPrenomTelephone($nom, $prenom, $telephones)

@@ -1,32 +1,44 @@
 <?php
 /**
  * Page de modification de l'inscription d'un enfant pour les responsables
- * 
+ *
  *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
 $this->headScript()->appendFile($this->basepath('/js/parent/edit-eleve.js'));
 $texteDemandeR2 = <<<EOT
-La Communauté de communes vous informe que le transport pour cette 2ème adresse ne sera 
-    validé qu’en fonction de la disponibilité des places sur les circuits existants. 
-    Vous serez informés prochainement des suites données à votre demande par mail. 
+La Communauté de communes vous informe que le transport pour cette 2ème adresse ne sera
+    validé qu’en fonction de la disponibilité des places sur les circuits existants.
+    Vous serez informés prochainement des suites données à votre demande par mail.
 EOT;
 $texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2);
 ?>
-<?php $this->headScript()->captureStart();?>
-texteDemandeR2 = "<?= $texteDemandeR2; ?>";
-<?php $this->headScript()->captureEnd(); ?>
-<?php $this->inlineScript()->captureStart();?>
-js_photo.init(<?= $this->flashMessage ? 0 : 1;?>);
-<?php $this->inlineScript()->captureEnd();?>
+<?php
+
+$this->headScript()->captureStart();
+?>
+texteDemandeR2 = "<?=$texteDemandeR2;?>";
+<?php
+
+$this->headScript()->captureEnd();
+?>
+<?php
+
+$this->inlineScript()->captureStart();
+?>
+js_photo.init(<?=$this->flashMessage ? 0 : 1;?>);
+<?php
+
+$this->inlineScript()->captureEnd();
+?>
 <?php
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
     $this->responsable->nom, $this->responsable->prenom);
@@ -54,7 +66,9 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 	</div>
 	<div id="flashMessenger"
 		class="flashMessenger float-right orange top-12px"
-		<?php $this->flashMessage ? 'style="display: none;"' : ''?>>
+		<?php
+
+$this->flashMessage ? 'style="display: none;"' : ''?>>
 		<ul class="warning">
 			<li>Une photo d'identité est nécessaire pour obtenir la carte de
 				transport.</li>
@@ -64,45 +78,42 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 <div id="fiche-wrapper">
 	<div id="fiche-header"></div>
 	<div id="fiche-inner">
-<?php
-echo $this->form()->openTag($this->form);
-echo $this->formHidden($this->form->get('eleveId'));
-echo $this->formHidden($this->form->get('responsable1Id'));
-echo $this->formHidden($this->form->get('organismeId'));
-echo $this->formHidden($this->form->get('regimeId'));
-echo $this->formHidden($this->form->get('csrf'));
-?>
-    <fieldset class="sbm-page1">
+		<?=$this->form()->openTag($this->form);?>
+		<?=$this->formHidden($this->form->get('eleveId'));?>
+		<?=$this->formHidden($this->form->get('responsable1Id'));?>
+		<?=$this->formHidden($this->form->get('organismeId'));?>
+		<?=$this->formHidden($this->form->get('regimeId'));?>
+		<?=$this->formHidden($this->form->get('csrf'));?>
+    	<fieldset class="sbm-page1">
 			<div id="wrapper-radio" class="clearfix">
 				<div id="enfant-edit-joursTransport"
 					class="row-inner edit float-left">
-                <?= $this->formRow($this->form->get('joursTransport')); ?></div>
+                <?=$this->formRow($this->form->get('joursTransport'));?></div>
 				<div id="enfant-edit-ga" class="row-inner edit float-left">
-				<?= $this->formRow($this->form->get('ga')); ?></div>
+				<?=$this->formRow($this->form->get('ga'));?></div>
 				<div id="enfant-edit-fa" class="row-inner edit float-left">
-				<?= $this->formRow($this->form->get('fa')); ?></div>
-				<div id="enfant-edit-ap" class="row-inner edit float-left">
-				<?php //= $this->formRow($this->form->get('ap'));?></div>
+				<?=$this->formRow($this->form->get('fa'));?></div>
+				<div id="enfant-edit-ap" class="row-inner edit float-left"></div>
 			</div>
 			<div id="wrapper-zone2" class="clearfix">
 				<div id="zonne2-col-gauche" class="float-left"
 					style="min-width: 39%">
 					<div id="enfant-edit-nom" class="row-inner edit">
-				        <?= $this->formRow($this->form->get('nom')); ?></div>
+				        <?=$this->formRow($this->form->get('nom'));?></div>
 					<div id="enfant-edit-prenom" class="row-inner edit">
-					   <?= $this->formRow($this->form->get('prenom')); ?></div>
+					   <?=$this->formRow($this->form->get('prenom'));?></div>
 					<div id="enfant-edit-dateN" class="row-inner edit">
-					   <?= $this->formRowDate($this->form->get('dateN')); ?></div>
+					   <?=$this->formRowDate($this->form->get('dateN'));?></div>
 				</div>
 				<div id="wrapper-photo" class="float-left"
 					style="margin-left: 10px; margin-right: 10px;">
-					<img height="70" alt="photo" src="<?= $this->dataphoto;?>" />
+					<img height="70" alt="photo" src="<?=$this->dataphoto;?>" />
 				</div>
 				<div id="zonne2-col-droite" class="float-left">
 					<div id="enfant-edit-etablissementId" class="row-inner edit">
-					   <?= $this->formRow($this->form->get('etablissementId')); ?></div>
+					   <?=$this->formRow($this->form->get('etablissementId'));?></div>
 					<div id="enfant-edit-classeId" class="row-inner edit">
-					   <?= $this->formRow($this->form->get('classeId')); ?></div>
+					   <?=$this->formRow($this->form->get('classeId'));?></div>
 					<div id="wrapper-filephoto" style="display: inline;">
 					<?php
     $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
@@ -111,8 +122,8 @@ echo $this->formHidden($this->form->get('csrf'));
     $btnSupprPhoto->setLabelOption('disable_html_escape', 'on');
     $btnDialogLabel = $this->flashMessage ? "Envoyer une photo" : "Changer la photo";
     ?>
-					<?= $this->formButton($btnOpenDialog, "<i class=\"fam-camera-edit\"></i> $btnDialogLabel");?>
-				    <?= $this->formButton($btnSupprPhoto, '<i class="fam-camera-delete"></i> Supprimer la photo');?>
+					<?=$this->formButton($btnOpenDialog, "<i class=\"fam-camera-edit\"></i> $btnDialogLabel");?>
+				    <?=$this->formButton($btnSupprPhoto,'<i class="fam-camera-delete"></i> Supprimer la photo');?>
 					</div>
 				</div>
 			</div>
@@ -129,12 +140,12 @@ echo $this->formHidden($this->form->get('csrf'));
 				</div>
 			</div>
 			<div id="user">
-				<div id="wrapper-commentaire"><?= $this->formRow($this->form->get('commentaire'));?></div>
+				<div id="wrapper-commentaire"><?=$this->formRow($this->form->get('commentaire'));?></div>
 			</div>
-			<div id="enfant-edit-buttons" class="row-inner edit">    		
-            <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?></div>
+			<div id="enfant-edit-buttons" class="row-inner edit">
+            <?=$this->formSubmit($this->form->get('submit')) .$this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
-<?= $this->form()->closeTag(); ?>
+<?=$this->form()->closeTag();?>
     </div>
 	<div id="fiche-footer"></div>
 </div>
@@ -166,11 +177,11 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 			l'expiration de la scolarité la photo est effacée.<br>Si vous envoyez
 			une nouvelle photo, l'ancienne est détruite automatiquement.
 		</p>
-		<?= $this->form()->openTag($this->formphoto);?>
-		<?= $this->formHidden($this->formphoto->get('eleveId'));?>
-		<?= $this->formRow($this->formphoto->get('filephoto')); ?>
+		<?=$this->form()->openTag($this->formphoto);?>
+		<?=$this->formHidden($this->formphoto->get('eleveId'));?>
+		<?=$this->formRow($this->formphoto->get('filephoto'));?>
 		<div style="display: inline;">
-		<?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
+		<?=$this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo');?>
 		</div>
 		<div class="photo-progress" style="display: none;">
 			<div class="photo-msg">Envoi en cours ...</div>
@@ -180,79 +191,98 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 			</div>
 		</div>
 		<div class="top-6px">
-		<?= $this->formButton($btnCloseDialog, 'Abandonner'); ?></div>
-		<?= $this->form()->closeTag();?>
+		<?=$this->formButton($btnCloseDialog, 'Abandonner');?></div>
+		<?=$this->form()->closeTag();?>
 	</div>
 	<div id="content_responsable1" class="row-inner">
 		<fieldset>
 			<div>
 				<div class="enfant-label">Responsable</div>
-                    <?= $identiteResponsable; ?></div>
+                    <?=$identiteResponsable;?></div>
 			<div>
 				<div class="enfant-label">Adresse</div>
-                    <?= $this->responsable->adresseL1; ?></div>
+                    <?=$this->responsable->adresseL1;?></div>
 			<div>
 				<div class="enfant-label">Adresse</div>
-                    <?= $this->responsable->adresseL2; ?></div>
+                    <?=$this->responsable->adresseL2;?></div>
 			<div>
 				<div class="enfant-label">Commune</div>
-                    <?= $this->responsable->codePostal . ' ' . $this->responsable->commune; ?>
+                    <?=$this->responsable->codePostal . ' ' . $this->responsable->commune;?>
                     </div>
 		</fieldset>
 	</div>
 	<div id="content_enfant_ap" class="row-inner">
 		<fieldset>
 			<div id="?chez" class="row-inner edit">
-						<?= $this->formRow($this->form->get('chez'));?></div>
+						<?=$this->formRow($this->form->get('chez'));?></div>
 			<div id="?adresseEleveL1" class="row-inner edit">
-						<?= $this->formRow($this->form->get('adresseL1'));?></div>
+						<?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="?adresseEleveL2" class="row-inner edit">
-						<?= $this->formRow($this->form->get('adresseL2'));?></div>
+						<?=$this->formRow($this->form->get('adresseL2'));?></div>
 			<div id="?codePostalEleve" class="row-inner edit">
-						<?= $this->formRow($this->form->get('codePostal'));?></div>
+						<?=$this->formRow($this->form->get('codePostal'));?></div>
 			<div id="?communeEleveId" class="row-inner edit">
-						<?= $this->formRow($this->form->get('communeId'));?></div>
+						<?=$this->formRow($this->form->get('communeId'));?></div>
 		</fieldset>
 	</div>
 	<div id="content_enfant_ga" class="row-inner">
-    <?= $this->formHidden($this->formga->get('r2responsable2Id')); ?>
-    <?= $this->formHidden($this->formga->get('r2userId')); ?>
-<?php if (is_null($this->responsable2) || $this->responsable2['owner']) : ?>
+    <?=$this->formHidden($this->formga->get('r2responsable2Id'));?>
+    <?=$this->formHidden($this->formga->get('r2userId'));?>
+    <?php
+
+if (is_null($this->responsable2) || $this->responsable2['owner']) :
+        ?>
 		<fieldset>
 			<div id="enfant_titre" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2titre'));?></div>
+			    <?=$this->formRow($this->formga->get('r2titre'));?></div>
 			<div id="enfant_nom" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2nom'));?></div>
+			    <?=$this->formRow($this->formga->get('r2nom'));?></div>
 			<div id="enfant_prenom" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2prenom'));?></div>
+			    <?=$this->formRow($this->formga->get('r2prenom'));?></div>
 			<div id="enfant_adresseL1" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2adresseL1'));?></div>
+			    <?=$this->formRow($this->formga->get('r2adresseL1'));?></div>
 			<div id="enfant_adresseL2" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2adresseL2'));?></div>
+			    <?=$this->formRow($this->formga->get('r2adresseL2'));?></div>
 			<div id="enfant_codePostal" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2codePostal'));?></div>
+			    <?=$this->formRow($this->formga->get('r2codePostal'));?></div>
 			<div id="enfant_communeId" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2communeId'));?></div>
+			    <?=$this->formRow($this->formga->get('r2communeId'));?></div>
 			<div id="enfant_telephoneF" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2telephoneF'));?></div>
+			    <?=$this->formRow($this->formga->get('r2telephoneF'));?></div>
+			<?php
+
+if ($this->layout()->hassbmservicesms) :
+            ?>
+			<div id=enfant_smsF class="row-inner edit">
+				<?=$this->formLabel($this->formga->get('r2smsF'));?>
+				<?=$this->formRadio($this->formga->get('r2smsF'));?></div>
+			<?php endif;
+
+        ?>
 			<div id="enfant_email" class="row-inner edit">
-			    <?= $this->formRow($this->formga->get('r2email'));?></div>
+			    <?=$this->formRow($this->formga->get('r2email'));?></div>
 			<div id="enfant_demandeR2" class="row-inner edit">
-			    <?= $this->formRow($this->form->get('demandeR2'));?></div>
+			    <?=$this->formRow($this->form->get('demandeR2'));?></div>
 		</fieldset>
-<?php else : ?>
+		<?php
+
+else :
+        ?>
 		<fieldset style="padding-right: 0.5em;">
 			<div>
-				<div class="enfant-label">Responsable</div><?= $r2identite; ?></div>
+				<div class="enfant-label">Responsable</div><?=$r2identite;?></div>
 			<div>
-				<div class="enfant-label">Adresse</div><?= $r2adresseL1; ?></div>
+				<div class="enfant-label">Adresse</div><?=$r2adresseL1;?></div>
 			<div>
-				<div class="enfant-label">Adresse</div><?= $r2adresseL2; ?></div>
+				<div class="enfant-label">Adresse</div><?=$r2adresseL2;?></div>
 			<div>
-				<div class="enfant-label">Commune</div><?= $r2cp . ' ' . $r2commune; ?></div>
+				<div class="enfant-label">Commune</div><?=$r2cp . ' ' . $r2commune;?></div>
 			<div id="enfant_demandeR2" class="row-inner edit">
-			    <?= $this->formRow($this->form->get('demandeR2')); ?></div>
+			    <?=$this->formRow($this->form->get('demandeR2'));?></div>
 		</fieldset>
-<?php endif; ?>
+		<?php
+
+endif;
+    ?>
     </div>
 </div>

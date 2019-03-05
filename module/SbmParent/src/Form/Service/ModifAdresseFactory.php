@@ -1,28 +1,28 @@
 <?php
 /**
- * Injecte les options nécessaires dans le formulaire Responsable
+ * Injecte les options nécessaires dans le formulaire ModifAdresse
  *
  * @project sbm
- * @package module/SbmCommun/src/Form
- * @filesource ResponsableVerrouille.php
+ * @package SbmParent/src/Form/Service
+ * @filesource ModifAdresseFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 4 mars 2019
  * @version 2019-2.5.0
  */
-namespace SbmCommun\Form;
+namespace SbmParent\Form\Service;
 
+use SbmParent\Form\ModifAdresse;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ResponsableVerrouille implements FactoryInterface
+class ModifAdresseFactory implements FactoryInterface
 {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new Responsable('responsable',
+        return new ModifAdresse('responsable',
             [
-                'verrouille' => true,
                 'hassbmservicesms' => $serviceLocator->has('sbmservicesms')
             ]);
     }

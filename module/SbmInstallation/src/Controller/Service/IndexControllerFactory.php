@@ -3,21 +3,21 @@
  * Injection des objets dans IndexController
  *
  * Préparation pour compatibilité avec ZF3
- * 
+ *
  * @project sbm
  * @package SbmInstallation/Controller/Service
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 4 mars 2019
  * @version 2019-2.4.5
  */
 namespace SbmInstallation\Controller\Service;
 
+use SbmBase\Model\StdLib;
+use SbmInstallation\Controller\IndexController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmInstallation\Controller\IndexController;
-use SbmBase\Model\StdLib;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -28,6 +28,7 @@ class IndexControllerFactory implements FactoryInterface
         $config_application = $sm->get('config');
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
+            'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'db_config' => StdLib::getParam('db', $config_application),
             'config_paiement' => StdLib::getParamR([
@@ -49,4 +50,4 @@ class IndexControllerFactory implements FactoryInterface
         ];
         return new IndexController($config_controller);
     }
-}   
+}

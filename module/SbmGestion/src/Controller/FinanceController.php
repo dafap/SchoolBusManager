@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -16,14 +16,10 @@ namespace SbmGestion\Controller;
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
-use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\CriteresForm;
-use SbmCommun\Form\Organisme as FormOrganisme;
-use SbmCommun\Form\Paiement as FormPaiement;
-use SbmCommun\Form\Tarif as FormTarif;
+use SbmCommun\Form;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmGestion\Form\FinancePaiementSuppr;
+use SbmGestion\Form\Finances;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
@@ -177,7 +173,7 @@ class FinanceController extends AbstractActionController
         $nb_paiements = $this->getPaginatorCountPerPage('nb_paiements', 15);
         if ($responsableId == - 1) {
             // pas de $responsableId - gestion de tous les paiements
-            $criteres_form = new CriteresForm('paiements');
+            $criteres_form = new Form\CriteresForm('paiements');
             $value_options = $this->db_manager->get('Sbm\Db\Select\Libelles')->caisse();
             $criteres_form->setValueOptions('codeCaisse', $value_options);
             $value_options = $this->db_manager->get('Sbm\Db\Select\Libelles')->modeDePaiement();
@@ -331,7 +327,7 @@ class FinanceController extends AbstractActionController
             $hidden_responsableId = false; // il faudra choisir le responsable
         }
         // on ouvre le formulaire, l'adapte et le lie à l'échange de données
-        $form = new FormPaiement(
+        $form = new Form\Paiement(
             [
                 'responsableId' => $hidden_responsableId,
                 'note' => false
@@ -413,7 +409,7 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $hidden_responsableId = false; // mettre true pour obtenir en hidden ; mettre false pour
                                        // obtenir un select
-        $form = new FormPaiement(
+        $form = new Form\Paiement(
             [
                 'responsableId' => $hidden_responsableId,
                 'note' => true
@@ -531,7 +527,7 @@ class FinanceController extends AbstractActionController
         }
 
         $paiementId = $args['paiementId'];
-        $form = new FinancePaiementSuppr();
+        $form = $this->form_manager->get(Finances\FinancePaiementSuppr::class);
         $form->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmgestion/finance',
@@ -802,7 +798,7 @@ class FinanceController extends AbstractActionController
             unset($nouveauxPossibles[$aKey['codeModeDePaiement']]);
         }
         unset($libelle);
-        $form = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
+        $form = $this->form_manager->get(Finances\BordereauRemiseValeurChoix::class);
         if ($id == 1) {
             $form->setValueOptions('bordereau', $bordereauxEnCours);
         } else {
@@ -893,7 +889,7 @@ class FinanceController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $tableTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
-        $form = new FormTarif();
+        $form = $this->form_manager->get(Form\Tarif::class);
         $form->setValueOptions('rythme',
             array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
             ->setValueOptions('grille',
@@ -940,13 +936,13 @@ class FinanceController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *      
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function tarifSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -1020,7 +1016,7 @@ class FinanceController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $tableTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
-        $form = new FormTarif();
+        $form = $this->form_manager->get(Form\Tarif::class);
         $form->setValueOptions('rythme',
             array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
             ->setValueOptions('grille',
@@ -1065,7 +1061,7 @@ class FinanceController extends AbstractActionController
      * renvoie la liste des élèves inscrits pour un tarif donné
      *
      * @todo : à faire
-     *      
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function tarifGroupAction()
@@ -1180,7 +1176,7 @@ class FinanceController extends AbstractActionController
     public function organismeAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormOrganisme();
+        $form = $this->form_manager->get(Form\Organisme::class);
         $form->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->visibles());
@@ -1220,7 +1216,7 @@ class FinanceController extends AbstractActionController
     public function organismeEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormOrganisme();
+        $form = $this->form_manager->get(Form\Organisme::class);
         $form->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->visibles());
@@ -1263,7 +1259,7 @@ class FinanceController extends AbstractActionController
     public function organismeSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [

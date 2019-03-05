@@ -3,13 +3,13 @@
  * Gestion des listes de diffusion de MailChimp
  *
  * Nécessite l'installation de la bibliothèque DrewM\MailChimp
- * 
+ *
  * @project sbm
  * @package SbmMailChimp/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmMailChimp\Controller;
@@ -69,7 +69,7 @@ class IndexController extends AbstractActionController
      *            les modes sont 'error', 'warning', 'success' ou 'info'
      * @param string $msg
      *            le message à placer
-     *            
+     *
      * @return \Zend\Http\Response
      */
     private function retourListe($mode = 'error', $msg = 'Action interdite.', $action = 'index')
@@ -118,7 +118,7 @@ class IndexController extends AbstractActionController
             }
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
-        $form = new Form\Liste();
+        $form = $this->form_manager->get(Form\Liste::class);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -214,7 +214,7 @@ class IndexController extends AbstractActionController
             $args = $prg;
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
-        $form = new Form\Liste();
+        $form = $this->form_manager->get(Form\Liste::class);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -269,7 +269,7 @@ class IndexController extends AbstractActionController
             $args = $prg;
         }
         $mailchimp = new MailChimp($this->mailchimp_key);
-        $form = new Form\Liste();
+        $form = $this->form_manager->get(Form\Liste::class);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -1358,4 +1358,3 @@ class IndexController extends AbstractActionController
         }
     }
 }
- 

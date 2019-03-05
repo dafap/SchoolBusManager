@@ -3,17 +3,19 @@
  * Description courte du fichier
  *
  * Description longue du fichier s'il y en a une
- * 
+ *
  * @project project_name
  * @package package_name
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 use SbmMailChimp\Controller;
+use SbmMailChimp\Form;
 use SbmMailChimp\Model\Db\Service\Users;
+
 return [
     'acl' => [
         'resources' => [
@@ -194,10 +196,15 @@ return [
             Users::class => Users::class
         ]
     ],
+    'form_manager' => [
+        'invokables' => [
+            Form\Liste::class => Form\Liste::class
+        ]
+    ],
     'view_manager' => [
         'template_map' => [],
         'template_path_stack' => [
             __DIR__ . '/../view'
         ]
     ]
-]; 
+];

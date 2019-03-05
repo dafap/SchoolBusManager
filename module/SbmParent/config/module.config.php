@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 6 avr. 2016
- * @version 2016-2
+ * @date 4 mars 2019
+ * @version 2019-2.5.0
  */
 use SbmParent\Controller;
 use SbmParent\Form;
@@ -39,13 +39,12 @@ return [
         ]
     ],
     'form_manager' => [
-        'invokables' => [
-            Form\Responsable2Complet::class => Form\Responsable2Complet::class,
-            Form\Responsable2Restreint::class => Form\Responsable2Restreint::class,
-            Form\ModifAdresse::class => Form\ModifAdresse::class
-        ],
+        'invokables' => [],
         'factories' => [
-            Form\Enfant::class => Form\Service\EnfantFactory::class
+            Form\Enfant::class => Form\Service\EnfantFactory::class,
+            Form\ModifAdresse::class => Form\Service\ModifAdresseFactory::class,
+            Form\Service\Responsable2Complet::class => Form\Service\Responsable2Complet::class,
+            Form\Service\Responsable2Restreint::class => Form\Service\Responsable2Restreint::class
         ]
     ],
     'controllers' => [

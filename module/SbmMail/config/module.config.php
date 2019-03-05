@@ -3,18 +3,18 @@
  * Paramétrage du module d'envoi de mails
  *
  * Les paramètres relatifs au site et au client sont dans config/autoload/sbm.local.php
- * 
+ *
  * @project sbm
  * @package SbmMail/config
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 5 mars 2018
+ * @version 2018-2.5.0
  */
-use SbmMail\Form\Mail;
-use SbmMail\Model;
 use SbmMail\Controller;
+use SbmMail\Model;
+use SbmMail\Form\Mail;
 
 return [
     'acl' => [
@@ -47,7 +47,8 @@ return [
                  * 'mode' => 'smtp', // 'smtp' ou 'sendmail'
                  * 'smtpOptions' => [
                  * 'host' => 'smtp.free.fr',
-                 * 'port' => '25', // 25, 587 ou 2525 si connexion TLS ; 465 ou 25025 si connexion SSL
+                 * 'port' => '25', // 25, 587 ou 2525 si connexion TLS ; 465 ou 25025 si connexion
+                 * SSL
                  * 'connexion_class' => 'plain',
                  * 'connexion_config' => [
                  * 'username' => '',
@@ -61,7 +62,7 @@ return [
                     'connection_type' => 'tls'
                 ]
             ], // ssl | tls
-            
+
             'message' => [
                 'type' => 'text/html',
                 'html_encoding' => \Zend\Mime\Mime::ENCODING_8BIT,
@@ -71,7 +72,7 @@ return [
     ],
     'form_manager' => [
         'invokables' => [
-            'SbmMail\MailForm' => Mail::class
+            Mail::class => Mail::class
         ]
     ],
     'service_manager' => [
@@ -111,4 +112,3 @@ return [
         ]
     ]
 ];
- 

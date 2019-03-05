@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -18,22 +18,11 @@ use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use SbmCartographie\Model\Projection;
-use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\Circuit as FormCircuit;
-use SbmCommun\Form\Classe as FormClasse;
-use SbmCommun\Form\Commune as FormCommune;
-use SbmCommun\Form\Etablissement as FormEtablissement;
-use SbmCommun\Form\EtablissementService as FormEtablissementService;
-use SbmCommun\Form\LatLng as LatLngForm;
-use SbmCommun\Form\Service as FormService;
-use SbmCommun\Form\Station as FormStation;
-use SbmCommun\Form\Transporteur as FormTransporteur;
+use SbmCommun\Form;
+use SbmCommun\Model\Strategy;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Mvc\Controller\EditResponse;
-use SbmCommun\Model\Strategy\Niveau;
-use SbmCommun\Model\Strategy\Semaine;
-use SbmGestion\Form\EtablissementServiceSuppr as FormEtablissementServiceSuppr;
-use SbmGestion\Form\StationDoublon;
+use SbmGestion\Form as FormGestion;
 use SbmGestion\Model\StationSupprDoublon;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use Zend\Db\Sql\Where;
@@ -112,13 +101,13 @@ class TransportController extends AbstractActionController
     public function circuitEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormCircuit();
+        $form = $this->form_manager->get(Form\Circuit::class);
         $form->setValueOptions('serviceId',
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
-            ->setValueOptions('semaine', Semaine::getJours());
+            ->setValueOptions('semaine', Strategy\Semaine::getJours());
         $params = [
             'data' => [
                 'table' => 'circuits',
@@ -171,13 +160,13 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *      
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function circuitSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -240,13 +229,13 @@ class TransportController extends AbstractActionController
     public function circuitAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormCircuit();
+        $form = $this->form_manager->get(Form\Circuit::class);
         $form->setValueOptions('serviceId',
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
-            ->setValueOptions('semaine', Semaine::getJours());
+            ->setValueOptions('semaine', Strategy\Semaine::getJours());
         $params = [
             'data' => [
                 'table' => 'circuits',
@@ -308,7 +297,7 @@ class TransportController extends AbstractActionController
                     'page' => $this->params('page', 1)
                 ]);
         }
-        $form = new ButtonForm([],
+        $form = new Form\ButtonForm([],
             [
                 'confirmer' => [
                     'class' => 'confirm',
@@ -491,7 +480,7 @@ class TransportController extends AbstractActionController
         }
         $args = $prg ?: [];
         $millesime = Session::get('millesime');
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -645,8 +634,8 @@ class TransportController extends AbstractActionController
     public function classeEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
+        $form = $this->form_manager->get(Form\Classe::class);
+        $form->setValueOptions('niveau', Strategy\Niveau::getNiveaux())->setValueOptions(
             'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout());
         $params = [
@@ -689,13 +678,13 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *      
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function classeSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -769,8 +758,8 @@ class TransportController extends AbstractActionController
     public function classeAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormClasse();
-        $form->setValueOptions('niveau', Niveau::getNiveaux())->setValueOptions(
+        $form = $this->form_manager->get(Form\Classe::class);
+        $form->setValueOptions('niveau', Strategy\Niveau::getNiveaux())->setValueOptions(
             'suivantId', $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout());
         $params = [
@@ -957,7 +946,7 @@ class TransportController extends AbstractActionController
     public function communeEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormCommune();
+        $form = $this->form_manager->get(Form\Commune::class);
         $form->modifFormForEdit();
         $params = [
             'data' => [
@@ -999,13 +988,13 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *      
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function communeSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -1079,7 +1068,7 @@ class TransportController extends AbstractActionController
     public function communeAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormCommune();
+        $form = $this->form_manager->get(Form\Commune::class);
         $params = [
             'data' => [
                 'table' => 'communes',
@@ -1237,7 +1226,7 @@ class TransportController extends AbstractActionController
      *
      * @param string $nature
      *            Prend les valeurs 'etablissement' ou 'station'
-     *            
+     *
      * @return string
      */
     private function critereLocalisation($nature)
@@ -1287,10 +1276,10 @@ class TransportController extends AbstractActionController
     public function etablissementEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormEtablissement();
+        $form = $this->form_manager->get(Form\Etablissement::class);
         $form->modifFormForEdit()
-            ->setValueOptions('jOuverture', Semaine::getJours())
-            ->setValueOptions('niveau', Niveau::getNiveaux())
+            ->setValueOptions('jOuverture', Strategy\Semaine::getJours())
+            ->setValueOptions('niveau', Strategy\Niveau::getNiveaux())
             ->setValueOptions('rattacheA',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
@@ -1337,13 +1326,13 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *      
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function etablissementSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -1417,9 +1406,9 @@ class TransportController extends AbstractActionController
     public function etablissementAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormEtablissement();
-        $form->setValueOptions('jOuverture', Semaine::getJours())
-            ->setValueOptions('niveau', Niveau::getNiveaux())
+        $form = $this->form_manager->get(Form\Etablissement::class);
+        $form->setValueOptions('jOuverture', Strategy\Semaine::getJours())
+            ->setValueOptions('niveau', Strategy\Niveau::getNiveaux())
             ->setValueOptions('rattacheA',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
@@ -1616,7 +1605,7 @@ class TransportController extends AbstractActionController
         $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
         $configCarte = StdLib::getParam('etablissement',
             $this->cartographie_manager->get('cartes'));
-        $form = new LatLngForm([
+        $form = new Form\LatLng([
             'etablissementId' => [
                 'id' => 'etablissementId'
             ]
@@ -1968,7 +1957,7 @@ class TransportController extends AbstractActionController
         $etablissementId = StdLib::getParam('etablissementId', $args, null);
         $serviceId = StdLib::getParam('serviceId', $args, null);
         $isPost = ! is_null(StdLib::getParam('submit', $args));
-        $form = new FormEtablissementService(
+        $form = new Form\EtablissementService(
             $origine == 'etablissement-service' ? 'service' : 'etablissement');
         if ($origine == 'etablissement-service') {
             $service = null;
@@ -2062,7 +2051,7 @@ class TransportController extends AbstractActionController
                     'page' => $this->params('page', 1)
                 ]);
         }
-        $form = new FormEtablissementServiceSuppr();
+        $form = $this->form_manager->get(FormGestion\EtablissementServiceSuppr::class);
         $form->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmgestion/transport',
@@ -2208,7 +2197,7 @@ class TransportController extends AbstractActionController
     public function serviceEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormService();
+        $form = $this->form_manager->get(Form\Service::class);
         $form->modifFormForEdit()
             ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
@@ -2256,13 +2245,13 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *      
+     *
      * @return \Zend\View\Model\ViewModel
      */
     public function serviceSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null,
             'origine' => null
         ],
@@ -2337,7 +2326,7 @@ class TransportController extends AbstractActionController
     public function serviceAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormService();
+        $form = $this->form_manager->get(Form\Service::class);
         $form->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
             ->setValueOptions('operateur', $this->operateurs)
@@ -2612,7 +2601,7 @@ class TransportController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($origine);
             }
         }
-        $form = new FormStation();
+        $form = $this->form_manager->get(Form\Station::class);
         $form->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->desservies());
@@ -2671,7 +2660,7 @@ class TransportController extends AbstractActionController
                 $this->redirectToOrigin()->setBack($origine);
             }
         }
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -2786,7 +2775,7 @@ class TransportController extends AbstractActionController
             $this->cartographie_manager->get('cartes'));
         $oDistanceMatrix = $this->cartographie_manager->get(
             GoogleMaps\DistanceMatrix::class);
-        $formCarte = new LatLngForm(
+        $formCarte = new Form\LatLng(
             [
                 'phase' => 1,
                 'lat' => [
@@ -2807,7 +2796,7 @@ class TransportController extends AbstractActionController
                 ]
             ], $configCarte['valide']);
         if ($isPost1 || $isPost2) {
-            $form = new FormStation();
+            $form = $this->form_manager->get(Form\Station::class);
             $form->setValueOptions('communeId',
                 $this->db_manager->get('Sbm\Db\Select\Communes')
                     ->desservies())
@@ -3206,7 +3195,7 @@ class TransportController extends AbstractActionController
         // même configuration de carte que pour les etablissements
         $configCarte = StdLib::getParam('station',
             $this->cartographie_manager->get('cartes'));
-        $form = new LatLngForm(
+        $form = new Form\LatLng(
             [
                 'stationId' => [
                     'id' => 'stationId'
@@ -3317,7 +3306,7 @@ class TransportController extends AbstractActionController
         }
         $arg = $prg ?: [];
         $stationsDesservies = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
-        $form = new StationDoublon();
+        $form = new FormGestion\StationDoublon();
         $form->setValueOptions('stationASupprId', $stationsDesservies)->setValueOptions(
             'stationAGarderId', $stationsDesservies);
         if (array_key_exists('submit', $arg)) {
@@ -3383,7 +3372,7 @@ class TransportController extends AbstractActionController
     public function transporteurEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new FormTransporteur();
+        $form = $this->form_manager->get(Form\Transporteur::class);
         $form->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->visibles());
@@ -3427,13 +3416,13 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas de service attribué avant de supprimer la fiche
-     *      
+     *
      * @return ViewModel
      */
     public function transporteurSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -3507,7 +3496,7 @@ class TransportController extends AbstractActionController
     public function transporteurAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new Formtransporteur();
+        $form = $this->form_manager->get(Form\Transporteur::class);
         $form->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->visibles());
@@ -3580,8 +3569,9 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByTransporteur(
-                    Session::get('millesime'), FiltreEleve::byTransporteur(
-                        $transporteurId), [
+                    Session::get('millesime'),
+                    FiltreEleve::byTransporteur($transporteurId),
+                    [
                         'serviceId',
                         'nom',
                         'prenom'

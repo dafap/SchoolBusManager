@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -18,14 +18,12 @@ use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use SbmCartographie\Model\Projection;
-use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\LatLng as LatLngForm;
-use SbmCommun\Form\Responsable as FormResponsable;
+use SbmCommun\Form;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface as RedirectToOrigineException;
 use SbmCommun\Model\Strategy\Semaine;
-use SbmGestion\Form\Eleve\EditForm as FormEleve;
-use SbmMail\Form\Mail as MailForm;
+use SbmGestion\Form\Eleve as FormEleve;
+use SbmMail\Form\Mail as FormMail;
 use SbmMail\Model\Template as MailTemplate;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
@@ -140,7 +138,7 @@ class EleveController extends AbstractActionController
                     'page' => $this->params('page', 1)
                 ]);
         }
-        $form = new ButtonForm([],
+        $form = new Form\ButtonForm([],
             [
                 'confirmer' => [
                     'class' => 'confirm',
@@ -241,7 +239,7 @@ class EleveController extends AbstractActionController
             $ispost = false;
         }
 
-        $form = new \SbmGestion\Form\Eleve\AddElevePhase1();
+        $form = $this->form_manager->get(FormEleve\AddElevePhase1::class);
         $value_options = $this->db_manager->get('Sbm\Db\Select\Responsables');
         $form->setAttribute('action',
             $this->url()
@@ -470,7 +468,7 @@ class EleveController extends AbstractActionController
         // ici on a un eleveId qui possède une fiche dans la table eleves et pour lequel on doit
         // saisir la scolarite
         $tableScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-        $form = new \SbmGestion\Form\Eleve\AddElevePhase2();
+        $form = $this->form_manager->get(FormEleve\AddElevePhase2::class);
 
         $form->setAttribute('action',
             $this->url()
@@ -702,7 +700,7 @@ class EleveController extends AbstractActionController
         $respSelect = $this->db_manager->get('Sbm\Db\Select\Responsables');
         $etabSelect = $this->db_manager->get('Sbm\Db\Select\Etablissements')->desservis();
         $clasSelect = $this->db_manager->get('Sbm\Db\Select\Classes')->tout();
-        $form = new FormEleve();
+        $form = $this->form_manager->get(FormEleve\EditForm::class);
         $form->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmgestion/eleve',
@@ -1083,7 +1081,7 @@ class EleveController extends AbstractActionController
             unset($args['rayer'], $args['confirmer']);
             Session::set('post', $args, $this->getSessionNamespace());
         }
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'eleveId' => $args['eleveId']
         ],
             [
@@ -1233,7 +1231,7 @@ class EleveController extends AbstractActionController
             $this->cartographie_manager->get('cartes'));
         // ici, il faut un formulaire permettant de saisir l'adresse particulière d'un élève. Le
         // tout est enregistré dans scolarites
-        $form = new \SbmGestion\Form\Eleve\LocalisationAdresse($configCarte['valide']);
+        $form = new FormEleve\LocalisationAdresse($configCarte['valide']);
         $form->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmgestion/eleve', [
@@ -1473,7 +1471,7 @@ class EleveController extends AbstractActionController
         $responsableId = null;
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire et on l'adapte
-        $form = new FormResponsable();
+        $form = $this->form_manager->get(Form\Responsable::class);
         $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
@@ -1557,7 +1555,7 @@ class EleveController extends AbstractActionController
         $responsableId = $args['responsableId'];
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire et on l'adapte
-        $form = new FormResponsable();
+        $form = $this->form_manager->get(Form\Responsable::class);
         // validateur permettant de s'assurer que l'email proposé n'existe pas
         $validator = new \Zend\Validator\Db\NoRecordExists(
             [
@@ -1729,7 +1727,7 @@ class EleveController extends AbstractActionController
     public function responsableSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -1852,7 +1850,7 @@ class EleveController extends AbstractActionController
         // nécessaire pour valider lat et lng
         $configCarte = StdLib::getParam('gestion',
             $this->cartographie_manager->get('cartes'));
-        $form = new LatLngForm([
+        $form = new Form\LatLng([
 
             'responsableId' => [
                 'id' => 'responsableId'
@@ -2082,7 +2080,7 @@ class EleveController extends AbstractActionController
                 ]);
             }
         }
-        $form = new MailForm();
+        $form = $this->form_manager->get(FormMail::class);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
@@ -2199,7 +2197,7 @@ class EleveController extends AbstractActionController
                 $form = null;
             } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                 $msg = '';
-                $form = new ButtonForm([
+                $form = new Form\ButtonForm([
                     'responsableId' => null
                 ],
                     [

@@ -9,7 +9,7 @@
  * @filesource modif-adresse.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 3 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -48,20 +48,24 @@ $actions = [];
 				<?=$this->responsable['titre2'];?>
 				<?=$this->responsable['nom2'];?>
 				<?=$this->responsable['prenom2'];?></div>
-			<div id="responsable-edit-telephoneF" class="row-inner edit clearfix erreur-a-droite">
-				<div class="float-left"><?=$this->formRow($this->form->get('telephoneF'));?></div>
-				<div class="float-left left-20px">Accepte les SMS
-					<?=$this->formRadio($this->form->get('smsF'));?></div>
-			</div>
-			<div id="responsable-edit-telephoneP" class="row-inner edit clearfix erreur-a-droite">
-				<div class="float-left"><?=$this->formRow($this->form->get('telephoneP'));?></div>
-				<div class="float-left left-20px">Accepte les SMS
-					<?=$this->formRadio($this->form->get('smsP'));?></div>
-			</div>
-			<div id="responsable-edit-telephoneT" class="row-inner edit clearfix erreur-a-droite">
-				<div class="float-left"><?=$this->formRow($this->form->get('telephoneT'));?></div>
-				<div class="float-left left-20px">Accepte les SMS
-					<?=$this->formRadio($this->form->get('smsT'));?></div>
+			<div id="responsable-telephones" class="row-inner edit clearfix">
+				<div id="responsable-telephone-numbers" class="float-left">
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneF'));?></div>
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneP'));?></div>
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneT'));?></div>
+				</div>
+				<?php
+
+if ($this->layout()->hassbmservicesms) :
+        ?>
+				<div id="responsable-acceptsms" class="left-20px float-left">
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsF'));?></div>
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsP'));?></div>
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsT'));?></div>
+				</div>
+				<?php endif;
+
+    ?>
 			</div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit">
 				<?=$this->formRow($this->form->get('adresseL1'));?></div>

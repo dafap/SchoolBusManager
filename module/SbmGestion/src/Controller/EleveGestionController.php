@@ -3,13 +3,13 @@
  * Controller principal du module SbmGestion
  *
  * Méthodes utilisées pour gérer la localisation des responsables et la création des cartes de transport
- * 
+ *
  * @project sbm
  * @package SbmGestion/Controller
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -18,11 +18,10 @@ use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
-use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\LatLng;
+use SbmCommun\Form;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmGestion\Form\AffectationDecision;
+use SbmGestion\Form as FormGestion;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
@@ -153,7 +152,7 @@ class EleveGestionController extends AbstractActionController
         }
         // ici, on doit avoir un bon $arg qui contient les valeurs postées
 
-        $formDecision = new AffectationDecision($args['trajet'], $args['op']);
+        $formDecision = new FormGestion\AffectationDecision($args['trajet'], $args['op']);
         $formDecision->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmgestion/gestioneleve',
@@ -192,7 +191,8 @@ class EleveGestionController extends AbstractActionController
                         // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase
                         // 2. Pour le moment, mettre la décision en session
                         Session::set('decision', $decision);
-                        $formDecision = new AffectationDecision($args['trajet'], 2);
+                        $formDecision = new FormGestion\AffectationDecision(
+                            $args['trajet'], 2);
                         $values_options1 = $this->db_manager->get(
                             'Sbm\Db\Select\Stations')->ouvertes();
                         $values_options2 = $this->db_manager->get(
@@ -301,7 +301,7 @@ class EleveGestionController extends AbstractActionController
         // nécessaire pour valider lat et lng
         $configCarte = StdLib::getParam('gestion',
             $this->cartographie_manager->get('cartes'));
-        $form = new LatLng([
+        $form = new Form\LatLng([
             'responsableId' => [
                 'id' => 'responsableId'
             ]
@@ -433,14 +433,14 @@ class EleveGestionController extends AbstractActionController
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
-        $form1 = new ButtonForm([],
+        $form1 = new Form\ButtonForm([],
             [
                 'nouvelle' => [
                     'class' => 'button default submit left-95px',
                     'value' => 'Préparer une nouvelle édition'
                 ]
             ]);
-        $form2 = new \SbmGestion\Form\SelectionCartes();
+        $form2 = $this->form_manager->get(FormGestion\SelectionCartes::class);
         $form2->setValueOptions('dateReprise',
             $this->db_manager->get('Sbm\Db\Select\DatesCartes')
                 ->cartesPapier())
@@ -578,7 +578,7 @@ class EleveGestionController extends AbstractActionController
             $documentName);
         $configLabel = $this->db_manager->get('Sbm\Db\System\DocLabels')->getConfig(
             $documentId);
-        $form = new \SbmGestion\Form\PlancheEtiquettesForm('duplicata',
+        $form = new FormGestion\PlancheEtiquettesForm('duplicata',
             [
                 'nbcols' => $configLabel['cols_number'],
                 'nbrows' => $configLabel['rows_number']
@@ -671,14 +671,14 @@ class EleveGestionController extends AbstractActionController
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
-        $form1 = new ButtonForm([],
+        $form1 = new Form\ButtonForm([],
             [
                 'nouvelle' => [
                     'class' => 'button default submit left-95px',
                     'value' => 'Préparer un nouveau lot de photos'
                 ]
             ]);
-        $form2 = new \SbmGestion\Form\SelectionPhotos();
+        $form2 = $this->form_manager->get(FormGestion\SelectionPhotos::class);
         $form2->setValueOptions('dateReprise',
             $this->db_manager->get('Sbm\Db\Select\DatesCartes')
                 ->extractionsPhotos())

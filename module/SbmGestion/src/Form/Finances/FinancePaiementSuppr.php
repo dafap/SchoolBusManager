@@ -3,16 +3,16 @@
  * Formulaire de confirmation de la suppression d'un paiement.
  *
  * Lors de la suppression d'un paiement la raison est demandée et est obligatoire.
- * 
+ *
  * @project dbm
- * @package SbmGestion/Form
+ * @package SbmGestion/Form/Finances
  * @filesource FinancePaiementSuppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
-namespace SbmGestion\Form;
+namespace SbmGestion\Form\Finances;
 
 use SbmCommun\Form\AbstractSbmForm as Form;
 use Zend\InputFilter\InputFilterProviderInterface;

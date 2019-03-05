@@ -1,11 +1,11 @@
 <?php
 /**
  * Controller du module SbmParent permettant de gérer les inscriptions des enfants
- * 
+ *
  * Version 2.3.1 du 10 mars 2017 : adaptation pour tarif annuel ou 3e trimestre. Dans l'inscription
  * en ligne on applique toujours le tarif annuel. Voir la classe SbmParent\Model\OutilsInscription
  * pour plus de détail.
- * 
+ *
  * Version 2.4.6 du 3 janvier 2019 : ajout de la gestion des photos
  *
  * @project sbm
@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -71,7 +71,8 @@ class IndexController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
         } catch (\Exception $e) {
-            if ($this->authenticate->by()->hasIdentity() && (($e instanceof CreateResponsableException) ||
+            if ($this->authenticate->by()->hasIdentity() &&
+                (($e instanceof CreateResponsableException) ||
                 ($e->getPrevious() instanceof CreateResponsableException))) {
                 // il faut créer un responsable associé car la demande vient d'un gestionnaire ou
                 // autre administrateur
@@ -162,7 +163,7 @@ class IndexController extends AbstractActionController
             'responsable1Id' => $responsable->responsableId
         ]);
         // Le formulaire de garde alterné est prévu complet pour une saisie
-        $formga = $this->form_manager->get(Form\Responsable2Complet::class);
+        $formga = $this->form_manager->get(Form\Service\Responsable2Complet::class);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             $hasGa = StdLib::getParam('ga', $args, false);
@@ -276,8 +277,8 @@ class IndexController extends AbstractActionController
         }
         $isPost = array_key_exists('submit', $args);
         $eleveId = $args['id'];
-        $outils = new OutilsInscription($this->db_manager, $auth_responsable->responsableId,
-            $authUserId, $eleveId);
+        $outils = new OutilsInscription($this->db_manager,
+            $auth_responsable->responsableId, $authUserId, $eleveId);
         $form = $this->form_manager->get(Form\Enfant::class);
         $form->setAttribute('action',
             $this->url()
@@ -308,7 +309,7 @@ class IndexController extends AbstractActionController
             // où l'utilisateur déciderait d'en rajouter une.
         }
         $formga = $this->form_manager->get(
-            $formgaComplet ? Form\Responsable2Complet::class : Form\Responsable2Restreint::class);
+            $formgaComplet ? Form\Service\Responsable2Complet::class : Form\Service\Responsable2Restreint::class);
 
         if ($isPost) {
             $form->setData($args);
@@ -761,7 +762,7 @@ class IndexController extends AbstractActionController
                 // où l'utilisateur déciderait d'en rajouter une.
             }
             $formga = $this->form_manager->get(
-                $formgaComplet ? Form\Responsable2Complet::class : Form\Responsable2Restreint::class);
+                $formgaComplet ? Form\Service\Responsable2Complet::class : Form\Service\Responsable2Restreint::class);
 
             if ($isPost) {
                 $form->setData($args);
@@ -1002,4 +1003,4 @@ class IndexController extends AbstractActionController
         }
         return $this->redirect()->toRoute('sbmparent');
     }
-} 
+}

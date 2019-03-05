@@ -7,16 +7,16 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 5 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 use SbmGestion\Controller;
 use SbmGestion\Form;
 use SbmGestion\Controller\Service;
+use SbmGestion\Model\Cartes\Cartes;
 use SbmGestion\Model\Db\Service as SbmGestionDbService;
+use SbmGestion\Model\Photos\Photos;
 use SbmGestion\Model\View\Helper as ViewHelper;
-use SbmGestion\Model\Cartes;
-use SbmGestion\Model\Photos;
 
 return [
     'acl' => [
@@ -86,6 +86,17 @@ return [
     ],
     'form_manager' => [
         'invokables' => [
+            Form\Eleve\AddElevePhase1::class => Form\Eleve\AddElevePhase1::class,
+            Form\Eleve\AddElevePhase2::class => Form\Eleve\AddElevePhase2::class,
+            Form\Eleve\EditForm::class => Form\Eleve\EditForm::class,
+            Form\Eleve\PriseEnChargePaiement::class => Form\Eleve\PriseEnChargePaiement::class,
+            Form\Finances\BordereauRemiseValeurChoix::class => Form\Finances\BordereauRemiseValeurChoix::class,
+            Form\Finances\BordereauRemiseValeurCreer::class => Form\Finances\BordereauRemiseValeurCreer::class,
+            Form\Finances\FinancePaiementSuppr::class => Form\Finances\FinancePaiementSuppr::class,
+            Form\EtablissementServiceSuppr::class => Form\EtablissementServiceSuppr::class,
+            Form\ModifHoraires::class => Form\ModifHoraires::class,
+            Form\SelectionCartes::class => Form\SelectionCartes::class,
+            Form\SelectionPhotos::class => Form\SelectionPhotos::class,
             Form\Simulation::class => Form\Simulation::class
         ]
     ],

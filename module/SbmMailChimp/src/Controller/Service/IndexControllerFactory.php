@@ -3,13 +3,13 @@
  * Injection des objets dans IndexController
  *
  * Préparation pour compatibilité avec ZF3
- * 
+ *
  * @project sbm
  * @package SbmMailChimp/Controller/Service
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmMailChimp\Controller\Service;
@@ -32,6 +32,7 @@ class IndexControllerFactory implements FactoryInterface
         $authenticate = $sm->get('SbmAuthentification\Authentication');
         $config_controller = [
             'db_manager' => $sm->get('Sbm\DbManager'),
+            'form_manager' => $sm->get('Sbm\FormManager'),
             'client' => StdLib::getParamR([
                 'sbm',
                 'client'
@@ -93,4 +94,3 @@ class IndexControllerFactory implements FactoryInterface
         return $acl;
     }
 }
- 

@@ -7,12 +7,13 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Image\Image;
 use SbmInstallation\Controller;
+use SbmInstallation\Form;
 
 return [
     'acl' => [
@@ -151,10 +152,15 @@ return [
             ]
         ]
     ],
+    'form_manager' => [
+        'invokables' => [
+            Form\DumpTables::class => Form\DumpTables::class
+        ]
+    ],
     'view_manager' => [
         'template_map' => [],
         'template_path_stack' => [
             __DIR__ . '/../view'
         ]
     ]
-];  
+];

@@ -9,7 +9,7 @@
  * @filesource modif-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2019
+ * @date 3 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -58,25 +58,28 @@ $actions = [];
 				<div id="responsable-edit-prenom2" class="row-inner edit float-left">
 					<?=$this->formRow($this->form->get('prenom2'));?></div>
 			</div>
-			<div id="responsable-edit-telephoneF" class="row-inner edit clearfix erreur-a-droite">
-				<div class="float-left"><?=$this->formRow($this->form->get('telephoneF'));?></div>
-				<div class="float-left left-20px">Accepte les SMS
-					<?=$this->formRadio($this->form->get('smsF'));?></div>
+			<div id="responsable-telephones" class="row-inner edit clearfix">
+				<div id="responsable-telephone-numbers" class="float-left">
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneF'));?></div>
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneP'));?></div>
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneT'));?></div>
+				</div>
+				<?php
+
+if ($this->layout()->hassbmservicesms) :
+        ?>
+				<div id="responsable-acceptsms" class="left-20px float-left">
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsF'));?></div>
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsP'));?></div>
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsT'));?></div>
+				</div>
+				<?php endif;
+
+    ?>
 			</div>
-			<div id="responsable-edit-telephoneP" class="row-inner edit clearfix erreur-a-droite">
-				<div class="float-left"><?=$this->formRow($this->form->get('telephoneP'));?></div>
-				<div class="float-left left-20px">Accepte les SMS
-					<?=$this->formRadio($this->form->get('smsP'));?></div>
-			</div>
-			<div id="responsable-edit-telephoneT" class="row-inner edit clearfix erreur-a-droite">
-				<div class="float-left"><?=$this->formRow($this->form->get('telephoneT'));?></div>
-				<div class="float-left left-20px">Accepte les SMS
-					<?=$this->formRadio($this->form->get('smsT'));?></div>
-			</div>
-			<!-- div id="responsable-edit-email" class="row-inner edit"><?=$this->formRow($this->form->get('email'));?></div -->
     <?php
 
-    if ($this->hasEnfantInscrit) :
+if ($this->hasEnfantInscrit) :
         ?>
             <?=$this->formHidden($this->form->get('email'));?>
             <?=$this->formHidden($this->form->get('adresseL1'));?>
@@ -91,7 +94,7 @@ $actions = [];
 			<div id="responsable-edit-communeId" class="row-inner edit"><?='<div class="enfant-label">Commune</div>' .$this->responsable['commune'];?></div>
     <?php
 
-    else :
+else :
         ?>
             <div id="responsable-edit-email" class="row-inner edit"><?='<div class="enfant-label">Email</div>' .$this->responsable['email'];?></div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit"><?=$this->formRow($this->form->get('adresseL1'));?></div>
@@ -101,7 +104,7 @@ $actions = [];
 			<div id="responsable-edit-demenagement" class="row-inner edit"><?=$this->formRow($this->form->get('demenagement'));?></div>
     <?php
 
-    endif;
+endif;
     ?>
     <div id="responsable-edit-blocAncien"
 				<?=$this->demenagement ? '' : 'style="display: none;"';?>>
@@ -112,9 +115,11 @@ $actions = [];
 				<div id="responsable-edit-ancienCommuneId" class="row-inner edit"><?=$this->formRow($this->form->get('ancienCommuneId'));?></div>
 			</div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
-    <?=$this->formSubmit($this->form->get('submit')) .$this->formSubmit($this->form->get('cancel'));?></div>
+    			<?=$this->formSubmit($this->form->get('submit'));?>
+    			<?=$this->formSubmit($this->form->get('cancel'));?>
+    		</div>
 		</fieldset>
-<?=$this->form()->closeTag();?>
+		<?=$this->form()->closeTag();?>
     </div>
 	<div id="fiche-footer"></div>
 </div>

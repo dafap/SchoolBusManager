@@ -9,26 +9,19 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 fév. 2019
+ * @date 5 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmAdmin\Controller;
 
-use SbmAdmin\Form\Export as ExportForm;
-use SbmAdmin\Form\Libelle as FormLibelle;
-use SbmAdmin\Form\User;
-use SbmAdmin\Form\UserRelation;
+use SbmAdmin\Form as FormAdmin;
 use SbmAdmin\Model\Db\Service\Libelle\Liste;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
-use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\CriteresForm;
-use SbmCommun\Form\Rpi;
-use SbmCommun\Form\SecteurScolaire as FormSecteurScolaire;
-use SbmCommun\Form\SimulationEtablissement as FormSimulationEtablissement;
+use SbmCommun\Form;
 use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Db\Sql\Where;
@@ -76,7 +69,7 @@ class IndexController extends AbstractActionController
     public function libelleAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = $this->form_manager->get(FormLibelle::class);
+        $form = $this->form_manager->get(FormAdmin\Libelle::class);
         $params = [
             'data' => [
                 'table' => 'libelles',
@@ -112,7 +105,7 @@ class IndexController extends AbstractActionController
     public function libelleEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = $this->form_manager->get(FormLibelle::class);
+        $form = $this->form_manager->get(FormAdmin\Libelle::class);
 
         $params = [
             'data' => [
@@ -153,7 +146,7 @@ class IndexController extends AbstractActionController
     public function libelleSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -253,7 +246,7 @@ class IndexController extends AbstractActionController
             ]
         ];
         $criteresForm = [
-            CriteresForm::class,
+            Form\CriteresForm::class,
             'libelles'
         ];
         $documentId = null;
@@ -348,7 +341,7 @@ class IndexController extends AbstractActionController
 
     public function rpiAjoutAction()
     {
-        $form = $this->form_manager->get(Rpi::class);
+        $form = $this->form_manager->get(Form\Rpi::class);
         $params = [
             'data' => [
                 'table' => 'rpi',
@@ -384,7 +377,7 @@ class IndexController extends AbstractActionController
 
     public function rpiEditAction()
     {
-        $form = $this->form_manager->get(Rpi::class);
+        $form = $this->form_manager->get(Form\Rpi::class);
         $params = [
             'data' => [
                 'table' => 'rpi',
@@ -447,7 +440,7 @@ class IndexController extends AbstractActionController
 
     public function rpiSupprAction()
     {
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -504,7 +497,7 @@ class IndexController extends AbstractActionController
     /**
      *
      * @todo à finir
-     *      
+     *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function rpiPdfAction()
@@ -568,7 +561,7 @@ class IndexController extends AbstractActionController
     public function secteurScolaireAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = $this->form_manager->get(FormSecteurScolaire::class);
+        $form = $this->form_manager->get(Form\SecteurScolaire::class);
         $form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->clgPu())
@@ -610,7 +603,7 @@ class IndexController extends AbstractActionController
     public function secteurScolaireSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -685,7 +678,7 @@ class IndexController extends AbstractActionController
             ObjectDataCriteres::class
         ];
         $criteresForm = [
-            CriteresForm::class,
+            Form\CriteresForm::class,
             'secteursScolairesClgPu'
         ];
         $documentId = null;
@@ -737,7 +730,7 @@ class IndexController extends AbstractActionController
     public function simulationEtablissementAjoutAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = $this->form_manager->get(FormSimulationEtablissement::class);
+        $form = $this->form_manager->get(Form\SimulationEtablissement::class);
         $form->setValueOptions('origineId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
@@ -779,7 +772,7 @@ class IndexController extends AbstractActionController
     public function simulationEtablissementSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -851,7 +844,7 @@ class IndexController extends AbstractActionController
             ObjectDataCriteres::class
         ];
         $criteresForm = [
-            CriteresForm::class,
+            Form\CriteresForm::class,
             'SimulationEtablissements'
         ];
         $documentId = null;
@@ -900,7 +893,7 @@ class IndexController extends AbstractActionController
             ]
         ];
         $criteresForm = [
-            CriteresForm::class,
+            Form\CriteresForm::class,
             'users'
         ];
         $documentId = null;
@@ -927,7 +920,7 @@ class IndexController extends AbstractActionController
                     ]);
             }
         }
-        $form = $this->form_manager->get(User::class);
+        $form = $this->form_manager->get(FormAdmin\User::class);
         $tUser = $this->db_manager->get('Sbm\Db\Table\Users');
         $form->setData([
             'userId' => null
@@ -977,7 +970,7 @@ class IndexController extends AbstractActionController
                 Session::set('post', $args, $this->getSessionNamespace());
             }
         }
-        $form = $this->form_manager->get(User::class);
+        $form = $this->form_manager->get(FormAdmin\User::class);
         $tUser = $this->db_manager->get('Sbm\Db\Table\Users');
         $form->bind($tUser->getObjData());
         if (array_key_exists('submit', $args)) {
@@ -1005,7 +998,7 @@ class IndexController extends AbstractActionController
     public function userSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -1119,7 +1112,7 @@ class IndexController extends AbstractActionController
                             'page' => $this->params('page', 1)
                         ]);
                 } else {
-                    $form = $this->form_manager->get(UserRelation::class)->getForm(
+                    $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
                         'transporteur');
                     $form->setValueOptions('transporteurId',
                         $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
@@ -1164,7 +1157,7 @@ class IndexController extends AbstractActionController
                             'page' => $this->params('page', 1)
                         ]);
                 } else {
-                    $form = $this->form_manager->get(UserRelation::class)->getForm(
+                    $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
                         'etablissement');
                     $form->setValueOptions('etablissementId',
                         $this->db_manager->get('Sbm\Db\Select\Etablissements')
@@ -1255,7 +1248,7 @@ class IndexController extends AbstractActionController
             }
             $confirme = StdLib::getParam('supproui', $args, false);
         }
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
@@ -1330,7 +1323,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->form_manager->get(ExportForm::class)->getForm('eleve');
+        $form = $this->form_manager->get(FormAdmin\Export::class)->getForm('eleve');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [
@@ -1378,7 +1371,8 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->form_manager->get(ExportForm::class)->getForm('etablissement');
+        $form = $this->form_manager->get(FormAdmin\Export::class)->getForm(
+            'etablissement');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [
@@ -1416,7 +1410,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->form_manager->get(ExportForm::class)->getForm('responsable');
+        $form = $this->form_manager->get(FormAdmin\Export::class)->getForm('responsable');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [
@@ -1454,7 +1448,7 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = $this->form_manager->get(ExportForm::class)->getForm('station');
+        $form = $this->form_manager->get(FormAdmin\Export::class)->getForm('station');
         if ($prg !== false) {
             if (array_key_exists('cancel', $prg)) {
                 return $this->redirect()->toRoute('sbmadmin', [

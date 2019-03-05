@@ -5,19 +5,20 @@
  * Les adresses de destination doivent être configurées dans le fichier config/autolaod/sbm.local.php
  * (voir $mail, clé 'destinataires')
  * Les adresses 'from' et 'replyTo' se trouvent aussi dans ce fichier de configuration (clé 'message')
- * 
+ *
  * @project sbm
  * @package SbmMail/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
+ * @date 5 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmMail\Controller;
 
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmMail\Form;
 use SbmMail\Model\Template as MailTemplate;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
@@ -51,7 +52,7 @@ class IndexController extends AbstractActionController
             }
         }
         $user = $this->user;
-        $form = $this->form_manager->get('SbmMail\MailForm');
+        $form = $this->form_manager->get(Form\Mail::class);
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {

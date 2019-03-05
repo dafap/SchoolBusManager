@@ -2,13 +2,13 @@
 /**
  * Gestion de la table `rpi`
  * (à déclarer dans module.config.php)
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Table
  * @filesource Rpi.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 5 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -44,5 +44,18 @@ class Rpi extends AbstractSbmTable
             'selection' => $selection
         ]);
         parent::saveRecord($oData);
+    }
+
+    /**
+     * Niveaux concernés par les RPI
+     *
+     * @return string[]
+     */
+    public static function getNiveaux()
+    {
+        return [
+            NiveauStrategy::CODE_NIVEAU_MATERNELLE => 'maternelle',
+            NiveauStrategy::CODE_NIVEAU_ELEMENTAIRE => 'élémentaire'
+        ];
     }
 }

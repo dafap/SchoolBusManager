@@ -7,20 +7,20 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
+ * @date 2 mars 2019
  * @version 2019-2.5.0
  */
-use SbmCommun\Model\Db\Service\DbManager;
-use SbmCommun\Model\Service\CalculDroits;
-use SbmCommun\Model\Service\MajDistances;
-use SbmCommun\Model\Service\FormManager;
+use SbmCommun\Form;
 use SbmCommun\Model\Db\ObjectData;
+use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Service\Libelles;
+use SbmCommun\Model\Db\Service\Query;
+use SbmCommun\Model\Db\Service\Select;
 use SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\Service\TableGateway;
-use SbmCommun\Model\Db\Service\Select;
-use SbmCommun\Model\Db\Service\Query;
-use SbmCommun\Form;
+use SbmCommun\Model\Service\CalculDroits;
+use SbmCommun\Model\Service\FormManager;
+use SbmCommun\Model\Service\MajDistances;
 
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
@@ -50,7 +50,6 @@ return [
             'Sbm\Db\ObjectData\EtablissementService' => ObjectData\EtablissementService::class,
             'Sbm\Db\ObjectData\Organisme' => ObjectData\Organisme::class,
             'Sbm\Db\ObjectData\Paiement' => ObjectData\Paiement::class,
-            'Sbm\Db\ObjectData\Responsable' => ObjectData\Responsable::class,
             'Sbm\Db\ObjectData\Rpi' => ObjectData\Rpi::class,
             'Sbm\Db\ObjectData\RpiClasse' => ObjectData\RpiClasse::class,
             'Sbm\Db\ObjectData\RpiCommune' => ObjectData\RpiCommune::class,
@@ -75,6 +74,8 @@ return [
             'Sbm\Db\SysObjectData\Libelle' => ObjectData\Sys\Libelle::class
         ],
         'factories' => [
+            'Sbm\Db\ObjectData\Responsable' => ObjectData\ResponsableFactory::class,
+
             'Sbm\Db\Table\Affectations' => Table\Affectations::class,
             'Sbm\Db\Table\Appels' => Table\Appels::class,
             'Sbm\Db\Table\Circuits' => Table\Circuits::class,
@@ -109,7 +110,7 @@ return [
             'Sbm\Db\System\DocTables' => Table\Sys\DocTables::class,
             'Sbm\Db\System\DocTables\Columns' => Table\Sys\DocColumns::class,
             'Sbm\Db\System\Libelles' => Table\Sys\Libelles::class,
-            
+
             'Sbm\Db\TableGateway\Affectations' => TableGateway\TableGatewayAffectations::class,
             'Sbm\Db\TableGateway\Appels' => TableGateway\TableGatewayAppels::class,
             'Sbm\Db\TableGateway\Circuits' => TableGateway\TableGatewayCircuits::class,
@@ -144,7 +145,7 @@ return [
             'Sbm\Db\SysTableGateway\DocLabels' => TableGateway\Sys\TableGatewayDocLabels::class,
             'Sbm\Db\SysTableGateway\DocTables' => TableGateway\Sys\TableGatewayDocTables::class,
             'Sbm\Db\SysTableGateway\Libelles' => TableGateway\Sys\TableGatewayLibelles::class,
-            
+
             'Sbm\Db\Vue\Circuits' => Table\Vue\Circuits::class,
             'Sbm\Db\Vue\Classes' => Table\Vue\Classes::class,
             'Sbm\Db\Vue\Etablissements' => Table\Vue\Etablissements::class,
@@ -155,7 +156,7 @@ return [
             'Sbm\Db\Vue\Services' => Table\Vue\Services::class,
             'Sbm\Db\Vue\Stations' => Table\Vue\Stations::class,
             'Sbm\Db\Vue\Transporteurs' => Table\Vue\Transporteurs::class,
-            
+
             'Sbm\Db\VueGateway\Circuits' => TableGateway\Vue\TableGatewayCircuits::class,
             'Sbm\Db\VueGateway\Classes' => TableGateway\Vue\TableGatewayClasses::class,
             'Sbm\Db\VueGateway\Etablissements' => TableGateway\Vue\TableGatewayEtablissements::class,
@@ -166,7 +167,7 @@ return [
             'Sbm\Db\VueGateway\Services' => TableGateway\Vue\TableGatewayServices::class,
             'Sbm\Db\VueGateway\Stations' => TableGateway\Vue\TableGatewayStations::class,
             'Sbm\Db\VueGateway\Transporteurs' => TableGateway\Vue\TableGatewayTransporteurs::class,
-            
+
             'Sbm\Db\Select\Bordereaux' => Select\BordereauxForSelect::class,
             'Sbm\Db\Select\Classes' => Select\ClassesForSelect::class,
             'Sbm\Db\Select\Communes' => Select\CommunesForSelect::class,
@@ -180,7 +181,7 @@ return [
             'Sbm\Db\Select\Transporteurs' => Select\Transporteurs::class,
             'Sbm\Db\Select\Libelles' => Select\LibellesForSelect::class,
             'Sbm\Libelles' => Libelles::class,
-            
+
             'Sbm\Db\Query\Circuits' => Query\Circuit\Circuits::class,
             'Sbm\Db\Query\Eleves' => Query\Eleve\Eleves::class,
             'Sbm\Db\Query\ElevesResponsables' => Query\Eleve\ElevesResponsables::class,
@@ -208,8 +209,6 @@ return [
             Form\Commune::class => Form\Commune::class,
             Form\Etablissement::class => Form\Etablissement::class,
             Form\Organisme::class => Form\Organisme::class,
-            Form\Responsable::class => Form\Responsable::class,
-            Form\ResponsableVerrouille::class => Form\ResponsableVerrouille::class,
             Form\Rpi::class => Form\Rpi::class,
             Form\SecteurScolaire::class => Form\SecteurScolaire::class,
             Form\Service::class => Form\Service::class,
@@ -218,7 +217,10 @@ return [
             Form\Tarif::class => Form\Tarif::class,
             Form\Transporteur::class => Form\Transporteur::class
         ],
-        'factories' => []
+        'factories' => [
+            Form\Responsable::class => Form\ResponsableFactory::class,
+            Form\ResponsableVerrouille::class => Form\ResponsableVerrouille::class
+        ]
     ],
     'cartographie_manager' => [
         'factories' => [

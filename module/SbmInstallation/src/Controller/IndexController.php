@@ -3,19 +3,19 @@
  * Controleur du module SbmInstallation
  *
  * Compatible ZF3
- * 
+ *
  * @project sbm
  * @package module/SbmInstallation/src/SbmInstallation/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 4 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Controller;
 
-use SbmBase\Model\StdLib;
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmInstallation\Form\DumpTables as FormDumpTables;
@@ -252,7 +252,7 @@ class IndexController extends AbstractActionController
             }
         } else {
             // FORMULAIRE DE DEMANDE
-            $form = new FormDumpTables();
+            $form = $this->form_manager->get(FormDumpTables::class);
             $form->setValueOptions('tables', $this->getDbTablesAlias('table'));
             $form->setValueOptions('systems', $this->getDbTablesAlias('system'));
             $form->setValueOptions('plugin', $this->getDbTablesAlias('plugin'));
@@ -463,8 +463,8 @@ class IndexController extends AbstractActionController
     private function getDbTablesAlias($filter = '')
     {
         $filter = strtolower($filter);
-        if (! is_string($filter) || ! ($filter == '' || in_array($filter,
-            [
+        if (! is_string($filter) ||
+            ! ($filter == '' || in_array($filter, [
                 'table',
                 'system',
                 'plugin',

@@ -8,14 +8,13 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2018
+ * @date 5 mars 2018
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
 use SbmBase\Model\Session;
-use SbmCommun\Form\ButtonForm;
-use SbmCommun\Form\Calendar as FormCalendar;
+use SbmCommun\Form;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Form\Simulation;
 use Zend\Db\Sql\Where;
@@ -34,8 +33,9 @@ class AnneeScolaireController extends AbstractActionController
             return $prg;
         }
         $simulation_vide = $this->db_manager->get('Sbm\Db\Table\Scolarites')->isEmptyMillesime(
-            self::SIMULATION) && $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(
-            self::SIMULATION);
+            self::SIMULATION) &&
+            $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(
+                self::SIMULATION);
 
         return new ViewModel(
             [
@@ -66,7 +66,7 @@ class AnneeScolaireController extends AbstractActionController
 
         $table_calendar = $this->db_manager->get('Sbm\Db\System\Calendar');
 
-        $form = $this->form_manager->get(FormCalendar::class);
+        $form = $this->form_manager->get(Form\Calendar::class);
         $form->setMaxLength($this->db_manager->getMaxLengthArray('calendar', 'system'));
         $form->bind($table_calendar->getObjData());
 
@@ -275,7 +275,7 @@ class AnneeScolaireController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $form = new ButtonForm([
+        $form = new Form\ButtonForm([
             'id' => null
         ],
             [
