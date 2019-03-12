@@ -2,7 +2,7 @@
 /**
  * Module de base du projet qui définie le modèle de chargement des modules et
  * diverses classes proposant des méthodes statiques générales.
- * 
+ *
  * @project sbm
  * @package SbmBase\Module
  * @filesource AbstractModule.php
@@ -40,7 +40,7 @@ class Module implements BootstrapListenerInterface, ConfigProviderInterface,
                         $session = $config['sbm_session'];
                         $sessionConfig = null;
                         if (isset($session['config'])) {
-                            $class = isset($session['config']['class']) ? $session['config']['class'] : 'Zend\Session\Config\SessionConfig';
+                            $class = isset($session['config']['class']) ? $session['config']['class'] : 'Zend\Session\Config\StandardConfig';
                             $options = isset($session['config']['options']) ? $session['config']['options'] : [];
                             $sessionConfig = new $class();
                             $sessionConfig->setOptions($options);
