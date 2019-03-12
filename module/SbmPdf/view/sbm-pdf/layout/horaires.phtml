@@ -1,17 +1,17 @@
 <?php
 /**
  * Modèle servant à définir le corps de document des horaires
- * 
- * Attention, ne pas utiliser HeadStyle pour placer les styles horaires 
+ *
+ * Attention, ne pas utiliser HeadStyle pour placer les styles horaires
  * car ils seraient dans la section head du document Html et ne seraient
  * pas interprétés dans Tcpdf.
- * 
+ *
  * @project sbm
  * @package SbmPdf/view/sbm-pdf/layout
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
+ * @date 12 mars 2019
  * @version 2019-2.5.0
  */
 if (empty($this->allerRetour)) {
@@ -62,42 +62,71 @@ if ($voirRemarque1) {
 	<tr>
 		<th colspan="7"><b>Matin</b></th>
 	</tr>
-	<?php if ($voirRemarque1) :?>
+	<?php
+
+if ($voirRemarque1) :
+    ?>
 	<tr>
 		<th width="5%">N°<br>arrêt</th>
 		<th width="8.5%">Horaire</th>
-		<th width="20%">Nom de l\'arrêt</th>
+		<th width="20%">Nom de l'arrêt</th>
 		<th width="13%">Emplacement</th>
 		<th width="6.5%">Nbre<br>élèves</th>
 		<th width="29%">Nom des élèves</th>
 		<th width="18%">Remarques</th>
 	</tr>
-	<?php else :?>
+	<?php
+
+else :
+    ?>
 	<tr>
 		<th width="5%">N°<br>arrêt</th>
 		<th width="8.5%">Horaire</th>
-		<th width="25%">Nom de l\'arrêt</th>
+		<th width="25%">Nom de l'arrêt</th>
 		<th width="23%">Emplacement</th>
 		<th width="6.5%">Nbre<br>élèves</th>
 		<th width="32%">Nom des élèves</th>
 	</tr>
-	<?php endif;?>
-<?php $i = 1; $effectif = 0; ?>      
-<?php foreach ((array) $this->allerRetour['aller'] as $row):?> 
-	<?php $nb = count($row["liste"]); $effectif += $nb;?>
+	<?php
+
+endif;
+?>
+<?php
+
+$i = 1;
+$effectif = 0;
+?>
+<?php
+
+foreach ((array) $this->allerRetour['aller'] as $row) :
+    ?>
+	<?php
+
+$nb = count($row["liste"]);
+    $effectif += $nb;
+    ?>
     <tr>
-		<td class="centre" width="5%"><?= $i++;?></td>
-		<td width="8.5%"><?= $row["horaire"];?></td>
-		<td width="<?= $voirRemarque1 ? '20%' : '25%';?>"><?= $row["station"];?></td>
-		<td width="<?= $voirRemarque1 ? '13%' : '23%';?>"><?= $row["typeArret"];?></td>
-		<td class="centre" width="6.5%"><?= $nb;?></td>
-		<td width="<?= $voirRemarque1 ? '29%' : '32%';?>"><?= implode("<br>", $row["liste"]);?></td>
-		<?php if ($voirRemarque1):?>
-		<td width="18%"><?= $row["commentaire1"];?></td>		
-		<?php endif;?>
+		<td class="centre" width="5%"><?=$i ++;?></td>
+		<td width="8.5%"><?=$row["horaire"];?></td>
+		<td width="<?=$voirRemarque1 ? '20%' : '25%';?>"><?=$row["station"];?></td>
+		<td width="<?=$voirRemarque1 ? '13%' : '23%';?>"><?=$row["typeArret"];?></td>
+		<td class="centre" width="6.5%"><?=$nb;?></td>
+		<td width="<?=$voirRemarque1 ? '29%' : '32%';?>"><?=implode("<br>", $row["liste"]);?></td>
+		<?php
+
+if ($voirRemarque1) :
+        ?>
+		<td width="18%"><?=$row["commentaire1"];?></td>
+		<?php endif;
+
+    ?>
 	</tr>
-<?php endforeach;?>
-    <?= sprintf($pied, $effectif);?>
+<?php
+
+endforeach
+;
+?>
+    <?=sprintf($pied, $effectif);?>
 </table>
 <p></p>
 <?php
@@ -118,7 +147,10 @@ if ($voirRemarque2) {
 	<tr>
 		<th colspan="7"><b>Mercredi midi &amp; soir</b></th>
 	</tr>
-	<?php if ($voirRemarque2) :?>
+	<?php
+
+if ($voirRemarque2) :
+    ?>
 	<tr>
 		<th width="5%">N°<br>arrêt</th>
 		<th width="8.5%">Horaire</th>
@@ -128,7 +160,10 @@ if ($voirRemarque2) {
 		<th width="29%">Nom des élèves</th>
 		<th width="18%">Remarques</th>
 	</tr>
-	<?php else :?>
+	<?php
+
+else :
+    ?>
 	<tr>
 		<th width="5%">N°<br>arrêt
 		</th>
@@ -139,26 +174,49 @@ if ($voirRemarque2) {
 		</th>
 		<th width="32%">Nom des élèves</th>
 	</tr>
-	<?php endif;?>
-<?php $i = 1; $effectif = 0; ?>      
-<?php foreach ((array) $this->allerRetour['retour'] as $row):?> 
-	<?php $nb = count($row["liste"]); $effectif += $nb;?>
+	<?php
+
+endif;
+?>
+<?php
+
+$i = 1;
+$effectif = 0;
+?>
+<?php
+
+foreach ((array) $this->allerRetour['retour'] as $row) :
+    ?>
+	<?php
+
+$nb = count($row["liste"]);
+    $effectif += $nb;
+    ?>
     <tr>
-		<td class="centre" width="5%"><?= $i++;?></td>
-		<td width="8.5%"><?= $row["horaire"];?></td>
-		<td width="<?= $voirRemarque2 ? '20%' : '25%';?>">
-			<?= $row["station"];?></td>
-		<td width="<?= $voirRemarque2 ? '13%' : '23%';?>">
-			<?= $row["typeArret"];?></td>
+		<td class="centre" width="5%"><?=$i ++;?></td>
+		<td width="8.5%"><?=$row["horaire"];?></td>
+		<td width="<?=$voirRemarque2 ? '20%' : '25%';?>">
+			<?=$row["station"];?></td>
+		<td width="<?=$voirRemarque2 ? '13%' : '23%';?>">
+			<?=$row["typeArret"];?></td>
 		<td class="centre" width="6.5%">
-			<?= $nb;?></td>
-		<td width="<?= $voirRemarque2 ? '29%' : '32%';?>">
-			<?= implode("<br>", $row["liste"]);?></td>
-		<?php if ($voirRemarque2):?>
+			<?=$nb;?></td>
+		<td width="<?=$voirRemarque2 ? '29%' : '32%';?>">
+			<?=implode("<br>", $row["liste"]);?></td>
+		<?php
+
+if ($voirRemarque2) :
+        ?>
 		<td width="18%">
-			<?= $row["commentaire2"];?></td>
-		<?php endif;?>
+			<?=$row["commentaire2"];?></td>
+		<?php endif;
+
+    ?>
 	</tr>
-<?php endforeach;?>
-    <?= sprintf($pied, $effectif);?>
+<?php
+
+endforeach
+;
+?>
+    <?=sprintf($pied, $effectif);?>
 </table>

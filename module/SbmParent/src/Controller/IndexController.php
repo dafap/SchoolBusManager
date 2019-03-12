@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -610,7 +610,8 @@ class IndexController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         $tCircuits = $this->db_manager->get('Sbm\Db\Vue\Circuits');
-        $rEffectifs = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(true);
+        $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
+        $effectifCircuits->init(true);
         $rListe = $this->db_manager->get('Sbm\Db\Eleve\Liste');
         $nbInscrits = [];
         $circuits = [];
@@ -618,7 +619,7 @@ class IndexController extends AbstractActionController
         for ($i = 1; array_key_exists('circuit' . $i . 'Id', $args); $i ++) {
             $circuitId = $args['circuit' . $i . 'Id'];
             $circuits[$i] = $tCircuits->getRecord($circuitId);
-            $nbInscrits[$i] = $rEffectifs[$circuitId]['total'];
+            $nbInscrits[$i] = $effectifCircuits->transportes($circuitId);
             $result = $rListe->query(Session::get('millesime'),
                 FiltreEleve::byCircuit($circuits[$i]->serviceId, $circuits[$i]->stationId,
                     true), [

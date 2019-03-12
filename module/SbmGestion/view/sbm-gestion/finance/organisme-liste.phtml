@@ -1,17 +1,20 @@
 <?php
+
 /**
  * Liste des organismes payeurs
- * 
+ *
+ * Cette vue reçoit un objet effectifOrganismes qui présente les méthodes demandes($organismeId)
+ * et transportes($organismeId) donnant les effectifs des élèves ayant fait une demande et des
+ * élèves transportés pour chaque identifiant $organismeId.
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/finance
  * @filesource organisme-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -93,13 +96,13 @@ $actions = [
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left">
-			<?= $this->listeZoneActions($hiddens, $actions);?></div>
+			<?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-			<?= $this->flashMessenger()->render('success');?>
-			<?= $this->flashMessenger()->render('warning');?>
-			<?= $this->flashMessenger()->render('error');?>
-			<?= $this->flashMessenger()->render('info');?>
-			<?= $this->flashMessenger()->render('default');?>
+			<?=$this->flashMessenger()->render('success');?>
+			<?=$this->flashMessenger()->render('warning');?>
+			<?=$this->flashMessenger()->render('error');?>
+			<?=$this->flashMessenger()->render('info');?>
+			<?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -116,17 +119,14 @@ $actions = [
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-            <?php foreach($organismes as $organisme): ?>
             <?php
-                $nbInscrits = StdLib::getParamR(
-                    [
-                        $organisme->organismeId,
-                        'transportes'
-                    ], $this->t_nb_inscrits, 0) . ' / ';
-                $nbInscrits .= StdLib::getParamR([
-                    $organisme->organismeId,
-                    'demandes'
-                ], $this->t_nb_inscrits, 0);
+
+            foreach ($organismes as $organisme) :
+                ?>
+            <?php
+                $nbInscrits = $this->effectifOrganismes->transportes(
+                    $organisme->organismeId) . ' / ' .
+                    $this->effectifOrganismes->demandes($organisme->organismeId);
                 // construction des JS pour selection
                 $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
                     $organisme->organismeId);
@@ -153,38 +153,41 @@ $actions = [
                     ]
                 ];
                 ?>
-                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+                <tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td class="nom">
-						<?= $this->escapeHtml($organisme->nom); ?></td>
+						<?=$this->escapeHtml($organisme->nom);?></td>
 					<td class="commune">
-						<?= $this->escapeHtml($organisme->commune); ?></td>
+						<?=$this->escapeHtml($organisme->commune);?></td>
 					<td class="codepostal">
-						<?= $this->escapeHtml($organisme->codePostal); ?></td>
+						<?=$this->escapeHtml($organisme->codePostal);?></td>
 					<td class="telephone">
-						<?= $this->telephone($organisme->telephone); ?></td>
+						<?=$this->telephone($organisme->telephone);?></td>
 					<td class="fax">
-						<?= $this->telephone($organisme->fax); ?></td>
+						<?=$this->telephone($organisme->fax);?></td>
 					<td class="email">
-						<?= $this->escapeHtml($organisme->email); ?></td>
+						<?=$this->escapeHtml($organisme->email);?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $organisme->organismeId, $organisme->selection)?>
+						<?=renderCheckbox($this, 'selection', 'chk' . $organisme->organismeId,$organisme->selection)?>
 						</td>
 					<td class="boutons">
-                		<?= $this->listeLigneActions($organisme->organismeId, $hiddens, $buttons);?></td>
-				</tr>         
-            <?php endforeach;?>
+                		<?=$this->listeLigneActions($organisme->organismeId, $hiddens, $buttons);?></td>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper">
-	    	<?= $this->form()->openTag($this->criteres_form);?>
-	    	<?= $this->formCollection($this->criteres_form, true);?>
-	    	<?= $this->form()->closeTag();?>
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -193,9 +196,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();
- 

@@ -3,7 +3,7 @@
  * Affichage des horaires d'un circuit pour un élève qui y est affecté
  *
  * (Modèle fourni par l'organisateur)
- * 
+ *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource horaires.phtml
@@ -54,7 +54,10 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 }
 ?>
 <div id="fiche-wrapper" class="parent horaires">
-	<h1>Transport de <?php echo $this->enfant;?></h1>
+	<h1>Transport de <?php
+
+echo $this->enfant;
+?></h1>
 	<div id="fiche-header">
 		<div class="clearfix">
 			<div class="float-left">
@@ -68,8 +71,14 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 			</div>
 		</div>
 		<div class="clearfix">
-			<h3 class="float-left"><?php echo implode('<br>', $h3contentG); ?></h3>
-			<h3 class="float-right"><?php echo implode('<br>', $h3contentD); ?></h3>
+			<h3 class="float-left"><?php
+
+echo implode('<br>', $h3contentG);
+?></h3>
+			<h3 class="float-right"><?php
+
+echo implode('<br>', $h3contentD);
+?></h3>
 		</div>
 	</div>
 	<div id=fiche-inner>
@@ -86,12 +95,30 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 						<th>Nom des élèves</th>
 						<th>Remarques</th>
 					</tr>
-	                <?php for ($i = 0; $i < count($data); $i ++):?>
-	                <?php $css = $this->cycle(['odd', 'even'])->next();?>
-	                <tr class="<?php echo $css;?>">
-						<td><?php echo implode('</td><td>', $aller[$i]);?></td>
+	                <?php
+
+                for ($i = 0; $i < count($data); $i ++) :
+                    ?>
+	                <?php
+
+                    $css = $this->cycle([
+                        'odd',
+                        'even'
+                    ])->next();
+                    ?>
+	                <tr class="<?php
+
+                    echo $css;
+                    ?>">
+						<td><?php
+
+                    echo implode('</td><td>', $aller[$i]);
+                    ?></td>
 					</tr>
-	                <?php endfor;?>
+	                <?php
+                endfor
+                ;
+                ?>
 				</tbody>
 			</table>
 		</fieldset>
@@ -109,20 +136,45 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 						<th>Nom des élèves</th>
 						<th>Remarques</th>
 					</tr>
-	                <?php for ($i = 0; $i < count($data); $i ++):?>
-	                <?php $css = $this->cycle(['odd', 'even'])->next();?>
-	                <tr class="<?php echo $css;?>">
-						<td><?php echo implode('</td><td>', $retour[$i]);?></td>
+	                <?php
+
+                for ($i = 0; $i < count($data); $i ++) :
+                    ?>
+	                <?php
+
+                    $css = $this->cycle([
+                        'odd',
+                        'even'
+                    ])->next();
+                    ?>
+	                <tr class="<?php
+
+                    echo $css;
+                    ?>">
+						<td><?php
+
+                    echo implode('</td><td>', $retour[$i]);
+                    ?></td>
 					</tr>
-	                <?php endfor;?>
+	                <?php
+                endfor
+                ;
+                ?>
 				</tbody>
 			</table>
 		</fieldset>
 		<div class="left-95px top-6px">
-			<form method="post" action="<?php echo $url_retour;?>">
+			<form method="post" action="<?php
+
+echo $url_retour;
+?>">
 				<input type="submit" class="default" name="horaires"
-					value="Imprimer" formaction="<?php echo $url_horaires;?>"> <input
-					type="submit" class="default" name="cancel" value="Retour">
+					value="Imprimer" formaction="<?php
+
+    echo $url_horaires;
+    ?>"
+					formtarget="_blank"> <input type="submit" class="default"
+					name="cancel" value="Retour">
 			</form>
 		</div>
 	</div>

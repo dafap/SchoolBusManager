@@ -8,14 +8,14 @@
  * @filesource Classes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 7 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Strategy\Niveau as NiveauStrategy;
 
-class Classes extends AbstractSbmTable
+class Classes extends AbstractSbmTable implements EffectifInterface
 {
 
     /**

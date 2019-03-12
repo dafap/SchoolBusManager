@@ -1,11 +1,11 @@
 <?php
 /**
  * Extension de la classe Tcpdf
- * 
- * Les modèles d'en-tête de pages sont définis par les méthodes templateHeaderMethodx 
+ *
+ * Les modèles d'en-tête de pages sont définis par les méthodes templateHeaderMethodx
  * où x est un entier à partir de 1
- * Le constructeur reçoit un PdfManager $pdf_manager et doit être suivi par l'appel de 
- * la méthode setParams() qui installe le tableau de paramètres $params provenant de 
+ * Le constructeur reçoit un PdfManager $pdf_manager et doit être suivi par l'appel de
+ * la méthode setParams() qui installe le tableau de paramètres $params provenant de
  * l'évènement 'renderPdf'.
  *
  * @project sbm
@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 fév. 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -68,6 +68,15 @@ class Tcpdf extends \TCPDF
      * @var ServiceLocatorInterface
      */
     protected $pdf_manager;
+
+    /**
+     * Nom de l'enregistrement du recordSource dans le db_manager lorsqu'il s'agit d'une table ou
+     * d'une vue.
+     * Requête Sql sinon.
+     *
+     * @var string
+     */
+    private $recordSource;
 
     /**
      * Tableau des modèles de pages dont les clés sont (header, footer, page)
@@ -147,7 +156,7 @@ class Tcpdf extends \TCPDF
      *
      * @param array $params
      *            paramètres envoyés dans l'évènement 'renderPdf'
-     *            
+     *
      * @return \SbmPdf\Model\Tcpdf
      */
     public function setParams($params = [])
@@ -246,7 +255,7 @@ class Tcpdf extends \TCPDF
      *            clé de la valeur recherchée
      * @param mixed $default
      *            valeur par défaut, renvoyée si la clé n'existe pas
-     *            
+     *
      * @return mixed valeur renvoyée
      */
     protected function getParam($key, $default)
@@ -267,10 +276,10 @@ class Tcpdf extends \TCPDF
      *            clé de la valeur recherchée
      * @param mixed $default
      *            valeur par défaut renvoyée si la clé n'existe pas
-     *            
+     *
      * @throws Exception si la section n'est pas présente dans le tableau config ou cette section
      *         n'est pas un tableau
-     *        
+     *
      * @return mixed valeur renvoyée
      */
     public function getConfig($sections, $key, $default = null, $exception = false)
@@ -547,7 +556,10 @@ class Tcpdf extends \TCPDF
     protected function getWhere()
     {
         $where = $this->getParam('where', new Where());
-        $filter = $this->getConfig('document', 'filter', null);
+        $filter = $this->decodeSource((string) $this->getConfig('document', 'filter', ''),
+            $this->pdf_manager->get('SbmAuthentification\Authentication')
+                ->by()
+                ->getUserId());
         if (! empty($filter)) {
             $where->literal($filter);
         }
@@ -595,19 +607,19 @@ class Tcpdf extends \TCPDF
      *
      * @throws Exception si aucune des clés ne donne un recordSource valide pour le ServiceManager
      *         (vérifier éventellement les enregistrements des clés dans module.config.php)
-     *        
+     *
      * @return \SbmCommun\Model\Db\Service\Table\AbstractSbmTable
      */
     protected function getRecordSourceTable()
     {
         if ($this->pdf_manager->get('Sbm\DbManager')->has(
             $this->getConfig('document', 'recordSource', ''))) {
-            return $this->pdf_manager->get('Sbm\DbManager')->get(
-                $this->getConfig('document', 'recordSource', ''));
+            $this->recordSource = $this->getConfig('document', 'recordSource', '');
+            return $this->pdf_manager->get('Sbm\DbManager')->get($this->recordSource);
         } elseif ($this->pdf_manager->get('Sbm\DbManager')->has(
             $this->getParam('recordSource', ''))) {
-            return $this->pdf_manager->get('Sbm\DbManager')->get(
-                $this->getParam('recordSource', ''));
+            $this->recordSource = $this->getParam('recordSource', '');
+            return $this->pdf_manager->get('Sbm\DbManager')->get($this->recordSource);
         } else {
             if (getenv('APPLICATION_ENV') == 'development') {
                 $config_source = $this->getConfig('document', 'recordSource', 'absente');
@@ -781,7 +793,8 @@ class Tcpdf extends \TCPDF
             $this->x = $this->original_lMargin;
         }
         if ($this->getConfig('document', 'pageheader_logo_visible', true) &&
-            $headerdata['logo'] && ($headerdata['logo'] !=
+            $headerdata['logo'] &&
+            ($headerdata['logo'] !=
             $this->getConfig('document', 'image_blank', K_BLANK_IMAGE))) {
             if (substr($headerdata['logo'], 0, 2) == '//') {
                 $k_path_logo = $headerdata['logo']; // url absolue
@@ -894,7 +907,7 @@ class Tcpdf extends \TCPDF
      *
      * @todo : Lorsqu'il y a plusieurs sources, les calculs se font sur chaque source et sont
      *       rendus s'ils ne sont pas nul
-     *      
+     *
      * @param string $param
      * @return string
      */
@@ -938,7 +951,8 @@ class Tcpdf extends \TCPDF
                 'text' => false
             ];
             $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width,
-                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style,
+                '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {
@@ -1004,7 +1018,7 @@ class Tcpdf extends \TCPDF
      *            de 3 entiers de 0 à 255 séparés par des ,)
      *            ou un tableau de 3 entiers de 0 à 255 représentant le codage de la couleur au
      *            format rgb
-     *            
+     *
      * @return array string la couleur codée au format RGB sous la forme d'un tableau si l'entrée
      *         est au format HTML
      *         ou la couleur codée au format HTML sous la forme d'une chaine si l'entrée est au
@@ -1179,8 +1193,9 @@ class Tcpdf extends \TCPDF
                 '', false, 'J');
         } else {
             // cas d'une section continue
-            $y = $this->GetY() + $this->getConfig('document', 'docheader_margin',
-                self::DEFAULT_SBM_DOCHEADER_MARGIN);
+            $y = $this->GetY() +
+                $this->getConfig('document', 'docheader_margin',
+                    self::DEFAULT_SBM_DOCHEADER_MARGIN);
             $this->SetY($y);
             $tmp = $this->getConfig('document', 'title', self::DEFAULT_SBM_DOCUMENT_TITLE);
             if (! empty($tmp)) {
@@ -1202,8 +1217,8 @@ class Tcpdf extends \TCPDF
                     $this->SetFont($this->getFontFamily(), $font_style);
                 } else {
                     $this->writeHTML(
-                        $this->getConfig('document', 'docheader_subtitle', ''), true, false,
-                        true, false, '');
+                        $this->getConfig('document', 'docheader_subtitle', ''), true,
+                        false, true, false, '');
                 }
             }
             /*
@@ -1227,7 +1242,7 @@ class Tcpdf extends \TCPDF
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *            
+     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod1($param = null)
@@ -1526,7 +1541,7 @@ class Tcpdf extends \TCPDF
      * @param int $ordinal_table
      * @param boolean $force
      *            force une initialisation du tableau
-     *            
+     *
      * @throws Exception
      * @return array
      */
@@ -1538,9 +1553,14 @@ class Tcpdf extends \TCPDF
             $table_columns = $this->getConfig('doctable', 'columns', []);
 
             if ($this->getRecordSourceType() == 'T') {
-                // La source doit être enregistrée dans le ServiceManager (table ou vue MySql)
-                // sinon exception
+                /**
+                 * POUR LES SOURCES qui sont des TABLES ou des VUES
+                 *
+                 * La source doit être enregistrée dans le ServiceManager (table ou vue MySql)
+                 * sinon exception
+                 */
                 $table = $this->getRecordSourceTable();
+
                 // si la description des colonnes est vide, on configure toutes les colonnes de la
                 // source
                 if (empty($table_columns)) {
@@ -1554,6 +1574,7 @@ class Tcpdf extends \TCPDF
                     $this->config['doctable']['columns'] = $table_columns;
                 }
                 // prépare les filtres pour le décodage des données (notamment booléennes)
+                $columnEffectif = false;
                 foreach ($table_columns as &$column) {
                     $column['filter'] = preg_replace([
                         '/^\s+/',
@@ -1565,14 +1586,58 @@ class Tcpdf extends \TCPDF
                     } else {
                         $column['filter'] = [];
                     }
+                    // repère les colonnes d'effectifs
+                    if (preg_match('/%(.*)%/', $column['tbody'])) {
+                        $columnEffectif = true;
+                    }
                     unset($column);
+                }
+                $effectifClass = null;
+                if ($columnEffectif) {
+                    $effectifClassName = $this->getParam('effectifClassName',
+                        Columns::getStringEffectifInterface($this->recordSource));
+                    if ($this->pdf_manager->get('Sbm\DbManager')->has($effectifClassName)) {
+                        $effectifClass = $this->pdf_manager->get('Sbm\DbManager')->get(
+                            $effectifClassName);
+                        $id = $effectifClass->getIdColumn();
+                        $sanspreinscrits = $this->getParam('sanspreinscrits', false);
+                        if (method_exists($effectifClass, 'setCaractereConditionnel')) {
+                            $caractere = $this->getParam('caractereConditionnel', false);
+                            if ($caractere) {
+                                $effectifClass->setCaractereConditionnel($caractere)->init(
+                                    $sanspreinscrits);
+                            } else {
+                                // Mauvaise configuration
+                                if (getenv('APPLICATION_ENV') == 'development') {
+                                    throw new Exception(
+                                        "Le paramètre `caractereConditionnel` n'a pas été défini avant l'appel.");
+                                }
+                                $effectifClass = null;
+                            }
+                        } else {
+                            $effectifClass->init($sanspreinscrits);
+                        }
+                    }
                 }
                 // lecture des données et calcul des largeurs de colonnes
                 foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
                     $ligne = [];
                     foreach ($table_columns as &$column) {
-                        $ligne[] = $value = StdLib::translateData(
-                            $row->{$column['tbody']}, $column['filter']);
+                        try {
+                            $ligne[] = $value = StdLib::translateData(
+                                $row->{$column['tbody']}, $column['filter']);
+                        } catch (\Exception $e) {
+                            if ($effectifClass instanceof \SbmGestion\Model\Db\Service\Eleve\EffectifInterface) {
+                                $columntbody = trim($column['tbody'], '%');
+                                if (method_exists($effectifClass, $columntbody)) {
+                                    $ligne[] = $effectifClass->{$columntbody}($row->{$id});
+                                } else {
+                                    $ligne[] = 0;
+                                }
+                            } else {
+                                $ligne[] = 0;
+                            }
+                        }
                         // adapte la largeur de la colonne si nécessaire
                         $value_width = $this->GetStringWidth($value,
                             $this->getConfig('document', 'data_font_family',
@@ -1589,10 +1654,61 @@ class Tcpdf extends \TCPDF
                 }
                 $this->config['doctable']['columns'] = $table_columns;
             } else {
-                $t_nb_inscrits = $this->getParam('t_nb_inscrits', []);
+                /**
+                 * POUR LES SOURCES qui sont des REQUETES SQL
+                 *
+                 * On essaiera de poser un effectif sur les colonnes %transportes% et %demandes% à
+                 * condition qu'on ait fourni un paramètre 'effectifClassName' correct (cad qu'il
+                 * existe une classe `effectifClass` implémentant `EffectifInterface` et possédant
+                 * les methodes `tranportes()` et éventuellement `demandes()`.
+                 * Pour obtenir des effectifs conditionnels, il faut qu'un paramètre
+                 * 'caractereConditionnel' soit passé et que la classe `effectifClass`
+                 * présente la méthode `setCaractereConditionnel`. Son appel se fera avant l'init.
+                 */
                 $columns = [];
-                foreach ($table_columns as $column) {
-                    $columns[] = $column['tbody'];
+                $effectifColumns = [];
+                foreach ($table_columns as &$column) {
+                    // on relève les colonnes d'effectifs et on met false à leur place dans
+                    // $column['tbody'] pour ne pas rechercher la valeur dans la requête.
+                    $matches = [];
+                    if (preg_match('/^%(.*)%$/', $column['tbody'], $matches)) {
+                        $effectifColumns[] = $matches[1];
+                        $column['tbody'] = false;
+                    } else {
+                        $columns[] = $column['tbody'];
+                    }
+                }
+                if ($effectifColumns) {
+                    $effectifClassName = $this->getParam('effectifClassName', false);
+                    $effectifClass = null;
+                    if ($effectifClassName &&
+                        $this->pdf_manager->get('Sbm\DbManager')->has($effectifClassName)) {
+                        $effectifClass = $this->pdf_manager->get('Sbm\DbManager')->get(
+                            $effectifClassName);
+                        if ($effectifClass instanceof \SbmGestion\Model\Db\Service\Eleve\EffectifInterface) {
+                            $id = $effectifClass->getIdColumn();
+                            $sanspreinscrits = $this->getParam('sanspreinscrits', false);
+                            if (method_exists($effectifClass, 'setCaractereConditionnel')) {
+                                $caractere = $this->getParam('caractereConditionnel',
+                                    false);
+                                if ($caractere) {
+                                    $effectifClass->setCaractereConditionnel($caractere)->init(
+                                        $sanspreinscrits);
+                                } else {
+                                    // Mauvaise configuration
+                                    if (getenv('APPLICATION_ENV') == 'development') {
+                                        throw new Exception(
+                                            "Le paramètre `caractereConditionnel` n'a pas été défini avant l'appel.");
+                                    }
+                                    $effectifClass = null;
+                                }
+                            } else {
+                                $effectifClass->init($sanspreinscrits);
+                            }
+                        } else {
+                            $effectifClass = null;
+                        }
+                    }
                 }
                 if (empty($columns)) {
                     $columns[] = Select::SQL_STAR;
@@ -1627,19 +1743,27 @@ class Tcpdf extends \TCPDF
                         foreach ($rowset as $row) {
                             // $row est un ArrayObject
                             $ligne = [];
+                            $idEffectifColumns = 0;
                             for ($key = 0; $key < count($table_columns); $key ++) {
-                                $value = $row[$table_columns[$key]['tbody']];
-                                // traitement des effectifs
-                                if ($table_columns[$key]['filter'] &&
-                                    strpos($table_columns[$key]['filter'], '%valeur%')) {
-                                    $filter = $table_columns[$key]['filter'];
-                                    $filter = str_replace('%valeur%', $value, $filter);
-                                    $filter = explode('=>', $filter);
-                                    if ($filter[0] == 't_nb_inscrits') {
-                                        $filter = StdLib::getArrayFromString($filter[1]);
-                                        $value = StdLib::getParamR($filter, $t_nb_inscrits,
-                                            0);
+                                // on distingue les colonnes d'effectifs
+                                if ($table_columns[$key]['tbody']) {
+                                    // ce n'est pas une colonne d'effectif
+                                    $value = $row[$table_columns[$key]['tbody']];
+                                } elseif (array_key_exists($idEffectifColumns,
+                                    $effectifColumns)) {
+                                    // c'est une colonne d'effectif
+                                    $method = $effectifColumns[$idEffectifColumns ++];
+                                    if ($effectifClass instanceof \SbmGestion\Model\Db\Service\Eleve\EffectifInterface &&
+                                        method_exists($effectifClass, $method)) {
+                                        // la configuration est correcte
+                                        $value = $effectifClass->{$method}($row->{$id});
+                                    } else {
+                                        // la configuration est incorrecte
+                                        $value = 0;
                                     }
+                                } else {
+                                    // autres cas
+                                    $value = 0;
                                 }
                                 // reprise du traitement
                                 $ligne[] = $value;
@@ -1661,7 +1785,8 @@ class Tcpdf extends \TCPDF
                     }
                 } catch (\Exception $e) {
                     if (getenv('APPLICATION_ENV') == 'development') {
-                        $msg = __METHOD__ . ' - ' . $e->getMessage() . "\n" . $recordSource;
+                        $msg = __METHOD__ . ' - ' . $e->getMessage() . "\n" . $recordSource .
+                            "\n" . $e->getTraceAsString();
                     } else {
                         $msg = "Impossible d'exécuter la requête.\n" . $sqlString;
                     }
@@ -1700,7 +1825,8 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docfooter_page_distincte', false)) {
             // cas d'une page distincte
             $this->SetY(
-                $this->GetY() + $this->getConfig('document', 'docfooter_margin',
+                $this->GetY() +
+                $this->getConfig('document', 'docfooter_margin',
                     self::DEFAULT_SBM_DOCFOOTER_MARGIN));
             $tmp = $this->getConfig('document', 'docfooter_title', '');
             if (! empty($tmp)) {
@@ -1736,7 +1862,8 @@ class Tcpdf extends \TCPDF
             $this->checkPageBreak($delta);
             if ($current_page == $this->PageNo()) {
                 $this->SetY(
-                    $this->GetY() + $this->getConfig('document', 'docfooter_margin',
+                    $this->GetY() +
+                    $this->getConfig('document', 'docfooter_margin',
                         self::DEFAULT_SBM_DOCFOOTER_MARGIN));
             }
             $tmp = $this->getConfig('document', 'docfooter_title', '');
@@ -1814,7 +1941,7 @@ class Tcpdf extends \TCPDF
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *            
+     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod2($param = null)
@@ -1914,7 +2041,7 @@ class Tcpdf extends \TCPDF
      *            'fieldname', 'filter', 'format', 'label', 'nature', 'style', 'data'
      * @param bool $force
      *            force l'initialisation des données par lecture de la base
-     *            
+     *
      * @return array
      */
     protected function getDataForEtiquettes($descripteur, $force = false)
@@ -2102,7 +2229,7 @@ class Tcpdf extends \TCPDF
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *            
+     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod3($param = null)
@@ -2114,7 +2241,8 @@ class Tcpdf extends \TCPDF
             return 'Cartes de transport';
         }
 
-        $label = new Carte($this->pdf_manager->get('Sbm\DbManager'), $this->getDocumentId());
+        $label = new Carte($this->pdf_manager->get('Sbm\DbManager'),
+            $this->getDocumentId());
         // position par défaut : planche entière
         if ($position = $this->getParam('position', false)) {
             $label->setCurrentColumn($position['column']);
@@ -2224,7 +2352,7 @@ class Tcpdf extends \TCPDF
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *            
+     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod4($param = null)
@@ -2313,7 +2441,8 @@ class Tcpdf extends \TCPDF
                 'text' => false
             ];
             $this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width,
-                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
+                $barcode_width, (($this->footer_margin / 3) - $line_width), 0.3, $style,
+                '');
         }
         $w_page = isset($this->l['w_page']) ? $this->l['w_page'] . ' ' : '';
         if (empty($this->pagegroups)) {

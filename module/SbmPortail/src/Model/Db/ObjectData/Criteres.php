@@ -1,13 +1,13 @@
 <?php
 /**
  * Entité pour les critères élèves du portail
- * 
+ *
  * @project sbm
  * @package SbmPortail\Model\Db\ObjectData
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
+ * @date 12 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPortail\Model\Db\ObjectData;
@@ -18,6 +18,18 @@ use Zend\Db\Sql\Where;
 
 class Criteres extends SbmCommunCriteres
 {
+
+    /**
+     *
+     * @var bool
+     */
+    private $sanspreinscrits;
+
+    public function __construct($form_fields, bool $sanspreinscrits = true)
+    {
+        $this->sanspreinscrits = $sanspreinscrits;
+        parent::__construct($form_fields);
+    }
 
     /**
      * On filtre sur le millesime en cours.
@@ -41,9 +53,14 @@ class Criteres extends SbmCommunCriteres
     public function getWhere($strict = [], $alias = [])
     {
         $where = new Where();
-        $where->literal('inscrit = 1')
-            ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+        if ($this->sanspreinscrits) {
+            $where->literal('inscrit = 1')
+                ->nest()
+                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                'gratuit > 0')->unnest();
+        } else {
+            $where->literal('inscrit = 1');
+        }
         $where->equalTo('sco.millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
@@ -90,9 +107,14 @@ class Criteres extends SbmCommunCriteres
     public function getWherePdf($descripteur = null)
     {
         $where = new Where();
-        $where->literal('inscrit = 1')
-            ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+        if ($this->sanspreinscrits) {
+            $where->literal('inscrit = 1')
+                ->nest()
+                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                'gratuit > 0')->unnest();
+        } else {
+            $where->literal('inscrit = 1');
+        }
         $where->equalTo('millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
@@ -145,7 +167,14 @@ class Criteres extends SbmCommunCriteres
     public function getWhereForEleves($strict = [], $alias = [])
     {
         $where = new Where();
-        $where->literal('inscrit = 1');
+        if ($this->sanspreinscrits) {
+            $where->literal('inscrit = 1')
+                ->nest()
+                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                'gratuit > 0')->unnest();
+        } else {
+            $where->literal('inscrit = 1');
+        }
         $where->equalTo('sco.millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
@@ -197,7 +226,14 @@ class Criteres extends SbmCommunCriteres
     public function getWherePdfForEleves($descripteur = null)
     {
         $where = new Where();
-        $where->literal('inscrit = 1');
+        if ($this->sanspreinscrits) {
+            $where->literal('inscrit = 1')
+                ->nest()
+                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                'gratuit > 0')->unnest();
+        } else {
+            $where->literal('inscrit = 1');
+        }
         $where->equalTo('millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);

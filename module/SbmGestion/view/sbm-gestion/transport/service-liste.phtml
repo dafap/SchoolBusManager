@@ -1,18 +1,19 @@
 <?php
+
 /**
  * Liste des services
  *
+ * Cette vue reçoit un objet effectifServices qui présente la méthode transportes($serviceId)
+ * donnant les effectifs des élèves transportés pour chaque identifiant $serviceId.
  *
  * @project sbm
  * @package SbmGestion
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -97,7 +98,7 @@ $actions = [
 <h1>Liste des services</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right"><?php
 echo $this->flashMessenger()->render('success');
 echo $this->flashMessenger()->render('warning');
@@ -120,12 +121,12 @@ echo $this->flashMessenger()->render('default');
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-            <?php foreach($services as $service): ?>
             <?php
-                $nbInscrits = StdLib::getParamR([
-                    $service->serviceId,
-                    'total'
-                ], $this->t_nb_inscrits, 0);
+
+            foreach ($services as $service) :
+                ?>
+            <?php
+                $nbInscrits = $this->effectifServices->transportes($service->serviceId);
                 // construction des JS pour selection
                 $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n",
                     $service->serviceId);
@@ -166,38 +167,41 @@ echo $this->flashMessenger()->render('default');
                     ]
                 ];
                 ?>
-                <tr class="<?= $css;?>">
+                <tr class="<?=$css;?>">
 					<td class="serviceid">
-						<?= $this->escapeHtml($service->serviceId); ?></td>
+						<?=$this->escapeHtml($service->serviceId);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($service->nom); ?></td>
+						<?=$this->escapeHtml($service->nom);?></td>
 					<td class="aliascg">
-						<?= $this->escapeHtml($service->aliasCG); ?></td>
+						<?=$this->escapeHtml($service->aliasCG);?></td>
 					<td class="transporteur">
-						<?= $this->escapeHtml($service->transporteur); ?></td>
+						<?=$this->escapeHtml($service->transporteur);?></td>
 					<td class="operateur">
-						<?= $this->escapeHtml($service->operateur); ?></td>
+						<?=$this->escapeHtml($service->operateur);?></td>
 					<td class="nbplaces">
-						<?= $this->escapeHtml($service->nbPlaces); ?></td>
+						<?=$this->escapeHtml($service->nbPlaces);?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $service->serviceId, $service->selection)?>
+						<?=renderCheckbox($this, 'selection', 'chk' . $service->serviceId, $service->selection)?>
 						</td>
 					<td class="boutons">
-            			<?=$this->listeLigneActions($service->serviceId,$hiddens,$buttons);?></td>
-				</tr>         
-            <?php endforeach;?>
+            			<?=$this->listeLigneActions($service->serviceId, $hiddens, $buttons);?></td>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper">
-	    	<?= $this->form()->openTag($this->criteres_form);?>
-	    	<?= $this->formCollection($this->criteres_form, true);?>
-	    	<?= $this->form()->closeTag();?>	
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -206,8 +210,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

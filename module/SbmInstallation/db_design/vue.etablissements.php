@@ -8,8 +8,8 @@
  * @filesource vue.etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 7 mars 2019
+ * @version 2019-2.5.0
  */
 return [
     'name' => 'etablissements',
@@ -49,7 +49,21 @@ return [
                 'field' => 'niveau'
             ],
             [
+                'expression' => [
+                    'value' => 'CASE niveau WHEN 1 THEN "maternelle" WHEN 2 THEN "élémentaire" WHEN 3 THEN "maternelle + élémentaire" WHEN 4 THEN "collège" WHEN 8 THEN "lycée" ELSE "autre" END',
+                    'type' => 'varchar(24)'
+                ],
+                'alias' => 'niveauEnToutesLettres'
+            ],
+            [
                 'field' => 'statut'
+            ],
+            [
+                'expression' => [
+                    'value' => 'CASE statut WHEN 1 THEN "Public" ELSE "Privé" END',
+                    'type' => 'varchar(6)'
+                ],
+                'alias' => 'statutEnToutesLettres'
             ],
             [
                 'field' => 'visible'

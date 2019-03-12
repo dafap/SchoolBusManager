@@ -2,25 +2,18 @@
 /**
  * Liste des etablissements
  *
- * Cette vue reçoit une variable $t_nb_inscrits qui est un tableau associatif 
- * structuré comme indiqué dans l'exemple ci-dessous :
- * [
- *     code_etablissement => [
- *         'demandes' => effectif des demandes
- *         'transportes' => effectif des élèves transportés
- *     ],
- *     ...
- * ]
+ * Cette vue reçoit un objet effectifEtablissements qui présente les méthodes
+ * demandes($etablissementId) et transportes($etablissementId) donnant les effectifs des élèves
+ * ayant fait une demande et des élèves transportés pour chaque identifiant $etablissementId.
  *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport/
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
 
 function renderCheckbox($view, $name, $id, $value)
@@ -147,13 +140,13 @@ $actions = [
 <h1>Liste des établissements</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-			<?= $this->flashMessenger()->render('success');?>
-			<?= $this->flashMessenger()->render('warning');?>
-			<?= $this->flashMessenger()->render('error');?>
-			<?= $this->flashMessenger()->render('info');?>
-			<?= $this->flashMessenger()->render('default');?>
+			<?=$this->flashMessenger()->render('success');?>
+			<?=$this->flashMessenger()->render('warning');?>
+			<?=$this->flashMessenger()->render('error');?>
+			<?=$this->flashMessenger()->render('info');?>
+			<?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -173,21 +166,16 @@ $actions = [
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-        <?php foreach($etablissements as $etablissement): ?>
+        <?php
+
+        foreach ($etablissements as $etablissement) :
+            ?>
         	<?php
             $pt = new Point($etablissement->x, $etablissement->y);
             $ptOk = $this->projection->isValid($pt, 'etablissement');
-            $nbInscrits = StdLib::getParamR(
-                [
-                    $etablissement->etablissementId,
-                    'transportes'
-                ], $this->t_nb_inscrits, 0);
-            $nbInscrits .= ' / ';
-            $nbInscrits .= StdLib::getParamR(
-                [
-                    $etablissement->etablissementId,
-                    'demandes'
-                ], $this->t_nb_inscrits, 0);
+            $nbInscrits = $this->effectifEtablissements->transportes(
+                $etablissement->etablissementId) . ' / ' .
+                $this->effectifEtablissements->demandes($etablissement->etablissementId);
             // construction des JS pour selection, visible et desservie
             $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n",
                 $etablissement->etablissementId);
@@ -228,48 +216,56 @@ $actions = [
             ];
             ?>
             	<tr
-					class="petit <?= $this->cycle(["even", "odd"])->next();?>">
+					class="petit <?=$this->cycle(["even","odd"])->next();?>">
 					<td>
-					<?php if (!$ptOk) : ?>
+					<?php
+
+            if (! $ptOk) :
+                ?>
 					   <i class="fam-error"></i>
-					<?php endif;?>
+					<?php endif;
+
+            ?>
 					</td>
 					<td class="etablissementid">
-						<?= $this->escapeHtml($etablissement->etablissementId); ?></td>
+						<?=$this->escapeHtml($etablissement->etablissementId);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($etablissement->nom); ?></td>
+						<?=$this->escapeHtml($etablissement->nom);?></td>
 					<td class="commune">
-						<?= $this->escapeHtml($etablissement->commune); ?></td>
+						<?=$this->escapeHtml($etablissement->commune);?></td>
 					<td class="codepostal">
-						<?= $this->escapeHtml($etablissement->codePostal); ?></td>
+						<?=$this->escapeHtml($etablissement->codePostal);?></td>
 					<td class="telephone">
-						<?= $this->telephone($etablissement->telephone); ?></td>
+						<?=$this->telephone($etablissement->telephone);?></td>
 					<td class="email">
-						<?= $this->escapeHtml($etablissement->email); ?></td>
+						<?=$this->escapeHtml($etablissement->email);?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="centre desservi">
-						<?= renderCheckbox($this, 'desservie', 'des' . $etablissement->etablissementId, $etablissement->desservie)?></td>
+						<?=renderCheckbox($this, 'desservie', 'des' . $etablissement->etablissementId,$etablissement->desservie)?></td>
 					<td class="centre visible">
-						<?= renderCheckbox($this, 'visible', 'vis' . $etablissement->etablissementId, $etablissement->visible)?></td>
+						<?=renderCheckbox($this, 'visible', 'vis' . $etablissement->etablissementId,$etablissement->visible)?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $etablissement->etablissementId, $etablissement->selection)?></td>
+						<?=renderCheckbox($this, 'selection', 'chk' . $etablissement->etablissementId,$etablissement->selection)?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($etablissement->etablissementId, $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($etablissement->etablissementId, $hiddens, $buttons);?>
 						</td>
-				</tr>         
-        <?php endforeach;?>
+				</tr>
+        <?php
+        endforeach
+        ;
+        ?>
         	</tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
 			</div>
 		<div class="criteres-wrapper">
-	    	<?= $this->form()->openTag($this->criteres_form);?>
-	    	<?= $this->formCollection($this->criteres_form, true);?>
-	    	<?= $this->form()->closeTag();?>	
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -278,8 +274,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

@@ -3,13 +3,17 @@
  * Controller du portail ouvert aux invités en consultation
  *
  * transporteur, etablissement, secretariat
- * 
+ *
+ * Modifier l'initialisation des propriétés `transporteur_sanspreinscrits` et
+ * `etablissement_sanspreinscrits` selon convenance pour adapter les données
+ * communiquées par le portail.
+ *
  * @project sbm
  * @package SbmPortail/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
+ * @date 12 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPortail\Controller;
@@ -24,6 +28,20 @@ use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
+
+    /**
+     * Indique si le portail des transporteur cache les préinscrits ou pas.
+     *
+     * @var bool
+     */
+    private $transporteur_sanspreinscrits = true;
+
+    /**
+     * Indique si le portail des établissements cache les préinscrits ou pas.
+     *
+     * @var bool
+     */
+    private $etablissement_sanspreinscrits = true;
 
     public function indexAction()
     {
@@ -136,8 +154,7 @@ class IndexController extends AbstractActionController
                 // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit.
                 // Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
-                $args = Session::get('post', [],
-                    $this->getSessionNamespace('org-eleves'));
+                $args = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
             } else {
                 if (array_key_exists('cancel', $args)) {
                     try {
@@ -173,7 +190,7 @@ class IndexController extends AbstractActionController
 
         // créer un objectData qui contient la méthode getWhere() adhoc
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
-            $criteres_form->getElementNames());
+            $criteres_form->getElementNames(), false);
 
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
@@ -217,7 +234,7 @@ class IndexController extends AbstractActionController
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
-            $criteres_form->getElementNames());
+            $criteres_form->getElementNames(), false);
         $criteres = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
@@ -243,17 +260,16 @@ class IndexController extends AbstractActionController
     {
         try {
             $services = $this->db_manager->get('Sbm\Db\Query\Services')->paginatorServicesWithEtablissements();
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService();
+            $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
+            $effectifServices->init();
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $services = [];
-            $stats = [];
+            $effectifServices = null;
         }
-
-        // die(var_dump($stats));
         return new ViewModel(
             [
                 'paginator' => $services,
-                'statServices' => $stats,
+                'effectifServices' => $effectifServices,
                 'page' => $this->params('page', 1)
             ]);
     }
@@ -275,30 +291,32 @@ class IndexController extends AbstractActionController
         try {
             $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                 $userId);
-
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(
-                true);
-
-            $elevesTransportes = StdLib::getParamR([
-                $etablissementId,
-                'transportes'
-            ], $stats, 0);
-
+            $oetablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
+                $etablissementId);
+            $etablissement = "$oetablissement->nom - $oetablissement->commune";
             $services = $this->db_manager->get('Sbm\Db\Query\Services')->getServicesGivenEtablissement(
                 $etablissementId);
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement(
-                $etablissementId, true);
+            $effectifEtablissements = $this->db_manager->get(
+                'Sbm\Db\Eleve\EffectifEtablissements');
+            $effectifEtablissements->init($this->etablissement_sanspreinscrits);
+            $elevesTransportes = $effectifEtablissements->transportes($etablissementId);
+            $effectifEtablissementsServices = $this->db_manager->get(
+                'Sbm\Db\Eleve\EffectifEtablissementsServices');
+            $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init(
+                $this->etablissement_sanspreinscrits);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+            $etablissement = '';
             $elevesTransportes = '';
             $services = [];
-            $stats = [];
+            $effectifEtablissementsServices = null;
         }
 
         return new ViewModel(
             [
+                'etablissement' => $etablissement,
                 'elevesTransportes' => $elevesTransportes,
                 'services' => $services,
-                'statServices' => $stats
+                'effectifEtablissementsServices' => $effectifEtablissementsServices
             ]);
     }
 
@@ -319,30 +337,35 @@ class IndexController extends AbstractActionController
         try {
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(true);
-            $elevesATransporter = StdLib::getParamR([
-                $transporteurId,
-                'total'
-            ], $stats, 0);
+            $transporteur = $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord(
+                $transporteurId)->nom;
             $services = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll(
                 [
                     'transporteurId' => $transporteurId
                 ]);
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService(
-                $transporteurId, true);
+            $effectifTransporteurs = $this->db_manager->get(
+                'Sbm\Db\Eleve\EffectifTransporteurs');
+            $effectifTransporteurs->init($this->transporteur_sanspreinscrits);
+            $elevesATransporter = $effectifTransporteurs->transportes($transporteurId);
+            $effectifTransporteursServices = $this->db_manager->get(
+                'Sbm\Db\Eleve\EffectifTransporteursServices');
+            $effectifTransporteursServices->setCaractereConditionnel($transporteurId)->init(
+                $this->transporteur_sanspreinscrits);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+            $transporteur = '';
             $transporteurId = null;
             $elevesATransporter = '';
             $services = [];
-            $stats = [];
+            $effectifTransporteursServices = null;
         }
 
         // die(var_dump($stats));
         return new ViewModel(
             [
+                'transporteur' => $transporteur,
                 'elevesATransporter' => $elevesATransporter,
                 'services' => $services,
-                'statServices' => $stats
+                'effectifTransporteursServices' => $effectifTransporteursServices
             ]);
     }
 
@@ -407,8 +430,14 @@ class IndexController extends AbstractActionController
                 ->toutes());
 
         // créer un objectData qui contient la méthode getWhere() adhoc
+        $categorie = $auth->getCategorieId();
+        if ($categorie == 2) {
+            $sanspreinscrits = $this->transporteur_sanspreinscrits;
+        } else {
+            $sanspreinscrits = $this->etablissement_sanspreinscrits;
+        }
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
-            $criteres_form->getElementNames());
+            $criteres_form->getElementNames(), $sanspreinscrits);
 
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
@@ -423,7 +452,7 @@ class IndexController extends AbstractActionController
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
 
-        switch ($auth->getCategorieId()) {
+        switch ($categorie) {
             case 2:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
                 try {
@@ -451,10 +480,9 @@ class IndexController extends AbstractActionController
                             ]);
                     }
                 }
-                $categorie = 2;
                 break;
             case 3:
-                // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
+                // Filtre les résultats pour n'afficher que ce qui concerne cet établissement
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                     $userId);
                 $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
@@ -464,7 +492,6 @@ class IndexController extends AbstractActionController
                         'nom',
                         'prenom'
                     ]);
-                $categorie = 3;
                 break;
             default:
                 try {
@@ -504,13 +531,19 @@ class IndexController extends AbstractActionController
         $userId = $auth->getUserId();
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
+        $categorie = $auth->getCategorieId();
+        if ($categorie == 2) {
+            $sanspreinscrits = $this->transporteur_sanspreinscrits;
+        } else {
+            $sanspreinscrits = $this->etablissement_sanspreinscrits;
+        }
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
-            $criteres_form->getElementNames());
+            $criteres_form->getElementNames(), $sanspreinscrits);
         $criteres = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-        switch ($auth->getCategorieId()) {
+        switch ($categorie) {
             case 2:
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                     $userId);
@@ -565,11 +598,13 @@ class IndexController extends AbstractActionController
         $where = new Where();
         $where->equalTo('millesime', Session::get('millesime'))->equalTo('serviceId',
             $serviceId);
+        $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
+        $effectifCircuits->init(true);
         return new ViewModel(
             [
                 'service' => $this->db_manager->get('Sbm\Db\Table\Services')->getRecord(
                     $serviceId),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(),
+                'effectifCircuits' => $effectifCircuits,
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
                     $where, [
                         'm1'
@@ -645,8 +680,14 @@ class IndexController extends AbstractActionController
             $userId);
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
+        $categorie = $auth->getCategorieId();
+        if ($categorie == 2) {
+            $sanspreinscrits = $this->transporteur_sanspreinscrits;
+        } else {
+            $sanspreinscrits = $this->etablissement_sanspreinscrits;
+        }
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
-            $criteres_form->getElementNames());
+            $criteres_form->getElementNames(), $sanspreinscrits);
         $criteres = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);

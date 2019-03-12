@@ -1,17 +1,15 @@
 <?php
 /**
  * Liste des services pour un transporteur donné
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport/
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_rapports = $this->url('sbmgestion/transport',
     [
@@ -59,20 +57,23 @@ $data = $this->paginator->getCurrentItems();
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
 		<ul class="float-left">
-			<li><?php echo $this->escapeHtml($this->transporteur->nom); ?></li>
+			<li><?php
+
+echo $this->escapeHtml($this->transporteur->nom);
+?></li>
 		</ul>
 		<div class="flashMessenger float-right">
-		    <?= $this->flashMessenger()->render('success');?>
-		    <?= $this->flashMessenger()->render('warning');?>
-		    <?= $this->flashMessenger()->render('error');?>
-		    <?= $this->flashMessenger()->render('info');?>
-		    <?= $this->flashMessenger()->render('default');?>
+		    <?=$this->flashMessenger()->render('success');?>
+		    <?=$this->flashMessenger()->render('warning');?>
+		    <?=$this->flashMessenger()->render('error');?>
+		    <?=$this->flashMessenger()->render('info');?>
+		    <?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-header" class="clearfix">
-		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?= $this->paginator->getTotalItemCount(); ?> services.</em>
+			<em>Il y a <?=$this->paginator->getTotalItemCount();?> services.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -87,12 +88,13 @@ $data = $this->paginator->getCurrentItems();
 					<th>Inscrits</th>
 					<th></th>
 				</tr>
-            <?php foreach($data as $service): ?>
+            <?php
+
+            foreach ($data as $service) :
+                ?>
             	<?php
-                $nbInscrits = StdLib::getParamR([
-                    $service->serviceId,
-                    'total'
-                ], $this->t_nb_inscrits, 0);
+                $nbInscrits = $this->effectifTransporteursServices->transportes(
+                    $service->serviceId);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -113,29 +115,32 @@ $data = $this->paginator->getCurrentItems();
                     ]
                 ];
                 ?>
-                <tr class="<?= $css;?>">
+                <tr class="<?=$css;?>">
 					<td class="serviceid">
-						<?= $this->escapeHtml($service->serviceId); ?></td>
+						<?=$this->escapeHtml($service->serviceId);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($service->nom); ?></td>
+						<?=$this->escapeHtml($service->nom);?></td>
 					<td class="aliascg">
-						<?= $this->escapeHtml($service->aliasCG); ?></td>
+						<?=$this->escapeHtml($service->aliasCG);?></td>
 					<td class="operateur">
-						<?= $this->escapeHtml($service->operateur); ?></td>
+						<?=$this->escapeHtml($service->operateur);?></td>
 					<td class="nbplaces">
-						<?= $this->escapeHtml($service->nbPlaces); ?></td>
+						<?=$this->escapeHtml($service->nbPlaces);?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="boutons">
-					<?= $this->listeLigneActions($this->serviceId, $hiddens, $buttons);?>
+					<?=$this->listeLigneActions($this->serviceId, $hiddens, $buttons);?>
 					</td>
-				</tr>         
-            <?php endforeach;?>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 	</div>
 </div>

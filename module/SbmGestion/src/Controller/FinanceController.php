@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -869,10 +869,13 @@ class FinanceController extends AbstractActionController
             ]);
         if ($args instanceof Response)
             return $args;
+        $effectifTarifs = $this->db_manager->get('Sbm\Db\Eleve\EffectifTarifs');
+        $effectifTarifs->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->paginator(
                     $args['where']),
+                'effectifTarifs' => $effectifTarifs,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_tarifs', 10),
                 'criteres_form' => $args['form']
@@ -1131,7 +1134,11 @@ class FinanceController extends AbstractActionController
             'route' => 'sbmgestion/finance',
             'action' => 'tarif-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => $this->db_manager->get(
+                    'Sbm\Db\Eleve\EffectifTarifs')
+            ]);
     }
 
     public function tarifGroupPdfAction()
@@ -1161,12 +1168,13 @@ class FinanceController extends AbstractActionController
         $args = $this->initListe('organismes');
         if ($args instanceof Response)
             return $args;
-
+        $effectifOrganismes = $this->db_manager->get('Sbm\Db\Eleve\EffectifOrganismes');
+        $effectifOrganismes->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->paginator(
                     $args['where']),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byOrganisme(),
+                'effectifOrganismes' => $effectifOrganismes,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_organismes', 15),
                 'criteres_form' => $args['form']
@@ -1413,6 +1421,10 @@ class FinanceController extends AbstractActionController
             'route' => 'sbmgestion/finance',
             'action' => 'organisme-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => $this->db_manager->get(
+                    'Sbm\Db\Eleve\EffectifOrganismes')
+            ]);
     }
 }

@@ -3,13 +3,16 @@
 /**
  * Liste des tarifs
  *
+ * Cette vue reçoit un objet effectifTarifs qui présente les méthodes demandes($tarifId)
+ * et transportes($tarifId) donnant les effectifs des élèves ayant fait une demande et des
+ * élèves transportés pour chaque identifiant $tarifId.
  *
  * @project sbm
  * @package SbmGestion
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -92,13 +95,13 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 <h1>Liste des tarifs</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-            <?= $this->flashMessenger()->render('success');?>
-            <?= $this->flashMessenger()->render('warning');?>
-            <?= $this->flashMessenger()->render('error');?>
-            <?= $this->flashMessenger()->render('info');?>
-            <?= $this->flashMessenger()->render('default');?>
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -110,10 +113,15 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<th>Rythme</th>
 					<th>Grille</th>
 					<th>Mode</th>
+					<th>Transportés</th>
+					<th>Demandes</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-        <?php foreach($tarifs as $test => $tarif): ?>
+        <?php
+
+        foreach ($tarifs as $tarif) :
+            ?>
         <?php
             // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $tarif->tarifId);
@@ -140,35 +148,42 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
                 ]
             ];
             ?>
-            <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+            <tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td class="nom">
-						<?= $this->escapeHtml($tarif->nom); ?></td>
-					<td class="montant">
-						<?= $fmt->formatCurrency($tarif->montant, 'EUR'); ?></td>
+						<?=$this->escapeHtml($tarif->nom);?></td>
+					<td class="montant align-right">
+						<?=$fmt->formatCurrency($tarif->montant, 'EUR');?></td>
 					<td class="attributs">
-						<?= $this->escapeHtml($tarif->rythme); ?></td>
+						<?=$this->escapeHtml($tarif->rythme);?></td>
 					<td class="attributs">
-						<?= $this->escapeHtml($tarif->grille); ?></td>
+						<?=$this->escapeHtml($tarif->grille);?></td>
 					<td class="attributs">
-						<?= $this->escapeHtml($tarif->mode); ?></td>
+						<?=$this->escapeHtml($tarif->mode);?></td>
+					<td class="effectif align-right">
+						<?=$this->effectifTarifs->transportes($tarif->tarifId);?>
+					<td class="effectif align-right">
+						<?=$this->effectifTarifs->demandes($tarif->tarifId);?>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
+						<?=renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
 						</td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($tarif->tarifId, $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($tarif->tarifId, $hiddens, $buttons);?>
 					</td>
-				</tr>         
-        <?php endforeach;?>
+				</tr>
+        <?php
+        endforeach
+        ;
+        ?>
         </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper">
-        	<?= $this->form()->openTag($this->criteres_form);?>
-        	<?= $this->formCollection($this->criteres_form, true);?>
-        	<?= $this->form()->closeTag();?>
+        	<?=$this->form()->openTag($this->criteres_form);?>
+        	<?=$this->formCollection($this->criteres_form, true);?>
+        	<?=$this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -177,8 +192,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

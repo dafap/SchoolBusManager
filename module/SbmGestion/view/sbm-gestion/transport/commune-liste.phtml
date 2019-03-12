@@ -1,26 +1,11 @@
 <?php
+
 /**
  * Liste des communes
- * 
- * Cette vue reçoit une variable $t_nb_inscrits qui est un tableau associatif 
- * structuré comme indiqué dans l'exemple ci-dessous :
- * [
- *     code_commune => [
- *         'demandes' => [
- *             'r1' => effectif des demandeR1,
- *             'r2' => effectif des demandeR2
- *         ],
- *         'transportes' => [
- *             'r1' => effectif des élèves transportés en demandeR1,
- *             'r2' => effectif des élèves transportés en demandeR2
- *         ],
- *         'total' => [
- *             'demandes' => effectif total des demandes en r1 ou en r2,
- *             'transportes' => effectif total des élèves transportés en demandeR1 ou en demande R2
- *         ]
- *     ],
- *     ...
- * ]
+ *
+ * Cette vue reçoit un objet effectifCommunes qui présente les méthodes demandes($communeId)
+ * et transportes($communeId) donnant les effectifs des élèves ayant fait une demande et des
+ * élèves transportés pour chaque identifiant $communeId.
  *
  *
  * @project sbm
@@ -28,11 +13,9 @@
  * @filesource view/sbm-gestion/transport/commune-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -92,18 +75,17 @@ $actions = [
         'title' => 'Nouvelle commune'
     ]
 ];
-// die(var_dump($this->t_nb_inscrits));
 ?>
 <h1>Liste des communes</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-			<?= $this->flashMessenger()->render('success');?>
-			<?= $this->flashMessenger()->render('warning');?>
-			<?= $this->flashMessenger()->render('error');?>
-			<?= $this->flashMessenger()->render('info');?>
-			<?= $this->flashMessenger()->render('default');?>
+			<?=$this->flashMessenger()->render('success');?>
+			<?=$this->flashMessenger()->render('warning');?>
+			<?=$this->flashMessenger()->render('error');?>
+			<?=$this->flashMessenger()->render('info');?>
+			<?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -126,21 +108,13 @@ $actions = [
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-            <?php foreach($communes as $commune): ?>
             <?php
-                $demandes = StdLib::getParamR(
-                    [
-                        $commune->communeId,
-                        'total',
-                        'demandes'
-                    ], $this->t_nb_inscrits, 0);
-                $transportes = StdLib::getParamR(
-                    [
-                        $commune->communeId,
-                        'total',
-                        'transportes'
-                    ], $this->t_nb_inscrits, 0);
-                $nbInscrits = "$transportes / $demandes";
+
+            foreach ($communes as $commune) :
+                ?>
+            <?php
+                $nbInscrits = $this->effectifCommunes->transportes($commune->communeId) .
+                    ' / ' . $this->effectifCommunes->demandes($commune->communeId);
                 // construction des JS pour selection
                 $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n",
                     $commune->communeId);
@@ -182,47 +156,50 @@ $actions = [
                     ]
                 ];
                 ?>
-            	<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+            	<tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td class="departement">
-						<?= $this->escapeHtml($commune->departement); ?></td>
+						<?=$this->escapeHtml($commune->departement);?></td>
 					<td class="canton">
-						<?= $this->escapeHtml($commune->canton); ?></td>
+						<?=$this->escapeHtml($commune->canton);?></td>
 					<td class="communeid">
-						<?= $this->escapeHtml($commune->communeId); ?></td>
+						<?=$this->escapeHtml($commune->communeId);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($commune->nom); ?></td>
+						<?=$this->escapeHtml($commune->nom);?></td>
 					<td class="codepostal">
-						<?= $this->escapeHtml($commune->codePostal); ?></td>
+						<?=$this->escapeHtml($commune->codePostal);?></td>
 					<td class="centre membre">
-						<?= $commune->membre ? 'X' : ''; ?></td>
+						<?=$commune->membre ? 'X' : '';?></td>
 					<td class="centre desservie">
-						<?= $commune->desservie ? 'X' : ''; ?></td>
+						<?=$commune->desservie ? 'X' : '';?></td>
 					<td class="centre visible">
-						<?= $commune->visible ? 'X' : ''; ?></td>
+						<?=$commune->visible ? 'X' : '';?></td>
 					<td class="centre visible">
-						<?= $commune->inscriptionenligne ? 'X' : ''; ?></td>
+						<?=$commune->inscriptionenligne ? 'X' : '';?></td>
 					<td class="centre visible">
-						<?= $commune->paiementenligne ? 'X' : ''; ?></td>
+						<?=$commune->paiementenligne ? 'X' : '';?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $commune->communeId, $commune->selection)?>
+						<?=renderCheckbox($this, 'selection', 'chk' . $commune->communeId, $commune->selection)?>
 						</td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($commune->communeId, $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($commune->communeId, $hiddens, $buttons);?>
 						</td>
-				</tr>         
-        <?php endforeach;?>
+				</tr>
+        <?php
+            endforeach
+            ;
+            ?>
         </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper">
-	    	<?= $this->form()->openTag($this->criteres_form);?>
-	    	<?= $this->formCollection($this->criteres_form, true);?>
-	    	<?= $this->form()->closeTag();?>
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
 	    </div>
 	</div>
 </div>
@@ -231,8 +208,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

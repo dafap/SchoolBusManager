@@ -8,12 +8,12 @@
  * @filesource Communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
+ * @date 7 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-class Communes extends AbstractSbmTable
+class Communes extends AbstractSbmTable implements EffectifInterface
 {
 
     /**

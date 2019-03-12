@@ -8,12 +8,12 @@
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 7 mars 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-class Stations extends AbstractSbmTable
+class Stations extends AbstractSbmTable implements EffectifInterface
 {
 
     /**
@@ -30,11 +30,10 @@ class Stations extends AbstractSbmTable
     public function setSelection($stationId, $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray(
-            [
-                'stationId' => $stationId,
-                'selection' => $selection
-            ]);
+        $oData->exchangeArray([
+            'stationId' => $stationId,
+            'selection' => $selection
+        ]);
         parent::saveRecord($oData);
     }
 }

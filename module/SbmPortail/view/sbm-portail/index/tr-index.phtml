@@ -6,17 +6,15 @@
  * - elevesATransporter
  * - services
  * - statServices
- * 
+ *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
+ * @date 12 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_horaires = $this->url('sbmdocument', [
@@ -38,37 +36,50 @@ $url_carte_etablissements = $this->url('sbmportail',
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
-		<?= $this->flashMessenger()->render('success');?>
-		<?= $this->flashMessenger()->render('warning');?>
-		<?= $this->flashMessenger()->render('error');?>
-		<?= $this->flashMessenger()->render('info');?>
-		<?= $this->flashMessenger()->render('default');?>
+		<?=$this->flashMessenger()->render('success');?>
+		<?=$this->flashMessenger()->render('warning');?>
+		<?=$this->flashMessenger()->render('error');?>
+		<?=$this->flashMessenger()->render('info');?>
+		<?=$this->flashMessenger()->render('default');?>
     </div>
 	<h1>Portail des transports scolaires</h1>
-	<!-- h3>Pour les transporteurs</h3-->
+	<h3>Pour <?=$this->transporteur;?></h3>
 	<div class="float-left">
-	<?php if ($this->elevesATransporter):?>
+	<?php
+
+if ($this->elevesATransporter) :
+    ?>
 		<table class="bleu">
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves à transporter</td>
 					<td class="effectif">
-						<?= $this->elevesATransporter ?:0;?>
+						<?=$this->elevesATransporter ?: 0;?>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-	<?php endif;?>
+	<?php endif;
+
+?>
 		<p></p>
-	<?php if ($this->services):?>
+	<?php
+
+if ($this->services) :
+    ?>
 		<table class="rose ">
 			<tbody>
-				<?php foreach ($this->services as $service):?>
-				    <?php
-        $effectif = Stdlib::getParamR([
-            $service->serviceId,
-            'total'
-        ], $this->statServices, 0);
+				<?php
+
+    foreach ($this->services as $service) :
+        ?>
+		<?php
+        if (method_exists($this->effectifTransporteursServices, 'transportes')) {
+            $effectif = $this->effectifTransporteursServices->transportes(
+                $service->serviceId);
+        } else {
+            $effectif = 0;
+        }
         $hiddens = [
             'serviceId' => $service->serviceId
         ];
@@ -81,17 +92,22 @@ $url_carte_etablissements = $this->url('sbmportail',
         ];
         ?>
 				<tr>
-					<td><?= $service->serviceId;?></td>
-					<td><?= $service->nom;?></td>
-					<td class="effectif"><?= $effectif;?></td>
+					<td><?=$service->serviceId;?></td>
+					<td><?=$service->nom;?></td>
+					<td class="effectif"><?=$effectif;?></td>
 					<td>
-						<?= $this->listeLigneActions($service->serviceId, $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($service->serviceId, $hiddens, $buttons);?>
 					</td>
 				</tr>
-				<?php endforeach;?>				
+				<?php
+    endforeach
+    ;
+    ?>
 			</tbody>
 		</table>
-	<?php endif;?>	
+	<?php endif;
+
+?>
 	</div>
 	<div id="menugeneral" class="float-right">
 		<div id="menugeneral-header">
@@ -99,13 +115,13 @@ $url_carte_etablissements = $this->url('sbmportail',
 		</div>
 		<div id="menugeneral-inner">
 			<ul>
-				<li><a href="<?= $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
+				<li><a href="<?=$url_eleves;?>"><i class="fam-bullet-go"></i>Liste
 						des élèves</a></li>
-				<li><a href="<?= $url_horaires; ?>" target="_blank"><i class="fam-bullet-go"></i>Fiches
-						horaires des circuits</a></li>
-				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
+				<li><a href="<?=$url_horaires;?>" target="_blank"><i
+						class="fam-bullet-go"></i>Fiches horaires des circuits</a></li>
+				<li><a href="<?=$url_carte_stations;?>"><i class="fam-bullet-go"></i>Carte
 						des points d'arrêts</a></li>
-				<li><a href="<?= $url_carte_etablissements; ?>"><i
+				<li><a href="<?=$url_carte_etablissements;?>"><i
 						class="fam-bullet-go"></i>Carte des établissements scolaires</a></li>
 			</ul>
 		</div>

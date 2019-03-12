@@ -57,7 +57,8 @@ class Liste implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(sprintf($message, gettype($serviceLocator)));
+            throw new Exception\ExceptionNoDbManager(
+                sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
         $this->dbAdapter = $this->db_manager->getDbAdapter();
@@ -121,7 +122,11 @@ class Liste implements FactoryInterface
         ], 's.stationId=c.stationId', [], Select::JOIN_LEFT)
             ->where(function ($where) {
             $where->isNull('c.stationId');
-        });
+        })
+            ->order([
+            'commune',
+            'nom'
+        ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }

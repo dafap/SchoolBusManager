@@ -8,7 +8,7 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 7 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -16,7 +16,7 @@ namespace SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Strategy\TarifAttributs as TarifAttributsStrategy;
 use Zend\Db\Sql\Where;
 
-class Tarifs extends AbstractSbmTable
+class Tarifs extends AbstractSbmTable implements EffectifInterface
 {
 
     private $modes = [
@@ -134,7 +134,7 @@ class Tarifs extends AbstractSbmTable
      *
      * @param string $choix
      *            'en ligne' ou 'tarif1' (annuel) ou 'tarif2' (trimestriel)
-     *            
+     *
      * @return integer
      */
     public function getTarifId($choix)

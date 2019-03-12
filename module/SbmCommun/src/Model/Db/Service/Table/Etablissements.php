@@ -8,7 +8,7 @@
  * @filesource Etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 7 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -17,7 +17,7 @@ use SbmCommun\Model\Strategy\Niveau as NiveauStrategy;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use Zend\Db\Sql\Where;
 
-class Etablissements extends AbstractSbmTable
+class Etablissements extends AbstractSbmTable implements EffectifInterface
 {
 
     /**
@@ -67,7 +67,7 @@ class Etablissements extends AbstractSbmTable
      *            enum {0, 1} 0: privé ; 1: public
      * @param array|string|null $communeId
      *            null ou $communeId ou tableau de $communeId
-     *            
+     *
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
     public function getEcoles($niveau, $statut = null, $communeId = null)

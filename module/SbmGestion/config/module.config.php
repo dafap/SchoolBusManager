@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 4 mars 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
 use SbmGestion\Controller;
@@ -80,6 +80,19 @@ return [
             'Sbm\Db\Circuit\Liste' => SbmGestionDbService\Circuit\Liste::class,
             'Sbm\Db\Eleve\Liste' => SbmGestionDbService\Eleve\Liste::class,
             'Sbm\Db\Eleve\Effectif' => SbmGestionDbService\Eleve\Effectif::class,
+            'Sbm\Db\Eleve\EffectifCircuits' => SbmGestionDbService\Eleve\EffectifCircuits::class,
+            'Sbm\Db\Eleve\EffectifClasses' => SbmGestionDbService\Eleve\EffectifClasses::class,
+            'Sbm\Db\Eleve\EffectifCommunes' => SbmGestionDbService\Eleve\EffectifCommunes::class,
+            'Sbm\Db\Eleve\EffectifEtablissements' => SbmGestionDbService\Eleve\EffectifEtablissements::class,
+            'Sbm\Db\Eleve\EffectifEtablissementsServices' => SbmGestionDbService\Eleve\EffectifEtablissementsServices::class,
+            'Sbm\Db\Eleve\EffectifOrganismes' => SbmGestionDbService\Eleve\EffectifOrganismes::class,
+            'Sbm\Db\Eleve\EffectifServices' => SbmGestionDbService\Eleve\EffectifServices::class,
+            'Sbm\Db\Eleve\EffectifServicesEtablissements' => SbmGestionDbService\Eleve\EffectifServicesEtablissements::class,
+            'Sbm\Db\Eleve\EffectifStations' => SbmGestionDbService\Eleve\EffectifStations::class,
+            'Sbm\Db\Eleve\EffectifStationsServices' => SbmGestionDbService\Eleve\EffectifStationsServices::class,
+            'Sbm\Db\Eleve\EffectifTarifs' => SbmGestionDbService\Eleve\EffectifTarifs::class,
+            'Sbm\Db\Eleve\EffectifTransporteurs' => SbmGestionDbService\Eleve\EffectifTransporteurs::class,
+            'Sbm\Db\Eleve\EffectifTransporteursServices' => SbmGestionDbService\Eleve\EffectifTransporteursServices::class,
             Cartes\Cartes::class => Cartes\CartesFactory::class,
             Photos\Photos::class => Photos\PhotosFactory::class
         ]

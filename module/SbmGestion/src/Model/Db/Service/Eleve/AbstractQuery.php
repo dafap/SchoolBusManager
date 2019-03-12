@@ -177,5 +177,86 @@ abstract class AbstractQuery
         }
         return $where;
     }
+
+    protected function getFiltreDemandes(bool $sanspreinscrits)
+    {
+        if ($sanspreinscrits) {
+            return [
+                'inscrit' => 1,
+                [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => [
+                        'gratuit',
+                        0
+                    ]
+                ]
+            ];
+        } else {
+            return [
+                'inscrit' => 1
+            ];
+        }
+    }
+
+    protected function getFiltreTransportes(bool $sanspreinscrits)
+    {
+        if ($sanspreinscrits) {
+            return [
+                'inscrit' => 1,
+                [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => [
+                        'gratuit',
+                        0
+                    ]
+                ],
+                'correspondance' => 1,
+                [
+                    [
+                        '>' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 1
+                    ],
+                    'or',
+                    [
+                        '=' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 2
+                    ]
+                ]
+            ];
+        } else {
+            return [
+                'inscrit' => 1,
+                'correspondance' => 1,
+                [
+                    [
+                        '>' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 1
+                    ],
+                    'or',
+                    [
+                        '=' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 2
+                    ]
+                ]
+            ];
+        }
+    }
 }
- 

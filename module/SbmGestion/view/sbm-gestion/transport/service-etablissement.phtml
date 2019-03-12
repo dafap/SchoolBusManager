@@ -2,17 +2,15 @@
 /**
  * Liste des établissements pour un service donné
  *
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport/
  * @filesource service-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // à faire en premier
@@ -77,18 +75,18 @@ $actions = [
 
 ?>
 <h1>Liste des établissements desservis par
-<?= $this->service->serviceId . ' - ' . $this->service->nom; ?>
+<?=$this->service->serviceId . ' - ' . $this->service->nom;?>
 
 </h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-            <?= $this->flashMessenger()->render('success');?>
-            <?= $this->flashMessenger()->render('warning');?>
-            <?= $this->flashMessenger()->render('error');?>
-            <?= $this->flashMessenger()->render('info');?>
-            <?= $this->flashMessenger()->render('default');?>
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -107,13 +105,13 @@ $actions = [
 					<th>Midi</th>
 					<th>Soir</th>
 				</tr>
-            <?php foreach($this->data as $etablissement): ?>
+            <?php
+
+            foreach ($this->data as $etablissement) :
+                ?>
             	<?php
-                $nbInscrits = StdLib::getParamR(
-                    [
-                        $etablissement->etablissementId,
-                        'total'
-                    ], $this->t_nb_inscrits, 0);
+                $nbInscrits = $this->effectifServicesEtablissements->transportes(
+                    $etablissement->etablissementId);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -141,34 +139,40 @@ $actions = [
                 ];
                 $id = $etablissement->etablissementId . '|' . $this->service->serviceId;
                 ?>
-                <tr class="petit <?php $css;?>">
+                <tr class="petit <?php
+
+                $css;
+                ?>">
 					<td class="etablissementid">
-						<?= $this->escapeHtml($etablissement->etablissementId); ?></td>
+						<?=$this->escapeHtml($etablissement->etablissementId);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($etablissement->etab_nom); ?></td>
+						<?=$this->escapeHtml($etablissement->etab_nom);?></td>
 					<td class="commune">
-						<?= $this->escapeHtml($etablissement->etab_commune); ?></td>
+						<?=$this->escapeHtml($etablissement->etab_commune);?></td>
 					<td class="codepostal">
-						<?= $this->escapeHtml($etablissement->etab_codePostal); ?></td>
+						<?=$this->escapeHtml($etablissement->etab_codePostal);?></td>
 					<td class="telephone">
-						<?= $this->telephone($etablissement->etab_telephone); ?></td>
+						<?=$this->telephone($etablissement->etab_telephone);?></td>
 					<td class="email">
-						<?= $this->escapeHtml($etablissement->etab_email); ?></td>
+						<?=$this->escapeHtml($etablissement->etab_email);?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="station">
-						<?= $this->escapeHtml($etablissement->sta_nom);?></td>
+						<?=$this->escapeHtml($etablissement->sta_nom);?></td>
 					<td class="matin">
-						<?= $etablissement->cir_m1; ?></td>
+						<?=$etablissement->cir_m1;?></td>
 					<td class="midi">
-						<?= $etablissement->cir_s2; ?></td>
+						<?=$etablissement->cir_s2;?></td>
 					<td class="soir">
-						<?= $etablissement->cir_s1; ?></td>
+						<?=$etablissement->cir_s1;?></td>
 					<td class="boutons">
-            			<?= $this->listeLigneActions($id, $hiddens, $buttons);?>
+            			<?=$this->listeLigneActions($id, $hiddens, $buttons);?>
 			        </td>
-				</tr>         
-            <?php endforeach;?>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>

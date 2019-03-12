@@ -1,13 +1,13 @@
 <?php
 /**
  * Détermine la liste des colonnes d'une table ou d'une requête
- * 
+ *
  * @project sbm
  * @package SbmPdf/Model
  * @filesource Columns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 fév. 2019
+ * @date 8 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -87,6 +87,25 @@ class Columns
         }
     }
 
+    /**
+     * Reçoit le nom d'enregistrement d'une classe dérivée de SbmAbstractClass (SbmCommun) et
+     * renvoie le nom d'enregistrement d'un EffectifInterface (SbmGestion)
+     *
+     * @param string $stringSbmAbstractTable
+     *
+     * @return string
+     *
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable
+     * @see \SbmGestion\Model\Db\Service\Eleve\EffectifInterface
+     */
+    public static function getStringEffectifInterface($stringSbmAbstractTable)
+    {
+        $parts = explode('\\', $stringSbmAbstractTable);
+        $parts[2] = 'Eleve';
+        $parts[3] = 'Effectif' . $parts[3];
+        return implode('\\', $parts);
+    }
+
     protected function tableListeDesChamps()
     {
         $table = $this->db_manager->get($this->recordSource);
@@ -96,6 +115,14 @@ class Columns
         foreach ($columns as $ocolumn) {
             $result[$ocolumn->getName()] = $ocolumn->getName() . ' (' .
                 $ocolumn->getDataType() . ')';
+        }
+        if ($table instanceof \SbmCommun\Model\Db\Service\Table\EffectifInterface) {
+            $effetifTable = self::getStringEffectifInterface($this->recordSource);
+            if ($this->db_manager->has($effetifTable)) {
+                foreach ($this->db_manager->get($effetifTable)->getEffectifColumns() as $key => $value) {
+                    $result["%$key%"] = $value;
+                }
+            }
         }
         return $result;
     }

@@ -2,18 +2,15 @@
 /**
  * Liste des services pour un établissement donné
  *
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport/
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-use SbmBase\Model\DateLib;
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport',
     [
@@ -77,19 +74,19 @@ $this->paginator->setCurrentPageNumber($this->page);
 $data = $this->paginator->getCurrentItems();
 ?>
 <h1>Liste des services
-<?= substr($this->etablissement->nom, 0, 5) == 'ECOLE' ? ' de l\'' : ' du '?>
-<?= $this->etablissement->nom . ' - ' . $this->etablissement->commune; ?>
+<?=substr($this->etablissement->nom, 0, 5) == 'ECOLE' ? ' de l\'' : ' du '?>
+<?=$this->etablissement->nom . ' - ' . $this->etablissement->commune;?>
 
 </h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-            <?= $this->flashMessenger()->render('success');?>
-            <?= $this->flashMessenger()->render('warning');?>
-            <?= $this->flashMessenger()->render('error');?>
-            <?= $this->flashMessenger()->render('info');?>
-            <?= $this->flashMessenger()->render('default');?>
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -109,12 +106,13 @@ $data = $this->paginator->getCurrentItems();
 					<th>Soir</th>
 					<th></th>
 				</tr>
-            <?php foreach($data as $entity): ?>
+            <?php
+
+            foreach ($data as $entity) :
+                ?>
             	<?php
-                $nbInscrits = StdLib::getParamR([
-                    $entity->serviceId,
-                    'total'
-                ], $this->t_nb_inscrits, 0);
+                $nbInscrits = $this->effectifEtablissementsServices->transportes(
+                    $entity->serviceId);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -123,29 +121,29 @@ $data = $this->paginator->getCurrentItems();
                     $css .= ' exces';
                 }
                 ?>
-                <tr class="<?= $css;?>">
+                <tr class="<?=$css;?>">
 					<td class="serviceid">
-						<?= $this->escapeHtml($entity->serviceId); ?></td>
+						<?=$this->escapeHtml($entity->serviceId);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($entity->serv_nom); ?></td>
+						<?=$this->escapeHtml($entity->serv_nom);?></td>
 					<td class="aliascg">
-						<?= $this->escapeHtml($entity->serv_aliasCG); ?></td>
+						<?=$this->escapeHtml($entity->serv_aliasCG);?></td>
 					<td class="transporteur">
-						<?= $this->escapeHtml($entity->serv_transporteur); ?></td>
+						<?=$this->escapeHtml($entity->serv_transporteur);?></td>
 					<td class="operateur">
-						<?= $this->escapeHtml($entity->serv_operateur); ?></td>
+						<?=$this->escapeHtml($entity->serv_operateur);?></td>
 					<td class="nbplaces">
-						<?= $this->escapeHtml($entity->serv_nbPlaces); ?></td>
+						<?=$this->escapeHtml($entity->serv_nbPlaces);?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="station">
-						<?= $this->escapeHtml($entity->sta_nom);?></td>
+						<?=$this->escapeHtml($entity->sta_nom);?></td>
 					<td class="matin">
-						<?= $entity->cir_m1; ?></td>
+						<?=$entity->cir_m1;?></td>
 					<td class="midi">
-						<?= $entity->cir_s2; ?></td>
+						<?=$entity->cir_s2;?></td>
 					<td class="soir">
-						<?= $entity->cir_s1; ?></td>
+						<?=$entity->cir_s1;?></td>
 					<td class="boutons">
             <?php
                 $hiddens = [
@@ -171,13 +169,16 @@ $data = $this->paginator->getCurrentItems();
                     $hiddens, $buttons);
                 ?>
 			        </td>
-				</tr>         
-            <?php endforeach;?>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 	</div>
 </div>

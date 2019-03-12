@@ -1,6 +1,10 @@
 <?php
+
 /**
  * Liste des circuits
+ *
+ * Cette vue reçoit un objet effectifCircuits qui présente la méthode transportes($circuitId)
+ * donnant les effectifs des élèves transportés pour chaque identifiant $circuitId.
  *
  *
  * @project sbm
@@ -8,11 +12,9 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -106,13 +108,13 @@ if (! $this->admin) {
 <h1>Liste des circuits</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-            <?= $this->flashMessenger()->render('success');?>
-            <?= $this->flashMessenger()->render('warning');?>
-            <?= $this->flashMessenger()->render('error');?>
-            <?= $this->flashMessenger()->render('info');?>
-            <?= $this->flashMessenger()->render('default');?>
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -132,12 +134,12 @@ if (! $this->admin) {
 					<th class="selection">Sélect.</th>
 					<th></th>
 				</tr>
-        <?php foreach($circuits as $circuit): ?>
+        <?php
+
+        foreach ($circuits as $circuit) :
+            ?>
         	<?php
-            $nbInscrits = StdLib::getParamR([
-                $circuit->circuitId,
-                'total'
-            ], $this->t_nb_inscrits, 0);
+            $nbInscrits = $this->effectifCircuits->transportes($circuit->circuitId);
             // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $circuit->circuitId);
             $jsCallback .= sprintf("$modele\n", $circuit->circuitId, $circuit->circuitId);
@@ -178,34 +180,37 @@ if (! $this->admin) {
                 ]
             ];
             ?>
-            	<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+            	<tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td class="serviceid">
-						<?= $this->escapeHtml($circuit->serviceId); ?></td>
+						<?=$this->escapeHtml($circuit->serviceId);?></td>
 					<td class="service">
-						<?= $this->escapeHtml($circuit->service); ?></td>
+						<?=$this->escapeHtml($circuit->service);?></td>
 					<td class="station">
-						<?= $this->escapeHtml($circuit->station); ?></td>
+						<?=$this->escapeHtml($circuit->station);?></td>
 					<td class="type-arret">
-						<?= $this->escapeHtml($circuit->typeArret); ?></td>
+						<?=$this->escapeHtml($circuit->typeArret);?></td>
 					<td class="centre montee">
-						<?= $circuit->montee ? 'X' : ''; ?></td>
+						<?=$circuit->montee ? 'X' : '';?></td>
 					<td class="centre descente">
-						<?= $circuit->descente ? 'X' : ''; ?></td>
+						<?=$circuit->descente ? 'X' : '';?></td>
 					<td class="horaire">
-						<?= $circuit->m1; ?></td>
+						<?=$circuit->m1;?></td>
 					<td class="horaire">
-						<?= $circuit->s1; ?></td>
+						<?=$circuit->s1;?></td>
 					<td class="horaire">
-						<?= $circuit->s2; ?></td>
+						<?=$circuit->s2;?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $circuit->circuitId, $circuit->selection)?>
+						<?=renderCheckbox($this, 'selection', 'chk' . $circuit->circuitId, $circuit->selection)?>
 						</td>
 					<td class="boutons">
-            			<?= $this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>
-				</tr>         
-        <?php endforeach;?>
+            			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>
+				</tr>
+        <?php
+        endforeach
+        ;
+        ?>
         </tbody>
 		</table>
 	</div>
@@ -230,15 +235,15 @@ $actions_selection = [
 			<div class="selection">
 				Pour les fiches sélectionnées :
 				<div class="menu float-right">
-					<?= $this->listeZoneActions([], $actions_selection);?>
+					<?=$this->listeZoneActions([], $actions_selection);?>
 				</div>
 			</div>
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
 		</div>
 		<div class="criteres-wrapper">
-	    	<?= $this->form()->openTag($this->criteres_form);?>
-	    	<?= $this->formCollection($this->criteres_form, true);?>
-	    	<?= $this->form()->closeTag();?>
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
 	    </div>
 	</div>
 </div>
@@ -247,8 +252,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

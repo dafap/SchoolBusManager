@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -78,11 +78,14 @@ class TransportController extends AbstractActionController
             'millesime' => $millesime
         ]);
         $circuitsVides = $resultset->count() == 0;
+        // mise en place du calcul d'effectif
+        $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
+        $effectifCircuits->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
                     $args['where']),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCircuit(),
+                'effectifCircuits' => $effectifCircuits,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
                 'criteres_form' => $args['form'],
@@ -522,7 +525,15 @@ class TransportController extends AbstractActionController
      */
     public function circuitPdfAction()
     {
-        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            [
+                'strict' => [
+                    'serviceId',
+                    'stationId'
+                ]
+            ]
+        ];
         $criteresForm = [
             'SbmCommun\Form\CriteresForm',
             'circuits'
@@ -532,7 +543,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifCircuits'
+            ]);
     }
 
     /**
@@ -610,7 +624,8 @@ class TransportController extends AbstractActionController
         $args = $this->initListe('classes');
         if ($args instanceof Response)
             return $args;
-
+        $effectifClasses = $this->db_manager->get('Sbm\Db\Eleve\EffectifClasses');
+        $effectifClasses->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Classes')->paginator(
@@ -618,7 +633,7 @@ class TransportController extends AbstractActionController
                         'niveau',
                         'rang'
                     ]),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byClasse(),
+                'effectifClasses' => $effectifClasses,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_classes', 15),
                 'criteres_form' => $args['form']
@@ -863,8 +878,7 @@ class TransportController extends AbstractActionController
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
-                    ->byClasse()
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifClasse'
             ]);
     }
 
@@ -925,12 +939,13 @@ class TransportController extends AbstractActionController
 
         if ($args instanceof Response)
             return $args;
-        // die(var_dump($args['form']));
+        $effectifCommunes = $this->db_manager->get('Sbm\Db\Eleve\EffectifCommunes');
+        $effectifCommunes->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Communes')->paginator(
                     $args['where']),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byCommune(),
+                'effectifCommunes' => $effectifCommunes,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_communes', 20),
                 'criteres_form' => $args['form']
@@ -1170,8 +1185,7 @@ class TransportController extends AbstractActionController
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
-                    ->byCommune()
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifCommunes'
             ]);
     }
 
@@ -1253,12 +1267,14 @@ class TransportController extends AbstractActionController
             ]);
         if ($args instanceof Response)
             return $args;
-
+        $effectifEtablissements = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifEtablissements');
+        $effectifEtablissements->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->paginator(
                     $args['where']),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(),
+                'effectifEtablissements' => $effectifEtablissements,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_etablissements',
                     10),
@@ -1517,10 +1533,7 @@ class TransportController extends AbstractActionController
                     'localisation' => 'Literal:' .
                     $this->critereLocalisation('etablissement')
                 ]
-            ],
-            function ($where, $args) {
-                return $where->equalTo('millesime', Session::get('millesime'));
-            }
+            ]
         ];
         $criteresForm = [
             'SbmCommun\Form\CriteresForm',
@@ -1533,8 +1546,7 @@ class TransportController extends AbstractActionController
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
-                    ->byEtablissement()
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifEtablissements'
             ]);
     }
 
@@ -1779,14 +1791,16 @@ class TransportController extends AbstractActionController
         $where = new Where();
         $where->equalTo('etablissementId', $etablissementId)->equalTo('cir_millesime',
             Session::get('millesime'));
+        $effectifEtablissementsServices = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifEtablissementsServices');
+        $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init();
         return new ViewModel(
             [
                 'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                     $etablissementId),
                 'paginator' => $table->paginator($where),
                 'count_per_page' => 15,
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement(
-                    $etablissementId),
+                'effectifEtablissementsServices' => $effectifEtablissementsServices,
                 'page' => $currentPage
             ]);
     }
@@ -1801,7 +1815,8 @@ class TransportController extends AbstractActionController
             null,
             function ($where, $args) {
                 $where->equalTo('etablissementId',
-                    StdLib::getParam('etablissementId', $args, - 1));
+                    StdLib::getParam('etablissementId', $args, - 1))->equalTo(
+                    'cir_millesime', Session::get('millesime'));
                 return $where;
             }
         ];
@@ -1811,7 +1826,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-service'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifEtablissementsServices',
+                'caractereConditionnel' => 'etablissementId'
+            ]);
     }
 
     /**
@@ -1903,6 +1922,9 @@ class TransportController extends AbstractActionController
                 ]);
         }
         $table = $this->db_manager->get('Sbm\Db\Vue\EtablissementsServices');
+        $effectifServicesEtablissements = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifServicesEtablissements');
+        $effectifServicesEtablissements->setCaractereConditionnel($serviceId)->init();
         return new ViewModel(
             [
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
@@ -1912,8 +1934,7 @@ class TransportController extends AbstractActionController
                         'serviceId' => $serviceId,
                         'cir_millesime' => Session::get('millesime')
                     ]),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissementGivenService(
-                    $serviceId),
+                'effectifServicesEtablissements' => $effectifServicesEtablissements,
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'serviceId' => $serviceId
@@ -2169,13 +2190,16 @@ class TransportController extends AbstractActionController
         $args = $this->initListe('services',
             function ($config, $form) {
                 $form->setValueOptions('transporteurId',
-                    $config['db_manager']->get('Sbm\Db\Select\Transporteurs'));
+                    $config['db_manager']->get('Sbm\Db\Select\Transporteurs'))
+                    ->setValueOptions('serviceId',
+                    $config['db_manager']->get('Sbm\Db\Select\Services'));
             }, [
                 'transporteurId'
             ]);
         if ($args instanceof Response)
             return $args;
-
+        $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
+        $effectifServices->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
@@ -2183,7 +2207,7 @@ class TransportController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
                 'criteres_form' => $args['form'],
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byService(),
+                'effectifServices' => $effectifServices,
                 'natureCartes' => $this->db_manager->get('Sbm\Db\Vue\Services')->getNatureCartes()
             ]);
     }
@@ -2441,7 +2465,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'service-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifServices'
+            ]);
     }
 
     /**
@@ -2453,7 +2480,8 @@ class TransportController extends AbstractActionController
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
-                $where->equalTo('serviceId', StdLib::getParam('serviceId', $args, - 1));
+                $where->equalTo('serviceId', StdLib::getParam('serviceId', $args, - 1))->equalTo(
+                    'cir_millesime', Session::get('millesime'));
                 return $where;
             }
         ];
@@ -2463,7 +2491,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'service-etablissement'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifServicesEtablissements',
+                'caractereConditionnel' => 'serviceId'
+            ]);
     }
 
     /**
@@ -2531,12 +2563,13 @@ class TransportController extends AbstractActionController
             ]);
         if ($args instanceof Response)
             return $args;
-
+        $effectifStations = $this->db_manager->get('Sbm\Db\Eleve\EffectifStations');
+        $effectifStations->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Stations')->paginator(
                     $args['where']),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation(),
+                'effectifStations' => $effectifStations,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_stations', 10),
                 'criteres_form' => $args['form'],
@@ -2558,10 +2591,12 @@ class TransportController extends AbstractActionController
             return $prg;
         }
 
+        $effectifStations = $this->db_manager->get('Sbm\Db\Eleve\EffectifStations');
+        $effectifStations->init();
         return new ViewModel(
             [
                 'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->stationsNonDesservies(),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byStation(),
+                'effectifStations' => $effectifStations,
                 'page' => $currentPage
             ]);
     }
@@ -2582,7 +2617,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'stations-non-desservies'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifStations'
+            ]);
     }
 
     /**
@@ -2972,14 +3010,17 @@ class TransportController extends AbstractActionController
                     'page' => $pageRetour
                 ]);
         }
-
+        $effectifStationsServices = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifStationsServices');
+        $effectifStationsServices->setCaractereConditionnel($stationId)->init();
         return new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->byStation(
-                    $stationId),
-                // 'paginator' => $table_eleves->paginator(),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenStation(
-                    $stationId),
+                'data' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->fetchAll(
+                    [
+                        'millesime' => Session::get('millesime'),
+                        'stationId' => $stationId
+                    ], 'serviceId'),
+                'effectifStationsServices' => $effectifStationsServices,
                 'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
                     $stationId),
                 'page' => $currentPage,
@@ -3082,8 +3123,7 @@ class TransportController extends AbstractActionController
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
-                    ->byStation()
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifStations'
             ]);
     }
 
@@ -3100,7 +3140,8 @@ class TransportController extends AbstractActionController
             function ($where, $args) {
                 $stationId = StdLib::getParam('stationId', $args);
                 $where = new Where();
-                return $where->equalTo('stationId', $stationId);
+                return $where->equalTo('stationId', $stationId)->equalTo('millesime',
+                    Session::get('millesime'));
             }
         ];
         $criteresForm = 'SbmCommun\Form\CriteresForm';
@@ -3109,7 +3150,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'station-service'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifStationsServices',
+                'caractereConditionnel' => 'stationId'
+            ]);
     }
 
     /**
@@ -3351,12 +3396,14 @@ class TransportController extends AbstractActionController
         $args = $this->initListe('transporteurs');
         if ($args instanceof Response)
             return $args;
-
+        $effectifTransporteurs = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifTransporteurs');
+        $effectifTransporteurs->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Transporteurs')->paginator(
                     $args['where']),
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(),
+                'effectifTransporteurs' => $effectifTransporteurs,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_transporteurs', 15),
                 'criteres_form' => $args['form']
@@ -3619,6 +3666,9 @@ class TransportController extends AbstractActionController
         }
         $where = new Where();
         $where->equalTo('transporteurId', $transporteurId);
+        $effectifTransporteursServices = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifTransporteursServices');
+        $effectifTransporteursServices->setCaractereConditionnel($transporteurId)->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
@@ -3626,8 +3676,7 @@ class TransportController extends AbstractActionController
                         'serviceId'
                     ]),
                 'count_per_page' => 15,
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService(
-                    $transporteurId),
+                'effectifTransporteursServices' => $effectifTransporteursServices,
                 'transporteur' => $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord(
                     $transporteurId),
                 'page' => $currentPage,
@@ -3655,8 +3704,7 @@ class TransportController extends AbstractActionController
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
-                't_nb_inscrits' => $this->db_manager->get('Sbm\Db\Eleve\Effectif')
-                    ->byTransporteur()
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifTransporteurs'
             ]);
     }
 
@@ -3703,7 +3751,11 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-service'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'caractereConditionnel' => 'transporteurId',
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifTransporteursServices'
+            ]);
     }
 
     public function transporteurGroupSelectionAction()

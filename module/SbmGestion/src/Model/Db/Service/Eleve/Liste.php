@@ -1,15 +1,15 @@
 <?php
 /**
  * Listes d'élèves affectés pour un ou plusieurs critères donnés
- * 
+ *
  * La jointure sur la table affectations nécessite que l'affectation soit faite (voir méthode select()).
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Eleve
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -143,12 +143,12 @@ class Liste extends AbstractQuery implements FactoryInterface
             empty($columns['comsco']) ? [] : $columns['comsco'], Select::JOIN_LEFT)
             ->join([
             'sta1' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta1.stationId=aff.station1Id', empty($columns['sta1']) ? [] : $columns['sta1'],
-            Select::JOIN_LEFT)
+        ], 'sta1.stationId=aff.station1Id',
+            empty($columns['sta1']) ? [] : $columns['sta1'], Select::JOIN_LEFT)
             ->join([
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta2.stationId=aff.station2Id', empty($columns['sta2']) ? [] : $columns['sta2'],
-            Select::JOIN_LEFT)
+        ], 'sta2.stationId=aff.station2Id',
+            empty($columns['sta2']) ? [] : $columns['sta2'], Select::JOIN_LEFT)
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
@@ -205,7 +205,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'station2' => 'nom'
             ]
         ];
-        $select = $this->select($columns, $order);
+        $select = $this->select1($columns, $order);
         $where = new Where();
         $where->equalTo('sco.millesime', $millesime);
         $select->where($this->arrayToWhere($where, $filtre));
@@ -575,6 +575,88 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
                 'commune' => new Literal('IFNULL(d.nom, c.nom)')
             ]);
+        // die($this->getSqlString($select));
+        return $select;
+    }
+
+    /**
+     * Groupes d'élèves pour classe, commune, etablissement, organisateur, tarif
+     */
+    private function select1($columns = [], $order = null, $distinct = true)
+    {
+        $select = $this->sql->select()
+            ->from([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ],
+            'res.responsableId=ele.responsable1Id OR res.responsableId=ele.responsable2Id',
+            empty($columns['res']) ? [] : $columns['res'])
+            ->join([
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res.communeId=comres.communeId',
+            empty($columns['comres']) ? [] : $columns['comres'])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'ele.eleveId=sco.eleveId',
+            empty($columns['sco']) ? [
+                'inscrit',
+                'paiement',
+                'fa',
+                'gratuit'
+            ] : $columns['sco'])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId = eta.etablissementId',
+            empty($columns['eta']) ? [
+                'etablissement' => 'nom'
+            ] : $columns['eta'])
+            ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'sco.classeId = cla.classeId',
+            empty($columns['cla']) ? [
+                'classe' => 'nom'
+            ] : $columns['cla'])
+            ->join(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
+            empty($columns['aff']) ? [
+                'service1Id',
+                'service2Id'
+            ] : $columns['aff'], SELECT::JOIN_LEFT)
+            ->join([
+            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsco.communeId=sco.communeId',
+            empty($columns['comsco']) ? [] : $columns['comsco'], Select::JOIN_LEFT)
+            ->join([
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta1.stationId=aff.station1Id',
+            empty($columns['sta1']) ? [] : $columns['sta1'], Select::JOIN_LEFT)
+            ->join([
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta2.stationId=aff.station2Id',
+            empty($columns['sta2']) ? [] : $columns['sta2'], Select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], Select::JOIN_LEFT);
+        if (! empty($columns['ele'])) {
+            $select->columns($columns['ele']);
+        }
+        if (! empty($order)) {
+            $select->order($order);
+        }
+        if ($distinct) {
+            $select->quantifier(Select::QUANTIFIER_DISTINCT);
+        }
         // die($this->getSqlString($select));
         return $select;
     }

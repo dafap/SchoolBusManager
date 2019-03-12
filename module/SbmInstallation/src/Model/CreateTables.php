@@ -8,7 +8,7 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 fév. 2019
+ * @date 7 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Model;
@@ -212,7 +212,7 @@ class CreateTables
      *            fichier de définition des données
      * @param array $properties
      *            0 => nom_court de la table, 1 => type de la table
-     *            
+     *
      * @return multitype:Ambigous <\Zend\Db\Adapter\Driver\StatementInterface,
      *         \Zend\Db\ResultSet\Zend\Db\ResultSet>
      */
@@ -226,10 +226,11 @@ class CreateTables
             $insert = $sql->insert(
                 StdLib::entityName($properties[0], $properties[1], $this->prefix));
             $insert->values($data);
-            //$sqlString = $sql->getSqlStringForSqlObject($insert); obsolete
+            // $sqlString = $sql->getSqlStringForSqlObject($insert); obsolete
             $sqlString = $sql->buildSqlString($insert);
             try {
-            $results[] = $this->dbadapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+                $results[] = $this->dbadapter->query($sqlString,
+                    Adapter::QUERY_MODE_EXECUTE);
             } catch (\Exception $e) {
                 $msg = __METHOD__ . "\n" . $sqlString;
                 throw new Exception($msg, 999, $e);
@@ -262,7 +263,7 @@ class CreateTables
      * @param string $entityType
      *            'table', 'system' ou 'vue' afin de pouvoir créer les tables temporaires de même
      *            nom que les vues avant de créer les vues
-     *            
+     *
      * @return string
      */
     protected function createTable($entityName, $entityStructure, $entityType)
@@ -325,8 +326,8 @@ class CreateTables
                 $command .= $sep . 'FOREIGN KEY (`' . implode('`,`', (array) $fk['key']) .
                     '`) REFERENCES `' .
                     StdLib::entityName($fk['references']['table'], $entityType,
-                        $this->prefix) . '`(`' . implode('`,`', $fk['references']['fields']) .
-                    '`)';
+                        $this->prefix) . '`(`' .
+                    implode('`,`', $fk['references']['fields']) . '`)';
                 if (array_key_exists('on', $fk['references'])) {
                     if (array_key_exists('update', $fk['references']['on'])) {
                         $command .= ' ON UPDATE ' .
@@ -379,7 +380,7 @@ class CreateTables
                     // créer un champ du nom de cet alias
                     $nom_field = $field['alias'];
                     if (array_key_exists('expression', $field)) {
-                        $value = $field['expression'];
+                        $value = $field['expression']['type'];
                     } else {
                         $value = $fields_table[$field['field']];
                     }
@@ -562,7 +563,7 @@ class CreateTables
                 }, $definition);
 
             $command = <<<EOT
-CREATE TRIGGER `$name` 
+CREATE TRIGGER `$name`
  $moment $evenement ON `$table_name`
  FOR EACH ROW BEGIN
  $definition;
@@ -636,7 +637,7 @@ EOT;
      *
      * @param array $entity
      *            Contenu d'un fichier de configuration
-     *            
+     *
      * @return boolean
      */
     protected function isEntity($entity)

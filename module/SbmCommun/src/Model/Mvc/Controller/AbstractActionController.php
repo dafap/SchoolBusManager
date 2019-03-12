@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 fév. 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -27,7 +27,7 @@ use Zend\View\Model\ViewModel;
  * Quelques méthodes utiles
  *
  * @author admin
- *        
+ *
  */
 abstract class AbstractActionController extends ZendAbstractActionController
 {
@@ -112,7 +112,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param array $keys_hiddens
      *            liste des noms des hiddens à passer dans le formulaire (reçoivent leur valeur par
      *            post)
-     *            
+     *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
     protected function markSelectionEleves($query, $filtre, $idField, $retour,
@@ -253,7 +253,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            tableau ('route' => ..., 'action' => ...) pour le retour en cas d'échec
      * @param array $pdf_params
      *            tableau associatif de paramètres à passer
-     *            
+     *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function documentPdf($criteresObject, $criteresForm, $documentId = null,
@@ -331,6 +331,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $call_pdf->setParam('pageheader_string',
                     $pageheader_params['pageheader_string']);
             }
+            if (array_key_exists('caractereConditionnel', $pdf_params)) {
+                $key = $pdf_params['caractereConditionnel'];
+                $pdf_params['caractereConditionnel'] = StdLib::getParam($key, $args, false);
+            }
             foreach ($pdf_params as $key => $value) {
                 $call_pdf->setParam($key, $value);
             }
@@ -338,8 +342,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
 
             $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
         } catch (\Exception $e) {
+            if (getenv('APPLICATION_ENV') == 'development') {
+                throw $e;
+            }
             $this->flashMessenger()->addErrorMessage($e->getMessage());
-
             $routeParams = [
 
                 'action' => $retour['action'],
@@ -377,12 +383,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param array $aliasWhere
      *            Liste des champs du formulaire qui sont des alias
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere() pour plus d'explications.
-     *     
+     *
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
      *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme
      *         ['paginator' => ..., 'form' => ..., 'retour' => boolean]
      */
-    protected function initListe($formName, $initForm = null, $strictWhere = [], $aliasWhere = [])
+    protected function initListe($formName, $initForm = null, $strictWhere = [],
+        $aliasWhere = [])
     {
         $retour = false;
         $prg = $this->prg();
@@ -464,7 +471,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param callable|null $initform
      *            Fonction d'initialisation du formulaire. Son paramètre est $args (tableau des
      *            paramètres fournis en post ou en session)
-     *            
+     *
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est
      *         un post,
      *         ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
@@ -532,7 +539,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param callable|null $initform
      *            Fonction d'initialisation du formulaire. Son paramètre est $args (tableau des
      *            paramètres fournis en post ou en session)
-     *            
+     *
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est
      *         un post,
      *         ou un \SbmCommun\Model\Mvc\Controller\EditResponse contenant les données à renvoyer
@@ -616,7 +623,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param string $renvoyer
      *            Fonction de construction de la réponse. Ses paramètres sont $id (valeur de l'id)
      *            et $table (table dont l'alias est donné)
-     *            
+     *
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est
      *         un post, ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un
      *         id,
@@ -724,7 +731,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            Si $action est null alors on prend l'action indiquée dans la route courante
      * @param string|null $item
      *            Ce que l'on veut rajouter
-     *            
+     *
      * @return string
      */
     protected function getSessionNamespace($action = null, $item = null)

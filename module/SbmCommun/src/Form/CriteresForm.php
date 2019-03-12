@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2018
- * @version 2018-2.4.3
+ * @date 10 mars 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
 
@@ -23,14 +23,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     /**
      * Si tableName est un tableau, ce tableau décrit les éléménts à placer dans le formulaire
      *
-     * @param string|array $tableName            
+     * @param string|array $tableName
      */
     public function __construct($tableName = null)
     {
         $this->tableName = is_array($tableName) ? 'generic' : $tableName;
         parent::__construct('criteres');
         $this->setAttribute('method', 'post');
-        
+
         if ($this->tableName == 'generic') {
             $this->addGenericElements($tableName);
         } else {
@@ -69,7 +69,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     /**
      * Affecte une classe css à tous les éléments du formulaire
      *
-     * @param string $css_class            
+     * @param string $css_class
      */
     public function setCssClass($css_class)
     {
@@ -81,8 +81,8 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     /**
      * Affecte les values_options à l'élément indiqué
      *
-     * @param string $element            
-     * @param array $values_options            
+     * @param string $element
+     * @param array $values_options
      */
     public function setValueOptions($element, array $values_options)
     {
@@ -211,7 +211,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         /*
          * $this->add([
          * 'name' => 'aliasCG',
@@ -229,7 +229,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
          * ]
          * ]);
          */
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
@@ -939,7 +939,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
@@ -1541,7 +1541,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
@@ -1561,7 +1561,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
@@ -1715,7 +1715,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ]
         ];
     }
-    
+
     private function formSimulationetablissements()
     {
         $this->add(
@@ -1757,7 +1757,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 ]
             ]);
     }
-    
+
     private function formSimulationetablissementsSpecification()
     {
         return [
@@ -1776,9 +1776,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         $this->add(
             [
+                'type' => 'Zend\Form\Element\Select',
                 'name' => 'serviceId',
                 'attributes' => [
-                    'type' => 'text',
                     'id' => 'critere-serviceId',
                     'maxlength' => '11',
                     'class' => 'sbm-width-10c'
@@ -1788,6 +1788,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'label_attributes' => [
                         'class' => 'sbm-first'
                     ],
+                    'empty_option' => 'Tous',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1937,7 +1938,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
          * ]
          * ]);
          */
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
@@ -2084,7 +2085,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -2101,7 +2102,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -2118,7 +2119,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -2135,7 +2136,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',

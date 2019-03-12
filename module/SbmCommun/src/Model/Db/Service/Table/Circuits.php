@@ -8,7 +8,7 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 7 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -16,7 +16,7 @@ namespace SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use Zend\Db\Sql\Expression;
 
-class Circuits extends AbstractSbmTable
+class Circuits extends AbstractSbmTable implements EffectifInterface
 {
 
     /**

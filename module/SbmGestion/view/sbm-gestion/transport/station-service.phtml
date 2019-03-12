@@ -1,17 +1,15 @@
 <?php
 /**
  * Liste des services pour une station donnée
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport/
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
+ * @date 11 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_rapports = $this->url('sbmgestion/transport',
     [
@@ -55,14 +53,14 @@ $actions = [
 <div id="liste-wrapper">
 	<div id="liste-title">
 		<ul>
-			<li>Commune : <?= $this->escapeHtml($this->station->commune); ?></li>
-			<li>Arrêt : <?= $this->escapeHtml($this->station->nom); ?></li>
+			<li>Commune : <?=$this->escapeHtml($this->station->commune);?></li>
+			<li>Arrêt : <?=$this->escapeHtml($this->station->nom);?></li>
 		</ul>
 	</div>
 	<div id="liste-header" class="clearfix">
-		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?= $this->data->count(); ?> services.</em>
+			<em>Il y a <?=$this->data->count();?> services.</em>
 		</p>
 	</div>
 	<div id="liste-inner">
@@ -71,29 +69,30 @@ $actions = [
 				<tr>
 					<th>Code</th>
 					<th>Nom</th>
-					<th>Alias</th>
+					<th>Transporteur</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
 					<th></th>
 				</tr>
-            <?php foreach($this->data as $service): ?>
             <?php
 
-                $nbInscrits = StdLib::getParamR([
-                    $service['serviceId'],
-                    'total'
-                ], $this->t_nb_inscrits, 0);
+            foreach ($this->data as $service) :
+                ?>
+            <?php
+
+                $nbInscrits = $this->effectifStationsServices->transportes(
+                    $service->serviceId);
                 $css = $this->cycle([
                     "even",
                     "odd"
                 ])->next();
-                if ($service['nbPlaces'] < $nbInscrits) {
+                if ($service->nbPlaces < $nbInscrits) {
                     $css .= ' exces';
                 }
                 $hiddens = [
                     'stationId' => $this->stationId,
-                    'serviceId' => $service['serviceId'],
+                    'serviceId' => $service->serviceId,
                     'origine' => 'station-service'
                 ];
                 $buttons = [
@@ -101,34 +100,37 @@ $actions = [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves du service %s montant à %s',
-                            $service['serviceId'], $this->station->nom)
+                            $service->serviceId, $this->station->nom)
                     ]
                 ];
-                $id = $this->stationId . '|' . $service['serviceId']?>
-                <tr class="<?= $css;?>">
+                $id = $this->stationId . '|' . $service->serviceId?>
+                <tr class="<?=$css;?>">
 					<td class="serviceid">
-						<?= $this->escapeHtml($service['serviceId']); ?></td>
+						<?=$this->escapeHtml($service->serviceId);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($service['nom']); ?></td>
+						<?=$this->escapeHtml($service->service);?></td>
 					<td class="aliascg">
-						<?= $this->escapeHtml($service['aliasCG']); ?></td>
+						<?=$this->escapeHtml($service->transporteur);?></td>
 					<td class="operateur">
-						<?= $this->escapeHtml($service['operateur']); ?></td>
+						<?=$this->escapeHtml($service->operateur);?></td>
 					<td class="nbplaces">
-						<?= $this->escapeHtml($service['nbPlaces']); ?></td>
+						<?=$service->nbPlaces;?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($id, $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($id, $hiddens, $buttons);?>
 					</td>
-				</tr>         
-            <?php endforeach;?>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?= $this->data->count(); ?> services.</em>
+			<em>Il y a <?=$this->data->count();?> services.</em>
 		</p>
 	</div>
 </div>

@@ -11,8 +11,6 @@
  * @date 6 fév. 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_origine = $this->url('sbmgestion/transport',
@@ -48,13 +46,13 @@ $actions = [
 <h1>Liste des stations non desservies</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-			<?= $this->flashMessenger()->render('success');?>
-			<?= $this->flashMessenger()->render('warning');?>
-			<?= $this->flashMessenger()->render('error');?>
-			<?= $this->flashMessenger()->render('info');?>
-			<?= $this->flashMessenger()->render('default');?>
+			<?=$this->flashMessenger()->render('success');?>
+			<?=$this->flashMessenger()->render('warning');?>
+			<?=$this->flashMessenger()->render('error');?>
+			<?=$this->flashMessenger()->render('info');?>
+			<?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -67,12 +65,12 @@ $actions = [
 					<th>Ouverte</th>
 					<th>Inscrits</th>
 				</tr>
-            <?php foreach($this->data as $station): ?>
+            <?php
+
+            foreach ($this->data as $station) :
+                ?>
             	<?php
-                $nbInscrits = StdLib::getParamR([
-                    $station['stationId'],
-                    'total'
-                ], $this->t_nb_inscrits, 0);
+                $nbInscrits = $this->effectifStations->transportes($station['stationId']);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -118,22 +116,25 @@ $actions = [
                     ]
                 ];
                 ?>
-                <tr class="<?= $css;?>">
+                <tr class="<?=$css;?>">
 					<td class="commune">
-						<?= $this->escapeHtml($station['commune']); ?></td>
+						<?=$this->escapeHtml($station['commune']);?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($station['nom']); ?></td>
+						<?=$this->escapeHtml($station['nom']);?></td>
 					<td class="visible">
-						<?= $station['visible'] ? 'Oui' : 'Non'; ?></td>
+						<?=$station['visible'] ? 'Oui' : 'Non';?></td>
 					<td class="ouverte">
-						<?= $station['ouverte'] ? 'Oui' : 'Non'; ?></td>
+						<?=$station['ouverte'] ? 'Oui' : 'Non';?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="boutons">
-                		<?= $this->listeLigneActions($station['stationId'], $hiddens, $buttons);?>
+                		<?=$this->listeLigneActions($station['stationId'], $hiddens, $buttons);?>
 			        </td>
-				</tr>         
-            <?php endforeach;?>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>

@@ -1,28 +1,20 @@
 <?php
+
 /**
  * Liste des transporteurs
  *
- * Cette vue reçoit une variable $t_nb_inscrits qui est un tableau associatif 
- * structuré comme indiqué dans l'exemple ci-dessous :
- * [
- *     code_transporteur => [
- *         'r1' => effectif des élèves transportés en demandeR1,
- *         'r2' => effectif des élèves transportés en demandeR2,
- *         'total' => effectif des élèves transportés (r1 ou r2)
- *     ],
- *     ...
- * ]
+ * Cette vue reçoit un objet effectifTransporteurs qui présente la méthode
+ * transportes($transporteurId) donnant les effectifs des élèves transportés
+ * pour chaque identifiant $transporteurId.
  *
  * @project sbm
  * @package SbmGestion
  * @filesource view/sbm-gestion/transport/transporteur-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -108,13 +100,13 @@ $actions = [
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left">
-			<?= $this->listeZoneActions($hiddens, $actions);?></div>
+			<?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-            <?= $this->flashMessenger()->render('success');?>
-            <?= $this->flashMessenger()->render('warning');?>
-            <?= $this->flashMessenger()->render('error');?>
-            <?= $this->flashMessenger()->render('info');?>
-            <?= $this->flashMessenger()->render('default');?>
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -131,8 +123,13 @@ $actions = [
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-            <?php foreach($transporteurs as $transporteur): ?>
             <?php
+
+            foreach ($transporteurs as $transporteur) :
+                ?>
+            <?php
+                $nbInscrits = $this->effectifTransporteurs->transportes(
+                    $transporteur->transporteurId);
                 // construction des JS pour selection
                 $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
                     $transporteur->transporteurId);
@@ -168,39 +165,42 @@ $actions = [
                     ]
                 ];
                 ?>
-                <tr class="petit <?= $css;?>">
+                <tr class="petit <?=$css;?>">
 					<td class="nom">
-						<?= $this->escapeHtml($transporteur->nom); ?></td>
+						<?=$this->escapeHtml($transporteur->nom);?></td>
 					<td class="commune">
-						<?= $this->escapeHtml($transporteur->commune); ?></td>
+						<?=$this->escapeHtml($transporteur->commune);?></td>
 					<td class="codepostal">
-						<?= $this->escapeHtml($transporteur->codePostal); ?></td>
+						<?=$this->escapeHtml($transporteur->codePostal);?></td>
 					<td class="telephone">
-						<?= $this->telephone($transporteur->telephone); ?></td>
+						<?=$this->telephone($transporteur->telephone);?></td>
 					<td class="fax">
-						<?= $this->telephone($transporteur->fax); ?></td>
+						<?=$this->telephone($transporteur->fax);?></td>
 					<td class="email">
-						<?= $this->escapeHtml($transporteur->email); ?></td>
-					<td class="nbinscrits">
-						<?= StdLib::getParamR([$transporteur->transporteurId, 'total'], $this->t_nb_inscrits, 0); ?></td>
+						<?=$this->escapeHtml($transporteur->email);?></td>
+					<td class="nbinscrits align-right">
+						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $transporteur->transporteurId, $transporteur->selection)?>
+						<?=renderCheckbox($this, 'selection', 'chk' . $transporteur->transporteurId,$transporteur->selection)?>
 					</td>
 					<td class="boutons">
-						<?=$this->listeLigneActions($transporteur->transporteurId,$hiddens,$buttons);?>
+						<?=$this->listeLigneActions($transporteur->transporteurId, $hiddens, $buttons);?>
 					</td>
-				</tr>         
-            <?php endforeach;?>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
             </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper">
-	    	<?= $this->form()->openTag($this->criteres_form);?>
-	    	<?= $this->formCollection($this->criteres_form, true);?>
-	    	<?= $this->form()->closeTag();?>
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -209,8 +209,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();

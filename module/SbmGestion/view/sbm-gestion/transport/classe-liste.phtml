@@ -1,27 +1,20 @@
 <?php
+
 /**
  * Liste des classes
  *
- * Cette vue reçoit une variable $t_nb_inscrits qui est un tableau associatif 
- * structuré comme indiqué dans l'exemple ci-dessous :
- * [
- *     code_classe => [
- *         'demandes' => effectif des demandes
- *         'transportes' => effectif des élèves transportés
- *     ],
- *     ...
- * ]
+ * Cette vue reçoit un objet effectifClasses qui présente les méthodes demandes($classeId)
+ * et transportes($classeId) donnant les effectifs des élèves ayant fait une demande et des
+ * élèves transportés pour chaque identifiant $classeId.
  *
  * @project sbm
  * @package SbmGestion
  * @filesource view/sbm-gestion/transport/classe-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mars 2019
  * @version 2019-2.5.0
  */
-use SbmBase\Model\StdLib;
-
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -86,13 +79,13 @@ $actions = [
 <h1>Liste des classes</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
-			<?= $this->flashMessenger()->render('success');?>
-			<?= $this->flashMessenger()->render('warning');?>
-			<?= $this->flashMessenger()->render('error');?>
-			<?= $this->flashMessenger()->render('info');?>
-			<?= $this->flashMessenger()->render('default');?>
+			<?=$this->flashMessenger()->render('success');?>
+			<?=$this->flashMessenger()->render('warning');?>
+			<?=$this->flashMessenger()->render('error');?>
+			<?=$this->flashMessenger()->render('info');?>
+			<?=$this->flashMessenger()->render('default');?>
 		</div>
 	</div>
 	<div id="liste-inner">
@@ -106,16 +99,13 @@ $actions = [
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-        <?php foreach($classes as $classe): ?>
+        <?php
+
+        foreach ($classes as $classe) :
+            ?>
         	<?php
-            $nbInscrits = StdLib::getParamR([
-                $classe->classeId,
-                'transportes'
-            ], $this->t_nb_inscrits, 0) . ' / ';
-            $nbInscrits .= StdLib::getParamR([
-                $classe->classeId,
-                'demandes'
-            ], $this->t_nb_inscrits, 0);
+            $nbInscrits = $this->effectifClasses->transportes($classe->classeId) . ' / ' .
+                $this->effectifClasses->demandes($classe->classeId);
             // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $classe->classeId);
             $jsCallback .= sprintf("$modele\n", $classe->classeId, $classe->classeId);
@@ -155,33 +145,36 @@ $actions = [
                 ]
             ];
             ?>
-            	<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+            	<tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td class="nom">
-						<?= $this->escapeHtml($classe->nom); ?></td>
+						<?=$this->escapeHtml($classe->nom);?></td>
 					<td class="aliascg invisible">
-						<?= $this->escapeHtml($classe->aliasCG); ?></td>
+						<?=$this->escapeHtml($classe->aliasCG);?></td>
 					<td class="nbinscrits">
-						<?= $nbInscrits; ?></td>
+						<?=$nbInscrits;?></td>
 					<td class="centre">
-						<?= $this->escapeHtml($classe->suivant); ?></td>
+						<?=$this->escapeHtml($classe->suivant);?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $classe->classeId, $classe->selection)?>
+						<?=renderCheckbox($this, 'selection', 'chk' . $classe->classeId, $classe->selection)?>
 						</td>
 					<td class="boutons">
-						<?= $this->listeLigneActions($classe->classeId, $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($classe->classeId, $hiddens, $buttons);?>
 						</td>
-				</tr>         
-        <?php endforeach;?>
+				</tr>
+        <?php
+        endforeach
+        ;
+        ?>
         </tbody>
 		</table>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper">
-        <?= $this->form()->openTag($this->criteres_form);?>
-        <?= $this->formCollection($this->criteres_form, true);?>
-        <?= $this->form()->closeTag();?>
+        <?=$this->form()->openTag($this->criteres_form);?>
+        <?=$this->formCollection($this->criteres_form, true);?>
+        <?=$this->form()->closeTag();?>
         </div>
 	</div>
 </div>
@@ -190,8 +183,8 @@ $this->headScript()->captureStart();
 ?>
 $(function() {
 function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
 });
 <?php
 $this->headScript()->captureEnd();
