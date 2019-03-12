@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 13 mars 2019
  * @version 2019-2.4.8
  */
 use SbmInstallation\Controller;
@@ -146,6 +146,11 @@ return [
                 ],
                 'may_terminate' => true
             ]
+        ]
+    ],
+    'form_manager' => [
+        'invokables' => [
+            Form\DumpTables::class => Form\DumpTables::class
         ]
     ],
     'view_manager' => [

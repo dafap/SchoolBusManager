@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.4.7
+ * @date 12 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmPortail\Controller;
 
@@ -276,7 +276,9 @@ class IndexController extends AbstractActionController
         try {
             $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                 $userId);
-            
+            $oetablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
+                $etablissementId);
+            $etablissement = "$oetablissement->nom - $oetablissement->commune";
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(true);
             
             $elevesTransportes = StdLib::getParamR(
@@ -290,6 +292,7 @@ class IndexController extends AbstractActionController
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byServiceGivenEtablissement(
                 $etablissementId, true);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $etablissement = '';
             $elevesTransportes = '';
             $services = [];
             $stats = [];
@@ -297,6 +300,7 @@ class IndexController extends AbstractActionController
         
         return new ViewModel(
             [
+                'etablissement' => $etablissement,
                 'elevesTransportes' => $elevesTransportes,
                 'services' => $services,
                 'statServices' => $stats
@@ -321,6 +325,8 @@ class IndexController extends AbstractActionController
         try {
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
+            $transporteur = $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord(
+				$transporteurId)->nom;	
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(true);
             $elevesATransporter = StdLib::getParamR(
                 [
@@ -334,6 +340,7 @@ class IndexController extends AbstractActionController
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->transporteurByService(
                 $transporteurId, true);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
+            $transporteur = '';
             $transporteurId = null;
             $elevesATransporter = '';
             $services = [];
@@ -343,6 +350,7 @@ class IndexController extends AbstractActionController
         // die(var_dump($stats));
         return new ViewModel(
             [
+                'transporteur' => $transporteur,
                 'elevesATransporter' => $elevesATransporter,
                 'services' => $services,
                 'statServices' => $stats

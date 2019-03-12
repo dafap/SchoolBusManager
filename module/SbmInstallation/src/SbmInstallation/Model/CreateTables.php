@@ -8,7 +8,7 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 13 mars 2019
  * @version 2019-2.4.8
  */
 namespace SbmInstallation\Model;
@@ -379,7 +379,7 @@ class CreateTables
                     // créer un champ du nom de cet alias
                     $nom_field = $field['alias'];
                     if (array_key_exists('expression', $field)) {
-                        $value = $field['expression'];
+                        $value = $field['expression']['type'];
                     } else {
                         $value = $fields_table[$field['field']];
                     }

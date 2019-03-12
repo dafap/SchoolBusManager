@@ -12,8 +12,8 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 12 mars 2019
+ * @version 2019-2.4.8
  */
 use SbmBase\Model\StdLib;
 
@@ -49,7 +49,7 @@ echo $this->flashMessenger()->render('default');
 ?>
     </div>
 	<h1>Portail des transports scolaires</h1>
-	<!-- h3>Pour les transporteurs</h3-->
+	<h3>Pour <?=$this->transporteur;?></h3>
 	<div class="float-left">
 	<?php if ($this->elevesATransporter):?>
 		<table class="bleu">

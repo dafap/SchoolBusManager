@@ -7,8 +7,8 @@
  * @filesource Bienvenue.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2018
- * @version 2018-2.4.1
+ * @date 10 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmFront\View\Helper;
 
@@ -93,7 +93,7 @@ class Bienvenue extends AbstractHelper
        <li class="onglet">Bienvenue $bienvenue
        <ul>$menu_content</ul> 
        </li>        
-       <li>| <a href="$logout"><i class="fam-door-out"></i>déconnexion</a></li>
+       <li>| <a href="$logout"><i class="fam-cancel"></i>déconnexion</a></li>
    </ul>
 </div>
 EOT;
