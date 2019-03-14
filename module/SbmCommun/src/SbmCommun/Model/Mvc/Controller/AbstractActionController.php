@@ -9,8 +9,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 fév. 2019
- * @version 2019-2.4.7
+ * @date 14 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -330,6 +330,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
             if (array_key_exists('pageheader_string', $pageheader_params)) {
                 $call_pdf->setParam('pageheader_string', 
                     $pageheader_params['pageheader_string']);
+            }
+            if (array_key_exists('criteres', $pdf_params)) {
+                $criteres = $criteres_obj->getCriteres();
+                $call_pdf->setParam('criteres', $criteres['criteres']);
+                $call_pdf->setParam('strict', $criteres['strict']);
+                $call_pdf->setParam('expression', $criteres['expression']);
+                unset($pdf_params['criteres']);
             }
             foreach ($pdf_params as $key => $value) {
                 $call_pdf->setParam($key, $value);

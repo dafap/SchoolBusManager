@@ -11,8 +11,8 @@
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 jan. 2019
- * @version 2019-2.4.6
+ * @date 13 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmPdf\Model;
 
@@ -107,8 +107,14 @@ class Etiquette
         } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
             $this->config['docfields'] = [];
         }
-        $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) /
+        $lineCount = $this->lineCount();
+        if ($lineCount>1) {
+            $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) /
              ($this->lineCount() - 1);
+        } else {
+            $this->y_space = 0;
+        }
+        
         $this->NewPage();
     }
 

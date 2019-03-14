@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.4.7
+ * @date 14 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmGestion\Controller;
 
@@ -1021,7 +1021,10 @@ class EleveController extends AbstractActionController
             'route' => 'sbmgestion/eleve',
             'action' => 'eleve-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour, 
+            [
+                'criteres' => true
+            ]);
     }
 
     public function eleveGroupePdfAction()
@@ -1391,13 +1394,19 @@ class EleveController extends AbstractActionController
         $rangeY = $projection->getRangeY();
         $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
         
-        $args = $this->initListe('responsables', function($config, $form){
-            $form->get('demenagement')->setUseHiddenElement(false);
-            $form->get('inscrits')->setUseHiddenElement(false);
-            $form->get('preinscrits')->setUseHiddenElement(false);
-            $form->get('localisation')->setUseHiddenElement(false);
-            $form->get('selection')->setUseHiddenElement(false);
-        }, 
+        $args = $this->initListe('responsables', 
+            function ($config, $form) {
+                $form->get('demenagement')
+                    ->setUseHiddenElement(false);
+                $form->get('inscrits')
+                    ->setUseHiddenElement(false);
+                $form->get('preinscrits')
+                    ->setUseHiddenElement(false);
+                $form->get('localisation')
+                    ->setUseHiddenElement(false);
+                $form->get('selection')
+                    ->setUseHiddenElement(false);
+            }, 
             [
                 'nbEnfants',
                 'nbInscrits',

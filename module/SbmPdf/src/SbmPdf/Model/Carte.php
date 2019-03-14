@@ -11,8 +11,8 @@
  * @filesource Carte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 jan. 2019
- * @version 2019-2.4.6
+ * @date 13 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmPdf\Model;
 
@@ -84,7 +84,7 @@ class Carte extends Etiquette
         // optimisation des lignes
         $d = $hauteur_utile - $y;
         if (abs($d) > 0.01 * $n) {
-            $delta += $d / $n;
+            $delta += $d / max($n, 2);
             $this->initPositions($delta, $hauteur_utile);
         }
     }

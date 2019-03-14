@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 14 mars 2019
  * @version 2019-2.4.8
  */
 namespace SbmPdf\Model;
@@ -30,7 +30,7 @@ use SbmPdf\Model\Db\Sql\Select;
 
 class Tcpdf extends \TCPDF
 {
-	use QuerySourceTrait;					 
+    use QuerySourceTrait;
 
     const HORS_SECTION = 0;
 
@@ -131,10 +131,10 @@ class Tcpdf extends \TCPDF
         $this->last_page_docheader = 0;
         parent::__construct(null, PDF_UNIT);
     }
-    
+
     /**
      * Renvoie la version courante de TCPDF
-     * 
+     *
      * @return string
      */
     public static function getVersion()
@@ -153,7 +153,7 @@ class Tcpdf extends \TCPDF
     public function setParams($params = [])
     {
         global $l;
-
+        
         if (array_key_exists('data', $params)) {
             $this->setData($params['data']);
             unset($params['data']);
@@ -1602,10 +1602,10 @@ class Tcpdf extends \TCPDF
                     $columns[] = Select::SQL_STAR;
                 }
                 $recordSource = $this->decodeSource(
-                    $this->getConfig('document', 'recordSource', ''),
-                        $this->pdf_manager->get('SbmAuthentification\Authentication')
-                            ->by()
-                            ->getUserId());
+                    $this->getConfig('document', 'recordSource', ''), 
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
+                        ->by()
+                        ->getUserId());
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 try {
                     $select = new Select($recordSource);
@@ -1886,14 +1886,18 @@ class Tcpdf extends \TCPDF
      * Renvoie un tableau indexé de données pour les étiquettes.
      * Chaque enregistrement du tableau correspond au contenu d'une étiquette sous la
      * forme d'un tableau associatif
+     * <code>
      * [
      * 'lignes' => [tableau indexé des lignes de l'étiquette (1)],
      * 'photos' => false ou tableau indexé de tableaux associatifs de la photo et de ses
      * paramètres (2). Autant de photos que le descripteur l'indique
      * ]
-     * (1) Chaque ligne de ce tableau est une chaine de caractères correctement formatée
+     * </code>
+     * <ol>
+     * <li> Chaque ligne de ce tableau est une chaine de caractères correctement formatée
      * pour être directement "écrite" dans la page PDF.
-     * (2) Si le descripteur indique qu'il s'agit d'une photo :
+     * <li> Si le descripteur indique qu'il s'agit d'une photo :
+     * <code>
      * 'photos' =>[
      * [
      * img => @imagedata où imagedata est le décodage de la colonne photo
@@ -1907,7 +1911,13 @@ class Tcpdf extends \TCPDF
      * dpi => résolution de l'image (300 par défaut)
      * ], ...
      * ]
+     * </code>
      * Sinon, 'photo' => []
+     * </li></ol>
+     * Le filtrage des données se fait :<ul>
+     * <li>pour les recordSources de type T par la méthode getWhere()</li>
+     * <li>pour les recordSources de type R par l'exploitation du paramètre `criteres`
+     * qui se présente sous la forme d'un tableau</li></ul>
      *
      * @param array $descripteur
      *            tableau de descripteurs des champs
@@ -1984,10 +1994,10 @@ class Tcpdf extends \TCPDF
                 // remplacement des variables %millesime%, %date%, %heure% et %userId%
                 // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
                 $sql = $this->decodeSource(
-                    $this->getConfig('document', 'recordSource', ''),
-                        $this->pdf_manager->get('SbmAuthentification\Authentication')
-                            ->by()
-                            ->getUserId());
+                    $this->getConfig('document', 'recordSource', ''), 
+                    $this->pdf_manager->get('SbmAuthentification\Authentication')
+                        ->by()
+                        ->getUserId());
                 $dbAdapter = $this->pdf_manager->get('Sbm\DbManager')->getDbAdapter();
                 
                 try {
@@ -2001,7 +2011,7 @@ class Tcpdf extends \TCPDF
                     if (! empty($criteres) || ! empty($expressions)) {
                         $where = [];
                         foreach ($criteres as $key => $value) {
-                            if (in_array($key, $expressions))
+                            if (array_key_exists($key, $expressions))
                                 continue;
                             if (in_array($key, $strict['empty'])) {
                                 $where[] = "tmp.$key = \"$value\"";
@@ -2010,9 +2020,13 @@ class Tcpdf extends \TCPDF
                                     continue;
                                 $where[] = "tmp.$key = \"$value\"";
                             } else {
-                                if (empty($value))
+                                if (empty($value)) {
                                     continue;
-                                $where[] = "tmp.$key Like \"$value%\"";
+                                } elseif (is_string($value)) {
+                                    $where[] = "tmp.$key Like \"$value%\"";
+                                } else {
+                                    $where[] = $this->createExpression($value, 'tmp');
+                                }
                             }
                         }
                         foreach ($expressions as $expression) {
@@ -2086,13 +2100,79 @@ class Tcpdf extends \TCPDF
                     $message = sprintf(
                         "Impossible d\'exécuter la requête décrite dans ce document.\n%s", 
                         $sql);
-                    throw new Exception($message, $e->getCode(), $e->getPrevious());
+                    throw new Exception($message, 0, $e->getPrevious());
                 }
             }
         }
         return $this->data;
     }
-    
+
+    /**
+     * Récursivité qui s'arrête lorsque $array est une chaine de caractères.
+     * Si cette chaine répond à la grammaire d'un nom de colonne, elle est préfixée.
+     * Pour ne pas la préfixer il faut qu'elle soit quotée ('ALAIN' ou "ALAIN") ou
+     * qu'elle contienne un caractère autre qu'une lettre, un chiffre ou le souligné.
+     * Les colonnes déjà préfixées ne le sont pas à nouveau, même si le préfixe est
+     * différent.
+     *
+     * @param array|string|number $array            
+     * @param string $prefix            
+     * @return string
+     */
+    private function createExpression($array, $prefix = '')
+    {
+        if (is_scalar($array)) {
+            if (! empty($prefix) && preg_match('/^[A-Za-z_][A-Za-z0-9_]+$/', $array)) {
+                return "$prefix.$array";
+            } else {
+                return $array;
+            }
+        }
+        if (array_key_exists('operator', $array)) {
+            $operator = $array['operator'];
+            $parts = $array['parts'];
+            switch ($operator) {
+                case 'OR':
+                case '||':
+                case 'XOR':
+                case 'AND':
+                case '&&':
+                    $pieces = [];
+                    foreach ($parts as $partie) {
+                        $pieces[] = $this->createExpression($partie, $prefix);
+                    }
+                    return '(' . implode(" $operator ", $pieces) . ')';
+                    break;
+                case 'NOT':
+                case '!':
+                    return $operator . ' (' . $this->createExpression($parts[0], $prefix) .
+                         ')';
+                    break;
+                case 'IS NULL':
+                case 'IS NOT NULL':
+                case 'IS TRUE':
+                case 'IS NOT TRUE':
+                case 'IS FALSE':
+                case 'IS NOT FALSE':
+                case 'IS UNKNOWN':
+                case 'IS NOT UNKNOWN':
+                    return '(' . $this->createExpression($parts[0], $prefix) .
+                         " $operator)";
+                    break;
+                case 'BETWEEN':
+                    return '(' . $this->createExpression($parts[0], $prefix) . ' BETWEEN ' .
+                         $this->createExpression($parts[1], $prefix) . ' AND ' .
+                         $this->createExpression($parts[2], $prefix) . ')';
+                    break;
+                default:
+                    return '(' . $this->createExpression($parts[0], $prefix) .
+                         " $operator " . $this->createExpression($parts[1], $prefix) . ')';
+                    break;
+            }
+        } else {
+            throw new Exception('Syntaxe incorrecte.');
+        }
+    }
     // =======================================================================================================
     // Modèle pour imprimer des cartes
     //
