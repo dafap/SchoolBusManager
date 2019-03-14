@@ -5,13 +5,13 @@
  * Utilisé dans Tcpdf pour le templateDocBodyMethod3
  * N'est pas enregistré dans service manager afin de passer aisément le documentId.
  *   $label = new Carte($this->pdf_manager->get('Sbm\DbManager'), $this->getDocumentId());
- * 
+ *
  * @project sbm
  * @package SbmPdf/Model
  * @filesource Carte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 fév. 2019
+ * @date 14 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -67,7 +67,8 @@ class Carte extends Etiquette
     }
 
     /**
-     * version 2016 sur page A4 (revue en fév. 2019 pour paramétrer le nombre de lignes)
+     * version 2016 sur page A4 (revue en fév.
+     * 2019 pour paramétrer le nombre de lignes)
      *
      * @param number $delta
      * @param number $hauteur_utile
@@ -85,7 +86,7 @@ class Carte extends Etiquette
         // optimisation des lignes
         $d = $hauteur_utile - $y;
         if (abs($d) > 0.01 * $n) {
-            $delta += $d / $n;
+            $delta += $d / max($n, 2);
             $this->initPositions($delta, $hauteur_utile);
         }
     }

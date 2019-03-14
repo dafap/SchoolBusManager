@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
+ * @date 14 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -211,26 +211,27 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * On reçoit au choix :
-     * - en paramètre le $documentId
-     * - par post un paramètre 'documentId'
+     * On reçoit au choix :<ul>
+     * <li>en paramètre le $documentId</li>
+     * <li>par post un paramètre 'documentId'</li>
+     * </ul>
      *
      * Dans les deux cas, ce paramètre peut être numérique (le documentId de la table documents),
      * une chaine de caractères ou un tableau.
      *
      * Si le caractère est numérique, c'est le documentId de la table système documents.
-     * Dans les autre cas, cela dépend de la présence ou non du paramètre get 'id'.
-     * - s'il est absent, 'documentId' contient le name du document
-     * - s'il est présent, 'documentId' contient le libelle du menu et 'id' contient
+     * Dans les autre cas, cela dépend de la présence ou non du paramètre GET 'id'.<ul>
+     * <li>s'il est absent, 'documentId' contient le name du document</li>
+     * <li>s'il est présent, 'documentId' contient le libelle du menu et 'id' contient
      * 'docaffectationId' de la table système 'docaffectations'.
-     * On retrouvera alors le 'documentId' dans la méthode Tcpdf::getDocumentId().
+     * On retrouvera alors le 'documentId' dans la méthode Tcpdf::getDocumentId().</li>
+     * </ul>
      *
      * On lit les critères définis dans le formulaire de critères de la liste (en session avec le
      * sessionNameSpace de xxxListeAction).
      * On transmet le where pour les documents basés sur une table ou vue sql et les tableaux
-     * 'expression', 'criteres' et 'strict' pour
-     * ceux basés sur une requête SQL. Voir pour cela les objets ObjectData qui doivent définir les
-     * méthodes getWhere() et getCriteres().
+     * 'expression', 'criteres' et 'strict' pour ceux basés sur une requête SQL. Voir pour cela les
+     * objets ObjectData qui doivent définir les méthodes getWhere() et getCriteres().
      *
      * ATTENTION AU RETOUR EN CAS DE PB
      * La pageRetour est indiquée par le paramètre pr (GET) or dans la page d'appel elle
@@ -334,6 +335,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
             if (array_key_exists('caractereConditionnel', $pdf_params)) {
                 $key = $pdf_params['caractereConditionnel'];
                 $pdf_params['caractereConditionnel'] = StdLib::getParam($key, $args, false);
+            }
+            if (array_key_exists('criteres', $pdf_params)) {
+                $criteres = $criteres_obj->getCriteres();
+                $call_pdf->setParam('criteres', $criteres['criteres']);
+                $call_pdf->setParam('strict', $criteres['strict']);
+                $call_pdf->setParam('expression', $criteres['expression']);
+                unset($pdf_params['criteres']);
             }
             foreach ($pdf_params as $key => $value) {
                 $call_pdf->setParam($key, $value);

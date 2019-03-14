@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 14 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -1019,7 +1019,10 @@ class EleveController extends AbstractActionController
             'route' => 'sbmgestion/eleve',
             'action' => 'eleve-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'criteres' => true
+            ]);
     }
 
     public function eleveGroupePdfAction()

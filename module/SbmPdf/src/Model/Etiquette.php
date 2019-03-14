@@ -2,16 +2,16 @@
 /**
  * Objet étiquette
  *
- * En version 2, cette classe est appelée dans Tcpdf et n'est pas considérée comme un service 
+ * En version 2, cette classe est appelée dans Tcpdf et n'est pas considérée comme un service
  * afin de pourvoir passer aisément le documentId
  *   $label = new Etiquette($this->pdf_manager->get('Sbm\DbManager'), $this->getDocumentId());
- * 
+ *
  * @project sbm
  * @package SbmPdf/Model
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 fév. 2019
+ * @date 14 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -108,8 +108,13 @@ class Etiquette
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $this->config['docfields'] = [];
         }
-        $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) /
-            ($this->lineCount() - 1);
+        $lineCount = $this->lineCount();
+        if ($lineCount > 1) {
+            $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) /
+                ($lineCount - 1);
+        } else {
+            $this->y_space = 0;
+        }
         $this->NewPage();
     }
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * Méthode de copie des tables sélectionnées
- * 
+ *
  * Compatible ZF3
  *
  * @project sbm
@@ -9,7 +9,7 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 14 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Model;
@@ -51,7 +51,7 @@ class DumpTables
  * Données de la %s `%s`
  *
  * Fichier permettant de recharger la table à partir du module SbmInstallation, action create
- * 
+ *
  * @project sbm
  * @package SbmInstallation
  * @filesource %s
@@ -158,13 +158,13 @@ EOT;
                         try {
                             $val = $table->getStrategie($key)->extract($column);
                         } catch (\Exception $e) {
-                            $val = "'" . addslashes($column) . "'";
+                            $val = "stripslashes('" . addslashes($column) . "')";
                         }
                     } else {
                         if (substr($key, - 5) == 'color' && substr($column, 0, 1) == '#') {
                             $column = substr($column, 1);
                         }
-                        $val = "'" . addslashes($column) . "'";
+                        $val = "stripslashes('" . addslashes($column) . "')";
                     }
 
                     $ligne .= "\n        '$key' => $val, ";
