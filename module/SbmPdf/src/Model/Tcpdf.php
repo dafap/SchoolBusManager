@@ -351,14 +351,186 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docfooter', false)) {
             $this->sectionDocumentFooter();
         }
-        // $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'),
-        // $this->getConfig('document', 'out_mode', 'I'));
+        $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'),
+            $this->getConfig('document', 'out_mode', 'I'));
         // die();
         $name = $this->getConfig('document', 'out_name', 'doc.pdf');
         if (headers_sent()) {
             $this->Error(
                 'Certaines données ont déjà été envoyées au navigateur, impossible d’envoyer un fichier PDF');
         }
+        $response = $this->prepareResponse($name);
+        $response->send();
+        // sans l'instruction die(), la taille du contenu est incorrecte. Il semble que du code
+        // html provenant du layer soit rajouté.
+        die();
+    }
+
+    /**
+     * Surcharge la méthode de tcpdf afin de placer les bon HTTP headers et arrêter le script après
+     * un envoi inline ($dest = I ou FI)
+     *
+     * {@inheritdoc}
+     * @see TCPDF::Output()
+     */
+    public function Output($name = 'doc.pdf', $dest = 'I')
+    {
+        // Output PDF to some destination
+        // Finish document if necessary
+        if ($this->state < 3) {
+            $this->Close();
+        }
+        // Normalize parameters
+        if (is_bool($dest)) {
+            $dest = $dest ? 'D' : 'F';
+        }
+        $dest = strtoupper($dest);
+        if ($dest[0] != 'F') {
+            $name = preg_replace('/[\s]+/', '_', $name);
+            $name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
+        }
+        if ($this->sign) {
+            // *** apply digital signature to the document ***
+            // get the document content
+            $pdfdoc = $this->getBuffer();
+            // remove last newline
+            $pdfdoc = substr($pdfdoc, 0, - 1);
+            // remove filler space
+            $byterange_string_len = strlen(\TCPDF_STATIC::$byterange_string);
+            // define the ByteRange
+            $byte_range = array();
+            $byte_range[0] = 0;
+            $byte_range[1] = strpos($pdfdoc, \TCPDF_STATIC::$byterange_string) +
+                $byterange_string_len + 10;
+            $byte_range[2] = $byte_range[1] + $this->signature_max_length + 2;
+            $byte_range[3] = strlen($pdfdoc) - $byte_range[2];
+            $pdfdoc = substr($pdfdoc, 0, $byte_range[1]) . substr($pdfdoc, $byte_range[2]);
+            // replace the ByteRange
+            $byterange = sprintf('/ByteRange[0 %u %u %u]', $byte_range[1], $byte_range[2],
+                $byte_range[3]);
+            $byterange .= str_repeat(' ', ($byterange_string_len - strlen($byterange)));
+            $pdfdoc = str_replace(\TCPDF_STATIC::$byterange_string, $byterange, $pdfdoc);
+            // write the document to a temporary folder
+            $tempdoc = \TCPDF_STATIC::getObjFilename('doc', $this->file_id);
+            $f = \TCPDF_STATIC::fopenLocal($tempdoc, 'wb');
+            if (! $f) {
+                $this->Error('Unable to create temporary file: ' . $tempdoc);
+            }
+            $pdfdoc_length = strlen($pdfdoc);
+            fwrite($f, $pdfdoc, $pdfdoc_length);
+            fclose($f);
+            // get digital signature via openssl library
+            $tempsign = \TCPDF_STATIC::getObjFilename('sig', $this->file_id);
+            if (empty($this->signature_data['extracerts'])) {
+                openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'],
+                    array(
+                        $this->signature_data['privkey'],
+                        $this->signature_data['password']
+                    ), array(), PKCS7_BINARY | PKCS7_DETACHED);
+            } else {
+                openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'],
+                    array(
+                        $this->signature_data['privkey'],
+                        $this->signature_data['password']
+                    ), array(), PKCS7_BINARY | PKCS7_DETACHED,
+                    $this->signature_data['extracerts']);
+            }
+            // read signature
+            $signature = file_get_contents($tempsign);
+            // extract signature
+            $signature = substr($signature, $pdfdoc_length);
+            $signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
+            $tmparr = explode("\n\n", $signature);
+            $signature = $tmparr[1];
+            // decode signature
+            $signature = base64_decode(trim($signature));
+            // add TSA timestamp to signature
+            $signature = $this->applyTSA($signature);
+            // convert signature to hex
+            $signature = current(unpack('H*', $signature));
+            $signature = str_pad($signature, $this->signature_max_length, '0');
+            // Add signature to the document
+            $this->buffer = substr($pdfdoc, 0, $byte_range[1]) . '<' . $signature . '>' .
+                substr($pdfdoc, $byte_range[1]);
+            $this->bufferlen = strlen($this->buffer);
+        }
+        switch ($dest) {
+            case 'I':
+                {
+                    // Send PDF to the standard output
+                    $this->IsOutputEmpty();
+                    if (php_sapi_name() != 'cli') {
+                        $response = $this->prepareResponseInline($name);
+                        $response->send();
+                        die();
+                    } else {
+                        echo $this->getBuffer();
+                    }
+                    break;
+                }
+            case 'D':
+                {
+                    // download PDF as file
+                    $this->IsOutputEmpty();
+                    $response = $this->prepareResponseAttachment($name);
+                    $response->send();
+                    break;
+                }
+            case 'F':
+            case 'FI':
+            case 'FD':
+                {
+                    // save PDF to a local file
+                    $f = \TCPDF_STATIC::fopenLocal($name, 'wb');
+                    if (! $f) {
+                        $this->Error('Unable to create output file: ' . $name);
+                    }
+                    fwrite($f, $this->getBuffer(), $this->bufferlen);
+                    fclose($f);
+                    $this->IsOutputEmpty();
+                    if ($dest == 'FI') {
+                        $response = $this->prepareResponseInline($name);
+                    } elseif ($dest == 'FD') {
+                        $response = $this->prepareResponseAttachment($name);
+                    }
+                    $response->send();
+                    die();
+                    break;
+                }
+            case 'E':
+                {
+                    // return PDF as base64 mime multi-part email attachment (RFC 2045)
+                    $retval = 'Content-Type: application/pdf;' . "\r\n";
+                    $retval .= ' name="' . $name . '"' . "\r\n";
+                    $retval .= 'Content-Transfer-Encoding: base64' . "\r\n";
+                    $retval .= 'Content-Disposition: attachment;' . "\r\n";
+                    $retval .= ' filename="' . $name . '"' . "\r\n\r\n";
+                    $retval .= chunk_split(base64_encode($this->getBuffer()), 76, "\r\n");
+                    return $retval;
+                }
+            case 'S':
+                {
+                    // returns PDF as a string
+                    return $this->getBuffer();
+                }
+            default:
+                {
+                    $this->Error('Incorrect output destination: ' . $dest);
+                }
+        }
+        return '';
+    }
+
+    private function IsOutputEmpty()
+    {
+        if (headers_sent() || ob_get_contents()) {
+            $this->Error(
+                'Certaines données ont déjà été envoyées au navigateur, impossible d’envoyer un fichier PDF');
+        }
+    }
+
+    private function prepareResponseInline(string $name): Response
+    {
         $response = new Response();
         // utilisation du header 'Transfert-Encoding' à la place de 'Content-Length' (HTTP/1.1)
         $response->getHeaders()
@@ -371,10 +543,34 @@ class Tcpdf extends \TCPDF
             ->addHeaderLine('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT')
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
         $response->setContent($this->getPDFData());
-        $response->send();
-        // sans l'instruction die(), la taille du contenu est incorrecte. Il semble que du code
-        // html provenant du layer soit rajouté.
-        die();
+        return $response;
+    }
+
+    private function prepareResponseAttachment(string $name): Response
+    {
+        $response = new Response();
+        // utilisation du header 'Transfert-Encoding' à la place de 'Content-Length' (HTTP/1.1)
+        $response->getHeaders()
+            ->addHeaderLine('Content-Description', 'File Transfer')
+            ->addHeaderLine('Cache-Control',
+            'private, must-revalidate, post-check=0, pre-check=0, max-age=1')
+            ->addHeaderLine('Pragma', 'public')
+            ->addHeaderLine('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT')
+            ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+        if (strpos(php_sapi_name(), 'cgi') === false) {
+            $response->getHeaders()
+                ->addHeaderLine('Content-Type', 'application/force-download')
+                ->addHeaderLine('Content-Type', 'application/octet-stream')
+                ->addHeaderLine('Content-Type', 'application/download')
+                ->addHeaderLine('Content-Type', 'application/pdf');
+        } else {
+            $response->getHeaders()->addHeaderLine('Content-Type', 'application/pdf');
+        }
+        $response->getHeaders()
+            ->addHeaderLine('Content-Disposition', 'filename="' . basename($name) . '"')
+            ->addHeaderLine('Content-Transfer-Encoding', 'binary');
+        $response->setContent($this->getPDFData());
+        return $response;
     }
 
     /**
