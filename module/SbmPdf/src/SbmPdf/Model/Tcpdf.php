@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
+ * @date 21 mars 2019
  * @version 2019-2.4.8
  */
 namespace SbmPdf\Model;
@@ -26,6 +26,7 @@ use Zend\View\Model\ViewModel;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmBase\Model\DateLib;
+use Zend\Http\PhpEnvironment\Response;
 use SbmPdf\Model\Db\Sql\Select;
 
 class Tcpdf extends \TCPDF
@@ -340,9 +341,30 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docfooter', false)) {
             $this->sectionDocumentFooter();
         }
-        
-        $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'), 
-            $this->getConfig('document', 'out_mode', 'I'));
+        // $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'), 
+        //    $this->getConfig('document', 'out_mode', 'I'));
+        // die();
+        $name = $this->getConfig('document', 'out_name', 'doc.pdf');
+        if (headers_sent()) {
+            $this->Error(
+                'Certaines données ont déjà été envoyées au navigateur, impossible d’envoyer un fichier PDF');
+        }
+        $response = new Response();
+        // utilisation du header 'Transfert-Encoding' à la place de 'Content-Length' (HTTP/1.1)
+        $response->getHeaders()
+            ->addHeaderLine('Content-type', 'application/pdf')
+            ->addHeaderLine('Content-Disposition', "inline; filename=\"$name\"")
+            ->addHeaderLine('Tranfert-Encoding', 'chunked')
+            ->addHeaderLine('Cache-Control',
+            'private, must-revalidate, post-check=0, pre-check=0, max-age=1')
+            ->addHeaderLine('Pragma', 'public')
+            ->addHeaderLine('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT')
+            ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+        $response->setContent($this->getPDFData());
+        $response->send();
+        // sans l'instruction die(), la taille du contenu est incorrecte. Il semble que du code
+        // html provenant du layer soit rajouté.
+        die();
     }
 
     /**
