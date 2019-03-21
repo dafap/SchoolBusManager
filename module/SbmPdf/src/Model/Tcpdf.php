@@ -351,19 +351,8 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docfooter', false)) {
             $this->sectionDocumentFooter();
         }
-        $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'),
+        return $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'),
             $this->getConfig('document', 'out_mode', 'I'));
-        // die();
-        $name = $this->getConfig('document', 'out_name', 'doc.pdf');
-        if (headers_sent()) {
-            $this->Error(
-                'Certaines données ont déjà été envoyées au navigateur, impossible d’envoyer un fichier PDF');
-        }
-        $response = $this->prepareResponse($name);
-        $response->send();
-        // sans l'instruction die(), la taille du contenu est incorrecte. Il semble que du code
-        // html provenant du layer soit rajouté.
-        die();
     }
 
     /**
