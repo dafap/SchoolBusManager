@@ -474,6 +474,7 @@ class Tcpdf extends \TCPDF
                     $this->IsOutputEmpty();
                     $response = $this->prepareResponseAttachment($name);
                     $response->send();
+                    die();
                     break;
                 }
             case 'F':
