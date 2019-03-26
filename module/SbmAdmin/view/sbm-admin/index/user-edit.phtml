@@ -9,8 +9,8 @@
  * @filesource user-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
- * @version 2018-2.4.5
+ * @date 26 mars 2019
+ * @version 2019-2.4.8
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $cssToken = $this->user->tokenalive ? 'label left-10px ' : 'hidden';
@@ -28,6 +28,13 @@ $actions = [
         'onclick' => sprintf($js, "'retour'")
     ]
 ];
+// force_canonical est utilisée pour obtenir l'adresse absolue
+$url_confirm = $this->url('login', [
+    'action' => 'confirm',
+    'id' => $this->user->token
+], [
+    'force_canonical' => true
+]);
 ?>
 <h1>Compte d'un utilisateur</h1>
 <div id="fiche-wrapper">
@@ -51,6 +58,12 @@ $actions = [
 			<div class="col1"><?= $this->formRow($this->form->get('categorieId'));?></div>
 			<div class="clearfix">
 				<div class="float-left">
+					<div class="col1 top-12px"><?= $this->formRow($this->form->get('tokenalive'));?></div>
+					<div class="col1"><?= $this->formRow($this->form->get('confirme'));?></div>
+					<div class="col1"><?= $this->formRow($this->form->get('active'));?></div>
+					<div class="col1"><?= $this->formRow($this->form->get('selection'));?></div>
+				</div>
+				<div class="float-left left-95px">
 					<div>
 						<div class="label">Créé le</div>
 							<?= $this->user->dateCreation; ?></div>
@@ -70,15 +83,10 @@ $actions = [
 						<div class="label">IP du login précédent</div>
 							<?= $this->user->previousIp; ?></div>
 				</div>
-				<div class="float-left left-95px">
-					<div class="col1"><?= $this->formRow($this->form->get('tokenalive'));?></div>
-					<div>
-						<div class="<?=  $cssToken;?>">Token d'entrée</div><?= $this->user->token; ?></div>
-					<div class="col1"><?= $this->formRow($this->form->get('confirme'));?></div>
-					<div class="col1"><?= $this->formRow($this->form->get('active'));?></div>
-					<div class="col1"><?= $this->formRow($this->form->get('selection'));?></div>
-				</div>
 			</div>
+			<?php if ($this->user->token):?>
+			<p>Lien à communiquer pour entrer après demande de mot de passe : <?=$url_confirm;?></p>
+			<?php endif;?>
 			<div id="wrapper-commentaire"><?= $this->formRow($this->form->get('note'));?></div>
 			<div id="user-buttons">  
         		<?= $this->formSubmit($this->form->get('submit'));?>
