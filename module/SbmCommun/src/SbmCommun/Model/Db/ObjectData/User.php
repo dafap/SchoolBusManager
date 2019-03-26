@@ -8,8 +8,8 @@
  * @filesource User.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2016
- * @version 2016-2.2.0
+ * @date 26 mars 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -31,7 +31,14 @@ class User extends AbstractObjectData
         $this->setToken();
         $this->dateCreation = DateLib::nowToMysql();
         $this->gds = Rand::getString(8);
-        $this->categorieId = 1;
+        try {
+            $categorieId = $this->categorieId;
+            if (!$categorieId) {
+                $$this->categorieId = 1;
+            }
+        } catch (Exception\OutOfBoundsException $e) {
+            $this->categorieId = 1;
+        }
         if (! isset($this->mdp)) {
             // mot de passe obligatoire pour MySql à partir de la version 5.7
             $mdp = new Mdp();
