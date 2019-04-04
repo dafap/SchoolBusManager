@@ -6,7 +6,7 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Strategy
  * @filesource Semaine.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 4 avr. 2019
  * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Strategy;
@@ -66,7 +66,7 @@ class Semaine extends AbstractPower2
      */
     protected function valid($value)
     {
-        return array_key_exists($value, self::getJours());
+        return empty($value) || array_key_exists($value, self::getJours());
     }
 
     /**

@@ -8,7 +8,7 @@
  * @filesource AbstractPower2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 4 avr. 2019
  * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Strategy;
@@ -41,7 +41,7 @@ abstract class AbstractPower2 implements StrategyInterface
     public function extract($param)
     {
         if (is_string($param)) {
-            if (! self::valid($param)) {
+            if (! $this->valid($param)) {
                 throw new Exception(
                     __METHOD__ .
                          sprintf(
