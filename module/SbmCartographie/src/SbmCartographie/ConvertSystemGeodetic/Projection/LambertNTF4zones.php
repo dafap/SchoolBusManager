@@ -9,8 +9,8 @@
  * @filesource LambertNTF4zones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 8 avr. 2019
+ * @version 2018-2.4.8
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
 
@@ -96,7 +96,7 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         $pt = $this->alg0012($pt->getX(), $pt->getY(), $pt->getZ())
             ->to('grade');
         // passe en coordonnées XYZ
-        return $this->alg0003($pt->getLongitude('radian'), $pt->getLatitude('radian'));
+        return $point->transforme($this->alg0003($pt->getLongitude('radian'), $pt->getLatitude('radian')));
     }
 
     /**
@@ -117,8 +117,8 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         // change de projection
         $proj = new Lambert93();
         // passe en coordonnée géographiques RGF93
-        return $proj->alg0012($pt->getX(), $pt->getY(), $pt->getZ())
-            ->to('degré');
+        return $point->transforme($proj->alg0012($pt->getX(), $pt->getY(), $pt->getZ())
+            ->to('degré'));
     }
 
     /**
@@ -129,8 +129,8 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
      */
     public function xyzVersgNTF(Point $point)
     {
-        return $this->alg0004($point->getX(), $point->getY())
-            ->to('grade');
+        return $point->transforme($this->alg0004($point->getX(), $point->getY())
+            ->to('grade'));
     }
 
     /**
@@ -143,8 +143,8 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
      */
     public function gNTFversXYZ(Point $point)
     {
-        return $this->alg0003($point->getLongitude('radian'), 
-            $point->getLatitude('radian'));
+        return $point->transforme($this->alg0003($point->getLongitude('radian'), 
+            $point->getLatitude('radian')));
         ;
     }
 }

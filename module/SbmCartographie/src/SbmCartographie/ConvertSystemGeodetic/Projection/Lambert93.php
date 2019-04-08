@@ -46,7 +46,7 @@ class Lambert93 extends AbstractProjection implements ProjectionInterface
      */
     public function gRGF93versXYZ(Point $p)
     {
-        return $this->alg0003($p->getLongitude('radian'), $p->getLatitude('radian'));
+        return $p->transforme($this->alg0003($p->getLongitude('radian'), $p->getLatitude('radian')));
     }
 
     /**
@@ -57,7 +57,7 @@ class Lambert93 extends AbstractProjection implements ProjectionInterface
      */
     public function xyzVersgRGF93(Point $p)
     {
-        return $this->alg0004($p->getX(), $p->getY())
-            ->to('degré');
+        return $p->transforme($this->alg0004($p->getX(), $p->getY())
+            ->to('degré'));
     }
 }
