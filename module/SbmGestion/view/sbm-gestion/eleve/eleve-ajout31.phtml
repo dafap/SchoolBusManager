@@ -20,8 +20,8 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 fév. 2019
- * @version 2019-2.4.7
+ * @date 9 avr. 2019
+ * @version 2019-2.4.8
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -49,7 +49,7 @@ $telephonesR2 = array_filter(
     ]);
 $url_map = $this->url('sbmgestion/eleve', 
     [
-        'action' => 'localisation',
+        'action' => 'eleve-localisation',
         'page' => $this->page
     ]);
 $url_ici = $this->url('sbmgestion/eleve', 
