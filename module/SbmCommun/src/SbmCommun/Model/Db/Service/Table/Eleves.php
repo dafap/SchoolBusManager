@@ -8,8 +8,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 fév. 2019
- * @version 2019-2.4.7
+ * @date 23 avr. 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -113,7 +113,7 @@ class Eleves extends AbstractSbmTable
         } else {
             // on vérifie si des données ont changé
             if ($dateNUnchanged && $obj_data->isUnchanged($old_data))
-                return;
+                return $obj_data->eleveId;
             if (! $obj_data->isUnchanged($old_data)) {
                 if ($old_data->nom != $obj_data->nom) {
                     $obj_data->addCalculateField('nomSA');
